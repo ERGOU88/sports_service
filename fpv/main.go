@@ -4,6 +4,11 @@ import(
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"sports_service/server/fpv/routers"
+	"flag"
+)
+
+var (
+	configFile = flag.String("c", "./app.yaml", "-c 配置文件")
 )
 
 func init() {
