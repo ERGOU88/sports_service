@@ -77,7 +77,7 @@ func InitZapLog(logPath string, showColor bool, level int) *zlog.SimpleZapLogger
 	if err != nil {
 		panic(fmt.Errorf("init log error %v", err))
 	}
-	l := logger.Named("job")
+	l := logger.Named("fpv")
 	defer l.Sync()
 	return zlog.NewSimpleZapLogger(l.Sugar())
 }
