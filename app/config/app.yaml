@@ -27,7 +27,7 @@ redis:
 
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
-  dir: ../data/app/app_server.log
+  dir: ./log/app_server.log
   level: 0
   show_color: true
 

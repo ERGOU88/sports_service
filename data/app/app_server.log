@@ -1,4 +1,0 @@
-{"level":"DEBUG","time":"2020-09-09T19:37:02.881+0800","app_id":"job","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:32","msg":"success"}
-{"level":"DEBUG","time":"2020-09-09T19:38:46.317+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:32","msg":"success"}
-{"level":"DEBUG","time":"2020-09-09T19:40:19.577+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:31","msg":"success"}
-{"level":"DEBUG","time":"2020-09-09T19:41:10.557+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:31","msg":"success"}
