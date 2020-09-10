@@ -1,0 +1,46 @@
+info:
+  contact: {}
+  description: '| 400 | 参数错误 |'
+  license: {}
+  title: FPV电竞app(登陆服)
+  version: "1.0"
+paths:
+  /api/v1/user/mobile/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - default: android
+        description: android
+        in: header
+        name: User-Agent
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 登陆/注册 请求参数
+        in: body
+        name: LoginParams
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/../muser.LoginSwagger'
+            type: object
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 手机一键注册/登陆 (ok)
+      tags:
+      - 001 手机一键注册/登陆 2020-09-10
+swagger: "2.0"

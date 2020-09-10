@@ -66,7 +66,7 @@ var Global Config
 func (c *Config) Load(confFile string) error {
 	// 实例
 	v := viper.New()
-	// 设置完成配置文件
+	// 设置配置文件
 	v.SetConfigFile(confFile)
 	if err := v.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {

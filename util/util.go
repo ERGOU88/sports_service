@@ -1,14 +1,14 @@
 package util
 
 import (
+	"crypto/md5"
 	"fmt"
-	"log"
-	"math/rand"
-	"strconv"
-	"time"
 	"github.com/json-iterator/go"
 	"github.com/rs/xid"
 	"github.com/zheng-ji/goSnowFlake"
+	"log"
+	"math/rand"
+	"time"
 )
 
 var (
@@ -33,12 +33,10 @@ func GetSnowId() int64 {
 	return id
 }
 
-// NewID 年+月+日+时间+4位随机
-func NewID() int64 {
+// NewUserId 年+月+日+时间+4位随机
+func NewUserId() string {
 	t := time.Now().Format("20060102150405")
-	t = fmt.Sprintf("%s%d", t, GenerateRandnum(1000, 9999))
-	id, _ := strconv.ParseInt(t, 10, 64)
-	return id
+	return fmt.Sprintf("%s%d", t, GenerateRandnum(1000, 9999))
 }
 
 func GenerateRandnum(min, max int) int {
@@ -55,6 +53,17 @@ func GetTransactionId() string {
 func GetXID() int64 {
 	xidService := xid.New()
 	return int64(xidService.Counter())
+}
+
+func MD5(str string) string {
+	md := md5.New()
+	md.Write([]byte(str))
+	return fmt.Sprintf("%x", md.Sum(nil))
+}
+
+func Md5String(s string) (md5_str string) {
+	md5_str = fmt.Sprintf("%x", md5.Sum([]byte(s)))
+	return
 }
 
 

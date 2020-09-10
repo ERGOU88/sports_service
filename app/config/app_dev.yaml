@@ -3,11 +3,11 @@ pprofAddr: :12001
 mode: dev
 mysql:
   main:
-    master: root:a3202381@tcp(127.0.0.1:3306)/fpv?charset=utf8mb4
+    master: root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4
     slave:
-      - root:a3202381@tcp(127.0.0.1:3306)/fpv?charset=utf8mb4
-      - root:a3202381@tcp(127.0.0.1:3306)/fpv?charset=utf8mb4
-      - root:a3202381@tcp(127.0.0.1:3306)/fpv?charset=utf8mb4
+      - root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4
+      - root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4
+      - root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
 
