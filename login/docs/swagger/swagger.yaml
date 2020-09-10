@@ -1,6 +1,69 @@
+definitions:
+  swag.LoginParamsSwag:
+    properties:
+      mobileNum:
+        example: 手机号码
+        type: string
+      platform:
+        example: 1
+        type: integer
+    required:
+    - mobileNum
+    type: object
+  swag.LoginSwag:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/swag.User'
+        type: object
+    type: object
+  swag.User:
+    properties:
+      age:
+        type: integer
+      avatar:
+        type: string
+      background_img:
+        type: string
+      born:
+        type: string
+      channel_id:
+        type: integer
+      city:
+        type: string
+      create_at:
+        type: integer
+      device_type:
+        type: integer
+      gender:
+        type: integer
+      id:
+        type: integer
+      is_anchor:
+        type: integer
+      last_login_time:
+        type: integer
+      mobile_num:
+        type: integer
+      nick_name:
+        type: string
+      password:
+        type: string
+      signature:
+        type: string
+      status:
+        type: integer
+      title:
+        type: string
+      update_at:
+        type: integer
+      user_id:
+        type: string
+    type: object
 info:
   contact: {}
-  description: '| 400 | 参数错误 |'
+  description: '### API错误码文档 [点击查看](/api/v1/doc)'
   license: {}
   title: FPV电竞app(登陆服)
   version: "1.0"
@@ -27,6 +90,7 @@ paths:
         name: LoginParams
         required: true
         schema:
+          $ref: '#/definitions/swag.LoginParamsSwag'
           type: object
       produces:
       - application/json
@@ -34,7 +98,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/../muser.LoginSwagger'
+            $ref: '#/definitions/swag.LoginSwag'
             type: object
         "500":
           description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'

@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "| 400 | 参数错误 |",
+        "description": "### API错误码文档 [点击查看](/api/v1/doc)",
         "title": "FPV电竞app(登陆服)",
         "contact": {},
         "license": {},
@@ -43,7 +43,8 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object"
+                            "type": "object",
+                            "$ref": "#/definitions/swag.LoginParamsSwag"
                         }
                     }
                 ],
@@ -52,7 +53,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/../muser.LoginSwagger"
+                            "$ref": "#/definitions/swag.LoginSwag"
                         }
                     },
                     "500": {
@@ -61,6 +62,101 @@
                             "type": "string"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "swag.LoginParamsSwag": {
+            "type": "object",
+            "required": [
+                "mobileNum"
+            ],
+            "properties": {
+                "mobileNum": {
+                    "type": "string",
+                    "example": "手机号码"
+                },
+                "platform": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "swag.LoginSwag": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "user": {
+                    "type": "object",
+                    "$ref": "#/definitions/swag.User"
+                }
+            }
+        },
+        "swag.User": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "integer"
+                },
+                "avatar": {
+                    "type": "string"
+                },
+                "background_img": {
+                    "type": "string"
+                },
+                "born": {
+                    "type": "string"
+                },
+                "channel_id": {
+                    "type": "integer"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "create_at": {
+                    "type": "integer"
+                },
+                "device_type": {
+                    "type": "integer"
+                },
+                "gender": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_anchor": {
+                    "type": "integer"
+                },
+                "last_login_time": {
+                    "type": "integer"
+                },
+                "mobile_num": {
+                    "type": "integer"
+                },
+                "nick_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "signature": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "update_at": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "string"
                 }
             }
         }

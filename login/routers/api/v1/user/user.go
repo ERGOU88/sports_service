@@ -7,6 +7,7 @@ import (
 	"sports_service/server/models/muser"
 	"net/http"
 	"sports_service/server/global/login/log"
+	_ "sports_service/server/login/routers/api/v1/swag"
 )
 
 // @Summary 手机一键注册/登陆 (ok)
@@ -17,8 +18,8 @@ import (
 // @Produce  json
 // @Param   User-Agent    header    string 	true  "android" default(android)
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
-// @Param   LoginParams  body	../muser.LoginParams true "登陆/注册 请求参数"
-// @Success 200 {object} ../muser.LoginSwagger
+// @Param   LoginParams  body swag.LoginParamsSwag true "登陆/注册 请求参数"
+// @Success 200 {object} swag.LoginSwag
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/user/mobile/login [post]
 // 手机一键登陆

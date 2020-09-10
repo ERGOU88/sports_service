@@ -27,11 +27,6 @@ type LoginParams struct {
 	Platform  int    `json:"platform" example:"平台 0 android 1 iOS 2 web"`      // 平台
 }
 
-// swagger api文档（登陆接口返回数据）
-type LoginSwagger struct {
-	Token string        `json:"token"` // token
-	User  *models.User  `json:"user"`  // 用户信息
-}
 
 var validPhone = regexp.MustCompile(`^1\d{10}$`)
 // 检验手机号
