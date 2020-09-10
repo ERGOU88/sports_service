@@ -7,55 +7,58 @@ import (
 )
 
 type Address struct {
-	Ip   string "ip"
-	Port int    "port"
+	Ip   string
+	Port int
 }
 
 type Addresses []Address
 
 type MysqlType struct {
-	Master    string   "master"
-	Slave     []string "slave"
-	MaxIdle   int      "max_idle"
-	MaxActive int      "max_active"
+	Master    string
+	Slave     []string
+	MaxIdle   int
+	MaxActive int
 }
 
 type RedisOption struct {
-	DBId      int    "dbid"
-	Name      string "name"
-	MaxIdle   int    "max_idle"
-	MaxActive int    "max_active"
+	DBId      int
+	Name      string
+	MaxIdle   int
+	MaxActive int
 }
 
 type RedisType struct {
-	Master  Address       "master"
-	Slave   Addresses     "slave"
-	Options []RedisOption "dboption"
+	Master  Address
+	Slave   Addresses
+	Options []RedisOption
 }
 
 type Config struct {
 	// 公网服务
-	PublicAddr string "public_addr"
-
+	PublicAddr string
+	// 性能监控地址
+	PprofAddr  string
+	// 开发（dev）、测试(test)、生产(prod)
+	Mode       string
 	// 日志
 	Log struct {
-		Dir       string "dir"
-		Level     int    "level"
-		ShowColor bool   "show_color"
-	} "log"
+		Path      string
+		Level     int
+		ShowColor bool
+	}
 
 	// mysql
 	Mysql struct {
-		Main MysqlType "main"
-	} "mysql"
+		Main MysqlType
+	}
 
 	// redis连接
 	Redis struct {
 		// 主服务
-		Main RedisType "main"
-	} "redis"
+		Main RedisType
+	}
 
-	Debug bool "debug"
+	Debug bool
 }
 
 var Global Config

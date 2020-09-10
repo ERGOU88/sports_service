@@ -1,0 +1,21 @@
+# IntelliJ project files
+.idea
+*.iml
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+.DS_Store
+*.o
+*.a
+*.so
+
+# Folders
+_obj
+_test
+
+# Architecture specific extensions/prefixes
+*.cgo1.go
+*.cgo2.c
+_cgo_defun.c
+_cgo_gotypes.go
+_cgo_export.*
+
+

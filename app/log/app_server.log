@@ -1,1 +1,27 @@
 {"level":"DEBUG","time":"2020-09-09T19:44:38.605+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:31","msg":"success"}
+{"level":"DEBUG","time":"2020-09-10T11:12:34.893+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:13:56.699+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:14:29.941+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:15:56.102+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:16:23.932+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:17:19.393+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:19:19.757+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:20:10.161+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:21:00.362+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:21:24.784+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:23:12.111+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:24:27.008+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:25:01.597+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:27:21.228+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:28:49.531+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:33:14.190+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+{"level":"DEBUG","time":"2020-09-10T11:36:20.902+0800","app_id":"fpv","caller":"/Users/jelly/go/src/sports_service/server/app/main.go:40","msg":"setup log success"}
+[2020-09-10 11:39:27]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-10 11:46:22]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-10 11:46:51]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-10 11:47:37]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-10 11:48:46]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-10 11:48:57]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-10 11:49:07]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-10 11:49:13]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-10 11:49:20]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success

@@ -1,4 +1,6 @@
-public_addr: :11010
+publicAddr: :11001
+pprofAddr: :12001
+mode: dev
 mysql:
   main:
     master: root:a3202381@tcp(127.0.0.1:3306)/fpv?charset=utf8mb4
@@ -6,8 +8,8 @@ mysql:
       - root:a3202381@tcp(127.0.0.1:3306)/fpv?charset=utf8mb4
       - root:a3202381@tcp(127.0.0.1:3306)/fpv?charset=utf8mb4
       - root:a3202381@tcp(127.0.0.1:3306)/fpv?charset=utf8mb4
-    max_idle: 128
-    max_active: 128
+    maxIdle: 128
+    maxActive: 128
 
 redis:
   main:
@@ -22,13 +24,13 @@ redis:
     dboption:
       - dbid: 0
         name:
-        max_idle: 128
-        max_active: 128
+        maxIdle: 128
+        maxActive: 128
 
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
-  dir: ./log/app_server.log
+  path: ./log/app_server.log
   level: 0
-  show_color: true
+  showColor: true
 
 debug: true
