@@ -15,17 +15,22 @@ import (
 
 // 微信登陆/注册
 func (svc *UserModule) WechatLoginOrReg(code string) (int, string, *models.User) {
+	// 获取微信 access token
 	accessToken := svc.WechatAccessToken(code)
 	if accessToken == nil {
 		return errdef.WX_ACCESS_TOKEN_FAIL, "", nil
 	}
 
+	// 数据库获取社交平台帐号信息
 	info := svc.social.GetSocialAccountByType(consts.TYPE_WECHAT, accessToken.Unionid)
 	// 微信信息不存在 则注册
 	if info == nil {
+		// 获取微信用户信息
 		wxinfo := svc.WechatInfo(accessToken)
 		r := muser.NewWechatRegister()
-		if err := r.Register(svc.user, svc.social, svc.context, accessToken.Unionid, wxinfo.Headimgurl, wxinfo.Nickname, wxinfo.Sex); err != nil {
+		// 注册
+		if err := r.Register(svc.user, svc.social, svc.context, accessToken.Unionid, wxinfo.Headimgurl, wxinfo.Nickname,
+			consts.TYPE_WECHAT, wxinfo.Sex); err != nil {
 			log.Log.Errorf("wx_trace: register err:%s", err)
 			return errdef.WX_REGISTER_FAIL, "", nil
 		}
@@ -56,7 +61,7 @@ func (svc *UserModule) WechatLoginOrReg(code string) (int, string, *models.User)
 		token := svc.user.GenUserToken(svc.user.User.UserId, util.Md5String(svc.user.User.Password))
 		// 保存到redis
 		if err := svc.user.SaveUserToken(svc.user.User.UserId, token); err != nil {
-			log.Log.Errorf("user_trace: save user token err:%s", err)
+			log.Log.Errorf("wx_trace: save user token err:%s", err)
 		}
 
 		return errdef.SUCCESS, token, svc.user.User
@@ -73,7 +78,7 @@ func (svc *UserModule) WechatLoginOrReg(code string) (int, string, *models.User)
 		token = svc.user.GenUserToken(svc.user.User.UserId, util.Md5String(svc.user.User.Password))
 		// 重新保存到redis
 		if err := svc.user.SaveUserToken(svc.user.User.UserId, token); err != nil {
-			log.Log.Errorf("user_trace: save user token err:%s", err)
+			log.Log.Errorf("wx_trace: save user token err:%s", err)
 		}
 	}
 
@@ -113,7 +118,7 @@ func (svc *UserModule) WechatInfo(accessToken *muser.AccessToken) *muser.WechatU
 	wxinfo := muser.WechatUserInfo{}
 	resp, body, errs := gorequest.New().Get(consts.WECHAT_USER_INFO_URL + v.Encode()).EndStruct(&wxinfo)
 	if errs != nil {
-		log.Log.Errorf("get wxinfo err %+v", errs)
+		log.Log.Errorf("wx_trace: get wxinfo err %+v", errs)
 		return nil
 	}
 
@@ -122,7 +127,7 @@ func (svc *UserModule) WechatInfo(accessToken *muser.AccessToken) *muser.WechatU
 	log.Log.Debugf("body : %+v", string(body))
 
 	if wxinfo.Errcode != 0 || resp.StatusCode != 200 {
-		log.Log.Errorf("request failed, errCode:%d, statusCode:%d", wxinfo.Errcode, resp.StatusCode)
+		log.Log.Errorf("wx_trace: request failed, errCode:%d, statusCode:%d", wxinfo.Errcode, resp.StatusCode)
 		return nil
 	}
 

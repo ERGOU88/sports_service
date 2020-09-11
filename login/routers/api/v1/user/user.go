@@ -82,10 +82,40 @@ func UserWechatLogin(c *gin.Context) {
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
+// @Summary 微博注册/登陆 (ok)
+// @Version 1.0
+// @Description
+// @tags 003 微博注册/登陆 2020-09-11
+// @Accept json
+// @Produce  json
+// @Param   User-Agent    header    string 	true  "android" default(android)
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   WeiboLoginParams  body swag.WeiboLoginSwag true "微博登陆/注册 请求参数"
+// @Success 200 {object} swag.LoginSwag
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/user/weibo/login [post]
 // 用户微博登陆
 func UserWeiboLogin(c *gin.Context) {
-	//reply := errdef.New(c)
+	reply := errdef.New(c)
+	params := new(muser.WeiboLoginParams)
+	if err := c.BindJSON(params); err != nil {
+		log.Log.Errorf("weibo_trace: 参数错误, params:%+v", params)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
 
+	svc := cuser.New(c)
+	// 微博登陆 / 注册
+	syscode, token, user := svc.WeiboLoginOrReg(params)
+	if syscode != errdef.SUCCESS {
+		log.Log.Errorf("weibo_trace: 用户登陆/注册失败, params:%+v", params)
+		reply.Response(http.StatusOK, syscode)
+		return
+	}
+
+	reply.Data["token"] = token
+	reply.Data["userInfo"] = user
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
 

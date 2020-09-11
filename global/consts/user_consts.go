@@ -16,6 +16,8 @@ const (
 	TYPE_MOBILE    = 0
 	// 微信用户
 	TYPE_WECHAT    = 1
+	// 微博用户
+	TYPE_WEIBO     = 2
 )
 
 const (
@@ -34,7 +36,9 @@ const (
 
 const (
 	WECHAT_ACCESS_TOKEN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?"
-	//微信用户信息
+	// 微信用户信息
 	WECHAT_USER_INFO_URL    = "https://api.weixin.qq.com/sns/userinfo?"
+	// 微博用户信息
+	WEIBO_USER_INFO_URL     = "https://api.weibo.com/2/users/show.json?"
 )
 

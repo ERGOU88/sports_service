@@ -8,7 +8,6 @@ import (
 )
 
 func Router(engine *gin.Engine) {
-
 	swagger := engine.Group("/swagger")
 	// swag生成接口文档
 	swagger.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

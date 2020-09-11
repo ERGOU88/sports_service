@@ -17,6 +17,12 @@ type WxLoginSwag struct {
 	Code    string     `binding:"required" json:"code" example:"授权码"`
 }
 
+// 微博请求参数
+type WeiboLoginSwag struct {
+	AccessToken string `json:"access_token" binding:"required"`
+	Uid         int64  `json:"uid" binding:"required"`
+}
+
 type User struct {
 	Id            int64  `json:"id" xorm:"pk autoincr comment('主键id') BIGINT(20)"`
 	NickName      string `json:"nick_name" xorm:"not null default '' comment('昵称') VARCHAR(45)"`

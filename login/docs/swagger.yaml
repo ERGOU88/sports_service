@@ -65,6 +65,16 @@ definitions:
       user_id:
         type: string
     type: object
+  swag.WeiboLoginSwag:
+    properties:
+      access_token:
+        type: string
+      uid:
+        type: integer
+    required:
+    - access_token
+    - uid
+    type: object
   swag.WxLoginSwag:
     properties:
       code:
@@ -173,4 +183,41 @@ paths:
       summary: 微信注册/登陆 (ok)
       tags:
       - 002 微信注册/登陆 2020-09-11
+  /api/v1/user/weibo/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - default: android
+        description: android
+        in: header
+        name: User-Agent
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 微博登陆/注册 请求参数
+        in: body
+        name: WeiboLoginParams
+        required: true
+        schema:
+          $ref: '#/definitions/swag.WeiboLoginSwag'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/swag.LoginSwag'
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 微博注册/登陆 (ok)
+      tags:
+      - 003 微博注册/登陆 2020-09-11
 swagger: "2.0"

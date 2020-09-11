@@ -117,6 +117,61 @@
                     }
                 }
             }
+        },
+        "/api/v1/user/weibo/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "003 微博注册/登陆 2020-09-11"
+                ],
+                "summary": "微博注册/登陆 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "android",
+                        "description": "android",
+                        "name": "User-Agent",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "微博登陆/注册 请求参数",
+                        "name": "WeiboLoginParams",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/swag.WeiboLoginSwag"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/swag.LoginSwag"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -214,6 +269,21 @@
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "swag.WeiboLoginSwag": {
+            "type": "object",
+            "required": [
+                "access_token",
+                "uid"
+            ],
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "uid": {
+                    "type": "integer"
                 }
             }
         },
