@@ -93,9 +93,27 @@ func init() {
 	setupRunMode()
 }
 
-// @title FPV电竞app(应用服)
+// @title FPV电竞APP（应用服）
 // @version 1.0
-// @description ### API错误码文档 [点击查看](/api/v1/doc)
+// @description ### 一、公共参数说明（此栏参数均为Headers请求头传递）
+// @description | 参数名 | 说明 | 示例 |
+// @description | ------ | :----- | :----- |
+// @description | User-Agent | 用户代理 | android |
+// @description | Version | 当前版本 | 1.0.1 |
+// @description ### 二、请求体说明（此栏参数均为POST JSON传递，不可用form-data提交）
+// @description
+// @description     {
+// @description         'mobileNum': '13177656222',
+// @description         'platform': 0
+// @description     }
+// @description ### 三、API错误码文档
+// @description [点击查看](/api/v1/doc)
+// @description ### 四、HTTP状态码说明
+// @description | 状态码 | 说明 |
+// @description | ------ | :----- |
+// @description | 200 | 操作成功 |
+// @description | 400 | 参数错误 |
+// @description | 500 | 内部错误 |
 func main() {
 	// 启动服务
 	engine := gin.New()

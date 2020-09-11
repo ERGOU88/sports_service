@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "### API错误码文档 [点击查看](/api/v1/doc)",
-        "title": "FPV电竞app(登陆服)",
+        "description": "### 一、公共参数说明（此栏参数均为Headers请求头传递）\n| 参数名 | 说明 | 示例 |\n| ------ | :----- | :----- |\n| User-Agent | 用户代理 | android |\n| Version | 当前版本 | 1.0.1 |\n### 二、请求体说明（此栏参数均为POST JSON传递，不可用form-data提交）\n\n{\n'mobileNum': '13177656222',\n'platform': 0\n}\n### 三、API错误码文档\n[点击查看](/api/v1/doc)\n### 四、HTTP状态码说明\n| 状态码 | 说明 |\n| ------ | :----- |\n| 200 | 操作成功 |\n| 400 | 参数错误 |\n| 500 | 内部错误 |",
+        "title": "FPV电竞APP（登陆服）",
         "contact": {},
         "license": {},
         "version": "1.0"
@@ -43,7 +43,6 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object",
                             "$ref": "#/definitions/swag.LoginParamsSwag"
                         }
                     }
@@ -52,7 +51,6 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
                             "$ref": "#/definitions/swag.LoginSwag"
                         }
                     },
@@ -100,7 +98,6 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object",
                             "$ref": "#/definitions/swag.WxLoginSwag"
                         }
                     }
@@ -109,7 +106,6 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
                             "$ref": "#/definitions/swag.LoginSwag"
                         }
                     },
@@ -131,10 +127,12 @@
             ],
             "properties": {
                 "mobileNum": {
+                    "description": "手机号",
                     "type": "string",
                     "example": "手机号码"
                 },
                 "platform": {
+                    "description": "平台",
                     "type": "integer",
                     "example": 1
                 }
@@ -144,9 +142,11 @@
             "type": "object",
             "properties": {
                 "token": {
+                    "description": "token",
                     "type": "string"
                 },
                 "user": {
+                    "description": "用户信息",
                     "type": "object",
                     "$ref": "#/definitions/swag.User"
                 }

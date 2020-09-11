@@ -1,0 +1,8 @@
+info:
+  contact: {}
+  description: '### API错误码文档 [点击查看](/api/v1/doc)'
+  license: {}
+  title: FPV电竞app(应用服)
+  version: "1.0"
+paths: {}
+swagger: "2.0"
