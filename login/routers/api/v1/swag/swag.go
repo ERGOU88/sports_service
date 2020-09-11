@@ -12,6 +12,11 @@ type LoginSwag struct {
 	User  *User         `json:"user"`  // 用户信息
 }
 
+// 微信登陆 请求参数
+type WxLoginSwag struct {
+	Code    string     `binding:"required" json:"code" example:"授权码"`
+}
+
 type User struct {
 	Id            int64  `json:"id" xorm:"pk autoincr comment('主键id') BIGINT(20)"`
 	NickName      string `json:"nick_name" xorm:"not null default '' comment('昵称') VARCHAR(45)"`

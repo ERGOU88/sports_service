@@ -38,13 +38,70 @@
                         "required": true
                     },
                     {
-                        "description": "登陆/注册 请求参数",
+                        "description": "手机号登陆/注册 请求参数",
                         "name": "LoginParams",
                         "in": "body",
                         "required": true,
                         "schema": {
                             "type": "object",
                             "$ref": "#/definitions/swag.LoginParamsSwag"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/swag.LoginSwag"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/wechat/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "002 微信注册/登陆 2020-09-11"
+                ],
+                "summary": "微信注册/登陆 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "android",
+                        "description": "android",
+                        "name": "User-Agent",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "微信登陆/注册 请求参数",
+                        "name": "WxLoginParam",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/swag.WxLoginSwag"
                         }
                     }
                 ],
@@ -157,6 +214,18 @@
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "swag.WxLoginSwag": {
+            "type": "object",
+            "required": [
+                "code"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "授权码"
                 }
             }
         }

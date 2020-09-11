@@ -55,5 +55,15 @@ func (m *SocialModel) AddSocialAccountInfo() error {
 	return nil
 }
 
+// 获取社交帐号
+func (m *SocialModel) GetSocialAccountByType(socialType int, unionid string) *models.SocialAccountLogin {
+	ok, err := m.Engine.Where("social_type=? AND unionid=?", socialType, unionid).Get(m.SocialAccount)
+	if !ok || err != nil {
+		return nil
+	}
+
+	return m.SocialAccount
+}
+
 
 

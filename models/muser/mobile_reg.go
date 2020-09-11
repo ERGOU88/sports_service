@@ -2,6 +2,7 @@ package muser
 
 import (
 	"errors"
+	"fmt"
 	"sports_service/server/dao"
 	"sports_service/server/global/consts"
 	"sports_service/server/global/login/log"
@@ -9,7 +10,6 @@ import (
 	"sports_service/server/util"
 	"strconv"
 	"time"
-	"fmt"
 )
 
 type mobileRegister struct {
@@ -57,7 +57,7 @@ func (r *mobileRegister) newUser(u *UserModel, mobileNum int64, param *LoginPara
 	u.SetDeviceType(param.Platform)
 	u.SetCreateAt(now)
 	u.SetUpdateAt(now)
-	u.SetLoginTime(now)
+	u.SetLastLoginTime(now)
 	u.SetPassword("")
 	u.SetUserType(consts.TYPE_MOBILE)
 	u.SetLastLoginTime(now)

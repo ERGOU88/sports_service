@@ -13,9 +13,18 @@ const (
 
 const (
 	// 手机用户
-	TYPE_MOBILE    = 1
+	TYPE_MOBILE    = 0
 	// 微信用户
-	TYPE_WECHAT    = 2
+	TYPE_WECHAT    = 1
+)
+
+const (
+	BOY_OR_GIRL  = 0
+	BOY          = 1
+	GIRL         = 2
+)
+
+const (
 	// cookie存储的key
 	COOKIE_NAME    = "auth"
 	USER_ID        = "user_id"

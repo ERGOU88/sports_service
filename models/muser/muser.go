@@ -47,6 +47,17 @@ func (m *UserModel) FindUserByPhone(mobileNum string) *models.User {
 	return m.User
 }
 
+// userid查询用户
+func (m *UserModel) FindUserByUserid(userId string) *models.User {
+	ok, err := m.Engine.Where("user_id=?", userId).Get(m.User)
+	if !ok || err != nil {
+		log.Log.Errorf("user_trace: find user by userid err:%s", err)
+		return nil
+	}
+
+	return m.User
+}
+
 // 添加用户
 func (m *UserModel) AddUser() error {
 	if _, err := m.Engine.InsertOne(m.User); err != nil {
@@ -95,11 +106,6 @@ func (m *UserModel) SetGender(gender int) {
 // 设置用户状态
 func (m *UserModel) SetStatus(status int) {
 	m.User.Status = status
-}
-
-// 设置登陆时间
-func (m *UserModel) SetLoginTime(tm int64) {
-	m.User.LastLoginTime = int(tm)
 }
 
 // 设置创建时间
