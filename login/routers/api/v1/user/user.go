@@ -82,4 +82,10 @@ func UserWechatLogin(c *gin.Context) {
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
+// 用户微博登陆
+func UserWeiboLogin(c *gin.Context) {
+	//reply := errdef.New(c)
+
+}
+
 
