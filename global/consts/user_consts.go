@@ -13,9 +13,19 @@ const (
 
 const (
 	// 手机用户
-	TYPE_PHONE   = 1
+	TYPE_MOBILE    = 1
+	// 微信用户
+	TYPE_WECHAT    = 2
 	// cookie存储的key
-	COOKIE_NAME  = "auth"
-	USER_ID      = "user_id"
+	COOKIE_NAME    = "auth"
+	USER_ID        = "user_id"
+	// todo: 默认头像
+	DEFAULT_AVATAR = ""
+)
+
+const (
+	WECHAT_ACCESS_TOKEN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?"
+	//微信用户信息
+	WECHAT_USER_INFO_URL    = "https://api.weixin.qq.com/sns/userinfo?"
 )
 

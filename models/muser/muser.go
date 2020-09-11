@@ -1,6 +1,7 @@
 package muser
 
 import (
+	"github.com/go-xorm/xorm"
 	"regexp"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/log"
@@ -13,11 +14,13 @@ import (
 
 type UserModel struct {
 	User    *models.User
+	Engine  *xorm.Session
 }
 
-func NewUserModel() *UserModel {
+func NewUserModel(engine *xorm.Session) *UserModel {
 	return &UserModel{
 		User: new(models.User),
+		Engine: engine,
 	}
 }
 
@@ -27,7 +30,6 @@ type LoginParams struct {
 	Platform  int    `json:"platform" example:"平台 0 android 1 iOS 2 web"`      // 平台
 }
 
-
 var validPhone = regexp.MustCompile(`^1\d{10}$`)
 // 检验手机号
 func (m *UserModel) CheckCellPhoneNumber(mobileNum string) bool {
@@ -36,7 +38,7 @@ func (m *UserModel) CheckCellPhoneNumber(mobileNum string) bool {
 
 // 手机号查询用户
 func (m *UserModel) FindUserByPhone(mobileNum string) *models.User {
-	ok, err := dao.Engine.Where("mobile_num=?", mobileNum).Get(m.User)
+	ok, err := m.Engine.Where("mobile_num=?", mobileNum).Get(m.User)
 	if !ok || err != nil {
 		log.Log.Errorf("user_trace: find user by phone err:%s", err)
 		return nil
@@ -47,7 +49,7 @@ func (m *UserModel) FindUserByPhone(mobileNum string) *models.User {
 
 // 添加用户
 func (m *UserModel) AddUser() error {
-	if _, err := dao.Engine.InsertOne(m.User); err != nil {
+	if _, err := m.Engine.InsertOne(m.User); err != nil {
 		log.Log.Errorf("user_trace: add user err:%s", err)
 		return err
 	}
@@ -76,7 +78,7 @@ func (m *UserModel) SetAvatar(avatar string) {
 }
 
 // 设置用户类型
-func (m *UserModel) SetUserType(utype int) {
+func (m *UserModel) SetUserDeviceType(utype int) {
 	m.User.DeviceType = utype
 }
 
@@ -113,6 +115,16 @@ func (m *UserModel) SetUpdateAt(tm int64) {
 // 设置密码
 func (m *UserModel) SetPassword(password string) {
 	m.User.Password = password
+}
+
+// 设置用户类型 1 手机号 2 微信 3 QQ 4 微博
+func (u *UserModel) SetUserType(userType int) {
+	u.User.UserType = userType
+}
+
+// 设置登陆时间
+func (u *UserModel) SetLastLoginTime(tm int64) {
+	u.User.LastLoginTime = int(tm)
 }
 
 // 获取用户token

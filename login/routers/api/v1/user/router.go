@@ -10,5 +10,7 @@ func Router(engine *gin.Engine) {
 	{
 		// 手机一键登陆
 		user.POST("/mobile/login", MobilePhoneLogin)
+		// 用户微信登陆
+		user.POST("/wechat/login", UserWechatLogin)
 	}
 }

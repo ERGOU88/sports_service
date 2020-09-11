@@ -10,6 +10,7 @@ const (
 	USER_ALREADY_EXISTS = 1001
 	USER_REPEAT_REG     = 1002
 	USER_REGISTER_FAIL  = 1003
+	USER_ADD_INFO_FAIL  = 1004
 )
 
 var MsgFlags = map[int]string{
@@ -21,6 +22,7 @@ var MsgFlags = map[int]string{
 	USER_ALREADY_EXISTS: "用户已存在",
 	USER_REPEAT_REG:     "用户重复注册",
 	USER_REGISTER_FAIL:  "用户注册失败",
+	USER_ADD_INFO_FAIL:  "添加用户信息失败",
 }
 
 func GetMsg(code int) string {

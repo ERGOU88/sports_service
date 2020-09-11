@@ -40,6 +40,10 @@ type Config struct {
 	PprofAddr  string
 	// 开发（dev）、测试(test)、生产(prod)
 	Mode       string
+	// 开放平台appid
+	WechatAppid  string
+	// 开放平台secret
+	WechatSecret string
 	// 日志
 	Log struct {
 		Path      string
@@ -77,7 +81,7 @@ func (c *Config) Load(confFile string) error {
 	}
 
 	if err := v.Unmarshal(&Global); err != nil {
-		fmt.Printf("err:%s",err)
+		fmt.Printf("unmarshal err:%s",err)
 		return err
 	}
 

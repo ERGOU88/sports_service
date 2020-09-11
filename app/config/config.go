@@ -77,7 +77,7 @@ func (c *Config) Load(confFile string) error {
 	}
 
 	if err := v.Unmarshal(&Global); err != nil {
-		fmt.Printf("err:%s",err)
+		fmt.Printf("unmarshal err:%s",err)
 		return err
 	}
 

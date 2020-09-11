@@ -32,8 +32,9 @@ func MobilePhoneLogin(c *gin.Context) {
 		return
 	}
 
+	svc := cuser.New(c)
 	// 手机一键登陆/注册
-	syscode, token, user := cuser.MobileLoginOrReg(params)
+	syscode, token, user := svc.MobileLoginOrReg(params)
 	if syscode != errdef.SUCCESS {
 		log.Log.Errorf("user_trace: 用户登陆/注册失败，mobileNum:%s", params.MobileNum)
 		reply.Response(http.StatusOK, syscode)
@@ -44,3 +45,11 @@ func MobilePhoneLogin(c *gin.Context) {
 	reply.Data["userInfo"] = user
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
+
+// 用户微信登陆
+func UserWechatLogin(c *gin.Context) {
+	//reply := errdef.New(c)
+
+}
+
+

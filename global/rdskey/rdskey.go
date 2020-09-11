@@ -16,8 +16,9 @@ const (
 )
 
 const (
-	LOGIN_REPEAT = SUGAR + "login_repeat_type:%d_sid:%s"              // 拦截重复注册的问题{拼接设备类型 + 手机号码}
-	USER_AUTH    = SUGAR + "key_user_auth_%s"                         // 保存用户token {拼接user_id}
+	LOGIN_REPEAT       = SUGAR + "login_repeat_type:%d_sid:%s"              // 拦截重复注册的问题{拼接设备类型 + 手机号码/unionid}
+	USER_AUTH          = SUGAR + "key_user_auth_%s"                         // 保存用户token {拼接user_id}
+	USER_NICKNAME_INCR = SUGAR + "user_nickname_incr"                       // 用户昵称自增
 )
 
 // make redis key
