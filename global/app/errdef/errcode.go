@@ -4,6 +4,7 @@ const (
 	SUCCESS            = 200
 	ERROR              = 500
 	INVALID_PARAMS     = 400
+	UNAUTHORIZED       = 401
 
 	// 用户相关错误码 1000-2000
 	FREE_LOGIN_FAIL         = 1000
@@ -34,6 +35,7 @@ var MsgFlags = map[int]string{
 	SUCCESS:        "ok",
 	ERROR:          "fail",
 	INVALID_PARAMS: "请求参数错误",
+	UNAUTHORIZED:   "未经授权",
 
 	FREE_LOGIN_FAIL:     "一键登陆失败",
 	INVALID_MOBILE_NUM:  "非法的手机号",
@@ -66,5 +68,6 @@ func GetMsg(code int) string {
 
 	return MsgFlags[ERROR]
 }
+
 
 

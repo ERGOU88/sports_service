@@ -7,6 +7,7 @@ import (
 	"sports_service/server/app/routers/api/v1/user"
 	"sports_service/server/app/routers/api/v1/swag"
 	"sports_service/server/app/routers/api/v1/doc"
+	"sports_service/server/app/routers/api/v1/client"
 	"sports_service/server/app/config"
 	"sports_service/server/global/app/log"
 )
@@ -22,6 +23,9 @@ func InitRouters(engine *gin.Engine) {
 		// 错误码文档
 		doc.Router(engine)
 	}
+
+	// 初始化接口
+	client.Router(engine)
 	// 用户账户
 	user.Router(engine)
 

@@ -11,6 +11,7 @@ import (
 )
 
 // @Summary 手机一键注册/登陆 (ok)
+// @Tags 账号体系
 // @Version 1.0
 // @Description
 // @tags 001 手机一键注册/登陆 2020-09-10
@@ -47,6 +48,7 @@ func MobilePhoneLogin(c *gin.Context) {
 }
 
 // @Summary 微信注册/登陆 (ok)
+// @Tags 账号体系
 // @Version 1.0
 // @Description
 // @tags 002 微信注册/登陆 2020-09-11
@@ -83,6 +85,7 @@ func UserWechatLogin(c *gin.Context) {
 }
 
 // @Summary 微博注册/登陆 (ok)
+// @Tags 账号体系
 // @Version 1.0
 // @Description
 // @tags 003 微博注册/登陆 2020-09-11
@@ -119,6 +122,7 @@ func UserWeiboLogin(c *gin.Context) {
 }
 
 // @Summary QQ注册/登陆 (ok)
+// @Tags 账号体系
 // @Version 1.0
 // @Description
 // @tags 004 QQ注册/登陆 2020-09-14
