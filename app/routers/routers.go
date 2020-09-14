@@ -4,11 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"sports_service/server/middleware"
 	"sports_service/server/global/consts"
-	"sports_service/server/login/routers/api/v1/user"
-	"sports_service/server/login/routers/api/v1/swag"
-	"sports_service/server/login/routers/api/v1/doc"
-	"sports_service/server/login/config"
-	"sports_service/server/global/login/log"
+	"sports_service/server/app/routers/api/v1/user"
+	"sports_service/server/app/routers/api/v1/swag"
+	"sports_service/server/app/routers/api/v1/doc"
+	"sports_service/server/app/config"
+	"sports_service/server/global/app/log"
 )
 
 // 路由初始化

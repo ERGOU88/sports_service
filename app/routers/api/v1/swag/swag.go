@@ -1,26 +1,9 @@
 package swag
 
-// 登陆请求所需的参数
-type LoginParamsSwag struct {
-	MobileNum string `binding:"required" json:"mobileNum" example:"手机号码"`    // 手机号
-	Platform  int    `json:"platform" example:"1"`                              // 平台
-}
-
 // swagger api文档（登陆接口返回数据）
 type LoginSwag struct {
 	Token string        `json:"token"` // token
 	User  *User         `json:"user"`  // 用户信息
-}
-
-// 微信登陆 请求参数
-type WxLoginSwag struct {
-	Code    string     `binding:"required" json:"code" example:"授权码"`
-}
-
-// 微博请求参数
-type WeiboLoginSwag struct {
-	AccessToken string `json:"access_token" binding:"required"`
-	Uid         int64  `json:"uid" binding:"required"`
 }
 
 type User struct {

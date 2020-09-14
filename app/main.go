@@ -8,8 +8,8 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/log/zap"
-	"sports_service/server/login/config"
-	"sports_service/server/login/routers"
+	"sports_service/server/app/config"
+	"sports_service/server/app/routers"
 	"sports_service/server/models/pprof"
 	"sports_service/server/util"
 )
@@ -93,7 +93,7 @@ func init() {
 	setupRunMode()
 }
 
-// @title FPV电竞APP（登陆服）
+// @title FPV电竞APP（应用服）
 // @version 1.0
 // @description ### 一、公共参数说明（此栏参数均为Headers请求头传递）
 // @description | 参数名 | 说明 | 示例 |

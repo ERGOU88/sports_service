@@ -18,6 +18,8 @@ const (
 	TYPE_WECHAT    = 1
 	// 微博用户
 	TYPE_WEIBO     = 2
+	// QQ用户
+	TYPE_QQ        = 3
 )
 
 const (

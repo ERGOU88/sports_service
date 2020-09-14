@@ -2,22 +2,22 @@ package cuser
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"github.com/parnurzeal/gorequest"
-	"net/url"
 	"sports_service/server/global/consts"
-	"sports_service/server/global/login/errdef"
+	"sports_service/server/global/app/errdef"
 	"sports_service/server/models"
 	"sports_service/server/models/muser"
-	"sports_service/server/login/config"
-	"sports_service/server/global/login/log"
+	"sports_service/server/global/app/log"
 	"sports_service/server/util"
+	third "sports_service/server/tools/third-login"
 )
 
 // 微信登陆/注册
 func (svc *UserModule) WechatLoginOrReg(code string) (int, string, *models.User) {
+	wechat := third.NewWechat()
 	// 获取微信 access token
-	accessToken := svc.WechatAccessToken(code)
+	accessToken := wechat.GetWechatAccessToken(code)
 	if accessToken == nil {
+		log.Log.Error("wx_trace: get wx access info error")
 		return errdef.WX_ACCESS_TOKEN_FAIL, "", nil
 	}
 
@@ -26,7 +26,12 @@ func (svc *UserModule) WechatLoginOrReg(code string) (int, string, *models.User)
 	// 微信信息不存在 则注册
 	if info == nil {
 		// 获取微信用户信息
-		wxinfo := svc.WechatInfo(accessToken)
+		wxinfo := wechat.GetWechatUserInfo(accessToken)
+		if wxinfo == nil {
+			log.Log.Error("wx_trace: get wx user info error")
+			return errdef.WX_USER_INFO_FAIL, "", nil
+		}
+
 		r := muser.NewWechatRegister()
 		// 注册
 		if err := r.Register(svc.user, svc.social, svc.context, accessToken.Unionid, wxinfo.Headimgurl, wxinfo.Nickname,
@@ -69,6 +74,7 @@ func (svc *UserModule) WechatLoginOrReg(code string) (int, string, *models.User)
 
 	// 通过uid查询用户信息
 	if user := svc.user.FindUserByUserid(info.UserId); user == nil {
+		log.Log.Error("wx_trace: find user by uid error")
 		return errdef.USER_GET_INFO_FAIL, "", nil
 	}
 	// 用户已注册过, 则直接从redis中获取token并返回
@@ -83,53 +89,4 @@ func (svc *UserModule) WechatLoginOrReg(code string) (int, string, *models.User)
 	}
 
 	return errdef.SUCCESS, token, svc.user.User
-}
-
-// WxAccessToken 获取微信accessToken
-func (svc *UserModule) WechatAccessToken(code string) *muser.AccessToken {
-	v := url.Values{}
-	v.Set("code", code)
-	// 开放平台appid
-	v.Set("appid", config.Global.WechatAppid)
-	// 开放平台secret
-	v.Set("secret", config.Global.WechatSecret)
-	v.Set("grant_type", "authorization_code")
-	// 返回值
-	accessToken := muser.AccessToken{}
-	resp, body, errs := gorequest.New().Get(consts.WECHAT_ACCESS_TOKEN_URL + v.Encode()).EndStruct(&accessToken)
-	if errs != nil {
-		log.Log.Errorf("%+v", errs)
-		return nil
-	}
-
-	if accessToken.Unionid == "" {
-		log.Log.Errorf("err body: %s, resp: %+v", string(body), resp)
-		return nil
-	}
-
-	return &accessToken
-}
-
-// 微信用户信息
-func (svc *UserModule) WechatInfo(accessToken *muser.AccessToken) *muser.WechatUserInfo {
-	v := url.Values{}
-	v.Set("access_token", accessToken.AccessToken)
-	v.Set("openid", accessToken.Openid)
-	wxinfo := muser.WechatUserInfo{}
-	resp, body, errs := gorequest.New().Get(consts.WECHAT_USER_INFO_URL + v.Encode()).EndStruct(&wxinfo)
-	if errs != nil {
-		log.Log.Errorf("wx_trace: get wxinfo err %+v", errs)
-		return nil
-	}
-
-	log.Log.Debugf("wxUserInfo: %+v", wxinfo)
-	log.Log.Debugf("resp : %+v", resp)
-	log.Log.Debugf("body : %+v", string(body))
-
-	if wxinfo.Errcode != 0 || resp.StatusCode != 200 {
-		log.Log.Errorf("wx_trace: request failed, errCode:%d, statusCode:%d", wxinfo.Errcode, resp.StatusCode)
-		return nil
-	}
-
-	return &wxinfo
 }

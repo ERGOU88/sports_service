@@ -26,8 +26,10 @@ func NewUserModel(engine *xorm.Session) *UserModel {
 
 // 登陆请求所需的参数
 type LoginParams struct {
-	MobileNum string `binding:"required" json:"mobileNum" example:"手机号码"`    // 手机号
-	Platform  int    `json:"platform" example:"平台 0 android 1 iOS 2 web"`      // 平台
+	Platform  int      `json:"platform" example:"0"`                                // 平台 0 android 1 iOS 2 web
+	Token     string   `json:"token" example:"客户端token"`
+	OpToken   string   `json:"opToken" example:"客户端返回的运营商token"`
+	Operator  string   `json:"operator" example:"客户端返回的运营商，CMCC:中国移动通信, CUCC:中国联通通讯, CTCC:中国电信"`
 }
 
 var validPhone = regexp.MustCompile(`^1\d{10}$`)

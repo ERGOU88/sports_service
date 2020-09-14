@@ -2,7 +2,7 @@ package muser
 
 import (
 	"sports_service/server/dao"
-	"sports_service/server/global/login/log"
+	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/util"
 	"github.com/gin-gonic/gin"

@@ -60,7 +60,62 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/swag.LoginParamsSwag"
+                            "$ref": "#/definitions/muser.LoginParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/swag.LoginSwag"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/qq/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "004 QQ注册/登陆 2020-09-14"
+                ],
+                "summary": "QQ注册/登陆 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "android",
+                        "description": "android",
+                        "name": "User-Agent",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "QQ登陆/注册 请求参数",
+                        "name": "WeiboLoginParams",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/muser.QQLoginParams"
                         }
                     }
                 ],
@@ -115,7 +170,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/swag.WxLoginSwag"
+                            "$ref": "#/definitions/muser.WxLoginParam"
                         }
                     }
                 ],
@@ -170,7 +225,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/swag.WeiboLoginSwag"
+                            "$ref": "#/definitions/muser.WeiboLoginParams"
                         }
                     }
                 ],
@@ -192,21 +247,68 @@ var doc = `{
         }
     },
     "definitions": {
-        "swag.LoginParamsSwag": {
+        "muser.LoginParams": {
             "type": "object",
-            "required": [
-                "mobileNum"
-            ],
             "properties": {
-                "mobileNum": {
-                    "description": "手机号",
+                "opToken": {
                     "type": "string",
-                    "example": "手机号码"
+                    "example": "客户端返回的运营商token"
+                },
+                "operator": {
+                    "type": "string",
+                    "example": "客户端返回的运营商，CMCC:中国移动通信, CUCC:中国联通通讯, CTCC:中国电信"
                 },
                 "platform": {
-                    "description": "平台",
                     "type": "integer",
-                    "example": 1
+                    "example": 0
+                },
+                "token": {
+                    "type": "string",
+                    "example": "客户端token"
+                }
+            }
+        },
+        "muser.QQLoginParams": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string",
+                    "example": "授权token"
+                },
+                "openid": {
+                    "type": "string"
+                },
+                "platform": {
+                    "type": "string",
+                    "example": "qzone、pengyou或qplus"
+                }
+            }
+        },
+        "muser.WeiboLoginParams": {
+            "type": "object",
+            "required": [
+                "access_token",
+                "uid"
+            ],
+            "properties": {
+                "access_token": {
+                    "type": "string",
+                    "example": "通行token"
+                },
+                "uid": {
+                    "type": "integer"
+                }
+            }
+        },
+        "muser.WxLoginParam": {
+            "type": "object",
+            "required": [
+                "code"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "code码"
                 }
             }
         },
@@ -288,33 +390,6 @@ var doc = `{
                     "type": "string"
                 }
             }
-        },
-        "swag.WeiboLoginSwag": {
-            "type": "object",
-            "required": [
-                "access_token",
-                "uid"
-            ],
-            "properties": {
-                "access_token": {
-                    "type": "string"
-                },
-                "uid": {
-                    "type": "integer"
-                }
-            }
-        },
-        "swag.WxLoginSwag": {
-            "type": "object",
-            "required": [
-                "code"
-            ],
-            "properties": {
-                "code": {
-                    "type": "string",
-                    "example": "授权码"
-                }
-            }
         }
     }
 }`
@@ -334,7 +409,7 @@ var SwaggerInfo = swaggerInfo{
 	Host:        "",
 	BasePath:    "",
 	Schemes:     []string{},
-	Title:       "FPV电竞APP（登陆服）",
+	Title:       "FPV电竞APP（应用服）",
 	Description: "### 一、公共参数说明（此栏参数均为Headers请求头传递）\n| 参数名 | 说明 | 示例 |\n| ------ | :----- | :----- |\n| User-Agent | 用户代理 | android |\n| Version | 当前版本 | 1.0.1 |\n### 二、请求体说明（此栏参数均为POST JSON传递，不可用form-data提交）\n\n{\n'mobileNum': '13177656222',\n'platform': 0\n}\n### 三、API错误码文档\n[点击查看](/api/v1/doc)\n### 四、HTTP状态码说明\n| 状态码 | 说明 |\n| ------ | :----- |\n| 200 | 操作成功 |\n| 400 | 参数错误 |\n| 500 | 内部错误 |",
 }
 

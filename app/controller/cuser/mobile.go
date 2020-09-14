@@ -2,25 +2,34 @@ package cuser
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"sports_service/server/global/login/errdef"
+	"sports_service/server/global/app/errdef"
 	"sports_service/server/models"
 	"sports_service/server/models/muser"
 	"sports_service/server/util"
-	"sports_service/server/global/login/log"
+	"sports_service/server/global/app/log"
+	"sports_service/server/tools/mobtech"
 )
 
 // 手机一键登陆/注册
 func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, *models.User) {
-	if b := svc.user.CheckCellPhoneNumber(param.MobileNum); !b {
-		log.Log.Errorf("user_trace: invalid mobile num %v", param.MobileNum)
+	mob := new(mobtech.MobTech)
+	// 从mob获取手机号码
+	mobileNum, err := mob.FreeLogin(param.Token, param.OpToken, param.Operator)
+	if err != nil {
+		return errdef.FREE_LOGIN_FAIL, "", nil
+	}
+
+	// 校验手机号合法性
+	if b := svc.user.CheckCellPhoneNumber(mobileNum); !b {
+		log.Log.Errorf("user_trace: invalid mobile num %v", mobileNum)
 		return errdef.INVALID_MOBILE_NUM, "", nil
 	}
 
 	// 根据手机号查询用户 不存在 注册用户 用户存在 为登陆
-	if user := svc.user.FindUserByPhone(param.MobileNum); user == nil {
+	if user := svc.user.FindUserByPhone(mobileNum); user == nil {
 		// 注册
 		reg := muser.NewMobileRegister()
-		if err := reg.Register(svc.user, param); err != nil {
+		if err := reg.Register(svc.user, param, mobileNum); err != nil {
 			log.Log.Errorf("user_trace: register err:%s", err)
 			return errdef.USER_REGISTER_FAIL, "", nil
 		}

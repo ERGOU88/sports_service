@@ -37,7 +37,7 @@ func NewWechat() *Wechat {
 }
 
 // 获取微信 access token (code 客户端获取的授权码)
-func (wx *Wechat) WechatAccessToken(code string) *AccessToken {
+func (wx *Wechat) GetWechatAccessToken(code string) *AccessToken {
 	v := url.Values{}
 	v.Set("code", code)
 	// 开放平台appid
@@ -62,7 +62,7 @@ func (wx *Wechat) WechatAccessToken(code string) *AccessToken {
 }
 
 // 获取微信用户信息
-func (wx *Wechat) WechatUserInfo(accessToken *AccessToken) *WechatUserInfo {
+func (wx *Wechat) GetWechatUserInfo(accessToken *AccessToken) *WechatUserInfo {
 	v := url.Values{}
 	v.Set("access_token", accessToken.AccessToken)
 	v.Set("openid", accessToken.Openid)

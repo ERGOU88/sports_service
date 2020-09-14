@@ -7,7 +7,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/muser"
 	"strings"
-	"sports_service/server/global/login/log"
+	"sports_service/server/global/app/log"
 )
 
 // token校验

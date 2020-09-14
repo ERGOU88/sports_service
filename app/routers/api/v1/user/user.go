@@ -2,12 +2,12 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/global/login/errdef"
-	"sports_service/server/login/controller/cuser"
+	"sports_service/server/global/app/errdef"
+	"sports_service/server/app/controller/cuser"
 	"sports_service/server/models/muser"
 	"net/http"
-	"sports_service/server/global/login/log"
-	_ "sports_service/server/login/routers/api/v1/swag"
+	"sports_service/server/global/app/log"
+	_ "sports_service/server/app/routers/api/v1/swag"
 )
 
 // @Summary 手机一键注册/登陆 (ok)
@@ -18,7 +18,7 @@ import (
 // @Produce  json
 // @Param   User-Agent    header    string 	true  "android" default(android)
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
-// @Param   LoginParams  body swag.LoginParamsSwag true "手机号登陆/注册 请求参数"
+// @Param   LoginParams  body muser.LoginParams true "手机号登陆/注册 请求参数"
 // @Success 200 {object} swag.LoginSwag
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/user/mobile/login [post]
@@ -36,7 +36,7 @@ func MobilePhoneLogin(c *gin.Context) {
 	// 手机一键登陆/注册
 	syscode, token, user := svc.MobileLoginOrReg(params)
 	if syscode != errdef.SUCCESS {
-		log.Log.Errorf("user_trace: 用户登陆/注册失败，mobileNum:%s", params.MobileNum)
+		log.Log.Errorf("user_trace: 用户登陆/注册失败，params:%+v", params)
 		reply.Response(http.StatusOK, syscode)
 		return
 	}
@@ -54,7 +54,7 @@ func MobilePhoneLogin(c *gin.Context) {
 // @Produce  json
 // @Param   User-Agent    header    string 	true  "android" default(android)
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
-// @Param   WxLoginParam  body swag.WxLoginSwag true "微信登陆/注册 请求参数"
+// @Param   WxLoginParam  body muser.WxLoginParam true "微信登陆/注册 请求参数"
 // @Success 200 {object} swag.LoginSwag
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/user/wechat/login [post]
@@ -90,7 +90,7 @@ func UserWechatLogin(c *gin.Context) {
 // @Produce  json
 // @Param   User-Agent    header    string 	true  "android" default(android)
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
-// @Param   WeiboLoginParams  body swag.WeiboLoginSwag true "微博登陆/注册 请求参数"
+// @Param   WeiboLoginParams  body muser.WeiboLoginParams true "微博登陆/注册 请求参数"
 // @Success 200 {object} swag.LoginSwag
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/user/weibo/login [post]
@@ -109,6 +109,42 @@ func UserWeiboLogin(c *gin.Context) {
 	syscode, token, user := svc.WeiboLoginOrReg(params)
 	if syscode != errdef.SUCCESS {
 		log.Log.Errorf("weibo_trace: 用户登陆/注册失败, params:%+v", params)
+		reply.Response(http.StatusOK, syscode)
+		return
+	}
+
+	reply.Data["token"] = token
+	reply.Data["userInfo"] = user
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// @Summary QQ注册/登陆 (ok)
+// @Version 1.0
+// @Description
+// @tags 004 QQ注册/登陆 2020-09-14
+// @Accept json
+// @Produce  json
+// @Param   User-Agent    header    string 	true  "android" default(android)
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   WeiboLoginParams  body muser.QQLoginParams true "QQ登陆/注册 请求参数"
+// @Success 200 {object} swag.LoginSwag
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/user/qq/login [post]
+// 用户微博登陆
+func UserQQLogin(c *gin.Context) {
+	reply := errdef.New(c)
+	params := new(muser.QQLoginParams)
+	if err := c.BindJSON(params); err != nil {
+		log.Log.Errorf("qq_trace: 参数错误, params:%+v", params)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cuser.New(c)
+	// QQ登陆 / 注册
+	syscode, token, user := svc.QQLoginOrReg(params)
+	if syscode != errdef.SUCCESS {
+		log.Log.Errorf("qq_trace: 用户登陆/注册失败, params:%+v", params)
 		reply.Response(http.StatusOK, syscode)
 		return
 	}

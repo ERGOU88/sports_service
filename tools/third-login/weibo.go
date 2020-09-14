@@ -71,7 +71,7 @@ func NewWeibo() *Weibo {
 }
 
 // 获取微博用户信息 (uid 即 openid)
-func (wb *Weibo) WeiboUserInfo(uid, accessToken string) *WeiboInfo {
+func (wb *Weibo) GetWeiboUserInfo(uid int64, accessToken string) *WeiboInfo {
 	// 通过拉取用户信息去验证access_token和uid的有效性
 	v := url.Values{}
 	v.Set("access_token", accessToken)

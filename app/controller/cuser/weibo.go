@@ -3,14 +3,13 @@ package cuser
 import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"github.com/parnurzeal/gorequest"
-	"net/url"
 	"sports_service/server/global/consts"
-	"sports_service/server/global/login/errdef"
-	"sports_service/server/global/login/log"
+	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
 	"sports_service/server/models"
 	"sports_service/server/models/muser"
 	"sports_service/server/util"
+	third "sports_service/server/tools/third-login"
 )
 
 // 微信登陆/注册
@@ -18,12 +17,19 @@ func (svc *UserModule) WeiboLoginOrReg(params *muser.WeiboLoginParams) (int, str
 	info := svc.social.GetSocialAccountByType(consts.TYPE_WEIBO, fmt.Sprint(params.Uid))
 	// 微博信息不存在 则注册
 	if info == nil {
-		weiboInfo := svc.WeiboInfo(params.Uid, params.AccessToken)
+		weibo := third.NewWeibo()
+		weiboInfo := weibo.GetWeiboUserInfo(params.Uid, params.AccessToken)
+		if weiboInfo == nil {
+			log.Log.Errorf("weibo_trace: get weibo user info error")
+			return errdef.WEIBO_USER_INFO_FAIL, "", nil
+		}
+
 		r := muser.NewWeiboRegister()
 		// 替换成app性别标识
-		gender := svc.InterChangeGender(weiboInfo.Gender)
+		gender := svc.WeiboInterChangeGender(weiboInfo.Gender)
 		// 注册
-		if err := r.Register(svc.user, svc.social, svc.context, fmt.Sprint(params.Uid), weiboInfo.AvatarLarge, weiboInfo.Name, consts.TYPE_WEIBO, gender); err != nil {
+		if err := r.Register(svc.user, svc.social, svc.context, fmt.Sprint(params.Uid), weiboInfo.AvatarLarge,
+			weiboInfo.Name, consts.TYPE_WEIBO, gender); err != nil {
 			log.Log.Errorf("weibo_trace: register err:%s", err)
 			return errdef.WEIBO_REGISTER_FAIL, "", nil
 		}
@@ -78,8 +84,8 @@ func (svc *UserModule) WeiboLoginOrReg(params *muser.WeiboLoginParams) (int, str
 	return errdef.SUCCESS, token, svc.user.User
 }
 
-// 替换成app的性别标识
-func (svc *UserModule) InterChangeGender(gender string) int {
+// 微博性别替换成app的性别标识
+func (svc *UserModule) WeiboInterChangeGender(gender string) int {
 	switch gender {
 	case "m":
 		return consts.BOY
@@ -88,30 +94,4 @@ func (svc *UserModule) InterChangeGender(gender string) int {
 	default:
 		return consts.BOY_OR_GIRL
 	}
-}
-
-// 微博用户信息
-func (svc *UserModule) WeiboInfo(uid int64, token string) *muser.WeiboInfo {
-	// 通过拉取用户信息去验证access_token和uid的有效性
-	v := url.Values{}
-	v.Set("access_token", token)
-	v.Set("uid", fmt.Sprint(uid))
-	weiboInfo := &muser.WeiboInfo{}
-	resp, body, errs := gorequest.New().Get(consts.WEIBO_USER_INFO_URL + v.Encode()).EndStruct(weiboInfo)
-	if errs != nil {
-		log.Log.Errorf("weibo_trace: get weibo info err %+v", errs)
-		return nil
-	}
-
-	log.Log.Debugf("weiboInfo: %+v", weiboInfo)
-	log.Log.Debugf("resp: %+v", resp)
-	log.Log.Debugf("body: %s", string(body))
-	log.Log.Debugf("errs: %+v", errs)
-
-	if resp.StatusCode != 200 || weiboInfo.ErrorCode != "" {
-		log.Log.Errorf("weibo_trace: request failed, errCode:%d, error:%s", weiboInfo.ErrorCode, weiboInfo.Error)
-		return nil
-	}
-
-	return weiboInfo
 }

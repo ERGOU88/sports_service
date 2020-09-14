@@ -2,7 +2,7 @@ package muser
 
 // 微博请求参数
 type WeiboLoginParams struct {
-	AccessToken string `json:"access_token" binding:"required"`
+	AccessToken string `json:"access_token" binding:"required" example:"通行token"`
 	Uid         int64  `json:"uid" binding:"required"`
 }
 
@@ -34,12 +34,12 @@ type WeiboInfo struct {
 	StatusesCount   int    `json:"statuses_count"`                        // 微博数
 	FavouritesCount int    `json:"favourites_count"`                      // 收藏数
 	CreatedAt       string `json:"created_at"`                            // 用户创建（注册）时间
-	AllowAllActMsg bool   `json:"allow_all_act_msg"`                      // 是否允许所有人给我发私信，true：是，false：否
-	GeoEnabled     bool   `json:"geo_enabled"`                            // 是否允许标识用户的地理位置，true：是，false：否
-	Verified       bool   `json:"verified"`                               // 是否是微博认证用户，即加V用户，true：是，false：否
-	VerifiedType   int    `json:"verified_type"`                          // 暂未支持
-	Remark         string `json:"remark"`                                 // 用户备注信息，只有在查询用户关系时才返回此字段
-	Status         struct {
+	AllowAllActMsg  bool   `json:"allow_all_act_msg"`                     // 是否允许所有人给我发私信，true：是，false：否
+	GeoEnabled      bool   `json:"geo_enabled"`                           // 是否允许标识用户的地理位置，true：是，false：否
+	Verified        bool   `json:"verified"`                              // 是否是微博认证用户，即加V用户，true：是，false：否
+	VerifiedType    int    `json:"verified_type"`                         // 暂未支持
+	Remark          string `json:"remark"`                                // 用户备注信息，只有在查询用户关系时才返回此字段
+	Status          struct {
 		Geo struct {
 			Longitude    string `json:"longitude"`                        // 经度坐标
 			Latitude     string `json:"latitude"`                         // 维度坐标

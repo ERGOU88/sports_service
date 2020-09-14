@@ -1,16 +1,48 @@
 definitions:
-  swag.LoginParamsSwag:
+  muser.LoginParams:
     properties:
-      mobileNum:
-        description: 手机号
-        example: 手机号码
+      opToken:
+        example: 客户端返回的运营商token
+        type: string
+      operator:
+        example: 客户端返回的运营商，CMCC:中国移动通信, CUCC:中国联通通讯, CTCC:中国电信
         type: string
       platform:
-        description: 平台
-        example: 1
+        example: 0
+        type: integer
+      token:
+        example: 客户端token
+        type: string
+    type: object
+  muser.QQLoginParams:
+    properties:
+      access_token:
+        example: 授权token
+        type: string
+      openid:
+        type: string
+      platform:
+        example: qzone、pengyou或qplus
+        type: string
+    type: object
+  muser.WeiboLoginParams:
+    properties:
+      access_token:
+        example: 通行token
+        type: string
+      uid:
         type: integer
     required:
-    - mobileNum
+    - access_token
+    - uid
+    type: object
+  muser.WxLoginParam:
+    properties:
+      code:
+        example: code码
+        type: string
+    required:
+    - code
     type: object
   swag.LoginSwag:
     properties:
@@ -65,24 +97,6 @@ definitions:
       user_id:
         type: string
     type: object
-  swag.WeiboLoginSwag:
-    properties:
-      access_token:
-        type: string
-      uid:
-        type: integer
-    required:
-    - access_token
-    - uid
-    type: object
-  swag.WxLoginSwag:
-    properties:
-      code:
-        example: 授权码
-        type: string
-    required:
-    - code
-    type: object
 info:
   contact: {}
   description: |-
@@ -106,7 +120,7 @@ info:
     | 400 | 参数错误 |
     | 500 | 内部错误 |
   license: {}
-  title: FPV电竞APP（登陆服）
+  title: FPV电竞APP（应用服）
   version: "1.0"
 paths:
   /api/v1/user/mobile/login:
@@ -131,7 +145,7 @@ paths:
         name: LoginParams
         required: true
         schema:
-          $ref: '#/definitions/swag.LoginParamsSwag'
+          $ref: '#/definitions/muser.LoginParams'
       produces:
       - application/json
       responses:
@@ -146,6 +160,43 @@ paths:
       summary: 手机一键注册/登陆 (ok)
       tags:
       - 001 手机一键注册/登陆 2020-09-10
+  /api/v1/user/qq/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - default: android
+        description: android
+        in: header
+        name: User-Agent
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: QQ登陆/注册 请求参数
+        in: body
+        name: WeiboLoginParams
+        required: true
+        schema:
+          $ref: '#/definitions/muser.QQLoginParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/swag.LoginSwag'
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: QQ注册/登陆 (ok)
+      tags:
+      - 004 QQ注册/登陆 2020-09-14
   /api/v1/user/wechat/login:
     post:
       consumes:
@@ -168,7 +219,7 @@ paths:
         name: WxLoginParam
         required: true
         schema:
-          $ref: '#/definitions/swag.WxLoginSwag'
+          $ref: '#/definitions/muser.WxLoginParam'
       produces:
       - application/json
       responses:
@@ -205,7 +256,7 @@ paths:
         name: WeiboLoginParams
         required: true
         schema:
-          $ref: '#/definitions/swag.WeiboLoginSwag'
+          $ref: '#/definitions/muser.WeiboLoginParams'
       produces:
       - application/json
       responses:
