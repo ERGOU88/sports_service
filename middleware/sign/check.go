@@ -45,7 +45,7 @@ func CheckSign() gin.HandlerFunc {
 		}
 
 		if strings.Compare(appId, string(consts.IOS_APP_ID)) == -1 &&
-			strings.Compare(appId, string(consts.AND_APP_ID)) == 1 &&
+			strings.Compare(appId, string(consts.AND_APP_ID)) == -1 &&
 			strings.Compare(appId, string(consts.WEB_APP_ID)) == -1 {
 			reply.Response(http.StatusUnauthorized, errdef.UNAUTHORIZED)
 			c.Abort()
