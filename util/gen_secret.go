@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
-	"flag"
 )
 
 const (
@@ -65,20 +64,3 @@ func GenAppId() string {
 	rand.Seed(time.Now().UnixNano())
 	return generateSecret(MIX_MODE, 8)
 }
-
-var (
-	charset string
-	length  int
-)
-// 解析参数
-func parseArgs() {
-	flag.IntVar(&length, "l", 16, "-l 生成密码的长度")
-	flag.StringVar(&charset, "t", "mix",
-		`-t 制定密码生成的字符集,
-        num:只使用数字[0-9],
-        char:只使用英文字母[a-zA-Z],
-        mix:使用数字和字母，
-        advance:使用数字、字母以及特殊字符`)
-	flag.Parse()
-}
-
