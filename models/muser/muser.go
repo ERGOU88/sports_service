@@ -87,6 +87,18 @@ func (m *UserModel) FindUserByUserid(userId string) *models.User {
 	return m.User
 }
 
+// userid列表查询用户
+func (m *UserModel) FindUserByUserids(userIds string, offset, limit int) []*models.User {
+	var list []*models.User
+	sql := fmt.Sprintf("SELECT * FROM user WHERE user_id in(%s) ORDER BY id DESC LIMIT ?, ?", userIds)
+	if err := m.Engine.SQL(sql, offset, limit).Find(&list); err != nil {
+		log.Log.Errorf("user_trace: get user list err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
 // 添加用户
 func (m *UserModel) AddUser() error {
 	if _, err := m.Engine.InsertOne(m.User); err != nil {
@@ -119,9 +131,9 @@ func (m *UserModel) UpdateUserInfo() error {
 }
 
 // 获取世界信息（暂时只有国家）
-func (m *UserModel) GetWorldInfo() []*models.WorldInfo {
-	var list []*models.WorldInfo
-	if err := m.Engine.Desc("sortorder").Find(&list); err != nil {
+func (m *UserModel) GetWorldInfo() []*models.WorldMap {
+	var list []*models.WorldMap
+	if err := m.Engine.Where("status=0").Desc("sortorder").Find(&list); err != nil {
 		return nil
 	}
 
@@ -130,8 +142,8 @@ func (m *UserModel) GetWorldInfo() []*models.WorldInfo {
 
 
 // 通过id获取世界信息（暂时只有国家）
-func (m *UserModel) GetWorldInfoById(id int32) *models.WorldInfo {
-	info := new(models.WorldInfo)
+func (m *UserModel) GetWorldInfoById(id int32) *models.WorldMap {
+	info := new(models.WorldMap)
 	ok, err := m.Engine.Where("id=?", id).Get(info)
 	if !ok || err != nil {
 		return nil

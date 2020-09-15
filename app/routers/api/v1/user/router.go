@@ -20,8 +20,9 @@ func Router(engine *gin.Engine) {
 		// 用户QQ登陆
 		user.POST("/qq/login", UserQQLogin)
 		// 用户信息
-		user.POST("/info", token.TokenAuth(), UserInfo)
+		user.GET("/info", token.TokenAuth(), UserInfo)
 		// 修改用户信息
 		user.POST("/edit/info", token.TokenAuth(), EditUserInfo)
 	}
+
 }

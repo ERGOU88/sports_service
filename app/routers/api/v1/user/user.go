@@ -17,7 +17,7 @@ import (
 // @Description
 // @Accept json
 // @Produce  json
-// @Param   AppId         header    string 	true  "AppId" default(android)
+// @Param   AppId         header    string 	true  "AppId"
 // @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
@@ -56,7 +56,7 @@ func MobilePhoneLogin(c *gin.Context) {
 // @Description
 // @Accept json
 // @Produce  json
-// @Param   AppId         header    string 	true  "AppId" default(android)
+// @Param   AppId         header    string 	true  "AppId"
 // @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
@@ -95,7 +95,7 @@ func UserWechatLogin(c *gin.Context) {
 // @Description
 // @Accept json
 // @Produce  json
-// @Param   AppId         header    string 	true  "AppId" default(android)
+// @Param   AppId         header    string 	true  "AppId"
 // @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
@@ -134,7 +134,7 @@ func UserWeiboLogin(c *gin.Context) {
 // @Description
 // @Accept json
 // @Produce  json
-// @Param   AppId         header    string 	true  "AppId" default(android)
+// @Param   AppId         header    string 	true  "AppId"
 // @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
@@ -173,7 +173,7 @@ func UserQQLogin(c *gin.Context) {
 // @Description
 // @Accept json
 // @Produce  json
-// @Param   AppId         header    string 	true  "AppId" default(android)
+// @Param   AppId         header    string 	true  "AppId"
 // @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
@@ -209,7 +209,7 @@ func UserInfo(c *gin.Context) {
 // @Description
 // @Accept json
 // @Produce  json
-// @Param   AppId         header    string 	true  "AppId" default(android)
+// @Param   AppId         header    string 	true  "AppId"
 // @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"

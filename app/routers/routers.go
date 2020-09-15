@@ -2,6 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	"sports_service/server/app/routers/api/v1/attention"
 	"sports_service/server/middleware"
 	"sports_service/server/global/consts"
 	"sports_service/server/app/routers/api/v1/user"
@@ -26,7 +27,9 @@ func InitRouters(engine *gin.Engine) {
 
 	// 初始化接口
 	client.Router(engine)
-	// 用户账户
+	// 用户体系
 	user.Router(engine)
+	// 关注模块
+	attention.Router(engine)
 
 }

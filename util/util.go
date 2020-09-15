@@ -8,6 +8,7 @@ import (
 	"github.com/zheng-ji/goSnowFlake"
 	"log"
 	"math/rand"
+	"strconv"
 	"time"
 	"strings"
 )
@@ -74,6 +75,22 @@ func Contains(str string, s []string) bool {
 		}
 	}
 	return false
+}
+
+
+func PageInfo(page, size string) (p, s int) {
+	p, _ = strconv.Atoi(page)
+	s, _ = strconv.Atoi(size)
+
+	if p <= 0 {
+		p = 1
+	}
+
+	if s <= 0 || s > 50 {
+		s = 10
+	}
+
+	return
 }
 
 

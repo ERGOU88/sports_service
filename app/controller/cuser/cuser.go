@@ -137,12 +137,12 @@ func (svc *UserModule) EditUserInfo(userId string, params *muser.EditUserInfoPar
 }
 
 // 获取世界信息（暂时只有国家）
-func (svc *UserModule) GetWorldInfo() []*models.WorldInfo {
+func (svc *UserModule) GetWorldInfo() []*models.WorldMap {
 	return svc.user.GetWorldInfo()
 }
 
 // 通过id获取世界信息（暂时只有国家）
-func (svc *UserModule) GetWorldInfoById(id int32) *models.WorldInfo {
+func (svc *UserModule) GetWorldInfoById(id int32) *models.WorldMap {
 	return svc.user.GetWorldInfoById(id)
 }
 

@@ -40,6 +40,13 @@ const (
 	QQ_REGISTER_FAIL        = 1303
 	QQ_ADD_ACCOUNT_FAIL     = 1304
 
+	// 关注相关错误码 2000-3000
+	ATTENTION_USER_NOT_EXISTS   = 2001
+	ATTENTION_ALREADY_EXISTS    = 2002
+	ATTENTION_USER_FAIL         = 2003
+	ATTENTION_RECORD_NOT_EXISTS = 2004
+	ATTENTION_REPEAT_CANCEL     = 2005
+	ATTENTION_CANCEL_FAIL       = 2006
 )
 
 var MsgFlags = map[int]string{
@@ -79,6 +86,13 @@ var MsgFlags = map[int]string{
 	QQ_USER_INFO_FAIL:     "获取QQ用户信息失败",
 	QQ_REGISTER_FAIL:      "QQ注册账户失败",
 	QQ_ADD_ACCOUNT_FAIL:   "QQ账户添加失败",
+
+	ATTENTION_USER_NOT_EXISTS:   "关注的用户不存在",
+	ATTENTION_ALREADY_EXISTS:    "已关注该用户",
+	ATTENTION_USER_FAIL:         "关注失败",
+	ATTENTION_RECORD_NOT_EXISTS: "未关注该用户",
+	ATTENTION_REPEAT_CANCEL:     "已取消关注 请勿重复操作",
+	ATTENTION_CANCEL_FAIL:       "取消关注失败",
 }
 
 func GetMsg(code int) string {

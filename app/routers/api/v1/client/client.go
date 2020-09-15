@@ -20,7 +20,7 @@ import (
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Success 200 {string} json "{"code":200,"data":{"secret": "DnaukFwVILpcewX6"},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
-// @Router /api/v1/client/init [post]
+// @Router /api/v1/client/init [get]
 func InitInfo(c *gin.Context) {
 	// 生成secret
 	secret := util.GenSecret(util.MIX_MODE, 16)
