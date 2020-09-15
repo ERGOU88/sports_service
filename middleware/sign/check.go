@@ -2,13 +2,13 @@ package sign
 
 import (
 	"crypto/md5"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"fmt"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"strings"
-	"sports_service/server/global/app/log"
 )
 
 var AppInfo = map[string]string{
@@ -25,8 +25,9 @@ func CheckSign() gin.HandlerFunc {
 		sign := c.GetHeader("Sign")
 		secret := c.GetHeader("Secret")
 		timestamp := c.GetHeader("Timestamp")
+		version := c.GetHeader("Version")
 		uri := c.Request.RequestURI
-		str := fmt.Sprintf("%s&AppId=%s&Timestamp=%s", uri, appId, timestamp)
+		str := fmt.Sprintf("%s&AppId=%s&Timestamp=%s&Version=%s", uri, appId, timestamp, version)
 
 		if !strings.Contains(uri, "/api/v1/client/init") && secret == "" {
 			reply.Response(http.StatusUnauthorized, errdef.UNAUTHORIZED)
@@ -38,7 +39,7 @@ func CheckSign() gin.HandlerFunc {
 			str = fmt.Sprintf("%s&Secret=%s", str, secret)
 		}
 
-		if appId == "" || sign == "" || timestamp == "" {
+		if appId == "" || sign == "" || timestamp == "" || version == "" {
 			reply.Response(http.StatusUnauthorized, errdef.UNAUTHORIZED)
 			c.Abort()
 			return

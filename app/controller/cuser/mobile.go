@@ -7,12 +7,12 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/util"
 	"sports_service/server/global/app/log"
-	"sports_service/server/tools/mobtech"
+	"sports_service/server/tools/mobTech"
 )
 
 // 手机一键登陆/注册
 func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, *models.User) {
-	mob := new(mobtech.MobTech)
+	mob := new(mobTech.MobTech)
 	// 从mob获取手机号码
 	mobileNum, err := mob.FreeLogin(param.Token, param.OpToken, param.Operator)
 	if err != nil {

@@ -98,7 +98,10 @@ func init() {
 // @description ### 一、公共参数说明（此栏参数均为Headers请求头传递）
 // @description | 参数名 | 说明 | 示例 |
 // @description | ------ | :----- | :----- |
-// @description | User-Agent | 用户代理 | android |
+// @description | AppId | AppId(区分Android,iOS,web) | 5EesXF1i |
+// @description | Secret | 服务端下发的secret 通过/api/v1/client/init接口获取 调用该接口时无需传 且 不参与签名 | DnaukFwVILpcewX6 |
+// @description | Timestamp | 请求时间戳 单位：秒 | 1588888888 |
+// @description | Sign | 签名 | 签名 md5签名32位值 |
 // @description | Version | 当前版本 | 1.0.1 |
 // @description ### 二、请求体说明（此栏参数均为POST JSON传递，不可用form-data提交）
 // @description
@@ -106,9 +109,16 @@ func init() {
 // @description         'mobileNum': '13177656222',
 // @description         'platform': 0
 // @description     }
-// @description ### 三、API错误码文档
+// @description ### 三、接口签名生成方式
+// @description 签名加密示例:
+// @description params = 请求的url路径(不包含域名与参数) + & + Header头参数以`&`拼接（无需按照字典序，具体看以下栗子） + & + appKey
+// @description appKey由服务端下发 并进行保存
+// @description sign = md5(params) 取md5 32位小写
+// @description 如：md5(/api/v1/user/mobile/login&AppId=5EesXF1i&Timestamp=1588888888&Version=1.0.1&Secret=DnaukFwVILpcewX6&RfhHecN9zsNcy19Y)
+// @description appKey为RfhHecN9zsNcy19Y
+// @description ### 四、API错误码文档
 // @description [点击查看](/api/v1/doc)
-// @description ### 四、HTTP状态码说明
+// @description ### 五、HTTP状态码说明
 // @description | 状态码 | 说明 |
 // @description | ------ | :----- |
 // @description | 200 | 操作成功 |

@@ -1,4 +1,4 @@
-package third_login
+package thirdLogin
 
 // 微信相关常量
 const (

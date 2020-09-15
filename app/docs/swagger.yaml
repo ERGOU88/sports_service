@@ -103,7 +103,10 @@ info:
     ### 一、公共参数说明（此栏参数均为Headers请求头传递）
     | 参数名 | 说明 | 示例 |
     | ------ | :----- | :----- |
-    | User-Agent | 用户代理 | android |
+    | AppId | AppId(区分Android,iOS,web) | 5EesXF1i |
+    | Secret | 服务端下发的secret 通过/api/v1/client/init接口获取 调用该接口时无需传 且 不参与签名 | DnaukFwVILpcewX6 |
+    | Timestamp | 请求时间戳 单位：秒 | 1588888888 |
+    | Sign | 签名 | 签名 md5签名32位值 |
     | Version | 当前版本 | 1.0.1 |
     ### 二、请求体说明（此栏参数均为POST JSON传递，不可用form-data提交）
 
@@ -111,9 +114,16 @@ info:
     'mobileNum': '13177656222',
     'platform': 0
     }
-    ### 三、API错误码文档
+    ### 三、接口签名生成方式
+    签名加密示例:
+    params = 请求的url路径(不包含域名与参数) + & + Header头参数以`&`拼接（无需按照字典序，具体看以下栗子） + & + appKey
+    appKey由服务端下发 并进行保存
+    sign = md5(params) 取md5 32位小写
+    如：md5(/api/v1/user/mobile/login&AppId=5EesXF1i&Timestamp=1588888888&Version=1.0.1&Secret=DnaukFwVILpcewX6&RfhHecN9zsNcy19Y)
+    appKey为RfhHecN9zsNcy19Y
+    ### 四、API错误码文档
     [点击查看](/api/v1/doc)
-    ### 四、HTTP状态码说明
+    ### 五、HTTP状态码说明
     | 状态码 | 说明 |
     | ------ | :----- |
     | 200 | 操作成功 |
@@ -123,15 +133,71 @@ info:
   title: FPV电竞APP（应用服）
   version: "1.0"
 paths:
+  /api/v1/client/init:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - default: android
+        description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"secret": "DnaukFwVILpcewX6"},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 初始化接口 (ok)
+      tags:
+      - 通用接口接口
   /api/v1/user/mobile/login:
     post:
       consumes:
       - application/json
       parameters:
       - default: android
-        description: android
+        description: AppId
         in: header
-        name: User-Agent
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
         required: true
         type: string
       - default: 1.0.0
@@ -159,16 +225,31 @@ paths:
             type: string
       summary: 手机一键注册/登陆 (ok)
       tags:
-      - 001 手机一键注册/登陆 2020-09-10
+      - 账号体系
   /api/v1/user/qq/login:
     post:
       consumes:
       - application/json
       parameters:
       - default: android
-        description: android
+        description: AppId
         in: header
-        name: User-Agent
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
         required: true
         type: string
       - default: 1.0.0
@@ -196,16 +277,31 @@ paths:
             type: string
       summary: QQ注册/登陆 (ok)
       tags:
-      - 004 QQ注册/登陆 2020-09-14
+      - 账号体系
   /api/v1/user/wechat/login:
     post:
       consumes:
       - application/json
       parameters:
       - default: android
-        description: android
+        description: AppId
         in: header
-        name: User-Agent
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
         required: true
         type: string
       - default: 1.0.0
@@ -233,16 +329,31 @@ paths:
             type: string
       summary: 微信注册/登陆 (ok)
       tags:
-      - 002 微信注册/登陆 2020-09-11
+      - 账号体系
   /api/v1/user/weibo/login:
     post:
       consumes:
       - application/json
       parameters:
       - default: android
-        description: android
+        description: AppId
         in: header
-        name: User-Agent
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
         required: true
         type: string
       - default: 1.0.0
@@ -270,5 +381,5 @@ paths:
             type: string
       summary: 微博注册/登陆 (ok)
       tags:
-      - 003 微博注册/登陆 2020-09-11
+      - 账号体系
 swagger: "2.0"

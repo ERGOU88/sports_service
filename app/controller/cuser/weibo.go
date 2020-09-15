@@ -9,7 +9,7 @@ import (
 	"sports_service/server/models"
 	"sports_service/server/models/muser"
 	"sports_service/server/util"
-	third "sports_service/server/tools/third-login"
+	third "sports_service/server/tools/thirdLogin"
 )
 
 // 微信登陆/注册

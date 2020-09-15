@@ -1,4 +1,4 @@
-package mobtech
+package mobTech
 
 import (
 	"encoding/json"

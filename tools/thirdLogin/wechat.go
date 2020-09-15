@@ -1,4 +1,4 @@
-package third_login
+package thirdLogin
 
 import (
 	"log"

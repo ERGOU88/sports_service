@@ -1,4 +1,4 @@
-package mobtech
+package mobTech
 
 const (
 	// 一键登陆url

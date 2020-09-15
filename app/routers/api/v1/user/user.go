@@ -14,10 +14,12 @@ import (
 // @Tags 账号体系
 // @Version 1.0
 // @Description
-// @tags 001 手机一键注册/登陆 2020-09-10
 // @Accept json
 // @Produce  json
-// @Param   User-Agent    header    string 	true  "android" default(android)
+// @Param   AppId         header    string 	true  "AppId" default(android)
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   LoginParams  body muser.LoginParams true "手机号登陆/注册 请求参数"
 // @Success 200 {object} swag.LoginSwag
@@ -51,10 +53,12 @@ func MobilePhoneLogin(c *gin.Context) {
 // @Tags 账号体系
 // @Version 1.0
 // @Description
-// @tags 002 微信注册/登陆 2020-09-11
 // @Accept json
 // @Produce  json
-// @Param   User-Agent    header    string 	true  "android" default(android)
+// @Param   AppId         header    string 	true  "AppId" default(android)
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   WxLoginParam  body muser.WxLoginParam true "微信登陆/注册 请求参数"
 // @Success 200 {object} swag.LoginSwag
@@ -88,10 +92,12 @@ func UserWechatLogin(c *gin.Context) {
 // @Tags 账号体系
 // @Version 1.0
 // @Description
-// @tags 003 微博注册/登陆 2020-09-11
 // @Accept json
 // @Produce  json
-// @Param   User-Agent    header    string 	true  "android" default(android)
+// @Param   AppId         header    string 	true  "AppId" default(android)
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   WeiboLoginParams  body muser.WeiboLoginParams true "微博登陆/注册 请求参数"
 // @Success 200 {object} swag.LoginSwag
@@ -125,10 +131,12 @@ func UserWeiboLogin(c *gin.Context) {
 // @Tags 账号体系
 // @Version 1.0
 // @Description
-// @tags 004 QQ注册/登陆 2020-09-14
 // @Accept json
 // @Produce  json
-// @Param   User-Agent    header    string 	true  "android" default(android)
+// @Param   AppId         header    string 	true  "AppId" default(android)
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   WeiboLoginParams  body muser.QQLoginParams true "QQ登陆/注册 请求参数"
 // @Success 200 {object} swag.LoginSwag

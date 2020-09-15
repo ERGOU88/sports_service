@@ -9,6 +9,7 @@ import (
 	"log"
 	"math/rand"
 	"time"
+	"strings"
 )
 
 var (
@@ -64,6 +65,15 @@ func MD5(str string) string {
 func Md5String(s string) (md5_str string) {
 	md5_str = fmt.Sprintf("%x", md5.Sum([]byte(s)))
 	return
+}
+
+func Contains(str string, s []string) bool {
+	for _, v := range s {
+		if strings.Contains(str, v) {
+			return true
+		}
+	}
+	return false
 }
 
 
