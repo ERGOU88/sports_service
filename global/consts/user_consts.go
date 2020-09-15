@@ -37,10 +37,11 @@ const (
 )
 
 const (
-	WECHAT_ACCESS_TOKEN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?"
-	// 微信用户信息
-	WECHAT_USER_INFO_URL    = "https://api.weixin.qq.com/sns/userinfo?"
-	// 微博用户信息
-	WEIBO_USER_INFO_URL     = "https://api.weibo.com/2/users/show.json?"
+	// 昵称最长30个字符
+	MAX_NAME_LEN      = 30
+	// 昵称最少1个字符
+	MIN_NAME_LEN      = 1
+	// 签名最长140个字符
+	MAX_SIGNATURE_LEN = 140
 )
 

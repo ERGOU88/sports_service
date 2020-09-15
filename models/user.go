@@ -22,4 +22,5 @@ type User struct {
 	CreateAt      int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt      int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
 	UserType      int    `json:"user_type" xorm:"not null default 0 comment('用户类型 0 手机号 1 微信 2 QQ 3 微博') TINYINT(2)"`
+	Country       int    `json:"country" xorm:"not null default 0 comment('国家') INT(3)"`
 }

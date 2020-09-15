@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/garyburd/redigo/redis"
 	"net/http"
+	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/consts"
 	"sports_service/server/models/muser"
 	"strings"
@@ -13,12 +14,13 @@ import (
 // token校验
 func TokenAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		reply := errdef.New(c)
 		var userid string
 		var hashcode string
 		val, err := c.Request.Cookie(consts.COOKIE_NAME)
 		if err != nil {
 			log.Log.Errorf("c.Request.Cookie() err is %s", err.Error())
-			c.JSON(http.StatusUnauthorized, "鉴权失败，请重新登陆")
+			reply.Response(http.StatusUnauthorized, errdef.INVALID_TOKEN)
 			c.Abort()
 			return
 		}
@@ -38,7 +40,7 @@ func TokenAuth() gin.HandlerFunc {
 
 		if len(hashcode) <= 0 {
 			log.Log.Errorf("len(hashcode) <= 0")
-			c.JSON(http.StatusUnauthorized, "鉴权失败，请重新登陆")
+			reply.Response(http.StatusUnauthorized, errdef.INVALID_TOKEN)
 			c.Abort()
 			return
 		}
@@ -47,7 +49,7 @@ func TokenAuth() gin.HandlerFunc {
 		token, err := model.GetUserToken(userid)
 		if err != nil && err == redis.ErrNil {
 			log.Log.Errorf("token_trace: get user token by redis err:%s", err)
-			c.JSON(http.StatusUnauthorized, "鉴权失败，请重新登陆")
+			reply.Response(http.StatusUnauthorized, errdef.INVALID_TOKEN)
 			c.Abort()
 			return
 		}
@@ -55,7 +57,7 @@ func TokenAuth() gin.HandlerFunc {
 		// 客户端token是否和redis存储的一致
 		if res := strings.Compare(v, token); res != 0 {
 			log.Log.Errorf("token_trace: token not match, server token:%s, client token:%s", token, v)
-			c.JSON(http.StatusUnauthorized, "鉴权失败，请重新登陆")
+			reply.Response(http.StatusUnauthorized, errdef.INVALID_TOKEN)
 			c.Abort()
 			return
 		}

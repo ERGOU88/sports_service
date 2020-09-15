@@ -16,13 +16,13 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 	// 从mob获取手机号码
 	mobileNum, err := mob.FreeLogin(param.Token, param.OpToken, param.Operator)
 	if err != nil {
-		return errdef.FREE_LOGIN_FAIL, "", nil
+		return errdef.USER_FREE_LOGIN_FAIL, "", nil
 	}
 
 	// 校验手机号合法性
 	if b := svc.user.CheckCellPhoneNumber(mobileNum); !b {
 		log.Log.Errorf("user_trace: invalid mobile num %v", mobileNum)
-		return errdef.INVALID_MOBILE_NUM, "", nil
+		return errdef.USER_INVALID_MOBILE_NUM, "", nil
 	}
 
 	// 根据手机号查询用户 不存在 注册用户 用户存在 为登陆

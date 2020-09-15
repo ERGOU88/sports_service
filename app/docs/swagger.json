@@ -68,6 +68,149 @@
                 }
             }
         },
+        "/api/v1/user/edit/info": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "账号体系"
+                ],
+                "summary": "编辑用户信息 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "android",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "编辑用户信息请求参数",
+                        "name": "EditUserInfoParams",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/muser.EditUserInfoParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/info": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "账号体系"
+                ],
+                "summary": "用户信息 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "android",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/muser.UserInfoResp"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/mobile/login": {
             "post": {
                 "consumes": [
@@ -374,6 +517,35 @@
         }
     },
     "definitions": {
+        "muser.EditUserInfoParams": {
+            "type": "object",
+            "properties": {
+                "avatarId": {
+                    "type": "integer",
+                    "example": 6
+                },
+                "born": {
+                    "type": "string",
+                    "example": "1993-06-20"
+                },
+                "countryId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "gender": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "nickName": {
+                    "type": "string",
+                    "example": "陈二狗"
+                },
+                "signature": {
+                    "type": "string",
+                    "example": "emmmmmmmm"
+                }
+            }
+        },
         "muser.LoginParams": {
             "type": "object",
             "properties": {
@@ -408,6 +580,63 @@
                 "platform": {
                     "type": "string",
                     "example": "qzone、pengyou或qplus"
+                }
+            }
+        },
+        "muser.UserInfoResp": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "integer",
+                    "example": 27
+                },
+                "avatar": {
+                    "type": "string",
+                    "example": "头像地址"
+                },
+                "background_img": {
+                    "type": "string",
+                    "example": "背景图"
+                },
+                "born": {
+                    "type": "string",
+                    "example": "出生日期"
+                },
+                "country": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "gender": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "is_anchor": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "mobileNum": {
+                    "type": "integer",
+                    "example": 13177656222
+                },
+                "nickname": {
+                    "type": "string",
+                    "example": "昵称 陈二狗"
+                },
+                "signature": {
+                    "type": "string",
+                    "example": "个性签名"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "user_id": {
+                    "type": "string",
+                    "example": "2009011314521111"
+                },
+                "user_type": {
+                    "type": "integer",
+                    "example": 0
                 }
             }
         },

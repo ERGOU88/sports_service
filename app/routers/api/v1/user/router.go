@@ -2,13 +2,14 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/sign"
+	"sports_service/server/middleware/token"
 )
 
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
 	user := api.Group("/user")
-	user.Use(sign.CheckSign())
+	// todo: 先不校验签名
+	//user.Use(sign.CheckSign())
 	{
 		// 手机一键登陆
 		user.POST("/mobile/login", MobilePhoneLogin)
@@ -18,5 +19,9 @@ func Router(engine *gin.Engine) {
 		user.POST("/weibo/login", UserWeiboLogin)
 		// 用户QQ登陆
 		user.POST("/qq/login", UserQQLogin)
+		// 用户信息
+		user.POST("/info", token.TokenAuth(), UserInfo)
+		// 修改用户信息
+		user.POST("/edit/info", token.TokenAuth(), EditUserInfo)
 	}
 }

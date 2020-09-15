@@ -24,12 +24,39 @@ func NewUserModel(engine *xorm.Session) *UserModel {
 	}
 }
 
+// 用户简单信息返回
+type UserInfoResp struct {
+	UserId        string `json:"user_id" example:"2009011314521111"`
+	Avatar        string `json:"avatar" example:"头像地址"`
+	MobileNum     int32  `json:"mobileNum" example:"13177656222"`
+	NickName      string `json:"nickname" example:"昵称 陈二狗"`
+	Gender        int32  `json:"gender" example:"0"`
+	Signature     string `json:"signature" example:"个性签名"`
+	Status        int32  `json:"status" example:"0"`
+	IsAnchor      int32  `json:"is_anchor" example:"0"`
+	BackgroundImg string `json:"background_img" example:"背景图"`
+	Born          string `json:"born" example:"出生日期"`
+	Age           int    `json:"age" example:"27"`
+	UserType      int    `json:"user_type" example:"0"`
+	Country       int32  `json:"country" example:"0"`
+}
+
 // 登陆请求所需的参数
 type LoginParams struct {
 	Platform  int      `json:"platform" example:"0"`                                // 平台 0 android 1 iOS 2 web
 	Token     string   `json:"token" example:"客户端token"`
 	OpToken   string   `json:"opToken" example:"客户端返回的运营商token"`
 	Operator  string   `json:"operator" example:"客户端返回的运营商，CMCC:中国移动通信, CUCC:中国联通通讯, CTCC:中国电信"`
+}
+
+// 修改用户信息请求参数
+type EditUserInfoParams struct {
+	AvatarId   int32    `json:"avatarId" example:"6"`            // 系统头像id（暂时仅支持更换系统默认头像）
+	NickName   string   `json:"nickName" example:"陈二狗"`        // 昵称
+	Born       string   `json:"born" example:"1993-06-20"`       // 出生年月
+	Gender     int32    `json:"gender" example:"1"`              // 性别 1 男 2 女
+	CountryId  int32    `json:"countryId" example:"1"`           // 国家id
+	Signature  string   `json:"signature" example:"emmmmmmmm"`   // 个性签名
 }
 
 var validPhone = regexp.MustCompile(`^1\d{10}$`)
@@ -68,6 +95,70 @@ func (m *UserModel) AddUser() error {
 	}
 
 	return nil
+}
+
+// 昵称是否重复
+func (m *UserModel) IsRepeatOfNickName(nickName string) bool {
+	count, _ := m.Engine.Where("nick_name = ?", nickName).Count(&models.User{})
+	if count > 0 {
+		return true
+	}
+
+	return false
+}
+
+// 更新用户信息
+func (m *UserModel) UpdateUserInfo() error {
+	if _, err := m.Engine.Where("id=?", m.User.Id).
+		Cols("avatar, nick_name, born, age, gender, country, signature, update_at").
+		Update(m.User); err != nil {
+			return err
+	}
+
+	return nil
+}
+
+// 获取世界信息（暂时只有国家）
+func (m *UserModel) GetWorldInfo() []*models.WorldInfo {
+	var list []*models.WorldInfo
+	if err := m.Engine.Desc("sortorder").Find(&list); err != nil {
+		return nil
+	}
+
+	return list
+}
+
+
+// 通过id获取世界信息（暂时只有国家）
+func (m *UserModel) GetWorldInfoById(id int32) *models.WorldInfo {
+	info := new(models.WorldInfo)
+	ok, err := m.Engine.Where("id=?", id).Get(info)
+	if !ok || err != nil {
+		return nil
+	}
+
+	return info
+}
+
+// 获取系统默认头像列表
+func (m *UserModel) GetSystemAvatarList() []*models.DefaultAvatar {
+	var list []*models.DefaultAvatar
+	if err := m.Engine.Desc("sortorder").Find(&list); err != nil {
+		return nil
+	}
+
+	return list
+}
+
+// 通过id获取系统默认头像
+func (m *UserModel) GetSystemAvatarById(id int32) *models.DefaultAvatar {
+	info := new(models.DefaultAvatar)
+	ok, err := m.Engine.Where("id=?", id).Get(info)
+	if !ok || err != nil {
+		return nil
+	}
+
+	return info
 }
 
 // 设置uid
