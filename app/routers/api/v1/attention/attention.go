@@ -49,7 +49,7 @@ func AttentionUser(c *gin.Context) {
 	reply.Response(http.StatusOK, syscode)
 }
 
-// @Summary 取消用户 (ok)
+// @Summary 取消关注 (ok)
 // @Tags 关注模块
 // @Version 1.0
 // @Description

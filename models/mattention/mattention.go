@@ -40,10 +40,11 @@ func (m *AttentionModel) GetAttentionInfo(attentionUid, userId string) *models.U
 }
 
 // 添加关注记录 (attentionUid 关注的用户id userId 被关注的用户id)
-func (m *AttentionModel) AddAttention(attentionUid, userId string) error {
+func (m *AttentionModel) AddAttention(attentionUid, userId string, status int) error {
 	m.UserAttention.UserId = userId
 	m.UserAttention.AttentionUid = attentionUid
 	m.UserAttention.CreateAt = int(time.Now().Unix())
+	m.UserAttention.Status = status
 	if _, err := m.Engine.InsertOne(m.UserAttention); err != nil {
 		return err
 	}
@@ -51,7 +52,7 @@ func (m *AttentionModel) AddAttention(attentionUid, userId string) error {
 	return nil
 }
 
-// 更新关注状态 重新关注/取消关注
+// 更新关注状态 关注/取消关注
 func (m *AttentionModel) UpdateAttentionStatus() error {
 	if _, err := m.Engine.Where("id=?", m.UserAttention.Id).
 		Cols("status, create_at").

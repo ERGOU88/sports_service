@@ -34,15 +34,13 @@ func New(c *gin.Context) AttentionModule {
 // 添加关注 attentionUid 关注的用户id userId 被关注的用户id
 func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 	// 关注的用户是否存在
-	attentionUser := svc.user.FindUserByUserid(attentionUid)
-	if attentionUser == nil {
+	if attentionUser := svc.user.FindUserByUserid(attentionUid); attentionUser == nil {
 		log.Log.Errorf("attention_trace: user not found, attentionUid:%s", attentionUid)
 		return errdef.USER_NOT_EXISTS
 	}
 
 	// 被关注的用户是否存在
-	user := svc.user.FindUserByUserid(userId)
-	if user == nil {
+	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("attention_trace: user not found, userId:%s", userId)
 		return errdef.ATTENTION_USER_NOT_EXISTS
 	}
@@ -66,7 +64,7 @@ func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 	}
 
 	// 添加关注记录
-	if err := svc.attention.AddAttention(attentionUid, userId); err != nil {
+	if err := svc.attention.AddAttention(attentionUid, userId, consts.ALREADY_ATTENTION); err != nil {
 		log.Log.Errorf("attention_trace: add attention err:%s", err)
 		return errdef.ATTENTION_USER_FAIL
 	}
@@ -77,15 +75,13 @@ func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 // 取消关注
 func (svc *AttentionModule) CancelAttention(attentionUid, userId string) int {
 	// 关注的用户是否存在
-	attentionUser := svc.user.FindUserByUserid(attentionUid)
-	if attentionUser == nil {
+	if attentionUser := svc.user.FindUserByUserid(attentionUid); attentionUser == nil {
 		log.Log.Errorf("attention_trace: user not found, attentionUid:%s", attentionUid)
 		return errdef.USER_NOT_EXISTS
 	}
 
 	// 被关注的用户是否存在
-	user := svc.user.FindUserByUserid(userId)
-	if user == nil {
+	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("attention_trace: user not found, userId:%s", userId)
 		return errdef.ATTENTION_USER_NOT_EXISTS
 	}

@@ -3,6 +3,8 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"sports_service/server/app/routers/api/v1/attention"
+	"sports_service/server/app/routers/api/v1/collect"
+	"sports_service/server/app/routers/api/v1/video"
 	"sports_service/server/middleware"
 	"sports_service/server/global/consts"
 	"sports_service/server/app/routers/api/v1/user"
@@ -31,5 +33,9 @@ func InitRouters(engine *gin.Engine) {
 	user.Router(engine)
 	// 关注模块
 	attention.Router(engine)
+	// 收藏模块
+	collect.Router(engine)
+	// 视频模块
+	video.Router(engine)
 
 }

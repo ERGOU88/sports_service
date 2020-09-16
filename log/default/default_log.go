@@ -2,7 +2,6 @@ package _default
 
 import (
 	"log"
-
 	"github.com/go-xorm/core"
 )
 
