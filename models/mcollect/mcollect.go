@@ -65,10 +65,14 @@ func (m *CollectModel) UpdateCollectStatus() error {
 	return nil
 }
 
+type CollectVideosInfo struct {
+	VideoId      int64      `json:"video_id"`
+	UpdateAt     int        `json:"update_at"`
+}
 // 获取收藏的视频id列表
-func (m *CollectModel) GetCollectVideos(userId string) []string {
-	var list []string
-	if err := m.Engine.Where("status=1 AND user_id=?", userId).Cols("video_id").Find(&list); err != nil {
+func (m *CollectModel) GetCollectVideos(userId string) []*CollectVideosInfo {
+	var list []*CollectVideosInfo
+	if err := m.Engine.Where("status=1 AND user_id=?", userId).Cols("video_id, update_at").Find(&list); err != nil {
 		log.Log.Errorf("collect_trace: get collect videos err:%s", err)
 		return nil
 	}

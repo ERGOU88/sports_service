@@ -13,6 +13,26 @@ type VideoModel struct {
 
 }
 
+// 视频信息
+type VideosInfoResp struct {
+	VideoId       int64  `json:"video_id"`       // 视频id
+	Title         string `json:"title"`          // 标题
+	Describe      string `json:"describe"`       // 描述
+	Cover         string `json:"cover"`          // 封面
+	VideoAddr     string `json:"video_addr"`     // 视频地址
+	IsRecommend   int    `json:"is_recommend"`   // 是否推荐
+	IsTop         int    `json:"is_top"`         // 是否置顶
+	VideoDuration int    `json:"video_duration"` // 视频时长
+	VideoWidth    int64  `json:"video_width"`    // 视频宽
+	VideoHeight   int64  `json:"video_height"`   // 视频高
+	CreateAt      int    `json:"create_at"`      // 视频创建时间
+	UserId        string `json:"user_id"`        // 发布视频的用户id
+	Avatar        string `json:"avatar"`         // 头像
+	Nickname      string `json:"nickName"`       // 昵称
+	IsAttention   int    `json:"is_attention"`   // 是否关注 1 关注 2 未关注
+	OpTime        int    `json:"collect_at"`     // 用户收藏/点赞等的操作时间
+}
+
 // 实栗
 func NewVideoModel(engine *xorm.Session) *VideoModel {
 	return &VideoModel{

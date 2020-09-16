@@ -35,43 +35,6 @@ definitions:
         example: 10001
         type: integer
     type: object
-  models.Videos:
-    properties:
-      cover:
-        type: string
-      create_at:
-        type: integer
-      describe:
-        type: string
-      is_recommend:
-        type: integer
-      is_top:
-        type: integer
-      rec_content:
-        type: string
-      sortorder:
-        type: integer
-      status:
-        type: integer
-      title:
-        type: string
-      top_content:
-        type: string
-      update_at:
-        type: integer
-      user_id:
-        type: string
-      video_addr:
-        type: string
-      video_duration:
-        type: integer
-      video_height:
-        type: integer
-      video_id:
-        type: integer
-      video_width:
-        type: integer
-    type: object
   muser.EditUserInfoParams:
     properties:
       avatarId:
@@ -179,6 +142,41 @@ definitions:
         type: string
     required:
     - code
+    type: object
+  mvideo.VideosInfoResp:
+    properties:
+      avatar:
+        type: string
+      collect_at:
+        type: integer
+      cover:
+        type: string
+      create_at:
+        type: integer
+      describe:
+        type: string
+      is_attention:
+        type: integer
+      is_recommend:
+        type: integer
+      is_top:
+        type: integer
+      nickName:
+        type: string
+      title:
+        type: string
+      user_id:
+        type: string
+      video_addr:
+        type: string
+      video_duration:
+        type: integer
+      video_height:
+        type: integer
+      video_id:
+        type: integer
+      video_width:
+        type: integer
     type: object
   swag.LoginSwag:
     properties:
@@ -619,7 +617,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Videos'
+              $ref: '#/definitions/mvideo.VideosInfoResp'
             type: array
         "500":
           description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
@@ -835,7 +833,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Videos'
+              $ref: '#/definitions/mvideo.VideosInfoResp'
             type: array
         "500":
           description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'

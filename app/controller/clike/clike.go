@@ -1,17 +1,17 @@
 package clike
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
-	"sports_service/server/models"
+	"sports_service/server/models/mattention"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
-	"fmt"
 	"strings"
 	"time"
 )
@@ -22,6 +22,7 @@ type LikeModule struct {
 	user       *muser.UserModel
 	like       *mlike.LikeModel
 	video      *mvideo.VideoModel
+	attention  *mattention.AttentionModel
 }
 
 func New(c *gin.Context) LikeModule {
@@ -32,6 +33,7 @@ func New(c *gin.Context) LikeModule {
 		user: muser.NewUserModel(socket),
 		video: mvideo.NewVideoModel(socket),
 		like: mlike.NewLikeModel(socket),
+		attention: mattention.NewAttentionModel(socket),
 		engine: socket,
 	}
 }
@@ -118,10 +120,19 @@ func (svc *LikeModule) CancelLikeForVideo(userId string, videoId int64) int {
 }
 
 // 获取用户点赞的视频列表
-func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*models.Videos {
-	videoIds := svc.like.GetUserLikeVideos(userId)
-	if len(videoIds) == 0 {
+func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*mvideo.VideosInfoResp {
+	infos := svc.like.GetUserLikeVideos(userId)
+	if len(infos) == 0 {
 		return nil
+	}
+
+	// mp key videoId   value 用户视频点赞的时间
+	mp := make(map[int64]int)
+	// 当前页所有视频id
+	videoIds := make([]string, len(infos))
+	for index, like := range infos {
+		mp[like.TypeId] = like.CreateAt
+		videoIds[index] = fmt.Sprint(like.TypeId)
 	}
 
 	offset := (page - 1) * size
@@ -133,5 +144,40 @@ func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*model
 		return nil
 	}
 
-	return videoList
+	// 重新组装数据
+	list := make([]*mvideo.VideosInfoResp, len(videoList))
+	for index, video := range videoList {
+		resp := new(mvideo.VideosInfoResp)
+		resp.VideoId = video.VideoId
+		resp.Title = video.Title
+		resp.Describe = video.Describe
+		resp.Cover = video.Cover
+		resp.VideoAddr = video.VideoAddr
+		resp.IsRecommend = video.IsRecommend
+		resp.IsTop = video.IsTop
+		resp.VideoDuration = video.VideoDuration
+		resp.VideoWidth = video.VideoWidth
+		resp.VideoHeight = video.VideoHeight
+		resp.CreateAt = video.CreateAt
+		resp.UserId = video.UserId
+		// 获取用户信息
+		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
+			resp.Avatar = user.Avatar
+			resp.Nickname = user.NickName
+		}
+
+		// 是否关注
+		attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)
+		resp.IsAttention = attentionInfo.Status
+
+		collectAt, ok := mp[video.VideoId]
+		if ok {
+			// 用户给视频点赞的时间
+			resp.OpTime = collectAt
+		}
+
+		list[index] = resp
+	}
+
+	return list
 }

@@ -11,6 +11,8 @@ func Router(engine *gin.Engine) {
 	{
 		// 用户发布的视频列表
 		video.GET("/user/publish")
+		// 用户视频浏览记录
+		video.GET("/browse/history", BrowseHistory)
 
 	}
 }

@@ -30,17 +30,20 @@ func NewLikeModel(engine *xorm.Session) *LikeModel {
 	}
 }
 
+type LikeVideosInfo struct {
+	TypeId   int64    `json:"type_id"`      // 视频id
+	CreateAt int      `json:"create_at"`    // 点赞时间
+}
 // 获取用户点赞的视频id列表
-func (m *LikeModel) GetUserLikeVideos(userId string) []string {
-	var list []string
-	if err := m.Engine.Where("zan_type=1 AND status=1 AND user_id=?", userId).Cols("type_id").Find(&list); err != nil {
+func (m *LikeModel) GetUserLikeVideos(userId string) []*LikeVideosInfo {
+	var list []*LikeVideosInfo
+	if err := m.Engine.Where("zan_type=1 AND status=1 AND user_id=?", userId).Cols("type_id", "create_at").Find(&list); err != nil {
 		log.Log.Errorf("like_trace: get like videos err:%s", err)
 		return nil
 	}
 
 	return list
 }
-
 
 // 添加点赞记录 1 视频点赞 2 帖子点赞 3 评论点赞
 func (m *LikeModel) AddGiveLikeByType(userId string, composeId int64, status, zanType int) error {

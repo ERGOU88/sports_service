@@ -25,5 +25,6 @@ func New(c *gin.Context) VideoModule {
 
 // 用户发布的视频列表
 func (svc *VideoModule) UserPublishVideos() {
+
 	return
 }

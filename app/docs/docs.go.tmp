@@ -538,7 +538,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Videos"
+                                "$ref": "#/definitions/mvideo.VideosInfoResp"
                             }
                         }
                     },
@@ -854,7 +854,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Videos"
+                                "$ref": "#/definitions/mvideo.VideosInfoResp"
                             }
                         }
                     },
@@ -1364,62 +1364,6 @@ var doc = `{
                 }
             }
         },
-        "models.Videos": {
-            "type": "object",
-            "properties": {
-                "cover": {
-                    "type": "string"
-                },
-                "create_at": {
-                    "type": "integer"
-                },
-                "describe": {
-                    "type": "string"
-                },
-                "is_recommend": {
-                    "type": "integer"
-                },
-                "is_top": {
-                    "type": "integer"
-                },
-                "rec_content": {
-                    "type": "string"
-                },
-                "sortorder": {
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "top_content": {
-                    "type": "string"
-                },
-                "update_at": {
-                    "type": "integer"
-                },
-                "user_id": {
-                    "type": "string"
-                },
-                "video_addr": {
-                    "type": "string"
-                },
-                "video_duration": {
-                    "type": "integer"
-                },
-                "video_height": {
-                    "type": "integer"
-                },
-                "video_id": {
-                    "type": "integer"
-                },
-                "video_width": {
-                    "type": "integer"
-                }
-            }
-        },
         "muser.EditUserInfoParams": {
             "type": "object",
             "properties": {
@@ -1568,6 +1512,59 @@ var doc = `{
                 "code": {
                     "type": "string",
                     "example": "code码"
+                }
+            }
+        },
+        "mvideo.VideosInfoResp": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "collect_at": {
+                    "type": "integer"
+                },
+                "cover": {
+                    "type": "string"
+                },
+                "create_at": {
+                    "type": "integer"
+                },
+                "describe": {
+                    "type": "string"
+                },
+                "is_attention": {
+                    "type": "integer"
+                },
+                "is_recommend": {
+                    "type": "integer"
+                },
+                "is_top": {
+                    "type": "integer"
+                },
+                "nickName": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "video_addr": {
+                    "type": "string"
+                },
+                "video_duration": {
+                    "type": "integer"
+                },
+                "video_height": {
+                    "type": "integer"
+                },
+                "video_id": {
+                    "type": "integer"
+                },
+                "video_width": {
+                    "type": "integer"
                 }
             }
         },

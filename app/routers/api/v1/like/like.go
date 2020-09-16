@@ -9,7 +9,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mlike"
 	"sports_service/server/util"
-	_ "sports_service/server/models"
+	_ "sports_service/server/models/mvideo"
 )
 
 // @Summary 视频点赞 (ok)
@@ -103,7 +103,7 @@ func CancelLikeForVideo(c *gin.Context) {
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
-// @Success 200 {array}  models.Videos
+// @Success 200 {array}  mvideo.VideosInfoResp
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/like/video/list [get]
 // 用户点赞的视频列表

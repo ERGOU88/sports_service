@@ -9,6 +9,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mattention"
 	"sports_service/server/util"
+	_ "sports_service/server/models/muser"
 )
 
 // @Summary 关注用户 (ok)

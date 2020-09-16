@@ -1,17 +1,17 @@
 package collect
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
-	"sports_service/server/models"
+	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
-	"fmt"
 	"strings"
 	"time"
 )
@@ -22,6 +22,7 @@ type CollectModule struct {
 	collect     *mcollect.CollectModel
 	user        *muser.UserModel
 	video       *mvideo.VideoModel
+	attention   *mattention.AttentionModel
 }
 
 func New(c *gin.Context) CollectModule {
@@ -32,6 +33,7 @@ func New(c *gin.Context) CollectModule {
 		collect: mcollect.NewCollectModel(socket),
 		user: muser.NewUserModel(socket),
 		video: mvideo.NewVideoModel(socket),
+		attention: mattention.NewAttentionModel(socket),
 		engine: socket,
 	}
 }
@@ -118,20 +120,63 @@ func (svc *CollectModule) CancelCollect(userId string, videoId int64) int {
 }
 
 // 获取用户收藏的视频列表
-func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []*models.Videos {
-	videoIds := svc.collect.GetCollectVideos(userId)
-	if len(videoIds) == 0 {
+func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []*mvideo.VideosInfoResp {
+	infos := svc.collect.GetCollectVideos(userId)
+	if len(infos) == 0 {
 		return nil
+	}
+
+	// mp key videoId  value 用户收藏视频的时间
+	mp := make(map[int64]int)
+	// 当前页所有视频id
+	videoIds := make([]string, len(infos))
+	for index, like := range infos {
+		mp[like.VideoId] = like.UpdateAt
+		videoIds[index] = fmt.Sprint(like.VideoId)
 	}
 
 	offset := (page - 1) * size
 	vids := strings.Join(videoIds, ",")
-	// 获取收藏的视频列表
+	// 获取收藏的视频列表信息
 	videoList := svc.video.FindVideoListByIds(vids, offset, size)
 	if len(videoList) == 0 {
 		log.Log.Errorf("collect_trace: not found video list info, len:%d, videoIds:%s", len(videoList), vids)
 		return nil
 	}
 
-	return videoList
+	// 重新组装数据
+	list := make([]*mvideo.VideosInfoResp, len(videoList))
+	for index, video := range videoList {
+		resp := new(mvideo.VideosInfoResp)
+		resp.VideoId = video.VideoId
+		resp.Title = video.Title
+		resp.Describe = video.Describe
+		resp.Cover = video.Cover
+		resp.VideoAddr = video.VideoAddr
+		resp.IsRecommend = video.IsRecommend
+		resp.IsTop = video.IsTop
+		resp.VideoDuration = video.VideoDuration
+		resp.VideoWidth = video.VideoWidth
+		resp.VideoHeight = video.VideoHeight
+		resp.CreateAt = video.CreateAt
+		resp.UserId = video.UserId
+		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
+			resp.Avatar = user.Avatar
+			resp.Nickname = user.NickName
+		}
+
+		// 是否关注
+		attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)
+		resp.IsAttention = attentionInfo.Status
+
+		collectAt, ok := mp[video.VideoId]
+		if ok {
+			// 用户收藏视频的时间
+			resp.OpTime = collectAt
+		}
+
+		list[index] = resp
+	}
+
+	return list
 }
