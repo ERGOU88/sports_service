@@ -88,8 +88,6 @@ func CancelLikeForVideo(c *gin.Context) {
 	reply.Response(http.StatusOK, syscode)
 }
 
-
-
 // @Summary 用户点赞的视频列表[分页获取] (ok)
 // @Tags 点赞模块
 // @Version 1.0

@@ -14,12 +14,12 @@ type LikeModel struct {
 
 // 添加点赞请求参数
 type GiveLikeParam struct {
-	VideoId       int64     `json:"videoId" example:"10001"`     // 点赞的视频id
+	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`     // 点赞的视频id
 }
 
 // 取消点赞请求参数
 type CancelLikeParam struct {
-	VideoId       int64     `json:"videoId" example:"10001"`     // 取消点赞的视频id
+	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`     // 取消点赞的视频id
 }
 
 // 实栗
@@ -35,9 +35,13 @@ type LikeVideosInfo struct {
 	CreateAt int      `json:"create_at"`    // 点赞时间
 }
 // 获取用户点赞的视频id列表
-func (m *LikeModel) GetUserLikeVideos(userId string) []*LikeVideosInfo {
+func (m *LikeModel) GetUserLikeVideos(userId string, offset, size int) []*LikeVideosInfo {
 	var list []*LikeVideosInfo
-	if err := m.Engine.Where("zan_type=1 AND status=1 AND user_id=?", userId).Cols("type_id", "create_at").Find(&list); err != nil {
+	if err := m.Engine.Where("zan_type=1 AND status=1 AND user_id=?", userId).
+		Cols("type_id", "create_at").
+		Desc("id").
+		Limit(size, offset).
+		Find(&list); err != nil {
 		log.Log.Errorf("like_trace: get like videos err:%s", err)
 		return nil
 	}

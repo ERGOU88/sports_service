@@ -121,7 +121,8 @@ func (svc *CollectModule) CancelCollect(userId string, videoId int64) int {
 
 // 获取用户收藏的视频列表
 func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []*mvideo.VideosInfoResp {
-	infos := svc.collect.GetCollectVideos(userId)
+	offset := (page - 1) * size
+	infos := svc.collect.GetCollectVideos(userId, offset, size)
 	if len(infos) == 0 {
 		return nil
 	}
@@ -135,12 +136,11 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
 		videoIds[index] = fmt.Sprint(like.VideoId)
 	}
 
-	offset := (page - 1) * size
 	vids := strings.Join(videoIds, ",")
 	// 获取收藏的视频列表信息
 	videoList := svc.video.FindVideoListByIds(vids, offset, size)
 	if len(videoList) == 0 {
-		log.Log.Errorf("collect_trace: not found video list info, len:%d, videoIds:%s", len(videoList), vids)
+		log.Log.Errorf("collect_trace: not found collect video list info, len:%d, videoIds:%s", len(videoList), vids)
 		return nil
 	}
 

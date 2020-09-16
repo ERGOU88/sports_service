@@ -1089,3 +1089,65 @@ net/http.(*conn).serve
 
 [2020-09-16 19:11:01]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 19:11:01 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[97;42m 200 [0m|耗时：    1.409932ms | ::1 |[97;44m  [0m GET     /swagger/doc.json |
 
+[2020-09-16 19:13:28]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/index.html,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36,ip:::1
+
+[2020-09-16 19:13:28]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 19:13:28 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[97;42m 200 [0m|耗时：      62.168µs | ::1 |[97;44m  [0m GET     /swagger/index.html |
+
+[2020-09-16 19:13:28]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/swagger-ui-bundle.js,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36,ip:::1
+
+[2020-09-16 19:13:28]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 19:13:28 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[90;47m 304 [0m|耗时：      81.008µs | ::1 |[97;44m  [0m GET     /swagger/swagger-ui-bundle.js |
+
+[2020-09-16 19:13:28]-83	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/swagger-ui.css,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36,ip:::1
+
+[2020-09-16 19:13:28]-83	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 19:13:28 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[90;47m 304 [0m|耗时：      53.373µs | ::1 |[97;44m  [0m GET     /swagger/swagger-ui.css |
+
+[2020-09-16 19:13:28]-83	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/swagger-ui-standalone-preset.js,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36,ip:::1
+
+[2020-09-16 19:13:28]-83	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 19:13:28 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[90;47m 304 [0m|耗时：      59.586µs | ::1 |[97;44m  [0m GET     /swagger/swagger-ui-standalone-preset.js |
+
+[2020-09-16 19:13:28]-83	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/doc.json,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36,ip:::1
+
+[2020-09-16 19:13:28]-83	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 19:13:28 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[97;42m 200 [0m|耗时：     1.15502ms | ::1 |[97;44m  [0m GET     /swagger/doc.json |
+
+[2020-09-16 21:00:39]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-16 21:01:04]-28	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/index.html,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36,ip:::1
+
+[2020-09-16 21:01:04]-28	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 21:01:04 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[97;42m 200 [0m|耗时：     350.377µs | ::1 |[97;44m  [0m GET     /swagger/index.html |
+
+[2020-09-16 21:01:04]-28	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/swagger-ui-bundle.js,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36,ip:::1
+
+[2020-09-16 21:01:04]-29	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/swagger-ui.css,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36,ip:::1
+
+[2020-09-16 21:01:04]-29	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 21:01:04 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[97;42m 200 [0m|耗时：     128.173µs | ::1 |[97;44m  [0m GET     /swagger/swagger-ui.css |
+
+[2020-09-16 21:01:04]-68	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/swagger-ui-standalone-preset.js,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36,ip:::1
+
+[2020-09-16 21:01:04]-68	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 21:01:04 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[97;42m 200 [0m|耗时：     405.676µs | ::1 |[97;44m  [0m GET     /swagger/swagger-ui-standalone-preset.js |
+
+[2020-09-16 21:01:04]-28	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 21:01:04 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[97;42m 200 [0m|耗时：    9.310928ms | ::1 |[97;44m  [0m GET     /swagger/swagger-ui-bundle.js |
+
+[2020-09-16 21:01:05]-28	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/doc.json,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36,ip:::1
+
+[2020-09-16 21:01:05]-28	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 21:01:05 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[97;42m 200 [0m|耗时：    2.506847ms | ::1 |[97;44m  [0m GET     /swagger/doc.json |
+
+[2020-09-16 21:03:32]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-16 21:05:07]-89	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/index.html,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36,ip:::1
+
+[2020-09-16 21:05:07]-89	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 21:05:07 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[97;42m 200 [0m|耗时：     225.662µs | ::1 |[97;44m  [0m GET     /swagger/index.html |
+
+[2020-09-16 21:05:07]-89	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/swagger-ui-bundle.js,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36,ip:::1
+
+[2020-09-16 21:05:07]-90	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/swagger-ui.css,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36,ip:::1
+
+[2020-09-16 21:05:07]-90	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 21:05:07 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[97;42m 200 [0m|耗时：     124.067µs | ::1 |[97;44m  [0m GET     /swagger/swagger-ui.css |
+
+[2020-09-16 21:05:07]-29	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/swagger-ui-standalone-preset.js,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36,ip:::1
+
+[2020-09-16 21:05:07]-29	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 21:05:07 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[97;42m 200 [0m|耗时：      762.03µs | ::1 |[97;44m  [0m GET     /swagger/swagger-ui-standalone-preset.js |
+
+[2020-09-16 21:05:07]-89	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 21:05:07 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[97;42m 200 [0m|耗时：    8.909091ms | ::1 |[97;44m  [0m GET     /swagger/swagger-ui-bundle.js |
+
+[2020-09-16 21:05:07]-29	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/doc.json,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36,ip:::1
+
+[2020-09-16 21:05:07]-29	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/16 - 21:05:07 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 |[97;42m 200 [0m|耗时：     1.44092ms | ::1 |[97;44m  [0m GET     /swagger/doc.json |
+

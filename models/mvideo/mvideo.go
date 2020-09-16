@@ -8,9 +8,21 @@ import (
 )
 
 type VideoModel struct {
-	Videos     *models.Videos
-	Engine     *xorm.Session
+	Videos            *models.Videos
+	Engine            *xorm.Session
+	Browse            *models.UserBrowseRecord
+	VideosExamine	  *models.VideosExamine
+	Labels            *models.VideoLabels
+}
 
+// 视频发布请求参数
+type VideoPublishParams struct {
+	Cover          string  `binding:"required" json:"cover"`          // 视频封面
+	Title          string  `binding:"required" json:"title"`          // 视频标题
+	Describe       string  `binding:"required" json:"describe"`       // 视频描述
+	VideoAddr      string  `binding:"required" json:"video_addr"`     // 视频地址
+	VideoDuration  int     `binding:"required" json:"video_duration"` // 视频时长
+	VideoLabels    string  `binding:"required" json:"video_labels"`   // 视频标签（多个用逗号分隔）
 }
 
 // 视频信息
@@ -37,12 +49,29 @@ type VideosInfoResp struct {
 func NewVideoModel(engine *xorm.Session) *VideoModel {
 	return &VideoModel{
 		Videos: new(models.Videos),
+		Browse: new(models.UserBrowseRecord),
+		VideosExamine: new(models.VideosExamine),
+		Labels: new(models.VideoLabels),
 		Engine: engine,
 	}
 }
 
+// 视频发布(写入视频审核表)
+func (m *VideoModel) VideoPublish() error {
+	if _, err := m.Engine.InsertOne(m.VideosExamine); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 添加视频标签(一次插入多条)
+func (m *VideoModel) AddVideoLabels(labels []*models.VideoLabels) (int64, error) {
+	return m.Engine.Insert(labels)
+}
+
 // 分页获取 用户发布的视频列表
-func (m *VideoModel) GetUserPublishVideos(offset, page int) {
+func (m *VideoModel) GetUserPublishVideos(offset, size int) {
 	return
 }
 
@@ -62,6 +91,25 @@ func (m *VideoModel) FindVideoListByIds(videoIds string, offset, size int) []*mo
 	sql := fmt.Sprintf("SELECT * FROM videos WHERE video_id in(%s) AND status=0 ORDER BY is_top DESC, is_recommend DESC, sortorder DESC, id LIMIT ?, ?", videoIds)
 	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
 		log.Log.Errorf("video_trace: get video list err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
+type BrowseVideos struct {
+	ComposeId       int64     `json:"compose_id"`    // 视频id
+	UpdateAt        int       `json:"update_at"`     // 浏览时间
+}
+// 获取浏览过的视频id记录
+func (m *VideoModel) GetBrowseVideosRecord(userId string, composeType, offset, size int) []*BrowseVideos {
+	var list []*BrowseVideos
+	if err := m.Engine.Where("user_id=? AND compose_type=?", userId, composeType).
+		Cols("compose_id, update_at").
+		Desc("id").
+		Limit(size, offset).
+		Find(&list); err != nil {
+		log.Log.Errorf("video_trace: get browse video record err:%s", err)
 		return nil
 	}
 

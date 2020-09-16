@@ -1307,11 +1307,172 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/api/v1/video/browse/history": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频模块"
+                ],
+                "summary": "用户浏览过的视频记录[分页获取] (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页码 从1开始",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页展示多少 最多50条",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/mvideo.VideosInfoResp"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/video/publish": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频模块"
+                ],
+                "summary": "视频发布 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "发布视频请求参数",
+                        "name": "VideoPublishParams",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/mvideo.VideoPublishParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
         "mattention.AddAttentionParam": {
             "type": "object",
+            "required": [
+                "userId"
+            ],
             "properties": {
                 "userId": {
                     "type": "string",
@@ -1321,6 +1482,9 @@ var doc = `{
         },
         "mattention.CancelAttentionParam": {
             "type": "object",
+            "required": [
+                "userId"
+            ],
             "properties": {
                 "userId": {
                     "type": "string",
@@ -1330,6 +1494,9 @@ var doc = `{
         },
         "mcollect.AddCollectParam": {
             "type": "object",
+            "required": [
+                "videoId"
+            ],
             "properties": {
                 "videoId": {
                     "type": "integer",
@@ -1339,6 +1506,9 @@ var doc = `{
         },
         "mcollect.CancelCollectParam": {
             "type": "object",
+            "required": [
+                "videoId"
+            ],
             "properties": {
                 "videoId": {
                     "type": "integer",
@@ -1348,6 +1518,9 @@ var doc = `{
         },
         "mlike.CancelLikeParam": {
             "type": "object",
+            "required": [
+                "videoId"
+            ],
             "properties": {
                 "videoId": {
                     "type": "integer",
@@ -1357,6 +1530,9 @@ var doc = `{
         },
         "mlike.GiveLikeParam": {
             "type": "object",
+            "required": [
+                "videoId"
+            ],
             "properties": {
                 "videoId": {
                     "type": "integer",
@@ -1512,6 +1688,37 @@ var doc = `{
                 "code": {
                     "type": "string",
                     "example": "code码"
+                }
+            }
+        },
+        "mvideo.VideoPublishParams": {
+            "type": "object",
+            "required": [
+                "cover",
+                "describe",
+                "title",
+                "video_addr",
+                "video_duration",
+                "video_labels"
+            ],
+            "properties": {
+                "cover": {
+                    "type": "string"
+                },
+                "describe": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "video_addr": {
+                    "type": "string"
+                },
+                "video_duration": {
+                    "type": "integer"
+                },
+                "video_labels": {
+                    "type": "string"
                 }
             }
         },

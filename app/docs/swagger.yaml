@@ -4,36 +4,48 @@ definitions:
       userId:
         example: 需关注的用户id
         type: string
+    required:
+    - userId
     type: object
   mattention.CancelAttentionParam:
     properties:
       userId:
         example: 被取消关注的用户id
         type: string
+    required:
+    - userId
     type: object
   mcollect.AddCollectParam:
     properties:
       videoId:
         example: 10001
         type: integer
+    required:
+    - videoId
     type: object
   mcollect.CancelCollectParam:
     properties:
       videoId:
         example: 10001
         type: integer
+    required:
+    - videoId
     type: object
   mlike.CancelLikeParam:
     properties:
       videoId:
         example: 10001
         type: integer
+    required:
+    - videoId
     type: object
   mlike.GiveLikeParam:
     properties:
       videoId:
         example: 10001
         type: integer
+    required:
+    - videoId
     type: object
   muser.EditUserInfoParams:
     properties:
@@ -142,6 +154,28 @@ definitions:
         type: string
     required:
     - code
+    type: object
+  mvideo.VideoPublishParams:
+    properties:
+      cover:
+        type: string
+      describe:
+        type: string
+      title:
+        type: string
+      video_addr:
+        type: string
+      video_duration:
+        type: integer
+      video_labels:
+        type: string
+    required:
+    - cover
+    - describe
+    - title
+    - video_addr
+    - video_duration
+    - video_labels
     type: object
   mvideo.VideosInfoResp:
     properties:
@@ -1142,4 +1176,112 @@ paths:
       summary: 微博注册/登陆 (ok)
       tags:
       - 账号体系
+  /api/v1/video/browse/history:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/mvideo.VideosInfoResp'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 用户浏览过的视频记录[分页获取] (ok)
+      tags:
+      - 视频模块
+  /api/v1/video/publish:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 发布视频请求参数
+        in: body
+        name: VideoPublishParams
+        required: true
+        schema:
+          $ref: '#/definitions/mvideo.VideoPublishParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 视频发布 (ok)
+      tags:
+      - 视频模块
 swagger: "2.0"

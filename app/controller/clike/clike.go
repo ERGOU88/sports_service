@@ -121,7 +121,8 @@ func (svc *LikeModule) CancelLikeForVideo(userId string, videoId int64) int {
 
 // 获取用户点赞的视频列表
 func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*mvideo.VideosInfoResp {
-	infos := svc.like.GetUserLikeVideos(userId)
+	offset := (page - 1) * size
+	infos := svc.like.GetUserLikeVideos(userId, offset, size)
 	if len(infos) == 0 {
 		return nil
 	}
@@ -135,7 +136,6 @@ func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*mvide
 		videoIds[index] = fmt.Sprint(like.TypeId)
 	}
 
-	offset := (page - 1) * size
 	vids := strings.Join(videoIds, ",")
 	// 获取点赞的视频列表信息
 	videoList := svc.video.FindVideoListByIds(vids, offset, size)

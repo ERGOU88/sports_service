@@ -14,12 +14,12 @@ type CollectModel struct {
 
 // 添加收藏请求参数
 type AddCollectParam struct {
-	VideoId       int64     `json:"videoId" example:"10001"`     // 收藏的视频id
+	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`     // 收藏的视频id
 }
 
 // 取消收藏请求参数
 type CancelCollectParam struct {
-	VideoId       int64     `json:"videoId" example:"10001"`     // 取消收藏的视频id
+	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`     // 取消收藏的视频id
 }
 
 // 实栗
@@ -70,9 +70,13 @@ type CollectVideosInfo struct {
 	UpdateAt     int        `json:"update_at"`
 }
 // 获取收藏的视频id列表
-func (m *CollectModel) GetCollectVideos(userId string) []*CollectVideosInfo {
+func (m *CollectModel) GetCollectVideos(userId string, offset, size int) []*CollectVideosInfo {
 	var list []*CollectVideosInfo
-	if err := m.Engine.Where("status=1 AND user_id=?", userId).Cols("video_id, update_at").Find(&list); err != nil {
+	if err := m.Engine.Where("status=1 AND user_id=?", userId).
+		Cols("video_id, update_at").
+		Desc("id").
+		Limit(size, offset).
+		Find(&list); err != nil {
 		log.Log.Errorf("collect_trace: get collect videos err:%s", err)
 		return nil
 	}
