@@ -5,6 +5,7 @@ import (
 	"sports_service/server/middleware/token"
 )
 
+// 用户账户模块路由
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
 	user := api.Group("/user")

@@ -4,10 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
-	"sports_service/server/models"
 	"sports_service/server/models/mvideo"
-	"fmt"
 )
 
 type VideoModule struct {

@@ -23,6 +23,18 @@ definitions:
         example: 10001
         type: integer
     type: object
+  mlike.CancelLikeParam:
+    properties:
+      videoId:
+        example: 10001
+        type: integer
+    type: object
+  mlike.GiveLikeParam:
+    properties:
+      videoId:
+        example: 10001
+        type: integer
+    type: object
   models.Videos:
     properties:
       cover:
@@ -673,6 +685,165 @@ paths:
       summary: 用户的粉丝列表[分页获取] (ok)
       tags:
       - 关注模块
+  /api/v1/like/video:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 点赞视频请求参数
+        in: body
+        name: GiveLikeParam
+        required: true
+        schema:
+          $ref: '#/definitions/mlike.GiveLikeParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 视频点赞 (ok)
+      tags:
+      - 点赞模块
+  /api/v1/like/video/cancel:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 取消视频点赞请求参数
+        in: body
+        name: CancelLikeParam
+        required: true
+        schema:
+          $ref: '#/definitions/mlike.CancelLikeParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 取消视频点赞 (ok)
+      tags:
+      - 点赞模块
+  /api/v1/like/video/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Videos'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 用户点赞的视频列表[分页获取] (ok)
+      tags:
+      - 点赞模块
   /api/v1/user/edit/info:
     post:
       consumes:

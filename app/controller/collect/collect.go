@@ -53,6 +53,7 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 	// 获取收藏的信息
 	info := svc.collect.GetCollectInfo(userId, videoId)
 	// 是否已收藏
+	// 已收藏过
 	if info != nil && info.Status == consts.ALREADY_COLLECT {
 		log.Log.Errorf("collect_trace: already collect, userId:%s, videoId:%d", userId, videoId)
 		return errdef.COLLECT_ALREADY_EXISTS

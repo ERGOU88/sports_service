@@ -58,6 +58,14 @@ const (
 
 	// 视频相关错误码 4001-5000
 	VIDEO_NOT_EXISTS            = 4001
+
+	// 点赞相关错误码 5001-6000
+	LIKE_VIDEO_NOT_EXISTS       = 5001
+	LIKE_ALREADY_EXISTS         = 5002
+	LIKE_VIDEO_FAIL             = 5003
+	LIKE_RECORD_NOT_EXISTS      = 5004
+	LIKE_REPEAT_CANCEL          = 5005
+	LIKE_CANCEL_FAIL            = 5006
 )
 
 var MsgFlags = map[int]string{
@@ -113,6 +121,13 @@ var MsgFlags = map[int]string{
 	COLLECT_CANCEL_FAIL:         "取消收藏失败",
 
 	VIDEO_NOT_EXISTS:            "视频不存在",
+
+	LIKE_VIDEO_NOT_EXISTS:       "点赞的视频不存在",
+	LIKE_ALREADY_EXISTS:         "已点过赞",
+	LIKE_VIDEO_FAIL:             "视频点赞失败",
+	LIKE_RECORD_NOT_EXISTS:      "未点赞该视频",
+	LIKE_REPEAT_CANCEL:          "已取消收藏，请勿重复操作",
+	LIKE_CANCEL_FAIL:            "取消点赞失败",
 }
 
 func GetMsg(code int) string {

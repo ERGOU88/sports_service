@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"sports_service/server/app/routers/api/v1/attention"
 	"sports_service/server/app/routers/api/v1/collect"
+	"sports_service/server/app/routers/api/v1/like"
 	"sports_service/server/app/routers/api/v1/video"
 	"sports_service/server/middleware"
 	"sports_service/server/global/consts"
@@ -37,5 +38,7 @@ func InitRouters(engine *gin.Engine) {
 	collect.Router(engine)
 	// 视频模块
 	video.Router(engine)
+	// 点赞模块
+	like.Router(engine)
 
 }

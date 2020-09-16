@@ -7,6 +7,7 @@ import (
 	_ "sports_service/server/app/docs"
 )
 
+// swag接口文档路由
 func Router(engine *gin.Engine) {
 	swagger := engine.Group("/swagger")
 	// swag生成接口文档
