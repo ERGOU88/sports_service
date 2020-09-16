@@ -43,20 +43,6 @@ func (m *CollectModel) AddCollectVideo(userId string, videoId int64, status int)
 	return nil
 }
 
-// 取消视频收藏
-func (m *CollectModel) CancelCollectVideo() {
-	return
-}
-
-//func (m *AttentionModel) GetAttentionInfo(attentionUid, userId string) *models.UserAttention {
-//	ok, err := m.Engine.Where("attention_uid=? AND user_id=?", attentionUid, userId).Get(m.UserAttention)
-//	if !ok || err != nil {
-//		return nil
-//	}
-//
-//	return m.UserAttention
-//}
-
 // 获取收藏的信息
 func (m *CollectModel) GetCollectInfo(userId string, videoId int64) *models.CollectVideoRecord {
 	ok, err := m.Engine.Where("user_id=? AND video_id=?", userId, videoId).Get(m.CollectVideo)
