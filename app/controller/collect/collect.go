@@ -7,10 +7,12 @@ import (
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
+	"sports_service/server/models"
 	"sports_service/server/models/mcollect"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -115,6 +117,20 @@ func (svc *CollectModule) CancelCollect(userId string, videoId int64) int {
 }
 
 // 获取用户收藏的视频列表
-func (svc *CollectModule) GetUserCollectVideos() {
-	return
+func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []*models.Videos {
+	videoIds := svc.collect.GetCollectVideos(userId)
+	if len(videoIds) == 0 {
+		return nil
+	}
+
+	offset := (page - 1) * size
+	vids := strings.Join(videoIds, ",")
+	// 获取收藏的视频列表
+	videoList := svc.video.FindVideoListByIds(vids, offset, size)
+	if len(videoList) == 0 {
+		log.Log.Errorf("collect_trace: not found video list info, len:%d, videoIds:%s", len(videoList), vids)
+		return nil
+	}
+
+	return videoList
 }

@@ -88,10 +88,10 @@ func (m *UserModel) FindUserByUserid(userId string) *models.User {
 }
 
 // userid列表查询用户
-func (m *UserModel) FindUserByUserids(userIds string, offset, limit int) []*models.User {
+func (m *UserModel) FindUserByUserids(userIds string, offset, size int) []*models.User {
 	var list []*models.User
 	sql := fmt.Sprintf("SELECT * FROM user WHERE user_id in(%s) ORDER BY id DESC LIMIT ?, ?", userIds)
-	if err := m.Engine.SQL(sql, offset, limit).Find(&list); err != nil {
+	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
 		log.Log.Errorf("user_trace: get user list err:%s", err)
 		return nil
 	}

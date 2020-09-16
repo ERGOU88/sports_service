@@ -2,6 +2,7 @@ package mcollect
 
 import (
 	"github.com/go-xorm/xorm"
+	"sports_service/server/global/app/log"
 	"sports_service/server/models"
 	"time"
 )
@@ -64,3 +65,13 @@ func (m *CollectModel) UpdateCollectStatus() error {
 	return nil
 }
 
+// 获取收藏的视频id列表
+func (m *CollectModel) GetCollectVideos(userId string) []string {
+	var list []string
+	if err := m.Engine.Where("status=1 AND user_id=?", userId).Cols("video_id").Find(&list); err != nil {
+		log.Log.Errorf("collect_trace: get collect videos err:%s", err)
+		return nil
+	}
+
+	return list
+}

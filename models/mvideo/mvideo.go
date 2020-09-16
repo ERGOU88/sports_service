@@ -2,7 +2,9 @@ package mvideo
 
 import (
 	"github.com/go-xorm/xorm"
+	"sports_service/server/global/app/log"
 	"sports_service/server/models"
+	"fmt"
 )
 
 type VideoModel struct {
@@ -33,4 +35,17 @@ func (m *VideoModel) FindVideoById(videoId string) *models.Videos {
 
 	return m.Videos
 }
+
+// 通过视频id查询视频列表
+func (m *VideoModel) FindVideoListByIds(videoIds string, offset, size int) []*models.Videos {
+	var list []*models.Videos
+	sql := fmt.Sprintf("SELECT * FROM videos WHERE video_id in(%s) AND status=0 ORDER BY is_top DESC, is_recommend DESC, sortorder DESC, id LIMIT ?, ?", videoIds)
+	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("video_trace: get video list err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
 

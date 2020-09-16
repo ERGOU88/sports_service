@@ -4,7 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
+	"sports_service/server/global/app/log"
+	"sports_service/server/models"
 	"sports_service/server/models/mvideo"
+	"fmt"
 )
 
 type VideoModule struct {
@@ -25,10 +28,5 @@ func New(c *gin.Context) VideoModule {
 
 // 用户发布的视频列表
 func (svc *VideoModule) UserPublishVideos() {
-	return
-}
-
-// 用户点赞的视频列表
-func (svc *VideoModule) UserZanVideos() {
 	return
 }
