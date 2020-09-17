@@ -8,6 +8,7 @@ import (
 	"fmt"
 )
 
+// todo: 视频id自增 帖子可以使用分布式唯一id
 type VideoModel struct {
 	Videos    *models.Videos
 	Engine    *xorm.Session
@@ -68,7 +69,12 @@ type PublishVideosInfo struct {
 
 // 删除历史记录请求参数
 type DeleteHistoryParam struct {
-	ComposeIds        []string     `binding:"required" json:"composeIds"` // 视频id列表
+	ComposeIds        []string     `binding:"required" json:"composeIds"` // 作品id列表
+}
+
+// 删除发布记录请求参数(不支持批量删除)
+type DeletePublishParam struct {
+	ComposeIds        string       `binding:"required" json:"composeIds"` // 作品id
 }
 
 // 实栗
@@ -96,6 +102,15 @@ func (m *VideoModel) AddVideoLabels(labels []*models.VideoLabels) (int64, error)
 	return m.Engine.Insert(labels)
 }
 
+// 删除视频标签
+func (m *VideoModel) DelVideoLabels(videoId string) error {
+	if _, err := m.Engine.Where("video_id=?", videoId).Delete(m.Labels); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // 添加视频统计数据
 func (m *VideoModel) AddVideoStatistic() error {
 	if _, err := m.Engine.InsertOne(m.Statistic); err != nil {
@@ -114,6 +129,15 @@ func (m *VideoModel) GetVideoStatistic(videoId string) *models.VideoStatistic {
 	}
 
 	return m.Statistic
+}
+
+// 删除视频统计数据
+func (m *VideoModel) DelVideoStatistic(videoId string) error {
+	if _, err := m.Engine.Where("video_id=?", videoId).Delete(m.Statistic); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 const (
@@ -179,7 +203,9 @@ func (m *VideoModel) GetUserPublishVideos(offset, size int, userId, status, fiel
 	sql := "SELECT v.*, s.fabulous_num, s.share_num, s.comment_num, s.browse_num FROM videos as v " +
 		"LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.user_id=? "
 	if status != consts.VIDEO_VIEW_ALL {
-		sql += "AND v.`status`=? "
+		sql += "AND v.`status` = ? "
+	} else {
+		sql += "AND v.`status` != 3"
 	}
 
 	// 条件为默认时间倒序 则使用videos表的时间字段
@@ -240,7 +266,7 @@ func (m *VideoModel) GetBrowseVideosRecord(userId string, composeType, offset, s
 
 // 通过id列表删除浏览的历史记录
 func (m *VideoModel) DeleteHistoryByIds(userId string, ids string) error {
-	sql := fmt.Sprintf("DELETE FROM `user_browse_record WHERE userId=? AND ids in(%s)`", ids)
+	sql := fmt.Sprintf("DELETE FROM `user_browse_record` WHERE user_id=? AND compose_id in(%s)", ids)
 	if _, err := m.Engine.Exec(sql, userId); err != nil {
 		return err
 	}
@@ -248,4 +274,24 @@ func (m *VideoModel) DeleteHistoryByIds(userId string, ids string) error {
 	return nil
 }
 
+const (
+	DELETE_PUBLISH_SQL = "DELETE FROM `videos` WHERE `user_id`=? AND video_id=?"
+)
+// 删除发布的记录
+func (m *VideoModel) DelPublishById(userId, videoId string) error {
+	if _, err := m.Engine.Exec(DELETE_PUBLISH_SQL, userId, videoId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 更新视频状态
+func (m *VideoModel) UpdateVideoStatus(userId, videoId string) error {
+	if _, err :=m.Engine.Where("user_id=? AND video_id=?", userId, videoId).Cols("status").Update(m.Videos); err != nil {
+		return err
+	}
+
+	return nil
+}
 

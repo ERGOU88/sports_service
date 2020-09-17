@@ -8,8 +8,8 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mcollect"
-	"sports_service/server/util"
 	_ "sports_service/server/models/mvideo"
+	"sports_service/server/util"
 )
 
 // @Summary 收藏视频 (ok)
@@ -121,3 +121,42 @@ func CollectVideoList(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
+
+// @Summary 删除收藏的历史记录 (ok)
+// @Tags 收藏模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   DeleteCollectParam  body mcollect.DeleteCollectParam true "删除收藏记录 请求参数"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/collect/delete [post]
+// 删除收藏记录
+func DeleteCollect(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, ok := c.Get(consts.USER_ID)
+	if !ok {
+		log.Log.Errorf("collect_trace: user not found, uid:%s", userId.(string))
+		reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
+		return
+	}
+
+	param := new(mcollect.DeleteCollectParam)
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("collect_trace: delete collect params err:%s, params:%+v", err, param)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := collect.New(c)
+	// 删除收藏记录
+	syscode := svc.DeleteCollectByIds(userId.(string), param)
+	reply.Response(http.StatusOK, syscode)
+}
+

@@ -31,6 +31,15 @@ definitions:
     required:
     - videoId
     type: object
+  mcollect.DeleteCollectParam:
+    properties:
+      composeIds:
+        items:
+          type: string
+        type: array
+    required:
+    - composeIds
+    type: object
   mlike.CancelLikeParam:
     properties:
       videoId:
@@ -161,6 +170,13 @@ definitions:
         items:
           type: string
         type: array
+    required:
+    - composeIds
+    type: object
+  mvideo.DeletePublishParam:
+    properties:
+      composeIds:
+        type: string
     required:
     - composeIds
     type: object
@@ -545,6 +561,57 @@ paths:
       summary: 初始化接口 (ok)
       tags:
       - 通用接口接口
+  /api/v1/collect/delete:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 删除收藏记录 请求参数
+        in: body
+        name: DeleteCollectParam
+        required: true
+        schema:
+          $ref: '#/definitions/mcollect.DeleteCollectParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 删除收藏的历史记录 (ok)
+      tags:
+      - 收藏模块
   /api/v1/collect/video:
     post:
       consumes:
@@ -1277,7 +1344,7 @@ paths:
       summary: 用户浏览过的视频记录[分页获取] (ok)
       tags:
       - 视频模块
-  /api/v1/video/history/delete:
+  /api/v1/video/delete/history:
     post:
       consumes:
       - application/json
@@ -1326,6 +1393,57 @@ paths:
           schema:
             type: string
       summary: 删除浏览的历史记录 (ok)
+      tags:
+      - 视频模块
+  /api/v1/video/delete/publish:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 删除发布的视频 请求参数
+        in: body
+        name: DeletePublishParam
+        required: true
+        schema:
+          $ref: '#/definitions/mvideo.DeletePublishParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 删除发布的视频 (ok)
       tags:
       - 视频模块
   /api/v1/video/publish:

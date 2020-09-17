@@ -142,7 +142,7 @@ func VideoPublishList(c *gin.Context) {
 // @Param   DeleteHistoryParam  body mvideo.DeleteHistoryParam true "删除浏览历史记录 请求参数"
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
-// @Router /api/v1/video/history/delete [post]
+// @Router /api/v1/video/delete/history [post]
 // 删除历史记录
 func DeleteHistory(c *gin.Context) {
 	reply := errdef.New(c)
@@ -163,5 +163,43 @@ func DeleteHistory(c *gin.Context) {
 	svc := cvideo.New(c)
 	// 删除历史记录
 	syscode := svc.DeleteHistoryByIds(userId.(string), param)
+	reply.Response(http.StatusOK, syscode)
+}
+
+// @Summary 删除发布的视频 (ok)
+// @Tags 视频模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   DeletePublishParam  body mvideo.DeletePublishParam true "删除发布的视频 请求参数"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/video/delete/publish [post]
+// 删除发布的视频
+func DeletePublish(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, ok := c.Get(consts.USER_ID)
+	if !ok {
+		log.Log.Errorf("video_trace: user not found, uid:%s", userId.(string))
+		reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
+		return
+	}
+
+	param := new(mvideo.DeletePublishParam)
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("video_trace: delete publish params err:%s, params:%+v", err, param)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cvideo.New(c)
+	// 删除发布的视频
+	syscode := svc.DeletePublishVideo(userId.(string), param.ComposeIds)
 	reply.Response(http.StatusOK, syscode)
 }

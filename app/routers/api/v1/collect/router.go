@@ -17,5 +17,7 @@ func Router(engine *gin.Engine) {
 		collect.POST("/video/cancel", CancelCollect)
 		// 用户收藏的视频列表
 		collect.GET("/video/list", CollectVideoList)
+		// 删除收藏
+		collect.POST("/delete", DeleteCollect)
 	}
 }

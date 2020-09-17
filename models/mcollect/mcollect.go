@@ -5,6 +5,7 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/models"
 	"time"
+	"fmt"
 )
 
 type CollectModel struct {
@@ -20,6 +21,11 @@ type AddCollectParam struct {
 // 取消收藏请求参数
 type CancelCollectParam struct {
 	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`     // 取消收藏的视频id
+}
+
+// 删除收藏记录请求参数
+type DeleteCollectParam struct {
+	ComposeIds        []string     `binding:"required" json:"composeIds"`           // 作品id列表
 }
 
 // 实栗
@@ -82,4 +88,14 @@ func (m *CollectModel) GetCollectVideos(userId string, offset, size int) []*Coll
 	}
 
 	return list
+}
+
+// 通过id列表删除收藏记录
+func (m *CollectModel) DeleteCollectByIds(userId string, ids string) error {
+	sql := fmt.Sprintf("DELETE FROM `collect_video_record` WHERE `user_id`=? AND video_id in(%s)", ids)
+	if _, err := m.Engine.Exec(sql, userId); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -215,3 +215,21 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
 
 	return list
 }
+
+// 删除收藏记录
+func (svc *CollectModule) DeleteCollectByIds(userId string, param *mcollect.DeleteCollectParam) int {
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("collect_trace: user not found, userId:%s", userId)
+		return errdef.USER_NOT_EXISTS
+	}
+
+	ids := strings.Join(param.ComposeIds, ",")
+	if err := svc.collect.DeleteCollectByIds(userId, ids); err != nil {
+		log.Log.Errorf("collect_trace: delete collect by ids err:%s", err)
+		return errdef.COLLECT_DELETE_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+

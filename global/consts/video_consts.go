@@ -18,12 +18,13 @@ const (
 )
 
 // 状态查询发布的内容
-// 状态 -1 查看所有 0 查看审核中 1 查看审核成功 2 查看审核失败
+// 状态 -1 查看所有 0 查看审核中 1 查看审核成功 2 查看审核失败 3 逻辑删除
 const (
 	VIDEO_VIEW_ALL      = "-1"
 	VIDEO_UNDER_REVIEW  = "0"
 	VIDEO_AUDIT_SUCCESS = "1"
 	VIDEO_AUDIT_FAILURE = "2"
+	VIDEO_DELETE_STATUS = "3"
 )
 
 

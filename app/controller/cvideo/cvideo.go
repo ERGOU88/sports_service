@@ -173,7 +173,7 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 	return list
 }
 
-// 删除历史记录
+// 删除历史浏览记录
 func (svc *VideoModule) DeleteHistoryByIds(userId string, param *mvideo.DeleteHistoryParam) int {
 	// 查询用户是否存在
 	if user := svc.user.FindUserByUserid(userId); user == nil {
@@ -184,7 +184,7 @@ func (svc *VideoModule) DeleteHistoryByIds(userId string, param *mvideo.DeleteHi
 	ids := strings.Join(param.ComposeIds, ",")
 	if err := svc.video.DeleteHistoryByIds(userId, ids); err != nil {
 		log.Log.Errorf("video_trace: delete history by ids err:%s", err)
-		return errdef.VIDEO_DELETE_HISTORY
+		return errdef.VIDEO_DELETE_HISTORY_FAIL
 	}
 
 	return errdef.SUCCESS
@@ -231,4 +231,68 @@ func (svc *VideoModule) GetConditionFieldByPublish(condition string) string {
 	}
 
 	return consts.CONDITION_FIELD_TIME
+}
+
+// 删除发布的视频
+// 事务处理
+// 产品逻辑：正式发布的视频 只能逻辑删除 且 其他流水数据 不可删除。 未审核或审核失败的 需删除 发布的视频、视频标签、视频总计数据
+func (svc *VideoModule) DeletePublishVideo(userId, videoId string) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("video_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
+
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
+		return errdef.USER_NOT_EXISTS
+	}
+
+	// 查询视频信息
+	video := svc.video.FindVideoById(videoId)
+	if video == nil {
+		log.Log.Errorf("video_trace: video not found, userId:%s", userId)
+		svc.engine.Rollback()
+		return errdef.VIDEO_NOT_EXISTS
+	}
+
+	// 如果是已审核通过的视频 只能逻辑删除
+	if fmt.Sprint(video.Status) == consts.VIDEO_AUDIT_SUCCESS {
+		// 状态3 为逻辑删除
+		video.Status = 3
+		if err := svc.video.UpdateVideoStatus(userId, videoId); err != nil {
+			log.Log.Errorf("video_trace: update video status err:%s", err)
+			svc.engine.Rollback()
+			return errdef.VIDEO_DELETE_PUBLISH_FAIL
+		}
+
+		svc.engine.Commit()
+		return errdef.SUCCESS
+	}
+
+	// 视频为未审核/审核失败 物理删除发布的视频、视频标签、视频总计
+	if err := svc.video.DelPublishById(userId, videoId); err != nil {
+		log.Log.Errorf("video_trace: delete publish by id err:%s", err)
+		svc.engine.Rollback()
+		return errdef.VIDEO_DELETE_PUBLISH_FAIL
+	}
+
+	// 删除视频标签
+	if err := svc.video.DelVideoLabels(videoId); err != nil {
+		log.Log.Errorf("video_trace: delete video labels err:%s", err)
+		svc.engine.Rollback()
+		return errdef.VIDEO_DELETE_PUBLISH_FAIL
+	}
+
+	// 删除视频统计数据
+	if err := svc.video.DelVideoStatistic(videoId); err != nil {
+		log.Log.Errorf("video_trace: delete video statistic err:%s", err)
+		svc.engine.Rollback()
+		return errdef.VIDEO_DELETE_PUBLISH_FAIL
+	}
+
+	svc.engine.Commit()
+	return errdef.SUCCESS
 }
