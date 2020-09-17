@@ -61,6 +61,20 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 		return errdef.COLLECT_ALREADY_EXISTS
 	}
 
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("collect_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
+
+	now :=  int(time.Now().Unix())
+	// 更新视频收藏总计 +1
+	if err := svc.video.UpdateVideoCollectNum(consts.CONFIRM_OPERATE, now); err != nil {
+		log.Log.Errorf("collect_trace: update video collect num err:%s", err)
+		svc.engine.Rollback()
+		return errdef.LIKE_VIDEO_FAIL
+	}
+
 	// 未收藏
 	// 记录存在 且 状态为未收藏 更新状态为收藏
 	if info != nil && info.Status == consts.NO_COLLECT {
@@ -68,15 +82,19 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 		info.UpdateAt = int(time.Now().Unix())
 		if err := svc.collect.UpdateCollectStatus(); err != nil {
 			log.Log.Errorf("collect_trace: update collect status err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COLLECT_VIDEO_FAIL
+		}
+	} else {
+		// 添加收藏记录
+		if err := svc.collect.AddCollectVideo(userId, videoId, consts.ALREADY_COLLECT); err != nil {
+			log.Log.Errorf("collect_trace: add collect record err:%s", err)
+			svc.engine.Rollback()
 			return errdef.COLLECT_VIDEO_FAIL
 		}
 	}
 
-	// 添加收藏记录
-	if err := svc.collect.AddCollectVideo(userId, videoId, consts.ALREADY_COLLECT); err != nil {
-		log.Log.Errorf("collect_trace: add collect record err:%s", err)
-		return errdef.COLLECT_VIDEO_FAIL
-	}
+	svc.engine.Commit()
 
 	return errdef.SUCCESS
 }
@@ -108,13 +126,30 @@ func (svc *CollectModule) CancelCollect(userId string, videoId int64) int {
 		return errdef.COLLECT_REPEAT_CANCEL
 	}
 
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("collect_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
+
+	now :=  int(time.Now().Unix())
+	// 更新视频收藏总计 -1
+	if err := svc.video.UpdateVideoCollectNum(consts.CANCEL_OPERATE, now); err != nil {
+		log.Log.Errorf("collect_trace: update video collect num err:%s", err)
+		svc.engine.Rollback()
+		return errdef.COLLECT_CANCEL_FAIL
+	}
+
 	// 更新状态 未收藏
 	info.Status = consts.NO_COLLECT
 	info.UpdateAt = int(time.Now().Unix())
 	if err := svc.collect.UpdateCollectStatus(); err != nil {
 		log.Log.Errorf("collect_trace: update collect status err:%s", err)
+		svc.engine.Rollback()
 		return errdef.COLLECT_CANCEL_FAIL
 	}
+
+	svc.engine.Commit()
 
 	return errdef.SUCCESS
 }

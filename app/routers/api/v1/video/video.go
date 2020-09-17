@@ -88,3 +88,13 @@ func BrowseHistory(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
+
+// 发布的视频列表
+// status 状态 -1 查询全部 0 审核中 1 已发布 2 不通过
+// condition 条件 -1 默认时间排序 1 播放数 2 弹幕数 3 评论数 4 点赞数 5 分享数
+func VideoPublishList(c *gin.Context) {
+	//status := c.DefaultQuery("status", "-1")
+	//condition := c.DefaultQuery("condition", "-1")
+
+
+}

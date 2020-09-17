@@ -8,11 +8,11 @@ import (
 )
 
 type VideoModel struct {
-	Videos            *models.Videos
-	Engine            *xorm.Session
-	Browse            *models.UserBrowseRecord
-	VideosExamine	  *models.VideosExamine
-	Labels            *models.VideoLabels
+	Videos    *models.Videos
+	Engine    *xorm.Session
+	Browse    *models.UserBrowseRecord
+	Labels    *models.VideoLabels
+	Statistic *models.VideoStatistic
 }
 
 // 视频发布请求参数
@@ -22,7 +22,7 @@ type VideoPublishParams struct {
 	Describe       string  `binding:"required" json:"describe"`       // 视频描述
 	VideoAddr      string  `binding:"required" json:"video_addr"`     // 视频地址
 	VideoDuration  int     `binding:"required" json:"video_duration"` // 视频时长
-	VideoLabels    string  `binding:"required" json:"video_labels"`   // 视频标签（多个用逗号分隔）
+	VideoLabels    string  `binding:"required" json:"video_labels"`   // 视频标签id（多个用逗号分隔）
 }
 
 // 视频信息
@@ -48,17 +48,17 @@ type VideosInfoResp struct {
 // 实栗
 func NewVideoModel(engine *xorm.Session) *VideoModel {
 	return &VideoModel{
-		Videos: new(models.Videos),
 		Browse: new(models.UserBrowseRecord),
-		VideosExamine: new(models.VideosExamine),
+		Videos: new(models.Videos),
 		Labels: new(models.VideoLabels),
+		Statistic: new(models.VideoStatistic),
 		Engine: engine,
 	}
 }
 
-// 视频发布(写入视频审核表)
+// 视频发布
 func (m *VideoModel) VideoPublish() error {
-	if _, err := m.Engine.InsertOne(m.VideosExamine); err != nil {
+	if _, err := m.Engine.InsertOne(m.Videos); err != nil {
 		return err
 	}
 
@@ -68,6 +68,82 @@ func (m *VideoModel) VideoPublish() error {
 // 添加视频标签(一次插入多条)
 func (m *VideoModel) AddVideoLabels(labels []*models.VideoLabels) (int64, error) {
 	return m.Engine.Insert(labels)
+}
+
+// 添加视频统计数据
+func (m *VideoModel) AddVideoStatistic() error {
+	if _, err := m.Engine.InsertOne(m.Statistic); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 获取视频统计数据
+func (m *VideoModel) GetVideoStatistic(videoId string) *models.VideoStatistic {
+	ok, err := m.Engine.Where("video_id=?", videoId).Get(m.Statistic)
+	if !ok || err != nil {
+		log.Log.Errorf("video_trace: get video statistic info err:%s", err)
+		return nil
+	}
+
+	return m.Statistic
+}
+
+const (
+	UPDATE_VIDEO_LIKE_NUM  = "UPDATE `video_statistic` SET `like_num` = `like_num` + ?, `update_at`=? WHERE `video_id`=? AND `like_num` + ? > 0 LIMIT 1"
+)
+// 更新视频点赞数
+func (m *VideoModel) UpdateVideoLikeNum(now, num int) error {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_LIKE_NUM, num, now, num); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+const (
+	UPDATE_VIDEO_COLLECT_NUM  = "UPDATE `video_statistic` SET `collect_num` = `collect_num` + ?, `update_at`=? WHERE `video_id`=? AND `collect_num` + ? > 0 LIMIT 1"
+)
+// 更新视频收藏数
+func (m *VideoModel) UpdateVideoCollectNum(now, num int) error {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_COLLECT_NUM, num, now, num); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 更新视频评论数
+func (m *VideoModel) UpdateVideoCommentNum() {
+	return
+}
+
+const (
+	UPDATE_VIDEO_BROWSE_NUM  = "UPDATE `video_statistic` SET `browse_num` = `browse_num` + ?, `update_at`=? WHERE `video_id`=? AND `browse_num` + ? > 0 LIMIT 1"
+)
+// 更新视频浏览数
+func (m *VideoModel) UpdateVideoBrowseNum(now, num int) error {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_BROWSE_NUM, num, now, num); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 更新视频分享数
+func (m *VideoModel) UpdateVideoShareNum() {
+	return
+}
+
+// 更新视频游币数
+func (m *VideoModel) UpdateVideoYcoinNum() {
+	return
+}
+
+// 更新视频弹幕数
+func (m *VideoModel) UpdateVideoBarrageNum() {
+	return
 }
 
 // 分页获取 用户发布的视频列表

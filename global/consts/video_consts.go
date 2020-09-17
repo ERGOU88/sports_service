@@ -11,3 +11,9 @@ const (
 	PUBLISH_VIDEO_BY_MANAGER = 0
 	PUBLISH_VIDEO_BY_USER    = 1
 )
+
+// 确认操作 +1  取消操作 -1 (点赞、收藏等)
+const (
+    CONFIRM_OPERATE = 1
+    CANCEL_OPERATE  = -1
+)

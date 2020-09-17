@@ -47,16 +47,16 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	}
 	// todo: 查询上传的标签是否存在
 	now := time.Now().Unix()
-	svc.video.VideosExamine.UserId = userId
-	svc.video.VideosExamine.Cover = params.Cover
-	svc.video.VideosExamine.Title = params.Title
-	svc.video.VideosExamine.Describe = params.Describe
-	svc.video.VideosExamine.VideoAddr = params.VideoAddr
-	svc.video.VideosExamine.VideoDuration = params.VideoDuration
-	svc.video.VideosExamine.CreateAt = int(now)
-	svc.video.VideosExamine.UpdateAt = int(now)
-	svc.video.VideosExamine.UserType = consts.PUBLISH_VIDEO_BY_USER
-	// 视频发布 写入审核表
+	svc.video.Videos.UserId = userId
+	svc.video.Videos.Cover = params.Cover
+	svc.video.Videos.Title = params.Title
+	svc.video.Videos.Describe = params.Describe
+	svc.video.Videos.VideoAddr = params.VideoAddr
+	svc.video.Videos.VideoDuration = params.VideoDuration
+	svc.video.Videos.CreateAt = int(now)
+	svc.video.Videos.UpdateAt = int(now)
+	svc.video.Videos.UserType = consts.PUBLISH_VIDEO_BY_USER
+	// 视频发布
 	if err := svc.video.VideoPublish(); err != nil {
 		log.Log.Errorf("video_trace: publish video err:%s", err)
 		svc.engine.Rollback()
@@ -68,9 +68,9 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	labelInfos := make([]*models.VideoLabels, len(labelIds))
 	for index, labelId := range labelIds {
 		info := new(models.VideoLabels)
-		info.VideoId = svc.video.VideosExamine.VideoId
+		info.VideoId = svc.video.Videos.VideoId
 		info.LabelId = labelId
-		// todo:通过标签id获取名称
+		// todo: 通过标签id获取名称
 		info.LabelName = "todo:通过标签id获取名称"
 		info.CreateAt = int(now)
 		labelInfos[index] = info
@@ -81,6 +81,16 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	if err != nil || int(affected) != len(labelInfos) {
 		svc.engine.Rollback()
 		return errors.New("add video labels error")
+	}
+
+	svc.video.Statistic.VideoId = svc.video.Videos.VideoId
+	svc.video.Statistic.CreateAt = int(now)
+	svc.video.Statistic.UpdateAt = int(now)
+	// 初始化视频统计数据
+	if err := svc.video.AddVideoStatistic(); err != nil {
+		log.Log.Errorf("video_trace: add video statistic err:%s", err)
+		svc.engine.Rollback()
+		return err
 	}
 
 	svc.engine.Commit()

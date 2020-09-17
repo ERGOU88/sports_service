@@ -61,22 +61,41 @@ func (svc *LikeModule) GiveLikeForVideo(userId string, videoId int64) int {
 		return errdef.LIKE_ALREADY_EXISTS
 	}
 
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("like_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
+
+	now :=  int(time.Now().Unix())
+	// 更新视频点赞总计 +1
+	if err := svc.video.UpdateVideoLikeNum(consts.CONFIRM_OPERATE, now); err != nil {
+		log.Log.Errorf("like_trace: update video like num err:%s", err)
+		svc.engine.Rollback()
+		return errdef.LIKE_VIDEO_FAIL
+	}
+
 	// 未点赞
 	// 记录存在 且 状态为 未点赞 更新状态为 已点赞
 	if info != nil && info.Status == consts.NOT_GIVE_LIKE {
 		info.Status = consts.ALREADY_GIVE_LIKE
-		info.CreateAt = int(time.Now().Unix())
+		info.CreateAt = now
 		if err := svc.like.UpdateLikeStatus(); err != nil {
 			log.Log.Errorf("like_trace: update like status err:%s", err)
+			svc.engine.Rollback()
+			return errdef.LIKE_VIDEO_FAIL
+		}
+
+	} else {
+		// 添加点赞记录
+		if err := svc.like.AddGiveLikeByType(userId, videoId, consts.ALREADY_GIVE_LIKE, consts.TYPE_VIDEO_LIKE); err != nil {
+			log.Log.Errorf("like_trace: add like video record err:%s", err)
+			svc.engine.Rollback()
 			return errdef.LIKE_VIDEO_FAIL
 		}
 	}
 
-	// 添加点赞记录
-	if err := svc.like.AddGiveLikeByType(userId, videoId, consts.ALREADY_GIVE_LIKE, consts.TYPE_VIDEO_LIKE); err != nil {
-		log.Log.Errorf("like_trace: add like video record err:%s", err)
-		return errdef.LIKE_VIDEO_FAIL
-	}
+	svc.engine.Commit()
 
 	return errdef.SUCCESS
 }
@@ -108,13 +127,30 @@ func (svc *LikeModule) CancelLikeForVideo(userId string, videoId int64) int {
 		return errdef.LIKE_REPEAT_CANCEL
 	}
 
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("like_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
+
+	now :=  int(time.Now().Unix())
+	// 更新视频点赞总计 -1
+	if err := svc.video.UpdateVideoLikeNum(consts.CANCEL_OPERATE, now); err != nil {
+		log.Log.Errorf("like_trace: update video like num err:%s", err)
+		svc.engine.Rollback()
+		return errdef.LIKE_CANCEL_FAIL
+	}
+
 	info.Status = consts.NOT_GIVE_LIKE
-	info.CreateAt = int(time.Now().Unix())
+	info.CreateAt = now
 	// 更新状态 未点赞
 	if err := svc.like.UpdateLikeStatus(); err != nil {
 		log.Log.Errorf("like_trace: update like status err:%s", err)
+		svc.engine.Rollback()
 		return errdef.LIKE_CANCEL_FAIL
 	}
+
+	svc.engine.Commit()
 
 	return errdef.SUCCESS
 }
