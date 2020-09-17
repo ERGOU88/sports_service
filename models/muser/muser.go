@@ -59,6 +59,14 @@ type EditUserInfoParams struct {
 	Signature  string   `json:"signature" example:"emmmmmmmm"`   // 个性签名
 }
 
+// 用户反馈请求参数
+type FeedbackParam struct {
+	Phone    string `json:"phone" example:"手机号"`
+	Describe string `binding:"required" json:"describe" example:"问题描述"`    // 反馈内容
+	Problem  string `json:"problem" example:"遇到的问题"`                       // 遇到的问题
+	Pics     string `json:"pics" example:"图片列表"`                           // 图片（多张逗号分隔）
+}
+
 var validPhone = regexp.MustCompile(`^1\d{10}$`)
 // 检验手机号
 func (m *UserModel) CheckCellPhoneNumber(mobileNum string) bool {
@@ -160,6 +168,24 @@ func (m *UserModel) GetSystemAvatarList() []*models.DefaultAvatar {
 	}
 
 	return list
+}
+
+// 记录用户反馈信息
+func (m *UserModel) RecordUserFeedback(userId string, param *FeedbackParam, now int) error {
+	feedback := new(models.Feedback)
+	feedback.Describe = param.Describe
+	feedback.Problem = param.Problem
+	feedback.CreateAt = now
+	feedback.UpdateAt = now
+	feedback.UserId = userId
+	feedback.Phone = param.Phone
+	feedback.Pics = param.Pics
+
+	if _, err := m.Engine.InsertOne(feedback); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // 通过id获取系统默认头像

@@ -1017,6 +1017,81 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/user/feedback": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "账号体系"
+                ],
+                "summary": "用户反馈问题 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "用户反馈问题 请求参数",
+                        "name": "FeedbackParam",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/muser.FeedbackParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/info": {
             "get": {
                 "consumes": [
@@ -1902,6 +1977,30 @@ var doc = `{
                 "signature": {
                     "type": "string",
                     "example": "emmmmmmmm"
+                }
+            }
+        },
+        "muser.FeedbackParam": {
+            "type": "object",
+            "required": [
+                "describe"
+            ],
+            "properties": {
+                "describe": {
+                    "type": "string",
+                    "example": "问题描述"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "手机号"
+                },
+                "pics": {
+                    "type": "string",
+                    "example": "图片列表"
+                },
+                "problem": {
+                    "type": "string",
+                    "example": "遇到的问题"
                 }
             }
         },

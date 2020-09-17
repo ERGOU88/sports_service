@@ -24,6 +24,8 @@ func Router(engine *gin.Engine) {
 		user.GET("/info", token.TokenAuth(), UserInfo)
 		// 修改用户信息
 		user.POST("/edit/info", token.TokenAuth(), EditUserInfo)
+		// 用户反馈
+		user.POST("/feedback", token.TokenAuth(), UserFeedback)
 	}
 
 }

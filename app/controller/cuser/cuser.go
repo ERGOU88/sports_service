@@ -136,6 +136,16 @@ func (svc *UserModule) EditUserInfo(userId string, params *muser.EditUserInfoPar
 	return errdef.SUCCESS
 }
 
+// 记录用户反馈
+func (svc *UserModule) RecordUserFeedback(userId string, param *muser.FeedbackParam) int {
+	if err := svc.user.RecordUserFeedback(userId, param, int(time.Now().Unix())); err != nil {
+		log.Log.Errorf("user_trace: record user feedback err:%s", err)
+		return errdef.USER_FEEDBACK_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
 // 获取世界信息（暂时只有国家）
 func (svc *UserModule) GetWorldInfo() []*models.WorldMap {
 	return svc.user.GetWorldInfo()
@@ -155,7 +165,6 @@ func (svc *UserModule) GetDefaultAvatarList() []*models.DefaultAvatar {
 func (svc *UserModule) GetDefaultAvatarById(id int32) *models.DefaultAvatar {
 	return svc.user.GetSystemAvatarById(id)
 }
-
 
 // 获取昵称/签名 长度（产品需求：1个汉字=2个字符 昵称最多15个汉字（30个字符）最少1个字符 签名最多70个汉字（140个字符））
 func (svc *UserModule) GetStrLen(r []rune) int {

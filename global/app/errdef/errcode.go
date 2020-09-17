@@ -25,6 +25,7 @@ const (
 	USER_UPDATE_INFO_FAIL   = 1014
 	USER_INVALID_NAME       = 1015
 	USER_INVALID_SIGNATURE  = 1016
+	USER_FEEDBACK_FAIL      = 1017
 
 	WX_USER_INFO_FAIL       = 1101
 	WX_ACCESS_TOKEN_FAIL    = 1102
@@ -95,6 +96,7 @@ var MsgFlags = map[int]string{
 	USER_UPDATE_INFO_FAIL:   "更新用户信息失败",
 	USER_INVALID_NAME:       "昵称不合法",
 	USER_INVALID_SIGNATURE:  "签名不合法",
+	USER_FEEDBACK_FAIL:      "反馈提交失败",
 
 	WX_USER_INFO_FAIL:    "获取微信用户信息失败",
 	WX_ACCESS_TOKEN_FAIL: "获取微信授权token失败",
