@@ -59,6 +59,7 @@ const (
 	// 视频相关错误码 4001-5000
 	VIDEO_NOT_EXISTS            = 4001
 	VIDEO_PUBLISH_FAIL          = 4002
+	VIDEO_DELETE_HISTORY        = 4003
 
 	// 点赞相关错误码 5001-6000
 	LIKE_VIDEO_NOT_EXISTS       = 5001
@@ -123,6 +124,7 @@ var MsgFlags = map[int]string{
 
 	VIDEO_NOT_EXISTS:            "视频不存在",
 	VIDEO_PUBLISH_FAIL:          "视频发布失败",
+	VIDEO_DELETE_HISTORY:        "删除历史记录失败",
 
 	LIKE_VIDEO_NOT_EXISTS:       "点赞的视频不存在",
 	LIKE_ALREADY_EXISTS:         "已点过赞",

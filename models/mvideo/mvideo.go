@@ -3,6 +3,7 @@ package mvideo
 import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"fmt"
 )
@@ -20,13 +21,33 @@ type VideoPublishParams struct {
 	Cover          string  `binding:"required" json:"cover"`          // 视频封面
 	Title          string  `binding:"required" json:"title"`          // 视频标题
 	Describe       string  `binding:"required" json:"describe"`       // 视频描述
-	VideoAddr      string  `binding:"required" json:"video_addr"`     // 视频地址
-	VideoDuration  int     `binding:"required" json:"video_duration"` // 视频时长
-	VideoLabels    string  `binding:"required" json:"video_labels"`   // 视频标签id（多个用逗号分隔）
+	VideoAddr      string  `binding:"required" json:"videoAddr"`     // 视频地址
+	VideoDuration  int     `binding:"required" json:"videoDuration"` // 视频时长
+	VideoLabels    string  `binding:"required" json:"videoLabels"`   // 视频标签id（多个用逗号分隔）
 }
 
 // 视频信息
 type VideosInfoResp struct {
+	VideoId       int64  `json:"videoId"`       // 视频id
+	Title         string `json:"title"`         // 标题
+	Describe      string `json:"describe"`      // 描述
+	Cover         string `json:"cover"`         // 封面
+	VideoAddr     string `json:"videoAddr"`     // 视频地址
+	IsRecommend   int    `json:"isRecommend"`   // 是否推荐
+	IsTop         int    `json:"isTop"`         // 是否置顶
+	VideoDuration int    `json:"videoDuration"` // 视频时长
+	VideoWidth    int64  `json:"videoWidth"`    // 视频宽
+	VideoHeight   int64  `json:"videoHeight"`   // 视频高
+	CreateAt      int    `json:"createAt"`      // 视频创建时间
+	UserId        string `json:"userId"`        // 发布视频的用户id
+	Avatar        string `json:"avatar"`        // 头像
+	Nickname      string `json:"nickName"`      // 昵称
+	IsAttention   int    `json:"isAttention"`   // 是否关注 1 关注 2 未关注
+	OpTime        int    `json:"collectAt"`     // 用户收藏/点赞等的操作时间
+}
+
+// 用户发布的视频信息
+type PublishVideosInfo struct {
 	VideoId       int64  `json:"video_id"`       // 视频id
 	Title         string `json:"title"`          // 标题
 	Describe      string `json:"describe"`       // 描述
@@ -37,12 +58,17 @@ type VideosInfoResp struct {
 	VideoDuration int    `json:"video_duration"` // 视频时长
 	VideoWidth    int64  `json:"video_width"`    // 视频宽
 	VideoHeight   int64  `json:"video_height"`   // 视频高
+	Status        int32  `json:"status"`         // 审核状态
 	CreateAt      int    `json:"create_at"`      // 视频创建时间
-	UserId        string `json:"user_id"`        // 发布视频的用户id
-	Avatar        string `json:"avatar"`         // 头像
-	Nickname      string `json:"nickName"`       // 昵称
-	IsAttention   int    `json:"is_attention"`   // 是否关注 1 关注 2 未关注
-	OpTime        int    `json:"collect_at"`     // 用户收藏/点赞等的操作时间
+	FabulousNum   int    `json:"fabulous_num"`   // 点赞数
+	CommentNum    int    `json:"comment_num"`    // 评论数
+	ShareNum      int    `json:"share_num"`      // 分享数
+	BrowseNum     int    `json:"browse_num"`     // 浏览数（播放数）
+}
+
+// 删除历史记录请求参数
+type DeleteHistoryParam struct {
+	ComposeIds        []string     `binding:"required" json:"composeIds"` // 视频id列表
 }
 
 // 实栗
@@ -146,14 +172,34 @@ func (m *VideoModel) UpdateVideoBarrageNum() {
 	return
 }
 
-// 分页获取 用户发布的视频列表
-func (m *VideoModel) GetUserPublishVideos(offset, size int) {
-	return
+// 分页获取 用户发布的视频列表[通过审核状态和条件查询]
+func (m *VideoModel) GetUserPublishVideos(offset, size int, userId, status, field string) []*PublishVideosInfo {
+	var list []*PublishVideosInfo
+
+	sql := "SELECT v.*, s.fabulous_num, s.share_num, s.comment_num, s.browse_num FROM videos as v " +
+		"LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.user_id=? "
+	if status != consts.VIDEO_VIEW_ALL {
+		sql += "AND v.`status`=? "
+	}
+
+	// 条件为默认时间倒序 则使用videos表的时间字段
+	if field == consts.VIDEO_CONDITION_TIME {
+		sql += fmt.Sprintf("GROUP BY v.video_id ORDER BY v.%s DESC, v.sortorder DESC LIMIT ?, ?", field)
+	} else {
+		sql += fmt.Sprintf("GROUP BY v.video_id ORDER BY s.%s DESC, v.sortorder DESC LIMIT ?, ?", field)
+	}
+
+	if err := m.Engine.SQL(sql, userId, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("video_trace: get user publish videos err:%s", err)
+		return nil
+	}
+
+	return list
 }
 
 // 通过id查询视频
 func (m *VideoModel) FindVideoById(videoId string) *models.Videos {
-	ok, err := m.Engine.Where("video_id=?").Get(m.Videos)
+	ok, err := m.Engine.Where("video_id=?", videoId).Get(m.Videos)
 	if !ok || err != nil {
 		return nil
 	}
@@ -190,6 +236,16 @@ func (m *VideoModel) GetBrowseVideosRecord(userId string, composeType, offset, s
 	}
 
 	return list
+}
+
+// 通过id列表删除浏览的历史记录
+func (m *VideoModel) DeleteHistoryByIds(userId string, ids string) error {
+	sql := fmt.Sprintf("DELETE FROM `user_browse_record WHERE userId=? AND ids in(%s)`", ids)
+	if _, err := m.Engine.Exec(sql, userId); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 

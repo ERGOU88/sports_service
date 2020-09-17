@@ -1391,6 +1391,81 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/video/history/delete": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频模块"
+                ],
+                "summary": "删除浏览的历史记录 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "删除浏览历史记录 请求参数",
+                        "name": "DeleteHistoryParam",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/mvideo.DeleteHistoryParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/video/publish": {
             "post": {
                 "consumes": [
@@ -1455,6 +1530,103 @@ var doc = `{
                         "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/video/publish/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频模块"
+                ],
+                "summary": "用户发布的视频记录[分页获取] (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页码 从1开始",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页展示多少 最多50条",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "status 状态 -1 查询全部 0 审核中 1 已发布 2 不通过",
+                        "name": "status",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "条件 -1 默认时间排序 0 播放数 1 弹幕数 2 评论数 3 点赞数 4 分享数",
+                        "name": "condition",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/mvideo.PublishVideosInfo"
+                            }
                         }
                     },
                     "500": {
@@ -1691,44 +1863,27 @@ var doc = `{
                 }
             }
         },
-        "mvideo.VideoPublishParams": {
+        "mvideo.DeleteHistoryParam": {
             "type": "object",
             "required": [
-                "cover",
-                "describe",
-                "title",
-                "video_addr",
-                "video_duration",
-                "video_labels"
+                "composeIds"
             ],
             "properties": {
-                "cover": {
-                    "type": "string"
-                },
-                "describe": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "video_addr": {
-                    "type": "string"
-                },
-                "video_duration": {
-                    "type": "integer"
-                },
-                "video_labels": {
-                    "type": "string"
+                "composeIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
-        "mvideo.VideosInfoResp": {
+        "mvideo.PublishVideosInfo": {
             "type": "object",
             "properties": {
-                "avatar": {
-                    "type": "string"
+                "browse_num": {
+                    "type": "integer"
                 },
-                "collect_at": {
+                "comment_num": {
                     "type": "integer"
                 },
                 "cover": {
@@ -1740,7 +1895,7 @@ var doc = `{
                 "describe": {
                     "type": "string"
                 },
-                "is_attention": {
+                "fabulous_num": {
                     "type": "integer"
                 },
                 "is_recommend": {
@@ -1749,13 +1904,13 @@ var doc = `{
                 "is_top": {
                     "type": "integer"
                 },
-                "nickName": {
-                    "type": "string"
+                "share_num": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
                 },
                 "title": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 },
                 "video_addr": {
@@ -1771,6 +1926,90 @@ var doc = `{
                     "type": "integer"
                 },
                 "video_width": {
+                    "type": "integer"
+                }
+            }
+        },
+        "mvideo.VideoPublishParams": {
+            "type": "object",
+            "required": [
+                "cover",
+                "describe",
+                "title",
+                "videoAddr",
+                "videoDuration",
+                "videoLabels"
+            ],
+            "properties": {
+                "cover": {
+                    "type": "string"
+                },
+                "describe": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "videoAddr": {
+                    "type": "string"
+                },
+                "videoDuration": {
+                    "type": "integer"
+                },
+                "videoLabels": {
+                    "type": "string"
+                }
+            }
+        },
+        "mvideo.VideosInfoResp": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "collectAt": {
+                    "type": "integer"
+                },
+                "cover": {
+                    "type": "string"
+                },
+                "createAt": {
+                    "type": "integer"
+                },
+                "describe": {
+                    "type": "string"
+                },
+                "isAttention": {
+                    "type": "integer"
+                },
+                "isRecommend": {
+                    "type": "integer"
+                },
+                "isTop": {
+                    "type": "integer"
+                },
+                "nickName": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                },
+                "videoAddr": {
+                    "type": "string"
+                },
+                "videoDuration": {
+                    "type": "integer"
+                },
+                "videoHeight": {
+                    "type": "integer"
+                },
+                "videoId": {
+                    "type": "integer"
+                },
+                "videoWidth": {
                     "type": "integer"
                 }
             }

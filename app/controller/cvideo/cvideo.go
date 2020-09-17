@@ -1,9 +1,12 @@
 package cvideo
 
 import (
+	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
+	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
@@ -11,9 +14,7 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	"strings"
-	"fmt"
 	"time"
-	"errors"
 )
 
 type VideoModule struct {
@@ -36,10 +37,16 @@ func New(c *gin.Context) VideoModule {
 	}
 }
 
-// 用户发布的视频列表
+// 用户发布视频
 // 事务处理
 // 数据记录到视频审核表 同时 标签记录到 视频标签表（多条记录 同一个videoId对应N个labelId 生成N条记录）
 func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPublishParams) error {
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+		return nil
+	}
+
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("video_trace: session begin err:%s", err)
@@ -97,8 +104,14 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	return nil
 }
 
-// 用户浏览过的视频记录 todo:视频标签
+// 用户浏览过的视频记录 todo:视频标签 暂时只有视频 后续会有其他
 func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []*mvideo.VideosInfoResp {
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+		return nil
+	}
+
 	offset := (page - 1) * size
 	records := svc.video.GetBrowseVideosRecord(userId, consts.TYPE_BROWSE_VIDEOS, offset, size)
 	if len(records) == 0 {
@@ -158,4 +171,64 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 	}
 
 	return list
+}
+
+// 删除历史记录
+func (svc *VideoModule) DeleteHistoryByIds(userId string, param *mvideo.DeleteHistoryParam) int {
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+		return errdef.USER_NOT_EXISTS
+	}
+
+	ids := strings.Join(param.ComposeIds, ",")
+	if err := svc.video.DeleteHistoryByIds(userId, ids); err != nil {
+		log.Log.Errorf("video_trace: delete history by ids err:%s", err)
+		return errdef.VIDEO_DELETE_HISTORY
+	}
+
+	return errdef.SUCCESS
+}
+
+// 获取用户发布的列表（暂时只有视频）
+func (svc *VideoModule) GetUserPublishList(userId, status, condition string, page, size int) []*mvideo.PublishVideosInfo {
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+		return nil
+	}
+
+	offset := (page - 1) * size
+	field := svc.GetConditionFieldByPublish(condition)
+	// 获取用户发布的视频列表[通过审核状态和条件查询]
+	return svc.video.GetUserPublishVideos(offset, size, userId, status, field)
+}
+
+// 条件查询发布的内容
+// -1 发布时间 0 播放数 1 弹幕数 2 评论数 3 点赞数 4 分享数
+func (svc *VideoModule) GetConditionFieldByPublish(condition string) string {
+	switch condition {
+	// 发布时间
+	case consts.VIDEO_CONDITION_TIME:
+		return consts.CONDITION_FIELD_TIME
+	// 播放数
+	case consts.VIDEO_CONDITION_PLAY:
+		return consts.CONDITION_FIELD_PLAY
+	// 弹幕数
+	case consts.VIDEO_CONDITION_BARRAGE:
+		return consts.CONDITION_FIELD_BARRAGE
+	// 评论数
+	case consts.VIDEO_CONDITION_COMMENT:
+		return consts.CONDITION_FIELD_COMMENT
+	// 点赞数
+	case consts.VIDEO_CONDITION_LIKE:
+		return consts.CONDITION_FIELD_LIKE
+	// 分享数
+	case consts.VIDEO_CONDITION_SHARE:
+		return consts.CONDITION_FIELD_SHARE
+	default:
+		log.Log.Errorf("video_trace: unsupported condition, condition: %s", condition)
+	}
+
+	return consts.CONDITION_FIELD_TIME
 }

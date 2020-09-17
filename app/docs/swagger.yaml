@@ -155,33 +155,20 @@ definitions:
     required:
     - code
     type: object
-  mvideo.VideoPublishParams:
+  mvideo.DeleteHistoryParam:
     properties:
-      cover:
-        type: string
-      describe:
-        type: string
-      title:
-        type: string
-      video_addr:
-        type: string
-      video_duration:
-        type: integer
-      video_labels:
-        type: string
+      composeIds:
+        items:
+          type: string
+        type: array
     required:
-    - cover
-    - describe
-    - title
-    - video_addr
-    - video_duration
-    - video_labels
+    - composeIds
     type: object
-  mvideo.VideosInfoResp:
+  mvideo.PublishVideosInfo:
     properties:
-      avatar:
-        type: string
-      collect_at:
+      browse_num:
+        type: integer
+      comment_num:
         type: integer
       cover:
         type: string
@@ -189,17 +176,17 @@ definitions:
         type: integer
       describe:
         type: string
-      is_attention:
+      fabulous_num:
         type: integer
       is_recommend:
         type: integer
       is_top:
         type: integer
-      nickName:
-        type: string
+      share_num:
+        type: integer
+      status:
+        type: integer
       title:
-        type: string
-      user_id:
         type: string
       video_addr:
         type: string
@@ -210,6 +197,63 @@ definitions:
       video_id:
         type: integer
       video_width:
+        type: integer
+    type: object
+  mvideo.VideoPublishParams:
+    properties:
+      cover:
+        type: string
+      describe:
+        type: string
+      title:
+        type: string
+      videoAddr:
+        type: string
+      videoDuration:
+        type: integer
+      videoLabels:
+        type: string
+    required:
+    - cover
+    - describe
+    - title
+    - videoAddr
+    - videoDuration
+    - videoLabels
+    type: object
+  mvideo.VideosInfoResp:
+    properties:
+      avatar:
+        type: string
+      collectAt:
+        type: integer
+      cover:
+        type: string
+      createAt:
+        type: integer
+      describe:
+        type: string
+      isAttention:
+        type: integer
+      isRecommend:
+        type: integer
+      isTop:
+        type: integer
+      nickName:
+        type: string
+      title:
+        type: string
+      userId:
+        type: string
+      videoAddr:
+        type: string
+      videoDuration:
+        type: integer
+      videoHeight:
+        type: integer
+      videoId:
+        type: integer
+      videoWidth:
         type: integer
     type: object
   swag.LoginSwag:
@@ -1233,6 +1277,57 @@ paths:
       summary: 用户浏览过的视频记录[分页获取] (ok)
       tags:
       - 视频模块
+  /api/v1/video/history/delete:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 删除浏览历史记录 请求参数
+        in: body
+        name: DeleteHistoryParam
+        required: true
+        schema:
+          $ref: '#/definitions/mvideo.DeleteHistoryParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 删除浏览的历史记录 (ok)
+      tags:
+      - 视频模块
   /api/v1/video/publish:
     post:
       consumes:
@@ -1282,6 +1377,73 @@ paths:
           schema:
             type: string
       summary: 视频发布 (ok)
+      tags:
+      - 视频模块
+  /api/v1/video/publish/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      - description: status 状态 -1 查询全部 0 审核中 1 已发布 2 不通过
+        in: query
+        name: status
+        required: true
+        type: string
+      - description: 条件 -1 默认时间排序 0 播放数 1 弹幕数 2 评论数 3 点赞数 4 分享数
+        in: query
+        name: condition
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/mvideo.PublishVideosInfo'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 用户发布的视频记录[分页获取] (ok)
       tags:
       - 视频模块
 swagger: "2.0"

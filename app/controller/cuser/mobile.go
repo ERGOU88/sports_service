@@ -12,7 +12,7 @@ import (
 
 // 手机一键登陆/注册
 func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, *models.User) {
-	mob := new(mobTech.MobTech)
+	mob := mobTech.NewMobTech()
 	// 从mob获取手机号码
 	mobileNum, err := mob.FreeLogin(param.Token, param.OpToken, param.Operator)
 	if err != nil {
