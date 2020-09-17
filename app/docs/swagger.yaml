@@ -56,6 +56,19 @@ definitions:
     required:
     - videoId
     type: object
+  mnotify.NotifySettingParams:
+    properties:
+      attentionPushSet:
+        type: integer
+      commentPushSet:
+        type: integer
+      sharePushSet:
+        type: integer
+      slotPushSet:
+        type: integer
+      thumbUpPushSet:
+        type: integer
+    type: object
   muser.EditUserInfoParams:
     properties:
       avatarId:
@@ -1004,6 +1017,57 @@ paths:
       summary: 用户点赞的视频列表[分页获取] (ok)
       tags:
       - 点赞模块
+  /api/v1/notify/setting:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 系统通知设置 请求参数
+        in: body
+        name: NotifySettingParams
+        required: true
+        schema:
+          $ref: '#/definitions/mnotify.NotifySettingParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 系统通知设置 (ok)
+      tags:
+      - 通知模块
   /api/v1/user/edit/info:
     post:
       consumes:

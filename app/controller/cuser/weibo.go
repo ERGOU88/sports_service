@@ -10,6 +10,7 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/util"
 	third "sports_service/server/tools/thirdLogin"
+	"time"
 )
 
 // 微信登陆/注册
@@ -48,6 +49,13 @@ func (svc *UserModule) WeiboLoginOrReg(params *muser.WeiboLoginParams) (int, str
 			log.Log.Errorf("weibo_trace: add wx account err:%s", err)
 			svc.engine.Rollback()
 			return errdef.WEIBO_ADD_ACCOUNT_FAIL, "", nil
+		}
+
+		// 添加通知初始化设置
+		if err := svc.notify.AddUserNotifySetting(svc.user.User.UserId, int(time.Now().Unix())); err != nil {
+			log.Log.Errorf("weibo_trace: add user notify set err:%s", err)
+			svc.engine.Rollback()
+			return errdef.USER_ADD_NOTIFY_SET_FAIL, "", nil
 		}
 
 		// 提交事务

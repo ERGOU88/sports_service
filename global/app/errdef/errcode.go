@@ -26,6 +26,7 @@ const (
 	USER_INVALID_NAME       = 1015
 	USER_INVALID_SIGNATURE  = 1016
 	USER_FEEDBACK_FAIL      = 1017
+	USER_ADD_NOTIFY_SET_FAIL= 1018
 
 	WX_USER_INFO_FAIL       = 1101
 	WX_ACCESS_TOKEN_FAIL    = 1102
@@ -71,6 +72,9 @@ const (
 	LIKE_RECORD_NOT_EXISTS      = 5004
 	LIKE_REPEAT_CANCEL          = 5005
 	LIKE_CANCEL_FAIL            = 5006
+
+	// 通知相关错误吗 6001-7000
+	NOTIFY_SETTING_FAIL         = 6001
 )
 
 var MsgFlags = map[int]string{
@@ -97,6 +101,7 @@ var MsgFlags = map[int]string{
 	USER_INVALID_NAME:       "昵称不合法",
 	USER_INVALID_SIGNATURE:  "签名不合法",
 	USER_FEEDBACK_FAIL:      "反馈提交失败",
+	USER_ADD_NOTIFY_SET_FAIL:"系统设置初始化失败",
 
 	WX_USER_INFO_FAIL:    "获取微信用户信息失败",
 	WX_ACCESS_TOKEN_FAIL: "获取微信授权token失败",
@@ -138,6 +143,8 @@ var MsgFlags = map[int]string{
 	LIKE_RECORD_NOT_EXISTS:      "未点赞该视频",
 	LIKE_REPEAT_CANCEL:          "已取消收藏，请勿重复操作",
 	LIKE_CANCEL_FAIL:            "取消点赞失败",
+
+	NOTIFY_SETTING_FAIL:         "系统通知设置失败",
 }
 
 func GetMsg(code int) string {

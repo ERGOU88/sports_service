@@ -942,6 +942,81 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/notify/setting": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "通知模块"
+                ],
+                "summary": "系统通知设置 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "系统通知设置 请求参数",
+                        "name": "NotifySettingParams",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/mnotify.NotifySettingParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/edit/info": {
             "post": {
                 "consumes": [
@@ -1948,6 +2023,26 @@ var doc = `{
                 "videoId": {
                     "type": "integer",
                     "example": 10001
+                }
+            }
+        },
+        "mnotify.NotifySettingParams": {
+            "type": "object",
+            "properties": {
+                "attentionPushSet": {
+                    "type": "integer"
+                },
+                "commentPushSet": {
+                    "type": "integer"
+                },
+                "sharePushSet": {
+                    "type": "integer"
+                },
+                "slotPushSet": {
+                    "type": "integer"
+                },
+                "thumbUpPushSet": {
+                    "type": "integer"
                 }
             }
         },

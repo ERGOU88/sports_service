@@ -5,6 +5,7 @@ import (
 	"sports_service/server/app/routers/api/v1/attention"
 	"sports_service/server/app/routers/api/v1/collect"
 	"sports_service/server/app/routers/api/v1/like"
+	"sports_service/server/app/routers/api/v1/notify"
 	"sports_service/server/app/routers/api/v1/video"
 	"sports_service/server/middleware"
 	"sports_service/server/global/consts"
@@ -40,5 +41,6 @@ func InitRouters(engine *gin.Engine) {
 	video.Router(engine)
 	// 点赞模块
 	like.Router(engine)
-
+	// 通知模块
+	notify.Router(engine)
 }

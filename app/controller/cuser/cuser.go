@@ -8,6 +8,7 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
+	"sports_service/server/models/mnotify"
 	"sports_service/server/models/muser"
 	"sports_service/server/tools/filter"
 	"sports_service/server/util"
@@ -21,6 +22,7 @@ type UserModule struct {
 	engine      *xorm.Session
 	user        *muser.UserModel
 	social      *muser.SocialModel
+	notify      *mnotify.NotifyModel
 }
 
 func New(c *gin.Context) UserModule {
@@ -30,6 +32,7 @@ func New(c *gin.Context) UserModule {
 		context: c,
 		user: muser.NewUserModel(socket),
 		social: muser.NewSocialPlatform(socket),
+		notify: mnotify.NewNotifyModel(socket),
 		engine:  socket,
 	}
 }

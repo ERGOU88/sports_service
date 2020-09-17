@@ -8,6 +8,7 @@ import (
 	"sports_service/server/util"
 	"sports_service/server/global/app/log"
 	"sports_service/server/tools/mobTech"
+	"time"
 )
 
 // 手机一键登陆/注册
@@ -34,11 +35,27 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 			return errdef.USER_REGISTER_FAIL, "", nil
 		}
 
+		// 开启事务
+		if err := svc.engine.Begin(); err != nil {
+			log.Log.Errorf("user_trace: session begin err:%s", err)
+			return errdef.ERROR, "", nil
+		}
+
 		// 添加用户
 		if err := svc.user.AddUser(); err != nil {
 			log.Log.Errorf("reg_trace: add user info err:%s", err)
+			svc.engine.Rollback()
 			return errdef.USER_ADD_INFO_FAIL, "", nil
 		}
+
+		// 添加用户初始化通知设置
+		if err := svc.notify.AddUserNotifySetting(svc.user.User.UserId, int(time.Now().Unix())); err != nil {
+			log.Log.Errorf("user_trace: add user notify setting err:%s", err)
+			svc.engine.Rollback()
+			return errdef.USER_ADD_NOTIFY_SET_FAIL, "", nil
+		}
+
+		svc.engine.Commit()
 
 		// 生成token
 		token := svc.user.GenUserToken(svc.user.User.UserId, util.Md5String(svc.user.User.Password))

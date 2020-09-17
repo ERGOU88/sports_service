@@ -9,6 +9,7 @@ import (
 	"sports_service/server/models/muser"
 	third "sports_service/server/tools/thirdLogin"
 	"sports_service/server/util"
+	"time"
 )
 
 func (svc *UserModule) QQLoginOrReg(params *muser.QQLoginParams) (int, string, *models.User) {
@@ -54,6 +55,13 @@ func (svc *UserModule) QQLoginOrReg(params *muser.QQLoginParams) (int, string, *
 			log.Log.Errorf("qq_trace: add qq account err:%s", err)
 			svc.engine.Rollback()
 			return errdef.QQ_ADD_ACCOUNT_FAIL, "", nil
+		}
+
+		// 添加通知初始化设置
+		if err := svc.notify.AddUserNotifySetting(svc.user.User.UserId, int(time.Now().Unix())); err != nil {
+			log.Log.Errorf("qq_trace: add user notify set err:%s", err)
+			svc.engine.Rollback()
+			return errdef.USER_ADD_NOTIFY_SET_FAIL, "", nil
 		}
 
 		// 提交事务
