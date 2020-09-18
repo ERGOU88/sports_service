@@ -34,12 +34,12 @@ func (c *FilterModel) FlushDirtyData(filepath []string) {
 	for _, filterPath := range filepath {
 		f, err := os.Open(filterPath)
 		if err != nil {
-			log.Fatalf("open file err:%s filePath:%s", err, filterPath)
+			log.Printf("open file err:%s filePath:%s", err, filterPath)
 			continue
 		}
 		text, err := ioutil.ReadAll(f)
 		if err != nil {
-			log.Fatalf("readall err:%s, %s", err, filterPath)
+			log.Printf("readall err:%s, %s", err, filterPath)
 			continue
 		}
 		// log.Printf("text:%s", text)

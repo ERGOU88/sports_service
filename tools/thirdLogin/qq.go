@@ -46,21 +46,21 @@ type QQUserInfo struct {
 func (qq *QQ) GetQQUnionID(accessToken string) (string, error) {
 	resp, body, errs := gorequest.New().Get(fmt.Sprintf("%s%s&unionid=1", QQ_GET_UNIONID_URL, accessToken)).End()
 	if errs != nil {
-		log.Fatalf("qq_trace: get qq user info err %+v", errs)
+		log.Printf("qq_trace: get qq user info err %+v", errs)
 		return "", errors.New("request error")
 	}
 
 	log.Printf("resp: %+v, body: %s, errs: %+v", resp, string(body), errs)
 	respData, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalf("qq_trace: read all err: %v", err)
+		log.Printf("qq_trace: read all err: %v", err)
 		return "", err
 	}
 
 	r := bytes.Fields(respData)
 	u := new(QQUnionid)
 	if err = json.Unmarshal(r[1], u); err != nil {
-		log.Fatalf("qq_trace: unmarshal err: %v", err)
+		log.Printf("qq_trace: unmarshal err: %v", err)
 		return "", err
 	}
 
@@ -86,7 +86,7 @@ func (qq *QQ) GetQQAppConf(agent string) (string, string) {
 func (qq *QQ) GetQQUserInfo(openid, access_token, agent, pf string) (*QQUserInfo, error) {
 	appKey, appId := qq.GetQQAppConf(agent)
 	if appKey == "" || appId == "" {
-		log.Fatalf("qq_trace: invalid agent, agent:%v", agent)
+		log.Printf("qq_trace: invalid agent, agent:%v", agent)
 		return nil, errors.New("data invalid")
 	}
 	v := url.Values{}
@@ -102,12 +102,12 @@ func (qq *QQ) GetQQUserInfo(openid, access_token, agent, pf string) (*QQUserInfo
 	qqUserInfo := new(QQUserInfo)
 	resp, body, errs := gorequest.New().Get(QQ_USER_INFO_URL + v.Encode()).EndStruct(qqUserInfo)
 	if errs != nil {
-		log.Fatalf("gorequest body: %+v, err: %v", string(body), errs)
+		log.Printf("gorequest body: %+v, err: %v", string(body), errs)
 		return nil, errors.New("http request failed!")
 	}
 
 	if qqUserInfo.Ret != 0 || resp.StatusCode != 200 {
-		log.Fatalf("gorequest body: %+v", string(body))
+		log.Printf("gorequest body: %+v", string(body))
 		return nil, errors.New("status not 200!")
 	}
 

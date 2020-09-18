@@ -53,18 +53,18 @@ func (mob *MobTech) FreeLogin(token, opToken, operator string) (string, error) {
 	data["sign"] = mob.generateSign(data, APP_SECRET)
 	postBody, err := mob.HttpPostBody(FREE_LOGIN_URL, data)
 	if err != nil {
-		log.Fatalf("mob_trace: http request failed, err:%v", err)
+		log.Printf("mob_trace: http request failed, err:%v", err)
 		return "", err
 	}
 
 	ret := new(Data)
 	if err := json.Unmarshal(postBody, &ret); err != nil {
-		log.Fatalf("mob_trace: unmarshal err:%v", err)
+		log.Printf("mob_trace: unmarshal err:%v", err)
 		return "", err
 	}
 
 	if ret.Status != 200 {
-		log.Fatal("mob_trace: request status not 200")
+		log.Println("mob_trace: request status not 200")
 		return "", errors.New("request status not 200")
 	}
 

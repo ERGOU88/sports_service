@@ -33,6 +33,10 @@ func New(c *gin.Context) AttentionModule {
 
 // 添加关注 attentionUid 关注的用户id userId 被关注的用户id
 func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
+	if attentionUid == userId {
+		log.Log.Errorf("attention_trace: don't focus yourself, attentionUid:%s, userId", attentionUid, userId)
+		return errdef.ATTENTION_YOURSELF_FAIL
+	}
 	// 关注的用户是否存在
 	if attentionUser := svc.user.FindUserByUserid(attentionUid); attentionUser == nil {
 		log.Log.Errorf("attention_trace: user not found, attentionUid:%s", attentionUid)

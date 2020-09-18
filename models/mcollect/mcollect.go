@@ -16,7 +16,7 @@ type CollectModel struct {
 // 添加收藏请求参数
 type AddCollectParam struct {
 	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`       // 收藏的视频id
-	ToUserId      string    `binding:"required" json:"to_user_id" example:"发布者uid"` // 发布者uid
+	ToUserId      string    `binding:"required" json:"toUserId" example:"发布者uid"` // 发布者uid
 }
 
 // 取消收藏请求参数
@@ -55,6 +55,7 @@ func (m *CollectModel) AddCollectVideo(userId, toUserId string, videoId int64, s
 
 // 获取收藏的信息
 func (m *CollectModel) GetCollectInfo(userId string, videoId int64, composeType int) *models.CollectRecord {
+	m.CollectRecord = new(models.CollectRecord)
 	ok, err := m.Engine.Where("user_id=? AND compose_id=? AND compose_type=?", userId, videoId, composeType).Get(m.CollectRecord)
 	if !ok || err != nil {
 		return nil
@@ -65,7 +66,7 @@ func (m *CollectModel) GetCollectInfo(userId string, videoId int64, composeType 
 
 // 更新收藏状态 收藏/取消收藏
 func (m *CollectModel) UpdateCollectStatus() error {
-	if _, err := m.Engine.Where("id=?", m.CollectRecord.Id).
+	if _, err := m.Engine.ID(m.CollectRecord.Id).
 		Cols("status, update_at").
 		Update(m.CollectRecord); err != nil {
 		return err
@@ -81,7 +82,7 @@ type CollectVideosInfo struct {
 // 获取收藏的作品id列表
 func (m *CollectModel) GetCollectList(userId string, offset, size int) []*CollectVideosInfo {
 	var list []*CollectVideosInfo
-	if err := m.Engine.Where("status=1 AND user_id=?", userId).
+	if err := m.Engine.Table(&models.CollectRecord{}).Where("status=1 AND user_id=?", userId).
 		Cols("compose_id, update_at").
 		Desc("id").
 		Limit(size, offset).

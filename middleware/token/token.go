@@ -25,6 +25,7 @@ func TokenAuth() gin.HandlerFunc {
 			return
 		}
 
+		log.Log.Debugf("val:%v", val)
 		v := val.Value
 		//v := c.Request.Header.Get("auth")
 		ks := strings.Split(v, "_")
@@ -45,6 +46,7 @@ func TokenAuth() gin.HandlerFunc {
 			return
 		}
 
+		log.Log.Debugf("token_trace: token userid:%s", userid)
 		model := new(muser.UserModel)
 		token, err := model.GetUserToken(userid)
 		if err != nil && err == redis.ErrNil {

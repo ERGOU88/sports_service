@@ -69,10 +69,10 @@ func (svc *CollectModule) AddCollect(userId, toUserId string, videoId int64) int
 
 	now :=  int(time.Now().Unix())
 	// 更新视频收藏总计 +1
-	if err := svc.video.UpdateVideoCollectNum(consts.CONFIRM_OPERATE, now); err != nil {
+	if err := svc.video.UpdateVideoCollectNum(videoId, consts.CONFIRM_OPERATE, now); err != nil {
 		log.Log.Errorf("collect_trace: update video collect num err:%s", err)
 		svc.engine.Rollback()
-		return errdef.LIKE_VIDEO_FAIL
+		return errdef.COLLECT_VIDEO_FAIL
 	}
 
 	// 未收藏
@@ -134,7 +134,7 @@ func (svc *CollectModule) CancelCollect(userId string, videoId int64) int {
 
 	now :=  int(time.Now().Unix())
 	// 更新视频收藏总计 -1
-	if err := svc.video.UpdateVideoCollectNum(consts.CANCEL_OPERATE, now); err != nil {
+	if err := svc.video.UpdateVideoCollectNum(videoId, consts.CANCEL_OPERATE, now); err != nil {
 		log.Log.Errorf("collect_trace: update video collect num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.COLLECT_CANCEL_FAIL

@@ -49,12 +49,12 @@ func (wx *Wechat) GetWechatAccessToken(code string) *AccessToken {
 	accessToken := AccessToken{}
 	resp, body, errs := gorequest.New().Get(WECHAT_ACCESS_TOKEN_URL + v.Encode()).EndStruct(&accessToken)
 	if errs != nil {
-		log.Fatalf("%+v", errs)
+		log.Printf("%+v", errs)
 		return nil
 	}
 
 	if accessToken.Unionid == "" {
-		log.Fatalf("err body: %s, resp: %+v", string(body), resp)
+		log.Printf("err body: %s, resp: %+v", string(body), resp)
 		return nil
 	}
 
@@ -69,7 +69,7 @@ func (wx *Wechat) GetWechatUserInfo(accessToken *AccessToken) *WechatUserInfo {
 	wxinfo := WechatUserInfo{}
 	resp, body, errs := gorequest.New().Get(WECHAT_USER_INFO_URL + v.Encode()).EndStruct(&wxinfo)
 	if errs != nil {
-		log.Fatalf("get wxinfo err %+v", errs)
+		log.Printf("get wxinfo err %+v", errs)
 		return nil
 	}
 
@@ -78,7 +78,7 @@ func (wx *Wechat) GetWechatUserInfo(accessToken *AccessToken) *WechatUserInfo {
 	log.Println("\nbody: ", string(body))
 
 	if wxinfo.Errcode != 0 || resp.StatusCode != 200 {
-		log.Fatalf("wx_trace: request failed, errCode:%d, statusCode:%d", wxinfo.Errcode, resp.StatusCode)
+		log.Printf("wx_trace: request failed, errCode:%d, statusCode:%d", wxinfo.Errcode, resp.StatusCode)
 		return nil
 	}
 

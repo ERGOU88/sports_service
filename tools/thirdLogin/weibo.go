@@ -79,7 +79,7 @@ func (wb *Weibo) GetWeiboUserInfo(uid int64, accessToken string) *WeiboInfo {
 	weiboInfo := &WeiboInfo{}
 	resp, body, errs := gorequest.New().Get(WEIBO_USER_INFO_URL + v.Encode()).EndStruct(weiboInfo)
 	if errs != nil {
-		log.Fatalf("weibo_trace: get weibo info err %+v", errs)
+		log.Printf("weibo_trace: get weibo info err %+v", errs)
 		return nil
 	}
 
@@ -89,7 +89,7 @@ func (wb *Weibo) GetWeiboUserInfo(uid int64, accessToken string) *WeiboInfo {
 	log.Println("\nerrs: ", errs)
 
 	if resp.StatusCode != 200 || weiboInfo.ErrorCode != "" {
-		log.Fatalf("weibo_trace: request failed, errCode:%d, error:%s", weiboInfo.ErrorCode, weiboInfo.Error)
+		log.Printf("weibo_trace: request failed, errCode:%d, error:%s", weiboInfo.ErrorCode, weiboInfo.Error)
 		return nil
 	}
 

@@ -67,6 +67,7 @@ func (m *LikeModel) AddGiveLikeByType(userId, toUserId string, composeId int64, 
 
 // 获取点赞的信息
 func (m *LikeModel) GetLikeInfo(userId string, composeId int64, zanType int) *models.ThumbsUp {
+	m.Like = new(models.ThumbsUp)
 	ok, err := m.Engine.Where("user_id=? AND type_id=? AND zan_type=?", userId, composeId, zanType).Get(m.Like)
 	if !ok || err != nil {
 		return nil
@@ -77,7 +78,7 @@ func (m *LikeModel) GetLikeInfo(userId string, composeId int64, zanType int) *mo
 
 // 更新点赞状态 点赞/取消点赞
 func (m *LikeModel) UpdateLikeStatus() error {
-	if _, err := m.Engine.Where("id=?", m.Like.Id).
+	if _, err := m.Engine.ID(m.Like.Id).
 		Cols("status, create_at").
 		Update(m.Like); err != nil {
 		return err

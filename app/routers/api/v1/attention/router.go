@@ -2,14 +2,13 @@ package attention
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/sign"
 	"sports_service/server/middleware/token"
 )
 
 // 关注模块路由
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
-	attention := api.Group("/attention", sign.CheckSign(), token.TokenAuth())
+	attention := api.Group("/attention", token.TokenAuth())
 	{
 		// 关注用户
 		attention.POST("/user", AttentionUser)

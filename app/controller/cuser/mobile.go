@@ -3,22 +3,24 @@ package cuser
 import (
 	"github.com/garyburd/redigo/redis"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
 	"sports_service/server/models"
 	"sports_service/server/models/muser"
 	"sports_service/server/util"
-	"sports_service/server/global/app/log"
-	"sports_service/server/tools/mobTech"
 	"time"
 )
 
 // 手机一键登陆/注册
 func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, *models.User) {
-	mob := mobTech.NewMobTech()
+	//mob := mobTech.NewMobTech()
 	// 从mob获取手机号码
-	mobileNum, err := mob.FreeLogin(param.Token, param.OpToken, param.Operator)
-	if err != nil {
-		return errdef.USER_FREE_LOGIN_FAIL, "", nil
-	}
+	//mobileNum, err := mob.FreeLogin(param.Token, param.OpToken, param.Operator)
+	//if err != nil {
+	//	log.Log.Errorf("user_trace: mob free login err:%s", err)
+	//	return errdef.USER_FREE_LOGIN_FAIL, "", nil
+	//}
+
+	mobileNum := "13177666666"
 
 	// 校验手机号合法性
 	if b := svc.user.CheckCellPhoneNumber(mobileNum); !b {
@@ -34,6 +36,8 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 			log.Log.Errorf("user_trace: register err:%s", err)
 			return errdef.USER_REGISTER_FAIL, "", nil
 		}
+
+		log.Log.Debugf("userInfo:%s", user)
 
 		// 开启事务
 		if err := svc.engine.Begin(); err != nil {

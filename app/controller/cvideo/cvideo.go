@@ -52,6 +52,7 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 		log.Log.Errorf("video_trace: session begin err:%s", err)
 		return err
 	}
+
 	// todo: 查询上传的标签是否存在
 	now := time.Now().Unix()
 	svc.video.Videos.UserId = userId
@@ -63,9 +64,11 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	svc.video.Videos.CreateAt = int(now)
 	svc.video.Videos.UpdateAt = int(now)
 	svc.video.Videos.UserType = consts.PUBLISH_VIDEO_BY_USER
+
 	// 视频发布
-	if err := svc.video.VideoPublish(); err != nil {
-		log.Log.Errorf("video_trace: publish video err:%s", err)
+	affected, err := svc.video.VideoPublish()
+	if err != nil || affected != 1 {
+		log.Log.Errorf("video_trace: publish video err:%s, affected:%d", err, affected)
 		svc.engine.Rollback()
 		return err
 	}
@@ -84,9 +87,10 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	}
 
 	// 添加视频标签（多条）
-	affected, err := svc.video.AddVideoLabels(labelInfos)
+	affected, err = svc.video.AddVideoLabels(labelInfos)
 	if err != nil || int(affected) != len(labelInfos) {
 		svc.engine.Rollback()
+		log.Log.Errorf("video_trace: add video labels err:%s", err)
 		return errors.New("add video labels error")
 	}
 
@@ -96,7 +100,7 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	// 初始化视频统计数据
 	if err := svc.video.AddVideoStatistic(); err != nil {
 		log.Log.Errorf("video_trace: add video statistic err:%s", err)
-		svc.engine.Rollback()
+		//svc.engine.Rollback()
 		return err
 	}
 

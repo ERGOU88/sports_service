@@ -94,7 +94,7 @@ func (m *base) HttpPostBody(url string, msg map[string]interface{}) ([]byte, err
 	request := gorequest.New()
 	resp, body, errs := request.Post(url).Set("Content-Type", "application/json; charset=utf-8").SendMap(msg).End()
 	if errs != nil {
-		log.Fatalf("mob_trace: request err:%+v, body:%s", errs, body)
+		log.Printf("mob_trace: request err:%+v, body:%s", errs, body)
 		return nil, errors.New("request error")
 	}
 

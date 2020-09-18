@@ -2186,6 +2186,11 @@ var doc = `{
         },
         "muser.LoginParams": {
             "type": "object",
+            "required": [
+                "opToken",
+                "operator",
+                "token"
+            ],
             "properties": {
                 "opToken": {
                     "type": "string",

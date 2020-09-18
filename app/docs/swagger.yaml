@@ -129,6 +129,10 @@ definitions:
       token:
         example: 客户端token
         type: string
+    required:
+    - opToken
+    - operator
+    - token
     type: object
   muser.QQLoginParams:
     properties:

@@ -24,7 +24,7 @@ func InitSnowId() {
 	var err error
 	iw, err = goSnowFlake.NewIdWorker(1)
 	if err != nil {
-		log.Fatalf("init iw err:%s", err.Error())
+		log.Printf("init iw err:%s", err.Error())
 		return
 	}
 }

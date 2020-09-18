@@ -31,6 +31,7 @@ func NewAttentionModel(engine *xorm.Session) *AttentionModel {
 
 // 获取关注的信息
 func (m *AttentionModel) GetAttentionInfo(attentionUid, userId string) *models.UserAttention {
+	m.UserAttention = new(models.UserAttention)
 	ok, err := m.Engine.Where("attention_uid=? AND user_id=?", attentionUid, userId).Get(m.UserAttention)
 	if !ok || err != nil {
 		return nil
@@ -54,7 +55,7 @@ func (m *AttentionModel) AddAttention(attentionUid, userId string, status int) e
 
 // 更新关注状态 关注/取消关注
 func (m *AttentionModel) UpdateAttentionStatus() error {
-	if _, err := m.Engine.Where("id=?", m.UserAttention.Id).
+	if _, err := m.Engine.ID(m.UserAttention.Id).
 		Cols("status, create_at").
 		Update(m.UserAttention); err != nil {
 		return err
@@ -66,7 +67,7 @@ func (m *AttentionModel) UpdateAttentionStatus() error {
 // 获取用户关注的列表
 func (m *AttentionModel) GetAttentionList(attentionUid string) []string {
 	var list []string
-	if err := m.Engine.Where("status=1 AND attention_uid=?", attentionUid).Cols("user_id").Find(&list); err != nil {
+	if err := m.Engine.Table(&models.UserAttention{}).Where("status=1 AND attention_uid=?", attentionUid).Cols("user_id").Find(&list); err != nil {
 		log.Log.Errorf("attention_trace: get attention list err:%s", err)
 		return nil
 	}
@@ -77,7 +78,7 @@ func (m *AttentionModel) GetAttentionList(attentionUid string) []string {
 // 获取用户的粉丝列表
 func (m *AttentionModel) GetFansList(userId string) []string {
 	var list []string
-	if err := m.Engine.Where("status=1 AND user_id=?", userId).Cols("attention_uid").Find(&list); err != nil {
+	if err := m.Engine.Table(&models.UserAttention{}).Where("status=1 AND user_id=?", userId).Cols("attention_uid").Find(&list); err != nil {
 		log.Log.Errorf("attention_trace: get fans list err:%s", err)
 		return nil
 	}

@@ -54,9 +54,9 @@ type UserZoneInfoResp struct {
 // 登陆请求所需的参数
 type LoginParams struct {
 	Platform  int      `json:"platform" example:"0"`                                // 平台 0 android 1 iOS 2 web
-	Token     string   `json:"token" example:"客户端token"`
-	OpToken   string   `json:"opToken" example:"客户端返回的运营商token"`
-	Operator  string   `json:"operator" example:"客户端返回的运营商，CMCC:中国移动通信, CUCC:中国联通通讯, CTCC:中国电信"`
+	Token     string   `binding:"required" json:"token" example:"客户端token"`
+	OpToken   string   `binding:"required" json:"opToken" example:"客户端返回的运营商token"`
+	Operator  string   `binding:"required" json:"operator" example:"客户端返回的运营商，CMCC:中国移动通信, CUCC:中国联通通讯, CTCC:中国电信"`
 }
 
 // 修改用户信息请求参数
@@ -90,6 +90,7 @@ func (m *UserModel) CheckCellPhoneNumber(mobileNum string) bool {
 
 // 手机号查询用户
 func (m *UserModel) FindUserByPhone(mobileNum string) *models.User {
+	m.User = new(models.User)
 	ok, err := m.Engine.Where("mobile_num=?", mobileNum).Get(m.User)
 	if !ok || err != nil {
 		log.Log.Errorf("user_trace: find user by phone err:%s", err)
@@ -101,9 +102,10 @@ func (m *UserModel) FindUserByPhone(mobileNum string) *models.User {
 
 // userid查询用户
 func (m *UserModel) FindUserByUserid(userId string) *models.User {
+	m.User = new(models.User)
 	ok, err := m.Engine.Where("user_id=?", userId).Get(m.User)
 	if !ok || err != nil {
-		log.Log.Errorf("user_trace: find user by userid err:%s", err)
+		log.Log.Errorf("user_trace: find user by userid err:%s, user:%v", err, m.User)
 		return nil
 	}
 

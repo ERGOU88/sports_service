@@ -89,12 +89,8 @@ func NewVideoModel(engine *xorm.Session) *VideoModel {
 }
 
 // 视频发布
-func (m *VideoModel) VideoPublish() error {
-	if _, err := m.Engine.InsertOne(m.Videos); err != nil {
-		return err
-	}
-
-	return nil
+func (m *VideoModel) VideoPublish() (int64, error) {
+	return m.Engine.InsertOne(m.Videos)
 }
 
 // 添加视频标签(一次插入多条)
@@ -156,8 +152,8 @@ const (
 	UPDATE_VIDEO_COLLECT_NUM  = "UPDATE `video_statistic` SET `collect_num` = `collect_num` + ?, `update_at`=? WHERE `video_id`=? AND `collect_num` + ? > 0 LIMIT 1"
 )
 // 更新视频收藏数
-func (m *VideoModel) UpdateVideoCollectNum(now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_VIDEO_COLLECT_NUM, num, now, num); err != nil {
+func (m *VideoModel) UpdateVideoCollectNum(videoId int64, now, num int) error {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_COLLECT_NUM, num, now, videoId, num); err != nil {
 		return err
 	}
 
@@ -225,6 +221,7 @@ func (m *VideoModel) GetUserPublishVideos(offset, size int, userId, status, fiel
 
 // 通过id查询视频
 func (m *VideoModel) FindVideoById(videoId string) *models.Videos {
+	m.Videos = new(models.Videos)
 	ok, err := m.Engine.Where("video_id=?", videoId).Get(m.Videos)
 	if !ok || err != nil {
 		return nil
@@ -236,7 +233,7 @@ func (m *VideoModel) FindVideoById(videoId string) *models.Videos {
 // 通过视频id查询视频列表
 func (m *VideoModel) FindVideoListByIds(videoIds string, offset, size int) []*models.Videos {
 	var list []*models.Videos
-	sql := fmt.Sprintf("SELECT * FROM videos WHERE video_id in(%s) AND status=0 ORDER BY is_top DESC, is_recommend DESC, sortorder DESC, id LIMIT ?, ?", videoIds)
+	sql := fmt.Sprintf("SELECT * FROM videos WHERE video_id in(%s) AND status=1 ORDER BY is_top DESC, is_recommend DESC, sortorder DESC, video_id LIMIT ?, ?", videoIds)
 	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
 		log.Log.Errorf("video_trace: get video list err:%s", err)
 		return nil
