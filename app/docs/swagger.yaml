@@ -17,10 +17,14 @@ definitions:
     type: object
   mcollect.AddCollectParam:
     properties:
+      to_user_id:
+        example: 发布者uid
+        type: string
       videoId:
         example: 10001
         type: integer
     required:
+    - to_user_id
     - videoId
     type: object
   mcollect.CancelCollectParam:
@@ -50,10 +54,14 @@ definitions:
     type: object
   mlike.GiveLikeParam:
     properties:
+      toUserId:
+        example: 被点赞的用户
+        type: string
       videoId:
         example: 10001
         type: integer
     required:
+    - toUserId
     - videoId
     type: object
   mnotify.NotifySettingParams:
@@ -141,7 +149,7 @@ definitions:
       avatar:
         example: 头像地址
         type: string
-      background_img:
+      backgroundImg:
         example: 背景图
         type: string
       born:
@@ -153,7 +161,7 @@ definitions:
       gender:
         example: 0
         type: integer
-      is_anchor:
+      isAnchor:
         example: 0
         type: integer
       mobileNum:
@@ -168,12 +176,17 @@ definitions:
       status:
         example: 0
         type: integer
-      user_id:
+      userId:
         example: "2009011314521111"
         type: string
-      user_type:
+      userType:
         example: 0
         type: integer
+    type: object
+  muser.UserZoneInfoParam:
+    properties:
+      userId:
+        type: string
     type: object
   muser.WeiboLoginParams:
     properties:
@@ -354,6 +367,42 @@ definitions:
         type: integer
       user_id:
         type: string
+    type: object
+  swag.UserZoneInfoResp:
+    properties:
+      totalAttention:
+        description: 关注数
+        example: 100
+        type: integer
+      totalBeLiked:
+        description: 被点赞数
+        example: 100
+        type: integer
+      totalCollect:
+        description: 收藏的作品数
+        example: 100
+        type: integer
+      totalFans:
+        description: 粉丝数
+        example: 100
+        type: integer
+      totalLikes:
+        description: 点赞的作品数
+        example: 100
+        type: integer
+      totalPublish:
+        description: 发布的作品数
+        example: 100
+        type: integer
+    type: object
+  swag.ZoneInfoSwag:
+    properties:
+      userInfo:
+        $ref: '#/definitions/muser.UserInfoResp'
+        type: object
+      zoneInfo:
+        $ref: '#/definitions/swag.UserZoneInfoResp'
+        type: object
     type: object
 info:
   contact: {}
@@ -1417,6 +1466,57 @@ paths:
           schema:
             type: string
       summary: 微博注册/登陆 (ok)
+      tags:
+      - 账号体系
+  /api/v1/user/zone/info:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 个人空间用户信息 请求参数
+        in: body
+        name: UserZoneInfoParam
+        required: true
+        schema:
+          $ref: '#/definitions/muser.UserZoneInfoParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/swag.ZoneInfoSwag'
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 个人空间用户信息 (ok)
       tags:
       - 账号体系
   /api/v1/video/browse/history:

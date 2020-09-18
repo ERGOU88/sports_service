@@ -1,9 +1,27 @@
 package swag
 
+import "sports_service/server/models/muser"
+
 // swagger api文档（登陆接口返回数据）
 type LoginSwag struct {
 	Token string        `json:"token"` // token
 	User  *User         `json:"user"`  // 用户信息
+}
+
+// swag文档展示
+type ZoneInfoSwag struct {
+	UserInfoResp     *muser.UserInfoResp       `json:"userInfo"`
+	UserZoneInfoResp *UserZoneInfoResp   `json:"zoneInfo"`
+}
+
+// 个人空间用户信息
+type UserZoneInfoResp struct {
+	TotalBeLiked     int64  `json:"totalBeLiked" example:"100"`     // 被点赞数
+	TotalFans        int64  `json:"totalFans" example:"100"`        // 粉丝数
+	TotalAttention   int64  `json:"totalAttention" example:"100"`   // 关注数
+	TotalCollect     int64  `json:"totalCollect" example:"100"`     // 收藏的作品数
+	TotalPublish     int64  `json:"totalPublish" example:"100"`     // 发布的作品数
+	TotalLikes       int64  `json:"totalLikes" example:"100"`       // 点赞的作品数
 }
 
 type User struct {

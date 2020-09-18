@@ -8,8 +8,12 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
+	"sports_service/server/models/mattention"
+	"sports_service/server/models/mcollect"
+	"sports_service/server/models/mlike"
 	"sports_service/server/models/mnotify"
 	"sports_service/server/models/muser"
+	"sports_service/server/models/mvideo"
 	"sports_service/server/tools/filter"
 	"sports_service/server/util"
 	"strings"
@@ -23,6 +27,10 @@ type UserModule struct {
 	user        *muser.UserModel
 	social      *muser.SocialModel
 	notify      *mnotify.NotifyModel
+	attention   *mattention.AttentionModel
+	like        *mlike.LikeModel
+	collect     *mcollect.CollectModel
+	video       *mvideo.VideoModel
 }
 
 func New(c *gin.Context) UserModule {
@@ -33,7 +41,11 @@ func New(c *gin.Context) UserModule {
 		user: muser.NewUserModel(socket),
 		social: muser.NewSocialPlatform(socket),
 		notify: mnotify.NewNotifyModel(socket),
-		engine:  socket,
+		attention: mattention.NewAttentionModel(socket),
+		like: mlike.NewLikeModel(socket),
+		collect: mcollect.NewCollectModel(socket),
+		video: mvideo.NewVideoModel(socket),
+		engine: socket,
 	}
 }
 
@@ -45,6 +57,7 @@ func (svc *UserModule) GetUserInfoByUserid(userId string) (int, *muser.UserInfoR
 		return errdef.USER_NOT_EXISTS, nil
 	}
 
+	// 重新组装返回数据
 	resp := &muser.UserInfoResp{
 		UserId: info.UserId,
 		Avatar: info.Avatar,
@@ -141,12 +154,61 @@ func (svc *UserModule) EditUserInfo(userId string, params *muser.EditUserInfoPar
 
 // 记录用户反馈
 func (svc *UserModule) RecordUserFeedback(userId string, param *muser.FeedbackParam) int {
+	info := svc.user.FindUserByUserid(userId)
+	if info == nil {
+		log.Log.Errorf("user_trace: user not found, uid:%s", userId)
+		return errdef.USER_NOT_EXISTS
+	}
+
 	if err := svc.user.RecordUserFeedback(userId, param, int(time.Now().Unix())); err != nil {
 		log.Log.Errorf("user_trace: record user feedback err:%s", err)
 		return errdef.USER_FEEDBACK_FAIL
 	}
 
 	return errdef.SUCCESS
+}
+
+// 获取个人空间用户信息
+func (svc *UserModule) GetUserZoneInfo(userId string) (int, *muser.UserInfoResp, *muser.UserZoneInfoResp) {
+	info := svc.user.FindUserByUserid(userId)
+	if info == nil {
+		log.Log.Errorf("user_trace: user not found, uid:%s", userId)
+		return errdef.USER_NOT_EXISTS, nil, nil
+	}
+
+	// 重新组装返回数据
+	resp := &muser.UserInfoResp{
+		UserId: info.UserId,
+		Avatar: info.Avatar,
+		MobileNum: int32(info.MobileNum),
+		NickName: info.NickName,
+		Gender: int32(info.Gender),
+		Signature: info.Signature,
+		Status: int32(info.Status),
+		IsAnchor: int32(info.IsAnchor),
+		BackgroundImg: info.BackgroundImg,
+		Born: info.Born,
+		Age: info.Age,
+		UserType: info.UserType,
+		Country: int32(info.Country),
+	}
+
+	zoneRes := &muser.UserZoneInfoResp{
+		// 被点赞总数
+		TotalBeLiked: svc.like.GetUserTotalBeLiked(userId),
+		// 用户关注总数
+		TotalAttention: svc.attention.GetTotalAttention(userId),
+		// 用户粉丝总数
+		TotalFans: svc.attention.GetTotalFans(userId),
+		// 用户总收藏（包含视频 和 后续的帖子）
+		TotalCollect: svc.collect.GetUserTotalCollect(userId),
+		// 用户点赞的总数
+		TotalLikes: svc.like.GetUserTotalLikes(userId),
+		// 用户发布的视频总数（已审核）
+		TotalPublish: svc.video.GetTotalPublish(userId),
+	}
+
+	return errdef.SUCCESS, resp, zoneRes
 }
 
 // 获取世界信息（暂时只有国家）

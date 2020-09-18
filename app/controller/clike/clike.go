@@ -39,7 +39,7 @@ func New(c *gin.Context) LikeModule {
 }
 
 // 点赞视频
-func (svc *LikeModule) GiveLikeForVideo(userId string, videoId int64) int {
+func (svc *LikeModule) GiveLikeForVideo(userId, toUserId string, videoId int64) int {
 	// 查询用户是否存在
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("like_trace: user not found, userId:%s", userId)
@@ -88,7 +88,7 @@ func (svc *LikeModule) GiveLikeForVideo(userId string, videoId int64) int {
 
 	} else {
 		// 添加点赞记录
-		if err := svc.like.AddGiveLikeByType(userId, videoId, consts.ALREADY_GIVE_LIKE, consts.TYPE_VIDEO_LIKE); err != nil {
+		if err := svc.like.AddGiveLikeByType(userId, toUserId, videoId, consts.ALREADY_GIVE_LIKE, consts.TYPE_VIDEO_LIKE); err != nil {
 			log.Log.Errorf("like_trace: add like video record err:%s", err)
 			svc.engine.Rollback()
 			return errdef.LIKE_VIDEO_FAIL

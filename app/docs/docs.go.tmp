@@ -1533,6 +1533,81 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/user/zone/info": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "账号体系"
+                ],
+                "summary": "个人空间用户信息 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "个人空间用户信息 请求参数",
+                        "name": "UserZoneInfoParam",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/muser.UserZoneInfoParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/swag.ZoneInfoSwag"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/video/browse/history": {
             "get": {
                 "consumes": [
@@ -1967,9 +2042,14 @@ var doc = `{
         "mcollect.AddCollectParam": {
             "type": "object",
             "required": [
+                "to_user_id",
                 "videoId"
             ],
             "properties": {
+                "to_user_id": {
+                    "type": "string",
+                    "example": "发布者uid"
+                },
                 "videoId": {
                     "type": "integer",
                     "example": 10001
@@ -2017,9 +2097,14 @@ var doc = `{
         "mlike.GiveLikeParam": {
             "type": "object",
             "required": [
+                "toUserId",
                 "videoId"
             ],
             "properties": {
+                "toUserId": {
+                    "type": "string",
+                    "example": "被点赞的用户"
+                },
                 "videoId": {
                     "type": "integer",
                     "example": 10001
@@ -2147,7 +2232,7 @@ var doc = `{
                     "type": "string",
                     "example": "头像地址"
                 },
-                "background_img": {
+                "backgroundImg": {
                     "type": "string",
                     "example": "背景图"
                 },
@@ -2163,7 +2248,7 @@ var doc = `{
                     "type": "integer",
                     "example": 0
                 },
-                "is_anchor": {
+                "isAnchor": {
                     "type": "integer",
                     "example": 0
                 },
@@ -2183,13 +2268,21 @@ var doc = `{
                     "type": "integer",
                     "example": 0
                 },
-                "user_id": {
+                "userId": {
                     "type": "string",
                     "example": "2009011314521111"
                 },
-                "user_type": {
+                "userType": {
                     "type": "integer",
                     "example": 0
+                }
+            }
+        },
+        "muser.UserZoneInfoParam": {
+            "type": "object",
+            "properties": {
+                "userId": {
+                    "type": "string"
                 }
             }
         },
@@ -2459,6 +2552,54 @@ var doc = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "swag.UserZoneInfoResp": {
+            "type": "object",
+            "properties": {
+                "totalAttention": {
+                    "description": "关注数",
+                    "type": "integer",
+                    "example": 100
+                },
+                "totalBeLiked": {
+                    "description": "被点赞数",
+                    "type": "integer",
+                    "example": 100
+                },
+                "totalCollect": {
+                    "description": "收藏的作品数",
+                    "type": "integer",
+                    "example": 100
+                },
+                "totalFans": {
+                    "description": "粉丝数",
+                    "type": "integer",
+                    "example": 100
+                },
+                "totalLikes": {
+                    "description": "点赞的作品数",
+                    "type": "integer",
+                    "example": 100
+                },
+                "totalPublish": {
+                    "description": "发布的作品数",
+                    "type": "integer",
+                    "example": 100
+                }
+            }
+        },
+        "swag.ZoneInfoSwag": {
+            "type": "object",
+            "properties": {
+                "userInfo": {
+                    "type": "object",
+                    "$ref": "#/definitions/muser.UserInfoResp"
+                },
+                "zoneInfo": {
+                    "type": "object",
+                    "$ref": "#/definitions/swag.UserZoneInfoResp"
                 }
             }
         }

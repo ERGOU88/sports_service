@@ -46,7 +46,7 @@ func GiveLikeForVideo(c *gin.Context) {
 
 	svc := clike.New(c)
 	// 视频点赞
-	syscode := svc.GiveLikeForVideo(userId.(string), param.VideoId)
+	syscode := svc.GiveLikeForVideo(userId.(string), param.ToUserId, param.VideoId)
 	reply.Response(http.StatusOK, syscode)
 }
 

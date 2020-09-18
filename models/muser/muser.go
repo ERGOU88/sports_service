@@ -26,19 +26,29 @@ func NewUserModel(engine *xorm.Session) *UserModel {
 
 // 用户简单信息返回
 type UserInfoResp struct {
-	UserId        string `json:"user_id" example:"2009011314521111"`
+	UserId        string `json:"userId" example:"2009011314521111"`
 	Avatar        string `json:"avatar" example:"头像地址"`
 	MobileNum     int32  `json:"mobileNum" example:"13177656222"`
 	NickName      string `json:"nickname" example:"昵称 陈二狗"`
 	Gender        int32  `json:"gender" example:"0"`
 	Signature     string `json:"signature" example:"个性签名"`
 	Status        int32  `json:"status" example:"0"`
-	IsAnchor      int32  `json:"is_anchor" example:"0"`
-	BackgroundImg string `json:"background_img" example:"背景图"`
+	IsAnchor      int32  `json:"isAnchor" example:"0"`
+	BackgroundImg string `json:"backgroundImg" example:"背景图"`
 	Born          string `json:"born" example:"出生日期"`
 	Age           int    `json:"age" example:"27"`
-	UserType      int    `json:"user_type" example:"0"`
+	UserType      int    `json:"userType" example:"0"`
 	Country       int32  `json:"country" example:"0"`
+}
+
+// 个人空间用户信息
+type UserZoneInfoResp struct {
+	TotalBeLiked     int64  `json:"totalBeLiked" example:"100"`     // 被点赞数
+	TotalFans        int64  `json:"totalFans" example:"100"`        // 粉丝数
+	TotalAttention   int64  `json:"totalAttention" example:"100"`   // 关注数
+	TotalCollect     int64  `json:"totalCollect" example:"100"`     // 收藏的作品数
+	TotalPublish     int64  `json:"totalPublish" example:"100"`     // 发布的作品数
+	TotalLikes       int64  `json:"totalLikes" example:"100"`       // 点赞的作品数
 }
 
 // 登陆请求所需的参数
@@ -65,6 +75,11 @@ type FeedbackParam struct {
 	Describe string `binding:"required" json:"describe" example:"问题描述"`    // 反馈内容
 	Problem  string `json:"problem" example:"遇到的问题"`                       // 遇到的问题
 	Pics     string `json:"pics" example:"图片列表"`                           // 图片（多张逗号分隔）
+}
+
+// 个人空间 用户信息请求参数
+type UserZoneInfoParam struct {
+	UserId  string `json:"userId"`            // 用户userid
 }
 
 var validPhone = regexp.MustCompile(`^1\d{10}$`)

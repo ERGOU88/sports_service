@@ -21,7 +21,7 @@ import (
 func InitRouters(engine *gin.Engine) {
 	// 初始化中间件
 	middleware.InitMiddleware(engine, log.Log, config.Global.Log.ShowColor)
-	// 生成环境 不展示api文档 及 错误码文档
+	// 生产环境 不展示api文档 及 错误码文档
 	if config.Global.Mode != string(consts.ModeProd) {
 		// swag文档
 		swag.Router(engine)

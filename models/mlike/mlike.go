@@ -14,12 +14,13 @@ type LikeModel struct {
 
 // 添加点赞请求参数
 type GiveLikeParam struct {
-	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`     // 点赞的视频id
+	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`          // 点赞的视频id
+	ToUserId      string    `binding:"required" json:"toUserId" example:"被点赞的用户"`    // 被点赞的用户id
 }
 
 // 取消点赞请求参数
 type CancelLikeParam struct {
-	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`     // 取消点赞的视频id
+	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`          // 取消点赞的视频id
 }
 
 // 实栗
@@ -50,8 +51,9 @@ func (m *LikeModel) GetUserLikeVideos(userId string, offset, size int) []*LikeVi
 }
 
 // 添加点赞记录 1 视频点赞 2 帖子点赞 3 评论点赞
-func (m *LikeModel) AddGiveLikeByType(userId string, composeId int64, status, zanType int) error {
+func (m *LikeModel) AddGiveLikeByType(userId, toUserId string, composeId int64, status, zanType int) error {
 	m.Like.UserId = userId
+	m.Like.ToUserId = toUserId
 	m.Like.TypeId = composeId
 	m.Like.Status = status
 	m.Like.ZanType = zanType
@@ -82,5 +84,27 @@ func (m *LikeModel) UpdateLikeStatus() error {
 	}
 
 	return nil
+}
+
+// 获取用户被点赞总数
+func (m *LikeModel) GetUserTotalBeLiked(userId string) int64 {
+	total, err := m.Engine.Where("to_user_id=? AND status=1", userId).Count(m.Like)
+	if err != nil {
+		log.Log.Errorf("like_trace: get user total be liked err:%s, uid:%s", err, userId)
+		return 0
+	}
+
+	return total
+}
+
+// 获取用户点赞总数
+func (m *LikeModel) GetUserTotalLikes(userId string) int64 {
+	total, err := m.Engine.Where("user_id=? AND status=1", userId).Count(m.Like)
+	if err != nil {
+		log.Log.Errorf("like_trace: get user total likes err:%s, uid:%s", err, userId)
+		return 0
+	}
+
+	return total
 }
 

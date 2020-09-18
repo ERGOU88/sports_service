@@ -274,7 +274,7 @@ func UserFeedback(c *gin.Context) {
 
 	params := new(muser.FeedbackParam)
 	if err := c.BindJSON(params); err != nil {
-		log.Log.Errorf("user_trace: feedback param err, params:%+v", params)
+		log.Log.Errorf("user_trace: feedback param err:%s, params:%+v", err, params)
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
@@ -282,6 +282,39 @@ func UserFeedback(c *gin.Context) {
 	svc := cuser.New(c)
 	// 记录用户反馈的问题
 	syscode := svc.RecordUserFeedback(userId.(string), params)
+	reply.Response(http.StatusOK, syscode)
+}
+
+// @Summary 个人空间用户信息 (ok)
+// @Tags 账号体系
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   UserZoneInfoParam  body muser.UserZoneInfoParam true "个人空间用户信息 请求参数"
+// @Success 200 {object}  swag.ZoneInfoSwag
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/user/zone/info [get]
+// 个人空间用户信息
+func UserZoneInfo(c *gin.Context) {
+	reply := errdef.New(c)
+	param := new(muser.UserZoneInfoParam)
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("user_trace: request user zone info err:%s, param:%+v", err, param)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cuser.New(c)
+	// 获取用户个人空间信息
+	syscode, userInfo, zoneInfo := svc.GetUserZoneInfo(param.UserId)
+	reply.Data["userInfo"] = userInfo
+	reply.Data["zoneInfo"] = zoneInfo
 	reply.Response(http.StatusOK, syscode)
 }
 

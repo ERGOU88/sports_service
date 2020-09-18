@@ -85,3 +85,25 @@ func (m *AttentionModel) GetFansList(userId string) []string {
 	return list
 }
 
+// 获取用户的关注总数
+func (m *AttentionModel) GetTotalAttention(userId string) int64 {
+	total, err := m.Engine.Where("status=1 AND attention_uid=?", userId).Count(m.UserAttention)
+	if err != nil {
+		log.Log.Errorf("attention_trace: get attention total err:%s, uid:%s", err, userId)
+		return 0
+	}
+
+	return total
+}
+
+// 获取用户的粉丝总数
+func (m *AttentionModel) GetTotalFans(userId string) int64 {
+	total, err := m.Engine.Where("status=1 AND user_id=?", userId).Count(m.UserAttention)
+	if err != nil {
+		log.Log.Errorf("attention_trace: get fans total err:%s, uid:%s", err, userId)
+		return 0
+	}
+
+	return total
+}
+

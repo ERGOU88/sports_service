@@ -9,18 +9,19 @@ import (
 )
 
 type CollectModel struct {
-	CollectVideo *models.CollectVideoRecord
-	Engine       *xorm.Session
+	CollectRecord *models.CollectRecord
+	Engine        *xorm.Session
 }
 
 // 添加收藏请求参数
 type AddCollectParam struct {
-	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`     // 收藏的视频id
+	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`       // 收藏的视频id
+	ToUserId      string    `binding:"required" json:"to_user_id" example:"发布者uid"` // 发布者uid
 }
 
 // 取消收藏请求参数
 type CancelCollectParam struct {
-	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`     // 取消收藏的视频id
+	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`       // 取消收藏的视频id
 }
 
 // 删除收藏记录请求参数
@@ -31,19 +32,21 @@ type DeleteCollectParam struct {
 // 实栗
 func NewCollectModel(engine *xorm.Session) *CollectModel {
 	return &CollectModel{
-		CollectVideo: new(models.CollectVideoRecord),
-		Engine:       engine,
+		CollectRecord: new(models.CollectRecord),
+		Engine:        engine,
 	}
 }
 
 // 添加视频收藏
-func (m *CollectModel) AddCollectVideo(userId string, videoId int64, status int) error {
-	m.CollectVideo.UserId = userId
-	m.CollectVideo.VideoId = videoId
-	m.CollectVideo.UpdateAt = int(time.Now().Unix())
-	m.CollectVideo.CreateAt = int(time.Now().Unix())
-	m.CollectVideo.Status = status
-	if _, err := m.Engine.InsertOne(m.CollectVideo); err != nil {
+func (m *CollectModel) AddCollectVideo(userId, toUserId string, videoId int64, status, composeType int) error {
+	m.CollectRecord.UserId = userId
+	m.CollectRecord.ToUserId = toUserId
+	m.CollectRecord.ComposeId = videoId
+	m.CollectRecord.ComposeType = composeType
+	m.CollectRecord.UpdateAt = int(time.Now().Unix())
+	m.CollectRecord.CreateAt = int(time.Now().Unix())
+	m.CollectRecord.Status = status
+	if _, err := m.Engine.InsertOne(m.CollectRecord); err != nil {
 		return err
 	}
 
@@ -51,20 +54,20 @@ func (m *CollectModel) AddCollectVideo(userId string, videoId int64, status int)
 }
 
 // 获取收藏的信息
-func (m *CollectModel) GetCollectInfo(userId string, videoId int64) *models.CollectVideoRecord {
-	ok, err := m.Engine.Where("user_id=? AND video_id=?", userId, videoId).Get(m.CollectVideo)
+func (m *CollectModel) GetCollectInfo(userId string, videoId int64, composeType int) *models.CollectRecord {
+	ok, err := m.Engine.Where("user_id=? AND compose_id=? AND compose_type=?", userId, videoId, composeType).Get(m.CollectRecord)
 	if !ok || err != nil {
 		return nil
 	}
 
-	return m.CollectVideo
+	return m.CollectRecord
 }
 
 // 更新收藏状态 收藏/取消收藏
 func (m *CollectModel) UpdateCollectStatus() error {
-	if _, err := m.Engine.Where("id=?", m.CollectVideo.Id).
+	if _, err := m.Engine.Where("id=?", m.CollectRecord.Id).
 		Cols("status, update_at").
-		Update(m.CollectVideo); err != nil {
+		Update(m.CollectRecord); err != nil {
 		return err
 	}
 
@@ -72,14 +75,14 @@ func (m *CollectModel) UpdateCollectStatus() error {
 }
 
 type CollectVideosInfo struct {
-	VideoId      int64      `json:"video_id"`
-	UpdateAt     int        `json:"update_at"`
+	ComposeId int64 `json:"compose_id"`
+	UpdateAt  int   `json:"update_at"`
 }
-// 获取收藏的视频id列表
-func (m *CollectModel) GetCollectVideos(userId string, offset, size int) []*CollectVideosInfo {
+// 获取收藏的作品id列表
+func (m *CollectModel) GetCollectList(userId string, offset, size int) []*CollectVideosInfo {
 	var list []*CollectVideosInfo
 	if err := m.Engine.Where("status=1 AND user_id=?", userId).
-		Cols("video_id, update_at").
+		Cols("compose_id, update_at").
 		Desc("id").
 		Limit(size, offset).
 		Find(&list); err != nil {
@@ -92,10 +95,21 @@ func (m *CollectModel) GetCollectVideos(userId string, offset, size int) []*Coll
 
 // 通过id列表删除收藏记录
 func (m *CollectModel) DeleteCollectByIds(userId string, ids string) error {
-	sql := fmt.Sprintf("DELETE FROM `collect_video_record` WHERE `user_id`=? AND video_id in(%s)", ids)
+	sql := fmt.Sprintf("DELETE FROM `collect_record` WHERE `user_id`=? AND compose_id in(%s)", ids)
 	if _, err := m.Engine.Exec(sql, userId); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// 获取用户收藏的作品总数
+func (m *CollectModel) GetUserTotalCollect(userId string) int64 {
+	total, err := m.Engine.Where("user_id=? AND status=1", userId).Count(m.CollectRecord)
+	if err != nil {
+		log.Log.Errorf("collect_trace: get collect total err:%s, uid:%s", err, userId)
+		return 0
+	}
+
+	return total
 }

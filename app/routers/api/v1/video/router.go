@@ -19,7 +19,7 @@ func Router(engine *gin.Engine) {
 		video.POST("/publish/list", VideoPublishList)
 		// 删除浏览记录
 		video.POST("/delete/history", DeleteHistory)
-
+		// 删除发布的记录
 		video.POST("/delete/publish", DeletePublish)
 
 	}

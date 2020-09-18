@@ -39,7 +39,7 @@ func New(c *gin.Context) CollectModule {
 }
 
 // 添加收藏
-func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
+func (svc *CollectModule) AddCollect(userId, toUserId string, videoId int64) int {
 	// 查询用户是否存在
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("collect_trace: user not found, userId:%s", userId)
@@ -53,7 +53,7 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 	}
 
 	// 获取收藏的信息
-	info := svc.collect.GetCollectInfo(userId, videoId)
+	info := svc.collect.GetCollectInfo(userId, videoId, consts.TYPE_VIDEO)
 	// 是否已收藏
 	// 已收藏过
 	if info != nil && info.Status == consts.ALREADY_COLLECT {
@@ -87,7 +87,7 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 		}
 	} else {
 		// 添加收藏记录
-		if err := svc.collect.AddCollectVideo(userId, videoId, consts.ALREADY_COLLECT); err != nil {
+		if err := svc.collect.AddCollectVideo(userId, toUserId, videoId, consts.ALREADY_COLLECT, consts.TYPE_VIDEO); err != nil {
 			log.Log.Errorf("collect_trace: add collect record err:%s", err)
 			svc.engine.Rollback()
 			return errdef.COLLECT_VIDEO_FAIL
@@ -114,7 +114,7 @@ func (svc *CollectModule) CancelCollect(userId string, videoId int64) int {
 	}
 
 	// 获取收藏的信息 判断是否已收藏 记录不存在 则 未收藏
-	info := svc.collect.GetCollectInfo(userId, videoId)
+	info := svc.collect.GetCollectInfo(userId, videoId, consts.TYPE_VIDEO)
 	if info == nil {
 		log.Log.Errorf("collect_trace: record not found, no collect, userId:%s, videoId:%d", userId, videoId)
 		return errdef.COLLECT_RECORD_NOT_EXISTS
@@ -157,7 +157,7 @@ func (svc *CollectModule) CancelCollect(userId string, videoId int64) int {
 // 获取用户收藏的视频列表
 func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []*mvideo.VideosInfoResp {
 	offset := (page - 1) * size
-	infos := svc.collect.GetCollectVideos(userId, offset, size)
+	infos := svc.collect.GetCollectList(userId, offset, size)
 	if len(infos) == 0 {
 		return nil
 	}
@@ -167,8 +167,8 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
 	// 当前页所有视频id
 	videoIds := make([]string, len(infos))
 	for index, like := range infos {
-		mp[like.VideoId] = like.UpdateAt
-		videoIds[index] = fmt.Sprint(like.VideoId)
+		mp[like.ComposeId] = like.UpdateAt
+		videoIds[index] = fmt.Sprint(like.ComposeId)
 	}
 
 	vids := strings.Join(videoIds, ",")
