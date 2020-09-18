@@ -40,15 +40,23 @@ func New(c *gin.Context) CollectModule {
 
 // 添加收藏
 func (svc *CollectModule) AddCollect(userId, toUserId string, videoId int64) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("collect_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
+
 	// 查询用户是否存在
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("collect_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
 		return errdef.USER_NOT_EXISTS
 	}
 
 	// 查找视频是否存在
 	if video := svc.video.FindVideoById(fmt.Sprint(videoId)); video == nil {
 		log.Log.Errorf("collect_trace: video not found, videoId:%d", videoId)
+		svc.engine.Rollback()
 		return errdef.COLLECT_VIDEO_NOT_EXISTS
 	}
 
@@ -58,18 +66,13 @@ func (svc *CollectModule) AddCollect(userId, toUserId string, videoId int64) int
 	// 已收藏过
 	if info != nil && info.Status == consts.ALREADY_COLLECT {
 		log.Log.Errorf("collect_trace: already collect, userId:%s, videoId:%d", userId, videoId)
+		svc.engine.Rollback()
 		return errdef.COLLECT_ALREADY_EXISTS
-	}
-
-	// 开启事务
-	if err := svc.engine.Begin(); err != nil {
-		log.Log.Errorf("collect_trace: session begin err:%s", err)
-		return errdef.ERROR
 	}
 
 	now :=  int(time.Now().Unix())
 	// 更新视频收藏总计 +1
-	if err := svc.video.UpdateVideoCollectNum(videoId, consts.CONFIRM_OPERATE, now); err != nil {
+	if err := svc.video.UpdateVideoCollectNum(videoId, now, consts.CONFIRM_OPERATE); err != nil {
 		log.Log.Errorf("collect_trace: update video collect num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.COLLECT_VIDEO_FAIL
@@ -101,15 +104,23 @@ func (svc *CollectModule) AddCollect(userId, toUserId string, videoId int64) int
 
 // 取消收藏
 func (svc *CollectModule) CancelCollect(userId string, videoId int64) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("collect_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
+
 	// 查询用户是否存在
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("collect_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
 		return errdef.USER_NOT_EXISTS
 	}
 
 	// 查找视频是否存在
 	if video := svc.video.FindVideoById(fmt.Sprint(videoId)); video == nil {
 		log.Log.Errorf("collect_trace: video not found, videoId:%d", videoId)
+		svc.engine.Rollback()
 		return errdef.VIDEO_NOT_EXISTS
 	}
 
@@ -117,24 +128,20 @@ func (svc *CollectModule) CancelCollect(userId string, videoId int64) int {
 	info := svc.collect.GetCollectInfo(userId, videoId, consts.TYPE_VIDEO)
 	if info == nil {
 		log.Log.Errorf("collect_trace: record not found, no collect, userId:%s, videoId:%d", userId, videoId)
+		svc.engine.Rollback()
 		return errdef.COLLECT_RECORD_NOT_EXISTS
 	}
 
 	// 状态 	!= 已收藏 提示重复操作
 	if info.Status != consts.ALREADY_COLLECT {
 		log.Log.Errorf("collect_trace: already cancel collect, userId:%s, videoId:%d", userId, videoId)
+		svc.engine.Rollback()
 		return errdef.COLLECT_REPEAT_CANCEL
-	}
-
-	// 开启事务
-	if err := svc.engine.Begin(); err != nil {
-		log.Log.Errorf("collect_trace: session begin err:%s", err)
-		return errdef.ERROR
 	}
 
 	now :=  int(time.Now().Unix())
 	// 更新视频收藏总计 -1
-	if err := svc.video.UpdateVideoCollectNum(videoId, consts.CANCEL_OPERATE, now); err != nil {
+	if err := svc.video.UpdateVideoCollectNum(videoId, now, consts.CANCEL_OPERATE); err != nil {
 		log.Log.Errorf("collect_trace: update video collect num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.COLLECT_CANCEL_FAIL

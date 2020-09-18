@@ -41,16 +41,17 @@ func New(c *gin.Context) VideoModule {
 // 事务处理
 // 数据记录到视频审核表 同时 标签记录到 视频标签表（多条记录 同一个videoId对应N个labelId 生成N条记录）
 func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPublishParams) error {
-	// 查询用户是否存在
-	if user := svc.user.FindUserByUserid(userId); user == nil {
-		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
-		return nil
-	}
-
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("video_trace: session begin err:%s", err)
 		return err
+	}
+
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
+		return nil
 	}
 
 	// todo: 查询上传的标签是否存在

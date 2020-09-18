@@ -4949,3 +4949,1389 @@ net/http.(*conn).serve
 [2020-09-18 18:37:25]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
 [2020-09-18 18:37:25]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 18:37:25 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：  104.926066ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
 
+[2020-09-18 18:39:45]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 18:39:49]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 18:39:49]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:39:49]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 18:39:49]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:39:49]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 18:39:49 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   83.393414ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 18:40:00]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 18:40:00]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:40:00]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 18:40:00]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:40:01]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 18:40:01 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   65.140791ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 18:40:07]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 18:40:07]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:40:07]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 18:40:07]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:40:07]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 18:40:07 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   96.939352ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 18:44:52]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 18:44:52]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 18:44:52 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;43m 401 [0m|耗时：      65.939µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video {
+   "videoId":2,
+   "userId":"202009101933004667",
+}
+|
+
+[2020-09-18 18:45:15]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 18:45:21]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 18:45:21]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:45:21]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 18:45:21]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:45:21]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:42	like_trace: invalid param, param:&{VideoId:0 ToUserId:}
+sports_service/server/app/routers/api/v1/like.GiveLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:42
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 18:45:21]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 18:45:21 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    1.154647ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 18:45:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 18:45:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:45:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 18:45:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:45:42]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:73	like_trace: update video like num err:Error 1054: Unknown column 'like_num' in 'where clause'
+sports_service/server/app/controller/clike.(*LikeModule).GiveLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:73
+sports_service/server/app/routers/api/v1/like.GiveLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:49
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 18:45:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 18:45:42 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   38.397576ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 18:47:00]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 18:47:04]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 18:47:04]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:47:04]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 18:47:04]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:47:04]-16	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:73	like_trace: update video like num err:sql: expected 4 arguments, got 3
+sports_service/server/app/controller/clike.(*LikeModule).GiveLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:73
+sports_service/server/app/routers/api/v1/like.GiveLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:49
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 18:47:04]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 18:47:04 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   10.463347ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 18:48:23]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 18:48:26]-69	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 18:48:26]-69	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:48:26]-69	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 18:48:26]-69	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:48:26]-69	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 18:48:26 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   36.693486ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 18:53:09]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 18:53:14]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 18:53:14]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:53:14]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 18:53:14]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:53:15]-82	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:68	like_trace: already give like, userId:202009181548217779, videoId:2
+sports_service/server/app/controller/clike.(*LikeModule).GiveLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:68
+sports_service/server/app/routers/api/v1/like.GiveLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:49
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 18:53:15]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 18:53:15 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：  460.359317ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 18:53:28]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/cancel,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 18:53:28]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:53:28]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 18:53:28]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:53:28]-82	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:146	like_trace: update video like num err:Error 1264: Out of range value for column 'update_at' at row 1
+sports_service/server/app/controller/clike.(*LikeModule).CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:146
+sports_service/server/app/routers/api/v1/like.CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:87
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 18:53:28]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 18:53:28 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    7.107629ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video/cancel |
+
+[2020-09-18 18:57:12]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 18:57:18]-51	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/cancel,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 18:57:18]-51	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:57:18]-51	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 18:57:18]-51	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:57:18]-51	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:146	like_trace: update video like num err:Error 1690: BIGINT UNSIGNED value is out of range in '(`fpv2`.`video_statistic`.`fabulous_num` + ?)'
+sports_service/server/app/controller/clike.(*LikeModule).CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:146
+sports_service/server/app/routers/api/v1/like.CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:87
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 18:57:18]-51	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 18:57:18 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   48.240976ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video/cancel |
+
+[2020-09-18 18:59:35]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 18:59:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/cancel,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 18:59:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:59:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 18:59:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 18:59:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 18:59:37 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   80.320218ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video/cancel |
+
+[2020-09-18 19:00:26]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:00:26]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:00:26]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:00:26]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:00:26]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:00:26 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   35.036068ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:00:27]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:00:27]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:00:27]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:00:27]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:00:27]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:00:27 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   85.573152ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:00:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:00:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:00:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:00:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:00:28]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/cvideo/cvideo.go:94	video_trace: add video labels err:Error 1062: Duplicate entry '7-1' for key 'PRIMARY'
+sports_service/server/app/controller/cvideo.(*VideoModule).UserPublishVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/cvideo/cvideo.go:94
+sports_service/server/app/routers/api/v1/video.VideoPublish
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/video/video.go:48
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:00:28]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/video/video.go:49	video_trace: video publish failed, err:add video labels error
+sports_service/server/app/routers/api/v1/video.VideoPublish
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/video/video.go:49
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:00:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:00:28 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   32.840353ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:00:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:00:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:00:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:00:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:00:28]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/cvideo/cvideo.go:94	video_trace: add video labels err:Error 1062: Duplicate entry '8-1' for key 'PRIMARY'
+sports_service/server/app/controller/cvideo.(*VideoModule).UserPublishVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/cvideo/cvideo.go:94
+sports_service/server/app/routers/api/v1/video.VideoPublish
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/video/video.go:48
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:00:28]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/video/video.go:49	video_trace: video publish failed, err:add video labels error
+sports_service/server/app/routers/api/v1/video.VideoPublish
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/video/video.go:49
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:00:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:00:28 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   81.021902ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:00:29]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:00:29]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:00:29]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:00:29]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:00:29]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/cvideo/cvideo.go:94	video_trace: add video labels err:Error 1062: Duplicate entry '9-1' for key 'PRIMARY'
+sports_service/server/app/controller/cvideo.(*VideoModule).UserPublishVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/cvideo/cvideo.go:94
+sports_service/server/app/routers/api/v1/video.VideoPublish
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/video/video.go:48
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:00:29]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/video/video.go:49	video_trace: video publish failed, err:add video labels error
+sports_service/server/app/routers/api/v1/video.VideoPublish
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/video/video.go:49
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:00:29]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:00:29 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   22.170962ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:24]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:24]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:24]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:24]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:24]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:24 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   48.221506ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:24]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:24]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:24]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:24]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:24]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:24 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   42.735426ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:25]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:25]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:25]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:25]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:25]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:25 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   79.996333ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:26]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:26]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:26]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:26]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:26]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:26 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    44.87191ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:26]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:26]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:26]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:26]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:26]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:26 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   38.710046ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:27]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:27]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:27]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:27]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:27]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:27 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   36.457855ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:27]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:27]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:27]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:27]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:27]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:27 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    73.58516ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:28 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   28.495308ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:28]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:28 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   83.163437ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:29]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:29]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:29]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:29]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:29]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:29 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   58.766513ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:29]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:29]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:29]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:29]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:29]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:29 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   11.419385ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:30]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:30]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:30]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:30]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:30]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:30 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   31.996218ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:30]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:30]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:30]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:30]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:30]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:30 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   13.914335ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:31]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:31]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:31]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:31]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:31]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:31 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   51.670532ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:31]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:31]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:31]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:31]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:31]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:31 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   27.013446ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:32]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:32]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:32]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:32]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:32]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:32 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   65.261928ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:32]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:32]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:32]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:32]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:32]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:32 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   89.962659ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:32]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:32]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:32]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:32]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:32]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:32 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    29.65147ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:33]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:33]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:33]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:33]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:33]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:33 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   32.896261ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:33]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:33]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:33]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:33]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:33]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:33 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    7.766786ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:34]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:34]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:34]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:34]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:34]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:34 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   21.379046ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:34]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:34]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:34]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:34]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:34]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:34 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   48.651485ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:35]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:35]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:35]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:35]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:35]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:35 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   81.541123ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:35]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:35]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:35]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:35]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:35]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:35 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   23.682776ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:35]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:35]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:35]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:35]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:36 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   45.444303ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:36 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    9.757794ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:36 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   77.066861ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:37 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   18.816131ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:37 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：  100.047021ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:37 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   13.418706ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:38]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:38]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:38]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:38]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:38]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:38 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   58.182877ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:38]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:38]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:38]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:38]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:39 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    90.20827ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:39 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   29.236903ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:39 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   39.209332ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:39 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   43.282794ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:40]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:40]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:40]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:40]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:40]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:40 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   11.615588ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:40]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:40]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:40]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:40]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:40]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:40 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   50.589159ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:41]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:41]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:41]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:41]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:41]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:41 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   18.637899ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:41]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:41]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:41]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:41]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:41]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:41 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   90.849619ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:41]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:41]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:41]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:41]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:41]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:41 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    8.829031ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:42 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   44.450525ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:42 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   39.291967ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:42]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:42 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   28.216323ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:43 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   50.620996ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:43 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    13.65208ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:44 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   40.527869ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:44 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   26.236805ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:44 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   13.397984ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:44]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:44 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   16.509348ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:45]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:45]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:45]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:45]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:45]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:45 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   12.726015ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:45]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:45]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:45]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:45]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:45]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:45 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   43.471468ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:46]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:46]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:46]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:46]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:46]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:46 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   96.756273ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:47]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:47]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:47]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:47]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:47]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:47 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   91.657655ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:47]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:47]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:47]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:47]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:47]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:47 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   87.282449ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:48]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:48]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:48]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:48]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:48]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:48 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   15.700976ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:01:48]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/video/publish,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:01:48]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:48]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:01:48]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:01:48]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:01:48 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    9.885165ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/video/publish |
+
+[2020-09-18 19:03:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:03:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:03:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:03:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:03:39]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:42	like_trace: invalid param, param:&{VideoId:10 ToUserId:}
+sports_service/server/app/routers/api/v1/like.GiveLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:42
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:03:39]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:03:39 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    1.906103ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 19:03:51]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:03:51]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:03:51]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:03:51]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:03:51]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:03:51 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   70.837264ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 19:03:54]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:03:54]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:03:54]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:03:54]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:03:54]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:68	like_trace: already give like, userId:202009181548217779, videoId:10
+sports_service/server/app/controller/clike.(*LikeModule).GiveLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:68
+sports_service/server/app/routers/api/v1/like.GiveLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:49
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:03:54]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:03:54 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   27.370533ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 19:04:08]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/cancel,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:04:08]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:04:08]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:04:08]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:04:08]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:04:08 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   38.832212ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video/cancel |
+
+[2020-09-18 19:04:09]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/cancel,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:04:09]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:04:09]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:04:09]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:04:09]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:138	like_trace: already cancel like, userId:202009181548217779, videoId:10
+sports_service/server/app/controller/clike.(*LikeModule).CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:138
+sports_service/server/app/routers/api/v1/like.CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:87
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:04:09]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:04:09 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    7.072949ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video/cancel |
+
+[2020-09-18 19:04:16]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:04:16]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:04:16]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:04:16]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:04:16]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:04:16 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   56.213159ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 19:04:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/cancel,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:04:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:04:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:04:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:04:36]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:04:36 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   90.299452ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video/cancel |
+
+[2020-09-18 19:04:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/cancel,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:04:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:04:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:04:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:04:43]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:138	like_trace: already cancel like, userId:202009181548217779, videoId:10
+sports_service/server/app/controller/clike.(*LikeModule).CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:138
+sports_service/server/app/routers/api/v1/like.CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:87
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:04:43]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:04:43 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    6.414046ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video/cancel |
+
+[2020-09-18 19:04:56]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:04:56]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:04:56]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:04:56]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:04:56]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:04:56 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   86.019481ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 19:05:11]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:05:11]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:05:11]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:05:11]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:05:11]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:68	like_trace: already give like, userId:202009181548217779, videoId:10
+sports_service/server/app/controller/clike.(*LikeModule).GiveLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:68
+sports_service/server/app/routers/api/v1/like.GiveLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:49
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:05:11]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:05:11 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   12.634843ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 19:05:21]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:05:21]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:05:21]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:05:21]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:05:21]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:05:21 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   25.757931ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 19:05:25]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:05:25]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:05:25]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:05:25]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:05:25]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:68	like_trace: already give like, userId:202009181548217779, videoId:11
+sports_service/server/app/controller/clike.(*LikeModule).GiveLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:68
+sports_service/server/app/routers/api/v1/like.GiveLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:49
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:05:25]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:05:25 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     6.45654ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 19:05:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/cancel,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:05:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:05:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:05:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:05:37]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:05:37 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   94.527815ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video/cancel |
+
+[2020-09-18 19:05:47]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/cancel,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:05:47]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:05:47]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:05:47]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:05:47]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:138	like_trace: already cancel like, userId:202009181548217779, videoId:11
+sports_service/server/app/controller/clike.(*LikeModule).CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:138
+sports_service/server/app/routers/api/v1/like.CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:87
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:05:47]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:05:47 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    6.905015ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video/cancel |
+
+[2020-09-18 19:05:54]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/cancel,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:05:54]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:05:54]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:05:54]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:05:54]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:138	like_trace: already cancel like, userId:202009181548217779, videoId:11
+sports_service/server/app/controller/clike.(*LikeModule).CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:138
+sports_service/server/app/routers/api/v1/like.CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:87
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:05:54]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:05:54 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    8.750829ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video/cancel |
+
+[2020-09-18 19:06:01]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:06:01]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:06:01]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:06:01]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:06:01]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:06:01 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   87.906904ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 19:07:22]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:07:22]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:07:22]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:07:22]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:07:22]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:07:22 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   94.399965ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 19:07:30]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/cancel,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:07:30]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:07:30]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:07:30]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:07:30]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:07:30 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    72.55328ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video/cancel |
+
+[2020-09-18 19:08:29]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 19:08:32]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/cancel,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:08:32]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:08:32]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:08:32]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:08:33]-52	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:138	like_trace: already cancel like, userId:202009181548217779, videoId:12
+sports_service/server/app/controller/clike.(*LikeModule).CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:138
+sports_service/server/app/routers/api/v1/like.CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:87
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:08:33]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:08:33 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   48.827258ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video/cancel |
+
+[2020-09-18 19:09:27]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/cancel,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:09:27]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:09:27]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:09:27]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:09:27]-52	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:131	like_trace: record not found, not give like, userId:202009181548217779, videoId:13
+sports_service/server/app/controller/clike.(*LikeModule).CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:131
+sports_service/server/app/routers/api/v1/like.CancelLikeForVideo
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:87
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:09:27]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:09:27 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    8.537438ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video/cancel |
+
+[2020-09-18 19:09:31]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:09:31]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:09:31]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:09:31]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:09:31]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:09:31 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   22.873045ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 19:09:35]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/cancel,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:09:35]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:09:35]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:09:35]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:09:35]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:09:35 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   44.775133ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video/cancel |
+
+[2020-09-18 19:10:02]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:10:02]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:10:02]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:10:02]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:10:02]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:10:02 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   98.382898ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video |
+
+[2020-09-18 19:10:06]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/list,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:10:06]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:10:06 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;43m 404 [0m|耗时：       21.11µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/like/video/list {
+   "videoId": 13,
+   "toUserId":"202009101933004667"
+}
+|
+
+[2020-09-18 19:10:09]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/list,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:10:09]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:10:09]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:10:09]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:10:09]-52	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/mlike/mlike.go:46	like_trace: get like videos err:Error 1146: Table 'fpv2.like_videos_info' doesn't exist
+sports_service/server/models/mlike.(*LikeModel).GetUserLikeVideos
+	/Users/jelly/go/src/sports_service/server/models/mlike/mlike.go:46
+sports_service/server/app/controller/clike.(*LikeModule).GetUserLikeVideos
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:168
+sports_service/server/app/routers/api/v1/like.LikeVideoList
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:120
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:10:09]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:10:09 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    5.276475ms | 127.0.0.1 |[97;44m  [0m GET     /api/v1/like/video/list {
+   "videoId": 13,
+   "toUserId":"202009101933004667"
+}
+|
+
+[2020-09-18 19:11:26]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 19:11:28]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/list,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:11:28]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:11:28]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:11:28]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:11:30]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/list,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:11:30]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:11:30]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:11:30]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:12:02]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 19:12:18]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 19:12:20]-67	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/list,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:12:20]-67	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:12:20]-67	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:12:20]-67	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:13:48]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 19:13:50]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/list,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:13:50]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:13:50]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:13:50]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:13:50]-16	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/mlike/mlike.go:46	like_trace: get like videos err:Error 1146: Table 'fpv2.like_videos_info' doesn't exist
+sports_service/server/models/mlike.(*LikeModel).GetUserLikeVideos
+	/Users/jelly/go/src/sports_service/server/models/mlike/mlike.go:46
+sports_service/server/app/controller/clike.(*LikeModule).GetUserLikeVideos
+	/Users/jelly/go/src/sports_service/server/app/controller/clike/clike.go:168
+sports_service/server/app/routers/api/v1/like.LikeVideoList
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/like/like.go:120
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:75
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:13:50]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:13:50 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   70.050821ms | 127.0.0.1 |[97;44m  [0m GET     /api/v1/like/video/list {
+   "videoId": 13,
+   "toUserId":"202009101933004667"
+}
+|
+
+[2020-09-18 19:15:11]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 19:15:14]-68	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/list,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:15:14]-68	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:15:14]-68	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:15:14]-68	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:22:05]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 19:22:09]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/list,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:22:09]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:22:09]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:22:09]-82	ERROR	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:61	token_trace: token not match, server token:, client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+sports_service/server/middleware/token.TokenAuth.func1
+	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:61
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:22:09]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:22:09 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;43m 401 [0m|耗时：     599.928µs | 127.0.0.1 |[97;44m  [0m GET     /api/v1/like/video/list {
+   "videoId": 13,
+   "toUserId":"202009101933004667"
+}
+|
+
+[2020-09-18 19:23:02]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/mobile/login,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:23:02]-82	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:34	user_trace: 参数错误, params:&{Platform:0 Token: OpToken: Operator:}
+sports_service/server/app/routers/api/v1/user.MobilePhoneLogin
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:34
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:23:02]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:23:02 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;43m 400 [0m|耗时：   13.546743ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/mobile/login |
+
+[2020-09-18 19:23:20]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/mobile/login,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:23:20]-82	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:34	user_trace: 参数错误, params:&{Platform:0 Token: OpToken: Operator:}
+sports_service/server/app/routers/api/v1/user.MobilePhoneLogin
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:34
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-18 19:23:20]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:23:20 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;43m 400 [0m|耗时：     232.128µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/mobile/login |
+
+[2020-09-18 19:25:25]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 19:25:38]-21	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/mobile/login,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:25:38]-21	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:25:38 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    16.24584ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/mobile/login |
+
+[2020-09-18 19:25:46]-21	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/list,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:25:46]-21	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:25:46]-21	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:25:46]-21	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:27:11]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 19:27:15]-62	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/list,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:27:15]-62	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:27:15]-62	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:27:15]-62	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:27:16]-62	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:27:16 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：  230.680921ms | 127.0.0.1 |[97;44m  [0m GET     /api/v1/like/video/list {
+   "videoId": 13,
+   "toUserId":"202009101933004667"
+}
+|
+
+[2020-09-18 19:28:55]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success
+[2020-09-18 19:28:58]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/like/video/list,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-18 19:28:58]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:28	val:auth=202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:28:58]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:49	token_trace: token userid:202009181548217779
+[2020-09-18 19:28:58]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/token/token.go:67	client token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e, server token:202009181548217779_beac03ea2ed704ca50c3b86fdc5d6a3e
+[2020-09-18 19:28:58]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/18 - 19:28:58 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：  242.193158ms | 127.0.0.1 |[97;44m  [0m GET     /api/v1/like/video/list {
+   "videoId": 13,
+   "toUserId":"202009101933004667"
+}
+|
+

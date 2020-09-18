@@ -38,7 +38,7 @@ type LikeVideosInfo struct {
 // 获取用户点赞的视频id列表
 func (m *LikeModel) GetUserLikeVideos(userId string, offset, size int) []*LikeVideosInfo {
 	var list []*LikeVideosInfo
-	if err := m.Engine.Where("zan_type=1 AND status=1 AND user_id=?", userId).
+	if err := m.Engine.Table(&models.ThumbsUp{}).Where("zan_type=1 AND status=1 AND user_id=?", userId).
 		Cols("type_id", "create_at").
 		Desc("id").
 		Limit(size, offset).

@@ -137,11 +137,11 @@ func (m *VideoModel) DelVideoStatistic(videoId string) error {
 }
 
 const (
-	UPDATE_VIDEO_LIKE_NUM  = "UPDATE `video_statistic` SET `like_num` = `like_num` + ?, `update_at`=? WHERE `video_id`=? AND `like_num` + ? > 0 LIMIT 1"
+	UPDATE_VIDEO_LIKE_NUM  = "UPDATE `video_statistic` SET `fabulous_num` = `fabulous_num` + ?, `update_at`=? WHERE `video_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
 )
 // 更新视频点赞数
-func (m *VideoModel) UpdateVideoLikeNum(now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_VIDEO_LIKE_NUM, num, now, num); err != nil {
+func (m *VideoModel) UpdateVideoLikeNum(videoId int64, now, num int) error {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_LIKE_NUM, num, now, videoId, num); err != nil {
 		return err
 	}
 
@@ -149,7 +149,7 @@ func (m *VideoModel) UpdateVideoLikeNum(now, num int) error {
 }
 
 const (
-	UPDATE_VIDEO_COLLECT_NUM  = "UPDATE `video_statistic` SET `collect_num` = `collect_num` + ?, `update_at`=? WHERE `video_id`=? AND `collect_num` + ? > 0 LIMIT 1"
+	UPDATE_VIDEO_COLLECT_NUM  = "UPDATE `video_statistic` SET `collect_num` = `collect_num` + ?, `update_at`=? WHERE `video_id`=? AND `collect_num` + ? >= 0 LIMIT 1"
 )
 // 更新视频收藏数
 func (m *VideoModel) UpdateVideoCollectNum(videoId int64, now, num int) error {
@@ -166,7 +166,7 @@ func (m *VideoModel) UpdateVideoCommentNum() {
 }
 
 const (
-	UPDATE_VIDEO_BROWSE_NUM  = "UPDATE `video_statistic` SET `browse_num` = `browse_num` + ?, `update_at`=? WHERE `video_id`=? AND `browse_num` + ? > 0 LIMIT 1"
+	UPDATE_VIDEO_BROWSE_NUM  = "UPDATE `video_statistic` SET `browse_num` = `browse_num` + ?, `update_at`=? WHERE `video_id`=? AND `browse_num` + ? >= 0 LIMIT 1"
 )
 // 更新视频浏览数
 func (m *VideoModel) UpdateVideoBrowseNum(now, num int) error {

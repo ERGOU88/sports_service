@@ -40,15 +40,23 @@ func New(c *gin.Context) LikeModule {
 
 // 点赞视频
 func (svc *LikeModule) GiveLikeForVideo(userId, toUserId string, videoId int64) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("like_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
+
 	// 查询用户是否存在
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("like_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
 		return errdef.USER_NOT_EXISTS
 	}
 
 	// 查找视频是否存在
 	if video := svc.video.FindVideoById(fmt.Sprint(videoId)); video == nil {
 		log.Log.Errorf("like_trace: like video not found, videoId:%d", videoId)
+		svc.engine.Rollback()
 		return errdef.LIKE_VIDEO_NOT_EXISTS
 	}
 
@@ -58,18 +66,13 @@ func (svc *LikeModule) GiveLikeForVideo(userId, toUserId string, videoId int64) 
 	// 已点赞
 	if info != nil && info.Status == consts.ALREADY_GIVE_LIKE {
 		log.Log.Errorf("like_trace: already give like, userId:%s, videoId:%d", userId, videoId)
+		svc.engine.Rollback()
 		return errdef.LIKE_ALREADY_EXISTS
-	}
-
-	// 开启事务
-	if err := svc.engine.Begin(); err != nil {
-		log.Log.Errorf("like_trace: session begin err:%s", err)
-		return errdef.ERROR
 	}
 
 	now :=  int(time.Now().Unix())
 	// 更新视频点赞总计 +1
-	if err := svc.video.UpdateVideoLikeNum(consts.CONFIRM_OPERATE, now); err != nil {
+	if err := svc.video.UpdateVideoLikeNum(videoId, now, consts.CONFIRM_OPERATE); err != nil {
 		log.Log.Errorf("like_trace: update video like num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.LIKE_VIDEO_FAIL
@@ -102,15 +105,23 @@ func (svc *LikeModule) GiveLikeForVideo(userId, toUserId string, videoId int64) 
 
 // 取消点赞（视频）
 func (svc *LikeModule) CancelLikeForVideo(userId string, videoId int64) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("like_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
+
 	// 查询用户是否存在
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("like_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
 		return errdef.USER_NOT_EXISTS
 	}
 
 	// 查找视频是否存在
 	if video := svc.video.FindVideoById(fmt.Sprint(videoId)); video == nil {
 		log.Log.Errorf("like_trace: cancel like video not found, videoId:%d", videoId)
+		svc.engine.Rollback()
 		return errdef.LIKE_VIDEO_NOT_EXISTS
 	}
 
@@ -118,24 +129,20 @@ func (svc *LikeModule) CancelLikeForVideo(userId string, videoId int64) int {
 	info := svc.like.GetLikeInfo(userId, videoId, consts.TYPE_VIDEO_LIKE)
 	if info == nil {
 		log.Log.Errorf("like_trace: record not found, not give like, userId:%s, videoId:%d", userId, videoId)
+		svc.engine.Rollback()
 		return errdef.LIKE_RECORD_NOT_EXISTS
 	}
 
 	// 状态 ！= 已点赞 提示重复操作
 	if info.Status != consts.ALREADY_GIVE_LIKE {
 		log.Log.Errorf("like_trace: already cancel like, userId:%s, videoId:%d", userId, videoId)
+		svc.engine.Rollback()
 		return errdef.LIKE_REPEAT_CANCEL
-	}
-
-	// 开启事务
-	if err := svc.engine.Begin(); err != nil {
-		log.Log.Errorf("like_trace: session begin err:%s", err)
-		return errdef.ERROR
 	}
 
 	now :=  int(time.Now().Unix())
 	// 更新视频点赞总计 -1
-	if err := svc.video.UpdateVideoLikeNum(consts.CANCEL_OPERATE, now); err != nil {
+	if err := svc.video.UpdateVideoLikeNum(videoId, now, consts.CANCEL_OPERATE); err != nil {
 		log.Log.Errorf("like_trace: update video like num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.LIKE_CANCEL_FAIL
@@ -204,7 +211,9 @@ func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*mvide
 
 		// 是否关注
 		attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)
-		resp.IsAttention = attentionInfo.Status
+		if attentionInfo != nil {
+			resp.IsAttention = attentionInfo.Status
+		}
 
 		collectAt, ok := mp[video.VideoId]
 		if ok {
