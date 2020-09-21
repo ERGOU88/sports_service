@@ -180,7 +180,7 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
 
 	vids := strings.Join(videoIds, ",")
 	// 获取收藏的视频列表信息
-	videoList := svc.video.FindVideoListByIds(vids, offset, size)
+	videoList := svc.video.FindVideoListByIds(vids)
 	if len(videoList) == 0 {
 		log.Log.Errorf("collect_trace: not found collect video list info, len:%d, videoIds:%s", len(videoList), vids)
 		return nil

@@ -181,7 +181,7 @@ func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*mvide
 
 	vids := strings.Join(videoIds, ",")
 	// 获取点赞的视频列表信息
-	videoList := svc.video.FindVideoListByIds(vids, offset, size)
+	videoList := svc.video.FindVideoListByIds(vids)
 	if len(videoList) == 0 {
 		log.Log.Errorf("like_trace: not found like video list info, len:%d, videoIds:%s", len(videoList), vids)
 		return nil

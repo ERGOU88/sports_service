@@ -26,46 +26,63 @@ func NewUserModel(engine *xorm.Session) *UserModel {
 
 // 用户简单信息返回
 type UserInfoResp struct {
-	UserId        string `json:"userId" example:"2009011314521111"`
+	UserId        string `json:"user_id" example:"2009011314521111"`
 	Avatar        string `json:"avatar" example:"头像地址"`
-	MobileNum     int32  `json:"mobileNum" example:"13177656222"`
-	NickName      string `json:"nickname" example:"昵称 陈二狗"`
+	MobileNum     int32  `json:"mobile_num" example:"13177656222"`
+	NickName      string `json:"nick_name" example:"昵称 陈二狗"`
 	Gender        int32  `json:"gender" example:"0"`
 	Signature     string `json:"signature" example:"个性签名"`
 	Status        int32  `json:"status" example:"0"`
-	IsAnchor      int32  `json:"isAnchor" example:"0"`
-	BackgroundImg string `json:"backgroundImg" example:"背景图"`
+	IsAnchor      int32  `json:"is_anchor" example:"0"`
+	BackgroundImg string `json:"background_img" example:"背景图"`
 	Born          string `json:"born" example:"出生日期"`
 	Age           int    `json:"age" example:"27"`
-	UserType      int    `json:"userType" example:"0"`
+	UserType      int    `json:"user_type" example:"0"`
 	Country       int32  `json:"country" example:"0"`
+}
+
+// 用户搜索
+type UserSearchResults struct {
+	UserId        string `json:"user_id" example:"2009011314521111"`
+	Avatar        string `json:"avatar" example:"头像地址"`
+	NickName      string `json:"nick_name" example:"昵称 陈二狗"`
+	Gender        int32  `json:"gender" example:"0"`
+	Signature     string `json:"signature" example:"个性签名"`
+	Status        int32  `json:"status" example:"0"`
+	IsAnchor      int32  `json:"is_anchor" example:"0"`
+	BackgroundImg string `json:"background_img" example:"背景图"`
+	Born          string `json:"born" example:"出生日期"`
+	Age           int    `json:"age" example:"27"`
+	IsAttention   int32  `json:"is_attention"`
+	WorksNum      int64  `json:"works_num"`                         // 作品数
+	FansNum       int64  `json:"fans_num"`                          // 粉丝数
 }
 
 // 个人空间用户信息
 type UserZoneInfoResp struct {
-	TotalBeLiked     int64  `json:"totalBeLiked" example:"100"`     // 被点赞数
-	TotalFans        int64  `json:"totalFans" example:"100"`        // 粉丝数
-	TotalAttention   int64  `json:"totalAttention" example:"100"`   // 关注数
-	TotalCollect     int64  `json:"totalCollect" example:"100"`     // 收藏的作品数
-	TotalPublish     int64  `json:"totalPublish" example:"100"`     // 发布的作品数
-	TotalLikes       int64  `json:"totalLikes" example:"100"`       // 点赞的作品数
+	TotalBeLiked     int64  `json:"total_beLiked" example:"100"`     // 被点赞数
+	TotalFans        int64  `json:"total_fans" example:"100"`        // 粉丝数
+	TotalAttention   int64  `json:"total_attention" example:"100"`   // 关注数
+	TotalCollect     int64  `json:"total_collect" example:"100"`     // 收藏的作品数
+	TotalPublish     int64  `json:"total_publish" example:"100"`     // 发布的作品数
+	TotalLikes       int64  `json:"total_likes" example:"100"`       // 点赞的作品数
 }
 
 // 登陆请求所需的参数
 type LoginParams struct {
 	Platform  int      `json:"platform" example:"0"`                                // 平台 0 android 1 iOS 2 web
 	Token     string   `binding:"required" json:"token" example:"客户端token"`
-	OpToken   string   `binding:"required" json:"opToken" example:"客户端返回的运营商token"`
+	OpToken   string   `binding:"required" json:"op_token" example:"客户端返回的运营商token"`
 	Operator  string   `binding:"required" json:"operator" example:"客户端返回的运营商，CMCC:中国移动通信, CUCC:中国联通通讯, CTCC:中国电信"`
 }
 
 // 修改用户信息请求参数
 type EditUserInfoParams struct {
-	AvatarId   int32    `json:"avatarId" example:"6"`            // 系统头像id（暂时仅支持更换系统默认头像）
-	NickName   string   `json:"nickName" example:"陈二狗"`        // 昵称
+	AvatarId   int32    `json:"avatar_id" example:"6"`            // 系统头像id（暂时仅支持更换系统默认头像）
+	NickName   string   `json:"nick_name" example:"陈二狗"`        // 昵称
 	Born       string   `json:"born" example:"1993-06-20"`       // 出生年月
 	Gender     int32    `json:"gender" example:"1"`              // 性别 1 男 2 女
-	CountryId  int32    `json:"countryId" example:"1"`           // 国家id
+	CountryId  int32    `json:"country_id" example:"1"`           // 国家id
 	Signature  string   `json:"signature" example:"emmmmmmmm"`   // 个性签名
 }
 
@@ -79,7 +96,7 @@ type FeedbackParam struct {
 
 // 个人空间 用户信息请求参数
 type UserZoneInfoParam struct {
-	UserId  string `json:"userId"`            // 用户userid
+	UserId  string `json:"user_id"`            // 用户userid
 }
 
 var validPhone = regexp.MustCompile(`^1\d{10}$`)
@@ -214,6 +231,18 @@ func (m *UserModel) GetSystemAvatarById(id int32) *models.DefaultAvatar {
 	}
 
 	return info
+}
+
+// 搜索用户
+func (m *UserModel) SearchUser(name string, offset, size int) []*UserSearchResults {
+	sql := "SELECT * FROM user WHERE nick_name like '%" + name + "%' OR user_id like '%" + name + "%' ORDER BY `id` DESC LIMIT ?, ?"
+	var list []*UserSearchResults
+	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("search_trace: search user err:%s", err)
+		return nil
+	}
+
+	return list
 }
 
 // 设置uid

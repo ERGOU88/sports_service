@@ -29,19 +29,18 @@ const (
 
 
 // 条件查询发布的内容
-// -1 发布时间 0 播放数 1 弹幕数 2 评论数 3 点赞数 4 分享数
+// -1 发布时间 0 播放数 1 弹幕数 2 点赞数 3 评论数 4 分享数
 const (
 	VIDEO_CONDITION_TIME    = "-1"
 	VIDEO_CONDITION_PLAY    = "0"
 	VIDEO_CONDITION_BARRAGE = "1"
-	VIDEO_CONDITION_COMMENT = "2"
-	VIDEO_CONDITION_LIKE    = "3"
+	VIDEO_CONDITION_LIKE    = "2"
+	VIDEO_CONDITION_COMMENT = "3"
 	VIDEO_CONDITION_SHARE   = "4"
 )
 
-
 const (
-	// 默认发布时间排序
+	// 发布时间排序
 	CONDITION_FIELD_TIME    = "create_at"
 	// 浏览数（播放数）排序
 	CONDITION_FIELD_PLAY    = "browse_num"

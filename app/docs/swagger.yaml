@@ -1,97 +1,126 @@
 definitions:
   mattention.AddAttentionParam:
     properties:
-      userId:
+      user_id:
         example: 需关注的用户id
         type: string
     required:
-    - userId
+    - user_id
     type: object
   mattention.CancelAttentionParam:
     properties:
-      userId:
+      user_id:
         example: 被取消关注的用户id
         type: string
     required:
-    - userId
+    - user_id
     type: object
   mcollect.AddCollectParam:
     properties:
       to_user_id:
         example: 发布者uid
         type: string
-      videoId:
+      video_id:
         example: 10001
         type: integer
     required:
     - to_user_id
-    - videoId
+    - video_id
     type: object
   mcollect.CancelCollectParam:
     properties:
-      videoId:
+      video_id:
         example: 10001
         type: integer
     required:
-    - videoId
+    - video_id
     type: object
   mcollect.DeleteCollectParam:
     properties:
-      composeIds:
+      compose_ids:
         items:
           type: string
         type: array
     required:
-    - composeIds
+    - compose_ids
     type: object
   mlike.CancelLikeParam:
     properties:
-      videoId:
+      video_id:
         example: 10001
         type: integer
     required:
-    - videoId
+    - video_id
     type: object
   mlike.GiveLikeParam:
     properties:
-      toUserId:
+      to_user_id:
         example: 被点赞的用户
         type: string
-      videoId:
+      video_id:
         example: 10001
         type: integer
     required:
-    - toUserId
-    - videoId
+    - to_user_id
+    - video_id
     type: object
   mnotify.NotifySettingParams:
     properties:
-      attentionPushSet:
+      attention_push_set:
         type: integer
-      commentPushSet:
+      comment_push_set:
         type: integer
-      sharePushSet:
+      share_push_set:
         type: integer
-      slotPushSet:
+      slot_push_set:
         type: integer
-      thumbUpPushSet:
+      thumb_up_push_set:
+        type: integer
+    type: object
+  models.Banner:
+    properties:
+      cover:
+        type: string
+      create_at:
+        type: integer
+      end_time:
+        type: integer
+      explain:
+        type: string
+      id:
+        type: integer
+      jump_url:
+        type: string
+      share_url:
+        type: string
+      sortorder:
+        type: integer
+      start_time:
+        type: integer
+      status:
+        type: integer
+      title:
+        type: string
+      type:
+        type: integer
+      update_at:
         type: integer
     type: object
   muser.EditUserInfoParams:
     properties:
-      avatarId:
+      avatar_id:
         example: 6
         type: integer
       born:
         example: "1993-06-20"
         type: string
-      countryId:
+      country_id:
         example: 1
         type: integer
       gender:
         example: 1
         type: integer
-      nickName:
+      nick_name:
         example: 陈二狗
         type: string
       signature:
@@ -117,7 +146,7 @@ definitions:
     type: object
   muser.LoginParams:
     properties:
-      opToken:
+      op_token:
         example: 客户端返回的运营商token
         type: string
       operator:
@@ -130,7 +159,7 @@ definitions:
         example: 客户端token
         type: string
     required:
-    - opToken
+    - op_token
     - operator
     - token
     type: object
@@ -153,7 +182,7 @@ definitions:
       avatar:
         example: 头像地址
         type: string
-      backgroundImg:
+      background_img:
         example: 背景图
         type: string
       born:
@@ -165,13 +194,13 @@ definitions:
       gender:
         example: 0
         type: integer
-      isAnchor:
+      is_anchor:
         example: 0
         type: integer
-      mobileNum:
+      mobile_num:
         example: 13177656222
         type: integer
-      nickname:
+      nick_name:
         example: 昵称 陈二狗
         type: string
       signature:
@@ -180,16 +209,55 @@ definitions:
       status:
         example: 0
         type: integer
-      userId:
+      user_id:
         example: "2009011314521111"
         type: string
-      userType:
+      user_type:
         example: 0
+        type: integer
+    type: object
+  muser.UserSearchResults:
+    properties:
+      age:
+        example: 27
+        type: integer
+      avatar:
+        example: 头像地址
+        type: string
+      background_img:
+        example: 背景图
+        type: string
+      born:
+        example: 出生日期
+        type: string
+      fans_num:
+        type: integer
+      gender:
+        example: 0
+        type: integer
+      is_anchor:
+        example: 0
+        type: integer
+      is_attention:
+        type: integer
+      nick_name:
+        example: 昵称 陈二狗
+        type: string
+      signature:
+        example: 个性签名
+        type: string
+      status:
+        example: 0
+        type: integer
+      user_id:
+        example: "2009011314521111"
+        type: string
+      works_num:
         type: integer
     type: object
   muser.UserZoneInfoParam:
     properties:
-      userId:
+      user_id:
         type: string
     type: object
   muser.WeiboLoginParams:
@@ -227,7 +295,80 @@ definitions:
     required:
     - composeIds
     type: object
-  mvideo.PublishVideosInfo:
+  mvideo.VideoDetailInfo:
+    properties:
+      avatar:
+        type: string
+      barrage_num:
+        type: integer
+      browse_num:
+        type: integer
+      comment_num:
+        type: integer
+      cover:
+        type: string
+      create_at:
+        type: integer
+      describe:
+        type: string
+      fabulous_num:
+        type: integer
+      is_collect:
+        type: integer
+      is_like:
+        type: integer
+      is_recommend:
+        type: integer
+      is_top:
+        type: integer
+      isAttention:
+        type: integer
+      labels:
+        type: string
+      nickName:
+        type: string
+      share_num:
+        type: integer
+      status:
+        type: integer
+      title:
+        type: string
+      userId:
+        type: string
+      video_addr:
+        type: string
+      video_duration:
+        type: integer
+      video_height:
+        type: integer
+      video_id:
+        type: integer
+      video_width:
+        type: integer
+    type: object
+  mvideo.VideoPublishParams:
+    properties:
+      cover:
+        type: string
+      describe:
+        type: string
+      title:
+        type: string
+      video_addr:
+        type: string
+      video_duration:
+        type: integer
+      video_labels:
+        type: string
+    required:
+    - cover
+    - describe
+    - title
+    - video_addr
+    - video_duration
+    - video_labels
+    type: object
+  mvideo.VideosInfo:
     properties:
       browse_num:
         type: integer
@@ -262,62 +403,51 @@ definitions:
       video_width:
         type: integer
     type: object
-  mvideo.VideoPublishParams:
-    properties:
-      cover:
-        type: string
-      describe:
-        type: string
-      title:
-        type: string
-      videoAddr:
-        type: string
-      videoDuration:
-        type: integer
-      videoLabels:
-        type: string
-    required:
-    - cover
-    - describe
-    - title
-    - videoAddr
-    - videoDuration
-    - videoLabels
-    type: object
   mvideo.VideosInfoResp:
     properties:
       avatar:
         type: string
-      collectAt:
+      collect_at:
         type: integer
       cover:
         type: string
-      createAt:
+      create_at:
         type: integer
       describe:
         type: string
-      isAttention:
+      is_attention:
         type: integer
-      isRecommend:
+      is_recommend:
         type: integer
-      isTop:
+      is_top:
         type: integer
-      nickName:
+      nick_name:
         type: string
       title:
         type: string
-      userId:
+      user_id:
         type: string
-      videoAddr:
+      video_addr:
         type: string
-      videoDuration:
+      video_duration:
         type: integer
-      videoHeight:
+      video_height:
         type: integer
-      videoId:
+      video_id:
         type: integer
-      videoWidth:
+      video_width:
         type: integer
+    type: object
+  swag.ColligateSearchSwag:
+    properties:
+      user_list:
+        items:
+          $ref: '#/definitions/muser.UserSearchResults'
+        type: array
+      video_list:
+        items:
+          $ref: '#/definitions/mvideo.VideoDetailInfo'
+        type: array
     type: object
   swag.LoginSwag:
     properties:
@@ -1121,6 +1251,304 @@ paths:
       summary: 系统通知设置 (ok)
       tags:
       - 通知模块
+  /api/v1/search/colligate:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 搜索的名称
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/swag.ColligateSearchSwag'
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 综合搜索[默认搜视频、用户 各取三条记录] (ok)
+      tags:
+      - 搜索模块
+  /api/v1/search/hot:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 热门搜索 (ok)
+      tags:
+      - 搜索模块
+  /api/v1/search/label:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      - description: 搜索的视频标签
+        in: query
+        name: label_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/mvideo.VideoDetailInfo'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 标签搜索视频[分页获取] (ok)
+      tags:
+      - 搜索模块
+  /api/v1/search/users:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      - description: 搜索的名称/userId
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/muser.UserSearchResults'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 用户搜索[分页获取] (ok)
+      tags:
+      - 搜索模块
+  /api/v1/search/videos:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      - description: 搜索的名称
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: 排序条件  0 播放数 1 弹幕数 2 点赞数 默认 播放数
+        in: query
+        name: sort
+        required: true
+        type: string
+      - description: 视频时长 0 表示没有限制 1 表示 1～5分钟  2：5～10分钟 3：10～30分钟 4：30分钟以上
+        in: query
+        name: duration
+        required: true
+        type: string
+      - description: 视频发布时间 0 不限制 1 一天内 2 一周内 3 半年内
+        in: query
+        name: publish_time
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/mvideo.VideoDetailInfo'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 视频搜索[分页获取] (ok)
+      tags:
+      - 搜索模块
   /api/v1/user/edit/info:
     post:
       consumes:
@@ -1523,6 +1951,63 @@ paths:
       summary: 个人空间用户信息 (ok)
       tags:
       - 账号体系
+  /api/v1/video/attention:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/mvideo.VideoDetailInfo'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 首页关注的用户发布的视频列表[分页获取] (ok)
+      tags:
+      - 视频模块
   /api/v1/video/browse/history:
     get:
       consumes:
@@ -1682,6 +2167,103 @@ paths:
       summary: 删除发布的视频 (ok)
       tags:
       - 视频模块
+  /api/v1/video/detail:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 视频id
+        in: query
+        name: video_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/mvideo.VideoDetailInfo'
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 视频详情 (ok)
+      tags:
+      - 视频模块
+  /api/v1/video/homepage/banner:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Banner'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 视频首页推荐的banner (ok)
+      tags:
+      - 视频模块
   /api/v1/video/publish:
     post:
       consumes:
@@ -1779,7 +2361,7 @@ paths:
         name: status
         required: true
         type: string
-      - description: 条件 -1 默认时间排序 0 播放数 1 弹幕数 2 评论数 3 点赞数 4 分享数
+      - description: 条件 -1 默认时间排序 0 播放数 1 弹幕数 2 点赞数 3 评论数 4 分享数
         in: query
         name: condition
         required: true
@@ -1791,13 +2373,70 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/mvideo.PublishVideosInfo'
+              $ref: '#/definitions/mvideo.VideosInfo'
             type: array
         "500":
           description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
           schema:
             type: string
       summary: 用户发布的视频记录[分页获取] (ok)
+      tags:
+      - 视频模块
+  /api/v1/video/recommend:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/mvideo.VideoDetailInfo'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 首页推荐的视频列表[分页获取] (ok)
       tags:
       - 视频模块
 swagger: "2.0"

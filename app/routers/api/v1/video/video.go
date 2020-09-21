@@ -9,6 +9,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mvideo"
 	"sports_service/server/util"
+	_ "sports_service/server/models"
 )
 
 // @Summary 视频发布 (ok)
@@ -103,8 +104,8 @@ func BrowseHistory(c *gin.Context) {
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
 // @Param   status	  	  query  	string 	true  "status 状态 -1 查询全部 0 审核中 1 已发布 2 不通过"
-// @Param   condition	  query  	string 	true  "条件 -1 默认时间排序 0 播放数 1 弹幕数 2 评论数 3 点赞数 4 分享数"
-// @Success 200 {array}  mvideo.PublishVideosInfo
+// @Param   condition	  query  	string 	true  "条件 -1 默认时间排序 0 播放数 1 弹幕数 2 点赞数 3 评论数 4 分享数"
+// @Success 200 {array}  mvideo.VideosInfo
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/video/publish/list [get]
 // 用户发布的视频列表
@@ -202,4 +203,115 @@ func DeletePublish(c *gin.Context) {
 	// 删除发布的视频
 	syscode := svc.DeletePublishVideo(userId.(string), param.ComposeIds)
 	reply.Response(http.StatusOK, syscode)
+}
+
+// @Summary 首页推荐的视频列表[分页获取] (ok)
+// @Tags 视频模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   page	  	  query  	string 	true  "页码 从1开始"
+// @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
+// @Success 200 {array}  mvideo.VideoDetailInfo
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/video/recommend [get]
+// 首页推荐列表
+func RecommendVideos(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	userId, _ := c.Get(consts.USER_ID)
+
+	svc := cvideo.New(c)
+	list := svc.GetRecommendVideos(userId.(string), page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// @Summary 视频首页推荐的banner (ok)
+// @Tags 视频模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Success 200 {array}  models.Banner
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/video/homepage/banner [get]
+// 首页推荐的banner
+func RecommendBanners(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cvideo.New(c)
+	banners := svc.GetRecommendBanners()
+	reply.Data["banners"] = banners
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// @Summary 首页关注的用户发布的视频列表[分页获取] (ok)
+// @Tags 视频模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   page	  	  query  	string 	true  "页码 从1开始"
+// @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
+// @Success 200 {array}  mvideo.VideoDetailInfo
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/video/attention [get]
+// 关注的人发布的视频
+func AttentionVideos(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	userId, _ := c.Get(consts.USER_ID)
+
+	svc := cvideo.New(c)
+	list := svc.GetAttentionVideos(userId.(string), page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// @Summary 视频详情 (ok)
+// @Tags 视频模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   video_id	  query  	string 	true  "视频id"
+// @Success 200 {object}  mvideo.VideoDetailInfo
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/video/detail [get]
+// 视频详情信息
+func VideoDetail(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+	videoId := c.Query("video_id")
+	if videoId == "" {
+		log.Log.Error("video_trace: videoId can't empty")
+		reply.Response(http.StatusOK, errdef.VIDEO_NOT_EXISTS)
+		return
+	}
+
+	svc := cvideo.New(c)
+	detail := svc.GetVideoDetail(userId.(string), videoId)
+	reply.Data["detail"] = detail
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }

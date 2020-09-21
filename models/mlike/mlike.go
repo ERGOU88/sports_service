@@ -14,13 +14,13 @@ type LikeModel struct {
 
 // 添加点赞请求参数
 type GiveLikeParam struct {
-	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`          // 点赞的视频id
-	ToUserId      string    `binding:"required" json:"toUserId" example:"被点赞的用户"`    // 被点赞的用户id
+	VideoId       int64     `binding:"required" json:"video_id" example:"10001"`          // 点赞的视频id
+	ToUserId      string    `binding:"required" json:"to_user_id" example:"被点赞的用户"`    // 被点赞的用户id
 }
 
 // 取消点赞请求参数
 type CancelLikeParam struct {
-	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`          // 取消点赞的视频id
+	VideoId       int64     `binding:"required" json:"video_id" example:"10001"`          // 取消点赞的视频id
 }
 
 // 实栗

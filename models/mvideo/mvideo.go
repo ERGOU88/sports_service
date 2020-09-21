@@ -22,33 +22,33 @@ type VideoPublishParams struct {
 	Cover          string  `binding:"required" json:"cover"`          // 视频封面
 	Title          string  `binding:"required" json:"title"`          // 视频标题
 	Describe       string  `binding:"required" json:"describe"`       // 视频描述
-	VideoAddr      string  `binding:"required" json:"videoAddr"`     // 视频地址
-	VideoDuration  int     `binding:"required" json:"videoDuration"` // 视频时长
-	VideoLabels    string  `binding:"required" json:"videoLabels"`   // 视频标签id（多个用逗号分隔）
+	VideoAddr      string  `binding:"required" json:"video_addr"`     // 视频地址
+	VideoDuration  int     `binding:"required" json:"video_duration"` // 视频时长
+	VideoLabels    string  `binding:"required" json:"video_labels"`   // 视频标签id（多个用逗号分隔）
 }
 
 // 视频信息
 type VideosInfoResp struct {
-	VideoId       int64  `json:"videoId"`       // 视频id
+	VideoId       int64  `json:"video_id"`       // 视频id
 	Title         string `json:"title"`         // 标题
 	Describe      string `json:"describe"`      // 描述
 	Cover         string `json:"cover"`         // 封面
-	VideoAddr     string `json:"videoAddr"`     // 视频地址
-	IsRecommend   int    `json:"isRecommend"`   // 是否推荐
-	IsTop         int    `json:"isTop"`         // 是否置顶
-	VideoDuration int    `json:"videoDuration"` // 视频时长
-	VideoWidth    int64  `json:"videoWidth"`    // 视频宽
-	VideoHeight   int64  `json:"videoHeight"`   // 视频高
-	CreateAt      int    `json:"createAt"`      // 视频创建时间
-	UserId        string `json:"userId"`        // 发布视频的用户id
+	VideoAddr     string `json:"video_addr"`     // 视频地址
+	IsRecommend   int    `json:"is_recommend"`   // 是否推荐
+	IsTop         int    `json:"is_top"`         // 是否置顶
+	VideoDuration int    `json:"video_duration"` // 视频时长
+	VideoWidth    int64  `json:"video_width"`    // 视频宽
+	VideoHeight   int64  `json:"video_height"`   // 视频高
+	CreateAt      int    `json:"create_at"`      // 视频创建时间
+	UserId        string `json:"user_id"`        // 发布视频的用户id
 	Avatar        string `json:"avatar"`        // 头像
-	Nickname      string `json:"nickName"`      // 昵称
-	IsAttention   int    `json:"isAttention"`   // 是否关注 1 关注 2 未关注
-	OpTime        int    `json:"collectAt"`     // 用户收藏/点赞等的操作时间
+	Nickname      string `json:"nick_name"`      // 昵称
+	IsAttention   int    `json:"is_attention"`   // 是否关注 1 关注 2 未关注
+	OpTime        int    `json:"collect_at"`     // 用户收藏/点赞等的操作时间
 }
 
-// 用户发布的视频信息
-type PublishVideosInfo struct {
+// 视频信息
+type VideosInfo struct {
 	VideoId       int64  `json:"video_id"`       // 视频id
 	Title         string `json:"title"`          // 标题
 	Describe      string `json:"describe"`       // 描述
@@ -65,6 +65,34 @@ type PublishVideosInfo struct {
 	CommentNum    int    `json:"comment_num"`    // 评论数
 	ShareNum      int    `json:"share_num"`      // 分享数
 	BrowseNum     int    `json:"browse_num"`     // 浏览数（播放数）
+}
+
+// 视频详情信息
+type VideoDetailInfo struct {
+	VideoId       int64                 `json:"video_id"`       // 视频id
+	Title         string                `json:"title"`          // 标题
+	Describe      string                `json:"describe"`       // 描述
+	Cover         string                `json:"cover"`          // 封面
+	VideoAddr     string                `json:"video_addr"`     // 视频地址
+	IsRecommend   int                   `json:"is_recommend"`   // 是否推荐
+	IsTop         int                   `json:"is_top"`         // 是否置顶
+	VideoDuration int                   `json:"video_duration"` // 视频时长
+	VideoWidth    int64                 `json:"video_width"`    // 视频宽
+	VideoHeight   int64                 `json:"video_height"`   // 视频高
+	Status        int32                 `json:"status"`         // 审核状态
+	CreateAt      int                   `json:"create_at"`      // 视频创建时间
+	FabulousNum   int                   `json:"fabulous_num"`   // 点赞数
+	CommentNum    int                   `json:"comment_num"`    // 评论数
+	BarrageNum    int                   `json:"barrage_num"`    // 弹幕数
+	ShareNum      int                   `json:"share_num"`      // 分享数
+	BrowseNum     int                   `json:"browse_num"`     // 浏览数（播放数）
+	UserId        string                `json:"userId"`         // 发布视频的用户id
+	Avatar        string                `json:"avatar"`         // 头像
+	Nickname      string                `json:"nickName"`       // 昵称
+	IsAttention   int                   `json:"isAttention"`    // 是否关注 1 关注 2 未关注
+	IsCollect     int                   `json:"is_collect"`     // 是否收藏
+	IsLike        int                   `json:"is_like"`        // 是否点赞
+	Labels        []*models.VideoLabels `json:"labels"`         // 视频标签
 }
 
 // 删除历史记录请求参数
@@ -96,6 +124,28 @@ func (m *VideoModel) VideoPublish() (int64, error) {
 // 添加视频标签(一次插入多条)
 func (m *VideoModel) AddVideoLabels(labels []*models.VideoLabels) (int64, error) {
 	return m.Engine.Insert(labels)
+}
+
+// 获取视频标签
+func (m *VideoModel) GetVideoLabels(videoId string) []*models.VideoLabels {
+	var labels []*models.VideoLabels
+	if err := m.Engine.Where("video_id=?", videoId).Find(&labels); err != nil {
+		log.Log.Errorf("video_trace: get video labels err:%s", err)
+		return nil
+	}
+
+	return labels
+}
+
+// 通过标签id 查询视频id列表
+func (m *VideoModel) GetVideoIdsByLabelId(labelId string, offset, size int) []string {
+	var videoIds []string
+	if err := m.Engine.Where("label_id=?", labelId).Cols("video_id").Limit(size, offset).Find(&videoIds); err != nil {
+		log.Log.Errorf("video_trace: get videoIds by labelid err:%s", err)
+		return nil
+	}
+
+	return videoIds
 }
 
 // 删除视频标签
@@ -193,8 +243,8 @@ func (m *VideoModel) UpdateVideoBarrageNum() {
 }
 
 // 分页获取 用户发布的视频列表[通过审核状态和条件查询]
-func (m *VideoModel) GetUserPublishVideos(offset, size int, userId, status, field string) []*PublishVideosInfo {
-	var list []*PublishVideosInfo
+func (m *VideoModel) GetUserPublishVideos(offset, size int, userId, status, field string) []*VideosInfo {
+	var list []*VideosInfo
 
 	sql := "SELECT v.*, s.fabulous_num, s.share_num, s.comment_num, s.browse_num FROM videos as v " +
 		"LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.user_id=? "
@@ -231,10 +281,10 @@ func (m *VideoModel) FindVideoById(videoId string) *models.Videos {
 }
 
 // 通过视频id查询视频列表
-func (m *VideoModel) FindVideoListByIds(videoIds string, offset, size int) []*models.Videos {
+func (m *VideoModel) FindVideoListByIds(videoIds string) []*models.Videos {
 	var list []*models.Videos
-	sql := fmt.Sprintf("SELECT * FROM videos WHERE video_id in(%s) AND status=1 ORDER BY is_top DESC, is_recommend DESC, sortorder DESC, video_id LIMIT ?, ?", videoIds)
-	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
+	sql := fmt.Sprintf("SELECT * FROM videos WHERE video_id in(%s) AND status=1 ORDER BY is_top DESC, is_recommend DESC, sortorder DESC, video_id", videoIds)
+	if err := m.Engine.SQL(sql).Find(&list); err != nil {
 		log.Log.Errorf("video_trace: get video list err:%s", err)
 		return nil
 	}
@@ -303,3 +353,79 @@ func (m *VideoModel) GetTotalPublish(userId string) int64 {
 	return total
 }
 
+const (
+	QUERY_RECOMMEND_VIDEOS = "SELECT v.*, s.fabulous_num,s.share_num,s.comment_num, s.browse_num FROM `videos` as v " +
+		"LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status = 1 GROUP BY v.video_id " +
+		"ORDER BY v.is_top DESC, v.is_recommend DESC, v.sortorder DESC, v.video_id DESC LIMIT ?, ?"
+)
+// 获取推荐的视频列表 todo:
+func (m *VideoModel) GetRecommendVideos(offset, size int) []*VideoDetailInfo {
+	var list []*VideoDetailInfo
+	if err := m.Engine.SQL(QUERY_RECOMMEND_VIDEOS, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("video_trace: get recommend videos err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
+const (
+	QUERY_ATTENTION_VIDEOS = "SELECT v.*, s.fabulous_num,s.share_num,s.comment_num, s.browse_num FROM `videos` as v " +
+		"LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status = 1 AND v.user_id in(%s) GROUP BY v.video_id " +
+		"ORDER BY v.is_top DESC, v.is_recommend DESC, v.sortorder DESC, v.video_id DESC LIMIT ?, ?"
+)
+// 获取关注的用户发布的视频
+func (m *VideoModel) GetAttentionVideos(userIds string, offset, size int) []*VideoDetailInfo {
+	sql := fmt.Sprintf(QUERY_ATTENTION_VIDEOS, userIds)
+	var list []*VideoDetailInfo
+	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("video_trace: get attention videos err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
+// 搜索视频
+// sortCondition: 播放量、弹幕数、分享数排序 默认播放量
+// mixDuration: 视频时长筛选 最小时长
+// maxDuration: 视频时长筛选 最大时长
+// publishTime: 发布时间筛选
+func (m *VideoModel) SearchVideos(name, sortCondition string, minDuration, maxDuration, publishTime int64, offset, size int) []*VideoDetailInfo {
+	sql :=  "SELECT v.*, s.fabulous_num, s.share_num, s.comment_num, s.browse_num FROM videos as v " +
+		"LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status=1 "
+
+	if name != "" {
+		sql += "AND v.title like '%" + name + "%' "
+	}
+
+	if minDuration != 0 && maxDuration != 0 {
+		sql += "AND v.video_duration >= ? AND v.video_duration <= ? "
+	}
+
+	if publishTime != 0 {
+		sql += "AND v.create_at >= ? "
+	}
+
+	sql += fmt.Sprintf("GROUP BY v.video_id ORDER BY s.%s DESC, v.is_top DESC, v.is_recommend DESC, v.sortorder DESC, v.video_id DESC LIMIT ?, ?", sortCondition)
+
+	var list []*VideoDetailInfo
+	if err := m.Engine.SQL(sql, minDuration, maxDuration, publishTime, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("video_trace: search videos err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
+// 获取热门搜索
+func (m *VideoModel) GetHotSearch() *models.HotSearch {
+	hot := new(models.HotSearch)
+	ok, err := m.Engine.Desc("id").Limit(1).Get(hot)
+	if !ok || err != nil {
+		log.Log.Errorf("video_trace: get hot search err:%s", err)
+		return nil
+	}
+
+	return hot
+}

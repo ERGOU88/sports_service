@@ -15,18 +15,18 @@ type CollectModel struct {
 
 // 添加收藏请求参数
 type AddCollectParam struct {
-	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`       // 收藏的视频id
-	ToUserId      string    `binding:"required" json:"toUserId" example:"发布者uid"` // 发布者uid
+	VideoId       int64     `binding:"required" json:"video_id" example:"10001"`       // 收藏的视频id
+	ToUserId      string    `binding:"required" json:"to_user_id" example:"发布者uid"` // 发布者uid
 }
 
 // 取消收藏请求参数
 type CancelCollectParam struct {
-	VideoId       int64     `binding:"required" json:"videoId" example:"10001"`       // 取消收藏的视频id
+	VideoId       int64     `binding:"required" json:"video_id" example:"10001"`       // 取消收藏的视频id
 }
 
 // 删除收藏记录请求参数
 type DeleteCollectParam struct {
-	ComposeIds        []string     `binding:"required" json:"composeIds"`           // 作品id列表
+	ComposeIds        []string     `binding:"required" json:"compose_ids"`           // 作品id列表
 }
 
 // 实栗

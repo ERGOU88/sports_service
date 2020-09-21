@@ -12,11 +12,11 @@ type NotifyModel struct {
 
 // 通知设置请求参数
 type NotifySettingParams struct {
-	CommentPushSet   int    `json:"commentPushSet"`         // 评论推送 0 接收 1 不接收
-	ThumbUpPushSet   int    `json:"thumbUpPushSet"`         // 点赞推送 0 接收 1 不接收
-	AttentionPushSet int    `json:"attentionPushSet"`       // 关注推送 0 接收 1 不接收
-	SharePushSet     int    `json:"sharePushSet"`           // 分享推送 0 接收 1 不接收
-	SlotPushSet      int    `json:"slotPushSet"`            // 投币推送 0 接收 1 不接收
+	CommentPushSet   int    `json:"comment_push_set"`          // 评论推送 0 接收 1 不接收
+	ThumbUpPushSet   int    `json:"thumb_up_push_set"`         // 点赞推送 0 接收 1 不接收
+	AttentionPushSet int    `json:"attention_push_set"`        // 关注推送 0 接收 1 不接收
+	SharePushSet     int    `json:"share_push_set"`            // 分享推送 0 接收 1 不接收
+	SlotPushSet      int    `json:"slot_push_set"`             // 投币推送 0 接收 1 不接收
 }
 
 // 实例

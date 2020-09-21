@@ -1017,6 +1017,439 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/search/colligate": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "搜索模块"
+                ],
+                "summary": "综合搜索[默认搜视频、用户 各取三条记录] (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索的名称",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/swag.ColligateSearchSwag"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/search/hot": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "搜索模块"
+                ],
+                "summary": "热门搜索 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/search/label": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "搜索模块"
+                ],
+                "summary": "标签搜索视频[分页获取] (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页码 从1开始",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页展示多少 最多50条",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索的视频标签",
+                        "name": "label_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/mvideo.VideoDetailInfo"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/search/users": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "搜索模块"
+                ],
+                "summary": "用户搜索[分页获取] (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页码 从1开始",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页展示多少 最多50条",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索的名称/userId",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/muser.UserSearchResults"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/search/videos": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "搜索模块"
+                ],
+                "summary": "视频搜索[分页获取] (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页码 从1开始",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页展示多少 最多50条",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索的名称",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序条件  0 播放数 1 弹幕数 2 点赞数 默认 播放数",
+                        "name": "sort",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "视频时长 0 表示没有限制 1 表示 1～5分钟  2：5～10分钟 3：10～30分钟 4：30分钟以上",
+                        "name": "duration",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "视频发布时间 0 不限制 1 一天内 2 一周内 3 半年内",
+                        "name": "publish_time",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/mvideo.VideoDetailInfo"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/edit/info": {
             "post": {
                 "consumes": [
@@ -1608,6 +2041,89 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/video/attention": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频模块"
+                ],
+                "summary": "首页关注的用户发布的视频列表[分页获取] (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页码 从1开始",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页展示多少 最多50条",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/mvideo.VideoDetailInfo"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/video/browse/history": {
             "get": {
                 "consumes": [
@@ -1841,6 +2357,148 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/video/detail": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频模块"
+                ],
+                "summary": "视频详情 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "视频id",
+                        "name": "video_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/mvideo.VideoDetailInfo"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/video/homepage/banner": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频模块"
+                ],
+                "summary": "视频首页推荐的banner (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Banner"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/video/publish": {
             "post": {
                 "consumes": [
@@ -1988,7 +2646,7 @@ var doc = `{
                     },
                     {
                         "type": "string",
-                        "description": "条件 -1 默认时间排序 0 播放数 1 弹幕数 2 评论数 3 点赞数 4 分享数",
+                        "description": "条件 -1 默认时间排序 0 播放数 1 弹幕数 2 点赞数 3 评论数 4 分享数",
                         "name": "condition",
                         "in": "query",
                         "required": true
@@ -2000,7 +2658,90 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/mvideo.PublishVideosInfo"
+                                "$ref": "#/definitions/mvideo.VideosInfo"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/video/recommend": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频模块"
+                ],
+                "summary": "首页推荐的视频列表[分页获取] (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页码 从1开始",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页展示多少 最多50条",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/mvideo.VideoDetailInfo"
                             }
                         }
                     },
@@ -2018,10 +2759,10 @@ var doc = `{
         "mattention.AddAttentionParam": {
             "type": "object",
             "required": [
-                "userId"
+                "user_id"
             ],
             "properties": {
-                "userId": {
+                "user_id": {
                     "type": "string",
                     "example": "需关注的用户id"
                 }
@@ -2030,10 +2771,10 @@ var doc = `{
         "mattention.CancelAttentionParam": {
             "type": "object",
             "required": [
-                "userId"
+                "user_id"
             ],
             "properties": {
-                "userId": {
+                "user_id": {
                     "type": "string",
                     "example": "被取消关注的用户id"
                 }
@@ -2043,14 +2784,14 @@ var doc = `{
             "type": "object",
             "required": [
                 "to_user_id",
-                "videoId"
+                "video_id"
             ],
             "properties": {
                 "to_user_id": {
                     "type": "string",
                     "example": "发布者uid"
                 },
-                "videoId": {
+                "video_id": {
                     "type": "integer",
                     "example": 10001
                 }
@@ -2059,10 +2800,10 @@ var doc = `{
         "mcollect.CancelCollectParam": {
             "type": "object",
             "required": [
-                "videoId"
+                "video_id"
             ],
             "properties": {
-                "videoId": {
+                "video_id": {
                     "type": "integer",
                     "example": 10001
                 }
@@ -2071,10 +2812,10 @@ var doc = `{
         "mcollect.DeleteCollectParam": {
             "type": "object",
             "required": [
-                "composeIds"
+                "compose_ids"
             ],
             "properties": {
-                "composeIds": {
+                "compose_ids": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -2085,10 +2826,10 @@ var doc = `{
         "mlike.CancelLikeParam": {
             "type": "object",
             "required": [
-                "videoId"
+                "video_id"
             ],
             "properties": {
-                "videoId": {
+                "video_id": {
                     "type": "integer",
                     "example": 10001
                 }
@@ -2097,15 +2838,15 @@ var doc = `{
         "mlike.GiveLikeParam": {
             "type": "object",
             "required": [
-                "toUserId",
-                "videoId"
+                "to_user_id",
+                "video_id"
             ],
             "properties": {
-                "toUserId": {
+                "to_user_id": {
                     "type": "string",
                     "example": "被点赞的用户"
                 },
-                "videoId": {
+                "video_id": {
                     "type": "integer",
                     "example": 10001
                 }
@@ -2114,19 +2855,63 @@ var doc = `{
         "mnotify.NotifySettingParams": {
             "type": "object",
             "properties": {
-                "attentionPushSet": {
+                "attention_push_set": {
                     "type": "integer"
                 },
-                "commentPushSet": {
+                "comment_push_set": {
                     "type": "integer"
                 },
-                "sharePushSet": {
+                "share_push_set": {
                     "type": "integer"
                 },
-                "slotPushSet": {
+                "slot_push_set": {
                     "type": "integer"
                 },
-                "thumbUpPushSet": {
+                "thumb_up_push_set": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Banner": {
+            "type": "object",
+            "properties": {
+                "cover": {
+                    "type": "string"
+                },
+                "create_at": {
+                    "type": "integer"
+                },
+                "end_time": {
+                    "type": "integer"
+                },
+                "explain": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "jump_url": {
+                    "type": "string"
+                },
+                "share_url": {
+                    "type": "string"
+                },
+                "sortorder": {
+                    "type": "integer"
+                },
+                "start_time": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "integer"
+                },
+                "update_at": {
                     "type": "integer"
                 }
             }
@@ -2134,7 +2919,7 @@ var doc = `{
         "muser.EditUserInfoParams": {
             "type": "object",
             "properties": {
-                "avatarId": {
+                "avatar_id": {
                     "type": "integer",
                     "example": 6
                 },
@@ -2142,7 +2927,7 @@ var doc = `{
                     "type": "string",
                     "example": "1993-06-20"
                 },
-                "countryId": {
+                "country_id": {
                     "type": "integer",
                     "example": 1
                 },
@@ -2150,7 +2935,7 @@ var doc = `{
                     "type": "integer",
                     "example": 1
                 },
-                "nickName": {
+                "nick_name": {
                     "type": "string",
                     "example": "陈二狗"
                 },
@@ -2187,12 +2972,12 @@ var doc = `{
         "muser.LoginParams": {
             "type": "object",
             "required": [
-                "opToken",
+                "op_token",
                 "operator",
                 "token"
             ],
             "properties": {
-                "opToken": {
+                "op_token": {
                     "type": "string",
                     "example": "客户端返回的运营商token"
                 },
@@ -2237,7 +3022,7 @@ var doc = `{
                     "type": "string",
                     "example": "头像地址"
                 },
-                "backgroundImg": {
+                "background_img": {
                     "type": "string",
                     "example": "背景图"
                 },
@@ -2253,15 +3038,15 @@ var doc = `{
                     "type": "integer",
                     "example": 0
                 },
-                "isAnchor": {
+                "is_anchor": {
                     "type": "integer",
                     "example": 0
                 },
-                "mobileNum": {
+                "mobile_num": {
                     "type": "integer",
                     "example": 13177656222
                 },
-                "nickname": {
+                "nick_name": {
                     "type": "string",
                     "example": "昵称 陈二狗"
                 },
@@ -2273,20 +3058,74 @@ var doc = `{
                     "type": "integer",
                     "example": 0
                 },
-                "userId": {
+                "user_id": {
                     "type": "string",
                     "example": "2009011314521111"
                 },
-                "userType": {
+                "user_type": {
                     "type": "integer",
                     "example": 0
+                }
+            }
+        },
+        "muser.UserSearchResults": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "integer",
+                    "example": 27
+                },
+                "avatar": {
+                    "type": "string",
+                    "example": "头像地址"
+                },
+                "background_img": {
+                    "type": "string",
+                    "example": "背景图"
+                },
+                "born": {
+                    "type": "string",
+                    "example": "出生日期"
+                },
+                "fans_num": {
+                    "type": "integer"
+                },
+                "gender": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "is_anchor": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "is_attention": {
+                    "type": "integer"
+                },
+                "nick_name": {
+                    "type": "string",
+                    "example": "昵称 陈二狗"
+                },
+                "signature": {
+                    "type": "string",
+                    "example": "个性签名"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "user_id": {
+                    "type": "string",
+                    "example": "2009011314521111"
+                },
+                "works_num": {
+                    "type": "integer"
                 }
             }
         },
         "muser.UserZoneInfoParam": {
             "type": "object",
             "properties": {
-                "userId": {
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -2344,7 +3183,115 @@ var doc = `{
                 }
             }
         },
-        "mvideo.PublishVideosInfo": {
+        "mvideo.VideoDetailInfo": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "barrage_num": {
+                    "type": "integer"
+                },
+                "browse_num": {
+                    "type": "integer"
+                },
+                "comment_num": {
+                    "type": "integer"
+                },
+                "cover": {
+                    "type": "string"
+                },
+                "create_at": {
+                    "type": "integer"
+                },
+                "describe": {
+                    "type": "string"
+                },
+                "fabulous_num": {
+                    "type": "integer"
+                },
+                "isAttention": {
+                    "type": "integer"
+                },
+                "is_collect": {
+                    "type": "integer"
+                },
+                "is_like": {
+                    "type": "integer"
+                },
+                "is_recommend": {
+                    "type": "integer"
+                },
+                "is_top": {
+                    "type": "integer"
+                },
+                "labels": {
+                    "type": "string"
+                },
+                "nickName": {
+                    "type": "string"
+                },
+                "share_num": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                },
+                "video_addr": {
+                    "type": "string"
+                },
+                "video_duration": {
+                    "type": "integer"
+                },
+                "video_height": {
+                    "type": "integer"
+                },
+                "video_id": {
+                    "type": "integer"
+                },
+                "video_width": {
+                    "type": "integer"
+                }
+            }
+        },
+        "mvideo.VideoPublishParams": {
+            "type": "object",
+            "required": [
+                "cover",
+                "describe",
+                "title",
+                "video_addr",
+                "video_duration",
+                "video_labels"
+            ],
+            "properties": {
+                "cover": {
+                    "type": "string"
+                },
+                "describe": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "video_addr": {
+                    "type": "string"
+                },
+                "video_duration": {
+                    "type": "integer"
+                },
+                "video_labels": {
+                    "type": "string"
+                }
+            }
+        },
+        "mvideo.VideosInfo": {
             "type": "object",
             "properties": {
                 "browse_num": {
@@ -2397,87 +3344,73 @@ var doc = `{
                 }
             }
         },
-        "mvideo.VideoPublishParams": {
-            "type": "object",
-            "required": [
-                "cover",
-                "describe",
-                "title",
-                "videoAddr",
-                "videoDuration",
-                "videoLabels"
-            ],
-            "properties": {
-                "cover": {
-                    "type": "string"
-                },
-                "describe": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "videoAddr": {
-                    "type": "string"
-                },
-                "videoDuration": {
-                    "type": "integer"
-                },
-                "videoLabels": {
-                    "type": "string"
-                }
-            }
-        },
         "mvideo.VideosInfoResp": {
             "type": "object",
             "properties": {
                 "avatar": {
                     "type": "string"
                 },
-                "collectAt": {
+                "collect_at": {
                     "type": "integer"
                 },
                 "cover": {
                     "type": "string"
                 },
-                "createAt": {
+                "create_at": {
                     "type": "integer"
                 },
                 "describe": {
                     "type": "string"
                 },
-                "isAttention": {
+                "is_attention": {
                     "type": "integer"
                 },
-                "isRecommend": {
+                "is_recommend": {
                     "type": "integer"
                 },
-                "isTop": {
+                "is_top": {
                     "type": "integer"
                 },
-                "nickName": {
+                "nick_name": {
                     "type": "string"
                 },
                 "title": {
                     "type": "string"
                 },
-                "userId": {
+                "user_id": {
                     "type": "string"
                 },
-                "videoAddr": {
+                "video_addr": {
                     "type": "string"
                 },
-                "videoDuration": {
+                "video_duration": {
                     "type": "integer"
                 },
-                "videoHeight": {
+                "video_height": {
                     "type": "integer"
                 },
-                "videoId": {
+                "video_id": {
                     "type": "integer"
                 },
-                "videoWidth": {
+                "video_width": {
                     "type": "integer"
+                }
+            }
+        },
+        "swag.ColligateSearchSwag": {
+            "type": "object",
+            "properties": {
+                "user_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/muser.UserSearchResults"
+                    }
+                },
+                "video_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/mvideo.VideoDetailInfo"
+                    }
                 }
             }
         },

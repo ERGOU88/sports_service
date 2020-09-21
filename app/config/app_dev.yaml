@@ -1,5 +1,5 @@
-publicAddr: :11002
-pprofAddr: :12002
+publicAddr: :11001
+pprofAddr: :12001
 mode: dev
 mysql:
   main:
@@ -34,7 +34,7 @@ wechatSecret: 3af44d06170ecdab4b49d1c70268c71f
 
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
-  path: ./log/login_server.log
+  path: ./log/app_server.log
   level: 0
   showColor: true
 

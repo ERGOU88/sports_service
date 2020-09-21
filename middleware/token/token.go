@@ -17,6 +17,7 @@ func TokenAuth() gin.HandlerFunc {
 		reply := errdef.New(c)
 		var userid string
 		var hashcode string
+		c.Set(consts.USER_ID, userid)
 		val, err := c.Request.Cookie(consts.COOKIE_NAME)
 		if err != nil {
 			log.Log.Errorf("c.Request.Cookie() err is %s", err.Error())

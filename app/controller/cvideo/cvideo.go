@@ -11,6 +11,9 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mattention"
+	"sports_service/server/models/mbanner"
+	"sports_service/server/models/mcollect"
+	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	"strings"
@@ -23,6 +26,9 @@ type VideoModule struct {
 	video        *mvideo.VideoModel
 	user         *muser.UserModel
 	attention    *mattention.AttentionModel
+	banner       *mbanner.BannerModel
+	like         *mlike.LikeModel
+	collect      *mcollect.CollectModel
 }
 
 func New(c *gin.Context) VideoModule {
@@ -33,6 +39,9 @@ func New(c *gin.Context) VideoModule {
 		video: mvideo.NewVideoModel(socket),
 		user: muser.NewUserModel(socket),
 		attention: mattention.NewAttentionModel(socket),
+		banner: mbanner.NewBannerMolde(socket),
+		like: mlike.NewLikeModel(socket),
+		collect: mcollect.NewCollectModel(socket),
 		engine: socket,
 	}
 }
@@ -134,7 +143,7 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 
 	vids := strings.Join(videoIds, ",")
 	// 获取浏览的视频列表信息
-	videoList := svc.video.FindVideoListByIds(vids, offset, size)
+	videoList := svc.video.FindVideoListByIds(vids)
 	if len(videoList) == 0 {
 		log.Log.Errorf("video_trace: not found browse video list info, len:%d, videoIds:%s", len(videoList), vids)
 		return nil
@@ -196,7 +205,7 @@ func (svc *VideoModule) DeleteHistoryByIds(userId string, param *mvideo.DeleteHi
 }
 
 // 获取用户发布的列表（暂时只有视频）
-func (svc *VideoModule) GetUserPublishList(userId, status, condition string, page, size int) []*mvideo.PublishVideosInfo {
+func (svc *VideoModule) GetUserPublishList(userId, status, condition string, page, size int) []*mvideo.VideosInfo {
 	// 查询用户是否存在
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
@@ -300,4 +309,167 @@ func (svc *VideoModule) DeletePublishVideo(userId, videoId string) int {
 
 	svc.engine.Commit()
 	return errdef.SUCCESS
+}
+
+// 获取推荐的视频列表
+func (svc *VideoModule) GetRecommendVideos(userId string, page, size int) []*mvideo.VideoDetailInfo {
+	offset := (page - 1) * size
+	list := svc.video.GetRecommendVideos(offset, size)
+	if len(list) == 0 {
+		return nil
+	}
+
+	// 重新组装数据
+	for _, video := range list {
+		// 获取视频标签信息
+		// video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+		// 查询用户信息
+		userInfo := svc.user.FindUserByUserid(video.UserId)
+		if userInfo == nil {
+			log.Log.Errorf("video_trace: user not found, uid:%s", video.UserId)
+			continue
+		}
+
+		video.Avatar = userInfo.Avatar
+		video.Nickname = userInfo.NickName
+		// 用户未登录
+		if userId == "" {
+			log.Log.Error("video_trace: no login")
+			continue
+		}
+		// 是否关注
+		if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
+			video.IsAttention = attentionInfo.Status
+		}
+
+		// 获取点赞的信息
+		if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
+			video.IsLike = likeInfo.Status
+		}
+
+		// 获取收藏的信息
+		if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
+			video.IsCollect = collectInfo.Status
+		}
+
+	}
+
+	return list
+}
+
+// 获取app首页推荐的banner
+func (svc *VideoModule) GetRecommendBanners() []*models.Banner {
+	return svc.banner.GetRecommendBanners(int32(consts.HOMEPAGE_BANNERS))
+}
+
+// 获取关注的用户发布的视频列表
+func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvideo.VideoDetailInfo {
+	// 用户未登录
+	if userId == "" {
+		log.Log.Error("video_trace: no login")
+		return nil
+	}
+
+	userIds := svc.attention.GetAttentionList(userId)
+	if len(userIds) == 0 {
+		log.Log.Errorf("video_trace: not following any users")
+		return nil
+	}
+
+	offset := (page - 1) * size
+	uids := strings.Join(userIds, ",")
+	list := svc.video.GetAttentionVideos(uids, offset, size)
+	if len(list) == 0 {
+		return nil
+	}
+
+	// 重新组装数据
+	for _, video := range list {
+		// 获取视频标签信息
+		// video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+		// 查询用户信息
+		userInfo := svc.user.FindUserByUserid(video.UserId)
+		if userInfo == nil {
+			log.Log.Errorf("video_trace: user not found, uid:%s", video.UserId)
+			continue
+		}
+
+		video.Avatar = userInfo.Avatar
+		video.Nickname = userInfo.NickName
+
+		if userId == "" {
+			log.Log.Error("video_trace: user no login")
+			continue
+		}
+
+		video.IsAttention = consts.ALREADY_ATTENTION
+
+		// 获取点赞的信息
+		if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
+			video.IsLike = likeInfo.Status
+		}
+
+		// 获取收藏的信息
+		if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
+			video.IsCollect = collectInfo.Status
+		}
+
+	}
+
+	return list
+}
+
+// 获取视频详情页数据
+func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDetailInfo {
+	video := svc.video.FindVideoById(videoId)
+	resp := new(mvideo.VideoDetailInfo)
+	resp.VideoId = video.VideoId
+	resp.Title = video.Title
+	resp.Describe = video.Describe
+	resp.Cover = video.Cover
+	resp.VideoAddr = video.VideoAddr
+	resp.IsRecommend = video.IsRecommend
+	resp.IsTop = video.IsTop
+	resp.VideoDuration = video.VideoDuration
+	resp.VideoWidth = video.VideoWidth
+	resp.VideoHeight = video.VideoHeight
+	resp.CreateAt = video.CreateAt
+	resp.UserId = video.UserId
+	resp.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+	// 获取用户信息
+	if user := svc.user.FindUserByUserid(video.UserId); user != nil {
+		resp.Avatar = user.Avatar
+		resp.Nickname = user.NickName
+	}
+
+	// 获取视频相关统计数据
+	info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
+	resp.BrowseNum = info.BrowseNum
+	resp.CommentNum = info.CommentNum
+	resp.FabulousNum = info.FabulousNum
+	resp.ShareNum = info.ShareNum
+	resp.BarrageNum = info.BarrageNum
+
+	if userId == "" {
+		log.Log.Error("video_trace: user no login")
+		return resp
+	}
+
+	// 是否关注
+	if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
+		resp.IsAttention = attentionInfo.Status
+	}
+
+	// 获取点赞的信息
+	if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
+		resp.IsLike = likeInfo.Status
+	}
+
+	// 获取收藏的信息
+	if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
+		resp.IsCollect = collectInfo.Status
+	}
+
+	return resp
+
 }

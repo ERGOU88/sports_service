@@ -20,6 +20,13 @@ func Router(engine *gin.Engine) {
 		video.POST("/delete/history", DeleteHistory)
 		// 删除发布的记录
 		video.POST("/delete/publish", DeletePublish)
-
+		// 首页推荐的视频列表
+		video.GET("/recommend", RecommendVideos)
+		// 首页推荐的banner列表
+		video.GET("/homepage/banner", RecommendBanners)
+		// 关注的人发布的视频列表
+		video.GET("/attention", AttentionVideos)
+		// 视频详情信息
+		video.GET("/detail", VideoDetail)
 	}
 }

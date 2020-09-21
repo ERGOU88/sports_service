@@ -1,6 +1,9 @@
 package swag
 
-import "sports_service/server/models/muser"
+import (
+	"sports_service/server/models/muser"
+	"sports_service/server/models/mvideo"
+)
 
 // swagger api文档（登陆接口返回数据）
 type LoginSwag struct {
@@ -12,6 +15,12 @@ type LoginSwag struct {
 type ZoneInfoSwag struct {
 	UserInfoResp     *muser.UserInfoResp       `json:"userInfo"`
 	UserZoneInfoResp *UserZoneInfoResp   `json:"zoneInfo"`
+}
+
+// swag文档展示（综合搜索结果）
+type ColligateSearchSwag struct {
+	UserList      []*muser.UserSearchResults `json:"user_list"`
+	VideoList     []*mvideo.VideoDetailInfo  `json:"video_list"`
 }
 
 // 个人空间用户信息

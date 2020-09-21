@@ -14,12 +14,12 @@ type AttentionModel struct {
 
 // 添加关注请求参数
 type AddAttentionParam struct {
-	UserId       string     `binding:"required" json:"userId" example:"需关注的用户id"`     // 需关注的用户id
+	UserId       string     `binding:"required" json:"user_id" example:"需关注的用户id"`     // 需关注的用户id
 }
 
 // 取消关注请求参数
 type CancelAttentionParam struct {
-	UserId       string     `binding:"required" json:"userId" example:"被取消关注的用户id"`  // 被取消关注的用户id
+	UserId       string     `binding:"required" json:"user_id" example:"被取消关注的用户id"`  // 被取消关注的用户id
 }
 
 func NewAttentionModel(engine *xorm.Session) *AttentionModel {
