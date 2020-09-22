@@ -14,13 +14,13 @@ type LikeModel struct {
 
 // 添加点赞请求参数
 type GiveLikeParam struct {
-	VideoId       int64     `binding:"required" json:"video_id" example:"10001"`          // 点赞的视频id
-	ToUserId      string    `binding:"required" json:"to_user_id" example:"被点赞的用户"`    // 被点赞的用户id
+	ComposeId int64  `binding:"required" json:"compose_id" example:"10001"`      // 点赞的视频/评论/帖子 id
+	ToUserId  string `binding:"required" json:"to_user_id" example:"被点赞的用户"` // 被点赞的用户id
 }
 
 // 取消点赞请求参数
 type CancelLikeParam struct {
-	VideoId       int64     `binding:"required" json:"video_id" example:"10001"`          // 取消点赞的视频id
+	ComposeId int64 `binding:"required" json:"compose_id" example:"10001"`       // 取消点赞的视频/评论/帖子 id
 }
 
 // 实栗
@@ -109,3 +109,13 @@ func (m *LikeModel) GetUserTotalLikes(userId string) int64 {
 	return total
 }
 
+// 根据点赞类型、作品id 获取点赞数量
+func (m *LikeModel) GetLikeNumByType(composeId int64, zanType int) int64 {
+	count, err := m.Engine.Where("type_id=? AND zan_type=? AND status=1", composeId, zanType).Count(&models.ThumbsUp{})
+	if err != nil {
+		log.Log.Errorf("like_trace: get like num by type err:%s", err)
+		return 0
+	}
+
+	return count
+}

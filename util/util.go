@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 	"strings"
+	"unicode"
 )
 
 var (
@@ -91,6 +92,26 @@ func PageInfo(page, size string) (p, s int) {
 	}
 
 	return
+}
+
+func GetStrLen(r []rune) int {
+	if len(r) == 0 {
+		return 0
+	}
+
+	var letterlen, wordlen int
+	for _, v := range r {
+		// 是否为汉字
+		if unicode.Is(unicode.Han, v) {
+			wordlen++
+			continue
+		}
+
+		letterlen++
+	}
+
+	length := letterlen + wordlen * 2
+	return length
 }
 
 

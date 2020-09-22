@@ -73,9 +73,18 @@ const (
 	LIKE_RECORD_NOT_EXISTS      = 5004
 	LIKE_REPEAT_CANCEL          = 5005
 	LIKE_CANCEL_FAIL            = 5006
+	LIKE_COMMENT_NOT_EXISTS     = 5007
+	LIKE_COMMENT_FAIL           = 5008
 
-	// 通知相关错误吗 6001-7000
+	// 通知相关错误码 6001-7000
 	NOTIFY_SETTING_FAIL         = 6001
+
+	// 评论相关错误码 7001-8000
+	COMMENT_PUBLISH_FAIL        = 7001
+	COMMENT_NOT_FOUND           = 7002
+	COMMENT_REPLY_FAIL          = 7003
+	COMMENT_REPLY_NOT_FOUND     = 7004
+	COMMENT_INVALID_CONTENT     = 7005
 )
 
 var MsgFlags = map[int]string{
@@ -145,8 +154,16 @@ var MsgFlags = map[int]string{
 	LIKE_RECORD_NOT_EXISTS:      "未点赞该视频",
 	LIKE_REPEAT_CANCEL:          "已取消收藏，请勿重复操作",
 	LIKE_CANCEL_FAIL:            "取消点赞失败",
+	LIKE_COMMENT_NOT_EXISTS:     "点赞的评论不存在",
+	LIKE_COMMENT_FAIL:           "评论点赞失败",
 
 	NOTIFY_SETTING_FAIL:         "系统通知设置失败",
+
+	COMMENT_PUBLISH_FAIL:        "发布评论失败",
+	COMMENT_NOT_FOUND:           "评论不存在",
+	COMMENT_REPLY_FAIL:          "评论回复失败",
+	COMMENT_REPLY_NOT_FOUND:     "未找到该评论相关回复",
+	COMMENT_INVALID_CONTENT:     "评论最少10字符，最多1000字符",
 }
 
 func GetMsg(code int) string {

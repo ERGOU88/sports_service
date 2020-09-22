@@ -322,7 +322,7 @@ func (svc *VideoModule) GetRecommendVideos(userId string, page, size int) []*mvi
 	// 重新组装数据
 	for _, video := range list {
 		// 获取视频标签信息
-		// video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+		// video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.ComposeId))
 		// 查询用户信息
 		userInfo := svc.user.FindUserByUserid(video.UserId)
 		if userInfo == nil {
@@ -386,7 +386,7 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 	// 重新组装数据
 	for _, video := range list {
 		// 获取视频标签信息
-		// video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+		// video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.ComposeId))
 		// 查询用户信息
 		userInfo := svc.user.FindUserByUserid(video.UserId)
 		if userInfo == nil {

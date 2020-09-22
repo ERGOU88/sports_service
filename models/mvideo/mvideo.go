@@ -212,6 +212,7 @@ func (m *VideoModel) UpdateVideoCollectNum(videoId int64, now, num int) error {
 
 // 更新视频评论数
 func (m *VideoModel) UpdateVideoCommentNum() {
+
 	return
 }
 

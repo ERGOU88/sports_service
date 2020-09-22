@@ -44,25 +44,115 @@ definitions:
     required:
     - compose_ids
     type: object
+  mcomment.PublishCommentParams:
+    properties:
+      content:
+        type: string
+      video_id:
+        type: integer
+    type: object
+  mcomment.ReplyComment:
+    properties:
+      avatar:
+        type: string
+      comment_level:
+        type: integer
+      content:
+        type: string
+      create_at:
+        type: integer
+      id:
+        type: integer
+      is_attention:
+        type: integer
+      is_top:
+        type: integer
+      like_num:
+        type: integer
+      parent_comment_id:
+        type: integer
+      parent_comment_user_id:
+        type: string
+      reply_comment_avatar:
+        type: string
+      reply_comment_id:
+        type: integer
+      reply_comment_user_id:
+        type: string
+      reply_comment_user_name:
+        type: string
+      reply_content:
+        type: string
+      status:
+        type: integer
+      user_id:
+        type: string
+      user_name:
+        type: string
+      video_id:
+        type: integer
+    type: object
+  mcomment.ReplyCommentParams:
+    properties:
+      content:
+        type: string
+      reply_id:
+        type: string
+      video_id:
+        type: integer
+    type: object
+  mcomment.VideoComments:
+    properties:
+      avatar:
+        type: string
+      comment_level:
+        type: integer
+      content:
+        type: string
+      create_at:
+        type: integer
+      id:
+        type: integer
+      is_attention:
+        type: integer
+      is_top:
+        type: integer
+      like_num:
+        type: integer
+      reply_list:
+        items:
+          $ref: '#/definitions/mcomment.ReplyComment'
+        type: array
+      reply_num:
+        type: integer
+      status:
+        type: integer
+      user_id:
+        type: string
+      user_name:
+        type: string
+      video_id:
+        type: integer
+    type: object
   mlike.CancelLikeParam:
     properties:
-      video_id:
+      compose_id:
         example: 10001
         type: integer
     required:
-    - video_id
+    - compose_id
     type: object
   mlike.GiveLikeParam:
     properties:
+      compose_id:
+        example: 10001
+        type: integer
       to_user_id:
         example: 被点赞的用户
         type: string
-      video_id:
-        example: 10001
-        type: integer
     required:
+    - compose_id
     - to_user_id
-    - video_id
     type: object
   mnotify.NotifySettingParams:
     properties:
@@ -984,6 +1074,242 @@ paths:
       summary: 用户收藏的视频列表[分页获取] (ok)
       tags:
       - 收藏模块
+  /api/v1/comment/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      - description: 视频id
+        in: query
+        name: video_id
+        required: true
+        type: string
+      - description: 排序规则 0 时间 1 热度
+        in: query
+        name: sort_type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/mcomment.VideoComments'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 评论列表[分页获取] (ok)
+      tags:
+      - 评论模块
+  /api/v1/comment/publish:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 发布评论请求参数
+        in: body
+        name: PublishCommentParams
+        required: true
+        schema:
+          $ref: '#/definitions/mcomment.PublishCommentParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 发布评论 (ok)
+      tags:
+      - 评论模块
+  /api/v1/comment/reply:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 回复评论请求参数
+        in: body
+        name: ReplyCommentParams
+        required: true
+        schema:
+          $ref: '#/definitions/mcomment.ReplyCommentParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 回复评论 (ok)
+      tags:
+      - 评论模块
+  /api/v1/comment/reply/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      - description: 视频id
+        in: query
+        name: video_id
+        required: true
+        type: string
+      - description: 评论id
+        in: query
+        name: comment_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/mcomment.ReplyComment'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 回复列表[分页获取] (ok)
+      tags:
+      - 评论模块
   /api/v1/fans/list:
     get:
       consumes:
@@ -1041,6 +1367,108 @@ paths:
       summary: 用户的粉丝列表[分页获取] (ok)
       tags:
       - 关注模块
+  /api/v1/like/comment:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 评论点赞请求参数
+        in: body
+        name: GiveLikeParam
+        required: true
+        schema:
+          $ref: '#/definitions/mlike.GiveLikeParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 评论点赞 (ok)
+      tags:
+      - 点赞模块
+  /api/v1/like/comment/cancel:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 取消评论点赞请求参数
+        in: body
+        name: CancelLikeParam
+        required: true
+        schema:
+          $ref: '#/definitions/mlike.CancelLikeParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 取消评论点赞 (ok)
+      tags:
+      - 点赞模块
   /api/v1/like/video:
     post:
       consumes:

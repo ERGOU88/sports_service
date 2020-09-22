@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"sports_service/server/app/routers/api/v1/attention"
 	"sports_service/server/app/routers/api/v1/collect"
+	"sports_service/server/app/routers/api/v1/comment"
 	"sports_service/server/app/routers/api/v1/like"
 	"sports_service/server/app/routers/api/v1/notify"
 	"sports_service/server/app/routers/api/v1/search"
@@ -46,4 +47,6 @@ func InitRouters(engine *gin.Engine) {
 	notify.Router(engine)
 	// 搜索模块
 	search.Router(engine)
+	// 评论模块
+	comment.Router(engine)
 }

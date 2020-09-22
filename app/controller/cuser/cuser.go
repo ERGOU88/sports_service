@@ -88,13 +88,13 @@ func (svc *UserModule) EditUserInfo(userId string, params *muser.EditUserInfoPar
 	// 去掉空格 换行
 	nickName := strings.Trim(params.NickName, " ")
 	nickName = strings.Replace(nickName, "\n", "", -1)
-	nameLen := svc.GetStrLen([]rune(nickName))
+	nameLen := util.GetStrLen([]rune(nickName))
 	if nameLen < consts.MIN_NAME_LEN || nameLen > consts.MAX_NAME_LEN {
 		log.Log.Errorf("user_trace: invalid nickname len, length:%d", nameLen)
 		return errdef.USER_INVALID_NAME_LEN
 	}
 
-	signLen := svc.GetStrLen([]rune(params.Signature))
+	signLen := util.GetStrLen([]rune(params.Signature))
 	if signLen > consts.MAX_SIGNATURE_LEN {
 		log.Log.Errorf("user_trace: invalid signature len, length:%d", signLen)
 		return errdef.USER_INVALID_SIGN_LEN

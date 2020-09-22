@@ -9,6 +9,7 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mattention"
+	"sports_service/server/models/mcomment"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
@@ -22,6 +23,7 @@ type LikeModule struct {
 	user       *muser.UserModel
 	like       *mlike.LikeModel
 	video      *mvideo.VideoModel
+	comment    *mcomment.CommentModel
 	attention  *mattention.AttentionModel
 }
 
@@ -32,6 +34,7 @@ func New(c *gin.Context) LikeModule {
 		context: c,
 		user: muser.NewUserModel(socket),
 		video: mvideo.NewVideoModel(socket),
+		comment: mcomment.NewCommentModel(socket),
 		like: mlike.NewLikeModel(socket),
 		attention: mattention.NewAttentionModel(socket),
 		engine: socket,
@@ -225,4 +228,114 @@ func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*mvide
 	}
 
 	return list
+}
+
+// 点赞评论
+func (svc *LikeModule) GiveLikeForComment(userId, toUserId string, commentId int64) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("like_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
+
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("like_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
+		return errdef.USER_NOT_EXISTS
+	}
+
+	// 查找视频是否存在
+	if video := svc.comment.GetVideoCommentById(fmt.Sprint(commentId)); video == nil {
+		log.Log.Errorf("like_trace: like comment not found, commentId:%d", commentId)
+		svc.engine.Rollback()
+		return errdef.LIKE_COMMENT_NOT_EXISTS
+	}
+
+	// 获取点赞的评论信息
+	info := svc.like.GetLikeInfo(userId, commentId, consts.TYPE_COMMENT_LIKE)
+	// 是否已点赞
+	// 已点赞
+	if info != nil && info.Status == consts.ALREADY_GIVE_LIKE {
+		log.Log.Errorf("like_trace: already give like, userId:%s, commentId:%d", userId, commentId)
+		svc.engine.Rollback()
+		return errdef.LIKE_ALREADY_EXISTS
+	}
+
+	now :=  int(time.Now().Unix())
+	// 未点赞
+	// 记录存在 且 状态为 未点赞 更新状态为 已点赞
+	if info != nil && info.Status == consts.NOT_GIVE_LIKE {
+		info.Status = consts.ALREADY_GIVE_LIKE
+		info.CreateAt = now
+		if err := svc.like.UpdateLikeStatus(); err != nil {
+			log.Log.Errorf("like_trace: update like comment status err:%s", err)
+			svc.engine.Rollback()
+			return errdef.LIKE_COMMENT_FAIL
+		}
+
+	} else {
+		// 添加点赞记录
+		if err := svc.like.AddGiveLikeByType(userId, toUserId, commentId, consts.ALREADY_GIVE_LIKE, consts.TYPE_COMMENT_LIKE); err != nil {
+			log.Log.Errorf("like_trace: add like comment record err:%s", err)
+			svc.engine.Rollback()
+			return errdef.LIKE_COMMENT_FAIL
+		}
+	}
+
+	svc.engine.Commit()
+
+	return errdef.SUCCESS
+}
+
+// 取消点赞（评论）
+func (svc *LikeModule) CancelLikeForComment(userId string, commentId int64) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("like_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
+
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("like_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
+		return errdef.USER_NOT_EXISTS
+	}
+
+	// 查找评论是否存在
+	if comment := svc.comment.GetVideoCommentById(fmt.Sprint(commentId)); comment == nil {
+		log.Log.Errorf("like_trace: cancel like comment not found, commentId:%d", commentId)
+		svc.engine.Rollback()
+		return errdef.LIKE_COMMENT_NOT_EXISTS
+	}
+
+	// 获取点赞的信息 判断是否已点赞 记录不存在 则 未点过赞
+	info := svc.like.GetLikeInfo(userId, commentId, consts.TYPE_COMMENT_LIKE)
+	if info == nil {
+		log.Log.Errorf("like_trace: record not found, not give like, userId:%s, commentId:%d", userId, commentId)
+		svc.engine.Rollback()
+		return errdef.LIKE_RECORD_NOT_EXISTS
+	}
+
+	// 状态 ！= 已点赞 提示重复操作
+	if info.Status != consts.ALREADY_GIVE_LIKE {
+		log.Log.Errorf("like_trace: already cancel like, userId:%s, commentId:%d", userId, commentId)
+		svc.engine.Rollback()
+		return errdef.LIKE_REPEAT_CANCEL
+	}
+
+	now :=  int(time.Now().Unix())
+	info.Status = consts.NOT_GIVE_LIKE
+	info.CreateAt = now
+	// 更新状态 未点赞
+	if err := svc.like.UpdateLikeStatus(); err != nil {
+		log.Log.Errorf("like_trace: update like status err:%s", err)
+		svc.engine.Rollback()
+		return errdef.LIKE_CANCEL_FAIL
+	}
+
+	svc.engine.Commit()
+
+	return errdef.SUCCESS
 }
