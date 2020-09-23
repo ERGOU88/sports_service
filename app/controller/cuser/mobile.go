@@ -6,21 +6,22 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/models"
 	"sports_service/server/models/muser"
+	"sports_service/server/tools/mobTech"
 	"sports_service/server/util"
 	"time"
 )
 
 // 手机一键登陆/注册
 func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, *models.User) {
-	//mob := mobTech.NewMobTech()
-	// 从mob获取手机号码
-	//mobileNum, err := mob.FreeLogin(param.Token, param.OpToken, param.Operator)
-	//if err != nil {
-	//	log.Log.Errorf("user_trace: mob free login err:%s", err)
-	//	return errdef.USER_FREE_LOGIN_FAIL, "", nil
-	//}
+	mob := mobTech.NewMobTech()
+	// 校验客户端token 并从mob获取手机号码
+	mobileNum, err := mob.FreeLogin(param.Token, param.OpToken, param.Operator)
+	if err != nil {
+		log.Log.Errorf("user_trace: mob free login err:%s", err)
+		return errdef.USER_FREE_LOGIN_FAIL, "", nil
+	}
 
-	mobileNum := "13177666666"
+	//mobileNum := "13177666666"
 
 	// 校验手机号合法性
 	if b := svc.user.CheckCellPhoneNumber(mobileNum); !b {

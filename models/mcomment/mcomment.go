@@ -9,6 +9,7 @@ import (
 type CommentModel struct {
 	Engine      *xorm.Session
 	Comment     *models.VideoComment
+	ReceiveAt   *models.ReceivedAt
 }
 
 // 视频评论列表
@@ -70,6 +71,7 @@ func NewCommentModel(engine *xorm.Session) *CommentModel {
 	return &CommentModel{
 		Engine:  engine,
 		Comment: new(models.VideoComment),
+		ReceiveAt: new(models.ReceivedAt),
 	}
 }
 
@@ -80,6 +82,38 @@ func (m *CommentModel) AddVideoComment() error {
 	}
 
 	return nil
+}
+
+// 添加用户收到的@
+func (m *CommentModel) AddReceiveAt() error {
+	if _, err := m.Engine.InsertOne(m.ReceiveAt); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 查询用户收到的@们
+func (m *CommentModel) GetReceiveAtList(userId string, offset, size int) []*models.ReceivedAt {
+	var list []*models.ReceivedAt
+	if err := m.Engine.Where("to_user_id=?", userId).Desc("id").Limit(size, offset).Find(&list); err != nil {
+		log.Log.Errorf("comment_trace: get receive at by userid err:%s, userId:%s", err, userId)
+		return nil
+	}
+
+	return list
+}
+
+
+// 获取未读的被@的数量
+func (m *CommentModel) GetUnreadAtCount(userId, readTm string) int64 {
+	count, err := m.Engine.Where("to_user_id=? AND create_at > ?", userId, readTm).Count(&models.ReceivedAt{})
+	if err != nil {
+		log.Log.Errorf("comment_trace: get unread at count err:%s", err)
+		return 0
+	}
+
+	return count
 }
 
 // 通过评论id获取评论信息

@@ -114,3 +114,14 @@ func (m *CollectModel) GetUserTotalCollect(userId string) int64 {
 
 	return total
 }
+
+// 获取用户被收藏的作品列表
+func (m *CollectModel) GetCollectedList(toUserId string, offset, size int) []*models.CollectRecord {
+	var list []*models.CollectRecord
+	if err := m.Engine.Where("to_user_id=? AND status=1", toUserId).Desc("id").Limit(size, offset).Find(&list); err != nil {
+		log.Log.Errorf("collect_trace: get collected list err:%s", err)
+		return nil
+	}
+
+	return list
+}

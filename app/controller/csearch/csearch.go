@@ -213,6 +213,46 @@ func (svc *SearchModule) GetHotSearch() []string {
 	return strings.Split(hot.HotSearchContent, ",")
 }
 
+// 搜索关注的用户
+func (svc *SearchModule) SearchAttentionUser(userId, name string, page, size int) []*mattention.SearchContactRes {
+	if name == "" || userId == "" {
+		log.Log.Errorf("search_trace: search attention name can't empty, name:%s", name)
+		return nil
+	}
+
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("search_trace: user not found, uid:%s", userId)
+		return nil
+	}
+
+	offset := (page - 1) * size
+	return svc.attention.SearchAttentionUser(userId, name, offset, size)
+}
+
+// 搜索粉丝列表
+func (svc *SearchModule) SearchFans(userId, name string, page, size int) []*mattention.SearchContactRes {
+	if name == "" || userId == "" {
+		log.Log.Errorf("search_trace: search fans name can't empty, name:%s", name)
+		return nil
+	}
+
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("search_trace: user not found, uid:%s", userId)
+		return nil
+	}
+
+	offset := (page - 1) * size
+	list := svc.attention.SearchFans(userId, name, offset, size)
+	for _, info := range list {
+		// 是否回关
+		if attentionInfo := svc.attention.GetAttentionInfo(userId, info.UserId); attentionInfo != nil {
+			info.IsAttention = int32(attentionInfo.Status)
+		}
+	}
+
+	return list
+}
+
 // 获取时长条件
 func (svc *SearchModule) GetDurationCondition(durationType string) (minDuration, maxDuration int64) {
 	switch durationType {

@@ -110,7 +110,7 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	// 初始化视频统计数据
 	if err := svc.video.AddVideoStatistic(); err != nil {
 		log.Log.Errorf("video_trace: add video statistic err:%s", err)
-		//svc.engine.Rollback()
+		svc.engine.Rollback()
 		return err
 	}
 

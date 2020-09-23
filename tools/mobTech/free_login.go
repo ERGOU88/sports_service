@@ -1,10 +1,10 @@
 package mobTech
 
 import (
-	"encoding/json"
-	"log"
-	"time"
 	"errors"
+	"log"
+	"sports_service/server/util"
+	"time"
 )
 
 // 移动开发者服务平台
@@ -58,7 +58,7 @@ func (mob *MobTech) FreeLogin(token, opToken, operator string) (string, error) {
 	}
 
 	ret := new(Data)
-	if err := json.Unmarshal(postBody, &ret); err != nil {
+	if err := util.JsonFast.Unmarshal(postBody, &ret); err != nil {
 		log.Printf("mob_trace: unmarshal err:%v", err)
 		return "", err
 	}
@@ -71,7 +71,7 @@ func (mob *MobTech) FreeLogin(token, opToken, operator string) (string, error) {
 	res := new(FreeLoginRes)
 	decode, _ := mob.Base64Decode([]byte(ret.Res.(string)))
 	decr, _ := mob.DesDecrypt(decode, []byte(APP_SECRET)[0:8])
-	if err := json.Unmarshal(decr, &res); err != nil {
+	if err := util.JsonFast.Unmarshal(decr, &res); err != nil {
 		return "", err
 	}
 

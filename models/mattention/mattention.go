@@ -108,3 +108,49 @@ func (m *AttentionModel) GetTotalFans(userId string) int64 {
 	return total
 }
 
+
+// 用户搜索联系人（关注/粉丝）
+type SearchContactRes struct {
+	UserId        string `json:"user_id" example:"2009011314521111"`
+	Avatar        string `json:"avatar" example:"头像地址"`
+	NickName      string `json:"nick_name" example:"昵称 陈二狗"`
+	Gender        int32  `json:"gender" example:"0"`
+	Signature     string `json:"signature" example:"个性签名"`
+	Status        int32  `json:"status" example:"0"`
+	IsAnchor      int32  `json:"is_anchor" example:"0"`
+	BackgroundImg string `json:"background_img" example:"背景图"`
+	Born          string `json:"born" example:"出生日期"`
+	Age           int    `json:"age" example:"27"`
+	IsAttention   int32  `json:"is_attention"`
+}
+
+const (
+ SEARCH_ATTENTION = "SELECT u.*, ua.status as is_attention FROM user_attention AS ua INNER JOIN user as u ON u.`user_id` = ua.`user_id` " +
+ 	"WHERE u.nick_name LIKE '%?%' OR u.`user_id` LIKE '%?%' AND u.status=0 AND ua.attention_uid = ? AND ua.status=1 ORDER BY ua.Id DESC LIMIT ?, ?"
+)
+// 搜索关注的用户
+func (m *AttentionModel) SearchAttentionUser(userId, name string, offset, size int) []*SearchContactRes {
+	var list []*SearchContactRes
+	ok, err := m.Engine.Table(&models.UserAttention{}).SQL(SEARCH_ATTENTION, name, name, userId, offset, size).Get(&list)
+	if !ok || err != nil {
+		return nil
+	}
+
+	return list
+}
+
+const (
+	SEARCH_FANS = "SELECT u.*, ua.status as is_attention FROM user_attention AS ua INNER JOIN user as u ON u.`user_id` = ua.`attention_uid` " +
+		"WHERE u.nick_name LIKE '%?%' OR u.`user_id` LIKE '%?%' AND u.status=0 AND ua.user_id = ? AND ua.status=1 ORDER BY ua.Id DESC LIMIT ?, ?"
+)
+// 搜索粉丝
+func (m *AttentionModel) SearchFans(userId, name string, offset, size int) []*SearchContactRes {
+	var list []*SearchContactRes
+	ok, err := m.Engine.Table(&models.UserAttention{}).SQL(SEARCH_FANS, name, name, userId, offset, size).Get(&list)
+	if !ok || err != nil {
+		return nil
+	}
+
+	return list
+}
+

@@ -10,6 +10,7 @@ import (
 	_ "sports_service/server/app/routers/api/v1/swag"
 	_ "sports_service/server/models/muser"
 	_ "sports_service/server/models/mvideo"
+	_ "sports_service/server/models/mattention"
 )
 
 // @Summary 视频搜索[分页获取] (ok)
@@ -159,5 +160,65 @@ func HotSearch(c *gin.Context) {
 	// 获取后台配置的热门搜索内容
 	hotSearch := svc.GetHotSearch()
 	reply.Data["list"] = hotSearch
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// @Summary 搜索关注的用户[分页获取] (ok)
+// @Tags 搜索模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   page	  	  query  	string 	true  "页码 从1开始"
+// @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
+// @Param   name    	  query  	string 	true  "搜索的用户名/userid"
+// @Success 200 {array}  mattention.SearchContactRes
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/search/attention [get]
+// 搜索关注的用户
+func AttentionSearch(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+	name := c.Query("name")
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+
+	svc := csearch.New(c)
+	list := svc.SearchAttentionUser(userId.(string), name, page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// @Summary 搜索粉丝[分页获取] (ok)
+// @Tags 搜索模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   page	  	  query  	string 	true  "页码 从1开始"
+// @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
+// @Param   name    	  query  	string 	true  "搜索的用户名/userid"
+// @Success 200 {array}  mattention.SearchContactRes
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/search/fans [get]
+// 搜索粉丝
+func FansSearch(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+	name := c.Query("name")
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+
+	svc := csearch.New(c)
+	list := svc.SearchFans(userId.(string), name, page, size)
+	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }

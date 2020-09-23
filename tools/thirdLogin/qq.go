@@ -5,14 +5,14 @@ import (
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base64"
+	"errors"
+	"fmt"
 	"github.com/parnurzeal/gorequest"
 	"io/ioutil"
 	"log"
-	"encoding/json"
 	"net/url"
+	"sports_service/server/util"
 	"strings"
-	"fmt"
-	"errors"
 )
 
 type QQ struct {}
@@ -59,7 +59,7 @@ func (qq *QQ) GetQQUnionID(accessToken string) (string, error) {
 
 	r := bytes.Fields(respData)
 	u := new(QQUnionid)
-	if err = json.Unmarshal(r[1], u); err != nil {
+	if err = util.JsonFast.Unmarshal(r[1], u); err != nil {
 		log.Printf("qq_trace: unmarshal err: %v", err)
 		return "", err
 	}

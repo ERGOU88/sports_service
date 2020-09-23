@@ -20,6 +20,10 @@ func Router(engine *gin.Engine) {
 		search.GET("/label", LabelSearch)
 		// 热门搜索
 		search.GET("/hot", HotSearch)
+		// 搜索关注的用户
+		search.GET("/attention", AttentionSearch)
+		// 搜索粉丝
+		search.GET("/fans", FansSearch)
 	}
 }
 

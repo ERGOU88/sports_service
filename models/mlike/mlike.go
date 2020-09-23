@@ -23,6 +23,57 @@ type CancelLikeParam struct {
 	ComposeId int64 `binding:"required" json:"compose_id" example:"10001"`       // 取消点赞的视频/评论/帖子 id
 }
 
+// 被点赞的视频信息
+type BeLikedVideoInfo struct {
+	ComposeId     int64                 `json:"compose_id"`      // 作品id
+	Title         string                `json:"title"`           // 标题
+	Describe      string                `json:"describe"`        // 描述
+	Cover         string                `json:"cover"`           // 封面
+	VideoAddr     string                `json:"video_addr"`      // 视频地址
+	VideoDuration int                   `json:"video_duration"`  // 视频时长
+	VideoWidth    int64                 `json:"video_width"`     // 视频宽
+	VideoHeight   int64                 `json:"video_height"`    // 视频高
+	Status        int32                 `json:"status"`          // 审核状态
+	CreateAt      int                   `json:"create_at"`       // 视频创建时间
+	BarrageNum    int                   `json:"barrage_num"`     // 弹幕数
+	BrowseNum     int                   `json:"browse_num"`      // 浏览数（播放数）
+	UserId        string                `json:"user_id"`         // 点赞的用户id
+	Avatar        string                `json:"avatar"`          // 点赞用户头像
+	Nickname      string                `json:"nick_name"`       // 被点赞的用户昵称
+	ToUserId      string                `json:"to_user_id"`      // 被点赞的用户id
+	ToUserAvatar  string                `json:"avatar"`          // 被点赞用户头像
+	ToUserName    string                `json:"to_user_name"`    // 被点赞的用户昵称
+	OpTime        int                   `json:"op_time"`         // 用户点赞操作时间
+	Type          int                   `json:"type"`            // 类型 1 视频 2 帖子 3 评论
+}
+
+// 被点赞的评论信息
+type BeLikedCommentInfo struct {
+	ComposeId     int64                 `json:"compose_id"`      // 作品id
+	Title         string                `json:"title"`           // 标题
+	Describe      string                `json:"describe"`        // 描述
+	Cover         string                `json:"cover"`           // 封面
+	VideoAddr     string                `json:"video_addr"`      // 视频地址
+	IsRecommend   int                   `json:"is_recommend"`    // 是否推荐
+	IsTop         int                   `json:"is_top"`          // 是否置顶
+	VideoDuration int                   `json:"video_duration"`  // 视频时长
+	VideoWidth    int64                 `json:"video_width"`     // 视频宽
+	VideoHeight   int64                 `json:"video_height"`    // 视频高
+	Status        int32                 `json:"status"`          // 审核状态
+	CreateAt      int                   `json:"create_at"`       // 视频创建时间
+	BarrageNum    int                   `json:"barrage_num"`     // 弹幕数
+	BrowseNum     int                   `json:"browse_num"`      // 浏览数（播放数）
+	UserId        string                `json:"user_id"`         // 点赞的用户id
+	Avatar        string                `json:"avatar"`          // 点赞用户头像
+	Nickname      string                `json:"nick_name"`       // 点赞的用户昵称
+	ToUserId      string                `json:"to_user_id"`      // 被点赞的用户id
+	ToUserAvatar  string                `json:"avatar"`          // 被点赞用户头像
+	ToUserName    string                `json:"to_user_name"`    // 被点赞的用户昵称
+	Content       string                `json:"content"`         // 被点赞的评论内容
+	OpTime        int                   `json:"op_time"`         // 用户点赞操作时间
+	Type          int                   `json:"type"`            // 类型 1 视频 2 帖子 3 评论
+}
+
 // 实栗
 func NewLikeModel(engine *xorm.Session) *LikeModel {
 	return &LikeModel{
@@ -76,6 +127,17 @@ func (m *LikeModel) GetLikeInfo(userId string, composeId int64, zanType int) *mo
 	return m.Like
 }
 
+// 获取用户被点赞的记录 包含 视频、评论等
+func (m *LikeModel) GetBeLikedList(toUserId string, offset, size int) []*models.ThumbsUp {
+	var list []*models.ThumbsUp
+	if err := m.Engine.Where("to_user_id=? AND status=1", toUserId).Desc("id").Limit(size, offset).Find(&list); err != nil {
+		log.Log.Errorf("like_trace: get be liked list err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
 // 更新点赞状态 点赞/取消点赞
 func (m *LikeModel) UpdateLikeStatus() error {
 	if _, err := m.Engine.ID(m.Like.Id).
@@ -114,6 +176,17 @@ func (m *LikeModel) GetLikeNumByType(composeId int64, zanType int) int64 {
 	count, err := m.Engine.Where("type_id=? AND zan_type=? AND status=1", composeId, zanType).Count(&models.ThumbsUp{})
 	if err != nil {
 		log.Log.Errorf("like_trace: get like num by type err:%s", err)
+		return 0
+	}
+
+	return count
+}
+
+// 获取未读的被点赞的数量
+func (m *LikeModel) GetUnreadBeLikedCount(userId, readTm string) int64 {
+	count, err := m.Engine.Where("to_user_id=? AND status=1 AND create_at > ?", userId, readTm).Count(&models.ThumbsUp{})
+	if err != nil {
+		log.Log.Errorf("like_trace: get unread be liked count err:%s", err)
 		return 0
 	}
 

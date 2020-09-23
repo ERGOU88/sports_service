@@ -15,6 +15,41 @@ definitions:
     required:
     - user_id
     type: object
+  mattention.SearchContactRes:
+    properties:
+      age:
+        example: 27
+        type: integer
+      avatar:
+        example: 头像地址
+        type: string
+      background_img:
+        example: 背景图
+        type: string
+      born:
+        example: 出生日期
+        type: string
+      gender:
+        example: 0
+        type: integer
+      is_anchor:
+        example: 0
+        type: integer
+      is_attention:
+        type: integer
+      nick_name:
+        example: 昵称 陈二狗
+        type: string
+      signature:
+        example: 个性签名
+        type: string
+      status:
+        example: 0
+        type: integer
+      user_id:
+        example: "2009011314521111"
+        type: string
+    type: object
   mcollect.AddCollectParam:
     properties:
       to_user_id:
@@ -196,6 +231,25 @@ definitions:
       update_at:
         type: integer
     type: object
+  models.SystemNoticeSettings:
+    properties:
+      attention_push_set:
+        type: integer
+      comment_push_set:
+        type: integer
+      create_at:
+        type: integer
+      share_push_set:
+        type: integer
+      slot_push_set:
+        type: integer
+      thumb_up_push_set:
+        type: integer
+      update_at:
+        type: integer
+      user_id:
+        type: string
+    type: object
   muser.EditUserInfoParams:
     properties:
       avatar_id:
@@ -286,6 +340,8 @@ definitions:
         type: integer
       is_anchor:
         example: 0
+        type: integer
+      is_attention:
         type: integer
       mobile_num:
         example: 13177656222
@@ -403,6 +459,8 @@ definitions:
         type: string
       fabulous_num:
         type: integer
+      is_attention:
+        type: integer
       is_collect:
         type: integer
       is_like:
@@ -411,11 +469,9 @@ definitions:
         type: integer
       is_top:
         type: integer
-      isAttention:
-        type: integer
       labels:
         type: string
-      nickName:
+      nick_name:
         type: string
       share_num:
         type: integer
@@ -423,7 +479,7 @@ definitions:
         type: integer
       title:
         type: string
-      userId:
+      user_id:
         type: string
       video_addr:
         type: string
@@ -497,8 +553,6 @@ definitions:
     properties:
       avatar:
         type: string
-      collect_at:
-        type: integer
       cover:
         type: string
       create_at:
@@ -513,6 +567,8 @@ definitions:
         type: integer
       nick_name:
         type: string
+      op_time:
+        type: integer
       title:
         type: string
       user_id:
@@ -1628,6 +1684,120 @@ paths:
       summary: 用户点赞的视频列表[分页获取] (ok)
       tags:
       - 点赞模块
+  /api/v1/notify/beliked:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: object
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 被点赞通知[分页获取] (ok)
+      tags:
+      - 通知模块
+  /api/v1/notify/receive/at:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: object
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 被@通知[分页获取] (ok)
+      tags:
+      - 通知模块
   /api/v1/notify/setting:
     post:
       consumes:
@@ -1679,6 +1849,160 @@ paths:
       summary: 系统通知设置 (ok)
       tags:
       - 通知模块
+  /api/v1/notify/setting/info:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SystemNoticeSettings'
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 通知设置信息 (ok)
+      tags:
+      - 通知模块
+  /api/v1/notify/unread/quantity:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 获取未读通知数量 (ok)
+      tags:
+      - 通知模块
+  /api/v1/search/attention:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      - description: 搜索的用户名/userid
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/mattention.SearchContactRes'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 搜索关注的用户[分页获取] (ok)
+      tags:
+      - 搜索模块
   /api/v1/search/colligate:
     get:
       consumes:
@@ -1727,6 +2051,68 @@ paths:
           schema:
             type: string
       summary: 综合搜索[默认搜视频、用户 各取三条记录] (ok)
+      tags:
+      - 搜索模块
+  /api/v1/search/fans:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      - description: 搜索的用户名/userid
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/mattention.SearchContactRes'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 搜索粉丝[分页获取] (ok)
       tags:
       - 搜索模块
   /api/v1/search/hot:

@@ -20,4 +20,8 @@ func (cm SortComment) Less(i, j int) bool {
 
 func (cm SortComment) Swap(i, j int) {
 	cm[i], cm[j] = cm[j], cm[i]
+	return
 }
+
+
+

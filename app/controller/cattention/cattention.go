@@ -147,6 +147,7 @@ func (svc *AttentionModule) GetAttentionUserList(attentionUid string, page, size
 			Age: user.Age,
 			UserType: user.UserType,
 			Country: int32(user.Country),
+			IsAttention: consts.ALREADY_ATTENTION,
 		}
 
 		resp[index] = info
@@ -188,6 +189,11 @@ func (svc *AttentionModule) GetFansList(userId string, page, size int) []*muser.
 			Age: user.Age,
 			UserType: user.UserType,
 			Country: int32(user.Country),
+		}
+
+		// 查询是否回关了
+		if attention := svc.attention.GetAttentionInfo(userId, user.UserId); attention != nil {
+			info.IsAttention = int32(attention.Status)
 		}
 
 		resp[index] = info

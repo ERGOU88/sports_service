@@ -64,7 +64,7 @@ func (svc *LikeModule) GiveLikeForVideo(userId, toUserId string, videoId int64) 
 	}
 
 	// 获取点赞的视频信息
-	info := svc.like.GetLikeInfo(userId, videoId, consts.TYPE_VIDEO_LIKE)
+	info := svc.like.GetLikeInfo(userId, videoId, consts.TYPE_VIDEOS)
 	// 是否已点赞
 	// 已点赞
 	if info != nil && info.Status == consts.ALREADY_GIVE_LIKE {
@@ -94,7 +94,7 @@ func (svc *LikeModule) GiveLikeForVideo(userId, toUserId string, videoId int64) 
 
 	} else {
 		// 添加点赞记录
-		if err := svc.like.AddGiveLikeByType(userId, toUserId, videoId, consts.ALREADY_GIVE_LIKE, consts.TYPE_VIDEO_LIKE); err != nil {
+		if err := svc.like.AddGiveLikeByType(userId, toUserId, videoId, consts.ALREADY_GIVE_LIKE, consts.TYPE_VIDEOS); err != nil {
 			log.Log.Errorf("like_trace: add like video record err:%s", err)
 			svc.engine.Rollback()
 			return errdef.LIKE_VIDEO_FAIL
@@ -129,7 +129,7 @@ func (svc *LikeModule) CancelLikeForVideo(userId string, videoId int64) int {
 	}
 
 	// 获取点赞的信息 判断是否已点赞 记录不存在 则 未点过赞
-	info := svc.like.GetLikeInfo(userId, videoId, consts.TYPE_VIDEO_LIKE)
+	info := svc.like.GetLikeInfo(userId, videoId, consts.TYPE_VIDEOS)
 	if info == nil {
 		log.Log.Errorf("like_trace: record not found, not give like, userId:%s, videoId:%d", userId, videoId)
 		svc.engine.Rollback()
@@ -253,7 +253,7 @@ func (svc *LikeModule) GiveLikeForComment(userId, toUserId string, commentId int
 	}
 
 	// 获取点赞的评论信息
-	info := svc.like.GetLikeInfo(userId, commentId, consts.TYPE_COMMENT_LIKE)
+	info := svc.like.GetLikeInfo(userId, commentId, consts.TYPE_COMMENT)
 	// 是否已点赞
 	// 已点赞
 	if info != nil && info.Status == consts.ALREADY_GIVE_LIKE {
@@ -276,7 +276,7 @@ func (svc *LikeModule) GiveLikeForComment(userId, toUserId string, commentId int
 
 	} else {
 		// 添加点赞记录
-		if err := svc.like.AddGiveLikeByType(userId, toUserId, commentId, consts.ALREADY_GIVE_LIKE, consts.TYPE_COMMENT_LIKE); err != nil {
+		if err := svc.like.AddGiveLikeByType(userId, toUserId, commentId, consts.ALREADY_GIVE_LIKE, consts.TYPE_COMMENT); err != nil {
 			log.Log.Errorf("like_trace: add like comment record err:%s", err)
 			svc.engine.Rollback()
 			return errdef.LIKE_COMMENT_FAIL
@@ -311,7 +311,7 @@ func (svc *LikeModule) CancelLikeForComment(userId string, commentId int64) int 
 	}
 
 	// 获取点赞的信息 判断是否已点赞 记录不存在 则 未点过赞
-	info := svc.like.GetLikeInfo(userId, commentId, consts.TYPE_COMMENT_LIKE)
+	info := svc.like.GetLikeInfo(userId, commentId, consts.TYPE_COMMENT)
 	if info == nil {
 		log.Log.Errorf("like_trace: record not found, not give like, userId:%s, commentId:%d", userId, commentId)
 		svc.engine.Rollback()

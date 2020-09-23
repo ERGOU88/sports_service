@@ -9,7 +9,7 @@ import (
 )
 
 // @Summary 初始化接口 (ok)
-// @Tags 通用接口接口
+// @Tags 通用接口
 // @Version 1.0
 // @Description
 // @Accept json

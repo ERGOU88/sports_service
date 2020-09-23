@@ -41,10 +41,10 @@ type VideosInfoResp struct {
 	VideoHeight   int64  `json:"video_height"`   // 视频高
 	CreateAt      int    `json:"create_at"`      // 视频创建时间
 	UserId        string `json:"user_id"`        // 发布视频的用户id
-	Avatar        string `json:"avatar"`        // 头像
+	Avatar        string `json:"avatar"`         // 头像
 	Nickname      string `json:"nick_name"`      // 昵称
 	IsAttention   int    `json:"is_attention"`   // 是否关注 1 关注 2 未关注
-	OpTime        int    `json:"collect_at"`     // 用户收藏/点赞等的操作时间
+	OpTime        int    `json:"op_time"`        // 用户收藏/点赞等的操作时间
 }
 
 // 视频信息
@@ -86,10 +86,10 @@ type VideoDetailInfo struct {
 	BarrageNum    int                   `json:"barrage_num"`    // 弹幕数
 	ShareNum      int                   `json:"share_num"`      // 分享数
 	BrowseNum     int                   `json:"browse_num"`     // 浏览数（播放数）
-	UserId        string                `json:"userId"`         // 发布视频的用户id
+	UserId        string                `json:"user_id"`        // 发布视频的用户id
 	Avatar        string                `json:"avatar"`         // 头像
-	Nickname      string                `json:"nickName"`       // 昵称
-	IsAttention   int                   `json:"isAttention"`    // 是否关注 1 关注 2 未关注
+	Nickname      string                `json:"nick_name"`      // 昵称
+	IsAttention   int                   `json:"is_attention"`   // 是否关注 1 关注 2 未关注
 	IsCollect     int                   `json:"is_collect"`     // 是否收藏
 	IsLike        int                   `json:"is_like"`        // 是否点赞
 	Labels        []*models.VideoLabels `json:"labels"`         // 视频标签
@@ -168,6 +168,7 @@ func (m *VideoModel) AddVideoStatistic() error {
 
 // 获取视频统计数据
 func (m *VideoModel) GetVideoStatistic(videoId string) *models.VideoStatistic {
+	m.Statistic = new(models.VideoStatistic)
 	ok, err := m.Engine.Where("video_id=?", videoId).Get(m.Statistic)
 	if !ok || err != nil {
 		log.Log.Errorf("video_trace: get video statistic info err:%s", err)
@@ -179,7 +180,7 @@ func (m *VideoModel) GetVideoStatistic(videoId string) *models.VideoStatistic {
 
 // 删除视频统计数据
 func (m *VideoModel) DelVideoStatistic(videoId string) error {
-	if _, err := m.Engine.Where("video_id=?", videoId).Delete(m.Statistic); err != nil {
+	if _, err := m.Engine.Where("video_id=?", videoId).Delete(&models.VideoStatistic{}); err != nil {
 		return err
 	}
 
