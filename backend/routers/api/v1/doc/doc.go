@@ -1,7 +1,7 @@
 package doc
 
 import (
-	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/backend/errdef"
 	"github.com/gin-gonic/gin"
 	"html/template"
 )

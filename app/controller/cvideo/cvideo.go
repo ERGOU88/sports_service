@@ -89,7 +89,7 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	// 组装多条记录 写入视频标签表
 	labelInfos := make([]*models.VideoLabels, len(labelIds))
 	for index, labelId := range labelIds {
-		if svc.label.GetLabelInfo(labelId) == nil {
+		if svc.label.GetLabelInfoByMem(labelId) == nil {
 			log.Log.Errorf("video_trace: label not found, labelId:%s", labelId)
 			continue
 		}
@@ -97,7 +97,7 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 		info := new(models.VideoLabels)
 		info.VideoId = svc.video.Videos.VideoId
 		info.LabelId = labelId
-		info.LabelName = svc.label.GetLabelName(labelId)
+		info.LabelName = svc.label.GetLabelNameByMem(labelId)
 		info.CreateAt = int(now)
 		labelInfos[index] = info
 	}

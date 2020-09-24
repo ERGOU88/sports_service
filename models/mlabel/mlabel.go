@@ -28,6 +28,17 @@ type VideoLabel struct {
 	Child     []*VideoLabel `json:"child" xorm:"-"` // 子类标签信息
 }
 
+// 添加视频标签请求参数
+type AddVideoLabelParam struct {
+	LabelName    string    `json:"label_name"`     // 视频标签名称
+	Icon         string    `json:"icon"`           // icon
+}
+
+// 删除视频标签请求参数
+type DelVideoLabelParam struct {
+	LabelId      string    `json:"label_id"`       // 视频标签id
+}
+
 var videoLabels []*VideoLabel
 
 // labelId -> labelName
@@ -46,6 +57,24 @@ func NewLabelModel(engine *xorm.Session) *LabelModel {
 		VideoLabels: new(models.VideoLabelConfig),
 		PostLabels: new(models.PostLabelConfig),
 	}
+}
+
+// 删除视频标签
+func (m *LabelModel) DelVideoLabel(labelId string) error {
+	if _, err := m.Engine.Where("label_id=?", labelId).Delete(&models.VideoLabels{}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 添加视频标签
+func (m *LabelModel) AddVideoLabel() error {
+	if _, err := m.Engine.Insert(m.VideoLabels); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // 通过labeiid获取视频标签信息
@@ -70,12 +99,12 @@ func (m *LabelModel) IsExistsLabel(labelId string) bool {
 }
 
 // 清空标签map
-func (m *LabelModel) DelAllLabel() {
+func (m *LabelModel) DelAllLabelByMem() {
 	labelMp = make(map[string]*VideoLabel)
 }
 
 // 通过标签id 获取标签信息
-func (m *LabelModel) GetLabelInfo(labelId string) *VideoLabel {
+func (m *LabelModel) GetLabelInfoByMem(labelId string) *VideoLabel {
 	label, ok := labelMp[labelId]
 	if !ok {
 		return nil
@@ -85,7 +114,7 @@ func (m *LabelModel) GetLabelInfo(labelId string) *VideoLabel {
 }
 
 // 通过标签id 获取标签名称
-func (m *LabelModel) GetLabelName(labelId string) string {
+func (m *LabelModel) GetLabelNameByMem(labelId string) string {
 	label, ok := labelMp[labelId]
 	if ok {
 		return label.LabelName
@@ -94,11 +123,29 @@ func (m *LabelModel) GetLabelName(labelId string) string {
 	return ""
 }
 
-// 更新标签信息
-func (m *LabelModel) UpdateLabelInfo(labelId string) {
+// 删除标签信息（内存）
+func (m *LabelModel) DelLabelInfoByMem(labelId string) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	delete(labelMp, labelId)
+}
+
+// 添加标签信息（内存）
+func (m *LabelModel) AddLabelInfoByMem() {
+	mutex.Lock()
+	defer mutex.Unlock()
+	info := &VideoLabel{
+		CreateAt: m.VideoLabels.CreateAt,
+		Icon: m.VideoLabels.Icon,
+		LabelId: m.VideoLabels.LabelId,
+		LabelName: m.VideoLabels.LabelName,
+		Pid: m.VideoLabels.Pid,
+		Sortorder: m.VideoLabels.Sortorder,
+		Status: m.VideoLabels.Status,
+		UpdateAt: m.VideoLabels.UpdateAt,
+	}
+
+	labelMp[fmt.Sprint(m.VideoLabels.LabelId)] = info
 }
 
 // 从内存读取视频标签 （第一次请求 内存没有 则从数据库load到内存）
@@ -107,7 +154,7 @@ func (m *LabelModel) GetVideoLabelList() []*VideoLabel {
 		var err error
 		err, videoLabels = m.LoadLabelsInfoByDb()
 		if err != nil {
-			return nil
+			return []*VideoLabel{}
 		}
 	}
 

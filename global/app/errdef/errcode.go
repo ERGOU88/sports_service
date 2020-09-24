@@ -61,10 +61,12 @@ const (
 	COLLECT_DELETE_FAIL         = 3007
 
 	// 视频相关错误码 4001-5000
-	VIDEO_NOT_EXISTS          = 4001
-	VIDEO_PUBLISH_FAIL        = 4002
-	VIDEO_DELETE_HISTORY_FAIL = 4003
-	VIDEO_DELETE_PUBLISH_FAIL = 4004
+	VIDEO_NOT_EXISTS            = 4001
+	VIDEO_PUBLISH_FAIL          = 4002
+	VIDEO_DELETE_HISTORY_FAIL   = 4003
+	VIDEO_DELETE_PUBLISH_FAIL   = 4004
+	VIDEO_DELETE_LABEL_FAIL     = 4005
+	VIDEO_DELETE_STATISTIC_FAIL = 4006
 
 	// 点赞相关错误码 5001-6000
 	LIKE_VIDEO_NOT_EXISTS       = 5001
@@ -143,10 +145,12 @@ var MsgFlags = map[int]string{
 	COLLECT_CANCEL_FAIL:         "取消收藏失败",
 	COLLECT_DELETE_FAIL:         "删除收藏的记录失败",
 
-	VIDEO_NOT_EXISTS:          "视频不存在",
-	VIDEO_PUBLISH_FAIL:        "视频发布失败",
-	VIDEO_DELETE_HISTORY_FAIL: "删除历史记录失败",
-	VIDEO_DELETE_PUBLISH_FAIL: "删除发布的视频失败",
+	VIDEO_NOT_EXISTS:            "视频不存在",
+	VIDEO_PUBLISH_FAIL:          "视频发布失败",
+	VIDEO_DELETE_HISTORY_FAIL:   "删除历史记录失败",
+	VIDEO_DELETE_PUBLISH_FAIL:   "删除发布的视频失败",
+	VIDEO_DELETE_LABEL_FAIL:     "删除视频标签失败",
+	VIDEO_DELETE_STATISTIC_FAIL: "删除视频统计数据失败",
 
 	LIKE_VIDEO_NOT_EXISTS:       "点赞的视频不存在",
 	LIKE_ALREADY_EXISTS:         "已点过赞",

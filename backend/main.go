@@ -4,13 +4,14 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"sports_service/server/app/config"
+	"sports_service/server/backend/config"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/log/zap"
 	"sports_service/server/models/pprof"
 	"sports_service/server/util"
+	"sports_service/server/backend/routers"
 )
 
 var (
@@ -92,7 +93,7 @@ func init() {
 	setupRunMode()
 }
 
-// @title FPV电竞APP（应用服）
+// @title 电竞社区平台（后台）
 // @version 1.0
 // @description ### 一、公共参数说明（此栏参数均为Headers请求头传递）
 // @description | 参数名 | 说明 | 示例 |
@@ -126,7 +127,7 @@ func init() {
 func main() {
 	// 启动服务
 	engine := gin.New()
-	//routers.InitRouters(engine)
+	routers.InitRouters(engine)
 	if err := engine.Run(config.Global.PublicAddr); err != nil {
 		fmt.Printf("engine.Run err:%v", err)
 		return

@@ -113,6 +113,18 @@ type EditVideoStatusParam struct {
 	Status        int32      `json:"status"`       // 状态 1：审核通过 2：审核不通过 3：逻辑删除
 }
 
+// 修改视频置顶状态
+type EditTopStatusParam struct {
+	VideoId      string     `json:"video_id"`      // 视频id
+	Status       int32      `json:"status"`        // 状态 0 不置顶 1 置顶
+}
+
+// 修改视频推荐状态
+type EditRecommendStatusParam struct {
+	VideoId      string     `json:"video_id"`      // 视频id
+	Status       int32      `json:"status"`        // 状态 0 不推荐 1 推荐
+}
+
 // 实栗
 func NewVideoModel(engine *xorm.Session) *VideoModel {
 	return &VideoModel{
@@ -309,7 +321,25 @@ func (m *VideoModel) DelPublishById(userId, videoId string) error {
 
 // 更新视频状态
 func (m *VideoModel) UpdateVideoStatus(userId, videoId string) error {
-	if _, err :=m.Engine.Where("user_id=? AND video_id=?", userId, videoId).Cols("status").Update(m.Videos); err != nil {
+	if _, err := m.Engine.Where("user_id=? AND video_id=?", userId, videoId).Cols("status").Update(m.Videos); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 修改视频置顶状态 0 不置顶 1 置顶 （置顶权重 > 推荐 ）
+func (m *VideoModel) UpdateVideoTopStatus(videoId string) error {
+	if _, err := m.Engine.Where("video_id=?", videoId).Cols("is_top").Update(m.Videos); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 修改视频推荐状态 0 不推荐 1 推荐
+func (m *VideoModel) UpdateVideoRecommendStatus(videoId string) error {
+	if _, err := m.Engine.Where("video_id=?", videoId).Cols("is_recommend").Update(m.Videos); err != nil {
 		return err
 	}
 
@@ -402,4 +432,15 @@ func (m *VideoModel) GetHotSearch() *models.HotSearch {
 	}
 
 	return hot
+}
+
+// 获取审核中/审核失败 的视频列表
+func (m *VideoModel) GetVideoReviewList(offset, size int) []*models.Videos {
+	var list []*models.Videos
+	if err := m.Engine.Where("status=0 OR status=2").Desc("video_id").Limit(size, offset).Find(&list); err != nil {
+		return []*models.Videos{}
+	}
+
+	return list
+
 }

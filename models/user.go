@@ -17,6 +17,7 @@ type User struct {
 	MobileNum     int64  `json:"mobile_num" xorm:"not null comment('手机号码') BIGINT(20)"`
 	NickName      string `json:"nick_name" xorm:"not null default '' comment('昵称') VARCHAR(45)"`
 	Password      string `json:"password" xorm:"not null comment('用户密码') VARCHAR(128)"`
+	RegIp         string `json:"reg_ip" xorm:"default ' ' comment('注册ip') VARCHAR(30)"`
 	Signature     string `json:"signature" xorm:"not null default '' comment('签名') VARCHAR(200)"`
 	Status        int    `json:"status" xorm:"default 0 comment('0 正常 1 封禁') TINYINT(1)"`
 	Title         string `json:"title" xorm:"not null default '' comment('称号/特殊身份') VARCHAR(255)"`

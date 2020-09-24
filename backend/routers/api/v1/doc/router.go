@@ -7,6 +7,6 @@ import (
 // api错误码路由
 func Router(engine *gin.Engine) {
 	// 错误码文档
-	api := engine.Group("/api/v1")
+	api := engine.Group("/backend/v1")
 	api.GET("/doc", ApiCode)
 }

@@ -53,3 +53,17 @@ const (
 	// 分享数排序
 	CONDITION_FIELD_SHARE   = "share_num"
 )
+
+const (
+	// 视频不置顶
+	VIDEO_NOT_TOP  =  0
+	// 视频置顶
+	VIDEO_IS_TOP   =  1
+)
+
+const (
+	// 视频设为不推荐
+	VIDEO_NOT_RECOMMEND = 0
+	// 视频设为推荐
+	VIDEO_IS_RECOMMEND  = 1
+)
