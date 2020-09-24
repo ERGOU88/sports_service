@@ -5008,3 +5008,4 @@ net/http.(*conn).serve
 }
 |
 
+[2020-09-24 11:22:52]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success

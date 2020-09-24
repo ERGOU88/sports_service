@@ -267,7 +267,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "通用接口接口"
+                    "通用接口"
                 ],
                 "summary": "初始化接口 (ok)",
                 "parameters": [
@@ -3405,6 +3405,96 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/video/detail/recommend": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频模块"
+                ],
+                "summary": "视频详情 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "视频id",
+                        "name": "video_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页码 从1开始",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页展示多少 最多50条",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/mvideo.VideoDetailInfo"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/video/homepage/banner": {
             "get": {
                 "consumes": [
@@ -4402,6 +4492,9 @@ var doc = `{
                 "fabulous_num": {
                     "type": "integer"
                 },
+                "fans_num": {
+                    "type": "integer"
+                },
                 "is_attention": {
                     "type": "integer"
                 },
@@ -4486,6 +4579,9 @@ var doc = `{
         "mvideo.VideosInfo": {
             "type": "object",
             "properties": {
+                "barrage_num": {
+                    "type": "integer"
+                },
                 "browse_num": {
                     "type": "integer"
                 },
