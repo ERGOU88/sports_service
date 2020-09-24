@@ -1,12 +1,12 @@
 package mlabel
 
 import (
-	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
-	"sports_service/server/models"
 	"github.com/go-xorm/xorm"
 	"reflect"
+	"sports_service/server/global/app/log"
+	"sports_service/server/models"
 	"sync"
+	"fmt"
 )
 
 type LabelModel struct {
@@ -16,27 +16,27 @@ type LabelModel struct {
 }
 
 // 标签列表信息
-type VideoLabelList struct {
-	CreateAt  int               `json:"create_at" `
-	Icon      string            `json:"icon"`
-	LabelId   int               `json:"label_id"`
-	LabelName string            `json:"label_name"`
-	Pid       int               `json:"pid"`
-	Sortorder int               `json:"sortorder"`
-	Status    int               `json:"status"`
-	UpdateAt  int               `json:"update_at"`
-	Child     []*VideoLabelList `json:"child" xorm:"-"`               // 子类标签信息
+type VideoLabel struct {
+	CreateAt  int           `json:"create_at" `
+	Icon      string        `json:"icon"`
+	LabelId   int           `json:"label_id"`
+	LabelName string        `json:"label_name"`
+	Pid       int           `json:"pid"`
+	Sortorder int           `json:"sortorder"`
+	Status    int           `json:"status"`
+	UpdateAt  int           `json:"update_at"`
+	Child     []*VideoLabel `json:"child" xorm:"-"` // 子类标签信息
 }
 
-var videoLabels []*VideoLabelList
+var videoLabels []*VideoLabel
 
 // labelId -> labelName
-var labelMp map[int]string
+var labelMp map[string]*VideoLabel
 
 var mutex sync.Mutex
 
 func init() {
-	labelMp = make(map[int]string)
+	labelMp = make(map[string]*VideoLabel)
 }
 
 // 实栗
@@ -61,7 +61,7 @@ func (m *LabelModel) GetVideoLabelInfoById(labelId string) *models.VideoLabelCon
 }
 
 // 标签是否存在
-func (m *LabelModel) IsExistsLabel(labelId int) bool {
+func (m *LabelModel) IsExistsLabel(labelId string) bool {
 	if _, ok := labelMp[labelId]; !ok {
 		return false
 	}
@@ -71,18 +71,38 @@ func (m *LabelModel) IsExistsLabel(labelId int) bool {
 
 // 清空标签map
 func (m *LabelModel) DelAllLabel() {
-	labelMp = make(map[int]string)
+	labelMp = make(map[string]*VideoLabel)
+}
+
+// 通过标签id 获取标签信息
+func (m *LabelModel) GetLabelInfo(labelId string) *VideoLabel {
+	label, ok := labelMp[labelId]
+	if !ok {
+		return nil
+	}
+
+	return label
+}
+
+// 通过标签id 获取标签名称
+func (m *LabelModel) GetLabelName(labelId string) string {
+	label, ok := labelMp[labelId]
+	if ok {
+		return label.LabelName
+	}
+
+	return ""
 }
 
 // 更新标签信息
-func (m *LabelModel) UpdateLabelInfo(labelId int) {
+func (m *LabelModel) UpdateLabelInfo(labelId string) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	delete(labelMp, labelId)
 }
 
 // 从内存读取视频标签 （第一次请求 内存没有 则从数据库load到内存）
-func (m *LabelModel) GetVideoLabelList() []*VideoLabelList {
+func (m *LabelModel) GetVideoLabelList() []*VideoLabel {
 	if len(videoLabels) == 0 {
 		var err error
 		err, videoLabels = m.LoadLabelsInfoByDb()
@@ -99,14 +119,14 @@ const (
 )
 
 // 从数据库获取标签信息
-func (m *LabelModel) LoadLabelsInfoByDb() (error, []*VideoLabelList) {
+func (m *LabelModel) LoadLabelsInfoByDb() (error, []*VideoLabel) {
 	// 定义指针切片用来存储所有标签
-	var info []*VideoLabelList
+	var info []*VideoLabel
 	// 定义指针切片返回控制器
-	var res []*VideoLabelList
+	var res []*VideoLabel
 
 	// 找出所有1级类别
-	if err := dao.Engine.SQL(QUERY_PARENT_LABELS).Find(&info); err != nil {
+	if err := m.Engine.Table(&models.VideoLabelConfig{}).SQL(QUERY_PARENT_LABELS).Find(&info); err != nil {
 		log.Log.Errorf("labels_trace: get labels info err:%s", err)
 		return err, nil
 	}
@@ -124,9 +144,9 @@ const (
 )
 
 // 通过父类标签id查询下属的子标签
-func (m *LabelModel) FindSubLabelsByPid(label *VideoLabelList) ([]*VideoLabelList, error) {
-	var child []*VideoLabelList
-	if err := dao.Engine.SQL(QUERY_SUB_LABELS, label.LabelId).Find(&child); err != nil {
+func (m *LabelModel) FindSubLabelsByPid(label *VideoLabel) ([]*VideoLabel, error) {
+	var child []*VideoLabel
+	if err := m.Engine.Table(&models.VideoLabelConfig{}).SQL(QUERY_SUB_LABELS, label.LabelId).Find(&child); err != nil {
 		log.Log.Errorf("label_trace: get child labels info err:%s", err)
 		return nil, err
 	}
@@ -135,11 +155,11 @@ func (m *LabelModel) FindSubLabelsByPid(label *VideoLabelList) ([]*VideoLabelLis
 }
 
 // 树状图重构
-func (m *LabelModel) tree(info []*VideoLabelList) []*VideoLabelList {
+func (m *LabelModel) tree(info []*VideoLabel) []*VideoLabel {
 	if reflect.ValueOf(info).IsValid() {
 		// 循环所有1级标签
 		for k, v := range info {
-			labelMp[k] = v.LabelName
+			labelMp[fmt.Sprint(v.LabelId)] = v
 			// 查询所有一级标签下的所有子标签
 			child, err := m.FindSubLabelsByPid(v)
 			if err != nil || len(child) == 0 {

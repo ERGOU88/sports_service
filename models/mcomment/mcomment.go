@@ -160,8 +160,6 @@ func (m *CommentModel) GetVideoCommentListByLike(videoId string, offset, size in
 	return list
 }
 
-
-
 // 获取评论下的回复列表
 func (m *CommentModel) GetVideoReply(videoId, commentId string, offset, size int) []*ReplyComment {
 	var list []*ReplyComment

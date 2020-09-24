@@ -30,9 +30,9 @@ type VideoPublishParams struct {
 // 视频信息
 type VideosInfoResp struct {
 	VideoId       int64  `json:"video_id"`       // 视频id
-	Title         string `json:"title"`         // 标题
-	Describe      string `json:"describe"`      // 描述
-	Cover         string `json:"cover"`         // 封面
+	Title         string `json:"title"`          // 标题
+	Describe      string `json:"describe"`       // 描述
+	Cover         string `json:"cover"`          // 封面
 	VideoAddr     string `json:"video_addr"`     // 视频地址
 	IsRecommend   int    `json:"is_recommend"`   // 是否推荐
 	IsTop         int    `json:"is_top"`         // 是否置顶
@@ -105,6 +105,12 @@ type DeleteHistoryParam struct {
 // 删除发布记录请求参数(不支持批量删除)
 type DeletePublishParam struct {
 	ComposeIds        string       `binding:"required" json:"composeIds"` // 作品id
+}
+
+// 后台修改视频状态请求参数
+type EditVideoStatusParam struct {
+	VideoId       string     `json:"video_id"`     // 视频id
+	Status        int32      `json:"status"`       // 状态 1：审核通过 2：审核不通过 3：逻辑删除
 }
 
 // 实栗
@@ -322,14 +328,14 @@ func (m *VideoModel) GetTotalPublish(userId string) int64 {
 }
 
 const (
-	QUERY_RECOMMEND_VIDEOS = "SELECT v.*, s.fabulous_num,s.share_num,s.comment_num, s.browse_num FROM `videos` as v " +
+	QUERY_VIDEO_LIST = "SELECT v.*, s.fabulous_num,s.share_num,s.comment_num, s.browse_num FROM `videos` as v " +
 		"LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status = 1 GROUP BY v.video_id " +
 		"ORDER BY v.is_top DESC, v.is_recommend DESC, v.sortorder DESC, v.video_id DESC LIMIT ?, ?"
 )
 // 获取推荐的视频列表 todo:
-func (m *VideoModel) GetRecommendVideos(offset, size int) []*VideoDetailInfo {
+func (m *VideoModel) GetVideoList(offset, size int) []*VideoDetailInfo {
 	var list []*VideoDetailInfo
-	if err := m.Engine.SQL(QUERY_RECOMMEND_VIDEOS, offset, size).Find(&list); err != nil {
+	if err := m.Engine.SQL(QUERY_VIDEO_LIST, offset, size).Find(&list); err != nil {
 		log.Log.Errorf("video_trace: get recommend videos err:%s", err)
 		return nil
 	}
