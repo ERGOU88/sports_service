@@ -57,7 +57,7 @@ func (svc *LikeModule) GiveLikeForVideo(userId, toUserId string, videoId int64) 
 	}
 
 	// 查找视频是否存在
-	if video := svc.video.FindVideoById(fmt.Sprint(videoId)); video == nil {
+	if video := svc.video.FindVideoById(fmt.Sprint(videoId)); video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS  {
 		log.Log.Errorf("like_trace: like video not found, videoId:%d", videoId)
 		svc.engine.Rollback()
 		return errdef.LIKE_VIDEO_NOT_EXISTS

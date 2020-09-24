@@ -198,7 +198,13 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 }
 
 // 获取视频评论
-func (svc *CommentModule) GetVideoComment(userId, videoId, sortType string, page, size int) []*mcomment.VideoComments {
+func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, page, size int) []*mcomment.VideoComments {
+	// 热门排序（按点赞数）
+	if sortType == consts.SORT_HOT {
+		log.Log.Debugf("comment_trace: get video comments by hot")
+		return svc.GetVideoCommentsByLiked(userId, videoId, page, size)
+	}
+
 	video := svc.video.FindVideoById(videoId)
 	// 视频不存在 或 视频未过审
 	if video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
@@ -290,13 +296,93 @@ func (svc *CommentModule) GetVideoComment(userId, videoId, sortType string, page
 
 	}
 
-	// 热度排序（点赞数）
-	if sortType == consts.SORT_HOT {
-		log.Log.Debug("sort by hot")
-		util.PartialSort(SortComment(list), len(list))
-	}
+	//// 热度排序（点赞数）
+	//if sortType == consts.SORT_HOT {
+	//	log.Log.Debug("sort by hot")
+	//	util.PartialSort(SortComment(list), len(list))
+	//}
 
 	return list
+}
+
+// 根据评论点赞数排序 获取视频评论列表
+func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, size int) []*mcomment.VideoComments {
+	video := svc.video.FindVideoById(videoId)
+	// 视频不存在 或 视频未过审
+	if video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
+		log.Log.Errorf("comment_trace: video not found or not pass, videoId:%s", videoId)
+		return []*mcomment.VideoComments{}
+	}
+
+	offset := (page - 1) * size
+	// 获取评论(按点赞数排序)
+	comments := svc.comment.GetVideoCommentListByLike(videoId, offset, size)
+	if len(comments) == 0 {
+		log.Log.Errorf("comment_trace: no comments, videoId:%s", videoId)
+		return []*mcomment.VideoComments{}
+	}
+
+	type tmpUser struct {
+		NickName   string
+		Avatar     string
+	}
+	// contents 存储 评论id——>评论的内容
+	contents := make(map[int64]string, 0)
+	// userInfo 存储 用户id——>头像、昵称
+	userInfo := make(map[string]*tmpUser, 0)
+	for _, item := range comments {
+		// 总回复数
+		item.ReplyNum = svc.comment.GetTotalReplyByComment(fmt.Sprint(item.Id))
+
+		user := new(tmpUser)
+		user.NickName = item.UserName
+		user.Avatar = item.Avatar
+		userInfo[item.UserId] = user
+
+		contents[item.Id] = item.Content
+
+		// 获取每个评论下的回复列表 (默认取三条)
+		item.ReplyList = svc.comment.GetVideoReply(videoId, fmt.Sprint(item.Id), 0, 3)
+		for _, reply := range item.ReplyList {
+			user := new(tmpUser)
+			user.NickName = reply.UserName
+			user.Avatar = reply.Avatar
+			userInfo[reply.UserId] = user
+
+			contents[reply.Id] = reply.Content
+			// 评论点赞数
+			reply.LikeNum = svc.like.GetLikeNumByType(reply.Id, consts.TYPE_COMMENT)
+			// 被回复的用户名、用户头像
+			uinfo, ok := userInfo[reply.ReplyCommentUserId]
+			if ok {
+				reply.ReplyCommentAvatar = uinfo.Avatar
+				reply.ReplyCommentUserName = uinfo.NickName
+			}
+
+			// 被回复的内容
+			content, ok := contents[reply.ReplyCommentId]
+			if ok {
+				reply.ReplyContent = content
+			}
+
+			if userId != "" {
+				// 是否关注
+				if attention := svc.attention.GetAttentionInfo(userId, reply.UserId); attention != nil {
+					reply.IsAttention = attention.Status
+				}
+			}
+		}
+
+		if userId != "" {
+			// 是否关注
+			if attention := svc.attention.GetAttentionInfo(userId, item.UserId); attention != nil {
+				item.IsAttention = attention.Status
+			}
+		}
+
+	}
+
+	return comments
 }
 
 // 获取评论回复列表

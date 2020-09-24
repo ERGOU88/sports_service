@@ -144,6 +144,24 @@ func (m *CommentModel) GetVideoCommentList(videoId string, offset, size int) []*
 	return list
 }
 
+// 根据评论点赞数排序 获取视频评论列表（1级评论）
+func (m *CommentModel) GetVideoCommentListByLike(videoId string, offset, size int) []*VideoComments {
+	sql := "SELECT vc.*, count(tu.Id) AS like_num FROM video_comment AS vc " +
+		"LEFT JOIN thumbs_up AS tu ON vc.id = tu.type_id AND tu.zan_type=3 AND tu.status=1 WHERE vc.video_id=? " +
+		"AND vc.comment_level = 1 AND vc.status=1 " +
+		"GROUP BY vc.Id ORDER BY like_num DESC LIMIT ?, ?"
+
+	var list []*VideoComments
+	if err := m.Engine.SQL(sql, videoId, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("comment_trace: get video comment list by like err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
+
+
 // 获取评论下的回复列表
 func (m *CommentModel) GetVideoReply(videoId, commentId string, offset, size int) []*ReplyComment {
 	var list []*ReplyComment

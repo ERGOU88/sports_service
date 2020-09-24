@@ -112,7 +112,7 @@ func CommentList(c *gin.Context) {
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 
 	svc := comment.New(c)
-	list := svc.GetVideoComment(userId.(string), videoId, sortType, page, size)
+	list := svc.GetVideoComments(userId.(string), videoId, sortType, page, size)
 
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
