@@ -5138,3 +5138,4 @@ net/http.(*conn).serve
 [2020-09-24 14:37:35]-83	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/controller/comment/comment.go:203	comment_trace: get video comments by hot
 [2020-09-24 14:37:35]-83	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/24 - 14:37:35 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   17.065341ms | 127.0.0.1 |[97;44m  [0m GET     /api/v1/comment/list |
 
+[2020-09-24 16:55:35]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:40	setup log success

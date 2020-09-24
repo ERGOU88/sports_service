@@ -13,6 +13,7 @@ import (
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mbanner"
 	"sports_service/server/models/mcollect"
+	"sports_service/server/models/mlabel"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
@@ -29,6 +30,7 @@ type VideoModule struct {
 	banner       *mbanner.BannerModel
 	like         *mlike.LikeModel
 	collect      *mcollect.CollectModel
+	label        *mlabel.LabelModel
 }
 
 func New(c *gin.Context) VideoModule {
@@ -42,6 +44,7 @@ func New(c *gin.Context) VideoModule {
 		banner: mbanner.NewBannerMolde(socket),
 		like: mlike.NewLikeModel(socket),
 		collect: mcollect.NewCollectModel(socket),
+		label: mlabel.NewLabelModel(socket),
 		engine: socket,
 	}
 }
@@ -63,7 +66,6 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 		return nil
 	}
 
-	// todo: 查询上传的标签是否存在
 	now := time.Now().Unix()
 	svc.video.Videos.UserId = userId
 	svc.video.Videos.Cover = params.Cover
@@ -87,11 +89,15 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	// 组装多条记录 写入视频标签表
 	labelInfos := make([]*models.VideoLabels, len(labelIds))
 	for index, labelId := range labelIds {
+		if svc.label.GetLabelInfo(labelId) == nil {
+			log.Log.Errorf("video_trace: label not found, labelId:%s", labelId)
+			continue
+		}
+
 		info := new(models.VideoLabels)
 		info.VideoId = svc.video.Videos.VideoId
 		info.LabelId = labelId
-		// todo: 通过标签id获取名称
-		info.LabelName = "todo:通过标签id获取名称"
+		info.LabelName = svc.label.GetLabelName(labelId)
 		info.CreateAt = int(now)
 		labelInfos[index] = info
 	}
@@ -297,14 +303,14 @@ func (svc *VideoModule) DeletePublishVideo(userId, videoId string) int {
 	if err := svc.video.DelVideoLabels(videoId); err != nil {
 		log.Log.Errorf("video_trace: delete video labels err:%s", err)
 		svc.engine.Rollback()
-		return errdef.VIDEO_DELETE_PUBLISH_FAIL
+		return errdef.VIDEO_DELETE_LABEL_FAIL
 	}
 
 	// 删除视频统计数据
 	if err := svc.video.DelVideoStatistic(videoId); err != nil {
 		log.Log.Errorf("video_trace: delete video statistic err:%s", err)
 		svc.engine.Rollback()
-		return errdef.VIDEO_DELETE_PUBLISH_FAIL
+		return errdef.VIDEO_DELETE_STATISTIC_FAIL
 	}
 
 	svc.engine.Commit()
@@ -314,7 +320,7 @@ func (svc *VideoModule) DeletePublishVideo(userId, videoId string) int {
 // 获取推荐的视频列表
 func (svc *VideoModule) GetRecommendVideos(userId string, page, size int) []*mvideo.VideoDetailInfo {
 	offset := (page - 1) * size
-	list := svc.video.GetRecommendVideos(offset, size)
+	list := svc.video.GetVideoList(offset, size)
 	if len(list) == 0 {
 		return []*mvideo.VideoDetailInfo{}
 	}
