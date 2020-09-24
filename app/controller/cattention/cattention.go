@@ -120,7 +120,7 @@ func (svc *AttentionModule) GetAttentionUserList(attentionUid string, page, size
 	userIds := svc.attention.GetAttentionList(attentionUid)
 	if len(userIds) == 0 {
 		log.Log.Errorf("attention_trace: not following any users")
-		return nil
+		return []*muser.UserInfoResp{}
 	}
 
 	offset := (page - 1) * size
@@ -128,7 +128,7 @@ func (svc *AttentionModule) GetAttentionUserList(attentionUid string, page, size
 	userList := svc.user.FindUserByUserids(uids, offset, size)
 	if len(userList) == 0 {
 		log.Log.Errorf("attention_trace: not found user list info, len:%d, uids:%s", len(userList), uids)
-		return nil
+		return []*muser.UserInfoResp{}
 	}
 
 	resp := make([]*muser.UserInfoResp, len(userList))
@@ -161,7 +161,7 @@ func (svc *AttentionModule) GetFansList(userId string, page, size int) []*muser.
 	userIds := svc.attention.GetFansList(userId)
 	if len(userIds) == 0 {
 		log.Log.Errorf("attention_trace: not has any fans")
-		return nil
+		return []*muser.UserInfoResp{}
 	}
 
 	offset := (page - 1) * size
@@ -169,7 +169,7 @@ func (svc *AttentionModule) GetFansList(userId string, page, size int) []*muser.
 	userList := svc.user.FindUserByUserids(uids, offset, size)
 	if len(userList) == 0 {
 		log.Log.Errorf("attention_trace: not found user list info, len:%d, uids:%s", len(userList), uids)
-		return nil
+		return []*muser.UserInfoResp{}
 	}
 
 	// 重新组装数据

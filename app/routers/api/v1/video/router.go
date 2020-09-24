@@ -28,5 +28,7 @@ func Router(engine *gin.Engine) {
 		video.GET("/attention", AttentionVideos)
 		// 视频详情信息
 		video.GET("/detail", VideoDetail)
+		// 视频详情页推荐视频（同标签推荐）
+		video.GET("/detail/recommend", DetailRecommend)
 	}
 }

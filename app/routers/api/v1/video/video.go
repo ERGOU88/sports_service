@@ -304,14 +304,40 @@ func VideoDetail(c *gin.Context) {
 	reply := errdef.New(c)
 	userId, _ := c.Get(consts.USER_ID)
 	videoId := c.Query("video_id")
-	if videoId == "" {
-		log.Log.Error("video_trace: videoId can't empty")
-		reply.Response(http.StatusOK, errdef.VIDEO_NOT_EXISTS)
-		return
-	}
 
 	svc := cvideo.New(c)
 	detail := svc.GetVideoDetail(userId.(string), videoId)
 	reply.Data["detail"] = detail
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// @Summary 视频详情 (ok)
+// @Tags 视频模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   video_id	  query  	string 	true  "视频id"
+// @Param   page	  	  query  	string 	true  "页码 从1开始"
+// @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
+// @Success 200 {array}  mvideo.VideoDetailInfo
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/video/detail/recommend [get]
+// 详情页推荐视频（同标签推荐）
+func DetailRecommend(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+	videoId := c.Query("video_id")
+
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	svc := cvideo.New(c)
+	// 获取详情页推荐视频（同标签推荐）
+	list := svc.GetDetailRecommend(userId.(string), videoId, page, size)
+	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }

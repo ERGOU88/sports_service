@@ -166,7 +166,7 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
 	offset := (page - 1) * size
 	infos := svc.collect.GetCollectList(userId, offset, size)
 	if len(infos) == 0 {
-		return nil
+		return []*mvideo.VideosInfoResp{}
 	}
 
 	// mp key videoId  value 用户收藏视频的时间
@@ -183,7 +183,7 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
 	videoList := svc.video.FindVideoListByIds(vids)
 	if len(videoList) == 0 {
 		log.Log.Errorf("collect_trace: not found collect video list info, len:%d, videoIds:%s", len(videoList), vids)
-		return nil
+		return []*mvideo.VideosInfoResp{}
 	}
 
 	// 重新组装数据

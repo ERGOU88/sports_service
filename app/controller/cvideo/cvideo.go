@@ -123,13 +123,13 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 	// 查询用户是否存在
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
-		return nil
+		return []*mvideo.VideosInfoResp{}
 	}
 
 	offset := (page - 1) * size
 	records := svc.video.GetBrowseVideosRecord(userId, consts.TYPE_BROWSE_VIDEOS, offset, size)
 	if len(records) == 0 {
-		return nil
+		return []*mvideo.VideosInfoResp{}
 	}
 
 	// mp key composeId   value 用户浏览的时间
@@ -146,7 +146,7 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 	videoList := svc.video.FindVideoListByIds(vids)
 	if len(videoList) == 0 {
 		log.Log.Errorf("video_trace: not found browse video list info, len:%d, videoIds:%s", len(videoList), vids)
-		return nil
+		return []*mvideo.VideosInfoResp{}
 	}
 
 	// 重新组装数据
@@ -209,7 +209,7 @@ func (svc *VideoModule) GetUserPublishList(userId, status, condition string, pag
 	// 查询用户是否存在
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
-		return nil
+		return []*mvideo.VideosInfo{}
 	}
 
 	offset := (page - 1) * size
@@ -316,7 +316,7 @@ func (svc *VideoModule) GetRecommendVideos(userId string, page, size int) []*mvi
 	offset := (page - 1) * size
 	list := svc.video.GetRecommendVideos(offset, size)
 	if len(list) == 0 {
-		return nil
+		return []*mvideo.VideoDetailInfo{}
 	}
 
 	// 重新组装数据
@@ -367,20 +367,20 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 	// 用户未登录
 	if userId == "" {
 		log.Log.Error("video_trace: no login")
-		return nil
+		return []*mvideo.VideoDetailInfo{}
 	}
 
 	userIds := svc.attention.GetAttentionList(userId)
 	if len(userIds) == 0 {
 		log.Log.Errorf("video_trace: not following any users")
-		return nil
+		return []*mvideo.VideoDetailInfo{}
 	}
 
 	offset := (page - 1) * size
 	uids := strings.Join(userIds, ",")
 	list := svc.video.GetAttentionVideos(uids, offset, size)
 	if len(list) == 0 {
-		return nil
+		return []*mvideo.VideoDetailInfo{}
 	}
 
 	// 重新组装数据
@@ -421,7 +421,17 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 
 // 获取视频详情页数据
 func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDetailInfo {
+	if videoId == "" {
+		log.Log.Error("video_trace: videoId can't empty")
+		return nil
+	}
+
 	video := svc.video.FindVideoById(videoId)
+	if video == nil {
+		log.Log.Error("video_trace: video not found, videoId:%s", videoId)
+		return nil
+	}
+
 	resp := new(mvideo.VideoDetailInfo)
 	resp.VideoId = video.VideoId
 	resp.Title = video.Title
@@ -449,6 +459,8 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
 	resp.FabulousNum = info.FabulousNum
 	resp.ShareNum = info.ShareNum
 	resp.BarrageNum = info.BarrageNum
+	// 粉丝数
+	resp.FansNum = svc.attention.GetTotalFans(fmt.Sprint(video.UserId))
 
 	if userId == "" {
 		log.Log.Error("video_trace: user no login")
@@ -472,4 +484,99 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
 
 	return resp
 
+}
+
+// 获取详情页推荐视频（根据同标签推荐）
+func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size int) []*mvideo.VideoDetailInfo {
+	if videoId == "" {
+		log.Log.Error("video_trace: videoId can't empty")
+		return []*mvideo.VideoDetailInfo{}
+	}
+
+	video := svc.video.FindVideoById(videoId)
+	if video == nil {
+		log.Log.Error("video_trace: video not found, videoId:%s", videoId)
+		return []*mvideo.VideoDetailInfo{}
+	}
+
+	// 获取视频所有标签
+	labels := svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+	ids := make([]string, len(labels))
+	for index, label := range labels {
+		ids[index] = label.LabelId
+	}
+
+	labelIds := strings.Join(ids, ",")
+	offset := (page - 1) * size
+	// 通过标签列表 获取拥有该标签的视频们
+	videoIds := svc.video.FindVideoIdsByLabelIds(labelIds, offset, size)
+	if len(videoIds) == 0 {
+		log.Log.Errorf("search_trace: not found videos by label ids, labelIds:%s", labelIds)
+		return []*mvideo.VideoDetailInfo{}
+	}
+
+	vids := strings.Join(videoIds, ",")
+	videos := svc.video.FindVideoListByIds(vids)
+	if len(videos) == 0 {
+		log.Log.Errorf("search_trace: not found videos, vids:%s", vids)
+		return []*mvideo.VideoDetailInfo{}
+	}
+
+	// 重新组装返回数据
+	res := make([]*mvideo.VideoDetailInfo, len(videos))
+	for index, video := range videos {
+		resp := new(mvideo.VideoDetailInfo)
+		resp.VideoId = video.VideoId
+		resp.Title = video.Title
+		resp.Describe = video.Describe
+		resp.Cover = video.Cover
+		resp.VideoAddr = video.VideoAddr
+		resp.IsRecommend = video.IsRecommend
+		resp.IsTop = video.IsTop
+		resp.VideoDuration = video.VideoDuration
+		resp.VideoWidth = video.VideoWidth
+		resp.VideoHeight = video.VideoHeight
+		resp.CreateAt = video.CreateAt
+		resp.UserId = video.UserId
+		resp.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+		// 获取用户信息
+		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
+			resp.Avatar = user.Avatar
+			resp.Nickname = user.NickName
+		}
+
+		// 获取视频相关统计数据
+		info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
+		resp.BrowseNum = info.BrowseNum
+		resp.CommentNum = info.CommentNum
+		resp.FabulousNum = info.FabulousNum
+		resp.ShareNum = info.ShareNum
+		resp.BarrageNum = info.BarrageNum
+		// 粉丝数
+		resp.FansNum = svc.attention.GetTotalFans(fmt.Sprint(video.UserId))
+
+		if userId == "" {
+			log.Log.Error("video_trace: user no login")
+			continue
+		}
+
+		// 是否关注
+		if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
+			resp.IsAttention = attentionInfo.Status
+		}
+
+		// 获取点赞的信息
+		if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
+			resp.IsLike = likeInfo.Status
+		}
+
+		// 获取收藏的信息
+		if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
+			resp.IsCollect = collectInfo.Status
+		}
+
+		res[index] = resp
+	}
+
+	return res
 }

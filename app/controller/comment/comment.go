@@ -203,7 +203,7 @@ func (svc *CommentModule) GetVideoComment(userId, videoId, sortType string, page
 	// 视频不存在 或 视频未过审
 	if video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
 		log.Log.Errorf("comment_trace: video not found or not pass, videoId:%s", videoId)
-		return nil
+		return []*mcomment.VideoComments{}
 	}
 
 	offset := (page - 1) * size
@@ -211,7 +211,7 @@ func (svc *CommentModule) GetVideoComment(userId, videoId, sortType string, page
 	comments := svc.comment.GetVideoCommentList(videoId, offset, size)
 	if len(comments) == 0 {
 		log.Log.Errorf("comment_trace: no comments, videoId:%s", videoId)
-		return nil
+		return []*mcomment.VideoComments{}
 	}
 
 	list := make([]*mcomment.VideoComments, len(comments))
@@ -305,21 +305,21 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 	// 视频不存在 或 视频未过审
 	if video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
 		log.Log.Errorf("comment_trace: video not found or not pass, videoId:%s", videoId)
-		return errdef.VIDEO_NOT_EXISTS, nil
+		return errdef.VIDEO_NOT_EXISTS, []*mcomment.ReplyComment{}
 	}
 
 	// 查询评论是否存在
 	comment := svc.comment.GetVideoCommentById(commentId)
 	if comment == nil {
 		log.Log.Error("comment_trace: comment not found, commentId:%s", commentId)
-		return errdef.COMMENT_NOT_FOUND, nil
+		return errdef.COMMENT_NOT_FOUND, []*mcomment.ReplyComment{}
 	}
 
 	offset := (page - 1) * size
 	replyList := svc.comment.GetVideoReply(videoId, commentId, offset, size)
 	if len(replyList) == 0 {
 		log.Log.Errorf("comment_trace: not found comment reply, commentId:%s", commentId)
-		return errdef.COMMENT_REPLY_NOT_FOUND, nil
+		return errdef.COMMENT_REPLY_NOT_FOUND, []*mcomment.ReplyComment{}
 	}
 
 	type tmpUser struct {

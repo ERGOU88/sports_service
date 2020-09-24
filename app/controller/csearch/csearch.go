@@ -43,7 +43,7 @@ func New(c *gin.Context) SearchModule {
 func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDetailInfo, []*muser.UserSearchResults) {
 	if name == "" {
 		log.Log.Errorf("search_trace: search name can't empty, name:%s", name)
-		return nil, nil
+		return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}
 	}
 
 	// 搜索到的视频
@@ -59,7 +59,7 @@ func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDe
 func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime string, page, size int) []*mvideo.VideoDetailInfo {
 	if name == "" {
 		log.Log.Errorf("search_trace: search name can't empty, name:%s", name)
-		return nil
+		return []*mvideo.VideoDetailInfo{}
 	}
 
 	sortField := svc.GetSortField(sort)
@@ -69,7 +69,7 @@ func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime s
 
 	list := svc.video.SearchVideos(name, sortField, min, max, pubTime, offset, size)
 	if len(list) == 0 {
-		return nil
+		return []*mvideo.VideoDetailInfo{}
 	}
 
 	for _, video := range list {
@@ -112,13 +112,13 @@ func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime s
 func (svc *SearchModule) UserSearch(userId, name string, page, size int) []*muser.UserSearchResults {
 	if name == "" {
 		log.Log.Errorf("search_trace: search user name can't empty, name:%s", name)
-		return nil
+		return []*muser.UserSearchResults{}
 	}
 
 	offset := (page - 1) * size
 	list := svc.user.SearchUser(name, offset, size)
 	if len(list) == 0 {
-		return nil
+		return []*muser.UserSearchResults{}
 	}
 
 	for _, user := range list {
@@ -148,14 +148,14 @@ func (svc *SearchModule) LabelSearch(userId string, labelId string, page, size i
 	videoIds := svc.video.GetVideoIdsByLabelId(labelId, offset, size)
 	if len(videoIds) == 0 {
 		log.Log.Errorf("search_trace: not found videos by label id, labelId:%s", labelId)
-		return nil
+		return []*mvideo.VideoDetailInfo{}
 	}
 
 	vids := strings.Join(videoIds, ",")
 	videos := svc.video.FindVideoListByIds(vids)
 	if len(videos) == 0 {
 		log.Log.Errorf("search_trace: not found videos, vids:%s", vids)
-		return nil
+		return []*mvideo.VideoDetailInfo{}
 	}
 
 	// 重新组装数据
@@ -217,12 +217,12 @@ func (svc *SearchModule) GetHotSearch() []string {
 func (svc *SearchModule) SearchAttentionUser(userId, name string, page, size int) []*mattention.SearchContactRes {
 	if name == "" || userId == "" {
 		log.Log.Errorf("search_trace: search attention name can't empty, name:%s", name)
-		return nil
+		return []*mattention.SearchContactRes{}
 	}
 
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("search_trace: user not found, uid:%s", userId)
-		return nil
+		return []*mattention.SearchContactRes{}
 	}
 
 	offset := (page - 1) * size
@@ -233,12 +233,12 @@ func (svc *SearchModule) SearchAttentionUser(userId, name string, page, size int
 func (svc *SearchModule) SearchFans(userId, name string, page, size int) []*mattention.SearchContactRes {
 	if name == "" || userId == "" {
 		log.Log.Errorf("search_trace: search fans name can't empty, name:%s", name)
-		return nil
+		return []*mattention.SearchContactRes{}
 	}
 
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("search_trace: user not found, uid:%s", userId)
-		return nil
+		return []*mattention.SearchContactRes{}
 	}
 
 	offset := (page - 1) * size

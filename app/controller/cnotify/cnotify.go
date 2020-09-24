@@ -71,12 +71,12 @@ func (svc *NotifyModule) SaveUserNotifySetting(userId string, params *mnotify.No
 func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interface{} {
 	if userId == "" {
 		log.Log.Error("notify_trace: need login")
-		return nil
+		return []interface{}{}
 	}
 
 	if info := svc.user.FindUserByUserid(userId); info == nil {
 		log.Log.Errorf("notify_trace: user not found, userId:%s", userId)
-		return nil
+		return []interface{}{}
 	}
 
 	offset := (page - 1) * size
@@ -84,7 +84,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 	list := svc.like.GetBeLikedList(userId, offset, size)
 	if len(list) == 0 {
 		log.Log.Error("notify_trace: be liked list empty")
-		return nil
+		return []interface{}{}
 	}
 
 	res := make([]interface{}, len(list))
@@ -194,12 +194,12 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) []interface{} {
 	if userId == "" {
 		log.Log.Error("notify_trace: need login")
-		return nil
+		return []interface{}{}
 	}
 
 	if info := svc.user.FindUserByUserid(userId); info == nil {
 		log.Log.Errorf("notify_trace: user not found, userId:%s", userId)
-		return nil
+		return []interface{}{}
 	}
 
 	offset := (page - 1) * size
@@ -207,7 +207,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) []int
 	list := svc.comment.GetReceiveAtList(userId, offset, size)
 	if len(list) == 0 {
 		log.Log.Error("notify_trace: receive at list empty")
-		return nil
+		return []interface{}{}
 	}
 
 	res := make([]interface{}, len(list))
@@ -319,12 +319,12 @@ func (svc *NotifyModule) GetUnreadNum(userId string) map[string]int64 {
 func (svc *NotifyModule) GetUserNotifySetting(userId string) *models.SystemNoticeSettings {
 	if userId == "" {
 		log.Log.Error("notify_trace: need login")
-		return &models.SystemNoticeSettings{}
+		return nil
 	}
 
 	if info := svc.user.FindUserByUserid(userId); info == nil {
 		log.Log.Errorf("notify_trace: user not found, userId:%s", userId)
-		return &models.SystemNoticeSettings{}
+		return nil
 	}
 
 	return svc.notify.GetUserNotifySetting(userId)

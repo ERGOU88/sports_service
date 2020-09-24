@@ -65,6 +65,7 @@ type VideosInfo struct {
 	CommentNum    int    `json:"comment_num"`    // 评论数
 	ShareNum      int    `json:"share_num"`      // 分享数
 	BrowseNum     int    `json:"browse_num"`     // 浏览数（播放数）
+	BarrageNum    int    `json:"barrage_num"`    // 弹幕数
 }
 
 // 视频详情信息
@@ -92,6 +93,7 @@ type VideoDetailInfo struct {
 	IsAttention   int                   `json:"is_attention"`   // 是否关注 1 关注 2 未关注
 	IsCollect     int                   `json:"is_collect"`     // 是否收藏
 	IsLike        int                   `json:"is_like"`        // 是否点赞
+	FansNum       int64                 `json:"fans_num"`       // 粉丝数
 	Labels        []*models.VideoLabels `json:"labels"`         // 视频标签
 }
 
@@ -142,6 +144,18 @@ func (m *VideoModel) GetVideoIdsByLabelId(labelId string, offset, size int) []st
 	var videoIds []string
 	if err := m.Engine.Where("label_id=?", labelId).Cols("video_id").Limit(size, offset).Find(&videoIds); err != nil {
 		log.Log.Errorf("video_trace: get videoIds by labelid err:%s", err)
+		return nil
+	}
+
+	return videoIds
+}
+
+// 通过标签id列表 查询视频id列表
+func (m *VideoModel) FindVideoIdsByLabelIds(labelIds string, offset, size int) []string {
+	var videoIds []string
+	sql := fmt.Sprintf("SELECT DISTINCT(video_id) FROM video_labels WHERE label_id IN(%s) LIMIT ?, ?", labelIds)
+	if err := m.Engine.Table(&models.VideoLabels{}).SQL(sql, offset, size).Find(&videoIds); err != nil {
+		log.Log.Errorf("video_trace: find videoIds by label ids err:%s", err)
 		return nil
 	}
 
@@ -248,7 +262,7 @@ func (m *VideoModel) UpdateVideoBarrageNum() {
 func (m *VideoModel) GetUserPublishVideos(offset, size int, userId, status, field string) []*VideosInfo {
 	var list []*VideosInfo
 
-	sql := "SELECT v.*, s.fabulous_num, s.share_num, s.comment_num, s.browse_num FROM videos as v " +
+	sql := "SELECT v.*, s.fabulous_num, s.share_num, s.comment_num, s.browse_num, s.barrage_num FROM videos as v " +
 		"LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.user_id=? "
 	if status != consts.VIDEO_VIEW_ALL {
 		sql += "AND v.`status` = ? "

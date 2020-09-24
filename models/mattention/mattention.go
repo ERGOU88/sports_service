@@ -124,30 +124,28 @@ type SearchContactRes struct {
 	IsAttention   int32  `json:"is_attention"`
 }
 
-const (
- SEARCH_ATTENTION = "SELECT u.*, ua.status as is_attention FROM user_attention AS ua INNER JOIN user as u ON u.`user_id` = ua.`user_id` " +
- 	"WHERE u.nick_name LIKE '%?%' OR u.`user_id` LIKE '%?%' AND u.status=0 AND ua.attention_uid = ? AND ua.status=1 ORDER BY ua.Id DESC LIMIT ?, ?"
-)
 // 搜索关注的用户
 func (m *AttentionModel) SearchAttentionUser(userId, name string, offset, size int) []*SearchContactRes {
+	sql := "SELECT u.*, ua.status as is_attention FROM user_attention AS ua INNER JOIN user as u ON u.`user_id` = ua.`user_id` " +
+		"WHERE u.nick_name LIKE '%" + name + "%' OR u.`user_id` LIKE '%" + name + "%' AND u.status=0 AND ua.attention_uid = ? AND " +
+		"ua.status=1 ORDER BY ua.Id DESC LIMIT ?, ?"
 	var list []*SearchContactRes
-	ok, err := m.Engine.Table(&models.UserAttention{}).SQL(SEARCH_ATTENTION, name, name, userId, offset, size).Get(&list)
-	if !ok || err != nil {
+	if err := m.Engine.Table(&models.UserAttention{}).SQL(sql, userId, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("search attention user err:%s", err)
 		return nil
 	}
 
 	return list
 }
 
-const (
-	SEARCH_FANS = "SELECT u.*, ua.status as is_attention FROM user_attention AS ua INNER JOIN user as u ON u.`user_id` = ua.`attention_uid` " +
-		"WHERE u.nick_name LIKE '%?%' OR u.`user_id` LIKE '%?%' AND u.status=0 AND ua.user_id = ? AND ua.status=1 ORDER BY ua.Id DESC LIMIT ?, ?"
-)
 // 搜索粉丝
 func (m *AttentionModel) SearchFans(userId, name string, offset, size int) []*SearchContactRes {
+	sql :=  "SELECT u.*, ua.status as is_attention FROM user_attention AS ua INNER JOIN user as u ON u.`user_id` = ua.`attention_uid` " +
+		"WHERE u.nick_name LIKE '%" + name + "%' OR u.`user_id` LIKE '%" + name + "%' AND u.status=0 AND ua.user_id = ? AND ua.status=1 " +
+		"ORDER BY ua.Id DESC LIMIT ?, ?"
 	var list []*SearchContactRes
-	ok, err := m.Engine.Table(&models.UserAttention{}).SQL(SEARCH_FANS, name, name, userId, offset, size).Get(&list)
-	if !ok || err != nil {
+	if err := m.Engine.Table(&models.UserAttention{}).SQL(sql, userId, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("search_trace: search fans err: %s", err)
 		return nil
 	}
 
