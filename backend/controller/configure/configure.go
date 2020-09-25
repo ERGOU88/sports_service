@@ -8,6 +8,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mbanner"
+	"sports_service/server/models/muser"
 	"time"
 )
 
@@ -15,6 +16,7 @@ type ConfigModule struct {
 	context     *gin.Context
 	engine      *xorm.Session
 	banner      *mbanner.BannerModel
+	user        *muser.UserModel
 }
 
 func New(c *gin.Context) ConfigModule {
@@ -22,6 +24,8 @@ func New(c *gin.Context) ConfigModule {
 	defer socket.Close()
 	return ConfigModule{
 		context: c,
+		banner: mbanner.NewBannerMolde(socket),
+		user: muser.NewUserModel(socket),
 		engine: socket,
 	}
 }
@@ -61,4 +65,27 @@ func (svc *ConfigModule) DelBanner(param *mbanner.DelBannerParam) int {
 func (svc *ConfigModule) GetBannerList(page, size int) []*models.Banner {
 	offset := (page - 1) * size
 	return svc.banner.GetBannerList(offset, size)
+}
+
+// 后台添加系统头像
+func (svc *ConfigModule) AddSystemAvatar(params *muser.AddSystemAvatarParams) int {
+	if err := svc.user.AddSystemAvatar(params); err != nil {
+		return errdef.CONFIG_DEL_AVATAR_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
+// 后台删除系统头像
+func (svc *ConfigModule) DelSystemAvatar(param *muser.DelSystemAvatarParam) int {
+	if err := svc.user.DelSystemAvatar(param.Id); err != nil {
+		return errdef.CONFIG_DEL_AVATAR_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
+// 后台获取系统头像（一次性获取）
+func (svc *ConfigModule) GetSystemAvatars() []*models.DefaultAvatar {
+	return svc.user.GetSystemAvatarList()
 }

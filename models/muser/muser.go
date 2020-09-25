@@ -10,6 +10,7 @@ import (
 	"strings"
 	"fmt"
 	"sports_service/server/global/rdskey"
+	"time"
 )
 
 type UserModel struct {
@@ -177,7 +178,7 @@ func (m *UserModel) UpdateUserInfo() error {
 func (m *UserModel) GetWorldInfo() []*models.WorldMap {
 	var list []*models.WorldMap
 	if err := m.Engine.Where("status=0").Desc("sortorder").Find(&list); err != nil {
-		return nil
+		return []*models.WorldMap{}
 	}
 
 	return list
@@ -199,10 +200,47 @@ func (m *UserModel) GetWorldInfoById(id int32) *models.WorldMap {
 func (m *UserModel) GetSystemAvatarList() []*models.DefaultAvatar {
 	var list []*models.DefaultAvatar
 	if err := m.Engine.Desc("sortorder").Find(&list); err != nil {
-		return nil
+		return []*models.DefaultAvatar{}
 	}
 
 	return list
+}
+
+// 添加系统头像请求参数
+type AddSystemAvatarParams struct {
+	Avatar    string `json:"avatar"`
+	Sortorder int    `json:"sortorder"`
+}
+
+// 添加系统头像(默认上架)
+func (m *UserModel) AddSystemAvatar(params *AddSystemAvatarParams) error {
+	now := int(time.Now().Unix())
+	info := &models.DefaultAvatar{
+		Avatar:  params.Avatar,
+		CreateAt: now,
+		UpdateAt: now,
+		Sortorder: params.Sortorder,
+		Status: 1,
+	}
+
+	if _, err := m.Engine.InsertOne(info); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 删除系统头像 请求参数
+type DelSystemAvatarParam struct {
+	Id      string    `json:"id"`
+}
+// 删除系统头像
+func (m *UserModel) DelSystemAvatar(id string) error {
+	if _, err := m.Engine.Where("id=?", id).Delete(&models.DefaultAvatar{}); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // 记录用户反馈信息

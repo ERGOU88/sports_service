@@ -28,6 +28,8 @@ const (
 	// 12001 - 13000 配置相关错误码
 	CONFIG_ADD_BANNER_FAIL      = 12001
 	CONFIG_DEL_BANNER_FAIL      = 12002
+	CONFIG_ADD_AVATAR_FAIL      = 12003
+	CONFIG_DEL_AVATAR_FAIL      = 12004
 )
 
 var MsgFlags = map[int]string{
@@ -55,6 +57,8 @@ var MsgFlags = map[int]string{
 
 	CONFIG_ADD_BANNER_FAIL:      "添加banner失败",
 	CONFIG_DEL_BANNER_FAIL:      "删除banner失败",
+	CONFIG_ADD_AVATAR_FAIL:      "添加系统头像失败",
+	CONFIG_DEL_AVATAR_FAIL:      "删除系统头像失败",
 }
 
 func GetMsg(code int) string {
