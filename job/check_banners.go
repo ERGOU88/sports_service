@@ -1,6 +1,7 @@
 package job
 
 import (
+	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/global/app/log"
 	"time"
@@ -38,12 +39,12 @@ func checkBannerStatus() {
 		}
 		//  展示开始时间 <= 当前时间 且 展示结束时间 > 当前时间 状态设置为上架
 		if banner.StartTime <= now && banner.EndTime > now {
-			banner.Status = 1
+			banner.Status = consts.HAS_LAUNCHED
 		}
 
 		// 展示结束时间 <= 当前时间 状态设置为已过期
 		if banner.EndTime <= now {
-			banner.Status = 2
+			banner.Status = consts.NO_LAUNCHED
 		}
 
 		// 更新banner状态

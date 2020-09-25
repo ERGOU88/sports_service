@@ -5,12 +5,9 @@ import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/backend/errdef"
+	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mbanner"
-	"sports_service/server/models/mcomment"
-	"sports_service/server/models/mvideo"
-	"fmt"
-	"strings"
 	"time"
 )
 
@@ -35,7 +32,7 @@ func (svc *ConfigModule) AddBanner(params *mbanner.AddBannerParams) int {
 	svc.banner.Banners.UpdateAt = now
 	svc.banner.Banners.CreateAt = now
 	svc.banner.Banners.Cover = params.Cover
-	svc.banner.Banners.Status = 0
+	svc.banner.Banners.Status = consts.WAIT_LAUNCHE
 	svc.banner.Banners.Title = params.Title
 	svc.banner.Banners.Explain = params.Explain
 	svc.banner.Banners.JumpUrl = params.JumpUrl
