@@ -17,3 +17,10 @@ const (
 	COMMENT_MIN_LEN  = 10
 	COMMENT_MAX_LEN  = 1000
 )
+
+// 评论列表排序 1 按评论时间倒序 2 按评论点赞数 3 按评论回复数
+const (
+	SORT_BY_TIME  = "1"
+	SORT_BY_LIKE  = "2"
+	SORT_BY_REPLY = "3"
+)

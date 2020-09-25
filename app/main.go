@@ -9,6 +9,7 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
+	"sports_service/server/job"
 	"sports_service/server/log/zap"
 	"sports_service/server/models/pprof"
 	"sports_service/server/util"
@@ -73,6 +74,13 @@ func setupSnowId() {
 	util.InitSnowId()
 }
 
+// 任务列表
+func setupJob() {
+	/*----检测banner(是否上架/是否过期)任务----*/
+	job.CheckBanners()
+	/*----检测banner(是否上架/是否过期)任务----*/
+}
+
 func init() {
 	// 配置
 	if err := setupConfig(); err != nil {
@@ -91,6 +99,8 @@ func init() {
 	setupSnowId()
 	// 设置运行模式
 	setupRunMode()
+	// 任务
+	setupJob()
 }
 
 // @title 电竞社区平台（应用服）

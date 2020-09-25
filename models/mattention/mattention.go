@@ -126,8 +126,10 @@ type SearchContactRes struct {
 
 // 搜索关注的用户
 func (m *AttentionModel) SearchAttentionUser(userId, name string, offset, size int) []*SearchContactRes {
-	sql := "SELECT u.*, ua.status as is_attention FROM user_attention AS ua INNER JOIN user as u ON u.`user_id` = ua.`user_id` " +
-		"WHERE u.nick_name LIKE '%" + name + "%' OR u.`user_id` LIKE '%" + name + "%' AND u.status=0 AND ua.attention_uid = ? AND " +
+	sql := "SELECT u.*, ua.status as is_attention FROM user_attention AS ua INNER JOIN user as u " +
+		"ON u.`user_id` = ua.`user_id` " +
+		"AND u.nick_name LIKE '%" + name + "%' OR u.`user_id` LIKE '%" + name + "%' AND u.status=0" +
+		"WHERE ua.attention_uid = ? AND " +
 		"ua.status=1 ORDER BY ua.Id DESC LIMIT ?, ?"
 	var list []*SearchContactRes
 	if err := m.Engine.Table(&models.UserAttention{}).SQL(sql, userId, offset, size).Find(&list); err != nil {
@@ -140,8 +142,11 @@ func (m *AttentionModel) SearchAttentionUser(userId, name string, offset, size i
 
 // 搜索粉丝
 func (m *AttentionModel) SearchFans(userId, name string, offset, size int) []*SearchContactRes {
-	sql :=  "SELECT u.*, ua.status as is_attention FROM user_attention AS ua INNER JOIN user as u ON u.`user_id` = ua.`attention_uid` " +
-		"WHERE u.nick_name LIKE '%" + name + "%' OR u.`user_id` LIKE '%" + name + "%' AND u.status=0 AND ua.user_id = ? AND ua.status=1 " +
+	sql :=  "SELECT u.*, ua.status as is_attention FROM user_attention AS ua INNER JOIN user as u " +
+		"ON u.`user_id` = ua.`attention_uid` " +
+		"AND u.nick_name LIKE '%" + name + "%' " +
+		"OR u.`user_id` LIKE '%" + name + "%' AND u.status=0 " +
+		"WHERE ua.user_id = ? AND ua.status=1 " +
 		"ORDER BY ua.Id DESC LIMIT ?, ?"
 	var list []*SearchContactRes
 	if err := m.Engine.Table(&models.UserAttention{}).SQL(sql, userId, offset, size).Find(&list); err != nil {

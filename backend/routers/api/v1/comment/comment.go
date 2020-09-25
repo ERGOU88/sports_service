@@ -2,42 +2,35 @@ package comment
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mcollect"
+	"net/http"
+	"sports_service/server/backend/controller/comment"
+	"sports_service/server/global/backend/errdef"
 	"sports_service/server/models/mcomment"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
+	"sports_service/server/util"
 )
 
-type CommentModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	comment     *mcomment.CommentModel
-	collect     *mcollect.CollectModel
-	user        *muser.UserModel
-	video       *mvideo.VideoModel
-	like        *mlike.LikeModel
-	attention   *mattention.AttentionModel
+// 获取视频评论列表（后台）
+func VideoCommentList(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	sortType := c.Query("sort_type")
+
+	svc := comment.New(c)
+	list := svc.GetVideoComments(sortType, page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
-func New(c *gin.Context) CommentModule {
-	socket := dao.Engine.Context(c)
-	defer socket.Close()
-	return CommentModule{
-		context: c,
-		comment: mcomment.NewCommentModel(socket),
-		user: muser.NewUserModel(socket),
-		video: mvideo.NewVideoModel(socket),
-		like: mlike.NewLikeModel(socket),
-		attention: mattention.NewAttentionModel(socket),
-		engine: socket,
+// 删除视频评论
+func DelVideoComments(c *gin.Context) {
+	reply := errdef.New(c)
+	param := new(mcomment.DelCommentParam)
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
 	}
-}
 
-// 获取后台视频评论列表
-func (svc *CommentModule) GetVideoComments() {
-
+	svc := comment.New(c)
+	syscode := svc.DelVideoComments(param)
+	reply.Response(http.StatusOK, syscode)
 }

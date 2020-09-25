@@ -2,11 +2,13 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	"sports_service/server/backend/routers/api/v1/comment"
 	"sports_service/server/backend/routers/api/v1/doc"
 	"sports_service/server/backend/routers/api/v1/swag"
 	"sports_service/server/backend/config"
 	"sports_service/server/backend/routers/api/v1/video"
 	"sports_service/server/global/consts"
+	"sports_service/server/backend/routers/api/v1/configure"
 )
 
 func InitRouters(engine *gin.Engine) {
@@ -20,5 +22,9 @@ func InitRouters(engine *gin.Engine) {
 
 	// 后台点播模块
 	video.Router(engine)
+	// 后台评论模块
+	comment.Router(engine)
+	// 后台配置模块（banner等）
+	configure.Router(engine)
 
 }

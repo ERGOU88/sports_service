@@ -41,7 +41,7 @@ type DelVideoLabelParam struct {
 
 var videoLabels []*VideoLabel
 
-// labelId -> labelName
+// labelId -> VideoLabel
 var labelMp map[string]*VideoLabel
 
 var mutex sync.Mutex

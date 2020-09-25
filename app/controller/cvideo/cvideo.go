@@ -363,9 +363,9 @@ func (svc *VideoModule) GetRecommendVideos(userId string, page, size int) []*mvi
 	return list
 }
 
-// 获取app首页推荐的banner
+// 获取app首页推荐的banner 默认取10条
 func (svc *VideoModule) GetRecommendBanners() []*models.Banner {
-	return svc.banner.GetRecommendBanners(int32(consts.HOMEPAGE_BANNERS))
+	return svc.banner.GetRecommendBanners(int32(consts.HOMEPAGE_BANNERS), time.Now().Unix(), 0, 10)
 }
 
 // 获取关注的用户发布的视频列表

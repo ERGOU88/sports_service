@@ -2,7 +2,8 @@ package mcomment
 
 import (
 	"github.com/go-xorm/xorm"
-	"sports_service/server/global/app/log"
+	"sports_service/server/global/backend/log"
+	"sports_service/server/global/consts"
 	"sports_service/server/models"
 )
 
@@ -53,17 +54,42 @@ type ReplyComment struct {
 	IsAttention          int                 `json:"is_attention"`            // 是否关注
 }
 
+// 视频评论数据（后台展示）
+type VideoCommentInfo struct {
+	VideoId     int64                   `json:"video_id"`        // 视频id
+	Title         string                `json:"title"`           // 标题
+	Describe      string                `json:"describe"`        // 描述
+	Cover         string                `json:"cover"`           // 封面
+	VideoAddr     string                `json:"video_addr"`      // 视频地址
+	VideoDuration int                   `json:"video_duration"`  // 视频时长
+	VideoWidth    int64                 `json:"video_width"`     // 视频宽
+	VideoHeight   int64                 `json:"video_height"`    // 视频高
+	Status        int32                 `json:"status"`          // 评论状态 (1 有效 0 逻辑删除)
+	UserId        string                `json:"user_id"`         // 用户id
+	Content       string                `json:"content"`         // 评论/回复的内容
+	CreateAt      int                   `json:"create_at"`       // 用户评论的时间
+	CommentLevel  int                   `json:"comment_level"`   // 1 为评论 2 为回复
+	LikeNum       int64                 `json:"like_num"`        // 点赞数
+	ReplyNum      int64                 `json:"reply_num"`       // 当前评论的回复数
+}
+
+
 // 发布评论请求参数
 type PublishCommentParams struct {
-	VideoId          int64       `json:"video_id"`      // 视频id
-	Content          string      `json:"content"`       // 评论的内容
+	VideoId          int64       `binding:"required" json:"video_id"`      // 视频id
+	Content          string      `binding:"required" json:"content"`       // 评论的内容
 }
 
 // 回复评论请求参数
 type ReplyCommentParams struct {
-	VideoId          int64       `json:"video_id"`      // 视频id
-	Content          string      `json:"content"`       // 评论的内容
-	ReplyId          string      `json:"reply_id"`      // 被回复的评论id
+	VideoId          int64       `binding:"required" json:"video_id"`      // 视频id
+	Content          string      `binding:"required" json:"content"`       // 评论的内容
+	ReplyId          string      `binding:"required" json:"reply_id"`      // 被回复的评论id
+}
+
+// 后台删除评论
+type DelCommentParam struct {
+	CommentId      string     `binding:"required" json:"comment_id"`       // 评论id
 }
 
 // 实栗
@@ -128,6 +154,25 @@ func (m *CommentModel) GetVideoCommentById(commentId string) *models.VideoCommen
 	return comment
 }
 
+// 通过评论id 查询该评论下的所有回复id
+func (m *CommentModel) GetVideoReplyIdsById(commentId string) []string {
+	var replyIds []string
+	if err := m.Engine.Table(&models.VideoComment{}).Cols("id").Where("reply_comment_id=? AND status=1", commentId).Find(&replyIds); err != nil {
+		log.Log.Errorf("comment_trace: get video reply ids err:%s", err)
+	}
+
+	return replyIds
+}
+
+// 删除视频评论
+func (m *CommentModel) DelVideoComments(commentIds string) error {
+	if _, err := m.Engine.In("id", commentIds).Delete(&models.VideoComment{}); err != nil {
+		log.Log.Errorf("comment_trace: delete comments by ids err:%s", err)
+		return err
+	}
+
+	return nil
+}
 
 // 获取视频评论列表(1级评论)
 func (m *CommentModel) GetVideoCommentList(videoId string, offset, size int) []*models.VideoComment {
@@ -184,4 +229,32 @@ func (m *CommentModel) GetTotalReplyByComment(commentId string) int64 {
 
 	return total
 
+}
+
+// 后台获取评论列表（可通过 1 时间、 2 点赞数、 3 回复数排序 默认时间倒序）
+func (m *CommentModel) GetVideoCommentsBySort(sortType string, offset, size int) []*VideoCommentInfo {
+	sql := "SELECT vc.*, count(distinct(tu.Id)) AS like_num, count(vc2.id) AS reply_num FROM video_comment AS vc " +
+		"LEFT JOIN thumbs_up AS tu ON vc.id = tu.type_id AND tu.zan_type=3 AND tu.status=1 " +
+		"LEFT JOIN video_comment AS vc2 ON vc.id=vc2.reply_comment_id AND vc2.comment_level=2 " +
+		"WHERE vc.status=1 GROUP BY vc.id "
+	switch sortType {
+	case consts.SORT_BY_TIME:
+		sql += "ORDER BY vc.create_at DESC "
+	case consts.SORT_BY_LIKE:
+		sql += "ORDER BY like_num DESC "
+	case consts.SORT_BY_REPLY:
+		sql += "ORDER BY reply_num DESC "
+	default:
+		sql += "ORDER BY vc.create_at DESC "
+
+	}
+
+	sql += "LIMIT ?, ?"
+	var list []*VideoCommentInfo
+	if err := m.Engine.Table(&models.VideoComment{}).SQL(sql, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("comment_trace: get comment list by sort, err:%s", err)
+		return nil
+	}
+
+	return list
 }

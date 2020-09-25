@@ -721,7 +721,7 @@ info:
     | 400 | 参数错误 |
     | 500 | 内部错误 |
   license: {}
-  title: FPV电竞APP（应用服）
+  title: 电竞社区平台（应用服）
   version: "1.0"
 paths:
   /api/v1/attention/cancel:

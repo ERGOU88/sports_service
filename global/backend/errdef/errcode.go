@@ -5,6 +5,7 @@ const (
 	ERROR              = 500
 	INVALID_PARAMS     = 400
 
+	// 10001 - 11000 视频相关错误码
 	VIDEO_ALREADY_DELETE        = 10001
 	VIDEO_NOT_EXISTS            = 10002
 	VIDEO_ALREADY_PASS          = 10003
@@ -19,6 +20,14 @@ const (
 	VIDEO_ADD_VIDEO_LABEL_FAIL  = 10012
 	VIDEO_LABEL_NOT_EXISTS      = 10013
 	VIDEO_LABEL_DELETE_FAIL     = 10014
+
+	// 11001 - 12000 评论相关错误码
+	COMMENT_NOT_EXISTS          = 11001
+	COMMENT_DELETE_FAIL         = 11002
+
+	// 12001 - 13000 配置相关错误码
+	CONFIG_ADD_BANNER_FAIL      = 12001
+	CONFIG_DEL_BANNER_FAIL      = 12002
 )
 
 var MsgFlags = map[int]string{
@@ -26,7 +35,6 @@ var MsgFlags = map[int]string{
 	ERROR:          "fail",
 	INVALID_PARAMS: "请求参数错误",
 
-	// 10001 - 11000 视频相关错误
 	VIDEO_ALREADY_DELETE:        "视频已删除",
 	VIDEO_NOT_EXISTS:            "视频不存在",
 	VIDEO_ALREADY_PASS:          "视频已过审，只能执行删除操作",
@@ -41,6 +49,12 @@ var MsgFlags = map[int]string{
 	VIDEO_ADD_VIDEO_LABEL_FAIL:  "添加视频标签失败",
 	VIDEO_LABEL_NOT_EXISTS:      "视频标签不存在",
 	VIDEO_LABEL_DELETE_FAIL:     "视频标签删除失败",
+
+	COMMENT_NOT_EXISTS:          "评论不存在",
+	COMMENT_DELETE_FAIL:         "删除评论失败",
+
+	CONFIG_ADD_BANNER_FAIL:      "添加banner失败",
+	CONFIG_DEL_BANNER_FAIL:      "删除banner失败",
 }
 
 func GetMsg(code int) string {

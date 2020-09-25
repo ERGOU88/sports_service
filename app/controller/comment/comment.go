@@ -98,6 +98,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	svc.comment.ReceiveAt.CommentId = svc.comment.Comment.Id
 	svc.comment.ReceiveAt.TopicType = consts.TYPE_COMMENT
 	svc.comment.ReceiveAt.CreateAt = int(now)
+	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_PUBLISH
 	// 评论也是@
 	if err := svc.comment.AddReceiveAt(); err != nil {
 		log.Log.Errorf("comment_trace: add receive at err:%s", err)
@@ -185,6 +186,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	svc.comment.ReceiveAt.CommentId = svc.comment.Comment.Id
 	svc.comment.ReceiveAt.TopicType = consts.TYPE_COMMENT
 	svc.comment.ReceiveAt.CreateAt = int(now)
+	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_REPLY
 	// 回复 记录到 @
 	if err := svc.comment.AddReceiveAt(); err != nil {
 		log.Log.Errorf("comment_trace: add receive at err:%s", err)
