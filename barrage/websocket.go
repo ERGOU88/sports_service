@@ -28,8 +28,7 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func 
-StartWebsocket(bindAddr string) {
+func StartWebsocket(bindAddr string) {
 	r := mux.NewRouter()
 	r.HandleFunc("/ws", WebSocketHandler)
 	http.Handle("/", r)
