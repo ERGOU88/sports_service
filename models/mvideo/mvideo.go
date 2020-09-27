@@ -450,3 +450,13 @@ func (m *VideoModel) GetVideoReviewList(offset, size int) []*models.Videos {
 	return list
 
 }
+
+// 获取用户总浏览数
+func (m *VideoModel) GetUserTotalBrowse(userId string) int64 {
+	count, err := m.Engine.Where("user_id=?", userId).Count(&models.UserBrowseRecord{})
+	if err != nil {
+		return 0
+	}
+
+	return count
+}

@@ -30,6 +30,10 @@ const (
 	CONFIG_DEL_BANNER_FAIL      = 12002
 	CONFIG_ADD_AVATAR_FAIL      = 12003
 	CONFIG_DEL_AVATAR_FAIL      = 12004
+
+	// 13001 - 14000 用户相关错误码
+	USER_FORBID_FAIL            = 13001
+	USER_UNFORBID_FAIL          = 13002
 )
 
 var MsgFlags = map[int]string{
@@ -59,6 +63,9 @@ var MsgFlags = map[int]string{
 	CONFIG_DEL_BANNER_FAIL:      "删除banner失败",
 	CONFIG_ADD_AVATAR_FAIL:      "添加系统头像失败",
 	CONFIG_DEL_AVATAR_FAIL:      "删除系统头像失败",
+
+	USER_FORBID_FAIL:            "用户封禁失败",
+	USER_UNFORBID_FAIL:          "用户解封失败",
 }
 
 func GetMsg(code int) string {

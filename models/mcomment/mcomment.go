@@ -131,6 +131,17 @@ func (m *CommentModel) GetReceiveAtList(userId string, offset, size int) []*mode
 	return list
 }
 
+// 获取用户总评论数
+func (m *CommentModel) GetUserTotalComments(userId string) int64 {
+	count, err := m.Engine.Where("user_id=?", userId).Count(&models.VideoComment{})
+	if err != nil {
+		log.Log.Errorf("comment_trace: get user total comments err:%s", err)
+		return 0
+	}
+
+	return count
+}
+
 
 // 获取未读的被@的数量
 func (m *CommentModel) GetUnreadAtCount(userId, readTm string) int64 {

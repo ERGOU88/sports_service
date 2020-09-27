@@ -45,3 +45,9 @@ const (
 	MAX_SIGNATURE_LEN = 140
 )
 
+// 用户状态 0 正常 1 封禁
+const (
+	USER_NORMAL = 0
+	USER_FORBID = 1
+)
+

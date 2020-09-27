@@ -25,6 +25,46 @@ func NewUserModel(engine *xorm.Session) *UserModel {
 	}
 }
 
+// 后台封禁用户请求参数
+type ForbidUserParam struct {
+	Id        string       `json:"id"`
+}
+
+// 后台解封用户请求参数
+type UnForbidUserParam struct {
+	Id        string      `json:"id"`
+}
+
+// 用户信息（后台）
+type UserInfo struct {
+	Id            int64  `json:"id"`
+	UserId        string `json:"user_id" example:"2009011314521111"`
+	Avatar        string `json:"avatar" example:"头像地址"`
+	MobileNum     int32  `json:"mobile_num" example:"13177656222"`
+	NickName      string `json:"nick_name" example:"昵称 陈二狗"`
+	Gender        int32  `json:"gender" example:"0"`
+	Signature     string `json:"signature" example:"个性签名"`
+	Status        int32  `json:"status" example:"0"`
+	IsAnchor      int32  `json:"is_anchor" example:"0"`
+	BackgroundImg string `json:"background_img" example:"背景图"`
+	Born          string `json:"born" example:"出生日期"`
+	Age           int    `json:"age" example:"27"`
+	Country       int32  `json:"country" example:"0"`
+	RegIp         string `json:"reg_ip"`
+	LastLoginTm   int    `json:"last_login_tm"`
+	Platform      int    `json:"platform"`
+
+	TotalBeLiked     int64  `json:"total_beLiked" example:"100"`     // 被点赞数
+	TotalFans        int64  `json:"total_fans" example:"100"`        // 粉丝数
+	TotalAttention   int64  `json:"total_attention" example:"100"`   // 关注数
+	TotalCollect     int64  `json:"total_collect" example:"100"`     // 收藏的作品数
+	TotalPublish     int64  `json:"total_publish" example:"100"`     // 发布的作品数
+	TotalLikes       int64  `json:"total_likes" example:"100"`       // 点赞的作品数
+	TotalComment     int64  `json:"total_comment"`                   // 总评价数
+	TotalBrowse      int64  `json:"total_browse"`                    // 总浏览数
+	TotalBarrage     int64  `json:"total_barrage"`                   // 总弹幕数
+}
+
 // 用户简单信息返回
 type UserInfoResp struct {
 	UserId        string `json:"user_id" example:"2009011314521111"`
@@ -43,6 +83,16 @@ type UserInfoResp struct {
 	IsAttention   int32  `json:"is_attention"`
 }
 
+// 个人空间用户信息
+type UserZoneInfoResp struct {
+	TotalBeLiked     int64  `json:"total_beLiked" example:"100"`     // 被点赞数
+	TotalFans        int64  `json:"total_fans" example:"100"`        // 粉丝数
+	TotalAttention   int64  `json:"total_attention" example:"100"`   // 关注数
+	TotalCollect     int64  `json:"total_collect" example:"100"`     // 收藏的作品数
+	TotalPublish     int64  `json:"total_publish" example:"100"`     // 发布的作品数
+	TotalLikes       int64  `json:"total_likes" example:"100"`       // 点赞的作品数
+}
+
 // 用户搜索
 type UserSearchResults struct {
 	UserId        string `json:"user_id" example:"2009011314521111"`
@@ -58,16 +108,6 @@ type UserSearchResults struct {
 	IsAttention   int32  `json:"is_attention"`
 	WorksNum      int64  `json:"works_num"`                         // 作品数
 	FansNum       int64  `json:"fans_num"`                          // 粉丝数
-}
-
-// 个人空间用户信息
-type UserZoneInfoResp struct {
-	TotalBeLiked     int64  `json:"total_beLiked" example:"100"`     // 被点赞数
-	TotalFans        int64  `json:"total_fans" example:"100"`        // 粉丝数
-	TotalAttention   int64  `json:"total_attention" example:"100"`   // 关注数
-	TotalCollect     int64  `json:"total_collect" example:"100"`     // 收藏的作品数
-	TotalPublish     int64  `json:"total_publish" example:"100"`     // 发布的作品数
-	TotalLikes       int64  `json:"total_likes" example:"100"`       // 点赞的作品数
 }
 
 // 登陆请求所需的参数
@@ -143,6 +183,17 @@ func (m *UserModel) FindUserByUserids(userIds string, offset, size int) []*model
 	return list
 }
 
+// 分页获取用户列表（后台）
+func (m *UserModel) GetUserList(offset, size int) []*models.User {
+	var list []*models.User
+	if err := m.Engine.Desc("id").Limit(size, offset).Find(&list); err != nil {
+		log.Log.Errorf("user_trace: get user list err:%s", err)
+		return []*models.User{}
+	}
+
+	return nil
+}
+
 // 添加用户
 func (m *UserModel) AddUser() error {
 	if _, err := m.Engine.InsertOne(m.User); err != nil {
@@ -169,6 +220,16 @@ func (m *UserModel) UpdateUserInfo() error {
 		Cols("avatar, nick_name, born, age, gender, country, signature, update_at").
 		Update(m.User); err != nil {
 			return err
+	}
+
+	return nil
+}
+
+// 更新用户状态
+func (m *UserModel) UpdateUserStatus(id string) error {
+	if _, err := m.Engine.Where("id=?", id).Cols("status, update_at").Update(m.User); err != nil {
+		log.Log.Errorf("user_trace: update user status err:%s", err)
+		return err
 	}
 
 	return nil
