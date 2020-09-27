@@ -5620,3 +5620,593 @@ net/http.(*conn).serve
 [2020-09-25 18:57:23]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:41	setup log success
 [2020-09-25 19:00:23]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:18	开始检测banner 是否上架/是否已过期
 [2020-09-25 19:00:23]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:21	检测完毕
+[2020-09-27 14:16:13]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:41	setup log success
+[2020-09-27 14:16:27]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:41	setup log success
+[2020-09-27 14:18:14]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:41	setup log success
+[2020-09-27 14:18:35]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:41	setup log success
+[2020-09-27 14:19:46]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:41	setup log success
+[2020-09-27 14:19:50]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:19:50]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:19:50 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;43m 404 [0m|耗时：      29.059µs | 127.0.0.1 |[97;44m  [0m GET     /api/v1/user/smscode {
+   "video_id": 59,
+   "reply_id":"13",
+   "content":"我是回复回复回复"
+}
+|
+
+[2020-09-27 14:20:11]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:20:11]-48	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:23	sms_trace: invalid mobile num 
+sports_service/server/app/controller/cuser.(*UserModule).SendSmsCode
+	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:23
+sports_service/server/app/routers/api/v1/user.SmsCode
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:26
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-27 14:20:11]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:20:11 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     437.671µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:20:39]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:20:39]-48	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/sms/sms.go:45	sms_trace: unsupported sendType, sendType:2
+sports_service/server/models/sms.(*SmsModel).GetSendMod
+	/Users/jelly/go/src/sports_service/server/models/sms/sms.go:45
+sports_service/server/app/controller/cuser.(*UserModule).SendSmsCode
+	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:99
+sports_service/server/app/routers/api/v1/user.SmsCode
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:26
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-27 14:20:39]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:20:39 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   11.114959ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:21:28]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:21:28]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:21:28 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：  144.017272ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:22:32]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:22:32]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:22:32 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：  411.387594ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:22:34]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:22:34]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:22:34 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    1.151248ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:22:46]-46	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 14:22:46]-46	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 14:23:05]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:23:05]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:23:05 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：      370.04µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:23:07]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:23:07]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:23:07 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     491.681µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:23:08]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:23:08]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:23:08 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     572.928µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:23:08]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:23:08]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:23:08 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     513.226µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:23:09]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:23:09]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:23:09 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     459.744µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:23:10]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:23:10]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:23:10 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     714.153µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:23:11]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:23:11]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:23:11 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     554.962µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:23:12]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:23:12]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:23:12 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     557.096µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:23:12]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:23:12]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:23:12 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     798.922µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:23:13]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:23:13]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:23:13 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     534.441µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:23:13]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:23:13]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:23:13 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     720.677µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:23:14]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:23:14]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:23:14 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     430.484µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:23:57]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:23:57]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:23:57 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    65.02985ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:24:10]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:24:10]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:24:10 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     419.188µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:24:16]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:24:16]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:24:16 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     597.698µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:25:07]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:25:07]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:25:07 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：   84.039816ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:25:46]-46	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 14:25:46]-46	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 14:26:00]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:26:00]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:26:00 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     360.214µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:26:08]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:26:08]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:26:08 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：  465.466987ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:28:46]-46	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 14:28:46]-46	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 14:29:50]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:41	setup log success
+[2020-09-27 14:29:57]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:29:58]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:29:58 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：  125.003018ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:30:38]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:30:38]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:30:38 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：  101.069323ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:30:50]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:30:50]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:30:50 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     764.276µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:07]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:07]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:07 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     466.703µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:08]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:08]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:08 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    7.741958ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:09]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:09]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:09 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     460.242µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:10]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:10]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:10 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     441.776µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:11]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:11]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:11 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     750.309µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:11]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:11]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:11 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     454.256µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:12]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:12]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:12 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     417.713µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:13]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:13]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:13 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    1.123037ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:14]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:14]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:14 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     607.132µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:15]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:15]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:15 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     952.502µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:15]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:15]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:15 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     565.158µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:16]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:16]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:16 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     533.076µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:17]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:17]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:17 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     773.899µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:23]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:23]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:23 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     448.612µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:24]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:24]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:24 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：      420.25µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:25]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:25]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:25 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    1.016418ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:36]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:36]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:36 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     489.153µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:37]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:37]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:37 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     730.734µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:31:38]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:31:38]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:31:38 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：  423.047248ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:32:10]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:32:10]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:32:10 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     705.525µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:32:29]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:32:29]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:32:29 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     621.838µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:32:40]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:32:40]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:32:40 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：  416.832206ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:32:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 14:32:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 14:32:57]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 14:32:57]-37	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:47	sms_trace: send sms code interval, mobileNum:13177656222
+sports_service/server/app/controller/cuser.(*UserModule).SendSmsCode
+	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:47
+sports_service/server/app/routers/api/v1/user.SmsCode
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:26
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-27 14:32:57]-37	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 14:32:57 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    4.258092ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 14:35:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 14:35:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 14:38:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 14:38:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 14:41:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 14:41:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 14:44:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 14:44:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 14:47:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 14:47:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 14:50:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 14:50:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 14:53:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 14:53:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 14:56:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 14:56:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 14:59:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 14:59:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 15:02:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 15:02:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 15:05:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 15:05:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 15:08:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 15:08:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 15:11:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 15:11:50]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 15:13:57]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:41	setup log success
+[2020-09-27 15:14:02]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 15:14:03]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 15:14:03 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：  164.101617ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 15:14:19]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 15:14:19]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 15:14:19 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     819.393µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 15:14:56]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode/login,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 15:14:56]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 15:14:56 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    10.82534ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode/login |
+
+[2020-09-27 15:15:25]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode/login,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 15:15:25]-53	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:187	sms_trace: get sms code by redis err:redigo: nil returned
+sports_service/server/app/controller/cuser.(*UserModule).CheckSmsCode
+	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:187
+sports_service/server/app/controller/cuser.(*UserModule).SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:115
+sports_service/server/app/routers/api/v1/user.SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:72
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-27 15:15:25]-53	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:74	sms_trace: 用户短信验证码登陆/注册失败，params:&{MobileNum:13177656222 Code:470574 Platform:1}
+sports_service/server/app/routers/api/v1/user.SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:74
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-27 15:15:25]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 15:15:25 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    5.259183ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode/login |
+
+[2020-09-27 15:15:34]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode/login,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 15:15:34]-53	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:187	sms_trace: get sms code by redis err:redigo: nil returned
+sports_service/server/app/controller/cuser.(*UserModule).CheckSmsCode
+	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:187
+sports_service/server/app/controller/cuser.(*UserModule).SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:115
+sports_service/server/app/routers/api/v1/user.SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:72
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-27 15:15:34]-53	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:74	sms_trace: 用户短信验证码登陆/注册失败，params:&{MobileNum:13177656222 Code:470574 Platform:1}
+sports_service/server/app/routers/api/v1/user.SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:74
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-27 15:15:34]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 15:15:34 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     757.279µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode/login |
+
+[2020-09-27 15:16:57]-50	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 15:16:57]-50	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 15:19:57]-50	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 15:19:57]-50	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 15:22:57]-50	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 15:22:57]-50	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-27 15:26:17]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:41	setup log success
+[2020-09-27 15:27:42]-103	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode/login,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 15:27:42]-103	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:187	sms_trace: get sms code by redis err:redigo: nil returned
+sports_service/server/app/controller/cuser.(*UserModule).CheckSmsCode
+	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:187
+sports_service/server/app/controller/cuser.(*UserModule).SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:115
+sports_service/server/app/routers/api/v1/user.SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:72
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-27 15:27:42]-103	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:74	sms_trace: 用户短信验证码登陆/注册失败，params:&{MobileNum:13177656222 Code:470574 Platform:1}
+sports_service/server/app/routers/api/v1/user.SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:74
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-27 15:27:42]-103	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 15:27:42 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     977.663µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode/login |
+
+[2020-09-27 15:27:47]-103	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode/login,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 15:27:47]-103	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:187	sms_trace: get sms code by redis err:redigo: nil returned
+sports_service/server/app/controller/cuser.(*UserModule).CheckSmsCode
+	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:187
+sports_service/server/app/controller/cuser.(*UserModule).SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:115
+sports_service/server/app/routers/api/v1/user.SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:72
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-27 15:27:47]-103	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:74	sms_trace: 用户短信验证码登陆/注册失败，params:&{MobileNum:13177656222 Code:470574 Platform:1}
+sports_service/server/app/routers/api/v1/user.SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:74
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-27 15:27:47]-103	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 15:27:47 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     755.657µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode/login |
+
+[2020-09-27 15:27:53]-103	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode/login,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 15:27:53]-103	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:187	sms_trace: get sms code by redis err:redigo: nil returned
+sports_service/server/app/controller/cuser.(*UserModule).CheckSmsCode
+	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:187
+sports_service/server/app/controller/cuser.(*UserModule).SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:115
+sports_service/server/app/routers/api/v1/user.SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:72
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-27 15:27:53]-103	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:74	sms_trace: 用户短信验证码登陆/注册失败，params:&{MobileNum:13177656222 Code:470574 Platform:1}
+sports_service/server/app/routers/api/v1/user.SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:74
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-27 15:27:53]-103	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 15:27:53 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     727.309µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode/login |
+
+[2020-09-27 15:27:58]-103	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 15:27:59]-103	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 15:27:59 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：  422.901253ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 15:28:02]-103	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode/login,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 15:28:02]-103	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:192	sms_trace: sms code not match, redis code:004357, code:470574, mobileNum:13177656222
+sports_service/server/app/controller/cuser.(*UserModule).CheckSmsCode
+	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:192
+sports_service/server/app/controller/cuser.(*UserModule).SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/controller/cuser/sms.go:115
+sports_service/server/app/routers/api/v1/user.SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:72
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-27 15:28:02]-103	ERROR	fpv	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:74	sms_trace: 用户短信验证码登陆/注册失败，params:&{MobileNum:13177656222 Code:470574 Platform:1}
+sports_service/server/app/routers/api/v1/user.SmsCodeLogin
+	/Users/jelly/go/src/sports_service/server/app/routers/api/v1/user/user.go:74
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-09-27 15:28:02]-103	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 15:28:02 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     5.16948ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode/login |
+
+[2020-09-27 15:28:11]-103	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 15:28:11]-103	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 15:28:11 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：     764.577µs | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode |
+
+[2020-09-27 15:28:39]-103	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/user/smscode/login,user_agent:PostmanRuntime/7.26.2,ip:127.0.0.1
+
+[2020-09-27 15:28:39]-103	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/27 - 15:28:39 | version: | User-Agent:PostmanRuntime/7.26.2 |[97;42m 200 [0m|耗时：    4.545798ms | 127.0.0.1 |[97;46m  [0m POST    /api/v1/user/smscode/login |
+
+[2020-09-27 15:29:17]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-27 15:29:17]-82	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕

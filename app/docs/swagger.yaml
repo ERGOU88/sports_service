@@ -85,6 +85,9 @@ definitions:
         type: string
       video_id:
         type: integer
+    required:
+    - content
+    - video_id
     type: object
   mcomment.ReplyComment:
     properties:
@@ -135,6 +138,10 @@ definitions:
         type: string
       video_id:
         type: integer
+    required:
+    - content
+    - reply_id
+    - video_id
     type: object
   mcomment.VideoComments:
     properties:
@@ -586,6 +593,22 @@ definitions:
       video_id:
         type: integer
       video_width:
+        type: integer
+    type: object
+  sms.SendSmsCodeParams:
+    properties:
+      mobile_num:
+        type: string
+      send_type:
+        type: string
+    type: object
+  sms.SmsCodeLoginParams:
+    properties:
+      code:
+        type: string
+      mobile_num:
+        type: string
+      platform:
         type: integer
     type: object
   swag.ColligateSearchSwag:
@@ -2614,6 +2637,108 @@ paths:
           schema:
             type: string
       summary: QQ注册/登陆 (ok)
+      tags:
+      - 账号体系
+  /api/v1/user/smscode:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 获取短信验证码请求参数
+        in: body
+        name: SendSmsCodeParams
+        required: true
+        schema:
+          $ref: '#/definitions/sms.SendSmsCodeParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 获取短信验证码 (ok)
+      tags:
+      - 账号体系
+  /api/v1/user/smscode/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 短信验证码登陆/注册 请求参数
+        in: body
+        name: SmsCodeLoginParams
+        required: true
+        schema:
+          $ref: '#/definitions/sms.SmsCodeLoginParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/swag.LoginSwag'
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 短信验证码注册/登陆 (ok)
       tags:
       - 账号体系
   /api/v1/user/wechat/login:

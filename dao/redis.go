@@ -658,6 +658,7 @@ func (this *RedisDao) EXPIRE(key string, expireTime int) (num int, err error) {
 	if err != nil {
 		return
 	}
+
 	return
 }
 

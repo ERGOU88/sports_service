@@ -14,6 +14,7 @@ import (
 	"sports_service/server/models/mnotify"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
+	"sports_service/server/models/sms"
 	"sports_service/server/tools/filter"
 	"sports_service/server/util"
 	"strings"
@@ -31,6 +32,7 @@ type UserModule struct {
 	like        *mlike.LikeModel
 	collect     *mcollect.CollectModel
 	video       *mvideo.VideoModel
+	sms         *sms.SmsModel
 }
 
 func New(c *gin.Context) UserModule {
@@ -45,6 +47,7 @@ func New(c *gin.Context) UserModule {
 		like: mlike.NewLikeModel(socket),
 		collect: mcollect.NewCollectModel(socket),
 		video: mvideo.NewVideoModel(socket),
+		sms: sms.NewSmsModel(),
 		engine: socket,
 	}
 }

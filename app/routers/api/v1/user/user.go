@@ -8,8 +8,78 @@ import (
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
+	"sports_service/server/models/sms"
 	"sports_service/server/models/muser"
 )
+
+// @Summary 获取短信验证码 (ok)
+// @Tags 账号体系
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   SendSmsCodeParams  body sms.SendSmsCodeParams true "获取短信验证码请求参数"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/user/smscode [post]
+// 获取短信验证码
+func SmsCode(c *gin.Context) {
+	reply := errdef.New(c)
+	params := new(sms.SendSmsCodeParams)
+	if err := c.BindJSON(params); err != nil {
+		log.Log.Errorf("sms_trace: 发送短信 参数错误, params:%+v", params)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cuser.New(c)
+	syscode := svc.SendSmsCode(params)
+	reply.Response(http.StatusOK, syscode)
+}
+
+// @Summary 短信验证码注册/登陆 (ok)
+// @Tags 账号体系
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   SmsCodeLoginParams  body sms.SmsCodeLoginParams true "短信验证码登陆/注册 请求参数"
+// @Success 200 {object} swag.LoginSwag
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/user/smscode/login [post]
+// 短信验证码登陆
+func SmsCodeLogin(c *gin.Context) {
+	reply := errdef.New(c)
+	params := new(sms.SmsCodeLoginParams)
+	if err := c.BindJSON(params); err != nil {
+		log.Log.Errorf("sms_trace: 短信验证码登陆 参数错误, params:%+v", params)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cuser.New(c)
+	// 短信验证码登陆/注册
+	syscode, token, user := svc.SmsCodeLogin(params)
+	if syscode != errdef.SUCCESS {
+		log.Log.Errorf("sms_trace: 用户短信验证码登陆/注册失败，params:%+v", params)
+		reply.Response(http.StatusOK, syscode)
+		return
+	}
+
+	reply.Data["token"] = token
+	reply.Data["userInfo"] = user
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
 
 // @Summary 手机一键注册/登陆 (ok)
 // @Tags 账号体系

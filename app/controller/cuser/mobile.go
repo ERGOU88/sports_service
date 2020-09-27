@@ -33,7 +33,7 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 	if user := svc.user.FindUserByPhone(mobileNum); user == nil {
 		// 注册
 		reg := muser.NewMobileRegister()
-		if err := reg.Register(svc.user, param, mobileNum); err != nil {
+		if err := reg.Register(svc.user, param.Platform, mobileNum, svc.context.ClientIP()); err != nil {
 			log.Log.Errorf("user_trace: register err:%s", err)
 			return errdef.USER_REGISTER_FAIL, "", nil
 		}

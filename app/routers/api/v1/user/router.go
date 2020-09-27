@@ -12,6 +12,10 @@ func Router(engine *gin.Engine) {
 	// todo: 先不校验签名
 	//user.Use(sign.CheckSign())
 	{
+		// 获取获短信验证码
+		user.POST("/smscode", SmsCode)
+		// 短信验证码登陆
+		user.POST("/smscode/login", SmsCodeLogin)
 		// 手机一键登陆
 		user.POST("/mobile/login", MobilePhoneLogin)
 		// 用户微信登陆

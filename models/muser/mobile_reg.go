@@ -23,7 +23,7 @@ func NewMobileRegister() *mobileRegister {
 }
 
 // 用户手机注册
-func (r *mobileRegister) Register(u *UserModel, param *LoginParams, mobileNum string) error {
+func (r *mobileRegister) Register(u *UserModel, platform int, mobileNum, clientIp string) error {
 	phone, err := strconv.ParseInt(mobileNum, 10, 64)
 	if err != nil {
 		log.Log.Errorf("reg_trace: strconv.ParseInt(%s)", err.Error())
@@ -39,28 +39,31 @@ func (r *mobileRegister) Register(u *UserModel, param *LoginParams, mobileNum st
 	}
 
 	rds := dao.NewRedisDao()
-	rds.EXPIRE64(key, rdskey.KEY_EXPIRE_MIN)
+	if _, err := rds.EXPIRE64(key, rdskey.KEY_EXPIRE_MIN); err != nil {
+		log.Log.Errorf("reg_trace: expire login repeat key err:%s", err)
+	}
 
-	r.newUser(u, phone, param)
+	r.newUser(u, phone, platform, clientIp)
 
 	return nil
 }
 
 // 设置用户相关信息
-func (r *mobileRegister) newUser(u *UserModel, phone int64, param *LoginParams) *UserModel {
+func (r *mobileRegister) newUser(u *UserModel, phone int64, platform int, clientIp string) *UserModel {
 	now := time.Now().Unix()
 	// todo 暂时先使用时间 + 4位随机数 生成uid
 	u.SetUid(util.NewUserId())
 	u.SetNickName(r.newDefaultNickName(phone))
 	u.SetPhone(phone)
 	u.SetAvatar(r.defaultAvatar())
-	u.SetDeviceType(param.Platform)
+	u.SetDeviceType(platform)
 	u.SetCreateAt(now)
 	u.SetUpdateAt(now)
 	u.SetLastLoginTime(now)
 	u.SetPassword("")
 	u.SetUserType(consts.TYPE_MOBILE)
 	u.SetLastLoginTime(now)
+	u.SetRegisterIp(clientIp)
 	return u
 }
 

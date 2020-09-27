@@ -106,6 +106,13 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 		return errdef.COMMENT_PUBLISH_FAIL
 	}
 
+	// 更新视频总计（视频评论总数）
+	if err := svc.video.UpdateVideoCommentNum(int(now), 1); err != nil {
+		log.Log.Errorf("comment_trace: update video comment num err:%s", err)
+		svc.engine.Rollback()
+		return errdef.COMMENT_PUBLISH_FAIL
+	}
+
 	svc.engine.Commit()
 
 	return errdef.SUCCESS
@@ -192,6 +199,13 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		log.Log.Errorf("comment_trace: add receive at err:%s", err)
 		svc.engine.Rollback()
 		return errdef.COMMENT_REPLY_FAIL
+	}
+
+	// 更新视频总计（视频评论总数）
+	if err := svc.video.UpdateVideoCommentNum(int(now), 1); err != nil {
+		log.Log.Errorf("comment_trace: update video comment num err:%s", err)
+		svc.engine.Rollback()
+		return errdef.COMMENT_PUBLISH_FAIL
 	}
 
 	svc.engine.Commit()

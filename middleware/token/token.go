@@ -69,7 +69,9 @@ func TokenAuth() gin.HandlerFunc {
 
 		if userid != "" {
 			// 给token续约
-			model.SaveUserToken(userid, v)
+			if err := model.SaveUserToken(userid, v); err != nil {
+				log.Log.Errorf("token_trace: save user token err:%s", err)
+			}
 		}
 
 		c.Set(consts.USER_ID, userid)

@@ -77,7 +77,7 @@ func setupSnowId() {
 // 任务列表
 func setupJob() {
 	/*----检测banner(是否上架/是否过期)任务----*/
-	job.CheckBanners()
+	go job.CheckBanners()
 	/*----检测banner(是否上架/是否过期)任务----*/
 }
 

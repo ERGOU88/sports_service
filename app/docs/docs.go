@@ -2791,6 +2791,156 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/user/smscode": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "账号体系"
+                ],
+                "summary": "获取短信验证码 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "获取短信验证码请求参数",
+                        "name": "SendSmsCodeParams",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/sms.SendSmsCodeParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/smscode/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "账号体系"
+                ],
+                "summary": "短信验证码注册/登陆 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "短信验证码登陆/注册 请求参数",
+                        "name": "SmsCodeLoginParams",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/sms.SmsCodeLoginParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/swag.LoginSwag"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/wechat/login": {
             "post": {
                 "consumes": [
@@ -3938,6 +4088,10 @@ var doc = `{
         },
         "mcomment.PublishCommentParams": {
             "type": "object",
+            "required": [
+                "content",
+                "video_id"
+            ],
             "properties": {
                 "content": {
                     "type": "string"
@@ -4011,6 +4165,11 @@ var doc = `{
         },
         "mcomment.ReplyCommentParams": {
             "type": "object",
+            "required": [
+                "content",
+                "reply_id",
+                "video_id"
+            ],
             "properties": {
                 "content": {
                     "type": "string"
@@ -4681,6 +4840,31 @@ var doc = `{
                     "type": "integer"
                 },
                 "video_width": {
+                    "type": "integer"
+                }
+            }
+        },
+        "sms.SendSmsCodeParams": {
+            "type": "object",
+            "properties": {
+                "mobile_num": {
+                    "type": "string"
+                },
+                "send_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "sms.SmsCodeLoginParams": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "mobile_num": {
+                    "type": "string"
+                },
+                "platform": {
                     "type": "integer"
                 }
             }

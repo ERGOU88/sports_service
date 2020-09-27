@@ -87,6 +87,15 @@ const (
 	COMMENT_REPLY_FAIL          = 7003
 	COMMENT_REPLY_NOT_FOUND     = 7004
 	COMMENT_INVALID_CONTENT     = 7005
+
+	// 短信验证码相关错误 8001-9000
+	SMS_CODE_INTERVAL_ERROR     = 8001
+	SMS_CODE_INTERVAL_SHORT     = 8002
+	SMS_CODE_INVALID_SEND_TYPE  = 8003
+	SMS_CODE_SEND_FAIL          = 8004
+	SMS_INVALID_CODE            = 8005
+	SMS_CODE_NOT_SEND           = 8006
+	SMS_CODE_NOT_MATCH          = 8007
 )
 
 var MsgFlags = map[int]string{
@@ -168,6 +177,14 @@ var MsgFlags = map[int]string{
 	COMMENT_REPLY_FAIL:          "评论回复失败",
 	COMMENT_REPLY_NOT_FOUND:     "未找到该评论相关回复",
 	COMMENT_INVALID_CONTENT:     "评论最少10字符，最多1000字符",
+
+	SMS_CODE_INTERVAL_ERROR:     "一天内该手机获取验证码次数超限(最多10次)",
+	SMS_CODE_INTERVAL_SHORT:     "获取短信验证间隔时间过短(间隔60秒)",
+	SMS_CODE_INVALID_SEND_TYPE:  "无效的短信类型",
+	SMS_CODE_SEND_FAIL:          "短信验证码发送失败",
+	SMS_INVALID_CODE:            "无效的短信验证码",
+	SMS_CODE_NOT_SEND:           "该手机未获取验证码",
+	SMS_CODE_NOT_MATCH:          "短信验证码不正确",
 }
 
 func GetMsg(code int) string {

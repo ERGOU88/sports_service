@@ -284,6 +284,11 @@ func (m *UserModel) SearchUser(name string, offset, size int) []*UserSearchResul
 	return list
 }
 
+// 设置注册ip
+func (m *UserModel) SetRegisterIp(ip string) {
+	m.User.RegIp = ip
+}
+
 // 设置uid
 func (m *UserModel) SetUid(uid string) {
 	m.User.UserId = uid
