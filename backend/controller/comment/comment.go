@@ -1,13 +1,14 @@
 package comment
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
+	"sports_service/server/global/backend/log"
 	"sports_service/server/global/backend/errdef"
 	"sports_service/server/models/mcomment"
 	"sports_service/server/models/mvideo"
-	"fmt"
 	"strings"
 )
 
@@ -61,12 +62,31 @@ func (svc *CommentModule) DelVideoComments(param *mcomment.DelCommentParam) int 
 	}
 
 	commentIds := svc.comment.GetVideoReplyIdsById(param.CommentId)
+	ids := make([]string, 0)
+	// 递归查询
+	svc.recursionComments(&ids, &commentIds)
+
 	// 当前评论 及 回复 一并删除
-	commentIds = append(commentIds, param.CommentId)
+	ids = append(ids, param.CommentId)
+
+	log.Log.Errorf("++++++++commentIds:%v", strings.Join(ids, ","))
+
 	// 删除视频评论及当前评论下的回复
-	if err := svc.comment.DelVideoComments(strings.Join(commentIds,",")); err != nil {
+	if err := svc.comment.DelVideoComments(strings.Join(ids,",")); err != nil {
 		return errdef.COMMENT_DELETE_FAIL
 	}
 
 	return errdef.SUCCESS
 }
+
+// 递归查询当前要删除的评论下的所有回复
+func (svc *CommentModule) recursionComments(ids *[]string, commentIds *[]string) {
+	*ids = append(*ids, *commentIds...)
+	if len(*commentIds) > 0 {
+		for _, commentId := range *commentIds {
+			replyIds := svc.comment.GetVideoReplyIdsById(commentId)
+			svc.recursionComments(ids, &replyIds)
+		}
+	}
+}
+

@@ -5,6 +5,7 @@ import (
 	"sports_service/server/global/backend/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
+	"fmt"
 )
 
 type CommentModel struct {
@@ -166,7 +167,8 @@ func (m *CommentModel) GetVideoReplyIdsById(commentId string) []string {
 
 // 删除视频评论
 func (m *CommentModel) DelVideoComments(commentIds string) error {
-	if _, err := m.Engine.In("id", commentIds).Delete(&models.VideoComment{}); err != nil {
+	sql := fmt.Sprintf("DELETE FROM `video_comment` WHERE `id` IN (%s)", commentIds)
+	if _, err := m.Engine.Exec(sql); err != nil {
 		log.Log.Errorf("comment_trace: delete comments by ids err:%s", err)
 		return err
 	}
@@ -258,3 +260,5 @@ func (m *CommentModel) GetVideoCommentsBySort(sortType string, offset, size int)
 
 	return list
 }
+
+

@@ -107,7 +107,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	}
 
 	// 更新视频总计（视频评论总数）
-	if err := svc.video.UpdateVideoCommentNum(int(now), 1); err != nil {
+	if err := svc.video.UpdateVideoCommentNum(video.VideoId, int(now), 1); err != nil {
 		log.Log.Errorf("comment_trace: update video comment num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.COMMENT_PUBLISH_FAIL
@@ -143,7 +143,8 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	}
 
 	// 查找视频是否存在
-	if video := svc.video.FindVideoById(fmt.Sprint(params.VideoId)); video == nil {
+	video := svc.video.FindVideoById(fmt.Sprint(params.VideoId))
+	if video == nil {
 		log.Log.Errorf("comment_trace: video not found, videoId:%d", params.VideoId)
 		svc.engine.Rollback()
 		return errdef.VIDEO_NOT_EXISTS
@@ -202,7 +203,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	}
 
 	// 更新视频总计（视频评论总数）
-	if err := svc.video.UpdateVideoCommentNum(int(now), 1); err != nil {
+	if err := svc.video.UpdateVideoCommentNum(video.VideoId, int(now), 1); err != nil {
 		log.Log.Errorf("comment_trace: update video comment num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.COMMENT_PUBLISH_FAIL

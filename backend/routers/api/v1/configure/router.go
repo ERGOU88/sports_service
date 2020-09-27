@@ -17,6 +17,6 @@ func Router(engine *gin.Engine) {
 		// 删除系统头像
 		configure.POST("/del/avatar", DelAvatar)
 		// 获取系统头像列表
-		configure.GET("/banners", GetAvatarList)
+		configure.GET("/avatar/list", GetAvatarList)
 	}
 }

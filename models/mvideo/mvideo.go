@@ -199,8 +199,8 @@ const (
 	UPDATE_VIDEO_COMMENT_NUM = "UPDATE `video_statistic` SET `comment_num` = `comment_num` + ?, `update_at`=? WHERE `video_id`=? AND `comment_num` + ? >= 0 LIMIT 1"
 )
 // 更新视频评论数
-func (m *VideoModel) UpdateVideoCommentNum(now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_VIDEO_COMMENT_NUM, num, now, num); err != nil {
+func (m *VideoModel) UpdateVideoCommentNum(videoId int64, now, num int) error {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_COMMENT_NUM, num, now, videoId, num); err != nil {
 		return err
 	}
 
