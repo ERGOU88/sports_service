@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package barrage;
+option go_package = "barrage";
+
+// 消息类型
+enum MessageType {
+    TYPE_CONN              = 0;   // 用户建立链接          client -> server
+    TYPE_CONN_RES          = 1;   // 用户建立链接回应       server -> client
+    TYPE_HEART_BEAT        = 2;   // 心跳                 client -> server
+    TYPE_HEART_BEAT_RES    = 3;   // 心跳回应              server -> client
+    TYPE_TEXT              = 4;   // 文本消息              server -> client
+    TYPE_BARRAGE           = 5;   // 弹幕消息              server -> client
+    TYPE_BROADCAST         = 6;   // 广播消息              server -> client
+    TYPE_WATCH_VIDEO       = 7;   // 观看视频消息           client -> server
+    TYPE_EXIT_VIDEO        = 8;   // 退出观看消息           client -> server
+}
+
+// 错误码
+enum RetCode {
+  CODE_FAIL                 = 0;   // 0 表示失败
+  CODE_SUCCESS              = 1;  //  1 表示成功
+}
+
+// 消息体
+message Message {
+  MessageType msgType = 1;        // 消息类型
+  string      msgId   = 2;        // 消息id
+  bytes       body    = 3;        // 消息体
+}
+
+// 连接请求消息
+message ReqConnMessage {
+  string  appId     = 1;
+  string  sign      = 2;
+  string  secret    = 3;
+  string  timestamp = 4;
+  string  version   = 5;
+}
+
+// 连接返回消息
+message ResConnMessage {
+  RetCode code      = 1;
+  string  content   = 2;
+  string  xid       = 3;          // 唯一标示（游客也可链接ws 客户端需存储在本地）
+}
+
+// 心跳消息
+message ReqHeartBeatMessage {
+  string  xid       = 1;
+}
+
+// 心跳响应
+message ResHeartBeatMessage {
+  string  xid       = 1;
+}
+
+// 弹幕消息
+message BarrageMessage {
+  BarrageInfo  barrage   = 1;
+  string       xid       = 2;
+}
+
+// 弹幕信息
+message BarrageInfo {
+  string  uid         = 1;           // 弹幕发送者uid
+  string  content     = 2;           // 弹幕内容
+  string  videoId     = 3;           // 视频id
+  int64   curDuration = 4;           // 当前时长
+  int64   sendTime    = 5;           // 发送时间
+}
+
+// 广播消息
+message BroadcastMessage {
+  string  content     = 1;
+  string  uid         = 2;
+  string  xid         = 3;
+}
+
+// 观看视频
+message ReqWatchVideo {
+  string  xid         = 1;           // 标识id
+  string  videoId     = 2;           // 视频id
+  string  uid         = 3;           // 用户id
+}
+
+// 退出视频
+message ReqExitVideo {
+  string  xid         = 1;           // 标识id
+  string  videoId     = 2;           // 视频id
+  string  uid         = 3;           // 用户id
+}
+
+
+
+

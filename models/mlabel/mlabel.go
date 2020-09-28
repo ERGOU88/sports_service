@@ -127,7 +127,9 @@ func (m *LabelModel) GetLabelNameByMem(labelId string) string {
 func (m *LabelModel) DelLabelInfoByMem(labelId string) {
 	mutex.Lock()
 	defer mutex.Unlock()
-	delete(labelMp, labelId)
+	if _, ok := labelMp[labelId]; ok {
+		delete(labelMp, labelId)
+	}
 }
 
 // 添加标签信息（内存）

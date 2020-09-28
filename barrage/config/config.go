@@ -13,13 +13,6 @@ type Address struct {
 
 type Addresses []Address
 
-type MysqlType struct {
-	Master    string
-	Slave     []string
-	MaxIdle   int
-	MaxActive int
-}
-
 type RedisOption struct {
 	DBId      int
 	Name      string
@@ -35,21 +28,20 @@ type RedisType struct {
 
 type Config struct {
 	// 公网服务
-	PublicAddr string
+	PublicAddr   string
 	// 性能监控地址
-	PprofAddr  string
+	PprofAddr    string
 	// 开发（dev）、测试(test)、生产(prod)
-	Mode       string
+	Mode         string
+	// nsq地址
+	NsqAddr      string
+	// 最大缓冲
+	MaxMsgCacheLen int
 	// 日志
 	Log struct {
 		Path      string
 		Level     int
 		ShowColor bool
-	}
-
-	// mysql
-	Mysql struct {
-		Main MysqlType
 	}
 
 	// redis连接

@@ -25,6 +25,8 @@ const (
 	SMS_INTERVAL_NUM          = SUGAR + "sms:interval_num:%s_%s"                   // 一天内同一手机发送验证码次数{拼接年月日_手机号码}
 	SMS_INTERVAL_TM           = SUGAR + "sms:interval_tm:%s_%s"                    // 验证码间隔时间60秒 {拼接短信类型_手机号}
 	SMS_CODE                  = SUGAR + "sms:code:%s_%s"                           // 验证码内容{拼接短信类型_手机号}
+
+	USER_WATCHING_VIDEO       = SUGAR + "user_watching_video_%s"                   // 记录正在观看视频的用户标示[xid]{拼接视频id}
 )
 
 // make redis key

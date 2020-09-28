@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"sports_service/server/tools/nsq"
 	"syscall"
 )
 
@@ -16,8 +17,11 @@ func InitSignal() {
 		switch s {
 		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGSTOP, syscall.SIGINT:
 			fmt.Printf("start stop service\n")
+			// 停止websocket服务（清理用户链接）
 			StopWebsocket()
 			fmt.Printf("start stop service success\n")
+			// 停止消费
+			nsq.Stop()
 			return
 		default:
 			return

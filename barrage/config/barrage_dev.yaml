@@ -1,24 +1,22 @@
 publicAddr: :15001
 pprofAddr: :14001
 mode: dev
-mysql:
-  main:
-    master: root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4
-    slave:
-      - root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4
-      - root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4
-      - root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4
-    maxIdle: 128
-    maxActive: 128
+## 日志等级 0 debug 1 info 2 warn 3 error
+log:
+  path: ./log/barrage_server.log
+  level: 0
+  showColor: true
+nsqAddr: 127.0.0.1:4150
+maxMsgCacheLen: 10000
 
 redis:
   main:
     master:
-      ip: 128.0.0.1
+      ip: 127.0.0.1
       port: 6379
 
     slave:
-      - ip: 128.0.0.1
+      - ip: 127.0.0.1
         port: 6379
 
     dboption:
@@ -26,11 +24,5 @@ redis:
         name:
         maxIdle: 128
         maxActive: 128
-
-## 日志等级 0 debug 1 info 2 warn 3 error
-log:
-  path: ./log/barrage_server.log
-  level: 0
-  showColor: true
 
 debug: true

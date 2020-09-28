@@ -31,6 +31,7 @@ redis:
 wechatAppid: wx9306bf43be47830b
 ## 开放平台secret
 wechatSecret: 3af44d06170ecdab4b49d1c70268c71f
+nsqAddr: 127.0.0.1:4151
 
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:

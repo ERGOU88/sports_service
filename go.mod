@@ -14,7 +14,12 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-xorm/core v0.6.3
 	github.com/go-xorm/xorm v0.7.9
+	github.com/gogo/protobuf v1.3.1 // indirect
+	github.com/golang/protobuf v1.4.2
+	github.com/gorilla/mux v1.8.0
+	github.com/gorilla/websocket v1.4.2
 	github.com/json-iterator/go v1.1.10
+	github.com/nsqio/go-nsq v1.0.8
 	github.com/parnurzeal/gorequest v0.2.16
 	github.com/rs/xid v1.2.1
 	github.com/spf13/viper v1.7.1
@@ -23,6 +28,7 @@ require (
 	github.com/tidwall/gjson v1.6.1
 	github.com/zheng-ji/goSnowFlake v0.0.0-20180906112711-fc763800eec9
 	go.uber.org/zap v1.16.0
+	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	moul.io/http2curl v1.0.0 // indirect

@@ -44,6 +44,8 @@ type Config struct {
 	WechatAppid  string
 	// 开放平台secret
 	WechatSecret string
+	// nsq地址
+	NsqAddr      string
 	// 日志
 	Log struct {
 		Path      string
