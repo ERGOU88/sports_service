@@ -87,12 +87,13 @@ func ReadChanelMessage() {
 		case pbBarrage.MessageType_TYPE_TEXT:
 		// 视频弹幕消息(主动推)
 		case pbBarrage.MessageType_TYPE_BARRAGE:
-			fmt.Printf("\nbarrage msg.body:%s", string(msg.Body))
 			barrage := pbBarrage.BarrageMessage{}
 			if err := proto.Unmarshal(msg.Body, &barrage); err != nil {
 				fmt.Printf("\nbarrage msg, proto unmarshal err:%s", err)
 				continue
 			}
+
+			fmt.Printf("\nrecv: %v", barrage)
 			// 获取正在观看该视频的用户们
 			list, err := getWatchUserByVideoId(barrage.Barrage.VideoId)
 			if err != nil || len(list) == 0 {

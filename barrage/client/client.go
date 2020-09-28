@@ -130,7 +130,17 @@ func FakeClient() {
 		}
 
 		atomic.AddInt64(&receive, 1)
-		log.Printf("\nrecv: %v", string(msg.Body))
+
+		switch msg.MsgType {
+		case pbBarrage.MessageType_TYPE_BARRAGE:
+			barrage := &pbBarrage.BarrageMessage{}
+			if err := proto.Unmarshal(msg.Body, barrage); err != nil {
+				fmt.Println("\nproto unmarshal err:%s", err)
+				continue
+			}
+
+			log.Printf("\nrecv: %v", barrage)
+		}
 	}
 
 }

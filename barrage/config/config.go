@@ -35,6 +35,10 @@ type Config struct {
 	Mode         string
 	// nsq地址
 	NsqAddr      string
+	// kafka地址
+	KafkaAddr    string
+	// kafka topic
+	KafkaTopic   string
 	// 最大缓冲
 	MaxMsgCacheLen int
 	// 日志

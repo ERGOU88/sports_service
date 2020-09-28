@@ -8,6 +8,8 @@ log:
   showColor: true
 nsqAddr: 127.0.0.1:4150
 maxMsgCacheLen: 10000
+kafkaAddr: 10.6.30.199:9092
+kafkaTopic: test1
 
 redis:
   main:
