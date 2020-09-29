@@ -96,6 +96,9 @@ const (
 	SMS_INVALID_CODE            = 8005
 	SMS_CODE_NOT_SEND           = 8006
 	SMS_CODE_NOT_MATCH          = 8007
+
+	// 弹幕相关错误码 9001- 10000
+	BARRAGE_VIDEO_SEND_FAIL     = 9001
 )
 
 var MsgFlags = map[int]string{
@@ -185,6 +188,8 @@ var MsgFlags = map[int]string{
 	SMS_INVALID_CODE:            "无效的短信验证码",
 	SMS_CODE_NOT_SEND:           "该手机未获取验证码",
 	SMS_CODE_NOT_MATCH:          "短信验证码不正确",
+
+	BARRAGE_VIDEO_SEND_FAIL:     "发送视频弹幕失败",
 }
 
 func GetMsg(code int) string {

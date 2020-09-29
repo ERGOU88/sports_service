@@ -258,6 +258,168 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/barrage/send": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "弹幕模块"
+                ],
+                "summary": "发送视频弹幕 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "发送弹幕请求参数",
+                        "name": "SendBarrageParams",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/mbarrage.SendBarrageParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/barrage/video/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "通知模块"
+                ],
+                "summary": "视频弹幕列表[视频时长区间获取] (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "时长区间 最小时长",
+                        "name": "min_duration",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "时长区间 最大时长",
+                        "name": "max_duration",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "视频id",
+                        "name": "video_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.VideoBarrage"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/client/init": {
             "get": {
                 "consumes": [
@@ -4043,6 +4205,34 @@ var doc = `{
                 }
             }
         },
+        "mbarrage.SendBarrageParams": {
+            "type": "object",
+            "required": [
+                "content",
+                "video_cur_duration",
+                "video_id"
+            ],
+            "properties": {
+                "color": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "font": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "integer"
+                },
+                "video_cur_duration": {
+                    "type": "integer"
+                },
+                "video_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "mcollect.AddCollectParam": {
             "type": "object",
             "required": [
@@ -4351,6 +4541,41 @@ var doc = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "models.VideoBarrage": {
+            "type": "object",
+            "properties": {
+                "barrage_type": {
+                    "type": "integer"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "font": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "location": {
+                    "type": "integer"
+                },
+                "send_time": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "video_cur_duration": {
+                    "type": "integer"
+                },
+                "video_id": {
+                    "type": "integer"
                 }
             }
         },

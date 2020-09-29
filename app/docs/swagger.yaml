@@ -50,6 +50,25 @@ definitions:
         example: "2009011314521111"
         type: string
     type: object
+  mbarrage.SendBarrageParams:
+    properties:
+      color:
+        type: string
+      content:
+        type: string
+      font:
+        type: string
+      location:
+        type: integer
+      video_cur_duration:
+        type: integer
+      video_id:
+        type: integer
+    required:
+    - content
+    - video_cur_duration
+    - video_id
+    type: object
   mcollect.AddCollectParam:
     properties:
       to_user_id:
@@ -256,6 +275,29 @@ definitions:
         type: integer
       user_id:
         type: string
+    type: object
+  models.VideoBarrage:
+    properties:
+      barrage_type:
+        type: integer
+      color:
+        type: string
+      content:
+        type: string
+      font:
+        type: string
+      id:
+        type: integer
+      location:
+        type: integer
+      send_time:
+        type: integer
+      user_id:
+        type: string
+      video_cur_duration:
+        type: integer
+      video_id:
+        type: integer
     type: object
   muser.EditUserInfoParams:
     properties:
@@ -906,6 +948,117 @@ paths:
       summary: 关注用户 (ok)
       tags:
       - 关注模块
+  /api/v1/barrage/send:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 发送弹幕请求参数
+        in: body
+        name: SendBarrageParams
+        required: true
+        schema:
+          $ref: '#/definitions/mbarrage.SendBarrageParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "400":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 发送视频弹幕 (ok)
+      tags:
+      - 弹幕模块
+  /api/v1/barrage/video/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 时长区间 最小时长
+        in: query
+        name: min_duration
+        required: true
+        type: string
+      - description: 时长区间 最大时长
+        in: query
+        name: max_duration
+        required: true
+        type: string
+      - description: 视频id
+        in: query
+        name: video_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.VideoBarrage'
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 视频弹幕列表[视频时长区间获取] (ok)
+      tags:
+      - 通知模块
   /api/v1/client/init:
     get:
       consumes:

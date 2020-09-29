@@ -6417,3 +6417,122 @@ net/http.(*conn).serve
 [2020-09-27 16:05:33]-68	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
 [2020-09-27 16:08:33]-68	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
 [2020-09-27 16:08:33]-68	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:01:24]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:42	setup log success
+[2020-09-29 14:04:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:04:25]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:06:56]-111	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/index.html,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36,ip:127.0.0.1
+
+[2020-09-29 14:06:56]-111	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/29 - 14:06:56 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 |[97;42m 200 [0m|耗时：     305.726µs | 127.0.0.1 |[97;44m  [0m GET     /swagger/index.html |
+
+[2020-09-29 14:06:56]-111	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/swagger-ui.css,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36,ip:127.0.0.1
+
+[2020-09-29 14:06:56]-111	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/29 - 14:06:56 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 |[97;42m 200 [0m|耗时：      193.54µs | 127.0.0.1 |[97;44m  [0m GET     /swagger/swagger-ui.css |
+
+[2020-09-29 14:06:56]-111	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/swagger-ui-bundle.js,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36,ip:127.0.0.1
+
+[2020-09-29 14:06:56]-133	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/swagger-ui-standalone-preset.js,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36,ip:127.0.0.1
+
+[2020-09-29 14:06:56]-133	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/29 - 14:06:56 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 |[97;42m 200 [0m|耗时：     679.927µs | 127.0.0.1 |[97;44m  [0m GET     /swagger/swagger-ui-standalone-preset.js |
+
+[2020-09-29 14:06:56]-111	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/29 - 14:06:56 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 |[97;42m 200 [0m|耗时：   12.728423ms | 127.0.0.1 |[97;44m  [0m GET     /swagger/swagger-ui-bundle.js |
+
+[2020-09-29 14:06:57]-111	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/doc.json,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36,ip:127.0.0.1
+
+[2020-09-29 14:06:57]-111	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/29 - 14:06:57 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 |[97;42m 200 [0m|耗时：    3.416134ms | 127.0.0.1 |[97;44m  [0m GET     /swagger/doc.json |
+
+[2020-09-29 14:07:08]-111	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/doc,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36,ip:127.0.0.1
+
+[2020-09-29 14:07:09]-111	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/29 - 14:07:09 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 |[97;42m 200 [0m|耗时：     744.629µs | 127.0.0.1 |[97;44m  [0m GET     /api/v1/doc |
+
+[2020-09-29 14:07:09]-111	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/favicon.ico,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36,ip:127.0.0.1
+
+[2020-09-29 14:07:09]-111	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/29 - 14:07:09 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 |[97;43m 404 [0m|耗时：      36.248µs | 127.0.0.1 |[97;44m  [0m GET     /favicon.ico |
+
+[2020-09-29 14:07:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:07:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:08:54]-111	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/api/v1/doc,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36,ip:127.0.0.1
+
+[2020-09-29 14:08:54]-111	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/29 - 14:08:54 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 |[97;42m 200 [0m|耗时：     462.475µs | 127.0.0.1 |[97;44m  [0m GET     /api/v1/doc |
+
+[2020-09-29 14:10:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:10:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:13:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:13:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:16:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:16:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:19:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:19:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:22:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:22:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:25:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:25:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:28:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:28:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:31:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:31:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:34:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:34:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:37:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:37:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:40:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:40:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:43:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:43:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:46:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:46:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:49:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:49:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:52:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:52:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:55:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:55:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:58:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 14:58:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 14:58:39]-775	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/index.html,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36,ip:127.0.0.1
+
+[2020-09-29 14:58:39]-775	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/29 - 14:58:39 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 |[97;42m 200 [0m|耗时：      87.502µs | 127.0.0.1 |[97;44m  [0m GET     /swagger/index.html |
+
+[2020-09-29 14:58:39]-775	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/swagger-ui.css,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36,ip:127.0.0.1
+
+[2020-09-29 14:58:39]-775	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/29 - 14:58:39 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 |[90;47m 304 [0m|耗时：     129.473µs | 127.0.0.1 |[97;44m  [0m GET     /swagger/swagger-ui.css |
+
+[2020-09-29 14:58:39]-776	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/swagger-ui-bundle.js,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36,ip:127.0.0.1
+
+[2020-09-29 14:58:39]-776	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/29 - 14:58:39 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 |[90;47m 304 [0m|耗时：     130.443µs | 127.0.0.1 |[97;44m  [0m GET     /swagger/swagger-ui-bundle.js |
+
+[2020-09-29 14:58:39]-777	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/swagger-ui-standalone-preset.js,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36,ip:127.0.0.1
+
+[2020-09-29 14:58:39]-777	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/29 - 14:58:39 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 |[90;47m 304 [0m|耗时：     101.075µs | 127.0.0.1 |[97;44m  [0m GET     /swagger/swagger-ui-standalone-preset.js |
+
+[2020-09-29 14:58:39]-777	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:27	url:/swagger/doc.json,user_agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36,ip:127.0.0.1
+
+[2020-09-29 14:58:39]-777	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:61	[PlayMate] 2020/09/29 - 14:58:39 | version: | User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 |[97;42m 200 [0m|耗时：    2.861437ms | 127.0.0.1 |[97;44m  [0m GET     /swagger/doc.json |
+
+[2020-09-29 15:01:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 15:01:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 15:04:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 15:04:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 15:07:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 15:07:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 15:10:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 15:10:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 15:13:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 15:13:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 15:16:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 15:16:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 15:19:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 15:19:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 15:22:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 15:22:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 15:25:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 15:25:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 15:28:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 15:28:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 15:31:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 15:31:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 15:34:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 15:34:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 15:37:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 15:37:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-09-29 15:40:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-09-29 15:40:24]-55	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕

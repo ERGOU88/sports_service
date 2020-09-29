@@ -44,17 +44,21 @@ func (m *base) getNickName(nickName string) string {
 		nickName = "FPV用户"
 	}
 
-	rds := dao.NewRedisDao()
-	nickNameNum, err := rds.INCR(rdskey.USER_NICKNAME_INCR)
+	nickNameNum, err := m.IncrNickNameNum()
 	if err != nil {
 		log.Log.Errorf("social_trace: user nickname incr err:%s", err)
 	}
 
 	if nickNameNum < 10 {
-		return fmt.Sprintf("%s0%d", nickName, nickNameNum)
+		return fmt.Sprintf("%s0%d%d", nickName, nickNameNum, util.GenerateRandnum(10000, 99999))
 	}
 
-	return fmt.Sprintf("%s%d", nickName, nickNameNum)
+	return fmt.Sprintf("%s%d%d", nickName, nickNameNum, util.GenerateRandnum(10000, 99999))
+}
+
+func (m *base) IncrNickNameNum() (int64, error) {
+	rds := dao.NewRedisDao()
+	return rds.INCR(rdskey.USER_NICKNAME_INCR)
 }
 
 

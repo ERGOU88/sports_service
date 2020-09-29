@@ -73,7 +73,7 @@ func (r *mobileRegister) newDefaultNickName(mobileNum int64) string {
 	length := len(str)
 	// 手机号后4位
 	str = str[len(str)-4: length]
-	return  fmt.Sprintf("用户%s", str)
+	return  fmt.Sprintf("用户%d%s", util.GenerateRandnum(10000, 99999), str)
 }
 
 // 验证重复

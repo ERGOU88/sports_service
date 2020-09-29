@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"sports_service/server/tools/nsq"
 	"sports_service/server/app/config"
 	"sports_service/server/app/routers"
 	"sports_service/server/dao"
@@ -81,6 +82,11 @@ func setupJob() {
 	/*----检测banner(是否上架/是否过期)任务----*/
 }
 
+// 初始化nsq（生产者）
+func setupNsq() {
+	nsq.ConnectNsqProduct(config.Global.NsqAddr)
+}
+
 func init() {
 	// 配置
 	if err := setupConfig(); err != nil {
@@ -101,6 +107,8 @@ func init() {
 	setupRunMode()
 	// 任务
 	setupJob()
+	// 初始化nsq
+	setupNsq()
 }
 
 // @title 电竞社区平台（应用服）

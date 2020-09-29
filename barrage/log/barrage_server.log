@@ -22,3 +22,6 @@
 [2020-09-28 19:52:30]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/barrage/main.go:39	setup log success
 [2020-09-28 19:55:36]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/barrage/main.go:39	setup log success
 [2020-09-28 20:23:13]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/barrage/main.go:39	setup log success
+[2020-09-29 10:07:08]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/barrage/main.go:39	setup log success
+[2020-09-29 10:07:22]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/barrage/main.go:39	setup log success
+[2020-09-29 10:10:22]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/barrage/main.go:39	setup log success
