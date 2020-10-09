@@ -2,8 +2,10 @@ package mvideo
 
 import (
 	"sports_service/server/global/app/log"
+	"sports_service/server/global/rdskey"
 	"sports_service/server/models"
 	"fmt"
+	"sports_service/server/dao"
 )
 
 // 添加视频标签(一次插入多条)
@@ -52,4 +54,16 @@ func (m *VideoModel) DelVideoLabels(videoId string) error {
 	}
 
 	return nil
+}
+
+// 记录任务id -> 用户id
+func (m *VideoModel) RecordUploadTaskId(userId string, taskId int64) error {
+	rds := dao.NewRedisDao()
+	return rds.SETEX(rdskey.MakeKey(rdskey.VIDEO_UPLOAD_TASK, taskId), rdskey.KEY_EXPIRE_WEEK, userId)
+}
+
+// 通过任务id 获取 用户id
+func (m *VideoModel) GetUploadUserIdByTaskId(taskId int64) (string, error) {
+	rds := dao.NewRedisDao()
+	return rds.Get(rdskey.MakeKey(rdskey.VIDEO_UPLOAD_TASK, taskId))
 }

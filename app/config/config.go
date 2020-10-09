@@ -64,6 +64,8 @@ type Config struct {
 		Main RedisType
 	}
 
+	RedisPassword string
+
 	Debug bool
 }
 

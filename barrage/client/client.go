@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"flag"
@@ -18,24 +18,24 @@ var urls string = ""
 
 var client, receive int64 = 0, 0
 
-func main() {
-	flag.Parse()
+func ClientConn() {
+	//flag.Parse()
 	log.SetFlags(0)
-
-	u := url.URL{Scheme: "ws", Host: *addr, Path: "/ws"}
+	//u := url.URL{Scheme: "ws", Host: *addr, Path: "/ws"}
+	u := url.URL{Scheme: "ws", Host: "127.0.0.1:15001", Path: "/ws"}
 	urls = u.String()
 
 	log.Printf("connecting to %s", urls)
 
-	FakeClient()
+	go FakeClient()
 
-	for {
-		r := atomic.SwapInt64(&receive, 0)
-		fmt.Println(client, r)
-		time.Sleep(time.Second)
-	}
-
-	select {}
+	//for {
+	//	r := atomic.SwapInt64(&receive, 0)
+	//	fmt.Println(client, r)
+	//	time.Sleep(time.Second)
+	//}
+	//
+	//select {}
 }
 
 func FakeClient() {
@@ -57,7 +57,7 @@ func FakeClient() {
 
 	bts, err := proto.Marshal(&req)
 	if err != nil {
-		fmt.Println("marshal err:%s", err)
+		fmt.Println("marshal err:", err)
 	}
 
 	xx := pbBarrage.Message{
@@ -70,7 +70,7 @@ func FakeClient() {
 
 	data, err := proto.Marshal(&xx)
 	if err != nil {
-		fmt.Println("proto marshal err:%s", err)
+		fmt.Println("proto marshal err:", err)
 	}
 
 	if err := c.WriteMessage(websocket.BinaryMessage, data); err != nil {
@@ -135,7 +135,7 @@ func FakeClient() {
 		case pbBarrage.MessageType_TYPE_BARRAGE:
 			barrage := &pbBarrage.BarrageMessage{}
 			if err := proto.Unmarshal(msg.Body, barrage); err != nil {
-				fmt.Println("\nproto unmarshal err:%s", err)
+				fmt.Println("\nproto unmarshal err:", err)
 				continue
 			}
 

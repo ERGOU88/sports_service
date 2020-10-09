@@ -10,6 +10,7 @@ import (
 	"sports_service/server/models/mvideo"
 	"sports_service/server/util"
 	_ "sports_service/server/models"
+	"sports_service/server/tools/tencentCloud/vod"
 )
 
 // @Summary 视频发布 (ok)
@@ -340,4 +341,30 @@ func DetailRecommend(c *gin.Context) {
 	list := svc.GetDetailRecommend(userId.(string), videoId, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// 获取上传签名（腾讯云）
+func UploadSign(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+
+	svc := cvideo.New(c)
+	syscode, sign := svc.GetUploadSign(userId.(string))
+	reply.Data["sign"] = sign
+	reply.Response(http.StatusOK, syscode)
+}
+
+// 事件回调（腾讯云）
+func EventCallback(c *gin.Context) {
+	reply := errdef.New(c)
+	callback := new(vod.EventNotify)
+	if err := c.BindJSON(callback); err != nil {
+		log.Log.Errorf("video_trace: callback params err:%s, params:%+v", err, callback)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+
+
+
 }

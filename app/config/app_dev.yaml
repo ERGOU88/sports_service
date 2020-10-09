@@ -26,6 +26,7 @@ redis:
         name:
         maxIdle: 128
         maxActive: 128
+redisPassword: n8R39KbtEfCEfyIk
 
 ## 开放平台appid
 wechatAppid: wx9306bf43be47830b

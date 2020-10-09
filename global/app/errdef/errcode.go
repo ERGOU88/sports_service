@@ -27,6 +27,7 @@ const (
 	USER_INVALID_SIGNATURE  = 1016
 	USER_FEEDBACK_FAIL      = 1017
 	USER_ADD_NOTIFY_SET_FAIL= 1018
+	USER_NO_LOGIN           = 1019
 
 	WX_USER_INFO_FAIL       = 1101
 	WX_ACCESS_TOKEN_FAIL    = 1102
@@ -67,6 +68,7 @@ const (
 	VIDEO_DELETE_PUBLISH_FAIL   = 4004
 	VIDEO_DELETE_LABEL_FAIL     = 4005
 	VIDEO_DELETE_STATISTIC_FAIL = 4006
+	VIDEO_UPLOAD_GEN_SIGN_FAIL  = 4007
 
 	// 点赞相关错误码 5001-6000
 	LIKE_VIDEO_NOT_EXISTS       = 5001
@@ -126,6 +128,7 @@ var MsgFlags = map[int]string{
 	USER_INVALID_SIGNATURE:  "签名不合法",
 	USER_FEEDBACK_FAIL:      "反馈提交失败",
 	USER_ADD_NOTIFY_SET_FAIL:"系统设置初始化失败",
+	USER_NO_LOGIN:           "用户未登录",
 
 	WX_USER_INFO_FAIL:    "获取微信用户信息失败",
 	WX_ACCESS_TOKEN_FAIL: "获取微信授权token失败",
@@ -163,6 +166,7 @@ var MsgFlags = map[int]string{
 	VIDEO_DELETE_PUBLISH_FAIL:   "删除发布的视频失败",
 	VIDEO_DELETE_LABEL_FAIL:     "删除视频标签失败",
 	VIDEO_DELETE_STATISTIC_FAIL: "删除视频统计数据失败",
+	VIDEO_UPLOAD_GEN_SIGN_FAIL:  "上传签名生成失败",
 
 	LIKE_VIDEO_NOT_EXISTS:       "点赞的视频不存在",
 	LIKE_ALREADY_EXISTS:         "已点过赞",

@@ -30,5 +30,9 @@ func Router(engine *gin.Engine) {
 		video.GET("/detail", VideoDetail)
 		// 视频详情页推荐视频（同标签推荐）
 		video.GET("/detail/recommend", DetailRecommend)
+		// 获取上传签名（腾讯云）
+		video.GET("/upload/sign", UploadSign)
+		// 事件回调
+		video.GET("/event/callback", EventCallback)
 	}
 }

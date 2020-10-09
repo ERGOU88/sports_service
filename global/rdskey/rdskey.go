@@ -27,6 +27,8 @@ const (
 	SMS_CODE                  = SUGAR + "sms:code:%s_%s"                           // 验证码内容{拼接短信类型_手机号}
 
 	USER_WATCHING_VIDEO       = SUGAR + "user_watching_video_%s"                   // 记录正在观看视频的用户标示[xid]{拼接视频id}
+
+	VIDEO_UPLOAD_TASK         = SUGAR + "video_upload_task_%d"                     // 记录任务id 对应的 用户id {拼接任务id（唯一）}
 )
 
 // make redis key

@@ -17,8 +17,11 @@ import (
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
+	"sports_service/server/tools/tencentCloud/vod"
+	"sports_service/server/util"
 	"strings"
 	"time"
+	cloud "sports_service/server/tools/tencentCloud"
 )
 
 type VideoModule struct {
@@ -586,3 +589,53 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 
 	return res
 }
+
+// 获取上传签名
+func (svc *VideoModule) GetUploadSign(userId string) (int, string) {
+	// 用户未登录
+	if userId == "" {
+		log.Log.Error("video_trace: no login")
+		return errdef.USER_NO_LOGIN, ""
+	}
+
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+		return errdef.USER_NOT_EXISTS, ""
+	}
+
+	client := cloud.New(consts.SECRET_ID, consts.SECRET_KEY, consts.API_DOMAIN)
+	taskId := util.GetXID()
+	sign := client.GenerateSign(userId, taskId)
+
+	if err := svc.video.RecordUploadTaskId(userId, taskId); err != nil {
+		log.Log.Errorf("video_trace: record upload taskid err:%s", err)
+		return errdef.VIDEO_UPLOAD_GEN_SIGN_FAIL,""
+	}
+
+	return errdef.SUCCESS, sign
+}
+
+// 事件回调
+func (svc *VideoModule) EventCallback(params *vod.EventNotify) int {
+	switch params.EventType {
+	// 上传事件
+	case consts.EVENT_TYPE_UPLOAD:
+		context := new(cloud.SourceContext)
+		if err := util.JsonFast.Unmarshal([]byte(params.FileUploadEvent.MediaBasicInfo.SourceInfo.SourceContext), context); err != nil {
+			log.Log.Errorf("video_trace: jsonfast unmarshal sourceContext err:%s", err)
+			return errdef.INVALID_PARAMS
+		}
+
+		userId, err := svc.video.GetUploadUserIdByTaskId(context.TaskId)
+		if err != nil || userId == "" {
+			return errdef.ERROR
+		}
+
+
+
+	}
+
+	return errdef.SUCCESS
+}
+

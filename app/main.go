@@ -50,7 +50,7 @@ func setupMysql() {
 // 初始化redis
 func setupRedis() {
 	rdshost := fmt.Sprintf("%s:%d", config.Global.Redis.Main.Master.Ip, config.Global.Redis.Main.Master.Port)
-	dao.InitRedis(rdshost, "")
+	dao.InitRedis(rdshost, config.Global.RedisPassword)
 }
 
 // 性能监控
