@@ -29,7 +29,7 @@ func (svc *UserModule) SendSmsCode(params *sms.SendSmsCodeParams) int {
 	// 获取短信模版
 	mod := svc.sms.GetSendMod(params.SendType)
 	if mod == "" {
-		log.Log.Errorf("sms_trace: get send mod err:%s", err)
+		log.Log.Error("sms_trace: invalid send type" )
 		return errdef.SMS_CODE_INVALID_SEND_TYPE
 	}
 
