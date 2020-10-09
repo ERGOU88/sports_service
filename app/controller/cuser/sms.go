@@ -29,12 +29,14 @@ func (svc *UserModule) SendSmsCode(params *sms.SendSmsCodeParams) int {
 	// 获取短信模版
 	mod := svc.sms.GetSendMod(params.SendType)
 	if mod == "" {
+		log.Log.Errorf("sms_trace: get send mod err:%s", err)
 		return errdef.SMS_CODE_INVALID_SEND_TYPE
 	}
 
 	// 获取当前手机号发送的短信验证码次数
 	limitNum, err := svc.sms.GetSendSmsLimitNum(params.MobileNum)
 	if err != nil && err != redis.ErrNil {
+		log.Log.Errorf("sms_trace: get send sms limit num err:%s", err)
 		return errdef.ERROR
 	}
 
