@@ -7385,3 +7385,11 @@ net/http.(*conn).serve
 [2020-10-09 20:14:43]-33	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
 [2020-10-09 20:17:43]-33	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
 [2020-10-09 20:17:43]-33	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-10-09 20:20:43]-33	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-10-09 20:20:43]-33	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-10-09 20:23:43]-33	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-10-09 20:23:43]-33	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-10-09 20:26:43]-33	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-10-09 20:26:43]-33	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-10-09 20:29:43]-33	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-10-09 20:29:43]-33	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕

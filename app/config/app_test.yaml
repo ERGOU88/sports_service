@@ -14,11 +14,11 @@ mysql:
 redis:
   main:
     master:
-      ip: 10.6.176.147
+      ip: 127.0.0.1
       port: 7916
 
     slave:
-      - ip: 10.6.176.147
+      - ip: 127.0.0.1
         port: 7916
 
     dboption:
@@ -26,6 +26,7 @@ redis:
         name:
         maxIdle: 128
         maxActive: 128
+redisPassword: n8R39KbtEfCEfyIk
 
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:

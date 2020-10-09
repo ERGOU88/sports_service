@@ -26,6 +26,7 @@ redis:
         name:
         maxIdle: 128
         maxActive: 128
+redisPassword: n8R39KbtEfCEfyIk
 
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
