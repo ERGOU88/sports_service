@@ -549,21 +549,33 @@ definitions:
         type: string
       describe:
         type: string
+      file_id:
+        type: string
+      task_id:
+        type: integer
       title:
         type: string
       video_addr:
         type: string
       video_duration:
         type: integer
+      video_height:
+        type: integer
       video_labels:
         type: string
+      video_width:
+        type: integer
     required:
     - cover
     - describe
+    - file_id
+    - task_id
     - title
     - video_addr
     - video_duration
+    - video_height
     - video_labels
+    - video_width
     type: object
   mvideo.VideosInfo:
     properties:
@@ -669,7 +681,7 @@ definitions:
       token:
         description: token
         type: string
-      user:
+      user_info:
         $ref: '#/definitions/swag.User'
         description: 用户信息
         type: object
@@ -746,10 +758,10 @@ definitions:
     type: object
   swag.ZoneInfoSwag:
     properties:
-      userInfo:
+      user_info:
         $ref: '#/definitions/muser.UserInfoResp'
         type: object
-      zoneInfo:
+      zone_info:
         $ref: '#/definitions/swag.UserZoneInfoResp'
         type: object
     type: object

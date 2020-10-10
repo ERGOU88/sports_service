@@ -4934,10 +4934,14 @@ var doc = `{
             "required": [
                 "cover",
                 "describe",
+                "file_id",
+                "task_id",
                 "title",
                 "video_addr",
                 "video_duration",
-                "video_labels"
+                "video_height",
+                "video_labels",
+                "video_width"
             ],
             "properties": {
                 "cover": {
@@ -4945,6 +4949,12 @@ var doc = `{
                 },
                 "describe": {
                     "type": "string"
+                },
+                "file_id": {
+                    "type": "string"
+                },
+                "task_id": {
+                    "type": "integer"
                 },
                 "title": {
                     "type": "string"
@@ -4955,8 +4965,14 @@ var doc = `{
                 "video_duration": {
                     "type": "integer"
                 },
+                "video_height": {
+                    "type": "integer"
+                },
                 "video_labels": {
                     "type": "string"
+                },
+                "video_width": {
+                    "type": "integer"
                 }
             }
         },
@@ -5118,7 +5134,7 @@ var doc = `{
                     "description": "token",
                     "type": "string"
                 },
-                "user": {
+                "user_info": {
                     "description": "用户信息",
                     "type": "object",
                     "$ref": "#/definitions/swag.User"
@@ -5228,11 +5244,11 @@ var doc = `{
         "swag.ZoneInfoSwag": {
             "type": "object",
             "properties": {
-                "userInfo": {
+                "user_info": {
                     "type": "object",
                     "$ref": "#/definitions/muser.UserInfoResp"
                 },
-                "zoneInfo": {
+                "zone_info": {
                     "type": "object",
                     "$ref": "#/definitions/swag.UserZoneInfoResp"
                 }
