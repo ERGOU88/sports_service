@@ -47,13 +47,15 @@ func VideoPublish(c *gin.Context) {
 
 	svc := cvideo.New(c)
 	// 用户发布视频
-	if err := svc.UserPublishVideo(userId.(string), params); err != nil {
-		log.Log.Errorf("video_trace: video publish failed, err:%s", err)
-		reply.Response(http.StatusOK, errdef.VIDEO_PUBLISH_FAIL)
-		return
-	}
+	//if err := svc.UserPublishVideo(userId.(string), params); err != nil {
+	//	log.Log.Errorf("video_trace: video publish failed, err:%s", err)
+	//	reply.Response(http.StatusOK, errdef.VIDEO_PUBLISH_FAIL)
+	//	return
+	//}
 
-	reply.Response(http.StatusOK, errdef.SUCCESS)
+	// 修改逻辑 用户发布视频 先记录到缓存
+	syscode := svc.RecordPubVideoInfo(userId.(string), params)
+	reply.Response(http.StatusOK, syscode)
 
 }
 
@@ -349,8 +351,9 @@ func UploadSign(c *gin.Context) {
 	userId, _ := c.Get(consts.USER_ID)
 
 	svc := cvideo.New(c)
-	syscode, sign := svc.GetUploadSign(userId.(string))
+	syscode, sign, taskId := svc.GetUploadSign(userId.(string))
 	reply.Data["sign"] = sign
+	reply.Data["task_id"] = taskId
 	reply.Response(http.StatusOK, syscode)
 }
 
@@ -363,8 +366,6 @@ func EventCallback(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-
-
 
 
 }

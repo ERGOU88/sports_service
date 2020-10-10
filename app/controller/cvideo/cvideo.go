@@ -52,6 +52,31 @@ func New(c *gin.Context) VideoModule {
 	}
 }
 
+// 记录用户发布的视频信息(先放入缓存 接收到腾讯云回调事件 再写库）
+func (svc *VideoModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPublishParams) int {
+	// 通过任务id获取用户id 是否为同一个用户
+	uid, err := svc.video.GetUploadUserIdByTaskId(params.TaskId)
+	if err != nil || strings.Compare(uid, userId) != 0 {
+		log.Log.Errorf("video_trace: user not match, cur userId:%s, uid:%s", userId, uid)
+		return errdef.VIDEO_PUBLISH_FAIL
+	}
+
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+		return errdef.USER_NOT_EXISTS
+	}
+
+	info, _ := util.JsonFast.Marshal(params)
+	// 先记录到缓存
+	if err := svc.video.RecordPublishInfo(userId, string(info), params.TaskId); err != nil {
+		log.Log.Errorf("video_trace: record publish info by redis err:%s", err)
+		return errdef.VIDEO_PUBLISH_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
 // 用户发布视频
 // 事务处理
 // 数据记录到视频审核表 同时 标签记录到 视频标签表（多条记录 同一个videoId对应N个labelId 生成N条记录）
@@ -66,7 +91,7 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
 		svc.engine.Rollback()
-		return nil
+		return errors.New("user not found")
 	}
 
 	now := time.Now().Unix()
@@ -591,32 +616,32 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 }
 
 // 获取上传签名
-func (svc *VideoModule) GetUploadSign(userId string) (int, string) {
+func (svc *VideoModule) GetUploadSign(userId string) (int, string, int64) {
 	// 用户未登录
 	if userId == "" {
 		log.Log.Error("video_trace: no login")
-		return errdef.USER_NO_LOGIN, ""
+		return errdef.USER_NO_LOGIN, "", 0
 	}
 
 	// 查询用户是否存在
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
-		return errdef.USER_NOT_EXISTS, ""
+		return errdef.USER_NOT_EXISTS, "", 0
 	}
 
-	client := cloud.New(consts.SECRET_ID, consts.SECRET_KEY, consts.API_DOMAIN)
+	client := cloud.New(consts.SECRET_ID, consts.SECRET_KEY, consts.VOD_API_DOMAIN)
 	taskId := util.GetXID()
 	sign := client.GenerateSign(userId, taskId)
 
 	if err := svc.video.RecordUploadTaskId(userId, taskId); err != nil {
 		log.Log.Errorf("video_trace: record upload taskid err:%s", err)
-		return errdef.VIDEO_UPLOAD_GEN_SIGN_FAIL,""
+		return errdef.VIDEO_UPLOAD_GEN_SIGN_FAIL, "", 0
 	}
 
-	return errdef.SUCCESS, sign
+	return errdef.SUCCESS, sign, taskId
 }
 
-// 事件回调
+// 事件回调(被动)
 func (svc *VideoModule) EventCallback(params *vod.EventNotify) int {
 	switch params.EventType {
 	// 上传事件
@@ -627,11 +652,18 @@ func (svc *VideoModule) EventCallback(params *vod.EventNotify) int {
 			return errdef.INVALID_PARAMS
 		}
 
+		// 通过任务id 获取 用户id
 		userId, err := svc.video.GetUploadUserIdByTaskId(context.TaskId)
 		if err != nil || userId == "" {
+			log.Log.Errorf("video_trace: invalid taskId, taskId:%d", context.TaskId)
 			return errdef.ERROR
 		}
 
+		// 查询用户是否存在
+		if user := svc.user.FindUserByUserid(userId); user == nil {
+			log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+			return errdef.USER_NOT_EXISTS
+		}
 
 
 	}

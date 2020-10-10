@@ -21,11 +21,17 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 		return errdef.USER_FREE_LOGIN_FAIL, "", nil
 	}
 
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("user_trace: session begin err:%s", err)
+		return errdef.ERROR, "", nil
+	}
 	//mobileNum := "13177666666"
 
 	// 校验手机号合法性
 	if b := svc.user.CheckCellPhoneNumber(mobileNum); !b {
 		log.Log.Errorf("user_trace: invalid mobile num %v", mobileNum)
+		svc.engine.Rollback()
 		return errdef.USER_INVALID_MOBILE_NUM, "", nil
 	}
 
@@ -36,14 +42,6 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 		if err := reg.Register(svc.user, param.Platform, mobileNum, svc.context.ClientIP()); err != nil {
 			log.Log.Errorf("user_trace: register err:%s", err)
 			return errdef.USER_REGISTER_FAIL, "", nil
-		}
-
-		log.Log.Debugf("userInfo:%s", user)
-
-		// 开启事务
-		if err := svc.engine.Begin(); err != nil {
-			log.Log.Errorf("user_trace: session begin err:%s", err)
-			return errdef.ERROR, "", nil
 		}
 
 		// 添加用户
@@ -70,7 +68,6 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 		}
 
 		return errdef.SUCCESS, token, svc.user.User
-
 	}
 
 	// 用户已注册过, 则直接从redis中获取token并返回

@@ -19,11 +19,13 @@ type VideoModel struct {
 
 // 视频发布请求参数
 type VideoPublishParams struct {
+	TaskId         int64   `binding:"required" json:"task_id"`        // 任务id
 	Cover          string  `binding:"required" json:"cover"`          // 视频封面
 	Title          string  `binding:"required" json:"title"`          // 视频标题
 	Describe       string  `binding:"required" json:"describe"`       // 视频描述
 	VideoAddr      string  `binding:"required" json:"video_addr"`     // 视频地址
 	VideoDuration  int     `binding:"required" json:"video_duration"` // 视频时长
+	FileId         string  `binding:"required" json:"file_id"`        // 腾讯云文件id
 	VideoLabels    string  `binding:"required" json:"video_labels"`   // 视频标签id（多个用逗号分隔）
 }
 

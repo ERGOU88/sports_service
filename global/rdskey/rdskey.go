@@ -29,6 +29,7 @@ const (
 	USER_WATCHING_VIDEO       = SUGAR + "user_watching_video_%s"                   // 记录正在观看视频的用户标示[xid]{拼接视频id}
 
 	VIDEO_UPLOAD_TASK         = SUGAR + "video_upload_task_%d"                     // 记录任务id 对应的 用户id {拼接任务id（唯一）}
+	VIDEO_UPLOAD_INFO         = SUGAR + "video_upload_info_%s_%d"                  // 记录用户上传的视频信息{拼接 userId + taskId}
 )
 
 // make redis key

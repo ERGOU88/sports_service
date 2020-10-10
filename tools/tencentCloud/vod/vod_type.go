@@ -52,15 +52,3 @@ type EventNotify struct {
 	EventType string `json:"EventType"`
 	FileUploadEvent FileUploadEvent `json:"FileUploadEvent"`
 }
-
-
-func (event *PullEventNotify) APIName() string {
-	return "Action=PullEvents"
-}
-
-func (event *PullEventNotify) Params() map[string]string {
-	var m = make(map[string]string)
-	// todo:
-	return m
-}
-
