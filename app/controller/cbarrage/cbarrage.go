@@ -53,7 +53,8 @@ func (svc *BarrageModule) SendVideoBarrage(userId string, params *mbarrage.SendB
 	}
 
 	// 查询视频是否存在
-	if video := svc.video.FindVideoById(fmt.Sprint(params.VideoId)); video == nil {
+	video := svc.video.FindVideoById(fmt.Sprint(params.VideoId))
+	if video == nil {
 		log.Log.Errorf("barrage_trace: video not found, videoId:%s", params.VideoId)
 		svc.engine.Rollback()
 		return errdef.VIDEO_NOT_EXISTS
@@ -77,7 +78,7 @@ func (svc *BarrageModule) SendVideoBarrage(userId string, params *mbarrage.SendB
 	}
 
 	// 更新视频弹幕总计 +1
-	if err := svc.video.UpdateVideoBarrageNum(int(now), consts.CONFIRM_OPERATE); err != nil {
+	if err := svc.video.UpdateVideoBarrageNum(video.VideoId, int(now), consts.CONFIRM_OPERATE); err != nil {
 		log.Log.Errorf("like_trace: update video like num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.LIKE_VIDEO_FAIL
