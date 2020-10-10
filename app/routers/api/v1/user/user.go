@@ -39,6 +39,7 @@ func SmsCode(c *gin.Context) {
 
 	svc := cuser.New(c)
 	syscode := svc.SendSmsCode(params)
+	
 	reply.Response(http.StatusOK, syscode)
 }
 

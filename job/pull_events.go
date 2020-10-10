@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+	"sports_service/server/app/controller/cvideo"
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mvideo"
 	"sports_service/server/models/muser"
@@ -72,6 +73,21 @@ func pullEvents() error {
 			}
 
 			// todo: 确认事件通知
+			svc := cvideo.New()
+			svc.UserPublishVideo()
+
+			info, err := vmodel.GetPublishInfo(source.UserId, source.TaskId)
+			if err != nil || info == "" {
+				log.Log.Errorf("job_trace: get publish info err:%s", err)
+				continue
+			}
+
+			pubInfo := new(mvideo.VideoPublishParams)
+			if err := util.JsonFast.Unmarshal([]byte(info), pubInfo); err != nil {
+				log.Log.Errorf("job_trace: jsonFast unmarshal err: %s", err)
+				continue
+			}
+
 
 
 		}

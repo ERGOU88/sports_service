@@ -104,6 +104,8 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	svc.video.Videos.CreateAt = int(now)
 	svc.video.Videos.UpdateAt = int(now)
 	svc.video.Videos.UserType = consts.PUBLISH_VIDEO_BY_USER
+	svc.video.Videos.VideoWidth = params.VideoWidth
+	svc.video.Videos.VideoHeight = params.VideoHeight
 
 	// 视频发布
 	affected, err := svc.video.VideoPublish()

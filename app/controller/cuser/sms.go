@@ -46,7 +46,7 @@ func (svc *UserModule) SendSmsCode(params *sms.SendSmsCodeParams) int {
 		newDay = true
 	}
 
-	// 最多一天内十条
+	// 最多一天内十条 todo: 需改回限制10条
 	if limitNum >= consts.SMS_INTERVAL_NUM {
 		log.Log.Errorf("sms_trace: send sms code interval, mobileNum:%s", params.MobileNum)
 		return errdef.SMS_CODE_INTERVAL_ERROR

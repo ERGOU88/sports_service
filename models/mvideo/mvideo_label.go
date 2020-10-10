@@ -74,3 +74,10 @@ func (m *VideoModel) RecordPublishInfo(userId, pubInfo string, taskId int64) err
 	rds := dao.NewRedisDao()
 	return rds.SETEX(key, rdskey.KEY_EXPIRE_DAY * 3,  pubInfo)
 }
+
+// 获取用户发布的视频信息
+func (m *VideoModel) GetPublishInfo(userId string, taskId int64) (string, error) {
+	key := rdskey.MakeKey(rdskey.VIDEO_UPLOAD_INFO, userId, taskId)
+	rds := dao.NewRedisDao()
+	return rds.Get(key)
+}

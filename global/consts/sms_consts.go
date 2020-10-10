@@ -16,7 +16,7 @@ const (
 
 const (
 	// 每个用户24小时内 最多发送十条短信验证码
-	SMS_INTERVAL_NUM = 10
+	SMS_INTERVAL_NUM = 1000
 )
 
 
