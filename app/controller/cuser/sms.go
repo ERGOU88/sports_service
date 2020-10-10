@@ -118,6 +118,12 @@ func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string
 		return syscode, "", nil
 	}
 
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("user_trace: session begin err:%s", err)
+		return errdef.ERROR, "", nil
+	}
+
 	// 根据手机号查询用户 不存在 注册用户 用户存在 为登陆
 	user := svc.user.FindUserByPhone(params.MobileNum)
 	if user == nil {
@@ -129,12 +135,6 @@ func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string
 		}
 
 		log.Log.Debugf("userInfo:%s", user)
-
-		// 开启事务
-		if err := svc.engine.Begin(); err != nil {
-			log.Log.Errorf("user_trace: session begin err:%s", err)
-			return errdef.ERROR, "", nil
-		}
 
 		// 添加用户
 		if err := svc.user.AddUser(); err != nil {
