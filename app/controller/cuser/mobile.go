@@ -36,7 +36,8 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 	}
 
 	// 根据手机号查询用户 不存在 注册用户 用户存在 为登陆
-	if user := svc.user.FindUserByPhone(mobileNum); user == nil {
+	user := svc.user.FindUserByPhone(mobileNum)
+	if user == nil {
 		// 注册
 		reg := muser.NewMobileRegister()
 		if err := reg.Register(svc.user, param.Platform, mobileNum, svc.context.ClientIP()); err != nil {
@@ -81,5 +82,5 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 		}
 	}
 
-	return errdef.SUCCESS, token, svc.user.User
+	return errdef.SUCCESS, token, user
 }

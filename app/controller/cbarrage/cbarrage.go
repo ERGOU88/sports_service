@@ -40,15 +40,22 @@ func New(c *gin.Context) BarrageModule {
 
 // 发送视频弹幕(记录到数据库 并发布到nsq) todo：nsq替换为kafka, 发布的内容 需通过敏感词过滤
 func (svc *BarrageModule) SendVideoBarrage(userId string, params *mbarrage.SendBarrageParams) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("barrage_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
 	// 查询用户是否存在
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("barrage_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
 		return errdef.USER_NOT_EXISTS
 	}
 
 	// 查询视频是否存在
 	if video := svc.video.FindVideoById(fmt.Sprint(params.VideoId)); video == nil {
 		log.Log.Errorf("barrage_trace: video not found, videoId:%s", params.VideoId)
+		svc.engine.Rollback()
 		return errdef.VIDEO_NOT_EXISTS
 	}
 
@@ -65,8 +72,18 @@ func (svc *BarrageModule) SendVideoBarrage(userId string, params *mbarrage.SendB
 	// 存储到mysql
 	if err := svc.barrage.RecordVideoBarrage(); err != nil {
 		log.Log.Errorf("barrage_trace: record video barrage err:%s", err)
+		svc.engine.Rollback()
 		return errdef.BARRAGE_VIDEO_SEND_FAIL
 	}
+
+	// 更新视频弹幕总计 +1
+	if err := svc.video.UpdateVideoBarrageNum(int(now), consts.CONFIRM_OPERATE); err != nil {
+		log.Log.Errorf("like_trace: update video like num err:%s", err)
+		svc.engine.Rollback()
+		return errdef.LIKE_VIDEO_FAIL
+	}
+
+	svc.engine.Commit()
 
 	barrageMsg := &pbBarrage.BarrageMessage{
 		Barrage: &pbBarrage.BarrageInfo{

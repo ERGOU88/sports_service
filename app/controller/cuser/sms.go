@@ -119,7 +119,8 @@ func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string
 	}
 
 	// 根据手机号查询用户 不存在 注册用户 用户存在 为登陆
-	if user := svc.user.FindUserByPhone(params.MobileNum); user == nil {
+	user := svc.user.FindUserByPhone(params.MobileNum)
+	if user == nil {
 		// 注册
 		reg := muser.NewMobileRegister()
 		if err := reg.Register(svc.user, params.Platform, params.MobileNum, svc.context.ClientIP()); err != nil {
@@ -173,7 +174,7 @@ func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string
 		}
 	}
 
-	return errdef.SUCCESS, token, svc.user.User
+	return errdef.SUCCESS, token, user
 }
 
 // 校验短信验证码
