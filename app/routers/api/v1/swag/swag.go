@@ -7,14 +7,14 @@ import (
 
 // swagger api文档（登陆接口返回数据）
 type LoginSwag struct {
-	Token string        `json:"token"` // token
-	User  *User         `json:"user"`  // 用户信息
+	Token string        `json:"token"`      // token
+	User  *User         `json:"user_info"`  // 用户信息
 }
 
 // swag文档展示
 type ZoneInfoSwag struct {
-	UserInfoResp     *muser.UserInfoResp       `json:"userInfo"`
-	UserZoneInfoResp *UserZoneInfoResp   `json:"zoneInfo"`
+	UserInfoResp     *muser.UserInfoResp       `json:"user_info"`
+	UserZoneInfoResp *UserZoneInfoResp         `json:"zone_info"`
 }
 
 // swag文档展示（综合搜索结果）

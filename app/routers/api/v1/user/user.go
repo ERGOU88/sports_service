@@ -39,7 +39,7 @@ func SmsCode(c *gin.Context) {
 
 	svc := cuser.New(c)
 	syscode := svc.SendSmsCode(params)
-	
+
 	reply.Response(http.StatusOK, syscode)
 }
 
@@ -78,7 +78,7 @@ func SmsCodeLogin(c *gin.Context) {
 	}
 
 	reply.Data["token"] = token
-	reply.Data["userInfo"] = user
+	reply.Data["user_info"] = user
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
@@ -384,8 +384,8 @@ func UserZoneInfo(c *gin.Context) {
 	svc := cuser.New(c)
 	// 获取用户个人空间信息
 	syscode, userInfo, zoneInfo := svc.GetUserZoneInfo(param.UserId)
-	reply.Data["userInfo"] = userInfo
-	reply.Data["zoneInfo"] = zoneInfo
+	reply.Data["user_info"] = userInfo
+	reply.Data["zone_info"] = zoneInfo
 	reply.Response(http.StatusOK, syscode)
 }
 
