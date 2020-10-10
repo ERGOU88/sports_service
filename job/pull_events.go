@@ -71,8 +71,8 @@ func pullEvents() error {
 				continue
 			}
 
-
 			// todo: 确认事件通知
+
 
 		}
 	}

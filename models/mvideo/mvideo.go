@@ -213,8 +213,8 @@ const (
 	UPDATE_VIDEO_BROWSE_NUM  = "UPDATE `video_statistic` SET `browse_num` = `browse_num` + ?, `update_at`=? WHERE `video_id`=? AND `browse_num` + ? >= 0 LIMIT 1"
 )
 // 更新视频浏览数
-func (m *VideoModel) UpdateVideoBrowseNum(now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_VIDEO_BROWSE_NUM, num, now, num); err != nil {
+func (m *VideoModel) UpdateVideoBrowseNum(videoId int64, now, num int) error {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_BROWSE_NUM, num, now, videoId, num); err != nil {
 		return err
 	}
 
@@ -231,9 +231,16 @@ func (m *VideoModel) UpdateVideoYcoinNum() {
 	return
 }
 
+const (
+	UPDATE_VIDEO_BARRAGE_NUM  = "UPDATE `video_statistic` SET `barrage_num` = `barrage_num` + ?, `update_at`=? WHERE `video_id`=? AND `barrage_num` + ? >= 0 LIMIT 1"
+)
 // 更新视频弹幕数
-func (m *VideoModel) UpdateVideoBarrageNum() {
-	return
+func (m *VideoModel) UpdateVideoBarrageNum(videoId int64, now, num int) error {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_BARRAGE_NUM, num, now, videoId, num); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // 分页获取 用户发布的视频列表[通过审核状态和条件查询]
