@@ -2,16 +2,15 @@ package job
 
 import (
 	"context"
-	"sports_service/server/app/controller/cvideo"
+	"sports_service/server/dao"
+	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
-	"sports_service/server/models/mvideo"
 	"sports_service/server/models/muser"
+	"sports_service/server/models/mvideo"
 	cloud "sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"strings"
-	"sports_service/server/global/app/log"
 	"time"
-	"sports_service/server/dao"
 )
 
 // 主动拉取事件（腾讯云）
@@ -73,8 +72,6 @@ func pullEvents() error {
 			}
 
 			// todo: 确认事件通知
-			svc := cvideo.New()
-			svc.UserPublishVideo()
 
 			info, err := vmodel.GetPublishInfo(source.UserId, source.TaskId)
 			if err != nil || info == "" {
