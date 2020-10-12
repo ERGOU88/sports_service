@@ -96,7 +96,9 @@ func (tc *TencentCloud) PullEvents() (*vod.PullEventsResponse, error){
 }
 
 // 确认事件通知
-func (tc *TencentCloud) ConfirmEvents() error {
+// EventHandles 事件句柄，即 拉取事件通知 接口输出参数中的 EventSet. EventHandle 字段。
+// 数组长度限制：16。
+func (tc *TencentCloud) ConfirmEvents(events []string) error {
 	credential := common.NewCredential(
 		tc.secretId,
 		tc.secretKey,
@@ -108,6 +110,8 @@ func (tc *TencentCloud) ConfirmEvents() error {
 	cpf.HttpProfile.Endpoint = tc.apiDomain
 	client, _ := vod.NewClient(credential, "ap-shanghai", cpf)
 	req := vod.NewConfirmEventsRequest()
+	ps := common.StringPtrs(events)
+	req.EventHandles = ps
 	// 通过client对象调用想要访问的接口，需要传入请求对象
 	response, err := client.ConfirmEvents(req)
 	// 处理异常

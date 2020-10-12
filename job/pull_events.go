@@ -179,7 +179,7 @@ func pullEvents() error {
 
 			client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
 			// 确认事件回调
-			if err := client.ConfirmEvents(); err != nil {
+			if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
 				log.Log.Errorf("job_trace: confirm events err:%s", err)
 				session.Rollback()
 				continue
