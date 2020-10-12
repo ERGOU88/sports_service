@@ -15,7 +15,7 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	"sports_service/server/models/sms"
-	"sports_service/server/tools/filter"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"strings"
 	"time"
@@ -103,18 +103,33 @@ func (svc *UserModule) EditUserInfo(userId string, params *muser.EditUserInfoPar
 		return errdef.USER_INVALID_SIGN_LEN
 	}
 
-	mfilter := filter.NewFilterModel()
+	//mfilter := filter.NewFilterModel()
 	// 校验昵称是否存在敏感词
-	pass, err := mfilter.ValidateText(nickName)
-	if err != nil || !pass {
-		log.Log.Errorf("user_trace: validate nickname err: %s，pass: %v", err, pass)
-		return errdef.USER_INVALID_NAME
-	}
+	//pass, err := mfilter.ValidateText(nickName)
+	//if err != nil || !pass {
+	//	log.Log.Errorf("user_trace: validate nickname err: %s，pass: %v", err, pass)
+	//	return errdef.USER_INVALID_NAME
+	//}
 
 	// 校验签名是否存在敏感词
-	pass, err = mfilter.ValidateText(params.Signature)
-	if !pass || err != nil {
-		log.Log.Errorf("user_trace: validate signature err: %s，pass: %v", err, pass)
+	//pass, err = mfilter.ValidateText(params.Signature)
+	//if !pass || err != nil {
+	//	log.Log.Errorf("user_trace: validate signature err: %s，pass: %v", err, pass)
+	//	return errdef.USER_INVALID_SIGNATURE
+	//}
+
+	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	// 检测昵称
+	isPass, err := client.TextModeration(nickName)
+	if !isPass {
+		log.Log.Errorf("user_trace: validate nick name err: %s，pass: %v", err, isPass)
+		return errdef.USER_INVALID_SIGNATURE
+	}
+
+	// 检测签名
+	isPass, err = client.TextModeration(params.Signature)
+	if !isPass {
+		log.Log.Errorf("user_trace: validate signature err: %s，pass: %v", err, isPass)
 		return errdef.USER_INVALID_SIGNATURE
 	}
 
@@ -161,6 +176,14 @@ func (svc *UserModule) RecordUserFeedback(userId string, param *muser.FeedbackPa
 	if info == nil {
 		log.Log.Errorf("user_trace: user not found, uid:%s", userId)
 		return errdef.USER_NOT_EXISTS
+	}
+
+	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	// 检测反馈的内容
+	isPass, err := client.TextModeration(param.Describe)
+	if !isPass {
+		log.Log.Errorf("user_trace: validate feedback describe err: %s，pass: %v", err, isPass)
+		return errdef.USER_INVALID_FEEDBACK
 	}
 
 	if err := svc.user.RecordUserFeedback(userId, param, int(time.Now().Unix())); err != nil {

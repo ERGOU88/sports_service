@@ -14,6 +14,7 @@ import (
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"time"
 )
@@ -45,6 +46,14 @@ func New(c *gin.Context) CommentModule {
 
 // 发布评论 todo: 脏词过滤
 func (svc *CommentModule) PublishComment(userId string, params *mcomment.PublishCommentParams) int {
+	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	// 检测评论内容
+	isPass, err := client.TextModeration(params.Content)
+	if !isPass {
+		log.Log.Errorf("comment_trace: validate comment err: %s，pass: %v", err, isPass)
+		return errdef.COMMENT_INVALID_CONTENT
+	}
+
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("video_trace: session begin err:%s", err)
@@ -64,7 +73,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	if contentLen < consts.COMMENT_MIN_LEN || contentLen > consts.COMMENT_MAX_LEN {
 		log.Log.Errorf("comment_trace: invalid content length, len:%d", contentLen)
 		svc.engine.Rollback()
-		return errdef.COMMENT_INVALID_CONTENT
+		return errdef.COMMENT_INVALID_LEN
 	}
 
 	// 查找视频是否存在
@@ -120,6 +129,14 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 
 // 回复评论 todo: 脏词过滤
 func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyCommentParams) int {
+	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	// 检测评论内容
+	isPass, err := client.TextModeration(params.Content)
+	if !isPass {
+		log.Log.Errorf("comment_trace: validate reply content err: %s，pass: %v", err, isPass)
+		return errdef.COMMENT_INVALID_REPLY
+	}
+
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("video_trace: session begin err:%s", err)
@@ -139,7 +156,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	if contentLen < consts.COMMENT_MIN_LEN || contentLen > consts.COMMENT_MAX_LEN {
 		log.Log.Errorf("comment_trace: invalid content length, len:%d", contentLen)
 		svc.engine.Rollback()
-		return errdef.COMMENT_INVALID_CONTENT
+		return errdef.COMMENT_INVALID_LEN
 	}
 
 	// 查找视频是否存在

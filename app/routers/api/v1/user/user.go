@@ -374,16 +374,16 @@ func UserFeedback(c *gin.Context) {
 // 个人空间用户信息
 func UserZoneInfo(c *gin.Context) {
 	reply := errdef.New(c)
-	param := new(muser.UserZoneInfoParam)
-	if err := c.BindJSON(param); err != nil {
-		log.Log.Errorf("user_trace: request user zone info err:%s, param:%+v", err, param)
+	userId := c.Query("user_id")
+	if userId == "" {
+		log.Log.Errorf("user_trace: request userId is empty, userId:%s", userId)
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
 
 	svc := cuser.New(c)
 	// 获取用户个人空间信息
-	syscode, userInfo, zoneInfo := svc.GetUserZoneInfo(param.UserId)
+	syscode, userInfo, zoneInfo := svc.GetUserZoneInfo(userId)
 	reply.Data["user_info"] = userInfo
 	reply.Data["zone_info"] = zoneInfo
 	reply.Response(http.StatusOK, syscode)

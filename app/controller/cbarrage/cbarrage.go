@@ -15,6 +15,7 @@ import (
 	"sports_service/server/global/app/log"
 	"github.com/golang/protobuf/proto"
 	"fmt"
+	"sports_service/server/tools/tencentCloud"
 	"time"
 )
 
@@ -40,6 +41,14 @@ func New(c *gin.Context) BarrageModule {
 
 // 发送视频弹幕(记录到数据库 并发布到nsq) todo：nsq替换为kafka, 发布的内容 需通过敏感词过滤
 func (svc *BarrageModule) SendVideoBarrage(userId string, params *mbarrage.SendBarrageParams) int {
+	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	// 检测弹幕内容
+	isPass, err := client.TextModeration(params.Content)
+	if !isPass {
+		log.Log.Errorf("barrage_trace: validate barrage content err: %s，pass: %v", err, isPass)
+		return errdef.BARRAGE_INVALID_CONTENT
+	}
+
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("barrage_trace: session begin err:%s", err)

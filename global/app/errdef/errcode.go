@@ -28,6 +28,7 @@ const (
 	USER_FEEDBACK_FAIL      = 1017
 	USER_ADD_NOTIFY_SET_FAIL= 1018
 	USER_NO_LOGIN           = 1019
+	USER_INVALID_FEEDBACK   = 1020
 
 	WX_USER_INFO_FAIL       = 1101
 	WX_ACCESS_TOKEN_FAIL    = 1102
@@ -69,6 +70,8 @@ const (
 	VIDEO_DELETE_LABEL_FAIL     = 4005
 	VIDEO_DELETE_STATISTIC_FAIL = 4006
 	VIDEO_UPLOAD_GEN_SIGN_FAIL  = 4007
+	VIDEO_INVALID_DESCRIBE      = 4008
+	VIDEO_INVALID_TITLE         = 4009
 
 	// 点赞相关错误码 5001-6000
 	LIKE_VIDEO_NOT_EXISTS       = 5001
@@ -88,7 +91,9 @@ const (
 	COMMENT_NOT_FOUND           = 7002
 	COMMENT_REPLY_FAIL          = 7003
 	COMMENT_REPLY_NOT_FOUND     = 7004
-	COMMENT_INVALID_CONTENT     = 7005
+	COMMENT_INVALID_LEN         = 7005
+	COMMENT_INVALID_CONTENT     = 7006
+	COMMENT_INVALID_REPLY       = 7007
 
 	// 短信验证码相关错误 8001-9000
 	SMS_CODE_INTERVAL_ERROR     = 8001
@@ -101,6 +106,7 @@ const (
 
 	// 弹幕相关错误码 9001- 10000
 	BARRAGE_VIDEO_SEND_FAIL     = 9001
+	BARRAGE_INVALID_CONTENT     = 9002
 )
 
 var MsgFlags = map[int]string{
@@ -129,6 +135,7 @@ var MsgFlags = map[int]string{
 	USER_FEEDBACK_FAIL:      "反馈提交失败",
 	USER_ADD_NOTIFY_SET_FAIL:"系统设置初始化失败",
 	USER_NO_LOGIN:           "用户未登录",
+	USER_INVALID_FEEDBACK:   "反馈信息含有违规字段",
 
 	WX_USER_INFO_FAIL:    "获取微信用户信息失败",
 	WX_ACCESS_TOKEN_FAIL: "获取微信授权token失败",
@@ -167,6 +174,8 @@ var MsgFlags = map[int]string{
 	VIDEO_DELETE_LABEL_FAIL:     "删除视频标签失败",
 	VIDEO_DELETE_STATISTIC_FAIL: "删除视频统计数据失败",
 	VIDEO_UPLOAD_GEN_SIGN_FAIL:  "上传签名生成失败",
+	VIDEO_INVALID_DESCRIBE:      "视频描述含有违规文字",
+	VIDEO_INVALID_TITLE:         "视频标题含有违规文字",
 
 	LIKE_VIDEO_NOT_EXISTS:       "点赞的视频不存在",
 	LIKE_ALREADY_EXISTS:         "已点过赞",
@@ -179,11 +188,13 @@ var MsgFlags = map[int]string{
 
 	NOTIFY_SETTING_FAIL:         "系统通知设置失败",
 
-	COMMENT_PUBLISH_FAIL:        "发布评论失败",
-	COMMENT_NOT_FOUND:           "评论不存在",
-	COMMENT_REPLY_FAIL:          "评论回复失败",
-	COMMENT_REPLY_NOT_FOUND:     "未找到该评论相关回复",
-	COMMENT_INVALID_CONTENT:     "评论最少10字符，最多1000字符",
+	COMMENT_PUBLISH_FAIL:    "发布评论失败",
+	COMMENT_NOT_FOUND:       "评论不存在",
+	COMMENT_REPLY_FAIL:      "评论回复失败",
+	COMMENT_REPLY_NOT_FOUND: "未找到该评论相关回复",
+	COMMENT_INVALID_LEN:     "评论最少10字符，最多1000字符",
+	COMMENT_INVALID_CONTENT: "评论中含有违规文字",
+	COMMENT_INVALID_REPLY:   "回复中含有违规文字",
 
 	SMS_CODE_INTERVAL_ERROR:     "一天内该手机获取验证码次数超限(最多10次)",
 	SMS_CODE_INTERVAL_SHORT:     "获取短信验证间隔时间过短(间隔60秒)",
@@ -194,6 +205,7 @@ var MsgFlags = map[int]string{
 	SMS_CODE_NOT_MATCH:          "短信验证码不正确",
 
 	BARRAGE_VIDEO_SEND_FAIL:     "发送视频弹幕失败",
+	BARRAGE_INVALID_CONTENT:     "弹幕内容含有违规文字",
 }
 
 func GetMsg(code int) string {
