@@ -15,6 +15,7 @@ type VideoModel struct {
 	Browse    *models.UserBrowseRecord
 	Labels    *models.VideoLabels
 	Statistic *models.VideoStatistic
+	Events    *models.TencentCloudEvents
 }
 
 // 视频发布请求参数
@@ -470,4 +471,9 @@ func (m *VideoModel) GetUserTotalBrowse(userId string) int64 {
 	}
 
 	return count
+}
+
+// 记录腾讯事件回调信息
+func (m *VideoModel) RecordTencentEvent() (int64, error) {
+	return m.Engine.InsertOne(m.Events)
 }

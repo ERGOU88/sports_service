@@ -1,9 +1,9 @@
 package consts
 
 const (
-	VOD_API_DOMAIN = "vod.tencentcloudapi.com"
-	SECRET_ID      = "AKIDSfbHjxhcmiV3ECAVqvzoNgme8NTIr9C0"
-	SECRET_KEY     = "g6FDvRkmZ5KJ1SijWpse9OM4XmmJZZke"
+	VOD_API_DOMAIN      = "vod.tencentcloudapi.com"
+	TX_CLOUD_SECRET_ID  = "AKIDSfbHjxhcmiV3ECAVqvzoNgme8NTIr9C0"
+	TX_CLOUD_SECRET_KEY = "g6FDvRkmZ5KJ1SijWpse9OM4XmmJZZke"
 )
 
 // NewFileUpload：视频上传完成；
