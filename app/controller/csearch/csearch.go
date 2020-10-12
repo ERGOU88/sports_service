@@ -55,7 +55,7 @@ func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDe
 	return videos, users
 }
 
-// 视频搜索
+// 视频搜索 todo: 限制搜索的字符数
 func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime string, page, size int) []*mvideo.VideoDetailInfo {
 	if name == "" {
 		log.Log.Errorf("search_trace: search name can't empty, name:%s", name)
@@ -108,7 +108,7 @@ func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime s
 	return list
 }
 
-// 搜索用户
+// 搜索用户 todo：限制搜索的字符数
 func (svc *SearchModule) UserSearch(userId, name string, page, size int) []*muser.UserSearchResults {
 	if name == "" {
 		log.Log.Errorf("search_trace: search user name can't empty, name:%s", name)
