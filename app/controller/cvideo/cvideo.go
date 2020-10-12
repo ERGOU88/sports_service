@@ -19,6 +19,7 @@ import (
 	"sports_service/server/models/mvideo"
 	"sports_service/server/tools/tencentCloud/vod"
 	"sports_service/server/util"
+	"strconv"
 	"strings"
 	"time"
 	cloud "sports_service/server/tools/tencentCloud"
@@ -106,6 +107,8 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	svc.video.Videos.UserType = consts.PUBLISH_VIDEO_BY_USER
 	svc.video.Videos.VideoWidth = params.VideoWidth
 	svc.video.Videos.VideoHeight = params.VideoHeight
+	fileId, _ := strconv.Atoi(params.FileId)
+	svc.video.Videos.FileId = int64(fileId)
 
 	// 视频发布
 	affected, err := svc.video.VideoPublish()
@@ -631,7 +634,7 @@ func (svc *VideoModule) GetUploadSign(userId string) (int, string, int64) {
 		return errdef.USER_NOT_EXISTS, "", 0
 	}
 
-	client := cloud.New(consts.SECRET_ID, consts.SECRET_KEY, consts.VOD_API_DOMAIN)
+	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
 	taskId := util.GetXID()
 	sign := client.GenerateSign(userId, taskId)
 

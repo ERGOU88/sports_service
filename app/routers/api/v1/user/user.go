@@ -117,7 +117,7 @@ func MobilePhoneLogin(c *gin.Context) {
 	}
 
 	reply.Data["token"] = token
-	reply.Data["userInfo"] = user
+	reply.Data["user_info"] = user
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
