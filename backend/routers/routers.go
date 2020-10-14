@@ -8,11 +8,16 @@ import (
 	"sports_service/server/backend/config"
 	"sports_service/server/backend/routers/api/v1/user"
 	"sports_service/server/backend/routers/api/v1/video"
+  "sports_service/server/backend/routers/api/v1/admin"
 	"sports_service/server/global/consts"
 	"sports_service/server/backend/routers/api/v1/configure"
+  "sports_service/server/middleware"
+  "sports_service/server/global/backend/log"
 )
 
 func InitRouters(engine *gin.Engine) {
+  // 初始化中间件
+  middleware.InitMiddleware(engine, log.Log, config.Global.Log.ShowColor)
 	// 生产环境 不展示api文档 及 错误码文档
 	if config.Global.Mode != string(consts.ModeProd) {
 		// swag文档
@@ -29,5 +34,7 @@ func InitRouters(engine *gin.Engine) {
 	configure.Router(engine)
 	// 后台用户管理模块
 	user.Router(engine)
+	// 后台管理员模块
+	admin.Router(engine)
 
 }

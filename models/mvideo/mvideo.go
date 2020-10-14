@@ -391,6 +391,16 @@ func (m *VideoModel) GetVideoList(offset, size int) []*VideoDetailInfo {
 	return list
 }
 
+// 获取视频总数（已审核通过的）
+func (m *VideoModel) GetVideoTotalCount() int64 {
+  count, err := m.Engine.Where("status=1").Count(&models.Videos{})
+  if err != nil {
+    return 0
+  }
+
+  return count
+}
+
 const (
 	QUERY_ATTENTION_VIDEOS = "SELECT v.*, s.fabulous_num,s.share_num,s.comment_num, s.browse_num FROM `videos` as v " +
 		"LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status = 1 AND v.user_id in(%s) GROUP BY v.video_id " +

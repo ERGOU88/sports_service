@@ -97,7 +97,17 @@ func (svc *VideoModule) EditVideoStatus(param *mvideo.EditVideoStatusParam) int 
 // 获取视频列表
 func (svc *VideoModule) GetVideoList(page, size int) []*mvideo.VideoDetailInfo {
 	offset := (page - 1) * size
-	return svc.video.GetVideoList(offset, size)
+	list := svc.video.GetVideoList(offset, size)
+	for _, video := range list {
+    video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+  }
+
+  return list
+}
+
+// 获取已审核通过的视频总数
+func (svc *VideoModule) GetVideoTotalCount() int64 {
+  return svc.video.GetVideoTotalCount()
 }
 
 // 修改视频置顶状态

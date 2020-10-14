@@ -31,7 +31,9 @@ func VideoList(c *gin.Context) {
 
 	svc := cvideo.New(c)
 	list := svc.GetVideoList(page, size)
+	total := svc.GetVideoTotalCount()
 	reply.Data["list"] = list
+	reply.Data["total"] = total
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 

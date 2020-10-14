@@ -22,7 +22,7 @@ func (g *Gin) Response(httpCode, errCode int) {
 	data = g.Data
 	g.Context.JSON(httpCode, gin.H{
 		"code": errCode,
-		"msg":  GetMsg(errCode),
+		"message":  GetMsg(errCode),
 		"data": data,
 		"tm":   time.Now().Unix(),
 	})
