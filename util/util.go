@@ -38,7 +38,7 @@ func GetSnowId() int64 {
 
 // NewUserId 年+月+日+时间+4位随机
 func NewUserId() string {
-	t := time.Now().Format("20060102150405")
+	t := time.Now().Format("060102150405")
 	return fmt.Sprintf("%s%d", t, GenerateRandnum(1000, 9999))
 }
 
