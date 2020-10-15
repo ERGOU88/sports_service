@@ -193,6 +193,25 @@ export const constantRoutes = [
   },
 
   {
+    path: '/user',
+    component: Layout,
+    redirect: '/user',
+    name: '用户',
+    meta: {
+      title: '用户模块',
+      icon: 'peoples'
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/user/user'),
+        name: '用户管理',
+        meta: { title: '用户管理', icon: 'people', affix: true }
+      }
+    ]
+  },
+
+  {
     path: 'external-link',
     component: Layout,
     children: [

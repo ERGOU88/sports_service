@@ -82,6 +82,7 @@
 <script>
   import {
     videoCommentList,
+    delVideoComment,
   } from '@/api/comment'
   import Pagination from '@/components/Pagination'
   import {formatDate} from '@/utils/format-date'
@@ -138,15 +139,15 @@
             cancelButtonText: "取消",
             type: "warning"
           }).then(() => {
-            return this.editCommentStatus(ids, state)
+            return this.delVideoComment(ids, state)
         }).catch(()=> {});
 
       },
 
       // 修改评论状态
-      async editCommentStatus(id, state) {
-        const res = await editVideoStatus({
-          video_id: id.toString(),
+      async delVideoComment(id, state) {
+        const res = await delVideoComment({
+          comment_id: id.toString(),
           status: state
         });
         console.log(res);

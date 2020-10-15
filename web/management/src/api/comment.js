@@ -14,3 +14,18 @@ export function videoCommentList(query) {
     })
   })
 }
+
+// 删除视频评论
+export function delVideoComment(params) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: '/comment/delete',
+      method: 'post',
+      data: params,
+    }).then(res => {
+      resolve(res)
+    }).catch(err => {
+      resolve(err)
+    })
+  })
+}

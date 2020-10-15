@@ -40,7 +40,7 @@ type UserInfo struct {
 	Id            int64  `json:"id"`
 	UserId        string `json:"user_id" example:"2009011314521111"`
 	Avatar        string `json:"avatar" example:"头像地址"`
-	MobileNum     int32  `json:"mobile_num" example:"13177656222"`
+	MobileNum     int64  `json:"mobile_num" example:"13177656222"`
 	NickName      string `json:"nick_name" example:"昵称 陈二狗"`
 	Gender        int32  `json:"gender" example:"0"`
 	Signature     string `json:"signature" example:"个性签名"`
@@ -53,6 +53,7 @@ type UserInfo struct {
 	RegIp         string `json:"reg_ip"`
 	LastLoginTm   int    `json:"last_login_tm"`
 	Platform      int    `json:"platform"`
+	UserType      int32  `json:"user_type"`
 
 	TotalBeLiked     int64  `json:"total_beLiked" example:"100"`     // 被点赞数
 	TotalFans        int64  `json:"total_fans" example:"100"`        // 粉丝数
@@ -191,7 +192,7 @@ func (m *UserModel) GetUserList(offset, size int) []*models.User {
 		return []*models.User{}
 	}
 
-	return nil
+	return list
 }
 
 // 添加用户
@@ -343,6 +344,16 @@ func (m *UserModel) SearchUser(name string, offset, size int) []*UserSearchResul
 	}
 
 	return list
+}
+
+// 获取用户总数
+func (m *UserModel) GetUserTotalCount() int64 {
+  count, err := m.Engine.Count(&models.User{})
+  if err != nil {
+    return 0
+  }
+
+  return count
 }
 
 // 设置注册ip

@@ -128,3 +128,8 @@ func (svc *BarrageModule) GetVideoBarrageList(videoId, minDuration, maxDuration 
 
 	return errdef.SUCCESS, svc.barrage.GetBarrageByDuration(videoId, minDuration, maxDuration, 0, 1000)
 }
+
+// 获取用户视频弹幕总数
+func (svc *BarrageModule) GetUserTotalVideoBarrage(userId string) int64 {
+  return svc.barrage.GetUserTotalVideoBarrage(userId)
+}

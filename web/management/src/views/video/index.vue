@@ -196,7 +196,7 @@
         });
         console.log(res);
         if (res.code === 200) {
-          if (state == 1) {
+          if (state === 1) {
             this.$message.success("id为" + id + "的视频，置顶成功")
           } else {
             this.$message.success("id为" + id + "的视频，已取消置顶")

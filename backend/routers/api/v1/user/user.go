@@ -16,6 +16,7 @@ func UserList(c *gin.Context) {
 	svc := cuser.New(c)
 	list := svc.GetUserList(page, size)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetUserTotalCount()
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 

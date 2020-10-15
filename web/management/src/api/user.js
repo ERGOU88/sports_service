@@ -22,3 +22,49 @@ export function logout() {
     method: 'post'
   })
 }
+
+// 获取用户列表
+export function userList(query) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: '/user/list',
+      method: 'get',
+      params: query,
+    }).then(res => {
+      resolve(res)
+    }).catch(err => {
+      resolve(err)
+    })
+  })
+}
+
+// 封禁用户
+export function forbidUser(params) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: '/user/forbid',
+      method: 'post',
+      data: params,
+    }).then(res => {
+      resolve(res)
+    }).catch(err => {
+      resolve(err)
+    })
+  })
+}
+
+// 解除封禁
+export function unForbidUser(params) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: '/user/unforbid',
+      method: 'post',
+      data: params,
+    }).then(res => {
+      resolve(res)
+    }).catch(err => {
+      resolve(err)
+    })
+  })
+}
+

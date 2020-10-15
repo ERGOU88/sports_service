@@ -49,3 +49,14 @@ func (m *BarrageModel) GetBarrageByDuration(videoId, minDuration, maxDuration st
 
 	return list
 }
+
+// 获取用户视频总弹幕数
+func (m *BarrageModel) GetUserTotalVideoBarrage(userId string) int64 {
+  total, err := m.Engine.Where("user_id=?", userId).Count(m.Barrage)
+  if err != nil {
+    log.Log.Errorf("barrage_trace: get user total barrage err:%s, uid:%s", err, userId)
+    return 0
+  }
+
+  return total
+}

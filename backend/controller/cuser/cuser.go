@@ -8,7 +8,8 @@ import (
 	"sports_service/server/global/backend/errdef"
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mattention"
-	"sports_service/server/models/mcollect"
+  "sports_service/server/models/mbarrage"
+  "sports_service/server/models/mcollect"
 	"sports_service/server/models/mcomment"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
@@ -25,6 +26,7 @@ type UserModule struct {
 	collect     *mcollect.CollectModel
 	video       *mvideo.VideoModel
 	comment     *mcomment.CommentModel
+	barrage     *mbarrage.BarrageModel
 }
 
 func New(c *gin.Context) UserModule {
@@ -38,6 +40,7 @@ func New(c *gin.Context) UserModule {
 		collect: mcollect.NewCollectModel(socket),
 		video: mvideo.NewVideoModel(socket),
 		comment: mcomment.NewCommentModel(socket),
+		barrage: mbarrage.NewBarrageModel(socket),
 		engine: socket,
 	}
 }
@@ -55,7 +58,7 @@ func (svc *UserModule) GetUserList(page, size int) []*muser.UserInfo {
 		resp := &muser.UserInfo{
 			UserId: info.UserId,
 			Avatar: info.Avatar,
-			MobileNum: int32(info.MobileNum),
+			MobileNum: int64(info.MobileNum),
 			NickName: info.NickName,
 			Gender: int32(info.Gender),
 			Signature: info.Signature,
@@ -68,6 +71,7 @@ func (svc *UserModule) GetUserList(page, size int) []*muser.UserInfo {
 			RegIp: info.RegIp,
 			LastLoginTm: info.LastLoginTime,
 			Platform: info.DeviceType,
+			UserType: int32(info.UserType),
 			Id: info.Id,
 			// 被点赞总数
 			TotalBeLiked: svc.like.GetUserTotalBeLiked(info.UserId),
@@ -82,7 +86,7 @@ func (svc *UserModule) GetUserList(page, size int) []*muser.UserInfo {
 			// 用户发布的视频总数（已审核）
 			TotalPublish: svc.video.GetTotalPublish(info.UserId),
 			// todo: 弹幕
-			TotalBarrage: 0,
+			TotalBarrage: svc.barrage.GetUserTotalVideoBarrage(info.UserId),
 			// 用户总评论数
 			TotalComment: svc.comment.GetUserTotalComments(info.UserId),
 			// 用户总浏览数
@@ -93,6 +97,11 @@ func (svc *UserModule) GetUserList(page, size int) []*muser.UserInfo {
 	}
 
 	return res
+}
+
+// 获取用户总数
+func (svc *UserModule) GetUserTotalCount() int64 {
+  return svc.user.GetUserTotalCount()
 }
 
 // 封禁用户
