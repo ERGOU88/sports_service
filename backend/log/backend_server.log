@@ -69,3 +69,110 @@
 [2020-10-15 18:02:12]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
 [2020-10-15 18:15:41]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
 [2020-10-15 18:28:39]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-15 19:21:39]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-15 19:21:50]-52	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/mvideo/mvideo.go:395	video_trace: get recommend videos err:Error 1130: Host '192.168.51.112' is not allowed to connect to this MySQL server
+sports_service/server/models/mvideo.(*VideoModel).GetVideoList
+	/Users/jelly/go/src/sports_service/server/models/mvideo/mvideo.go:395
+sports_service/server/backend/controller/cvideo.(*VideoModule).GetVideoList
+	/Users/jelly/go/src/sports_service/server/backend/controller/cvideo/cvideo.go:100
+sports_service/server/backend/routers/api/v1/video.VideoList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/video/video.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-15 19:21:53]-57	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:191	user_trace: get user list err:Error 1130: Host '192.168.51.112' is not allowed to connect to this MySQL server
+sports_service/server/models/muser.(*UserModel).GetUserList
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:191
+sports_service/server/backend/controller/cuser.(*UserModule).GetUserList
+	/Users/jelly/go/src/sports_service/server/backend/controller/cuser/cuser.go:51
+sports_service/server/backend/routers/api/v1/user.UserList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/user/user.go:17
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-15 19:21:57]-64	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/mvideo/mvideo.go:395	video_trace: get recommend videos err:Error 1130: Host '192.168.51.112' is not allowed to connect to this MySQL server
+sports_service/server/models/mvideo.(*VideoModel).GetVideoList
+	/Users/jelly/go/src/sports_service/server/models/mvideo/mvideo.go:395
+sports_service/server/backend/controller/cvideo.(*VideoModule).GetVideoList
+	/Users/jelly/go/src/sports_service/server/backend/controller/cvideo/cvideo.go:100
+sports_service/server/backend/routers/api/v1/video.VideoList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/video/video.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-15 19:26:36]-100	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/mvideo/mvideo.go:395	video_trace: get recommend videos err:Error 1130: Host '192.168.51.112' is not allowed to connect to this MySQL server
+sports_service/server/models/mvideo.(*VideoModel).GetVideoList
+	/Users/jelly/go/src/sports_service/server/models/mvideo/mvideo.go:395
+sports_service/server/backend/controller/cvideo.(*VideoModule).GetVideoList
+	/Users/jelly/go/src/sports_service/server/backend/controller/cvideo/cvideo.go:100
+sports_service/server/backend/routers/api/v1/video.VideoList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/video/video.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-15 19:27:00]-105	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/mvideo/mvideo.go:395	video_trace: get recommend videos err:Error 1130: Host '192.168.51.112' is not allowed to connect to this MySQL server
+sports_service/server/models/mvideo.(*VideoModel).GetVideoList
+	/Users/jelly/go/src/sports_service/server/models/mvideo/mvideo.go:395
+sports_service/server/backend/controller/cvideo.(*VideoModule).GetVideoList
+	/Users/jelly/go/src/sports_service/server/backend/controller/cvideo/cvideo.go:100
+sports_service/server/backend/routers/api/v1/video.VideoList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/video/video.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-15 19:27:49]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success

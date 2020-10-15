@@ -32,18 +32,17 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="视频标签">
-        <template slot-scope="scope">
-          <span v-for="item in scope.row.labels" :label="item.label_id.toString()" :key="item.label_id"> {{item.label_name}} </span>
-        </template>
-      </el-table-column>
-
       <el-table-column width="90px" align="center" label="视频时长">
         <template slot-scope="scope">
           <span>{{ scope.row.video_duration }}</span>
         </template>
       </el-table-column>
 
+      <el-table-column width="90px" align="center" label="评论内容">
+        <template slot-scope="scope">
+          <span>{{ scope.row.content }}</span>
+        </template>
+      </el-table-column>
 
       <el-table-column width="90px" align="center" label="点赞量">
         <template slot-scope="scope">
@@ -69,7 +68,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="操作" width="300">
+      <el-table-column align="center" label="操作" width="130">
         <template slot-scope="scope">
           <el-button :type="(scope.row.status === 1)?'primary':'info'" size="mini" @click="handleDelComment(scope.row, 1)" :disabled="!(scope.row.status === 1)">删除</el-button>
         </template>

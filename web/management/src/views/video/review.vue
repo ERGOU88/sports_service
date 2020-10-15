@@ -62,14 +62,14 @@
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="审核状态" width="110">
+      <el-table-column class-name="status-col" label="审核状态" width="110" align="center">
         <template slot-scope="scope">
-          <el-tag type="warning" effect="dark" v-if="scope.row.status==0">待审核</el-tag>
-          <el-tag type="danger" effect="dark" v-if="scope.row.status==2">审核失败</el-tag>
+          <el-tag type="warning" effect="dark" v-if="scope.row.status===0">待审核</el-tag>
+          <el-tag type="danger" effect="dark" v-if="scope.row.status===2">审核失败</el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="操作" width="300">
+      <el-table-column align="center" label="操作" width="200">
         <template slot-scope="scope">
           <el-button :type="(scope.row.status === 0)?'primary':'info'" size="mini" @click="handleEditState(scope.row, 1)" :disabled="!(scope.row.status === 0)">通过</el-button>
           <el-button :type="(scope.row.status === 2)?'primary':'info'" size="mini" @click="handleEditState(scope.row, 3)" :disabled="!(scope.row.status === 2)">删除</el-button>

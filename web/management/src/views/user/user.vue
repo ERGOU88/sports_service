@@ -120,14 +120,14 @@
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="状态" width="110">
+      <el-table-column class-name="status-col" label="状态" width="110" align="center">
         <template slot-scope="scope">
           <el-tag type="success" effect="dark" v-if="scope.row.status===1">封禁</el-tag>
           <el-tag type="warning" effect="dark" v-if="scope.row.status===0">正常</el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="操作" width="300">
+      <el-table-column align="center" label="操作" width="200">
         <template slot-scope="scope">
           <el-button :type="(scope.row.status === 0)?'primary':'info'" size="mini" @click="handleForbid(scope.row.id)" :disabled="!(scope.row.status === 0)">封禁</el-button>
           <el-button :type="(scope.row.status === 1)?'primary':'info'" size="mini" @click="handleUnForbid(scope.row.id)" :disabled="!(scope.row.status === 1)">解封</el-button>

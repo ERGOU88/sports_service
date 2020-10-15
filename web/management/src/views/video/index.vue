@@ -86,14 +86,14 @@
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="是否置顶" width="110">
+      <el-table-column class-name="status-col" label="是否置顶" width="110" align="center">
         <template slot-scope="scope">
           <el-tag type="success" effect="dark" v-if="scope.row.is_top==1">已置顶</el-tag>
           <el-tag type="warning" effect="dark" v-if="scope.row.is_top==0">未置顶</el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="审核状态" width="110">
+      <el-table-column class-name="status-col" label="审核状态" width="110" align="center">
         <template slot-scope="scope">
           <el-tag type="success" effect="dark" v-if="scope.row.status==1">审核成功</el-tag>
           <el-tag type="warning" effect="dark" v-if="scope.row.status==0">待审核</el-tag>
