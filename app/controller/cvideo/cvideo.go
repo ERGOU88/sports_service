@@ -83,6 +83,15 @@ func (svc *VideoModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPu
 		return errdef.VIDEO_INVALID_TITLE
 	}
 
+	// 检测自定义标签
+	if params.CustomLabels != "" {
+    isPass, err = client.TextModeration(params.CustomLabels)
+    if !isPass {
+      log.Log.Errorf("video_trace: validate title err: %s，pass: %v", err, isPass)
+      return errdef.VIDEO_INVALID_CUSTOM_LABEL
+    }
+  }
+
 	info, _ := util.JsonFast.Marshal(params)
 	// 先记录到缓存
 	if err := svc.video.RecordPublishInfo(userId, string(info), params.TaskId); err != nil {
@@ -689,5 +698,42 @@ func (svc *VideoModule) EventCallback(params *vod.EventNotify) int {
 	}
 
 	return errdef.SUCCESS
+}
+
+// 检测自定义标签
+func (svc *VideoModule) CheckCustomLabel(userId string, params *mvideo.CustomLabelParams) int {
+  // 用户未登录
+  if userId == "" {
+    log.Log.Error("video_trace: no login")
+    return errdef.USER_NO_LOGIN
+  }
+
+  if params.VideoId == "" {
+    log.Log.Error("video_trace: videoId can't empty")
+    return errdef.VIDEO_NOT_EXISTS
+  }
+
+  // 查询用户是否存在
+  if user := svc.user.FindUserByUserid(userId); user == nil {
+    log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+    return errdef.USER_NOT_EXISTS
+  }
+
+  // 查询视频是否存在
+  video := svc.video.FindVideoById(params.VideoId)
+  if video == nil {
+    log.Log.Error("video_trace: video not found, videoId:%s", params.VideoId)
+    return errdef.VIDEO_NOT_EXISTS
+  }
+
+  client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+  // 检测视频描述
+  isPass, err := client.TextModeration(params.CustomLabel)
+  if !isPass {
+    log.Log.Errorf("video_trace: validate custom label err: %s，pass: %v", err, isPass)
+    return errdef.VIDEO_INVALID_CUSTOM_LABEL
+  }
+
+  return errdef.SUCCESS
 }
 

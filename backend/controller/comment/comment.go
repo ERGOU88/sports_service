@@ -54,6 +54,11 @@ func (svc *CommentModule) GetVideoComments(sortType string, page, size int) []*m
 	return list
 }
 
+// 获取视频评论总数
+func (svc *CommentModule) GetCommentTotal() int64 {
+  return svc.comment.GetCommentTotal()
+}
+
 // 删除视频评论（物理删除）
 func (svc *CommentModule) DelVideoComments(param *mcomment.DelCommentParam) int {
 	comment := svc.comment.GetVideoCommentById(param.CommentId)

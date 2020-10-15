@@ -369,3 +369,20 @@ func EventCallback(c *gin.Context) {
 
 
 }
+
+// 用户上传自定义标签
+func CheckCustomLabels(c *gin.Context) {
+  reply := errdef.New(c)
+  userId, _ := c.Get(consts.USER_ID)
+  params := new(mvideo.CustomLabelParams)
+  if err := c.BindJSON(params); err != nil {
+    log.Log.Errorf("video_trace: custom labels params err:%s, params:%+v", err, params)
+    reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := cvideo.New(c)
+  // 检测自定义标签文本
+  syscode := svc.CheckCustomLabel(userId.(string), params)
+  reply.Response(http.StatusOK, syscode)
+}

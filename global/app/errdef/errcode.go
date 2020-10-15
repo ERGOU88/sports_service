@@ -72,6 +72,7 @@ const (
 	VIDEO_UPLOAD_GEN_SIGN_FAIL  = 4007
 	VIDEO_INVALID_DESCRIBE      = 4008
 	VIDEO_INVALID_TITLE         = 4009
+	VIDEO_INVALID_CUSTOM_LABEL  = 4010
 
 	// 点赞相关错误码 5001-6000
 	LIKE_VIDEO_NOT_EXISTS       = 5001
@@ -176,8 +177,9 @@ var MsgFlags = map[int]string{
 	VIDEO_UPLOAD_GEN_SIGN_FAIL:  "上传签名生成失败",
 	VIDEO_INVALID_DESCRIBE:      "视频描述含有违规文字",
 	VIDEO_INVALID_TITLE:         "视频标题含有违规文字",
+  VIDEO_INVALID_CUSTOM_LABEL:  "自定义标签含有违规文字",
 
-	LIKE_VIDEO_NOT_EXISTS:       "点赞的视频不存在",
+  LIKE_VIDEO_NOT_EXISTS:       "点赞的视频不存在",
 	LIKE_ALREADY_EXISTS:         "已点过赞",
 	LIKE_VIDEO_FAIL:             "视频点赞失败",
 	LIKE_RECORD_NOT_EXISTS:      "未点赞该视频",

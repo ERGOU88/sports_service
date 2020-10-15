@@ -21,7 +21,7 @@ type VideoModel struct {
 // 视频发布请求参数
 type VideoPublishParams struct {
 	TaskId         int64   `binding:"required" json:"task_id"`        // 任务id
-	Cover          string  `binding:"required" json:"cover"`          // 视频封面
+	Cover          string  `json:"cover"`                             // 视频封面
 	Title          string  `binding:"required" json:"title"`          // 视频标题
 	Describe       string  `binding:"required" json:"describe"`       // 视频描述
 	VideoAddr      string  `binding:"required" json:"video_addr"`     // 视频地址
@@ -30,6 +30,8 @@ type VideoPublishParams struct {
 	VideoWidth     int64   `binding:"required" json:"video_width"`    // 视频宽
 	VideoHeight    int64   `binding:"required" json:"video_height"`   // 视频高
 	VideoLabels    string  `binding:"required" json:"video_labels"`   // 视频标签id（多个用逗号分隔）
+	Size           int64   `json:"size"`                              // 视频字节数
+	CustomLabels   string  `json:"custom_labels"`                     // 字符串（多个用逗号分隔）
 }
 
 // 视频信息
@@ -128,6 +130,12 @@ type EditTopStatusParam struct {
 type EditRecommendStatusParam struct {
 	VideoId      string     `json:"video_id"`      // 视频id
 	Status       int32      `json:"status"`        // 状态 0 不推荐 1 推荐
+}
+
+// 自定义标签请求
+type CustomLabelParams struct {
+  VideoId       string    `json:"video_id"`       // 视频id
+  CustomLabel   string    `json:"custom_label"`   // 自定义标签
 }
 
 // 实栗
@@ -394,6 +402,16 @@ func (m *VideoModel) GetVideoList(offset, size int) []*VideoDetailInfo {
 // 获取视频总数（已审核通过的）
 func (m *VideoModel) GetVideoTotalCount() int64 {
   count, err := m.Engine.Where("status=1").Count(&models.Videos{})
+  if err != nil {
+    return 0
+  }
+
+  return count
+}
+
+// 获取视频总数（未审核/未通过审核）
+func (m *VideoModel) GetVideoReviewTotalCount() int64 {
+  count, err := m.Engine.Where("status = 0 or status = 2").Count(&models.Videos{})
   if err != nil {
     return 0
   }

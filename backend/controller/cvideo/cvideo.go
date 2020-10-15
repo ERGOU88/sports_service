@@ -110,6 +110,11 @@ func (svc *VideoModule) GetVideoTotalCount() int64 {
   return svc.video.GetVideoTotalCount()
 }
 
+// 获取未审核/审核失败的视频总数
+func (svc *VideoModule) GetVideoReviewTotalCount() int64 {
+  return svc.video.GetVideoReviewTotalCount()
+}
+
 // 修改视频置顶状态
 func (svc *VideoModule) EditVideoTopStatus(param *mvideo.EditTopStatusParam) int {
 	if param.VideoId == "" {

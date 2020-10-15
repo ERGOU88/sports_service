@@ -165,10 +165,29 @@ export const constantRoutes = [
         meta: { title: '视频管理', icon: 'edit', affix: true }
       },
       {
-        path: 'comment',
-        component: () => import('@/views/video/comment'),
-        name: '评论管理',
-        meta: { title: '评论管理', icon: 'message', affix: true }
+        path: 'review',
+        component: () => import('@/views/video/review'),
+        name: '视频审核',
+        meta: { title: '视频审核', icon: 'edit', affix: true }
+      }
+    ]
+  },
+
+  {
+    path: '/comment',
+    component: Layout,
+    redirect: '/comment',
+    name: '评论',
+    meta: {
+      title: '评论模块',
+      icon: 'message'
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/comment/comment'),
+        name: '视频评论',
+        meta: { title: '视频评论', icon: 'edit', affix: true }
       }
     ]
   },

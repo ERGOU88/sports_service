@@ -57,7 +57,8 @@ type ReplyComment struct {
 
 // 视频评论数据（后台展示）
 type VideoCommentInfo struct {
-	VideoId     int64                   `json:"video_id"`        // 视频id
+  Id            int64                 `json:"id"`              // 评论id
+	VideoId       int64                 `json:"video_id"`        // 视频id
 	Title         string                `json:"title"`           // 标题
 	Describe      string                `json:"describe"`        // 描述
 	Cover         string                `json:"cover"`           // 封面
@@ -270,6 +271,17 @@ func (m *CommentModel) GetVideoCommentsBySort(sortType string, offset, size int)
 	}
 
 	return list
+}
+
+// 获取视频评论总数
+func (m *CommentModel) GetCommentTotal() int64 {
+  count, err := m.Engine.Where("status=1").Count(&models.VideoComment{})
+  if err != nil {
+    log.Log.Errorf("comment_trace: get total comments err:%s", err)
+    return 0
+  }
+
+  return count
 }
 
 

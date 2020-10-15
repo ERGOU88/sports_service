@@ -45,6 +45,21 @@ export function editTopStatus(params) {
   })
 }
 
+// 待审核的视频列表
+export function videoReviewList(query) {
+  return new Promise((resolve, reject) => {
+    request ({
+      url: '/video/review/list',
+      method: 'get',
+      query,
+    }).then(res => {
+      resolve(res)
+    }).catch(err => {
+      resolve(err)
+    })
+  })
+}
+
 
 // export function videoList(query) {
 //   return request({

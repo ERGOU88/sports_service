@@ -119,6 +119,8 @@ func pullEvents() error {
 			video.VideoHeight = pubInfo.VideoHeight
 			fileId, _ := strconv.Atoi(*event.FileUploadEvent.FileId)
 			video.FileId = int64(fileId)
+			video.Size = pubInfo.Size
+      // todo: 如果有 记录用户自定义标签
 
 			// 视频发布
 			affected, err := vmodel.VideoPublish()

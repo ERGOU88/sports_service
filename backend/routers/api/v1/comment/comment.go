@@ -18,6 +18,7 @@ func VideoCommentList(c *gin.Context) {
 	svc := comment.New(c)
 	list := svc.GetVideoComments(sortType, page, size)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetCommentTotal()
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
