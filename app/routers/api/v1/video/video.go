@@ -8,6 +8,7 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mvideo"
+  _ "sports_service/server/models/mlabel"
 	"sports_service/server/util"
 	_ "sports_service/server/models"
 	"sports_service/server/tools/tencentCloud/vod"
@@ -387,6 +388,20 @@ func CheckCustomLabels(c *gin.Context) {
   reply.Response(http.StatusOK, syscode)
 }
 
+// @Summary 视频标签 (ok)
+// @Tags 视频模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Success 200 {array}  mlabel.VideoLabel
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/video/label/list [get]
 // 获取视频标签列表
 func VideoLabelList(c *gin.Context) {
   reply := errdef.New(c)

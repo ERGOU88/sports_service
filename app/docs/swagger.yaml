@@ -195,6 +195,29 @@ definitions:
       video_id:
         type: integer
     type: object
+  mlabel.VideoLabel:
+    properties:
+      child:
+        items:
+          $ref: '#/definitions/mlabel.VideoLabel'
+        type: array
+      create_at:
+        type: integer
+      icon:
+        type: string
+      label_id:
+        type: integer
+      label_name:
+        type: string
+      pid:
+        type: integer
+      sortorder:
+        type: integer
+      status:
+        type: integer
+      update_at:
+        type: integer
+    type: object
   mlike.CancelLikeParam:
     properties:
       compose_id:
@@ -547,10 +570,14 @@ definitions:
     properties:
       cover:
         type: string
+      custom_labels:
+        type: string
       describe:
         type: string
       file_id:
         type: string
+      size:
+        type: integer
       task_id:
         type: integer
       title:
@@ -566,7 +593,6 @@ definitions:
       video_width:
         type: integer
     required:
-    - cover
     - describe
     - file_id
     - task_id
@@ -3432,6 +3458,53 @@ paths:
           schema:
             type: string
       summary: 视频首页推荐的banner (ok)
+      tags:
+      - 视频模块
+  /api/v1/video/label/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/mlabel.VideoLabel'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 视频标签 (ok)
       tags:
       - 视频模块
   /api/v1/video/publish:

@@ -3876,6 +3876,75 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/video/label/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频模块"
+                ],
+                "summary": "视频标签 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/mlabel.VideoLabel"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/video/publish": {
             "post": {
                 "consumes": [
@@ -4422,6 +4491,41 @@ var doc = `{
                 }
             }
         },
+        "mlabel.VideoLabel": {
+            "type": "object",
+            "properties": {
+                "child": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/mlabel.VideoLabel"
+                    }
+                },
+                "create_at": {
+                    "type": "integer"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "label_id": {
+                    "type": "integer"
+                },
+                "label_name": {
+                    "type": "string"
+                },
+                "pid": {
+                    "type": "integer"
+                },
+                "sortorder": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "update_at": {
+                    "type": "integer"
+                }
+            }
+        },
         "mlike.CancelLikeParam": {
             "type": "object",
             "required": [
@@ -4932,7 +5036,6 @@ var doc = `{
         "mvideo.VideoPublishParams": {
             "type": "object",
             "required": [
-                "cover",
                 "describe",
                 "file_id",
                 "task_id",
@@ -4947,11 +5050,17 @@ var doc = `{
                 "cover": {
                     "type": "string"
                 },
+                "custom_labels": {
+                    "type": "string"
+                },
                 "describe": {
                     "type": "string"
                 },
                 "file_id": {
                     "type": "string"
+                },
+                "size": {
+                    "type": "integer"
                 },
                 "task_id": {
                     "type": "integer"
