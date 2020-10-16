@@ -45,6 +45,7 @@ func VideoBarrageList(c *gin.Context) {
   svc := comment.New(c)
   list := svc.GetVideoBarrageList(page, size)
   reply.Data["list"] = list
+  reply.Data["total"] = svc.GetVideoBarrageTotal()
   reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 

@@ -104,4 +104,16 @@ func (m *BarrageModel) DelVideoBarrage(id string) error {
   return nil
 }
 
+// 获取弹幕总数
+func (m *BarrageModel) GetVideoBarrageTotal() int64 {
+  count, err := m.Engine.Where("barrage_type=0").Count(&models.VideoBarrage{})
+  if err != nil {
+    log.Log.Errorf("comment_trace: get total barrage err:%s", err)
+    return 0
+  }
+
+  return count
+}
+
+
 

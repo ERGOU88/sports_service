@@ -13,7 +13,6 @@
         </template>
       </el-table-column>
 
-
       <el-table-column width="120px" align="center" label="视频描述">
         <template slot-scope="scope">
           <span>{{ scope.row.describe }}</span>
@@ -157,8 +156,6 @@
           this.$message.error(res.message)
         }
       },
-
     },
-
   }
 </script>

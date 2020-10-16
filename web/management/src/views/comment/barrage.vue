@@ -19,7 +19,6 @@
         </template>
       </el-table-column>
 
-
       <el-table-column width="160px" align="center" label="视频链接">
         <template slot-scope="scope">
           <span>{{ scope.row.video_addr }}</span>
@@ -50,14 +49,12 @@
         </template>
       </el-table-column>
 
-
       <el-table-column align="center" label="操作" width="130">
         <template slot-scope="scope">
           <el-button :type="'primary'" size="mini" @click="handleDelBarrage(scope.row)" >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.size" @pagination="listData" />
   </div>
 </template>
@@ -145,7 +142,6 @@
           this.$message.error(res.message)
         }
       },
-
     },
 
   }

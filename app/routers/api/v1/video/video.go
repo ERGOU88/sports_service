@@ -76,7 +76,7 @@ func VideoPublish(c *gin.Context) {
 // @Success 200 {array}  mvideo.VideosInfoResp
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/video/browse/history [get]
-// 视频浏览记录
+// 视频浏览记录 todo: 分页数据重复问题 客户端传递最后一条记录创建时间
 func BrowseHistory(c *gin.Context) {
 	reply := errdef.New(c)
 	userId, ok := c.Get(consts.USER_ID)

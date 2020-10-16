@@ -310,7 +310,7 @@ type BrowseVideos struct {
 // 获取浏览过的视频id记录
 func (m *VideoModel) GetBrowseVideosRecord(userId string, composeType, offset, size int) []*BrowseVideos {
 	var list []*BrowseVideos
-	if err := m.Engine.Where("user_id=? AND compose_type=?", userId, composeType).
+	if err := m.Engine.Table(&models.UserBrowseRecord{}).Where("user_id=? AND compose_type=?", userId, composeType).
 		Cols("compose_id, update_at").
 		Desc("id").
 		Limit(size, offset).

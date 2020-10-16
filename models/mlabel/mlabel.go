@@ -197,7 +197,7 @@ func (m *LabelModel) FindSubLabelsByPid(label *VideoLabel) ([]*VideoLabel, error
 	var child []*VideoLabel
 	if err := m.Engine.Table(&models.VideoLabelConfig{}).SQL(QUERY_SUB_LABELS, label.LabelId).Find(&child); err != nil {
 		log.Log.Errorf("label_trace: get child labels info err:%s", err)
-		return nil, err
+		return []*VideoLabel{}, err
 	}
 
 	return child, nil

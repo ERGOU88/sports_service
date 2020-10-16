@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sports_service/server/app/controller/cuser"
+  "sports_service/server/app/controller/cvideo"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/util"
 )
@@ -28,10 +29,16 @@ func InitInfo(c *gin.Context) {
 	svc := cuser.New(c)
 	// 系统头像配置列表
 	avatarList := svc.GetDefaultAvatarList()
-	// 世界信息（暂时仅有国家信息）
+	// 世界配置信息（暂时仅有国家信息）
 	worldList := svc.GetWorldInfo()
+
+	svc2 := cvideo.New(c)
+	// 视频标签配置
+  labelList := svc2.GetVideoLabelList()
 	reply.Data["secret"] = secret
-	reply.Data["avatarList"] = avatarList
-	reply.Data["worldList"] = worldList
-	reply.Response(http.StatusOK, errdef.SUCCESS)
+	reply.Data["avatar_list"] = avatarList
+	reply.Data["world_list"] = worldList
+  reply.Data["world_list"] = worldList
+  reply.Data["label_list"] = labelList
+  reply.Response(http.StatusOK, errdef.SUCCESS)
 }

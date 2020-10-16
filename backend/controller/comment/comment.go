@@ -104,6 +104,11 @@ func (svc *CommentModule) GetVideoBarrageList(page, size int) []*mbarrage.VideoB
   return svc.barrage.GetVideoBarrageList(offset, size)
 }
 
+// 获取视频弹幕总数（管理后台）
+func (svc *CommentModule) GetVideoBarrageTotal() int64 {
+  return svc.barrage.GetVideoBarrageTotal()
+}
+
 // 删除视频弹幕
 func (svc *CommentModule) DelVideoBarrage(param *mbarrage.DelBarrageParam) error {
   return svc.barrage.DelVideoBarrage(param.Id)
