@@ -7,7 +7,8 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/backend/log"
 	"sports_service/server/global/backend/errdef"
-	"sports_service/server/models/mcomment"
+  "sports_service/server/models/mbarrage"
+  "sports_service/server/models/mcomment"
 	"sports_service/server/models/mvideo"
 	"strings"
 )
@@ -17,6 +18,7 @@ type CommentModule struct {
 	engine      *xorm.Session
 	comment     *mcomment.CommentModel
 	video       *mvideo.VideoModel
+	barrage     *mbarrage.BarrageModel
 }
 
 func New(c *gin.Context) CommentModule {
@@ -26,6 +28,7 @@ func New(c *gin.Context) CommentModule {
 		context: c,
 		comment: mcomment.NewCommentModel(socket),
 		video: mvideo.NewVideoModel(socket),
+		barrage: mbarrage.NewBarrageModel(socket),
 		engine: socket,
 	}
 }
@@ -95,3 +98,13 @@ func (svc *CommentModule) recursionComments(ids *[]string, commentIds *[]string)
 	}
 }
 
+// 获取视频弹幕列表
+func (svc *CommentModule) GetVideoBarrageList(page, size int) []*mbarrage.VideoBarrageInfo {
+  offset := (page - 1) * size
+  return svc.barrage.GetVideoBarrageList(offset, size)
+}
+
+// 删除视频弹幕
+func (svc *CommentModule) DelVideoBarrage(param *mbarrage.DelBarrageParam) error {
+  return svc.barrage.DelVideoBarrage(param.Id)
+}

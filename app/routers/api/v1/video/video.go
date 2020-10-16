@@ -386,3 +386,12 @@ func CheckCustomLabels(c *gin.Context) {
   syscode := svc.CheckCustomLabel(userId.(string), params)
   reply.Response(http.StatusOK, syscode)
 }
+
+// 获取视频标签列表
+func VideoLabelList(c *gin.Context) {
+  reply := errdef.New(c)
+  svc := cvideo.New(c)
+  list := svc.GetVideoLabelList()
+  reply.Data["list"] = list
+  reply.Response(http.StatusOK, errdef.SUCCESS)
+}

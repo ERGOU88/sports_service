@@ -708,22 +708,10 @@ func (svc *VideoModule) CheckCustomLabel(userId string, params *mvideo.CustomLab
     return errdef.USER_NO_LOGIN
   }
 
-  if params.VideoId == "" {
-    log.Log.Error("video_trace: videoId can't empty")
-    return errdef.VIDEO_NOT_EXISTS
-  }
-
   // 查询用户是否存在
   if user := svc.user.FindUserByUserid(userId); user == nil {
     log.Log.Errorf("video_trace: user not found, userId:%s", userId)
     return errdef.USER_NOT_EXISTS
-  }
-
-  // 查询视频是否存在
-  video := svc.video.FindVideoById(params.VideoId)
-  if video == nil {
-    log.Log.Error("video_trace: video not found, videoId:%s", params.VideoId)
-    return errdef.VIDEO_NOT_EXISTS
   }
 
   client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
@@ -736,4 +724,10 @@ func (svc *VideoModule) CheckCustomLabel(userId string, params *mvideo.CustomLab
 
   return errdef.SUCCESS
 }
+
+// 获取视频标签列表
+func (svc *VideoModule) GetVideoLabelList() []*mlabel.VideoLabel {
+  return svc.label.GetVideoLabelList()
+}
+
 

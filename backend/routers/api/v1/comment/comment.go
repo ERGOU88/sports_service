@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"sports_service/server/backend/controller/comment"
 	"sports_service/server/global/backend/errdef"
-	"sports_service/server/models/mcomment"
+  "sports_service/server/models/mbarrage"
+  "sports_service/server/models/mcomment"
 	"sports_service/server/util"
 )
 
@@ -34,4 +35,33 @@ func DelVideoComments(c *gin.Context) {
 	svc := comment.New(c)
 	syscode := svc.DelVideoComments(param)
 	reply.Response(http.StatusOK, syscode)
+}
+
+// 视频弹幕列表
+func VideoBarrageList(c *gin.Context) {
+  reply := errdef.New(c)
+  page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+
+  svc := comment.New(c)
+  list := svc.GetVideoBarrageList(page, size)
+  reply.Data["list"] = list
+  reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// 删除视频弹幕
+func DelVideoBarrage(c *gin.Context) {
+  reply := errdef.New(c)
+  param := new(mbarrage.DelBarrageParam)
+  if err := c.BindJSON(param); err != nil {
+    reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := comment.New(c)
+  if err := svc.DelVideoBarrage(param); err != nil {
+    reply.Response(http.StatusOK, errdef.VIDEO_BARRAGE_DELETE_FAIL)
+    return
+  }
+
+  reply.Response(http.StatusOK, errdef.SUCCESS)
 }

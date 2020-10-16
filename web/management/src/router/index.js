@@ -188,6 +188,12 @@ export const constantRoutes = [
         component: () => import('@/views/comment/comment'),
         name: '视频评论',
         meta: { title: '视频评论', icon: 'message', affix: true }
+      },
+      {
+        path: 'barrage',
+        component: () => import('@/views/comment/barrage'),
+        name: '视频弹幕',
+        meta: { title: '视频弹幕', icon: 'eye', affix: true }
       }
     ]
   },

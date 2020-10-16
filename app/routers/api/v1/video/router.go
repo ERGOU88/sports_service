@@ -34,7 +34,9 @@ func Router(engine *gin.Engine) {
 		video.GET("/upload/sign", UploadSign)
 		// 事件回调
 		video.GET("/event/callback", EventCallback)
-		// 用户自定义视频标签
+		// 用户自定义视频标签检测
 		video.POST("/custom/labels", CheckCustomLabels)
+    // 获取视频标签列表
+    video.GET("/label/list", VideoLabelList)
 	}
 }

@@ -60,3 +60,48 @@ func (m *BarrageModel) GetUserTotalVideoBarrage(userId string) int64 {
 
   return total
 }
+
+type VideoBarrageInfo struct {
+  Id               int64  `json:"id"`
+  VideoId          int64  `json:"video_id"`
+  VideoCurDuration int    `json:"video_cur_duration"`
+  Content          string `json:"content"`
+  UserId           string `json:"user_id"`
+  Color            string `json:"color"`
+  Font             string `json:"font"`
+  BarrageType      int    `json:"barrage_type"`
+  Location         int    `json:"location"`
+  SendTime         int64  `json:"send_time"`
+  Title            string `json:"title"`
+  VideoAddr        string `json:"video_addr"`
+}
+
+// 后台分页获取 视频弹幕 列表
+func (m *BarrageModel) GetVideoBarrageList(offset, size int) []*VideoBarrageInfo {
+  sql := "SELECT vb.*, v.title, v.video_addr FROM video_barrage AS vb LEFT JOIN videos AS v ON vb.video_id=v.video_id GROUP BY vb.id LIMIT ?, ?"
+  var list []*VideoBarrageInfo
+  if err := m.Engine.Table(&models.VideoComment{}).SQL(sql, offset, size).Find(&list); err != nil {
+      log.Log.Errorf("barrage_trace: get video barrage list by sort, err:%s", err)
+      return []*VideoBarrageInfo{}
+  }
+
+  return list
+}
+
+// 后台删除弹幕请求参数
+type DelBarrageParam struct {
+  Id      string     `binding:"required" json:"id"`       // 弹幕id
+}
+const (
+  DELETE_VIDEO_BARRAGE = "DELETE FROM `video_barrage` WHERE `id`=?"
+)
+// 删除弹幕
+func (m *BarrageModel) DelVideoBarrage(id string) error {
+  if _, err := m.Engine.Exec(DELETE_VIDEO_BARRAGE, id); err != nil {
+    return err
+  }
+
+  return nil
+}
+
+

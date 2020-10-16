@@ -51,7 +51,7 @@ export function videoReviewList(query) {
     request ({
       url: '/video/review/list',
       method: 'get',
-      query,
+      params: query,
     }).then(res => {
       resolve(res)
     }).catch(err => {
@@ -60,11 +60,3 @@ export function videoReviewList(query) {
   })
 }
 
-
-// export function videoList(query) {
-//   return request({
-//     url: '/video/list',
-//     method: 'get',
-//     params: query
-//   })
-// }

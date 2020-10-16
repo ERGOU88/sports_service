@@ -11,5 +11,9 @@ func Router(engine *gin.Engine) {
 		comment.GET("/list", VideoCommentList)
 		// 删除评论（物理删除）
 		comment.POST("/delete", DelVideoComments)
+		// 视频弹幕列表
+		comment.GET("/barrage", VideoBarrageList)
+		// 删除视频弹幕
+		comment.POST("/barrage/delete", DelVideoBarrage)
 	}
 }

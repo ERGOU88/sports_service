@@ -134,7 +134,6 @@ type EditRecommendStatusParam struct {
 
 // 自定义标签请求
 type CustomLabelParams struct {
-  VideoId       string    `json:"video_id"`       // 视频id
   CustomLabel   string    `json:"custom_label"`   // 自定义标签
 }
 
