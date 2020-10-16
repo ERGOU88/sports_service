@@ -232,11 +232,11 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
 			resp.Avatar = user.Avatar
 			resp.Nickname = user.NickName
+      // 是否关注
+      attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)
+      resp.IsAttention = attentionInfo.Status
 		}
 
-		// 是否关注
-		attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)
-		resp.IsAttention = attentionInfo.Status
 
 		collectAt, ok := mp[video.VideoId]
 		if ok {
