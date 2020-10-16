@@ -34,6 +34,7 @@ func (m *AttentionModel) GetAttentionInfo(attentionUid, userId string) *models.U
 	m.UserAttention = new(models.UserAttention)
 	ok, err := m.Engine.Where("attention_uid=? AND user_id=?", attentionUid, userId).Get(m.UserAttention)
 	if !ok || err != nil {
+	  log.Log.Errorf("attention_trace: get attention info err:%s, ok:%v", err, ok)
 		return nil
 	}
 
