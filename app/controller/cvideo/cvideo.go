@@ -234,7 +234,9 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 			resp.Nickname = user.NickName
       // 是否关注
       attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)
-      resp.IsAttention = attentionInfo.Status
+      if attentionInfo != nil {
+        resp.IsAttention = attentionInfo.Status
+      }
 		}
 
 

@@ -9284,3 +9284,15 @@ sports_service/server/job.PullEventsJob
 sports_service/server/job.PullEventsJob
 	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29
 [2020-10-16 19:00:17]-60	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31	事件处理完毕
+[2020-10-16 19:02:17]-60	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:27	开始拉取事件[腾讯云]
+[2020-10-16 19:02:17]-60	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29	job_trace: pull events err:[TencentCloudSDKError] Code=FailedOperation, Message=has not config callback, RequestId=308ba1df-4190-407f-8d82-8cbcb56f0b94
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29
+[2020-10-16 19:02:17]-60	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31	事件处理完毕
+[2020-10-16 19:03:17]-59	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-10-16 19:03:17]-59	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-10-16 19:04:17]-60	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:27	开始拉取事件[腾讯云]
+[2020-10-16 19:04:17]-60	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29	job_trace: pull events err:[TencentCloudSDKError] Code=FailedOperation, Message=has not config callback, RequestId=feb70a44-7016-4e6a-a28f-e3c7bc4fedfa
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29
+[2020-10-16 19:04:17]-60	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31	事件处理完毕

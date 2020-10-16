@@ -207,7 +207,9 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
 			resp.Nickname = user.NickName
       // 是否关注
       attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)
-      resp.IsAttention = attentionInfo.Status
+      if attentionInfo != nil {
+        resp.IsAttention = attentionInfo.Status
+      }
 		}
 
 		collectAt, ok := mp[video.VideoId]
