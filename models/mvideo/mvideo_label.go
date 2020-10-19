@@ -10,7 +10,7 @@ import (
 
 // 添加视频标签(一次插入多条)
 func (m *VideoModel) AddVideoLabels(labels []*models.VideoLabels) (int64, error) {
-	return m.Engine.Insert(labels)
+	return m.Engine.InsertMulti(labels)
 }
 
 // 获取视频标签
