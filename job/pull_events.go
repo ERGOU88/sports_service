@@ -18,7 +18,7 @@ import (
 
 // 主动拉取事件（腾讯云）
 func PullEventsJob() {
-	ticker := time.NewTicker(time.Minute * 2)
+	ticker := time.NewTicker(time.Minute * 1)
 	defer ticker.Stop()
 
 	for {

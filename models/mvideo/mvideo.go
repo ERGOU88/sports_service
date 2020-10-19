@@ -144,6 +144,7 @@ func NewVideoModel(engine *xorm.Session) *VideoModel {
 		Videos: new(models.Videos),
 		Labels: new(models.VideoLabels),
 		Statistic: new(models.VideoStatistic),
+		Events: new(models.TencentCloudEvents),
 		Engine: engine,
 	}
 }
