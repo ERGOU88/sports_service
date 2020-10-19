@@ -123,7 +123,7 @@ func (svc *UserModule) EditUserInfo(userId string, params *muser.EditUserInfoPar
 	isPass, err := client.TextModeration(nickName)
 	if !isPass {
 		log.Log.Errorf("user_trace: validate nick name err: %s，pass: %v", err, isPass)
-		return errdef.USER_INVALID_SIGNATURE
+		return errdef.USER_INVALID_NAME
 	}
 
 	// 检测签名

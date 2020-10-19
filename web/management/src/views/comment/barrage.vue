@@ -137,6 +137,7 @@
                 timeDivider: true,
                 durationDisplay: true,
                 remainingTimeDisplay: false,
+
                 fullscreenToggle: true  //全屏按钮
               },
               isVideoVisible: false,
