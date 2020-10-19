@@ -106,21 +106,20 @@ func pullEvents() error {
 
 			// 数据记录到视频审核表 同时 标签记录到 视频标签表（多条记录 同一个videoId对应N个labelId 生成N条记录）
 			now := time.Now().Unix()
-			video := new(models.Videos)
-			video.UserId = userId
-			video.Cover = *event.FileUploadEvent.MediaBasicInfo.CoverUrl
-			video.Title = pubInfo.Title
-			video.Describe = pubInfo.Describe
-			video.VideoAddr = pubInfo.VideoAddr
-			video.VideoDuration = pubInfo.VideoDuration
-			video.CreateAt = int(now)
-			video.UpdateAt = int(now)
-			video.UserType = consts.PUBLISH_VIDEO_BY_USER
-			video.VideoWidth = pubInfo.VideoWidth
-			video.VideoHeight = pubInfo.VideoHeight
+      vmodel.Videos.UserId = userId
+      vmodel.Videos.Cover = *event.FileUploadEvent.MediaBasicInfo.CoverUrl
+      vmodel.Videos.Title = pubInfo.Title
+      vmodel.Videos.Describe = pubInfo.Describe
+      vmodel.Videos.VideoAddr = pubInfo.VideoAddr
+      vmodel.Videos.VideoDuration = pubInfo.VideoDuration
+      vmodel.Videos.CreateAt = int(now)
+      vmodel.Videos.UpdateAt = int(now)
+      vmodel.Videos.UserType = consts.PUBLISH_VIDEO_BY_USER
+      vmodel.Videos.VideoWidth = pubInfo.VideoWidth
+      vmodel.Videos.VideoHeight = pubInfo.VideoHeight
 			fileId, _ := strconv.Atoi(*event.FileUploadEvent.FileId)
-			video.FileId = int64(fileId)
-			video.Size = pubInfo.Size
+      vmodel.Videos.FileId = int64(fileId)
+      vmodel.Videos.Size = pubInfo.Size
       // todo: 如果有 记录用户自定义标签
 
 			// 视频发布
@@ -142,7 +141,7 @@ func pullEvents() error {
 				}
 
 				info := new(models.VideoLabels)
-				info.VideoId = video.VideoId
+				info.VideoId = vmodel.Videos.VideoId
 				info.LabelId = labelId
 				info.LabelName = lmodel.GetLabelNameByMem(labelId)
 				info.CreateAt = int(now)
@@ -160,7 +159,7 @@ func pullEvents() error {
       }
 
 
-			vmodel.Statistic.VideoId = video.VideoId
+			vmodel.Statistic.VideoId = vmodel.Videos.VideoId
 			vmodel.Statistic.CreateAt = int(now)
 			vmodel.Statistic.UpdateAt = int(now)
 			// 初始化视频统计数据
