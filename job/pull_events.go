@@ -42,6 +42,12 @@ func pullEvents() error {
 		return err
 	}
 
+  session := dao.Engine.Context(context.Background())
+  if err := session.Begin(); err != nil {
+    log.Log.Errorf("job_trace: session begin err:%s", err)
+    return err
+  }
+
 	for _, event := range resp.Response.EventSet {
 		switch *event.EventType {
 		// 上传事件
@@ -52,12 +58,7 @@ func pullEvents() error {
 				continue
 			}
 
-			session := dao.Engine.Context(context.Background())
 			vmodel := mvideo.NewVideoModel(session)
-			if err := session.Begin(); err != nil {
-				log.Log.Errorf("job_trace: session begin err:%s", err)
-				continue
-			}
 
 			// 通过任务id 获取 用户id
 			userId, err := vmodel.GetUploadUserIdByTaskId(source.TaskId)
