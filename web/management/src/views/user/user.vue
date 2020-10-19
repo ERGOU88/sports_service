@@ -16,7 +16,7 @@
 
       <el-table-column width="120px" align="center" label="用户头像">
         <template slot-scope="scope">
-          <span>{{ scope.row.avatar }}</span>
+          <img :src=scope.row.avatar height="120" >
         </template>
       </el-table-column>
 
