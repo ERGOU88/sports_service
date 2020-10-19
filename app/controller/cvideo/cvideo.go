@@ -159,13 +159,15 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 		labelInfos[index] = info
 	}
 
-	// 添加视频标签（多条）
-	affected, err = svc.video.AddVideoLabels(labelInfos)
-	if err != nil || int(affected) != len(labelInfos) {
-		svc.engine.Rollback()
-		log.Log.Errorf("video_trace: add video labels err:%s", err)
-		return errors.New("add video labels error")
-	}
+  if len(labelInfos) > 0 {
+    // 添加视频标签（多条）
+    affected, err = svc.video.AddVideoLabels(labelInfos)
+    if err != nil || int(affected) != len(labelInfos) {
+      svc.engine.Rollback()
+      log.Log.Errorf("video_trace: add video labels err:%s", err)
+      return errors.New("add video labels error")
+    }
+  }
 
 	svc.video.Statistic.VideoId = svc.video.Videos.VideoId
 	svc.video.Statistic.CreateAt = int(now)

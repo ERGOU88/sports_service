@@ -108,7 +108,7 @@ func pullEvents() error {
 			now := time.Now().Unix()
 			video := new(models.Videos)
 			video.UserId = userId
-			video.Cover = pubInfo.Cover
+			video.Cover = *event.FileUploadEvent.MediaBasicInfo.CoverUrl
 			video.Title = pubInfo.Title
 			video.Describe = pubInfo.Describe
 			video.VideoAddr = pubInfo.VideoAddr
@@ -149,13 +149,15 @@ func pullEvents() error {
 				labelInfos[index] = info
 			}
 
-			// 添加视频标签（多条）
-			affected, err = vmodel.AddVideoLabels(labelInfos)
-			if err != nil || int(affected) != len(labelInfos) {
-				log.Log.Errorf("job_trace: add video labels err:%s", err)
-				session.Rollback()
-				continue
-			}
+			if len(labelInfos) > 0 {
+        // 添加视频标签（多条）
+        affected, err = vmodel.AddVideoLabels(labelInfos)
+        if err != nil || int(affected) != len(labelInfos) {
+          log.Log.Errorf("job_trace: add video labels err:%s", err)
+          session.Rollback()
+          continue
+        }
+      }
 
 
 			vmodel.Statistic.VideoId = video.VideoId
