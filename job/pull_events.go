@@ -133,8 +133,8 @@ func pullEvents() error {
 			lmodel := mlabel.NewLabelModel(session)
 			labelIds := strings.Split(pubInfo.VideoLabels, ",")
 			// 组装多条记录 写入视频标签表
-			labelInfos := make([]*models.VideoLabels, len(labelIds))
-			for index, labelId := range labelIds {
+			labelInfos := make([]*models.VideoLabels, 0)
+			for _, labelId := range labelIds {
 				if lmodel.GetLabelInfoByMem(labelId) == nil {
 					log.Log.Errorf("job_trace: label not found, labelId:%s", labelId)
 					continue
@@ -145,7 +145,7 @@ func pullEvents() error {
 				info.LabelId = labelId
 				info.LabelName = lmodel.GetLabelNameByMem(labelId)
 				info.CreateAt = int(now)
-				labelInfos[index] = info
+				labelInfos = append(labelInfos, info)
 			}
 
 			if len(labelInfos) > 0 {
