@@ -265,7 +265,7 @@ func (m *VideoModel) GetUserPublishVideos(offset, size int, userId, status, fiel
 	if status != consts.VIDEO_VIEW_ALL {
 		sql += fmt.Sprintf("AND v.`status` = %s ", status)
 	} else {
-		sql += "AND v.`status` != 3"
+		sql += "AND v.`status` != 3 "
 	}
 
 	// 条件为默认时间倒序 则使用videos表的时间字段
