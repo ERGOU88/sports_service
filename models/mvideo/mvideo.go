@@ -270,12 +270,14 @@ func (m *VideoModel) GetUserPublishVideos(offset, size int, userId, status, fiel
 
 	// 条件为默认时间倒序 则使用videos表的时间字段
 	if field == consts.VIDEO_CONDITION_TIME {
-		sql += fmt.Sprintf("GROUP BY v.video_id ORDER BY v.%s DESC, v.sortorder DESC LIMIT ?, ?", field, offset, size)
+		sql += fmt.Sprintf("GROUP BY v.video_id ORDER BY v.%s DESC, v.sortorder DESC ", field)
 	} else {
-		sql += fmt.Sprintf("GROUP BY v.video_id ORDER BY s.%s DESC, v.sortorder DESC LIMIT ?, ?", field, offset, size)
+		sql += fmt.Sprintf("GROUP BY v.video_id ORDER BY s.%s DESC, v.sortorder DESC ", field)
 	}
 
-	if err := m.Engine.SQL(sql, userId).Find(&list); err != nil {
+	sql += "LIMIT ?, ?"
+
+	if err := m.Engine.SQL(sql, userId, offset, size).Find(&list); err != nil {
 		log.Log.Errorf("video_trace: get user publish videos err:%s", err)
 		return nil
 	}
