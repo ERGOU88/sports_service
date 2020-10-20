@@ -263,7 +263,7 @@ func (m *VideoModel) GetUserPublishVideos(offset, size int, userId, status, fiel
 	sql := "SELECT v.*, s.fabulous_num, s.share_num, s.comment_num, s.browse_num, s.barrage_num FROM videos as v " +
 		"LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.user_id=? "
 	if status != consts.VIDEO_VIEW_ALL {
-		sql += "AND v.`status` = ? "
+		sql += fmt.Sprintf("AND v.`status` = %d ", status)
 	} else {
 		sql += "AND v.`status` != 3"
 	}
