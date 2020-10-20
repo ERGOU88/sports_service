@@ -160,7 +160,7 @@ type SetSortParams struct {
 // 热搜配置设置状态（展示/隐藏）
 type SetStatusParams struct {
   Id          int        `json:"id" binding:"required"`         // 数据id
-  Status      int        `json:"status" binding:"required"`     // 状态 0 展示 1 隐藏
+  Status      int        `json:"status"`                        // 状态 0 展示 1 隐藏
 }
 
 // 实栗

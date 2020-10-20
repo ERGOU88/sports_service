@@ -221,6 +221,24 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/configure',
+    component: Layout,
+    redirect: '/configure',
+    name: '设置',
+    meta: {
+      title: '设置',
+      icon: 'peoples'
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/configure/configure'),
+        name: '热搜',
+        meta: { title: '热搜', icon: 'search', affix: true }
+      }
+    ]
+  },
 
   // {
   //   path: 'external-link',

@@ -147,7 +147,7 @@ func (svc *ConfigModule) SetStatusByHotSearch(params *mvideo.SetStatusParams) in
   }
 
   now := time.Now().Unix()
-  svc.video.HotSearch.Sortorder = params.Status
+  svc.video.HotSearch.Status = params.Status
   svc.video.HotSearch.UpdateAt = int(now)
   if err := svc.video.UpdateStatusByHotSearch(params.Id); err != nil {
     return errdef.CONFIG_SET_STATUS_HOT_FAIL
