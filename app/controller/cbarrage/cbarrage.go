@@ -88,9 +88,9 @@ func (svc *BarrageModule) SendVideoBarrage(userId string, params *mbarrage.SendB
 
 	// 更新视频弹幕总计 +1
 	if err := svc.video.UpdateVideoBarrageNum(video.VideoId, int(now), consts.CONFIRM_OPERATE); err != nil {
-		log.Log.Errorf("like_trace: update video like num err:%s", err)
+		log.Log.Errorf("barrage_trace: update video barrage num err:%s", err)
 		svc.engine.Rollback()
-		return errdef.LIKE_VIDEO_FAIL
+		return errdef.BARRAGE_VIDEO_SEND_FAIL
 	}
 
 	svc.engine.Commit()

@@ -31,6 +31,7 @@ func New(secretId, secretKey, apiDomain string) (client *TencentCloud) {
 	return client
 }
 
+// 透传数据
 type SourceContext struct {
 	UserId    string   `json:"user_id"`   // 用户id
 	TaskId    int64    `json:"task_id"`   // 任务id

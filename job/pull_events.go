@@ -111,13 +111,16 @@ func pullEvents() error {
       vmodel.Videos.Title = pubInfo.Title
       vmodel.Videos.Describe = pubInfo.Describe
       vmodel.Videos.VideoAddr = pubInfo.VideoAddr
-      vmodel.Videos.VideoDuration = pubInfo.VideoDuration
+      // 转为毫秒
+      vmodel.Videos.VideoDuration = int(*event.FileUploadEvent.MetaData.VideoDuration * 1000)
       vmodel.Videos.CreateAt = int(now)
       vmodel.Videos.UpdateAt = int(now)
       vmodel.Videos.UserType = consts.PUBLISH_VIDEO_BY_USER
-      vmodel.Videos.VideoWidth = pubInfo.VideoWidth
-      vmodel.Videos.VideoHeight = pubInfo.VideoHeight
-			fileId, _ := strconv.Atoi(*event.FileUploadEvent.FileId)
+      vmodel.Videos.VideoWidth = *event.FileUploadEvent.MetaData.Width
+      vmodel.Videos.VideoHeight = *event.FileUploadEvent.MetaData.Height
+      // 单位：字节
+      vmodel.Videos.Size = *event.FileUploadEvent.MetaData.Size
+      fileId, _ := strconv.Atoi(*event.FileUploadEvent.FileId)
       vmodel.Videos.FileId = int64(fileId)
       vmodel.Videos.Size = pubInfo.Size
       // todo: 如果有 记录用户自定义标签
@@ -157,7 +160,6 @@ func pullEvents() error {
           continue
         }
       }
-
 
 			vmodel.Statistic.VideoId = vmodel.Videos.VideoId
 			vmodel.Statistic.CreateAt = int(now)
