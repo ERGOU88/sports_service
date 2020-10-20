@@ -284,6 +284,11 @@ func (svc *VideoModule) GetUserPublishList(userId, status, condition string, pag
 
   // 获取用户发布的视频列表[通过审核状态和条件查询]
   list := svc.video.GetUserPublishVideos(offset, size, userId, status, field)
+  if len(list) == 0 {
+    log.Log.Errorf("video_trace: not publish video, userId:%s", userId)
+    return []*mvideo.VideosInfo{}
+  }
+
 	for _, val := range list {
 	  // todo: 已播时长（毫秒）
 	  val.TimeElapsed = 10000
