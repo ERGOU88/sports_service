@@ -73,6 +73,8 @@ type VideosInfo struct {
 	ShareNum      int    `json:"share_num"`      // 分享数
 	BrowseNum     int    `json:"browse_num"`     // 浏览数（播放数）
 	BarrageNum    int    `json:"barrage_num"`    // 弹幕数
+  TimeElapsed   int    `json:"time_elapsed"`   // 已播放的时长 毫秒
+  StatusCn      string `json:"status_cn"`      // 审核状态（中文展示）
 }
 
 // 视频详情信息

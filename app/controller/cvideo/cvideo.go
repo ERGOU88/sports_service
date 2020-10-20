@@ -281,8 +281,44 @@ func (svc *VideoModule) GetUserPublishList(userId, status, condition string, pag
 
 	offset := (page - 1) * size
 	field := svc.GetConditionFieldByPublish(condition)
-	// 获取用户发布的视频列表[通过审核状态和条件查询]
-	return svc.video.GetUserPublishVideos(offset, size, userId, status, field)
+
+  // 获取用户发布的视频列表[通过审核状态和条件查询]
+  list := svc.video.GetUserPublishVideos(offset, size, userId, status, field)
+	for _, val := range list {
+	  // todo: 已播时长（毫秒）
+	  val.TimeElapsed = 10000
+	  val.StatusCn = svc.GetConditionCn(condition)
+  }
+
+  return list
+}
+
+// -1 发布时间 0 播放数 1 弹幕数 2 评论数 3 点赞数 4 分享数
+func (svc *VideoModule) GetConditionCn(condition string) string {
+  switch condition {
+  // 发布时间
+  case consts.VIDEO_CONDITION_TIME:
+    return "发布时间"
+  // 播放数
+  case consts.VIDEO_CONDITION_PLAY:
+    return "播放数"
+  // 弹幕数
+  case consts.VIDEO_CONDITION_BARRAGE:
+    return "弹幕数"
+  // 评论数
+  case consts.VIDEO_CONDITION_COMMENT:
+    return "评论数"
+  // 点赞数
+  case consts.VIDEO_CONDITION_LIKE:
+    return "点赞数"
+  // 分享数
+  case consts.VIDEO_CONDITION_SHARE:
+    return "分享数"
+  default:
+    log.Log.Errorf("video_trace: unsupported condition, condition: %s", condition)
+  }
+
+  return "发布时间"
 }
 
 // 条件查询发布的内容

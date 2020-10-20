@@ -35,6 +35,11 @@ const (
 	// 13001 - 14000 用户相关错误码
 	USER_FORBID_FAIL            = 13001
 	USER_UNFORBID_FAIL          = 13002
+
+	// 14001 - 15000 后台用户相关错误码
+	ADMIN_ADD_FAIL              = 14001
+	ADMIN_NOT_EXISTS            = 14002
+	ADMIN_PASSWORD_NOT_MATCH    = 14003
 )
 
 var MsgFlags = map[int]string{
@@ -68,6 +73,10 @@ var MsgFlags = map[int]string{
 
 	USER_FORBID_FAIL:            "用户封禁失败",
 	USER_UNFORBID_FAIL:          "用户解封失败",
+
+  ADMIN_ADD_FAIL:              "管理员添加失败",
+  ADMIN_NOT_EXISTS:            "管理员不存在",
+  ADMIN_PASSWORD_NOT_MATCH:    "帐号/密码不正确",
 }
 
 func GetMsg(code int) string {
