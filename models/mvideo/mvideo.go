@@ -261,7 +261,7 @@ func (m *VideoModel) GetUserPublishVideos(offset, size int, userId, status, fiel
 	var list []*VideosInfo
 
 	sql := "SELECT v.*, s.fabulous_num, s.share_num, s.comment_num, s.browse_num, s.barrage_num FROM videos as v " +
-		"LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.user_id=? "
+		"LEFT JOIN video_statistic as s ON v.`video_id`=s.`video_id` WHERE v.`user_id`=? "
 	if status != consts.VIDEO_VIEW_ALL {
 		sql += fmt.Sprintf("AND v.`status` = %s ", status)
 	} else {
@@ -270,9 +270,9 @@ func (m *VideoModel) GetUserPublishVideos(offset, size int, userId, status, fiel
 
 	// 条件为默认时间倒序 则使用videos表的时间字段
 	if field == consts.VIDEO_CONDITION_TIME {
-		sql += fmt.Sprintf("GROUP BY v.video_id ORDER BY v.%s DESC, v.sortorder DESC ", field)
+		sql += fmt.Sprintf("GROUP BY v.`video_id` ORDER BY v.`%s` DESC, v.`sortorder` DESC ", field)
 	} else {
-		sql += fmt.Sprintf("GROUP BY v.video_id ORDER BY s.%s DESC, v.sortorder DESC ", field)
+		sql += fmt.Sprintf("GROUP BY v.`video_id` ORDER BY s.`%s` DESC, v.`sortorder` DESC ", field)
 	}
 
 	sql += "LIMIT ?, ?"
