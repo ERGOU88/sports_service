@@ -38,7 +38,7 @@ module.exports = {
     },
     proxy: {
       [process.env.VUE_APP_BASE_API]: {
-        target: 'http://192.168.51.97:13002/backend/v1',
+        target: 'http://192.168.51.87:13002/backend/v1',
         changeOrigin: true,  //配置跨域
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''

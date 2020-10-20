@@ -38,8 +38,9 @@ const (
 
 	// 14001 - 15000 后台用户相关错误码
 	ADMIN_ADD_FAIL              = 14001
-	ADMIN_NOT_EXISTS            = 14002
-	ADMIN_PASSWORD_NOT_MATCH    = 14003
+	ADMIN_HAS_EXISTS            = 14002
+	ADMIN_NOT_EXISTS            = 14003
+	ADMIN_PASSWORD_NOT_MATCH    = 14004
 )
 
 var MsgFlags = map[int]string{
@@ -75,6 +76,7 @@ var MsgFlags = map[int]string{
 	USER_UNFORBID_FAIL:          "用户解封失败",
 
   ADMIN_ADD_FAIL:              "管理员添加失败",
+  ADMIN_HAS_EXISTS:            "管理员已存在",
   ADMIN_NOT_EXISTS:            "管理员不存在",
   ADMIN_PASSWORD_NOT_MATCH:    "帐号/密码不正确",
 }

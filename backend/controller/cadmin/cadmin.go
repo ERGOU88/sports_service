@@ -30,6 +30,11 @@ func New(c *gin.Context) AdminModule {
 
 // 添加后台管理员 todo:测试使用
 func (svc *AdminModule) AddAdminUser(params *madmin.AdminRegOrLoginParams) int {
+  admin := svc.admin.FindAdminUserByName(params.UserName)
+  if admin != nil {
+    return errdef.ADMIN_NOT_EXISTS
+  }
+
   // 去掉空格 换行
   name := strings.Trim(params.UserName, " ")
   name = strings.Replace(name, "\n", "", -1)

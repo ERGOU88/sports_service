@@ -54,6 +54,7 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import {adminLogin} from "@/api/login";
 
 export default {
   name: 'Login',
@@ -75,7 +76,7 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: '111111'
+        password: '123456'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -105,21 +106,49 @@ export default {
         this.$refs.password.focus()
       })
     },
+
+    async adminLogin(name, pwd) {
+      const res = await adminLogin({
+        user_name: name,
+        password: pwd,
+      });
+      console.log(res);
+      if (res.code === 200) {
+        this.$message.success("登陆成功")
+        this.$router.push({ path: "/video/list" })
+      } else {
+        this.$message.error(res.message)
+      }
+    },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
+      console.log(this.$refs.password.value)
+      const username = this.$refs.username.value
+      if (username.length <= 0 || username.length > 10) {
+        this.$message.error("请输入正确的用户名")
+        return
+      }
+
+      const pwd = this.$refs.password.value
+      if (pwd.length < 6) {
+        this.$message.error("请输入正确的密码！！长度不能小于6")
+        return
+      }
+
+      this.adminLogin(username, pwd)
+      // this.$refs.loginForm.validate(valid => {
+      //   if (valid) {
+      //     this.loading = true
+      //     this.$store.dispatch('user/login', this.loginForm).then(() => {
+      //       this.$router.push({ path: this.redirect || '/' })
+      //       this.loading = false
+      //     }).catch(() => {
+      //       this.loading = false
+      //     })
+      //   } else {
+      //     console.log('error submit!!')
+      //     return false
+      //   }
+      // })
     }
   }
 }

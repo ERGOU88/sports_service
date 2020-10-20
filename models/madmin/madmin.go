@@ -35,7 +35,7 @@ func (m *AdminModel) AddAdminUser() error {
 // 通过用户名 查询 管理员
 func (m *AdminModel) FindAdminUserByName(userName string) *models.AdminUser {
   admin := new(models.AdminUser)
-  ok, err := m.Engine.Where("user_name=?", userName).Get(admin)
+  ok, err := m.Engine.Where("username=?", userName).Get(admin)
   if !ok || err != nil {
     return nil
   }
