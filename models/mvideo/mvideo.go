@@ -16,6 +16,7 @@ type VideoModel struct {
 	Labels    *models.VideoLabels
 	Statistic *models.VideoStatistic
 	Events    *models.TencentCloudEvents
+  HotSearch *models.HotSearch
 }
 
 // 视频发布请求参数
@@ -134,9 +135,32 @@ type EditRecommendStatusParam struct {
 	Status       int32      `json:"status"`        // 状态 0 不推荐 1 推荐
 }
 
-// 自定义标签请求
+// 自定义标签请求参数
 type CustomLabelParams struct {
   CustomLabel   string    `json:"custom_label"`   // 自定义标签
+}
+
+// 添加热搜配置请求参数
+type AddHotSearchParams struct {
+  HotSearch       string     `json:"hot_search" binding:"required"`   // 热搜内容
+  Sortorder       int        `json:"sortorder" binding:"required"`    // 权重
+}
+
+// 删除热搜配置请求参数
+type DelHotSearchParams struct {
+  Id              int       `json:"id" binding:"required"`     // 数据id
+}
+
+// 热搜配置设置权重
+type SetSortParams struct {
+  Id          int       `json:"id" binding:"required"`          // 数据id
+  Sortorder   int       `json:"sortorder" binding:"sortorder"`  // 权重值
+}
+
+// 热搜配置设置状态（展示/隐藏）
+type SetStatusParams struct {
+  Id          int        `json:"id" binding:"required"`         // 数据id
+  Status      int        `json:"status" binding:"required"`     // 状态 0 展示 1 隐藏
 }
 
 // 实栗
@@ -147,6 +171,7 @@ func NewVideoModel(engine *xorm.Session) *VideoModel {
 		Labels: new(models.VideoLabels),
 		Statistic: new(models.VideoStatistic),
 		Events: new(models.TencentCloudEvents),
+    HotSearch: new(models.HotSearch),
 		Engine: engine,
 	}
 }
@@ -472,16 +497,51 @@ func (m *VideoModel) SearchVideos(name, sortCondition string, minDuration, maxDu
 	return list
 }
 
-// 获取热门搜索
-func (m *VideoModel) GetHotSearch() *models.HotSearch {
-	hot := new(models.HotSearch)
-	ok, err := m.Engine.Desc("id").Limit(1).Get(hot)
-	if !ok || err != nil {
-		log.Log.Errorf("video_trace: get hot search err:%s", err)
-		return nil
-	}
+// 获取热门搜索配置列表
+func (m *VideoModel) GetHotSearch() []*models.HotSearch {
+  var list []*models.HotSearch
+	if err := m.Engine.Desc("sortorder", "id").Find(&list); err != nil {
+    log.Log.Errorf("video_trace: get hot search err:%s", err)
+    return []*models.HotSearch{}
+  }
 
-	return hot
+	return list
+}
+
+// 添加热搜配置
+func (m *VideoModel) AddHotSearch() error {
+  if _, err := m.Engine.InsertOne(m.HotSearch); err != nil {
+    return err
+  }
+
+  return nil
+}
+
+// 删除热搜配置
+func (m *VideoModel) DelHotSearch(id int) error {
+  if _, err := m.Engine.Where("id=?", id).Delete(&models.HotSearch{}); err != nil {
+    return err
+  }
+
+  return nil
+}
+
+// 修改热搜配置（权重、更新时间）
+func (m *VideoModel) UpdateSortByHotSearch(id int) error {
+  if _, err := m.Engine.Where("id=?", id).Cols("sortorder", "update_at").Update(m.HotSearch); err != nil {
+    return err
+  }
+
+  return nil
+}
+
+// 更新热搜配置（状态、更新时间）
+func (m *VideoModel) UpdateStatusByHotSearch(id int) error {
+  if _, err := m.Engine.Where("id=?", id).Cols("status", "update_at").Update(m.HotSearch); err != nil {
+    return err
+  }
+
+  return nil
 }
 
 // 获取审核中/审核失败 的视频列表

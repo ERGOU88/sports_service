@@ -18,5 +18,15 @@ func Router(engine *gin.Engine) {
 		configure.POST("/del/avatar", DelAvatar)
 		// 获取系统头像列表
 		configure.GET("/avatar/list", GetAvatarList)
+		// 热搜列表
+		configure.GET("/hot/search", GetHotSearch)
+		// 添加热搜
+		configure.POST("/add/hot/search", AddHotSearch)
+		// 删除热搜
+		configure.POST("/del/hot/search", DelHotSearch)
+		// 设置热搜权重
+		configure.POST("/set/hot/sort", SetSortByHotSearch)
+    // 设置热搜状态
+    configure.POST("/set/hot/status", SetStatusByHotSearch)
 	}
 }

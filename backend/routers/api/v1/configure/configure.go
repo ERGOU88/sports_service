@@ -7,7 +7,8 @@ import (
 	"sports_service/server/global/backend/errdef"
 	"sports_service/server/models/mbanner"
 	"sports_service/server/models/muser"
-	"sports_service/server/util"
+  "sports_service/server/models/mvideo"
+  "sports_service/server/util"
 )
 
 // 添加banner
@@ -84,7 +85,73 @@ func GetAvatarList(c *gin.Context) {
 
 	svc := configure.New(c)
 	list := svc.GetSystemAvatars()
-
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// 热搜配置
+func GetHotSearch(c *gin.Context) {
+  reply := errdef.New(c)
+
+  svc := configure.New(c)
+  list := svc.GetHotSearch()
+  reply.Data["list"] = list
+  reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// 添加热搜
+func AddHotSearch(c *gin.Context) {
+  reply := errdef.New(c)
+  params := new(mvideo.AddHotSearchParams)
+  if err := c.BindJSON(params); err != nil {
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := configure.New(c)
+  list := svc.AddHotSearch(params)
+  reply.Data["list"] = list
+  reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// 删除热搜
+func DelHotSearch(c *gin.Context) {
+  reply := errdef.New(c)
+  param := new(mvideo.DelHotSearchParams)
+  if err := c.BindJSON(param); err != nil {
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := configure.New(c)
+  syscode := svc.DelHotSearch(param)
+  reply.Response(http.StatusOK, syscode)
+}
+
+// 设置热搜权重
+func SetSortByHotSearch(c *gin.Context) {
+  reply := errdef.New(c)
+  param := new(mvideo.SetSortParams)
+  if err := c.BindJSON(param); err != nil {
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := configure.New(c)
+  syscode := svc.SetSortByHotSearch(param)
+  reply.Response(http.StatusOK, syscode)
+}
+
+// 设置热搜状态
+func SetStatusByHotSearch(c *gin.Context) {
+  reply := errdef.New(c)
+  param := new(mvideo.SetStatusParams)
+  if err := c.BindJSON(param); err != nil {
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := configure.New(c)
+  syscode := svc.SetStatusByHotSearch(param)
+  reply.Response(http.StatusOK, syscode)
 }

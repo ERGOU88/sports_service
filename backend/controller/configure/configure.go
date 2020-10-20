@@ -9,7 +9,9 @@ import (
 	"sports_service/server/models"
 	"sports_service/server/models/mbanner"
 	"sports_service/server/models/muser"
-	"time"
+  "sports_service/server/models/mvideo"
+  "sports_service/server/tools/tencentCloud"
+  "time"
 )
 
 type ConfigModule struct {
@@ -17,6 +19,7 @@ type ConfigModule struct {
 	engine      *xorm.Session
 	banner      *mbanner.BannerModel
 	user        *muser.UserModel
+	video       *mvideo.VideoModel
 }
 
 func New(c *gin.Context) ConfigModule {
@@ -26,6 +29,7 @@ func New(c *gin.Context) ConfigModule {
 		context: c,
 		banner: mbanner.NewBannerMolde(socket),
 		user: muser.NewUserModel(socket),
+		video: mvideo.NewVideoModel(socket),
 		engine: socket,
 	}
 }
@@ -88,4 +92,66 @@ func (svc *ConfigModule) DelSystemAvatar(param *muser.DelSystemAvatarParam) int 
 // 后台获取系统头像（一次性获取）
 func (svc *ConfigModule) GetSystemAvatars() []*models.DefaultAvatar {
 	return svc.user.GetSystemAvatarList()
+}
+
+// 获取热搜配置
+func (svc *ConfigModule) GetHotSearch() []*models.HotSearch {
+  return svc.video.GetHotSearch()
+}
+
+// 添加热搜
+func (svc *ConfigModule) AddHotSearch(params *mvideo.AddHotSearchParams) int {
+  client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+  // 检测热搜内容
+  isPass, err := client.TextModeration(params.HotSearch)
+  if !isPass || err != nil {
+    return errdef.CONFIG_INVALID_HOT_SEARCH
+  }
+
+  now := time.Now().Unix()
+  svc.video.HotSearch.HotSearchContent = params.HotSearch
+  svc.video.HotSearch.CreateAt = int(now)
+  svc.video.HotSearch.UpdateAt = int(now)
+  if err := svc.video.AddHotSearch(); err != nil {
+    return errdef.CONFIG_ADD_HOT_SEARCH_FAIL
+  }
+
+  return errdef.SUCCESS
+}
+
+// 删除热搜
+func (svc *ConfigModule) DelHotSearch(params *mvideo.DelHotSearchParams) int {
+  if err := svc.video.DelHotSearch(params.Id); err != nil {
+    return errdef.CONFIG_DEL_HOT_SEARCH_FAIL
+  }
+
+  return errdef.SUCCESS
+}
+
+// 热搜内容设置权重
+func (svc *ConfigModule) SetSortByHotSearch(params *mvideo.SetSortParams) int {
+  now := time.Now().Unix()
+  svc.video.HotSearch.Sortorder = params.Sortorder
+  svc.video.HotSearch.UpdateAt = int(now)
+  if err := svc.video.UpdateSortByHotSearch(params.Id); err != nil {
+    return errdef.CONFIG_SET_SORT_HOT_FAIL
+  }
+
+  return errdef.SUCCESS
+}
+
+// 热搜内容设置状态
+func (svc *ConfigModule) SetStatusByHotSearch(params *mvideo.SetStatusParams) int {
+  if params.Status != 0 && params.Status != 1 {
+    return errdef.INVALID_PARAMS
+  }
+
+  now := time.Now().Unix()
+  svc.video.HotSearch.Sortorder = params.Status
+  svc.video.HotSearch.UpdateAt = int(now)
+  if err := svc.video.UpdateStatusByHotSearch(params.Id); err != nil {
+    return errdef.CONFIG_SET_STATUS_HOT_FAIL
+  }
+
+  return errdef.SUCCESS
 }

@@ -31,6 +31,11 @@ const (
 	CONFIG_DEL_BANNER_FAIL      = 12002
 	CONFIG_ADD_AVATAR_FAIL      = 12003
 	CONFIG_DEL_AVATAR_FAIL      = 12004
+	CONFIG_ADD_HOT_SEARCH_FAIL  = 12005
+  CONFIG_DEL_HOT_SEARCH_FAIL  = 12006
+  CONFIG_SET_STATUS_HOT_FAIL  = 12007
+  CONFIG_SET_SORT_HOT_FAIL    = 12008
+  CONFIG_INVALID_HOT_SEARCH   = 12009
 
 	// 13001 - 14000 用户相关错误码
 	USER_FORBID_FAIL            = 13001
@@ -71,8 +76,13 @@ var MsgFlags = map[int]string{
 	CONFIG_DEL_BANNER_FAIL:      "删除banner失败",
 	CONFIG_ADD_AVATAR_FAIL:      "添加系统头像失败",
 	CONFIG_DEL_AVATAR_FAIL:      "删除系统头像失败",
+  CONFIG_ADD_HOT_SEARCH_FAIL:  "添加热搜失败",
+  CONFIG_DEL_HOT_SEARCH_FAIL:  "删除热搜失败",
+  CONFIG_SET_STATUS_HOT_FAIL:  "设置热搜状态失败",
+  CONFIG_SET_SORT_HOT_FAIL:    "设置热搜权重失败",
+  CONFIG_INVALID_HOT_SEARCH:   "热搜内容含有违规文字",
 
-	USER_FORBID_FAIL:            "用户封禁失败",
+  USER_FORBID_FAIL:            "用户封禁失败",
 	USER_UNFORBID_FAIL:          "用户解封失败",
 
   ADMIN_ADD_FAIL:              "管理员添加失败",

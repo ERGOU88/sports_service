@@ -6,7 +6,8 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
-	"sports_service/server/models/mattention"
+  "sports_service/server/models"
+  "sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
@@ -208,9 +209,8 @@ func (svc *SearchModule) LabelSearch(userId string, labelId string, page, size i
 }
 
 // 获取热门搜索（后台配置的结果集）
-func (svc *SearchModule) GetHotSearch() []string {
-	hot := svc.video.GetHotSearch()
-	return strings.Split(hot.HotSearchContent, ",")
+func (svc *SearchModule) GetHotSearch() []*models.HotSearch {
+	return  svc.video.GetHotSearch()
 }
 
 // 搜索关注的用户
