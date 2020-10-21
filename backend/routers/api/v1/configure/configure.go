@@ -109,9 +109,8 @@ func AddHotSearch(c *gin.Context) {
   }
 
   svc := configure.New(c)
-  list := svc.AddHotSearch(params)
-  reply.Data["list"] = list
-  reply.Response(http.StatusOK, errdef.SUCCESS)
+  syscode := svc.AddHotSearch(params)
+  reply.Response(http.StatusOK, syscode)
 }
 
 // 删除热搜

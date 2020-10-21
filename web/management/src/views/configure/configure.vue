@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 80%">
+    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="ID" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
@@ -34,17 +34,17 @@
 
       <el-table-column class-name="status-col" label="当前状态" width="110" align="center">
         <template slot-scope="scope">
-          <el-tag type="success" effect="dark" v-if="scope.row.status===1">屏蔽</el-tag>
-          <el-tag type="warning" effect="dark" v-if="scope.row.status===0">正常</el-tag>
+          <el-tag type="success" effect="dark" v-if="scope.row.status===0">正常</el-tag>
+          <el-tag type="warning" effect="dark" v-if="scope.row.status===1">屏蔽</el-tag>
         </template>
       </el-table-column>
 
 
-      <el-table-column align="center" label="操作" width="300">
+      <el-table-column align="center" label="操作" width="400">
         <template slot-scope="scope">
           <el-button :type="(scope.row.status === 0)?'primary':'info'" size="mini" @click="handleSetStatus(scope.row, 1)" :disabled="!(scope.row.status === 0)">设为屏蔽</el-button>
           <el-button :type="(scope.row.status === 1)?'primary':'info'" size="mini" @click="handleSetStatus(scope.row, 0)" :disabled="!(scope.row.status === 1)">设为正常</el-button>
-          <el-button :type="'primary'" size="mini" @click="handleSet">设置权重</el-button>
+          <el-button :type="'primary'" size="mini" @click="handleSet(scope.row.id, scope.row.sortorder)">设置权重</el-button>
           <el-button :type="'primary'" size="mini" @click="handleDel(scope.row, 3)">删除</el-button>
         </template>
       </el-table-column>
@@ -98,8 +98,10 @@
         this.refreshList()
       },
 
-      handleSet() {
-        setSortShow = true
+      handleSet(id, sortorder) {
+        this.setSortShow = true
+        this.id = id
+        this.sortorder = sortorder
       },
       handleSetClose() {
         this.setSortShow = false

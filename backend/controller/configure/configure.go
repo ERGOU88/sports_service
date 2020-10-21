@@ -108,7 +108,9 @@ func (svc *ConfigModule) AddHotSearch(params *mvideo.AddHotSearchParams) int {
     return errdef.CONFIG_INVALID_HOT_SEARCH
   }
 
-  svc.video.GetHotSearch()
+  if b := svc.video.IsRepeatHotSearchName(params.HotSearch); b {
+    return errdef.CONFIG_HOT_NAME_EXISTS
+  }
 
   now := time.Now().Unix()
   svc.video.HotSearch.HotSearchContent = params.HotSearch

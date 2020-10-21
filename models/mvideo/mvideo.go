@@ -508,8 +508,15 @@ func (m *VideoModel) GetHotSearch() []*models.HotSearch {
 	return list
 }
 
-func (m *VideoModel) GetHotSearchByName() {
+// 热搜词是否重复
+func (m *VideoModel) IsRepeatHotSearchName(name string) bool {
+  hot := new(models.HotSearch)
+  ok, err := m.Engine.Where("name=?", name).Get(hot)
+  if err == nil && ok {
+    return true
+  }
 
+  return false
 }
 
 // 添加热搜配置

@@ -16,16 +16,6 @@
   } from '@/api/configure'
   export default {
     data() {
-      const validateName = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请输入热搜词'));
-        } else if (value.length > 10) {
-          callback(new Error('热搜词长度不能大于10位'));
-        } else {
-          callback();
-        }
-      };
-
       const validateSortorder = (rule, value, callback) => {
         if (isNumber(value)) {
           callback();
@@ -36,12 +26,6 @@
 
       return {
         rules: {
-          name: [
-            {
-              validator: validateName,
-              trigger: 'blur'
-            }
-          ],
           sortorder: [
             {
               validator: validateSortorder,
@@ -50,7 +34,7 @@
           ]
         },
         form: {
-          sortorder: '',
+          sortorder: this.sortorder,
         },
         loading: false,
         formLabelWidth: '120px',
@@ -100,10 +84,8 @@
       submitForm() {
         this.$refs.ruleForm.validate(async valid => {
           if (valid) {
-            alert(this.id)
-            alert(this.sortorder)
             this.cread()
-            this.handleSetSort(this.id, this.form.sortorder)
+            this.handleSetSort(this.id, parseInt(this.form.sortorder))
           } else {
             console.log('error submit!!');
             return false;

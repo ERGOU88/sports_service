@@ -83,7 +83,6 @@
       },
 
       async addHotInfo(sortorder, name) {
-        alert(sortorder)
         const res = await addHotSearch({
           hot_search: name,
           sortorder: parseInt(sortorder),
