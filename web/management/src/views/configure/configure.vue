@@ -1,7 +1,6 @@
 <template>
-
   <div class="app-container">
-    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
+    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 80%">
       <el-table-column align="center" label="ID" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
@@ -45,22 +44,26 @@
         <template slot-scope="scope">
           <el-button :type="(scope.row.status === 0)?'primary':'info'" size="mini" @click="handleSetStatus(scope.row, 1)" :disabled="!(scope.row.status === 0)">设为屏蔽</el-button>
           <el-button :type="(scope.row.status === 1)?'primary':'info'" size="mini" @click="handleSetStatus(scope.row, 0)" :disabled="!(scope.row.status === 1)">设为正常</el-button>
+          <el-button :type="'primary'" size="mini" @click="handleSet">设置权重</el-button>
           <el-button :type="'primary'" size="mini" @click="handleDel(scope.row, 3)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-
+    <div>
+       <el-button :type="'primary'" size="mini" @click="addShow=true">添加热搜</el-button>
+    </div>
+    <add v-if="addShow" :show='addShow' @handleClose='handleClose'></add>
+    <set v-if="setSortShow" :show='setSortShow' @handleSetClose='handleSetClose' :id="id" :sortorder='sortorder'></set>
   </div>
 </template>
 <script>
   import {
     hotSearchList,
-    addHotSearch,
     delHotSearch,
-    setSort,
     setStatus
   } from '@/api/configure'
-  import Pagination from '@/components/Pagination'
+  import add from './components/addHotSearch.vue'
+  import set from './components/setSort.vue'
   import {formatDate} from '@/utils/format-date'
   export default {
     filters: {
@@ -72,9 +75,17 @@
     },
     data() {
       return {
+        addShow: false,
+        setSortShow: false,
         list: [],
         loading: 1,
+        id: 0,
+        sortorder: 0,
       }
+    },
+    components: {
+      add,
+      set,
     },
 
     created() {
@@ -82,6 +93,19 @@
     },
 
     methods: {
+      handleClose() {
+        this.addShow = false
+        this.refreshList()
+      },
+
+      handleSet() {
+        setSortShow = true
+      },
+      handleSetClose() {
+        this.setSortShow = false
+        this.refreshList()
+      },
+
       async listData() {
         const res = await hotSearchList();
         console.log(res)
@@ -149,7 +173,6 @@
           this.$message.error(res.message)
         }
       },
-    },
-
+    }
   }
 </script>

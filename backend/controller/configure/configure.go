@@ -108,8 +108,11 @@ func (svc *ConfigModule) AddHotSearch(params *mvideo.AddHotSearchParams) int {
     return errdef.CONFIG_INVALID_HOT_SEARCH
   }
 
+  svc.video.GetHotSearch()
+
   now := time.Now().Unix()
   svc.video.HotSearch.HotSearchContent = params.HotSearch
+  svc.video.HotSearch.Sortorder = params.Sortorder
   svc.video.HotSearch.CreateAt = int(now)
   svc.video.HotSearch.UpdateAt = int(now)
   if err := svc.video.AddHotSearch(); err != nil {

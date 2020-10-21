@@ -143,7 +143,7 @@ type CustomLabelParams struct {
 // 添加热搜配置请求参数
 type AddHotSearchParams struct {
   HotSearch       string     `json:"hot_search" binding:"required"`   // 热搜内容
-  Sortorder       int        `json:"sortorder" binding:"required"`    // 权重
+  Sortorder       int        `json:"sortorder"`                       // 权重
 }
 
 // 删除热搜配置请求参数
@@ -154,7 +154,7 @@ type DelHotSearchParams struct {
 // 热搜配置设置权重
 type SetSortParams struct {
   Id          int       `json:"id" binding:"required"`          // 数据id
-  Sortorder   int       `json:"sortorder" binding:"sortorder"`  // 权重值
+  Sortorder   int       `json:"sortorder"`                      // 权重值
 }
 
 // 热搜配置设置状态（展示/隐藏）
@@ -506,6 +506,10 @@ func (m *VideoModel) GetHotSearch() []*models.HotSearch {
   }
 
 	return list
+}
+
+func (m *VideoModel) GetHotSearchByName() {
+
 }
 
 // 添加热搜配置

@@ -70,7 +70,7 @@ type UserInfo struct {
 type UserInfoResp struct {
 	UserId        string `json:"user_id" example:"2009011314521111"`
 	Avatar        string `json:"avatar" example:"头像地址"`
-	MobileNum     int32  `json:"mobile_num" example:"13177656222"`
+	MobileNum     int64  `json:"mobile_num" example:"13177656222"`
 	NickName      string `json:"nick_name" example:"昵称 陈二狗"`
 	Gender        int32  `json:"gender" example:"0"`
 	Signature     string `json:"signature" example:"个性签名"`

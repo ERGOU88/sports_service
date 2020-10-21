@@ -64,7 +64,7 @@ func (svc *UserModule) GetUserInfoByUserid(userId string) (int, *muser.UserInfoR
 	resp := &muser.UserInfoResp{
 		UserId: info.UserId,
 		Avatar: info.Avatar,
-		MobileNum: int32(info.MobileNum),
+		MobileNum: info.MobileNum,
 		NickName: info.NickName,
 		Gender: int32(info.Gender),
 		Signature: info.Signature,
@@ -206,7 +206,7 @@ func (svc *UserModule) GetUserZoneInfo(userId string) (int, *muser.UserInfoResp,
 	resp := &muser.UserInfoResp{
 		UserId: info.UserId,
 		Avatar: info.Avatar,
-		MobileNum: int32(info.MobileNum),
+		MobileNum: info.MobileNum,
 		NickName: info.NickName,
 		Gender: int32(info.Gender),
 		Signature: info.Signature,
