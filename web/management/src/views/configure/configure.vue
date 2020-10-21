@@ -1,5 +1,8 @@
 <template>
   <div class="app-container">
+    <div align="right" style="width: 79%;margin-bottom: 20px;margin-top: 20px">
+      <el-button :type="'primary'" size="mini" @click="addShow=true">添加热搜</el-button>
+    </div>
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="ID" width="80">
         <template slot-scope="scope">
@@ -49,9 +52,6 @@
         </template>
       </el-table-column>
     </el-table>
-    <div>
-       <el-button :type="'primary'" size="mini" @click="addShow=true">添加热搜</el-button>
-    </div>
     <add v-if="addShow" :show='addShow' @handleClose='handleClose'></add>
     <set v-if="setSortShow" :show='setSortShow' @handleSetClose='handleSetClose' :id="id" :sortorder='sortorder'></set>
   </div>

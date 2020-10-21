@@ -3,10 +3,12 @@ package client
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/cuser"
+  "sports_service/server/app/config"
+  "sports_service/server/app/controller/cuser"
   "sports_service/server/app/controller/cvideo"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/util"
+	"fmt"
 )
 
 // @Summary 初始化接口 (ok)
@@ -40,5 +42,13 @@ func InitInfo(c *gin.Context) {
 	reply.Data["world_list"] = worldList
   reply.Data["world_list"] = worldList
   reply.Data["label_list"] = labelList
+  // 登陆协议
+  reply.Data["login_treaty"] = fmt.Sprintf("%s%s", config.Global.StaticDomain, "/static/template/login_treaty.html")
+  // 上传协议
+  reply.Data["upload_treaty"] = fmt.Sprintf("%s%s", config.Global.StaticDomain, "/static/template/upload_treaty.html")
+  // 常见问题
+  reply.Data["upload_treaty"] = fmt.Sprintf("%s%s", config.Global.StaticDomain, "/static/template/faq.html")
+  // 关于
+  reply.Data["about"] = fmt.Sprintf("%s%s", config.Global.StaticDomain, "/static/template/about_content.html")
   reply.Response(http.StatusOK, errdef.SUCCESS)
 }

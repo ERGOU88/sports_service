@@ -149,6 +149,7 @@ func init() {
 func main() {
 	// 启动服务
 	engine := gin.New()
+  engine.Static("/static", "./static")
 	routers.InitRouters(engine)
 	if err := engine.Run(config.Global.PublicAddr); err != nil {
 		fmt.Printf("engine.Run err:%v", err)
