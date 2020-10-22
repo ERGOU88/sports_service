@@ -7,7 +7,8 @@ import (
 	"sports_service/server/global/backend/log"
 	"sports_service/server/global/backend/errdef"
 	"sports_service/server/global/consts"
-	"sports_service/server/models/mattention"
+  "sports_service/server/models"
+  "sports_service/server/models/mattention"
   "sports_service/server/models/mbarrage"
   "sports_service/server/models/mcollect"
 	"sports_service/server/models/mcomment"
@@ -93,6 +94,10 @@ func (svc *UserModule) GetUserList(page, size int) []*muser.UserInfo {
 			TotalBrowse: svc.video.GetUserTotalBrowse(info.UserId),
 		}
 
+    if country := svc.GetWorldInfoById(int32(info.Country)); country != nil {
+      resp.CountryCn = country.Name
+    }
+
 		res[index] = resp
 	}
 
@@ -114,6 +119,11 @@ func (svc *UserModule) ForbidUser(id string) int {
 	}
 
 	return errdef.SUCCESS
+}
+
+// 通过id获取世界信息（暂时只有国家）
+func (svc *UserModule) GetWorldInfoById(id int32) *models.WorldMap {
+  return svc.user.GetWorldInfoById(id)
 }
 
 // 解封用户

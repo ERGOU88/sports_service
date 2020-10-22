@@ -11,5 +11,7 @@ func Router(engine *gin.Engine) {
     admin.POST("/reg", RegAdminUser)
     // 后台管理员登陆
     admin.POST("/login", LoginByPassword)
+    // 管理员上传
+    admin.POST("/upload", UploadFile)
   }
 }

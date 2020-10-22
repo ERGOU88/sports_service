@@ -59,7 +59,7 @@
 
       <el-table-column width="120px" align="center" label="国家">
         <template slot-scope="scope">
-          <span>{{ scope.row.country }}</span>
+          <span>{{ scope.row.country_cn }}</span>
         </template>
       </el-table-column>
 

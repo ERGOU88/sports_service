@@ -48,6 +48,7 @@ func GetBanners(c *gin.Context) {
 	list := svc.GetBannerList(page, size)
 
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetBannerTotal()
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 

@@ -50,6 +50,7 @@ type UserInfo struct {
 	Born          string `json:"born" example:"出生日期"`
 	Age           int    `json:"age" example:"27"`
 	Country       int32  `json:"country" example:"0"`
+	CountryCn     string `json:"country_cn" example:"中国"`
 	RegIp         string `json:"reg_ip"`
 	LastLoginTm   int    `json:"last_login_tm"`
 	Platform      int    `json:"platform"`

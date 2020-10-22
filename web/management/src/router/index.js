@@ -233,11 +233,17 @@ export const constantRoutes = [
     children: [
       {
         path: 'list',
-        component: () => import('@/views/configure/configure'),
+        component: () => import('@/views/configure/hotSearch'),
         name: '热搜',
         meta: { title: '热搜', icon: 'search', affix: true }
+      },
+      {
+        path: 'banner',
+        component: () => import('@/views/configure/banner'),
+        name: 'banner',
+        meta: { title: 'banner', icon: 'search', affix: true }
       }
-    ]
+    ],
   },
 
   // {

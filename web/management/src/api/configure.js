@@ -73,3 +73,48 @@ export function setStatus(params) {
     })
   })
 }
+
+// 添加banner
+export function addBanner(params) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: '/config/add/banner',
+      method: 'post',
+      data: params,
+    }).then(res => {
+      resolve(res)
+    }).catch(err => {
+      resolve(err)
+    })
+  })
+}
+
+// 删除banner
+export function delBanner(params) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: '/config/del/banner',
+      method: 'post',
+      data: params,
+    }).then(res => {
+      resolve(res)
+    }).catch(err => {
+      resolve(err)
+    })
+  })
+}
+
+// banner列表
+export function bannerList(query) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: '/config/banners',
+      method: 'get',
+      params: query,
+    }).then(res => {
+      resolve(res)
+    }).catch(err => {
+      resolve(err)
+    })
+  })
+}

@@ -36,6 +36,12 @@ func New(c *gin.Context) ConfigModule {
 
 // 后台添加banner
 func (svc *ConfigModule) AddBanner(params *mbanner.AddBannerParams) int {
+  if params.EndTime - params.StartTime < 1800 ||
+    params.EndTime <= params.StartTime ||
+    params.EndTime <= int(time.Now().Unix()) {
+    return errdef.CONFIG_DEL_BANNER_FAIL
+  }
+
 	now := int(time.Now().Unix())
 	svc.banner.Banners.UpdateAt = now
 	svc.banner.Banners.CreateAt = now
@@ -69,6 +75,11 @@ func (svc *ConfigModule) DelBanner(param *mbanner.DelBannerParam) int {
 func (svc *ConfigModule) GetBannerList(page, size int) []*models.Banner {
 	offset := (page - 1) * size
 	return svc.banner.GetBannerList(offset, size)
+}
+
+// 后台获取banner总数
+func (svc *ConfigModule) GetBannerTotal() int64 {
+  return svc.banner.GetBannerTotal()
 }
 
 // 后台添加系统头像

@@ -68,3 +68,15 @@ export function unForbidUser(params) {
   })
 }
 
+// 文件上传
+export function fileUpload(fileobj){
+  let param = new FormData();
+  param.append('file_up', fileobj);
+  return request({
+    method: 'post',
+    url: '/admin/upload',
+    headers: {'Content-Type':'multipart/form-data'},
+    data: param
+  });
+}
+

@@ -14,14 +14,13 @@ type BannerModel struct {
 
 // 后台添加banner请求参数
 type AddBannerParams struct {
-	BeginTm   int    `json:"begin_tm"`
 	Cover     string `binding:"required" json:"cover"`
-	EndTime   int    `json:"end_time"`
+	EndTime   int    `binding:"required" json:"end_time"`
 	Explain   string `json:"explain"`
 	JumpUrl   string `json:"jump_url"`
 	ShareUrl  string `json:"share_url"`
 	Sortorder int    `json:"sortorder"`
-	StartTime int    `json:"start_time"`
+	StartTime int    `binding:"required" json:"start_time"`
 	Title     string `json:"title"`
 	Type      int    `json:"type"`
 }
@@ -99,5 +98,15 @@ func (m *BannerModel) GetBannerList(offset, size int) []*models.Banner {
 	}
 
 	return info
+}
+
+// 后台获取banner总数目
+func (m *BannerModel) GetBannerTotal() int64 {
+  total, err := m.Engine.Count(m.Banners)
+  if err != nil {
+    return 0
+  }
+
+  return total
 }
 

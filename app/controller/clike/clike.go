@@ -218,10 +218,10 @@ func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*mvide
 			resp.IsAttention = attentionInfo.Status
 		}
 
-		collectAt, ok := mp[video.VideoId]
+		likeAt, ok := mp[video.VideoId]
 		if ok {
 			// 用户给视频点赞的时间
-			resp.OpTime = collectAt
+			resp.OpTime = likeAt
 		}
 
 		list[index] = resp
