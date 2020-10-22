@@ -1,16 +1,18 @@
 package comment
 
 import (
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/backend/log"
-	"sports_service/server/global/backend/errdef"
+  "fmt"
+  "github.com/gin-gonic/gin"
+  "github.com/go-xorm/xorm"
+  "sports_service/server/dao"
+  "sports_service/server/global/backend/errdef"
+  "sports_service/server/global/backend/log"
   "sports_service/server/models/mbarrage"
   "sports_service/server/models/mcomment"
-	"sports_service/server/models/mvideo"
-	"strings"
+  "sports_service/server/models/muser"
+  "sports_service/server/models/mvideo"
+  "strconv"
+  "strings"
 )
 
 type CommentModule struct {
@@ -19,6 +21,7 @@ type CommentModule struct {
 	comment     *mcomment.CommentModel
 	video       *mvideo.VideoModel
 	barrage     *mbarrage.BarrageModel
+	user        *muser.UserModel
 }
 
 func New(c *gin.Context) CommentModule {
@@ -29,16 +32,49 @@ func New(c *gin.Context) CommentModule {
 		comment: mcomment.NewCommentModel(socket),
 		video: mvideo.NewVideoModel(socket),
 		barrage: mbarrage.NewBarrageModel(socket),
+		user: muser.NewUserModel(socket),
 		engine: socket,
 	}
 }
 
 // 获取后台视频评论列表
-func (svc *CommentModule) GetVideoComments(sortType string, page, size int) []*mcomment.VideoCommentInfo {
+func (svc *CommentModule) GetVideoComments(queryId, sortType, condition string, page, size int) ([]*mcomment.VideoCommentInfo, int64) {
+  var (
+  	total int64
+  	userId, videoId string
+  )
+  if queryId != "" {
+    if _, err := strconv.Atoi(queryId); err != nil {
+      return []*mcomment.VideoCommentInfo{}, total
+    }
+
+    // 查询用户是否存在
+    user := svc.user.FindUserByUserid(queryId)
+    if user != nil {
+      userId = user.UserId
+      total = svc.GetCommentTotalByUserId(userId)
+    }
+
+    // 查询视频是否存在
+    video := svc.video.FindVideoById(queryId)
+    if video != nil {
+      videoId = fmt.Sprint(video.VideoId)
+      total = svc.GetCommentTotalByVideoId(videoId)
+    }
+
+    // 都不存在
+    if user == nil && video == nil  {
+      return []*mcomment.VideoCommentInfo{}, total
+    }
+
+  } else {
+    total = svc.GetCommentTotal()
+  }
+
 	offset := (page - 1) * size
-	list := svc.comment.GetVideoCommentsBySort(sortType, offset, size)
+	list := svc.comment.GetVideoCommentsBySort(userId, videoId, sortType, condition, offset, size)
 	if len(list) == 0 {
-		return  []*mcomment.VideoCommentInfo{}
+		return []*mcomment.VideoCommentInfo{}, total
 	}
 
 	for _, comment := range list {
@@ -54,13 +90,24 @@ func (svc *CommentModule) GetVideoComments(sortType string, page, size int) []*m
 		}
 	}
 
-	return list
+	return list, total
 }
 
 // 获取视频评论总数
 func (svc *CommentModule) GetCommentTotal() int64 {
   return svc.comment.GetCommentTotal()
 }
+
+// 通过用户id获取评论总数
+func (svc *CommentModule) GetCommentTotalByUserId(queryId string) int64 {
+  return svc.comment.GetCommentTotalByUserId(queryId)
+}
+
+// 通过视频id获取评论总数
+func (svc *CommentModule) GetCommentTotalByVideoId(videoId string) int64 {
+  return svc.comment.GetCommentTotalByVideoId(videoId)
+}
+
 
 // 删除视频评论（物理删除）
 func (svc *CommentModule) DelVideoComments(param *mcomment.DelCommentParam) int {

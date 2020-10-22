@@ -33,7 +33,7 @@ const (
 	COOKIE_NAME    = "auth"
 	USER_ID        = "user_id"
 	// todo: 默认头像
-	DEFAULT_AVATAR = ""
+	DEFAULT_AVATAR = "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2863307160,2081500909&fm=26&gp=0.jpg?imageView2/1/w/80/h/80"
 )
 
 const (

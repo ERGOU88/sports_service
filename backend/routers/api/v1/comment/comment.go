@@ -14,12 +14,14 @@ import (
 func VideoCommentList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	condition := c.Query("condition")
 	sortType := c.Query("sort_type")
+	queryId := c.Query("query_id")
 
 	svc := comment.New(c)
-	list := svc.GetVideoComments(sortType, page, size)
+	list, total := svc.GetVideoComments(queryId, sortType, condition, page, size)
 	reply.Data["list"] = list
-	reply.Data["total"] = svc.GetCommentTotal()
+	reply.Data["total"] = total
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 

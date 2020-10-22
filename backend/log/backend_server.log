@@ -199,3 +199,1126 @@ net/http.(*conn).serve
 [2020-10-21 15:11:50]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
 [2020-10-21 18:17:36]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
 [2020-10-21 18:17:48]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-22 10:48:42]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-22 10:48:53]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-22 10:57:01]-89	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 10:57:40]-78	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 10:58:37]-118	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 10:58:41]-140	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:03:48]-124	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:04:47]-129	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:04:51]-195	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:04:52]-210	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:04:53]-213	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:04:53]-216	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:04:54]-219	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:04:54]-222	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:04:55]-193	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:04:56]-225	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:04:57]-198	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:04:57]-201	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:04:58]-228	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:04:59]-204	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:04:59]-244	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:04:59]-231	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:05:00]-247	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:05:01]-250	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:05:01]-207	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:05:02]-258	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:05:02]-253	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:05:04]-261	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:48
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:15:24]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-22 11:16:27]-41	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:49
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:16:30]-66	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:49
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:16:30]-30	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:49
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:16:31]-69	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:49
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:16:34]-44	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:49
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:16:35]-72	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:49
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:16:35]-33	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:49
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:18:42]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-22 11:18:59]-69	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:49
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:19:47]-60	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:49
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:21
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:29:54]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-22 11:29:59]-31	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:49
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:30:01]-37	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:49
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:40:31]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-22 11:43:19]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-22 11:45:25]-114	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:46:35]-145	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:47:04]-167	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:49:43]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-22 11:49:52]-69	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 11:51:27]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-22 11:51:49]-72	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 12:04:18]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-22 12:04:56]-73	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 12:05:00]-86	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 12:05:06]-76	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 12:05:17]-79	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 12:05:29]-28	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 12:05:37]-89	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 12:05:47]-114	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 12:08:57]-105	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 12:09:01]-108	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 12:11:51]-157	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-22 12:11:56]-159	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:168
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/src/sports_service/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895

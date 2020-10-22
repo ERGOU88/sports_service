@@ -208,7 +208,7 @@
         }
       },
       onPlayerPlay(player) {
-        this.full(player)
+        //this.full(player)
       },
     },
 

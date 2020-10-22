@@ -1,21 +1,14 @@
 <template>
   <div class="app-container">
-<!--    <div align="right" style="margin-bottom: 20px;margin-top: 20px">-->
-<!--    <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="queryBefore">-->
-<!--      搜索-->
-<!--    </el-button>-->
-
-<!--    </div>-->
-    <div class="filter-container" style="display: flex;">
-      <el-input v-model="listQuery.gameName" placeholder="游戏名称" style="width: 200px;margin-right: 10px;" class="filter-item" />
-      <!-- <el-select v-model="listQuery.cateid" placeholder="类别" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in typeList" :key="item.id" :label="item.name" :value="item.id" />
-      </el-select> -->
-      <el-cascader v-model="listQuery.cateid" :options="typeList" :show-all-levels="false" filterable :props="{ checkStrictly: true, value: 'cateid', label: 'name', children: 'child'}" clearable></el-cascader>
-      <el-select v-model="listQuery.status" placeholder="状态" clearable class="filter-item" style="width: 130px;margin: 0 10px;">
-        <el-option v-for="item in stateList" :key="item.id" :label="item.name" :value="item.id" />
+    <div class="filter-container" style="display: flex; margin-bottom: 10px;">
+      <el-input v-model="listQuery.query_id" placeholder="输入视频ID、用户ID搜索" style="width: 200px;margin-right: 10px;" class="filter-item" />
+      <el-select v-model="listQuery.condition" placeholder="排序条件" clearable class="filter-item" style="width: 130px;margin: 0 10px;">
+        <el-option v-for="item in conditionList" :key="item.id" :label="item.name" :value="item.id" />
       </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="queryBefore">
+      <el-select v-model="listQuery.sort_type" placeholder="排序方式" clearable class="filter-item" style="width: 130px;margin: 0 10px;">
+        <el-option v-for="item in sortTypeList" :key="item.id" :label="item.name" :value="item.id" />
+      </el-select>
+      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="queryList">
         搜索
       </el-button>
     </div>
@@ -111,6 +104,7 @@
     videoCommentList,
     delVideoComment,
   } from '@/api/comment'
+  import {isNumber} from '@/utils/validate';
   import Pagination from '@/components/Pagination'
   import {formatDate} from '@/utils/format-date'
   export default {
@@ -130,7 +124,35 @@
         listQuery: {
           page: 1,
           size: 10,
+          query_id: "",
+          sort_type: "0",   //  1 正序 0 倒序
+          condition: "1",
         },
+        conditionList: [
+          {
+            id: "1",
+            name: '时间'
+          },
+          {
+            id: "2",
+            name: '点赞量'
+          },
+          {
+            id: "3",
+            name: '评论量'
+          }
+        ],
+
+        sortTypeList: [
+          {
+            id: "0",
+            name: '倒序'
+          },
+          {
+            id: "1",
+            name: '正序'
+          }
+        ],
         loading: 1,
       }
     },
@@ -180,6 +202,23 @@
         }
 
         this.loading = 0;
+      },
+
+      // 通过视频id， 用户id查询
+      queryList() {
+        this.listQuery.query_id = this.listQuery.query_id.replace(/\s*/g, '');
+        // if (this.listQuery.query_id === "") {
+        //   this.$message.error("搜索内容不能为空")
+        //   return
+        // }
+        //
+        // console.log(parseInt(this.listQuery.query_id))
+        // if (!isNumber(this.listQuery.query_id)) {
+        //   this.$message.error("请输入正确的视频id/用户id")
+        //   return
+        // }
+
+        this.listData();
       },
 
       // 重新拉取页面信息
@@ -240,7 +279,7 @@
         }
       },
       onPlayerPlay(player) {
-        this.full(player)
+        //this.full(player)
       },
     },
   }
