@@ -1,5 +1,24 @@
 <template>
   <div class="app-container">
+<!--    <div align="right" style="margin-bottom: 20px;margin-top: 20px">-->
+<!--    <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="queryBefore">-->
+<!--      搜索-->
+<!--    </el-button>-->
+
+<!--    </div>-->
+    <div class="filter-container" style="display: flex;">
+      <el-input v-model="listQuery.gameName" placeholder="游戏名称" style="width: 200px;margin-right: 10px;" class="filter-item" />
+      <!-- <el-select v-model="listQuery.cateid" placeholder="类别" clearable style="width: 90px" class="filter-item">
+        <el-option v-for="item in typeList" :key="item.id" :label="item.name" :value="item.id" />
+      </el-select> -->
+      <el-cascader v-model="listQuery.cateid" :options="typeList" :show-all-levels="false" filterable :props="{ checkStrictly: true, value: 'cateid', label: 'name', children: 'child'}" clearable></el-cascader>
+      <el-select v-model="listQuery.status" placeholder="状态" clearable class="filter-item" style="width: 130px;margin: 0 10px;">
+        <el-option v-for="item in stateList" :key="item.id" :label="item.name" :value="item.id" />
+      </el-select>
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="queryBefore">
+        搜索
+      </el-button>
+    </div>
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="视频ID" width="80">
         <template slot-scope="scope">

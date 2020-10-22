@@ -333,23 +333,32 @@ func (m *VideoModel) FindVideoListByIds(videoIds string) []*models.Videos {
 	return list
 }
 
-type BrowseVideos struct {
+type BrowseRecord struct {
 	ComposeId       int64     `json:"compose_id"`    // 视频id
 	UpdateAt        int       `json:"update_at"`     // 浏览时间
 }
-// 获取浏览过的视频id记录
-func (m *VideoModel) GetBrowseVideosRecord(userId string, composeType, offset, size int) []*BrowseVideos {
-	var list []*BrowseVideos
+// 获取浏览过的作品id记录
+func (m *VideoModel) GetBrowseRecord(userId string, composeType, offset, size int) []*BrowseRecord {
+	var list []*BrowseRecord
 	if err := m.Engine.Table(&models.UserBrowseRecord{}).Where("user_id=? AND compose_type=?", userId, composeType).
 		Cols("compose_id, update_at").
 		Desc("id").
 		Limit(size, offset).
 		Find(&list); err != nil {
-		log.Log.Errorf("video_trace: get browse video record err:%s", err)
+		log.Log.Errorf("video_trace: get browse record err:%s", err)
 		return nil
 	}
 
 	return list
+}
+
+// 记录用户浏览的视频记录
+func (m *VideoModel) RecordUserBrowseVideo() error {
+  if _, err := m.Engine.InsertOne(m.Browse); err != nil {
+    return err
+  }
+
+  return nil
 }
 
 // 通过id列表删除浏览的历史记录

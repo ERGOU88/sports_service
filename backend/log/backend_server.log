@@ -197,3 +197,5 @@ net/http.(*conn).serve
 [2020-10-21 14:55:54]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
 [2020-10-21 15:06:35]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
 [2020-10-21 15:11:50]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-21 18:17:36]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-21 18:17:48]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success

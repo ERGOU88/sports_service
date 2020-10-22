@@ -192,7 +192,7 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 	}
 
 	offset := (page - 1) * size
-	records := svc.video.GetBrowseVideosRecord(userId, consts.TYPE_BROWSE_VIDEOS, offset, size)
+	records := svc.video.GetBrowseRecord(userId, consts.TYPE_BROWSE_VIDEOS, offset, size)
 	if len(records) == 0 {
 		return []*mvideo.VideosInfoResp{}
 	}
@@ -554,11 +554,6 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
 	resp.CreateAt = video.CreateAt
 	resp.UserId = video.UserId
 	resp.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
-	// 获取用户信息
-	if user := svc.user.FindUserByUserid(video.UserId); user != nil {
-		resp.Avatar = user.Avatar
-		resp.Nickname = user.NickName
-	}
 
 	// 获取视频相关统计数据
 	info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
@@ -569,11 +564,32 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
 	resp.BarrageNum = info.BarrageNum
 	// 粉丝数
 	resp.FansNum = svc.attention.GetTotalFans(fmt.Sprint(video.UserId))
+  now := int(time.Now().Unix())
+  // 增加视频浏览总数
+  if err := svc.video.UpdateVideoBrowseNum(video.VideoId, now, 1); err != nil {
+    log.Log.Errorf("video_trace: update video browse num err:%s", err)
+  }
 
 	if userId == "" {
 		log.Log.Error("video_trace: user no login")
 		return resp
 	}
+
+  // 获取用户信息
+  if user := svc.user.FindUserByUserid(video.UserId); user != nil {
+    resp.Avatar = user.Avatar
+    resp.Nickname = user.NickName
+
+    svc.video.Browse.CreateAt = now
+    svc.video.Browse.UpdateAt = now
+    svc.video.Browse.UserId = userId
+    svc.video.Browse.ComposeId = video.VideoId
+    svc.video.Browse.ComposeType = consts.TYPE_VIDEO
+    // 记录用户浏览的视频记录
+    if err := svc.video.RecordUserBrowseVideo(); err != nil {
+      log.Log.Errorf("video_trace: record user browse video err:%s", err)
+    }
+  }
 
 	// 是否关注
 	if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
