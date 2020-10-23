@@ -10606,3 +10606,36 @@ sports_service/server/job.PullEventsJob
 	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29
 [2020-10-22 10:48:01]-68	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31	事件处理完毕
 [2020-10-23 13:30:53]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:42	setup log success
+[2020-10-23 13:35:24]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:42	setup log success
+[2020-10-23 13:35:53]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:42	setup log success
+[2020-10-23 13:36:53]-63	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:27	开始拉取事件[腾讯云]
+[2020-10-23 13:36:57]-63	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29	job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=4cb4537d-caf0-40fc-a6d9-0c03afba6221
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29
+[2020-10-23 13:36:57]-63	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31	事件处理完毕
+[2020-10-23 13:37:53]-63	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:27	开始拉取事件[腾讯云]
+[2020-10-23 13:37:57]-63	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29	job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=a923b4c1-c125-42a0-8e5d-10cdd8ea631a
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29
+[2020-10-23 13:37:57]-63	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31	事件处理完毕
+[2020-10-23 13:38:03]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:42	setup log success
+[2020-10-23 13:41:56]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:42	setup log success
+[2020-10-23 13:42:54]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:42	setup log success
+[2020-10-23 13:43:03]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/app/main.go:42	setup log success
+[2020-10-23 13:43:54]-50	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:27	开始拉取事件[腾讯云]
+[2020-10-23 13:43:57]-50	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29	job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=b5e2577c-c3a5-45ba-8564-bb6e325add2e
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29
+[2020-10-23 13:43:57]-50	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31	事件处理完毕
+[2020-10-23 13:44:54]-50	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:27	开始拉取事件[腾讯云]
+[2020-10-23 13:44:57]-50	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29	job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=67f6cbca-e69b-4232-8588-37e110b80ff4
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29
+[2020-10-23 13:44:57]-50	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31	事件处理完毕
+[2020-10-23 13:45:54]-50	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:27	开始拉取事件[腾讯云]
+[2020-10-23 13:45:54]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-10-23 13:45:54]-16	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-10-23 13:45:57]-50	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29	job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=d9ca8e87-f0b9-42b3-be2b-508fadbca9a7
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:29
+[2020-10-23 13:45:57]-50	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31	事件处理完毕
