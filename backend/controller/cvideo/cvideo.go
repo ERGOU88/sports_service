@@ -10,7 +10,8 @@ import (
 	"sports_service/server/models/mvideo"
 	"github.com/go-xorm/xorm"
 	"fmt"
-	"sports_service/server/util"
+  "sports_service/server/tools/tencentCloud"
+  "sports_service/server/util"
 	"time"
 )
 
@@ -184,11 +185,18 @@ func (svc *VideoModule) GetVideoLabelList() []*mlabel.VideoLabel {
 	return svc.label.GetVideoLabelList()
 }
 
-// 添加视频标签 todo:脏词过滤
+// 添加视频标签
 func (svc *VideoModule) AddVideoLabel(param *mlabel.AddVideoLabelParam) int {
+  client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+  // 检测热搜内容
+  isPass, err := client.TextModeration(param.LabelName)
+  if !isPass || err != nil {
+    return errdef.VIDEO_INVALID_LABEL_NAME
+  }
+
 	lenth := util.GetStrLen([]rune(param.LabelName))
 	if lenth <= 0 || lenth > 20 {
-		return errdef.VIDEO_INVALID_LABEL_NAME
+		return errdef.VIDEO_INVALID_LABEL_LEN
 	}
 
 	now := time.Now().Unix()
@@ -196,12 +204,15 @@ func (svc *VideoModule) AddVideoLabel(param *mlabel.AddVideoLabelParam) int {
 	svc.label.VideoLabels.LabelName = param.LabelName
 	svc.label.VideoLabels.CreateAt = int(now)
 	svc.label.VideoLabels.Icon = param.Icon
+	svc.label.VideoLabels.Sortorder = param.Sortorder
+	svc.label.VideoLabels.Status = 1
 	if err := svc.label.AddVideoLabel(); err != nil {
 		return errdef.VIDEO_INVALID_LABEL_NAME
 	}
 
 	// 添加到内存中
 	svc.label.AddLabelInfoByMem()
+  svc.label.CleanLabelInfoByMem()
 
 	return errdef.SUCCESS
 }
@@ -218,6 +229,6 @@ func (svc *VideoModule) DelVideoLabel(labelId string) int {
 
 	// 从内存中删除
 	svc.label.DelLabelInfoByMem(labelId)
-
+  svc.label.CleanLabelInfoByMem()
 	return errdef.SUCCESS
 }

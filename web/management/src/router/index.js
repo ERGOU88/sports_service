@@ -174,6 +174,12 @@ export const constantRoutes = [
         component: () => import('@/views/video/review'),
         name: '视频审核',
         meta: { title: '视频审核', icon: 'edit', affix: true }
+      },
+      {
+        path: 'label',
+        component: () => import('@/views/video/label'),
+        name: '视频标签',
+        meta: { title: '视频标签', icon: 'star', affix: true }
       }
     ]
   },
@@ -228,7 +234,7 @@ export const constantRoutes = [
     name: '设置',
     meta: {
       title: '设置',
-      icon: 'peoples'
+      icon: 'skill'
     },
     children: [
       {
@@ -241,7 +247,13 @@ export const constantRoutes = [
         path: 'banner',
         component: () => import('@/views/configure/banner'),
         name: 'banner',
-        meta: { title: 'banner', icon: 'search', affix: true }
+        meta: { title: 'banner', icon: 'eye-open', affix: true }
+      },
+      {
+        path: 'avatar',
+        component: () => import('@/views/configure/avatar'),
+        name: '系统头像',
+        meta: { title: '系统头像', icon: 'peoples', affix: true }
       }
     ],
   },

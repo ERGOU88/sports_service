@@ -36,6 +36,7 @@ definitions:
         example: 0
         type: integer
       is_attention:
+        example: 0
         type: integer
       nick_name:
         example: 昵称 陈二狗
@@ -111,42 +112,61 @@ definitions:
   mcomment.ReplyComment:
     properties:
       avatar:
+        example: 头像
         type: string
       comment_level:
+        example: 1
         type: integer
       content:
+        example: 评论内容
         type: string
       create_at:
+        example: 1600000000
         type: integer
       id:
+        example: 1600000000
         type: integer
       is_attention:
+        example: 0
         type: integer
       is_top:
+        example: 1
         type: integer
       like_num:
+        example: 100
         type: integer
       parent_comment_id:
+        example: 1000000000
         type: integer
       parent_comment_user_id:
+        example: 父评论的用户id
         type: string
       reply_comment_avatar:
+        example: 被回复评论的用户头像
         type: string
       reply_comment_id:
+        example: 1000000000
         type: integer
       reply_comment_user_id:
+        example: 被回复的评论用户id
         type: string
       reply_comment_user_name:
+        example: 被回复评论的用户昵称
         type: string
       reply_content:
+        example: 被回复的内容
         type: string
       status:
+        example: 1
         type: integer
       user_id:
+        example: 用户id
         type: string
       user_name:
+        example: 用户昵称
         type: string
       video_id:
+        example: 1000000000
         type: integer
     type: object
   mcomment.ReplyCommentParams:
@@ -165,34 +185,47 @@ definitions:
   mcomment.VideoComments:
     properties:
       avatar:
+        example: 用户头像
         type: string
       comment_level:
+        example: 1
         type: integer
       content:
+        example: 评论的内容
         type: string
       create_at:
+        example: 1600000000
         type: integer
       id:
+        example: 1000000000
         type: integer
       is_attention:
+        example: 0
         type: integer
       is_top:
+        example: 1
         type: integer
       like_num:
+        example: 100
         type: integer
       reply_list:
         items:
           $ref: '#/definitions/mcomment.ReplyComment'
         type: array
       reply_num:
+        example: 100
         type: integer
       status:
+        example: 0
         type: integer
       user_id:
+        example: 用户id
         type: string
       user_name:
+        example: 用户昵称
         type: string
       video_id:
+        example: 1000000000
         type: integer
     type: object
   mlabel.VideoLabel:
@@ -221,7 +254,7 @@ definitions:
   mlike.CancelLikeParam:
     properties:
       compose_id:
-        example: 10001
+        example: 10000000000
         type: integer
     required:
     - compose_id
@@ -229,7 +262,7 @@ definitions:
   mlike.GiveLikeParam:
     properties:
       compose_id:
-        example: 10001
+        example: 10000000000
         type: integer
       to_user_id:
         example: 被点赞的用户
@@ -241,14 +274,19 @@ definitions:
   mnotify.NotifySettingParams:
     properties:
       attention_push_set:
+        example: 0
         type: integer
       comment_push_set:
+        example: 0
         type: integer
       share_push_set:
+        example: 0
         type: integer
       slot_push_set:
+        example: 0
         type: integer
       thumb_up_push_set:
+        example: 0
         type: integer
     type: object
   models.Banner:
@@ -414,6 +452,7 @@ definitions:
         example: 0
         type: integer
       is_attention:
+        example: 0
         type: integer
       mobile_num:
         example: 13177656222
@@ -449,6 +488,7 @@ definitions:
         example: 出生日期
         type: string
       fans_num:
+        example: 100
         type: integer
       gender:
         example: 0
@@ -457,6 +497,7 @@ definitions:
         example: 0
         type: integer
       is_attention:
+        example: 1
         type: integer
       nick_name:
         example: 昵称 陈二狗
@@ -471,6 +512,7 @@ definitions:
         example: "2009011314521111"
         type: string
       works_num:
+        example: 100
         type: integer
     type: object
   muser.UserZoneInfoParam:
@@ -627,6 +669,10 @@ definitions:
         type: integer
       status:
         type: integer
+      status_cn:
+        type: string
+      time_elapsed:
+        type: integer
       title:
         type: string
       video_addr:
@@ -643,36 +689,52 @@ definitions:
   mvideo.VideosInfoResp:
     properties:
       avatar:
+        example: 头像
         type: string
       cover:
+        example: 视频封面
         type: string
       create_at:
+        example: 1600000000
         type: integer
       describe:
+        example: 视频描述
         type: string
       is_attention:
+        example: 1
         type: integer
       is_recommend:
+        example: 1
         type: integer
       is_top:
+        example: 1
         type: integer
       nick_name:
+        example: 昵称
         type: string
       op_time:
+        example: 1600000000
         type: integer
       title:
+        example: 视频标题
         type: string
       user_id:
+        example: 用户id
         type: string
       video_addr:
+        example: 视频地址
         type: string
       video_duration:
+        example: 1000000
         type: integer
       video_height:
+        example: 1000
         type: integer
       video_id:
+        example: 1000000000
         type: integer
       video_width:
+        example: 1000
         type: integer
     type: object
   sms.SendSmsCodeParams:

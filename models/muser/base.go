@@ -35,7 +35,7 @@ func (m *base) getDeviceType(c *gin.Context) int {
 
 // 默认头像
 func (m *base) defaultAvatar() string {
-	return ""
+	return consts.DEFAULT_AVATAR
 }
 
 // 默认昵称

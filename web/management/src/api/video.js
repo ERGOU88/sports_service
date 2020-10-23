@@ -60,3 +60,47 @@ export function videoReviewList(query) {
   })
 }
 
+// 视频标签列表
+export function videoLabelList(query) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: '/video/label/list',
+      method: 'get',
+      params: query,
+    }).then(res => {
+      resolve(res)
+    }).catch(err => {
+      resolve(err)
+    })
+  })
+}
+
+// 删除标签
+export function delLabel(params) {
+  return new Promise((resolve, reject) => {
+    request ({
+      url: '/video/del/label',
+      method: 'post',
+      data: params,
+    }).then(res => {
+      resolve(res)
+    }).catch(err => {
+      resolve(err)
+    })
+  })
+}
+
+// 添加视频标签
+export function addVideoLabel(params) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: '/video/add/label',
+      method: 'post',
+      data: params,
+    }).then(res => {
+      resolve(res)
+    }).catch(err => {
+      resolve(err)
+    })
+  })
+}

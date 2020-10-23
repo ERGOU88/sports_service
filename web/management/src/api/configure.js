@@ -74,6 +74,21 @@ export function setStatus(params) {
   })
 }
 
+// banner列表
+export function bannerList(query) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: '/config/banners',
+      method: 'get',
+      params: query,
+    }).then(res => {
+      resolve(res)
+    }).catch(err => {
+      resolve(err)
+    })
+  })
+}
+
 // 添加banner
 export function addBanner(params) {
   return new Promise((resolve, reject) => {
@@ -104,13 +119,43 @@ export function delBanner(params) {
   })
 }
 
-// banner列表
-export function bannerList(query) {
+// 头像列表
+export function avatarList(query) {
   return new Promise((resolve, reject) => {
     request({
-      url: '/config/banners',
+      url: '/config/avatar/list',
       method: 'get',
       params: query,
+    }).then(res => {
+      resolve(res)
+    }).catch(err => {
+      resolve(err)
+    })
+  })
+}
+
+// 添加头像
+export function addAvatar(params) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: '/config/add/avatar',
+      method: 'post',
+      data: params,
+    }).then(res => {
+      resolve(res)
+    }).catch(err => {
+      resolve(err)
+    })
+  })
+}
+
+// 删除系统头像
+export function delAvatar(params) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: '/config/del/avatar',
+      method: 'post',
+      data: params,
     }).then(res => {
       resolve(res)
     }).catch(err => {

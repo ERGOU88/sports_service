@@ -75,7 +75,7 @@
       <el-table-column class-name="status-col" label="审核状态" width="110" align="center">
         <template slot-scope="scope">
           <el-tag type="warning" effect="dark" v-if="scope.row.status===0">待审核</el-tag>
-          <el-tag type="danger" effect="dark" v-if="scope.row.status===2">审核失败</el-tag>
+          <el-tag type="danger" effect="dark" v-if="scope.row.status===2">未通过</el-tag>
         </template>
       </el-table-column>
 

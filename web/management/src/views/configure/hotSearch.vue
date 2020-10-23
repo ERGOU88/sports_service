@@ -3,7 +3,7 @@
     <div align="right" style="width: 79%;margin-bottom: 20px;margin-top: 20px">
       <el-button :type="'primary'" size="mini" @click="addShow=true">新增热搜</el-button>
     </div>
-    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
+    <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 79%">
       <el-table-column align="center" label="ID" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
@@ -25,7 +25,7 @@
 
       <el-table-column width="120px" align="center" label="搜索次数">
         <template slot-scope="scope">
-          <span>{{ scope.row.user_id }}</span>
+          <span>100</span>
         </template>
       </el-table-column>
 

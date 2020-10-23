@@ -37,7 +37,7 @@ type UnForbidUserParam struct {
 
 // 用户信息（后台）
 type UserInfo struct {
-	Id            int64  `json:"id"`
+	Id            int64  `json:"id" example:"1000000000000"`
 	UserId        string `json:"user_id" example:"2009011314521111"`
 	Avatar        string `json:"avatar" example:"头像地址"`
 	MobileNum     int64  `json:"mobile_num" example:"13177656222"`
@@ -51,10 +51,10 @@ type UserInfo struct {
 	Age           int    `json:"age" example:"27"`
 	Country       int32  `json:"country" example:"0"`
 	CountryCn     string `json:"country_cn" example:"中国"`
-	RegIp         string `json:"reg_ip"`
-	LastLoginTm   int    `json:"last_login_tm"`
-	Platform      int    `json:"platform"`
-	UserType      int32  `json:"user_type"`
+	RegIp         string `json:"reg_ip" example:"192.168.0.108"`
+	LastLoginTm   int    `json:"last_login_tm" example:"1600000000"`
+	Platform      int    `json:"platform" example:"0"`
+	UserType      int32  `json:"user_type" example:"0"`
 
 	TotalBeLiked     int64  `json:"total_beLiked" example:"100"`     // 被点赞数
 	TotalFans        int64  `json:"total_fans" example:"100"`        // 粉丝数
@@ -62,9 +62,9 @@ type UserInfo struct {
 	TotalCollect     int64  `json:"total_collect" example:"100"`     // 收藏的作品数
 	TotalPublish     int64  `json:"total_publish" example:"100"`     // 发布的作品数
 	TotalLikes       int64  `json:"total_likes" example:"100"`       // 点赞的作品数
-	TotalComment     int64  `json:"total_comment"`                   // 总评价数
-	TotalBrowse      int64  `json:"total_browse"`                    // 总浏览数
-	TotalBarrage     int64  `json:"total_barrage"`                   // 总弹幕数
+	TotalComment     int64  `json:"total_comment" example:"100"`     // 总评价数
+	TotalBrowse      int64  `json:"total_browse" example:"100"`      // 总浏览数
+	TotalBarrage     int64  `json:"total_barrage" example:"100"`     // 总弹幕数
 }
 
 // 用户简单信息返回
@@ -82,7 +82,7 @@ type UserInfoResp struct {
 	Age           int    `json:"age" example:"27"`
 	UserType      int    `json:"user_type" example:"0"`
 	Country       int32  `json:"country" example:"0"`
-	IsAttention   int32  `json:"is_attention"`
+	IsAttention   int32  `json:"is_attention" example:"0"`
 }
 
 // 个人空间用户信息
@@ -107,9 +107,9 @@ type UserSearchResults struct {
 	BackgroundImg string `json:"background_img" example:"背景图"`
 	Born          string `json:"born" example:"出生日期"`
 	Age           int    `json:"age" example:"27"`
-	IsAttention   int32  `json:"is_attention"`
-	WorksNum      int64  `json:"works_num"`                         // 作品数
-	FansNum       int64  `json:"fans_num"`                          // 粉丝数
+	IsAttention   int32  `json:"is_attention"  example:"1"`
+	WorksNum      int64  `json:"works_num" example:"100"`                          // 作品数
+	FansNum       int64  `json:"fans_num"  example:"100"`                          // 粉丝数
 }
 
 // 登陆请求所需的参数
@@ -122,18 +122,18 @@ type LoginParams struct {
 
 // 修改用户信息请求参数
 type EditUserInfoParams struct {
-	AvatarId   int32    `json:"avatar_id" example:"6"`            // 系统头像id（暂时仅支持更换系统默认头像）
-	NickName   string   `json:"nick_name" example:"陈二狗"`        // 昵称
+	AvatarId   int32    `json:"avatar_id" example:"6"`           // 系统头像id（暂时仅支持更换系统默认头像）
+	NickName   string   `json:"nick_name" example:"陈二狗"`       // 昵称
 	Born       string   `json:"born" example:"1993-06-20"`       // 出生年月
 	Gender     int32    `json:"gender" example:"1"`              // 性别 1 男 2 女
-	CountryId  int32    `json:"country_id" example:"1"`           // 国家id
+	CountryId  int32    `json:"country_id" example:"1"`          // 国家id
 	Signature  string   `json:"signature" example:"emmmmmmmm"`   // 个性签名
 }
 
 // 用户反馈请求参数
 type FeedbackParam struct {
 	Phone    string `json:"phone" example:"手机号"`
-	Describe string `binding:"required" json:"describe" example:"问题描述"`    // 反馈内容
+	Describe string `binding:"required" json:"describe" example:"问题描述"`     // 反馈内容
 	Problem  string `json:"problem" example:"遇到的问题"`                       // 遇到的问题
 	Pics     string `json:"pics" example:"图片列表"`                           // 图片（多张逗号分隔）
 }
@@ -283,7 +283,7 @@ func (m *UserModel) AddSystemAvatar(params *AddSystemAvatarParams) error {
 		CreateAt: now,
 		UpdateAt: now,
 		Sortorder: params.Sortorder,
-		Status: 1,
+		Status: 0,
 	}
 
 	if _, err := m.Engine.InsertOne(info); err != nil {

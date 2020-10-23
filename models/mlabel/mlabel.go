@@ -32,6 +32,7 @@ type VideoLabel struct {
 type AddVideoLabelParam struct {
 	LabelName    string    `json:"label_name"`     // 视频标签名称
 	Icon         string    `json:"icon"`           // icon
+	Sortorder    int       `json:"sortorder"`      // 权重
 }
 
 // 删除视频标签请求参数
@@ -61,7 +62,7 @@ func NewLabelModel(engine *xorm.Session) *LabelModel {
 
 // 删除视频标签
 func (m *LabelModel) DelVideoLabel(labelId string) error {
-	if _, err := m.Engine.Where("label_id=?", labelId).Delete(&models.VideoLabels{}); err != nil {
+	if _, err := m.Engine.Where("label_id=?", labelId).Delete(&models.VideoLabelConfig{}); err != nil {
 		return err
 	}
 
@@ -132,6 +133,11 @@ func (m *LabelModel) DelLabelInfoByMem(labelId string) {
 	}
 }
 
+// 修改频率低的数据 直接清理内存数据 下次从数据库load内存
+func (m *LabelModel) CleanLabelInfoByMem() {
+  videoLabels = nil
+}
+
 // 添加标签信息（内存）
 func (m *LabelModel) AddLabelInfoByMem() {
 	mutex.Lock()
@@ -153,6 +159,7 @@ func (m *LabelModel) AddLabelInfoByMem() {
 // 从内存读取视频标签 （第一次请求 内存没有 则从数据库load到内存）
 func (m *LabelModel) GetVideoLabelList() []*VideoLabel {
 	if len(videoLabels) == 0 {
+	  log.Log.Debugf("load mysql")
 		var err error
 		err, videoLabels = m.LoadLabelsInfoByDb()
 		if err != nil {
@@ -160,6 +167,7 @@ func (m *LabelModel) GetVideoLabelList() []*VideoLabel {
 		}
 	}
 
+  log.Log.Debugf("load mem")
 	return videoLabels
 }
 
@@ -209,6 +217,7 @@ func (m *LabelModel) tree(info []*VideoLabel) []*VideoLabel {
 		// 循环所有1级标签
 		for k, v := range info {
 			labelMp[fmt.Sprint(v.LabelId)] = v
+			log.Log.Debugf("labelMp:%+v", labelMp)
 			// 查询所有一级标签下的所有子标签
 			child, err := m.FindSubLabelsByPid(v)
 			if err != nil || len(child) == 0 {

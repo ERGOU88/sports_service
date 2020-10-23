@@ -15,40 +15,40 @@ type NotifyModel struct {
 
 // 通知设置请求参数
 type NotifySettingParams struct {
-	CommentPushSet   int    `json:"comment_push_set"`          // 评论推送 0 接收 1 不接收
-	ThumbUpPushSet   int    `json:"thumb_up_push_set"`         // 点赞推送 0 接收 1 不接收
-	AttentionPushSet int    `json:"attention_push_set"`        // 关注推送 0 接收 1 不接收
-	SharePushSet     int    `json:"share_push_set"`            // 分享推送 0 接收 1 不接收
-	SlotPushSet      int    `json:"slot_push_set"`             // 投币推送 0 接收 1 不接收
+	CommentPushSet   int    `json:"comment_push_set" example:"0"`          // 评论推送 0 接收 1 不接收
+	ThumbUpPushSet   int    `json:"thumb_up_push_set" example:"0"`         // 点赞推送 0 接收 1 不接收
+	AttentionPushSet int    `json:"attention_push_set" example:"0"`        // 关注推送 0 接收 1 不接收
+	SharePushSet     int    `json:"share_push_set" example:"0"`            // 分享推送 0 接收 1 不接收
+	SlotPushSet      int    `json:"slot_push_set" example:"0"`             // 投币推送 0 接收 1 不接收
 }
 
 // 收到的@信息（评论/回复）
 type ReceiveCommentAtInfo struct {
-	ComposeId     int64                 `json:"compose_id"`      // 作品id
-	Title         string                `json:"title"`           // 标题
-	Describe      string                `json:"describe"`        // 描述
-	Cover         string                `json:"cover"`           // 封面
-	VideoAddr     string                `json:"video_addr"`      // 视频地址
-	IsRecommend   int                   `json:"is_recommend"`    // 是否推荐
-	IsTop         int                   `json:"is_top"`          // 是否置顶
-	VideoDuration int                   `json:"video_duration"`  // 视频时长
-	VideoWidth    int64                 `json:"video_width"`     // 视频宽
-	VideoHeight   int64                 `json:"video_height"`    // 视频高
-	Status        int32                 `json:"status"`          // 审核状态
-	CreateAt      int                   `json:"create_at"`       // 视频创建时间
-	BarrageNum    int                   `json:"barrage_num"`     // 弹幕数
-	BrowseNum     int                   `json:"browse_num"`      // 浏览数（播放数）
-	UserId        string                `json:"user_id"`         // 执行@的用户id
-	Avatar        string                `json:"avatar"`          // 执行@的用户头像
-	Nickname      string                `json:"nick_name"`       // 执行@的用户昵称
-	ToUserId      string                `json:"to_user_id"`      // 被@的用户id
-	ToUserAvatar  string                `json:"avatar"`          // 被@用户头像
-	ToUserName    string                `json:"to_user_name"`    // 被@的用户昵称
-	Content       string                `json:"content"`         // 评论内容
-	Reply         string                `json:"reply"`           // 回复的内容
-	AtTime        int                   `json:"at_time"`         // 用户@的时间
-	Type          int                   `json:"type"`            // 类型 1 视频 2 帖子 3 评论
-	CommentType   int                   `json:"comment_type"`    // 1 为评论 2 为回复
+	ComposeId     int64                 `json:"compose_id" example:"1000000000"`      // 作品id
+	Title         string                `json:"title" example:"视频标题"`               // 标题
+	Describe      string                `json:"describe" example:"视频描述"`            // 描述
+	Cover         string                `json:"cover" example:"视频封面地址"`           // 封面
+	VideoAddr     string                `json:"video_addr" example:"视频地址"`         // 视频地址
+	IsRecommend   int                   `json:"is_recommend" example:"0"`             // 是否推荐
+	IsTop         int                   `json:"is_top" example:"0"`                   // 是否置顶
+	VideoDuration int                   `json:"video_duration" example:"1000"`        // 视频时长
+	VideoWidth    int64                 `json:"video_width" example:"1000"`           // 视频宽
+	VideoHeight   int64                 `json:"video_height" example:"1000"`          // 视频高
+	Status        int32                 `json:"status" example:"1"`                   // 审核状态
+	CreateAt      int                   `json:"create_at" example:"1600000000"`       // 视频创建时间
+	BarrageNum    int                   `json:"barrage_num" example:"1000"`           // 弹幕数
+	BrowseNum     int                   `json:"browse_num" example:"1000"`            // 浏览数（播放数）
+	UserId        string                `json:"user_id" example:"执行@的用户id"`        // 执行@的用户id
+	Avatar        string                `json:"avatar" example:"执行@的用户头像"`        // 执行@的用户头像
+	Nickname      string                `json:"nick_name" example:"执行@的用户昵称"`     // 执行@的用户昵称
+	ToUserId      string                `json:"to_user_id" example:"被@的用户id"`       // 被@的用户id
+	ToUserAvatar  string                `json:"avatar" example:"被@的用户头像"`          // 被@用户头像
+	ToUserName    string                `json:"to_user_name" example:"被@的用户昵称"`    // 被@的用户昵称
+	Content       string                `json:"content" example:"内容"`                 // 评论内容
+	Reply         string                `json:"reply"  example:"回复的内容"`             // 回复的内容
+	AtTime        int                   `json:"at_time" example:"1600000000"`          // 用户@的时间
+	Type          int                   `json:"type" example:"1"`                      // 类型 1 视频 2 帖子 3 评论
+	CommentType   int                   `json:"comment_type" example:"1"`              // 1 为评论 2 为回复
 }
 
 // 实例

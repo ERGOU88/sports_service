@@ -34,8 +34,8 @@
 
       <el-table-column width="120px" align="center" label="性别">
         <template slot-scope="scope">
-          <span v-if="scope.row.gender===1">女</span>
-          <span v-if="scope.row.gender===0">男</span>
+          <span v-if="scope.row.gender===1">男</span>
+          <span v-if="scope.row.gender===2">女</span>
         </template>
       </el-table-column>
 
@@ -116,14 +116,14 @@
 
       <el-table-column width="90px" align="center" label="弹幕数">
         <template slot-scope="scope">
-          <span>{{ scope.row.totaol_barrage}}</span>
+          <span>{{ scope.row.total_barrage}}</span>
         </template>
       </el-table-column>
 
       <el-table-column class-name="status-col" label="状态" width="110" align="center">
         <template slot-scope="scope">
-          <el-tag type="success" effect="dark" v-if="scope.row.status===1">封禁</el-tag>
-          <el-tag type="warning" effect="dark" v-if="scope.row.status===0">正常</el-tag>
+          <el-tag type="success" effect="dark" v-if="scope.row.status===0">正常</el-tag>
+          <el-tag type="warning" effect="dark" v-if="scope.row.status===1">封禁</el-tag>
         </template>
       </el-table-column>
 

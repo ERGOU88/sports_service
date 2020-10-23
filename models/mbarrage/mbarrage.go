@@ -62,18 +62,18 @@ func (m *BarrageModel) GetUserTotalVideoBarrage(userId string) int64 {
 }
 
 type VideoBarrageInfo struct {
-  Id               int64  `json:"id"`
-  VideoId          int64  `json:"video_id"`
-  VideoCurDuration int    `json:"video_cur_duration"`
-  Content          string `json:"content"`
-  UserId           string `json:"user_id"`
-  Color            string `json:"color"`
-  Font             string `json:"font"`
-  BarrageType      int    `json:"barrage_type"`
-  Location         int    `json:"location"`
-  SendTime         int64  `json:"send_time"`
-  Title            string `json:"title"`
-  VideoAddr        string `json:"video_addr"`
+  Id               int64  `json:"id"  example:"10000000000"`
+  VideoId          int64  `json:"video_id" example:"10000000000"`
+  VideoCurDuration int    `json:"video_cur_duration" example:"100"`
+  Content          string `json:"content" example:"弹幕内容"`
+  UserId           string `json:"user_id" example:"10000000000"`
+  Color            string `json:"color" example:"颜色"`
+  Font             string `json:"font" example:"字体"`
+  BarrageType      int    `json:"barrage_type" example:"0"`
+  Location         int    `json:"location" example:"0"`
+  SendTime         int64  `json:"send_time" example:"1600000000"`
+  Title            string `json:"title" example:"标题"`
+  VideoAddr        string `json:"video_addr" example:"视频地址"`
 }
 
 // 后台分页获取 视频弹幕 列表

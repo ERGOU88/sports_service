@@ -12,6 +12,12 @@
 
       <el-form-item label="说明" prop="explain"><el-input v-model="form.explain" type="explain"></el-input></el-form-item>
 
+      <el-form-item label="banner类型" prop="explain">
+        <el-select v-model="form.type" placeholder="banner类型" clearable class="filter-item" style="width: 130px;margin: 0 0px;">
+          <el-option v-for="item in types" :key="item.id" :label="item.name" :value="item.id" />
+        </el-select>
+      </el-form-item>
+
       <el-form-item label="banner图" prop="cover"> <upload @uploadFile='uploadFile'></upload></el-form-item>
     <el-form-item label="开始时间" prop="start_time">
       <template slot-scope="scope">
@@ -57,6 +63,17 @@
         }
       };
 
+      const validateCover = (rule, value, callback) => {
+        const tmpcnt = value.lastIndexOf('.')
+        const exname = value.substring(tmpcnt + 1)
+        const names = ['jpg', 'jpeg', 'png']
+        if (names.indexOf(exname) < 0) {
+          callback(new Error('不支持的图片格式!请重新选择图片！'))
+        } else {
+          callback()
+        }
+      }
+
       return {
         rules: {
           title: [
@@ -69,6 +86,7 @@
               trigger: 'blur'
             }
           ],
+
           start_time: [
             { required: true, message: '请选择开始日期' }
           ],
@@ -76,7 +94,11 @@
             { required: true, message: '请选择结束日期' }
           ],
           cover: [
-            { required: true, message: '请确认是否已上传banner图' }
+            { required: true, message: '请确认是否已上传banner图' },
+            {
+              validator: validateCover,
+              trigger: 'blur'
+            }
           ]
         },
         form: {
@@ -92,6 +114,20 @@
           type: 1,
           title: ''
         },
+        types: [
+          {
+            id: 1,
+            name: '首页'
+          },
+          {
+            id: 2,
+            name: '直播页'
+          },
+          {
+            id: 3,
+            name: '官网'
+          }
+        ],
         loading: false,
         formLabelWidth: '120px',
         ishide: this.show,
@@ -137,6 +173,12 @@
           return
         }
 
+        const timestamp = (new Date()).valueOf() / 1000
+        if (timestamp >= form.end_time) {
+          this.$message.error("下架时间不能小于当前时间")
+          return
+        }
+
         const res = await addBanner({
             cover: form.cover,
             explain: form.explain,
@@ -169,7 +211,7 @@
         });
       }
     },
-  };
+  }
 </script>
 
 <style lang="scss" scoped>

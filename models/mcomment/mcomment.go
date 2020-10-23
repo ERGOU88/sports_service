@@ -16,43 +16,43 @@ type CommentModel struct {
 
 // 视频评论列表
 type VideoComments struct {
-	Id                  int64               `json:"id"`                      // 评论id
-	IsTop               int                 `json:"is_top"`                  // 置顶状态 1 置顶 0 不置顶
-	Avatar              string              `json:"avatar"`                  // 用户头像
-	UserId              string              `json:"user_id"`                 // 用户id
-	UserName            string              `json:"user_name"`               // 用户名称
-	CommentLevel        int                 `json:"comment_level"`           // 评论等级[1 一级评论 默认 ，2 二级评论]
-	Content             string              `json:"content"`                 // 评论内容
-	CreateAt            int                 `json:"create_at"`               // 创建时间
-	Status              int                 `json:"status"`                  // 状态 1 有效 0 逻辑删除
-	VideoId             int64               `json:"video_id"`                // 视频id
-	ReplyList           []*ReplyComment     `json:"reply_list"`              // 回复列表
-	LikeNum             int64               `json:"like_num"`                // 点赞数
-	IsAttention         int                 `json:"is_attention"`            // 是否关注
-	ReplyNum            int64               `json:"reply_num"`               // 总回复数
+	Id                  int64               `json:"id" example:"1000000000"`                      // 评论id
+	IsTop               int                 `json:"is_top"  example:"1"`                          // 置顶状态 1 置顶 0 不置顶
+	Avatar              string              `json:"avatar"  example:"用户头像"`                    // 用户头像
+	UserId              string              `json:"user_id" example:"用户id"`                     // 用户id
+	UserName            string              `json:"user_name" example:"用户昵称"`                  // 用户名称
+	CommentLevel        int                 `json:"comment_level" example:"1"`                    // 评论等级[1 一级评论 默认 ，2 二级评论]
+	Content             string              `json:"content"  example:"评论的内容"`                 // 评论内容
+	CreateAt            int                 `json:"create_at" example:"1600000000"`              // 创建时间
+	Status              int                 `json:"status" example:"0"`                          // 状态 1 有效 0 逻辑删除
+	VideoId             int64               `json:"video_id" example:"1000000000"`               // 视频id
+	ReplyList           []*ReplyComment     `json:"reply_list"`                                  // 回复列表
+	LikeNum             int64               `json:"like_num" example:"100"`                      // 点赞数
+	IsAttention         int                 `json:"is_attention" example:"0"`                    // 是否关注
+	ReplyNum            int64               `json:"reply_num" example:"100"`                     // 总回复数
 }
 
 // 回复评论的内容
 type ReplyComment struct {
-	Id                   int64               `json:"id"`                      // 评论id
-	IsTop                int                 `json:"is_top"`                  // 置顶状态 1 置顶 0 不置顶
-	Avatar               string              `json:"avatar"`                  // 用户头像
-	UserId               string              `json:"user_id"`                 // 用户id
-	UserName             string              `json:"user_name"`               // 用户名称
-	CommentLevel         int                 `json:"comment_level"`           // 评论等级[1 一级评论 默认 ，2 二级评论]
-	Content              string              `json:"content"`                 // 评论内容
-	CreateAt             int                 `json:"create_at"`               // 创建时间
-	ParentCommentId      int64               `json:"parent_comment_id"`       // 父评论id
-	ParentCommentUserId  string              `json:"parent_comment_user_id"`  // 父评论的用户id
-	ReplyCommentId       int64               `json:"reply_comment_id"`        // 被回复的评论id
-	ReplyCommentUserId   string              `json:"reply_comment_user_id"`   // 被回复的评论用户id
-	ReplyCommentUserName string              `json:"reply_comment_user_name"` // 被回复评论的用户昵称
-	ReplyCommentAvatar   string              `json:"reply_comment_avatar"`    // 被回复评论的用户头像
-	ReplyContent         string              `json:"reply_content"`           // 被回复的内容
-	Status               int                 `json:"status"`                  // 状态 1 有效 0 逻辑删除
-	VideoId              int64               `json:"video_id"`                // 视频id
-	LikeNum              int64               `json:"like_num"`                // 点赞数
-	IsAttention          int                 `json:"is_attention"`            // 是否关注
+	Id                   int64               `json:"id" example:"1600000000"`                          // 评论id
+	IsTop                int                 `json:"is_top" example:"1"`                               // 置顶状态 1 置顶 0 不置顶
+	Avatar               string              `json:"avatar" example:"头像"`                             // 用户头像
+	UserId               string              `json:"user_id" example:"用户id"`                          // 用户id
+	UserName             string              `json:"user_name" example:"用户昵称"`                       // 用户名称
+	CommentLevel         int                 `json:"comment_level" example:"1"`                         // 评论等级[1 一级评论 默认 ，2 二级评论]
+	Content              string              `json:"content" example:"评论内容"`                          // 评论内容
+	CreateAt             int                 `json:"create_at" example:"1600000000"`                    // 创建时间
+	ParentCommentId      int64               `json:"parent_comment_id" example:"1000000000"`            // 父评论id
+	ParentCommentUserId  string              `json:"parent_comment_user_id" example:"父评论的用户id"`     // 父评论的用户id
+	ReplyCommentId       int64               `json:"reply_comment_id" example:"1000000000"`             // 被回复的评论id
+	ReplyCommentUserId   string              `json:"reply_comment_user_id" example:"被回复的评论用户id"`   // 被回复的评论用户id
+	ReplyCommentUserName string              `json:"reply_comment_user_name" example:"被回复评论的用户昵称"`// 被回复评论的用户昵称
+	ReplyCommentAvatar   string              `json:"reply_comment_avatar" example:"被回复评论的用户头像"`   // 被回复评论的用户头像
+	ReplyContent         string              `json:"reply_content"  example:"被回复的内容"`                // 被回复的内容
+	Status               int                 `json:"status" example:"1"`                                 // 状态 1 有效 0 逻辑删除
+	VideoId              int64               `json:"video_id" example:"1000000000"`                      // 视频id
+	LikeNum              int64               `json:"like_num" example:"100"`                             // 点赞数
+	IsAttention          int                 `json:"is_attention" example:"0"`                           // 是否关注
 }
 
 // 视频评论数据（后台展示）

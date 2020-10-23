@@ -1362,3 +1362,60 @@ net/http.(*conn).serve
 [2020-10-22 19:54:33]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
 [2020-10-22 20:02:23]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
 [2020-10-22 20:12:46]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-23 09:45:46]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-23 09:46:10]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-23 09:50:51]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-23 10:27:47]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-23 11:11:07]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-23 11:11:10]-15	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:213	labelMp:map[1:0xc00021c070]
+[2020-10-23 11:11:10]-15	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:213	labelMp:map[1:0xc00021c070 2:0xc00021c0e0]
+[2020-10-23 11:20:06]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-23 11:20:10]-15	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:157	load mysql
+[2020-10-23 11:20:10]-15	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:215	labelMp:map[1:0xc000205030]
+[2020-10-23 11:20:10]-15	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:215	labelMp:map[1:0xc000205030 2:0xc0002050a0]
+[2020-10-23 11:20:10]-15	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:165	load mem
+[2020-10-23 11:20:20]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:165	load mem
+[2020-10-23 11:20:26]-56	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:165	load mem
+[2020-10-23 11:20:34]-60	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:165	load mem
+[2020-10-23 11:20:41]-69	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:165	load mem
+[2020-10-23 11:20:46]-63	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:165	load mem
+[2020-10-23 11:21:47]-46	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:165	load mem
+[2020-10-23 11:25:44]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-23 11:25:47]-30	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:162	load mysql
+[2020-10-23 11:25:47]-30	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:220	labelMp:map[1:0xc000204070]
+[2020-10-23 11:25:47]-30	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:25:55]-43	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:26:00]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:26:45]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-23 11:27:31]-15	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:162	load mysql
+[2020-10-23 11:27:31]-15	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:220	labelMp:map[3:0xc000275030]
+[2020-10-23 11:27:31]-15	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:220	labelMp:map[1:0xc0002750a0 3:0xc000275030]
+[2020-10-23 11:27:31]-15	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:33:11]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-23 11:33:14]-45	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:162	load mysql
+[2020-10-23 11:33:14]-45	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:220	labelMp:map[3:0xc0001e9030]
+[2020-10-23 11:33:14]-45	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:220	labelMp:map[1:0xc0001e90a0 3:0xc0001e9030]
+[2020-10-23 11:33:14]-45	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:33:17]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:162	load mysql
+[2020-10-23 11:33:17]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:220	labelMp:map[1:0xc0001fc070]
+[2020-10-23 11:33:17]-66	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:33:27]-86	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:162	load mysql
+[2020-10-23 11:33:27]-86	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:220	labelMp:map[1:0xc0001fc070 4:0xc0002160e0]
+[2020-10-23 11:33:27]-86	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:220	labelMp:map[1:0xc0002161c0 4:0xc0002160e0]
+[2020-10-23 11:33:27]-86	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:33:34]-27	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:162	load mysql
+[2020-10-23 11:33:34]-27	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:220	labelMp:map[1:0xc00020dd50]
+[2020-10-23 11:33:34]-27	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:33:55]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:162	load mysql
+[2020-10-23 11:33:55]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:220	labelMp:map[1:0xc00020dd50 5:0xc0002163f0]
+[2020-10-23 11:33:55]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:220	labelMp:map[1:0xc000216460 5:0xc0002163f0]
+[2020-10-23 11:33:55]-53	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:34:04]-92	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:34:38]-95	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:35:21]-31	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:35:29]-77	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:35:53]-80	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:35:56]-99	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:48:36]-181	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 11:51:59]-166	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 12:59:40]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success

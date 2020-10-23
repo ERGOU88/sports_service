@@ -37,22 +37,22 @@ type VideoPublishParams struct {
 
 // 视频信息
 type VideosInfoResp struct {
-	VideoId       int64  `json:"video_id"`       // 视频id
-	Title         string `json:"title"`          // 标题
-	Describe      string `json:"describe"`       // 描述
-	Cover         string `json:"cover"`          // 封面
-	VideoAddr     string `json:"video_addr"`     // 视频地址
-	IsRecommend   int    `json:"is_recommend"`   // 是否推荐
-	IsTop         int    `json:"is_top"`         // 是否置顶
-	VideoDuration int    `json:"video_duration"` // 视频时长
-	VideoWidth    int64  `json:"video_width"`    // 视频宽
-	VideoHeight   int64  `json:"video_height"`   // 视频高
-	CreateAt      int    `json:"create_at"`      // 视频创建时间
-	UserId        string `json:"user_id"`        // 发布视频的用户id
-	Avatar        string `json:"avatar"`         // 头像
-	Nickname      string `json:"nick_name"`      // 昵称
-	IsAttention   int    `json:"is_attention"`   // 是否关注 1 关注 2 未关注
-	OpTime        int    `json:"op_time"`        // 用户收藏/点赞等的操作时间
+	VideoId       int64  `json:"video_id" example:"1000000000"`       // 视频id
+	Title         string `json:"title" example:"视频标题"`             // 标题
+	Describe      string `json:"describe" example:"视频描述"`          // 描述
+	Cover         string `json:"cover" example:"视频封面"`             // 封面
+	VideoAddr     string `json:"video_addr" example:"视频地址"`        // 视频地址
+	IsRecommend   int    `json:"is_recommend" example:"1"`           // 是否推荐
+	IsTop         int    `json:"is_top" example:"1"`                 // 是否置顶
+	VideoDuration int    `json:"video_duration" example:"1000000"`   // 视频时长
+	VideoWidth    int64  `json:"video_width" example:"1000"`         // 视频宽
+	VideoHeight   int64  `json:"video_height" example:"1000"`        // 视频高
+	CreateAt      int    `json:"create_at" example:"1600000000"`     // 视频创建时间
+	UserId        string `json:"user_id" example:"用户id"`            // 发布视频的用户id
+	Avatar        string `json:"avatar" example:"头像"`                // 头像
+	Nickname      string `json:"nick_name" example:"昵称"`             // 昵称
+	IsAttention   int    `json:"is_attention" example:"1"`            // 是否关注 1 关注 2 未关注
+	OpTime        int    `json:"op_time" example:"1600000000"`        // 用户收藏/点赞等的操作时间
 }
 
 // 视频信息

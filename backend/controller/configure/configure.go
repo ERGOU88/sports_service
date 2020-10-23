@@ -39,7 +39,7 @@ func (svc *ConfigModule) AddBanner(params *mbanner.AddBannerParams) int {
   if params.EndTime - params.StartTime < 1800 ||
     params.EndTime <= params.StartTime ||
     params.EndTime <= int(time.Now().Unix()) {
-    return errdef.CONFIG_DEL_BANNER_FAIL
+    return errdef.CONFIG_INVALID_END_TIME
   }
 
 	now := int(time.Now().Unix())

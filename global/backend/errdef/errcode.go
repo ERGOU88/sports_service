@@ -16,11 +16,12 @@ const (
 	VIDEO_NOT_PASS              = 10008
 	VIDEO_EDIT_TOP_FAIL         = 10009
 	VIDEO_EDIT_RECOMMEND_FAIL   = 10010
-	VIDEO_INVALID_LABEL_NAME    = 10011
-	VIDEO_ADD_VIDEO_LABEL_FAIL  = 10012
-	VIDEO_LABEL_NOT_EXISTS      = 10013
-	VIDEO_LABEL_DELETE_FAIL     = 10014
-	VIDEO_BARRAGE_DELETE_FAIL   = 10015
+	VIDEO_INVALID_LABEL_LEN     = 10011
+  VIDEO_INVALID_LABEL_NAME    = 10012
+	VIDEO_ADD_VIDEO_LABEL_FAIL  = 10013
+	VIDEO_LABEL_NOT_EXISTS      = 10014
+	VIDEO_LABEL_DELETE_FAIL     = 10015
+	VIDEO_BARRAGE_DELETE_FAIL   = 10016
 
 	// 11001 - 12000 评论相关错误码
 	COMMENT_NOT_EXISTS          = 11001
@@ -65,7 +66,8 @@ var MsgFlags = map[int]string{
 	VIDEO_NOT_PASS:              "视频未审核",
 	VIDEO_EDIT_TOP_FAIL:         "修改视频置顶状态失败",
 	VIDEO_EDIT_RECOMMEND_FAIL:   "修改视频推荐状态失败",
-	VIDEO_INVALID_LABEL_NAME:    "视频标签名称长度不合法，应小于等于20个字符",
+  VIDEO_INVALID_LABEL_LEN:     "视频标签名称长度不合法，应小于等于20个字符",
+	VIDEO_INVALID_LABEL_NAME:    "标签名称中含有违规字符",
 	VIDEO_ADD_VIDEO_LABEL_FAIL:  "添加视频标签失败",
 	VIDEO_LABEL_NOT_EXISTS:      "视频标签不存在",
 	VIDEO_LABEL_DELETE_FAIL:     "视频标签删除失败",
@@ -75,7 +77,7 @@ var MsgFlags = map[int]string{
 	COMMENT_DELETE_FAIL:         "删除评论失败",
 
 	CONFIG_ADD_BANNER_FAIL:      "添加banner失败",
-  CONFIG_INVALID_END_TIME:     "上架时间必须大于下架时间（且上架时长需>=30分钟）",
+  CONFIG_INVALID_END_TIME:     "上架时间必须大于下架时间，下架时间必须大于当前时间（且上架时长需>=30分钟）",
 	CONFIG_DEL_BANNER_FAIL:      "删除banner失败",
 	CONFIG_ADD_AVATAR_FAIL:      "添加系统头像失败",
 	CONFIG_DEL_AVATAR_FAIL:      "删除系统头像失败",

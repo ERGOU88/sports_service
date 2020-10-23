@@ -122,7 +122,7 @@ type SearchContactRes struct {
 	BackgroundImg string `json:"background_img" example:"背景图"`
 	Born          string `json:"born" example:"出生日期"`
 	Age           int    `json:"age" example:"27"`
-	IsAttention   int32  `json:"is_attention"`
+	IsAttention   int32  `json:"is_attention"  example:"0"`
 }
 
 // 搜索关注的用户

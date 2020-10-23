@@ -4237,7 +4237,8 @@
                     "example": 0
                 },
                 "is_attention": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "nick_name": {
                     "type": "string",
@@ -4347,61 +4348,80 @@
             "type": "object",
             "properties": {
                 "avatar": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "头像"
                 },
                 "comment_level": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "content": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "评论内容"
                 },
                 "create_at": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1600000000
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1600000000
                 },
                 "is_attention": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "is_top": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "like_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 100
                 },
                 "parent_comment_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1000000000
                 },
                 "parent_comment_user_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "父评论的用户id"
                 },
                 "reply_comment_avatar": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "被回复评论的用户头像"
                 },
                 "reply_comment_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1000000000
                 },
                 "reply_comment_user_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "被回复的评论用户id"
                 },
                 "reply_comment_user_name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "被回复评论的用户昵称"
                 },
                 "reply_content": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "被回复的内容"
                 },
                 "status": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "user_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "用户id"
                 },
                 "user_name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "用户昵称"
                 },
                 "video_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1000000000
                 }
             }
         },
@@ -4428,28 +4448,36 @@
             "type": "object",
             "properties": {
                 "avatar": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "用户头像"
                 },
                 "comment_level": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "content": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "评论的内容"
                 },
                 "create_at": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1600000000
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1000000000
                 },
                 "is_attention": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "is_top": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "like_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 100
                 },
                 "reply_list": {
                     "type": "array",
@@ -4458,19 +4486,24 @@
                     }
                 },
                 "reply_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 100
                 },
                 "status": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "user_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "用户id"
                 },
                 "user_name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "用户昵称"
                 },
                 "video_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1000000000
                 }
             }
         },
@@ -4517,7 +4550,7 @@
             "properties": {
                 "compose_id": {
                     "type": "integer",
-                    "example": 10001
+                    "example": 10000000000
                 }
             }
         },
@@ -4530,7 +4563,7 @@
             "properties": {
                 "compose_id": {
                     "type": "integer",
-                    "example": 10001
+                    "example": 10000000000
                 },
                 "to_user_id": {
                     "type": "string",
@@ -4542,19 +4575,24 @@
             "type": "object",
             "properties": {
                 "attention_push_set": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "comment_push_set": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "share_push_set": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "slot_push_set": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "thumb_up_push_set": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 }
             }
         },
@@ -4793,7 +4831,8 @@
                     "example": 0
                 },
                 "is_attention": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "mobile_num": {
                     "type": "integer",
@@ -4841,7 +4880,8 @@
                     "example": "出生日期"
                 },
                 "fans_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 100
                 },
                 "gender": {
                     "type": "integer",
@@ -4852,7 +4892,8 @@
                     "example": 0
                 },
                 "is_attention": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "nick_name": {
                     "type": "string",
@@ -4871,7 +4912,8 @@
                     "example": "2009011314521111"
                 },
                 "works_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 100
                 }
             }
         },
@@ -5104,6 +5146,12 @@
                 "status": {
                     "type": "integer"
                 },
+                "status_cn": {
+                    "type": "string"
+                },
+                "time_elapsed": {
+                    "type": "integer"
+                },
                 "title": {
                     "type": "string"
                 },
@@ -5128,52 +5176,68 @@
             "type": "object",
             "properties": {
                 "avatar": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "头像"
                 },
                 "cover": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "视频封面"
                 },
                 "create_at": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1600000000
                 },
                 "describe": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "视频描述"
                 },
                 "is_attention": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "is_recommend": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "is_top": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "nick_name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "昵称"
                 },
                 "op_time": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1600000000
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "视频标题"
                 },
                 "user_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "用户id"
                 },
                 "video_addr": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "视频地址"
                 },
                 "video_duration": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1000000
                 },
                 "video_height": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1000
                 },
                 "video_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1000000000
                 },
                 "video_width": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1000
                 }
             }
         },
