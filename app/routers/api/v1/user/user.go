@@ -368,7 +368,8 @@ func UserFeedback(c *gin.Context) {
 // @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
-// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   Version 	    header    string 	true  "版本" default(1.0.0)
+// @Param   user_id 	    query     string 	true  "用户id"
 // @Param   UserZoneInfoParam  body muser.UserZoneInfoParam true "个人空间用户信息 请求参数"
 // @Success 200 {object}  swag.ZoneInfoSwag
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"

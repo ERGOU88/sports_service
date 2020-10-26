@@ -105,6 +105,7 @@ func BrowseHistory(c *gin.Context) {
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   user_id	    query  	string 	true  "查看的用户id"
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
 // @Param   status	  	  query  	string 	true  "status 状态 -1 查询全部 0 审核中 1 已发布 2 不通过"
@@ -115,22 +116,56 @@ func BrowseHistory(c *gin.Context) {
 // 用户发布的视频列表
 func VideoPublishList(c *gin.Context) {
 	reply := errdef.New(c)
-	userId, ok := c.Get(consts.USER_ID)
-	if !ok {
-		log.Log.Errorf("video_trace: user not found, uid:%s", userId.(string))
-		reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
-		return
-	}
-
+	//userId, ok := c.Get(consts.USER_ID)
+	//if !ok {
+	//	log.Log.Errorf("video_trace: user not found, uid:%s", userId.(string))
+	//	reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
+	//	return
+	//}
+  uid := c.Query("user_id")
 	status := c.DefaultQuery("status", "-1")
 	condition := c.DefaultQuery("condition", "-1")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 
 	svc := cvideo.New(c)
 	// 获取用户发布的内容列表
-	list := svc.GetUserPublishList(userId.(string), status, condition, page, size)
+	list := svc.GetUserPublishList(uid, status, condition, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// @Summary 查看其他用户发布的视频记录[分页获取] (ok)
+// @Tags 视频模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   page	  	  query  	string 	true  "页码 从1开始"
+// @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
+// @Param   status	  	  query  	string 	true  "status 状态 -1 查询全部 0 审核中 1 已发布 2 不通过"
+// @Param   condition	  query  	string 	true  "条件 -1 默认时间排序 0 播放数 1 弹幕数 2 点赞数 3 评论数 4 分享数"
+// @Success 200 {array}  mvideo.VideosInfo
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/video/other/publish [get]
+// 获取其他用户发布的视频列表
+func OtherUserPublishList(c *gin.Context) {
+  reply := errdef.New(c)
+  userId := c.Query("user_id")
+
+  status := c.DefaultQuery("status", "-1")
+  condition := c.DefaultQuery("condition", "-1")
+  page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+
+  svc := cvideo.New(c)
+  // 获取其他用户发布的内容列表
+  list := svc.GetUserPublishList(userId, status, condition, page, size)
+  reply.Data["list"] = list
+  reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
 // @Summary 删除浏览的历史记录 (ok)

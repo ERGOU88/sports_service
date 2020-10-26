@@ -1419,3 +1419,31 @@ net/http.(*conn).serve
 [2020-10-23 11:48:36]-181	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
 [2020-10-23 11:51:59]-166	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
 [2020-10-23 12:59:40]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-23 14:13:23]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-23 14:15:37]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-23 14:24:34]-133	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:162	load mysql
+[2020-10-23 14:24:34]-133	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:220	labelMp:map[5:0xc0001a00e0]
+[2020-10-23 14:24:34]-133	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:220	labelMp:map[1:0xc0001a0230 5:0xc0001a00e0]
+[2020-10-23 14:24:34]-133	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-10-23 14:35:07]-195	ERROR	fpv	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:169	user_trace: find user by userid err:%!s(<nil>), user:&{0    0  0 0 0 0 0 0 0 0     0  0  0}
+sports_service/server/models/muser.(*UserModel).FindUserByUserid
+	/Users/jelly/go/src/sports_service/server/models/muser/muser.go:169
+sports_service/server/backend/controller/comment.(*CommentModule).GetVideoComments
+	/Users/jelly/go/src/sports_service/server/backend/controller/comment/comment.go:52
+sports_service/server/backend/routers/api/v1/comment.VideoCommentList
+	/Users/jelly/go/src/sports_service/server/backend/routers/api/v1/comment/comment.go:22
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+sports_service/server/middleware/engineLog.EngineLog.func1
+	/Users/jelly/go/src/sports_service/server/middleware/engineLog/log.go:33
+github.com/gin-gonic/gin.(*Context).Next
+	/Users/jelly/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest
+	/Users/jelly/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409
+github.com/gin-gonic/gin.(*Engine).ServeHTTP
+	/Users/jelly/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367
+net/http.serverHandler.ServeHTTP
+	/usr/local/go/src/net/http/server.go:2807
+net/http.(*conn).serve
+	/usr/local/go/src/net/http/server.go:1895
+[2020-10-26 09:56:39]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success

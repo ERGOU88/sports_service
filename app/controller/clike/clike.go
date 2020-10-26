@@ -167,6 +167,11 @@ func (svc *LikeModule) CancelLikeForVideo(userId string, videoId int64) int {
 
 // 获取用户点赞的视频列表
 func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*mvideo.VideosInfoResp {
+  if userId == "" {
+    log.Log.Errorf("like_trace: userId not exists! userId:%s", userId)
+    return []*mvideo.VideosInfoResp{}
+  }
+
 	offset := (page - 1) * size
 	infos := svc.like.GetUserLikeVideos(userId, offset, size)
 	if len(infos) == 0 {

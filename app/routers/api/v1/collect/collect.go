@@ -99,6 +99,7 @@ func CancelCollect(c *gin.Context) {
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   user_id	    query  	string 	true  "查看的用户id"
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
 // @Success 200 {array}   mvideo.VideosInfoResp
@@ -107,20 +108,44 @@ func CancelCollect(c *gin.Context) {
 // 用户收藏的视频列表
 func CollectVideoList(c *gin.Context) {
 	reply := errdef.New(c)
-	userId, ok := c.Get(consts.USER_ID)
-	if !ok {
-		log.Log.Errorf("collect_trace: user not found, uid:%s", userId.(string))
-		reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
-		return
-	}
-
+	uid := c.Query("user_id")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	svc := collect.New(c)
 	// 获取用户收藏的视频列表
-	list := svc.GetUserCollectVideos(userId.(string), page, size)
+	list := svc.GetUserCollectVideos(uid, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
+
+// @Summary 查看其他用户收藏的视频列表[分页获取] (ok)
+// @Tags 收藏模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   page	  	  query  	string 	true  "页码 从1开始"
+// @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
+// @Success 200 {array}   mvideo.VideosInfoResp
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/collect/other/list [get]
+// 查看其他用户收藏的视频列表
+func OtherUserCollectVideoList(c *gin.Context) {
+  reply := errdef.New(c)
+  userId := c.Query("user_id")
+
+  page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+  svc := collect.New(c)
+  // 获取用户收藏的视频列表
+  list := svc.GetUserCollectVideos(userId, page, size)
+  reply.Data["list"] = list
+  reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
 
 // @Summary 删除收藏的历史记录 (ok)
 // @Tags 收藏模块

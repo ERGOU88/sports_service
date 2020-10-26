@@ -16,6 +16,8 @@ func Router(engine *gin.Engine) {
 		video.GET("/browse/history", BrowseHistory)
 		// 用户发布的视频列表
 		video.GET("/publish/list", VideoPublishList)
+		// 其他用户发布的视频列表
+		video.GET("/other/publish", OtherUserPublishList)
 		// 删除浏览记录
 		video.POST("/delete/history", DeleteHistory)
 		// 删除发布的记录

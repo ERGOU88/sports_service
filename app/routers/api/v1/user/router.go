@@ -31,7 +31,7 @@ func Router(engine *gin.Engine) {
 		// 用户反馈
 		user.POST("/feedback", token.TokenAuth(), UserFeedback)
 		// 个人空间信息
-		user.GET("/zone/info", token.TokenAuth(), UserZoneInfo)
+		user.GET("/zone/info", UserZoneInfo)
 	}
 
 }

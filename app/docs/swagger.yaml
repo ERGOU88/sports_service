@@ -753,6 +753,30 @@ definitions:
       platform:
         type: integer
     type: object
+  swag.ClientInitSwag:
+    properties:
+      about:
+        example: 关于h5页
+        type: string
+      avatar_list:
+        type: string
+      faq_h5:
+        example: 常见问题h5页
+        type: string
+      label_list:
+        type: string
+      login_treaty:
+        example: 登陆协议h5页
+        type: string
+      secret:
+        example: 密钥
+        type: string
+      upload_treaty:
+        example: 上传协议h5页
+        type: string
+      world_list:
+        type: string
+    type: object
   swag.ColligateSearchSwag:
     properties:
       user_list:
@@ -1190,9 +1214,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"code":200,"data":{"secret": "DnaukFwVILpcewX6"},"msg":"success","tm":"1588888888"}'
+          description: OK
           schema:
-            type: string
+            $ref: '#/definitions/swag.ClientInitSwag'
         "500":
           description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
           schema:
@@ -1249,6 +1273,63 @@ paths:
           schema:
             type: string
       summary: 删除收藏的历史记录 (ok)
+      tags:
+      - 收藏模块
+  /api/v1/collect/other/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/mvideo.VideosInfoResp'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 查看其他用户收藏的视频列表[分页获取] (ok)
       tags:
       - 收藏模块
   /api/v1/collect/video:
@@ -1382,6 +1463,11 @@ paths:
         description: 版本
         in: header
         name: Version
+        required: true
+        type: string
+      - description: 查看的用户id
+        in: query
+        name: user_id
         required: true
         type: string
       - description: 页码 从1开始
@@ -1805,6 +1891,63 @@ paths:
       summary: 取消评论点赞 (ok)
       tags:
       - 点赞模块
+  /api/v1/like/other/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/mvideo.VideosInfoResp'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 查看其他用户点赞的视频列表[分页获取] (ok)
+      tags:
+      - 点赞模块
   /api/v1/like/video:
     post:
       consumes:
@@ -1936,6 +2079,11 @@ paths:
         description: 版本
         in: header
         name: Version
+        required: true
+        type: string
+      - description: 查看的用户id
+        in: query
+        name: user_id
         required: true
         type: string
       - description: 页码 从1开始
@@ -3127,6 +3275,11 @@ paths:
         name: Version
         required: true
         type: string
+      - description: 用户id
+        in: query
+        name: user_id
+        required: true
+        type: string
       - description: 个人空间用户信息 请求参数
         in: body
         name: UserZoneInfoParam
@@ -3569,6 +3722,73 @@ paths:
       summary: 视频标签 (ok)
       tags:
       - 视频模块
+  /api/v1/video/other/publish:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 页码 从1开始
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 每页展示多少 最多50条
+        in: query
+        name: size
+        required: true
+        type: string
+      - description: status 状态 -1 查询全部 0 审核中 1 已发布 2 不通过
+        in: query
+        name: status
+        required: true
+        type: string
+      - description: 条件 -1 默认时间排序 0 播放数 1 弹幕数 2 点赞数 3 评论数 4 分享数
+        in: query
+        name: condition
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/mvideo.VideosInfo'
+            type: array
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 查看其他用户发布的视频记录[分页获取] (ok)
+      tags:
+      - 视频模块
   /api/v1/video/publish:
     post:
       consumes:
@@ -3649,6 +3869,11 @@ paths:
         description: 版本
         in: header
         name: Version
+        required: true
+        type: string
+      - description: 查看的用户id
+        in: query
+        name: user_id
         required: true
         type: string
       - description: 页码 从1开始

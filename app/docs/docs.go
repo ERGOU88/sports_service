@@ -466,9 +466,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"code\":200,\"data\":{\"secret\": \"DnaukFwVILpcewX6\"},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/swag.ClientInitSwag"
                         }
                     },
                     "500": {
@@ -544,6 +544,89 @@ var doc = `{
                         "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/collect/other/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "收藏模块"
+                ],
+                "summary": "查看其他用户收藏的视频列表[分页获取] (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页码 从1开始",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页展示多少 最多50条",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/mvideo.VideosInfoResp"
+                            }
                         }
                     },
                     "500": {
@@ -752,6 +835,13 @@ var doc = `{
                         "description": "版本",
                         "name": "Version",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "查看的用户id",
+                        "name": "user_id",
+                        "in": "query",
                         "required": true
                     },
                     {
@@ -1365,6 +1455,89 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/like/other/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "点赞模块"
+                ],
+                "summary": "查看其他用户点赞的视频列表[分页获取] (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页码 从1开始",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页展示多少 最多50条",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/mvideo.VideosInfoResp"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/like/video": {
             "post": {
                 "consumes": [
@@ -1562,6 +1735,13 @@ var doc = `{
                         "description": "版本",
                         "name": "Version",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "查看的用户id",
+                        "name": "user_id",
+                        "in": "query",
                         "required": true
                     },
                     {
@@ -3303,6 +3483,13 @@ var doc = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "description": "个人空间用户信息 请求参数",
                         "name": "UserZoneInfoParam",
                         "in": "body",
@@ -3945,6 +4132,103 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/video/other/publish": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频模块"
+                ],
+                "summary": "查看其他用户发布的视频记录[分页获取] (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页码 从1开始",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页展示多少 最多50条",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "status 状态 -1 查询全部 0 审核中 1 已发布 2 不通过",
+                        "name": "status",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "条件 -1 默认时间排序 0 播放数 1 弹幕数 2 点赞数 3 评论数 4 分享数",
+                        "name": "condition",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/mvideo.VideosInfo"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/video/publish": {
             "post": {
                 "consumes": [
@@ -4067,6 +4351,13 @@ var doc = `{
                         "description": "版本",
                         "name": "Version",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "查看的用户id",
+                        "name": "user_id",
+                        "in": "query",
                         "required": true
                     },
                     {
@@ -5280,6 +5571,40 @@ var doc = `{
                 },
                 "platform": {
                     "type": "integer"
+                }
+            }
+        },
+        "swag.ClientInitSwag": {
+            "type": "object",
+            "properties": {
+                "about": {
+                    "type": "string",
+                    "example": "关于h5页"
+                },
+                "avatar_list": {
+                    "type": "string"
+                },
+                "faq_h5": {
+                    "type": "string",
+                    "example": "常见问题h5页"
+                },
+                "label_list": {
+                    "type": "string"
+                },
+                "login_treaty": {
+                    "type": "string",
+                    "example": "登陆协议h5页"
+                },
+                "secret": {
+                    "type": "string",
+                    "example": "密钥"
+                },
+                "upload_treaty": {
+                    "type": "string",
+                    "example": "上传协议h5页"
+                },
+                "world_list": {
+                    "type": "string"
                 }
             }
         },

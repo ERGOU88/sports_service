@@ -1,7 +1,8 @@
 package swag
 
 import (
-	"sports_service/server/models/muser"
+  "sports_service/server/models"
+  "sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 )
 
@@ -21,6 +22,18 @@ type ZoneInfoSwag struct {
 type ColligateSearchSwag struct {
 	UserList      []*muser.UserSearchResults `json:"user_list"`
 	VideoList     []*mvideo.VideoDetailInfo  `json:"video_list"`
+}
+
+// swag文档展示（客户端初始化返回数据）
+type ClientInitSwag struct {
+  Secret        string                      `json:"secret" example:"密钥"`
+  AvatarList    []models.DefaultAvatar      `json:"avatar_list"`
+  WorldList     []models.WorldMap           `json:"world_list"`
+  LabelList     []models.VideoLabelConfig   `json:"label_list"`
+  LoginTreaty   string                      `json:"login_treaty" example:"登陆协议h5页"`
+  UploadTreaty  string                      `json:"upload_treaty" example:"上传协议h5页"`
+  FaqH5         string                      `json:"faq_h5" example:"常见问题h5页"`
+  About         string                      `json:"about" example:"关于h5页"`
 }
 
 // 个人空间用户信息

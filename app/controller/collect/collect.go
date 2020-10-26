@@ -163,6 +163,11 @@ func (svc *CollectModule) CancelCollect(userId string, videoId int64) int {
 
 // 获取用户收藏的视频列表
 func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []*mvideo.VideosInfoResp {
+  if userId == "" {
+    log.Log.Errorf("collect_trace: userId not exists! userId:%s", userId)
+    return []*mvideo.VideosInfoResp{}
+  }
+
 	offset := (page - 1) * size
 	infos := svc.collect.GetCollectList(userId, offset, size)
 	if len(infos) == 0 {
