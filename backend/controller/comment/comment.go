@@ -108,7 +108,6 @@ func (svc *CommentModule) GetCommentTotalByVideoId(videoId string) int64 {
   return svc.comment.GetCommentTotalByVideoId(videoId)
 }
 
-
 // 删除视频评论（物理删除）
 func (svc *CommentModule) DelVideoComments(param *mcomment.DelCommentParam) int {
 	comment := svc.comment.GetVideoCommentById(param.CommentId)

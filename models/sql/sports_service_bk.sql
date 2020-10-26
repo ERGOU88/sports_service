@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 8.0.12)
 # Database: fpv2
-# Generation Time: 2020-09-25 11:04:59 +0000
+# Generation Time: 2020-10-22 01:54:08 +0000
 # ************************************************************
 
 
@@ -19,6 +19,23 @@ SET NAMES utf8mb4;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# Dump of table admin_user
+# ------------------------------------------------------------
+
+CREATE TABLE `admin_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `phone` char(11) DEFAULT '' COMMENT '手机号',
+  `username` varchar(255) NOT NULL COMMENT '用户名',
+  `password` char(32) NOT NULL COMMENT '登录密码',
+  `salt` char(10) NOT NULL COMMENT 'salt',
+  `sub_account` bigint(11) NOT NULL DEFAULT '0' COMMENT '子账号标识：0则为主账号，大于0则为子账号，值等于主账号ID',
+  `update_at` int(11) NOT NULL COMMENT '更新时间',
+  `create_at` int(11) NOT NULL COMMENT '注册时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 
 # Dump of table banner
@@ -152,7 +169,9 @@ CREATE TABLE `hot_circle` (
 
 CREATE TABLE `hot_search` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-  `hot_search_content` varchar(128) NOT NULL COMMENT '热门搜索内容 多个用逗号分隔 例如：FPV,电竞,无人机',
+  `hot_search_content` varchar(128) NOT NULL COMMENT '热门搜索内容 如：FPV、电竞',
+  `status` tinyint(1) DEFAULT '0' COMMENT '0 展示 1 隐藏',
+  `sortorder` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '排序权重',
   `create_at` int(11) NOT NULL COMMENT '创建时间',
   `update_at` int(11) NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
@@ -213,7 +232,7 @@ CREATE TABLE `post_info` (
   `video_height` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '视频高',
   PRIMARY KEY (`post_id`),
   KEY `user_id` (`user_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='帖子表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='帖子表';
 
 
 
@@ -248,7 +267,7 @@ CREATE TABLE `post_info_examine` (
   KEY `user_id` (`user_id`) USING BTREE,
   FULLTEXT KEY `label_name` (`label_name`),
   FULLTEXT KEY `label_id` (`label_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='帖子审核表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='帖子审核表';
 
 
 
@@ -265,7 +284,7 @@ CREATE TABLE `post_label_config` (
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`label_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='帖子标签配置';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='帖子标签配置';
 
 
 
@@ -278,7 +297,7 @@ CREATE TABLE `post_labels` (
   `label_name` varchar(521) DEFAULT NULL COMMENT '标签名',
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`post_id`,`label_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='帖子拥有的标签表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='帖子拥有的标签表';
 
 
 
@@ -294,7 +313,7 @@ CREATE TABLE `post_statistic` (
   `create_at` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_at` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
   PRIMARY KEY (`post_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='帖子相关参数统计';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='帖子相关参数统计';
 
 
 
@@ -312,7 +331,7 @@ CREATE TABLE `received_at` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `to_user_id` (`to_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收到的@';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='收到的@';
 
 
 
@@ -327,7 +346,7 @@ CREATE TABLE `search_history` (
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 正常 2 已删除',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户搜索历史表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户搜索历史表';
 
 
 
@@ -344,7 +363,7 @@ CREATE TABLE `section_config` (
   `update_at` int(11) NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `circle_id` (`circle_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='所属圈子的板块配置表（后台设置）';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='所属圈子的板块配置表（后台设置）';
 
 
 
@@ -363,7 +382,7 @@ CREATE TABLE `share_record` (
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0展示 1不展示',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户分享记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户分享记录';
 
 
 
@@ -377,7 +396,7 @@ CREATE TABLE `social_account_login` (
   `status` tinyint(1) DEFAULT '0' COMMENT '0 正常 1 封禁',
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`user_id`,`social_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='社交平台登陆表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='社交平台登陆表';
 
 
 
@@ -394,7 +413,7 @@ CREATE TABLE `social_circle` (
   `create_at` int(11) NOT NULL COMMENT '创建时间',
   `update_at` int(11) NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`circle_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='圈子表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='圈子表';
 
 
 
@@ -411,7 +430,7 @@ CREATE TABLE `system_log` (
   `log_text` mediumtext COMMENT '备注',
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统记录';
 
 
 
@@ -433,7 +452,7 @@ CREATE TABLE `system_message` (
   PRIMARY KEY (`system_id`),
   KEY `receive_id` (`receive_id`),
   KEY `send_type` (`send_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统消息';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统消息';
 
 
 
@@ -450,7 +469,7 @@ CREATE TABLE `system_notice_settings` (
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='用户系统推送通知设置表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='用户系统推送通知设置表';
 
 
 
@@ -471,7 +490,20 @@ CREATE TABLE `system_push` (
   PRIMARY KEY (`push_id`),
   KEY `receive_id` (`receive_id`),
   KEY `send_type` (`send_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统推送';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统推送';
+
+
+
+# Dump of table tencent_cloud_events
+# ------------------------------------------------------------
+
+CREATE TABLE `tencent_cloud_events` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `file_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '腾讯云文件id',
+  `event` mediumtext COMMENT '事件内容（json字符串）',
+  `create_at` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='腾讯事件回调';
 
 
 
@@ -490,7 +522,7 @@ CREATE TABLE `thumbs_up` (
   KEY `user_id` (`user_id`),
   KEY `to_user_id` (`to_user_id`),
   KEY `type_id` (`type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='点赞表（针对帖子/视频/评论）';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='点赞表（针对帖子/视频/评论）';
 
 
 
@@ -506,7 +538,7 @@ CREATE TABLE `user` (
   `gender` tinyint(1) NOT NULL DEFAULT '0' COMMENT '性别 0男性 1女性',
   `born` varchar(128) NOT NULL DEFAULT '' COMMENT '出生日期',
   `age` int(3) NOT NULL DEFAULT '0' COMMENT '年龄',
-  `avatar` varchar(100) NOT NULL DEFAULT '' COMMENT '头像',
+  `avatar` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '头像',
   `status` tinyint(1) DEFAULT '0' COMMENT '0 正常 1 封禁',
   `last_login_time` int(11) DEFAULT NULL COMMENT '最后登录时间',
   `signature` varchar(200) NOT NULL DEFAULT '' COMMENT '签名',
@@ -520,10 +552,10 @@ CREATE TABLE `user` (
   `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `user_type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '用户类型 0 手机号 1 微信 2 QQ 3 微博',
   `country` int(3) NOT NULL DEFAULT '0' COMMENT '国家',
-  `reg_ip` varchar(30) CHARACTER SET utf8mb4 DEFAULT ' ' COMMENT '注册ip',
+  `reg_ip` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT ' ' COMMENT '注册ip',
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='用户表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='用户表';
 
 
 
@@ -539,7 +571,7 @@ CREATE TABLE `user_attention` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `attention_uid` (`attention_uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户关注表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户关注表';
 
 
 
@@ -570,7 +602,7 @@ CREATE TABLE `user_ycoin` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `ycoin` (`ycoin`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户货币表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户货币表';
 
 
 
@@ -590,7 +622,7 @@ CREATE TABLE `video_barrage` (
   `send_time` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '弹幕发送时间',
   PRIMARY KEY (`id`),
   KEY `video_id` (`video_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='视频弹幕';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='视频弹幕';
 
 
 
@@ -634,7 +666,7 @@ CREATE TABLE `video_label_config` (
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`label_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='视频标签配置';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='视频标签配置';
 
 
 
@@ -647,7 +679,7 @@ CREATE TABLE `video_labels` (
   `label_name` varchar(521) DEFAULT NULL COMMENT '标签名',
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`video_id`,`label_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='视频拥有的标签表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='视频拥有的标签表';
 
 
 
@@ -675,7 +707,7 @@ CREATE TABLE `video_live` (
   `duration` bigint(20) DEFAULT '0' COMMENT '时长（秒）',
   `live_type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '直播类型（0：管理员[sys_user]，1：用户[user]）',
   `manager` int(11) NOT NULL DEFAULT '0' COMMENT '后台操作用户',
-  `sequence` varchar(50) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '推流唯一标识',
+  `sequence` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '推流唯一标识',
   PRIMARY KEY (`id`),
   KEY `anchor_id` (`anchor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='视频直播表';
@@ -697,7 +729,7 @@ CREATE TABLE `video_statistic` (
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '修改时间',
   PRIMARY KEY (`video_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='视频相关参数统计';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='视频相关参数统计';
 
 
 
@@ -723,6 +755,8 @@ CREATE TABLE `videos` (
   `video_height` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '视频高',
   `create_at` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_at` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
+  `file_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '腾讯云文件id',
+  `size` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '视频大小（字节数）',
   PRIMARY KEY (`video_id`),
   KEY `user_id` (`user_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='视频表';
@@ -758,7 +792,7 @@ CREATE TABLE `videos_examine` (
   KEY `user_id` (`user_id`) USING BTREE,
   FULLTEXT KEY `label_name` (`label_name`),
   FULLTEXT KEY `label_id` (`label_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='视频审核表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='视频审核表';
 
 
 
@@ -795,7 +829,7 @@ CREATE TABLE `ycoin_receive_record` (
   `create_at` int(11) NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户获取游币记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户获取游币记录表';
 
 
 
@@ -814,7 +848,7 @@ CREATE TABLE `ycoin_reward_record` (
   PRIMARY KEY (`id`),
   KEY `giver_id` (`giver_id`),
   KEY `donne_id` (`donne_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='游币打赏记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='游币打赏记录表';
 
 
 
@@ -835,7 +869,7 @@ CREATE TABLE `ycoin_task` (
   `create_at` int(11) NOT NULL COMMENT '创建时间',
   `update_at` int(11) NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COMMENT='游币获取任务表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='游币获取任务表';
 
 
 

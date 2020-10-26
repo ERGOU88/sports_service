@@ -568,7 +568,7 @@ func (m *VideoModel) UpdateStatusByHotSearch(id int) error {
 func (m *VideoModel) GetVideoReviewList(offset, size int) []*models.Videos {
 	var list []*models.Videos
 	if err := m.Engine.Where("status=0 OR status=2").Desc("video_id").Limit(size, offset).Find(&list); err != nil {
-		return []*models.Videos{}
+		return nil
 	}
 
 	return list

@@ -1,16 +1,17 @@
 package muser
 
 import (
-	"github.com/go-xorm/xorm"
-	"regexp"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
-	"sports_service/server/models"
-	"sports_service/server/util"
-	"strings"
-	"fmt"
-	"sports_service/server/global/rdskey"
-	"time"
+  "fmt"
+  "github.com/go-xorm/xorm"
+  "regexp"
+  "sports_service/server/dao"
+  "sports_service/server/global/app/log"
+  "sports_service/server/global/consts"
+  "sports_service/server/global/rdskey"
+  "sports_service/server/models"
+  "sports_service/server/util"
+  "strings"
+  "time"
 )
 
 type UserModel struct {
@@ -194,6 +195,73 @@ func (m *UserModel) GetUserList(offset, size int) []*models.User {
 	}
 
 	return list
+}
+
+// 根据用户id、手机号查询用户(后台用户列表排序 0 按注册时间倒序 1 关注数 2 粉丝数 3 发布数 4 浏览数 5 点赞数 6 收藏数 7 评论数 8 弹幕数)
+func (m *UserModel) GetUserListBySort(userId, mobileNum, sortType, condition string, offset, size int) []*UserInfo {
+  sql := " SELECT u.*, count(ua.id) as total_attention, count(ua2.id) as total_fans, " +
+    "count(tu.id) as total_be_liked, count(cr.id) as total_collect, count(tu2.id) as total_likes, " +
+    "count(v.video_id) as total_publish, count(vb.id) as total_barrage, count(vc.id) as total_comment, " +
+    "count(ubr.id) as total_browse FROM user as u LEFT JOIN user_attention as ua " +
+    "ON u.user_id = ua.attention_uid and ua.status=1 LEFT JOIN user_attention as ua2 " +
+    "ON u.user_id=ua2.user_id and ua2.status=1 LEFT JOIN thumbs_up as tu " +
+    "ON u.user_id=tu.to_user_id AND tu.status=1 LEFT JOIN collect_record as cr " +
+    "ON u.user_id=cr.user_id and cr.status=1 LEFT JOIN thumbs_up as tu2 " +
+    "ON u.user_id=tu2.user_id and tu2.status=1 LEFT JOIN videos as v " +
+    "ON v.user_id=u.user_id AND v.status=1 LEFT JOIN video_barrage as vb " +
+    "ON vb.user_id=u.user_id LEFT JOIN video_comment as vc " +
+    "ON vc.user_id=u.user_id LEFT JOIN user_browse_record as ubr " +
+    "ON ubr.user_id=u.user_id "
+
+   if userId != "" {
+     sql += fmt.Sprintf("WHERE u.user_id=%s ", userId)
+   }
+
+   if mobileNum != "" {
+     sql += fmt.Sprintf("WHERE u.mobile_num=%s ", mobileNum)
+   }
+
+   sql += "GROUP BY u.user_id "
+
+   switch condition {
+   case consts.USER_SORT_BY_TIME:
+     sql += "ORDER BY u.create_at "
+   case consts.USER_SORT_BY_ATTENTION:
+     sql += "ORDER BY total_attention "
+   case consts.USER_SORT_BY_FANS:
+     sql += "ORDER BY total_fans "
+   case consts.USER_SORT_BY_PUBLISH:
+     sql += "ORDER BY total_publish "
+   case consts.USER_SORT_BY_BROWSE:
+     sql += "ORDER BY total_browse "
+   case consts.USER_SORT_BY_LIKE:
+     sql += "ORDER BY total_likes "
+   case consts.USER_SORT_BY_COLLECT:
+     sql += "ORDER BY total_collect "
+   case consts.USER_SORT_BY_COMMENT:
+     sql += "ORDER BY total_comment "
+   case consts.USER_SORT_BY_BARRAGE:
+     sql += "ORDER BY total_barrage "
+   default:
+     sql += "ORDER BY u.create_at "
+   }
+
+   // 1 正序 默认倒序
+   if sortType == "1" {
+     sql += "ASC "
+   } else {
+     sql += "DESC "
+   }
+
+   sql += "LIMIT ?, ?"
+   var list []*UserInfo
+   if err := m.Engine.Table(&models.User{}).SQL(sql, offset, size).Find(&list); err != nil {
+     log.Log.Errorf("user_trace: get user list by sort, err:%s", err)
+     return []*UserInfo{}
+   }
+
+   return list
+
 }
 
 // 添加用户

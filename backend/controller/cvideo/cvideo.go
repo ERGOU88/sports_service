@@ -99,6 +99,9 @@ func (svc *VideoModule) EditVideoStatus(param *mvideo.EditVideoStatusParam) int 
 func (svc *VideoModule) GetVideoList(page, size int) []*mvideo.VideoDetailInfo {
 	offset := (page - 1) * size
 	list := svc.video.GetVideoList(offset, size)
+	if len(list) == 0 {
+	  return []*mvideo.VideoDetailInfo{}
+  }
 	for _, video := range list {
     video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
   }
@@ -177,7 +180,12 @@ func (svc *VideoModule) EditVideoRecommendStatus(param *mvideo.EditRecommendStat
 // 获取审核中/审核失败的视频列表
 func (svc *VideoModule) GetVideoReviewList(page, size int) []*models.Videos {
 	offset := (page - 1) * size
- 	return svc.video.GetVideoReviewList(offset, size)
+ 	list := svc.video.GetVideoReviewList(offset, size)
+ 	if list == nil {
+ 	  return []*models.Videos{}
+  }
+
+  return list
 }
 
 // 获取视频标签列表

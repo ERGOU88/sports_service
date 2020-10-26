@@ -51,3 +51,16 @@ const (
 	USER_FORBID = 1
 )
 
+// 后台用户列表排序 0 按注册时间倒序 1 关注数 2 粉丝数 3 发布数 4 浏览数 5 点赞数 6 收藏数 7 评论数 8 弹幕数
+const (
+  USER_SORT_BY_TIME      = "0"
+  USER_SORT_BY_ATTENTION = "1"
+  USER_SORT_BY_FANS      = "2"
+  USER_SORT_BY_PUBLISH   = "3"
+  USER_SORT_BY_BROWSE    = "4"
+  USER_SORT_BY_LIKE      = "5"
+  USER_SORT_BY_COLLECT   = "6"
+  USER_SORT_BY_COMMENT   = "7"
+  USER_SORT_BY_BARRAGE   = "8"
+)
+

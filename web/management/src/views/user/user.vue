@@ -248,6 +248,12 @@
         this.loading = 0;
       },
 
+      // 通过手机号， 用户id查询
+      queryList() {
+        this.listQuery.query_id = this.listQuery.query_id.replace(/\s*/g, '');
+        this.listData();
+      },
+
       // 编辑后重新拉取页面信息
       refreshList() {
         this.listData();
