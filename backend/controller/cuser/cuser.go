@@ -47,7 +47,7 @@ func New(c *gin.Context) UserModule {
 }
 
 // 后台获取用户列表
-func (svc *UserModule) GetUserList(page, size int) []*muser.UserInfo {
+func (svc *UserModule) GetUserList(queryId, sortType, condition string, page, size int) []*muser.UserInfo {
 	offset := (page - 1) * size
 	list := svc.user.GetUserList(offset, size)
 	if len(list) == 0 {

@@ -1,5 +1,18 @@
 <template>
   <div class="app-container">
+    <div class="filter-container" style="display: flex; margin-bottom: 10px;">
+      <el-input v-model="listQuery.query_id" placeholder="输入用户ID、手机号搜索" style="width: 200px;margin-right: 10px;" class="filter-item" />
+      <el-select v-model="listQuery.condition" placeholder="排序条件" clearable class="filter-item" style="width: 130px;margin: 0 10px;">
+        <el-option v-for="item in conditionList" :key="item.id" :label="item.name" :value="item.id" />
+      </el-select>
+      <el-select v-model="listQuery.sort_type" placeholder="排序方式" clearable class="filter-item" style="width: 130px;margin: 0 10px;">
+        <el-option v-for="item in sortTypeList" :key="item.id" :label="item.name" :value="item.id" />
+      </el-select>
+      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="queryList">
+        搜索
+      </el-button>
+    </div>
+
     <el-table v-loading="loading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="ID" width="80">
         <template slot-scope="scope">
@@ -162,7 +175,56 @@
         listQuery: {
           page: 1,
           size: 10,
+          query_id: "",
+          sort_type: "0",   //  1 正序 0 倒序
+          condition: "1",
         },
+
+        conditionList: [
+          {
+            id: "1",
+            name: '关注数'
+          },
+          {
+            id: "2",
+            name: '粉丝数'
+          },
+          {
+            id: "3",
+            name: '发布数'
+          },
+          {
+            id: "4",
+            name: '浏览量'
+          },
+          {
+            id: "5",
+            name: '点赞数'
+          },
+          {
+            id: "6",
+            name: '收藏数'
+          },
+          {
+            id: "7",
+            name: '评论数'
+          },
+          {
+            id: "8",
+            name: '弹幕数'
+          },
+        ],
+
+        sortTypeList: [
+          {
+            id: "0",
+            name: '倒序'
+          },
+          {
+            id: "1",
+            name: '正序'
+          }
+        ],
         loading: 1,
       }
     },

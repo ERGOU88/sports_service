@@ -67,7 +67,9 @@ func CheckSign() gin.HandlerFunc {
 // 校验签名是否一致
 func verifySign(str, appId, sign string) bool {
 	appKey := getAppKey(appId)
-	str = fmt.Sprintf("&%s", appKey)
+	str += fmt.Sprintf("&%s", appKey)
+
+	log.Log.Debugf("str:%s", str)
 	data := []byte(str)
 	has := md5.Sum(data)
 	md5Str := fmt.Sprintf("%x", has)

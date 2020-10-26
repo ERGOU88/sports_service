@@ -13,8 +13,12 @@ import (
 func UserList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
-	svc := cuser.New(c)
-	list := svc.GetUserList(page, size)
+  condition := c.Query("condition")
+  sortType := c.Query("sort_type")
+  queryId := c.Query("query_id")
+
+  svc := cuser.New(c)
+	list := svc.GetUserList(queryId, sortType, condition, page, size)
 	reply.Data["list"] = list
 	reply.Data["total"] = svc.GetUserTotalCount()
 	reply.Response(http.StatusOK, errdef.SUCCESS)
