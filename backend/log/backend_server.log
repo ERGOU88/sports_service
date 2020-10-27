@@ -1539,3 +1539,5 @@ net/http.serverHandler.ServeHTTP
 	/usr/local/go/src/net/http/server.go:2807
 net/http.(*conn).serve
 	/usr/local/go/src/net/http/server.go:1895
+[2020-10-27 12:16:26]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
+[2020-10-27 12:16:52]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success

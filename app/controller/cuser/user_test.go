@@ -32,10 +32,10 @@ func TestEditUserInfo(t *testing.T) {
   c, _ := gin.CreateTestContext(httptest.NewRecorder())
   svc := New(c)
   params := &muser.EditUserInfoParams{
-    AvatarId: 1,
-    NickName: "陈二狗",
-    Born: "1993-06-20",
-    Gender: 1,
+    Avatar:    1,
+    NickName:  "陈二狗",
+    Born:      "1993-06-20",
+    Gender:    1,
     CountryId: 1,
     Signature: "菩提本无树，明镜亦非台",
   }
@@ -51,10 +51,10 @@ func BenchmarkEditUserInfo(b *testing.B) {
     c, _ := gin.CreateTestContext(httptest.NewRecorder())
     svc := New(c)
     params := &muser.EditUserInfoParams{
-      AvatarId: 1,
-      NickName: fmt.Sprintf("陈二g.ou%d", num),
-      Born: "1993-06-20",
-      Gender: 1,
+      Avatar:    1,
+      NickName:  fmt.Sprintf("陈二g.ou%d", num),
+      Born:      "1993-06-20",
+      Gender:    1,
       CountryId: 1,
       Signature: "菩提本无树，明镜亦非台",
     }

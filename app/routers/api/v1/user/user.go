@@ -308,7 +308,7 @@ func EditUserInfo(c *gin.Context) {
 		return
 	}
 
-	if params.CountryId == 0 && params.Born == "" && params.Signature == "" && params.Gender == 0 && params.NickName == "" && params.AvatarId == 0 {
+	if params.CountryId == 0 && params.Born == "" && params.Signature == "" && params.Gender == 0 && params.NickName == "" && params.Avatar == 0 {
 		log.Log.Errorf("user_trace: invalid param, params:%+v", params)
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return

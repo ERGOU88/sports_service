@@ -140,9 +140,9 @@ func (svc *UserModule) EditUserInfo(userId string, params *muser.EditUserInfoPar
 	}
 
 	// 查看系统头像是否存在
-	avatarInfo := svc.GetDefaultAvatarById(params.AvatarId)
+	avatarInfo := svc.GetDefaultAvatarById(params.Avatar)
 	if avatarInfo == nil {
-		log.Log.Errorf("user_trace: nick name not exists, avatar id:%d", params.AvatarId)
+		log.Log.Errorf("user_trace: nick name not exists, avatar id:%d", params.Avatar)
 		return errdef.USER_AVATAR_NOT_EXISTS
 	}
 
