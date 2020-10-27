@@ -53,7 +53,7 @@ type UserInfo struct {
 	Country       int32  `json:"country" example:"0"`
 	CountryCn     string `json:"country_cn" example:"中国"`
 	RegIp         string `json:"reg_ip" example:"192.168.0.108"`
-	LastLoginTm   int    `json:"last_login_tm" example:"1600000000"`
+	LastLoginTime int    `json:"last_login_time" example:"1600000000"`
 	Platform      int    `json:"platform" example:"0"`
 	UserType      int32  `json:"user_type" example:"0"`
 

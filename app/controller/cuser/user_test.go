@@ -33,7 +33,7 @@ func TestEditUserInfo(t *testing.T) {
   svc := New(c)
   params := &muser.EditUserInfoParams{
     Avatar:    1,
-    NickName:  "陈二狗",
+    NickName:  "陈二go",
     Born:      "1993-06-20",
     Gender:    1,
     CountryId: 1,

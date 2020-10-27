@@ -115,7 +115,7 @@ func (svc *UserModule) GetUserList(page, size int) []*muser.UserInfo {
 			Age: info.Age,
 			Country: int32(info.Country),
 			RegIp: info.RegIp,
-			LastLoginTm: info.LastLoginTime,
+			LastLoginTime: info.LastLoginTime,
 			Platform: info.DeviceType,
 			UserType: int32(info.UserType),
 			Id: info.Id,

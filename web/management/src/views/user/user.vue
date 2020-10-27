@@ -41,7 +41,7 @@
 
       <el-table-column width="120px" align="center" label="最后登陆时间">
         <template slot-scope="scope">
-          <span>{{ scope.row.last_login_tm | formatDate}}</span>
+          <span>{{ scope.row.last_login_time | formatDate}}</span>
         </template>
       </el-table-column>
 
