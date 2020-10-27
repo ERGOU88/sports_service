@@ -147,7 +147,12 @@ func (svc *CommentModule) recursionComments(ids *[]string, commentIds *[]string)
 // 获取视频弹幕列表
 func (svc *CommentModule) GetVideoBarrageList(page, size int) []*mbarrage.VideoBarrageInfo {
   offset := (page - 1) * size
-  return svc.barrage.GetVideoBarrageList(offset, size)
+  list := svc.barrage.GetVideoBarrageList(offset, size)
+  if len(list) == 0 {
+    return []*mbarrage.VideoBarrageInfo{}
+  }
+
+  return list
 }
 
 // 获取视频弹幕总数（管理后台）
