@@ -28,10 +28,14 @@ func GetRedisPool(server, password string, maxConn int) *redis.Pool {
 			if err != nil {
 				return nil, err
 			}
-			if _, err := c.Do("AUTH", password); err != nil {
-			    c.Close()
-			    return nil, err
-			}
+
+			if password != "" {
+        if _, err := c.Do("AUTH", password); err != nil {
+          c.Close()
+          return nil, err
+        }
+      }
+
 			return c, err
 		},
 		TestOnBorrow: func(c redis.Conn, t time.Time) error {

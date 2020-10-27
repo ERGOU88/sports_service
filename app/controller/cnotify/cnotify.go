@@ -2,7 +2,8 @@ package cnotify
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
+  "github.com/garyburd/redigo/redis"
+  "github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
@@ -296,18 +297,23 @@ func (svc *NotifyModule) GetUnreadNum(userId string) map[string]int64 {
 		return mp
 	}
 
-
 	// 获取用户上次读取被点赞列表的时间
 	readTm, err := svc.notify.GetReadBeLikedTime(userId)
-	if err == nil {
+	if err == nil || err == redis.ErrNil {
+	  if readTm == "" {
+	    readTm = "0"
+    }
 		// 获取未读的被点赞的数量
 		mp["liked_notify"] = svc.like.GetUnreadBeLikedCount(userId, readTm)
 	}
 
 	// 获取用户上次读取被@列表数据的时间
 	readAt, err := svc.notify.GetReadAtTime(userId)
-	log.Log.Errorf("comment_trace: readAt:%d, err:%s", readAt, err)
-	if err == nil {
+	log.Log.Errorf("comment_trace: readAt:%s, err:%s", readAt, err)
+	if err == nil || err == redis.ErrNil {
+    if readAt == "" {
+      readAt = "0"
+    }
 		// 获取未读的被@的数量
 		mp["at_notify"] = svc.comment.GetUnreadAtCount(userId, readAt)
 	}

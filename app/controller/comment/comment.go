@@ -44,7 +44,7 @@ func New(c *gin.Context) CommentModule {
 	}
 }
 
-// 发布评论 todo: 脏词过滤
+// 发布评论
 func (svc *CommentModule) PublishComment(userId string, params *mcomment.PublishCommentParams) int {
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测评论内容
@@ -127,7 +127,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	return errdef.SUCCESS
 }
 
-// 回复评论 todo: 脏词过滤
+// 回复评论
 func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyCommentParams) int {
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测评论内容

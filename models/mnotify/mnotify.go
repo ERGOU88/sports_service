@@ -73,7 +73,7 @@ func (m *NotifyModel) AddUserNotifySetting(userId string, now int) error {
 
 // 修改用户通知设置
 func (m *NotifyModel) UpdateUserNotifySetting() error {
-	if _, err := m.Engine.Update(m.NofitySetting); err != nil {
+	if _, err := m.Engine.Where("user_id=?", m.NofitySetting.UserId).Update(m.NofitySetting); err != nil {
 		return err
 	}
 
