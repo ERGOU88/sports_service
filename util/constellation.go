@@ -23,7 +23,7 @@ func GetTimeFromStrDate(date string) (year, month, day int) {
 // 获取年龄
 func GetAge(year, month, day int) (age int) {
 	if year <= 0 || month <= 0 || month >= 13 || day <= 0 || day >= 32 {
-		age = -1
+		age = 0
 	}
 
 	nowyear := time.Now().Year()

@@ -39,7 +39,7 @@ func NewBannerMolde(engine *xorm.Session) *BannerModel {
 }
 
 const (
-	QUERY_BANNER_LIST = "SELECT * FROM `banner` WHERE `type`=1 AND start_time < ? AND end_time > ? ORDER BY id DESC LIMIT ?, ?"
+	QUERY_BANNER_LIST = "SELECT * FROM `banner` WHERE `type`=? AND start_time < ? AND end_time > ? ORDER BY id DESC LIMIT ?, ?"
 )
 
 // 获取首页推荐banner 符合上架时间的 (types: 1 首页 2 直播页 3 官网banner)
