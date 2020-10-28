@@ -39,11 +39,11 @@ func NewBannerMolde(engine *xorm.Session) *BannerModel {
 }
 
 const (
-	QUERY_BANNER_LIST = "SELECT * FROM `banner` WHERE `type`=? AND start_time < ? AND end_time > ? ORDER BY id DESC LIMIT ?, ?"
+	QUERY_BANNER_LIST = "SELECT * FROM `banner` WHERE `type`=? AND `start_time` < ? AND `end_time` > ? ORDER BY sortorder DESC, id DESC LIMIT ?, ?"
 )
 
 // 获取首页推荐banner 符合上架时间的 (types: 1 首页 2 直播页 3 官网banner)
-func (m *BannerModel) GetRecommendBanners(bannerType int32, offset, tm int64, size int) []*models.Banner {
+func (m *BannerModel) GetRecommendBanners(bannerType int32, tm int64, offset, size int) []*models.Banner {
 	var info []*models.Banner
 	if err := m.Engine.SQL(QUERY_BANNER_LIST, bannerType, tm, tm, offset, size).Find(&info); err != nil {
 		log.Log.Errorf("banner_trace: get recommend banners err:%s", err)
