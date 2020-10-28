@@ -101,14 +101,14 @@ func (m *base) newUser(u *UserModel, c *gin.Context, avatar, nickName string, ge
 	u.SetNickName(m.getNickName(nickName))
 	u.SetLastLoginTime(now)
 	// todo 暂时先使用时间 + 4位随机数 生成uid
-	u.SetUid(util.NewUserId())
+	u.SetUid(m.getUserID())
 	u.SetCreateAt(now)
 	u.SetUpdateAt(now)
 	u.SetPassword("")
 	return
 }
 
-// 设置默认信
+// 设置默认信息
 func (m *base) setDefaultInfo(u *UserModel, avatar string, gender int) {
 	u.SetAvatar(consts.DEFAULT_AVATAR)
 	if avatar != "" {
@@ -118,4 +118,31 @@ func (m *base) setDefaultInfo(u *UserModel, avatar string, gender int) {
 	if gender != 0 {
 		u.SetGender(gender)
 	}
+}
+
+// uid 8位
+func (m *base) getUserID() string {
+  uid := fmt.Sprint(util.GetXID())
+  if len(uid) == 8 {
+    return uid
+  }
+
+  rds := dao.NewRedisDao()
+  ok, err := rds.EXISTS(rdskey.USER_ID_INCR)
+  if err != nil {
+    log.Log.Errorf("user_trace: uid incr err:%s", err)
+    return uid
+  }
+
+  if !ok {
+    rds.Set(rdskey.USER_ID_INCR, 10240102)
+  }
+
+  num := util.GenerateRandnum(1, 33)
+  incrUid, err := rds.INCRBY(rdskey.USER_ID_INCR, int64(num))
+  if err != nil {
+    log.Log.Errorf("user_trace: uid incr err:%s", err)
+  }
+
+  return fmt.Sprint(incrUid)
 }

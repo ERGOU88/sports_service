@@ -57,54 +57,54 @@ type VideosInfoResp struct {
 
 // 视频信息
 type VideosInfo struct {
-	VideoId       int64  `json:"video_id"`       // 视频id
-	Title         string `json:"title"`          // 标题
-	Describe      string `json:"describe"`       // 描述
-	Cover         string `json:"cover"`          // 封面
-	VideoAddr     string `json:"video_addr"`     // 视频地址
-	IsRecommend   int    `json:"is_recommend"`   // 是否推荐
-	IsTop         int    `json:"is_top"`         // 是否置顶
-	VideoDuration int    `json:"video_duration"` // 视频时长
-	VideoWidth    int64  `json:"video_width"`    // 视频宽
-	VideoHeight   int64  `json:"video_height"`   // 视频高
-	Status        int32  `json:"status"`         // 审核状态
-	CreateAt      int    `json:"create_at"`      // 视频创建时间
-	FabulousNum   int    `json:"fabulous_num"`   // 点赞数
-	CommentNum    int    `json:"comment_num"`    // 评论数
-	ShareNum      int    `json:"share_num"`      // 分享数
-	BrowseNum     int    `json:"browse_num"`     // 浏览数（播放数）
-	BarrageNum    int    `json:"barrage_num"`    // 弹幕数
-  TimeElapsed   int    `json:"time_elapsed"`   // 已播放的时长 毫秒
-  StatusCn      string `json:"status_cn"`      // 审核状态（中文展示）
+	VideoId       int64  `json:"video_id" example:"1000000000"`       // 视频id
+	Title         string `json:"title" example:"标题"`                // 标题
+	Describe      string `json:"describe" example:"描述"`             // 描述
+	Cover         string `json:"cover" example:"封面"`                // 封面
+	VideoAddr     string `json:"video_addr" example:"视频地址"`        // 视频地址
+	IsRecommend   int    `json:"is_recommend" example:"0"`            // 是否推荐
+	IsTop         int    `json:"is_top" example:"0"`                  // 是否置顶
+	VideoDuration int    `json:"video_duration" example:"1000000"`    // 视频时长
+	VideoWidth    int64  `json:"video_width" example:"1000"`          // 视频宽
+	VideoHeight   int64  `json:"video_height" example:"1000"`         // 视频高
+	Status        int32  `json:"status" example:"0"`                  // 审核状态
+	CreateAt      int    `json:"create_at" example:"1600000000"`      // 视频创建时间
+	FabulousNum   int    `json:"fabulous_num" example:"1"`            // 点赞数
+	CommentNum    int    `json:"comment_num" example:"1"`             // 评论数
+	ShareNum      int    `json:"share_num" example:"1"`               // 分享数
+	BrowseNum     int    `json:"browse_num" example:"1"`             // 浏览数（播放数）
+	BarrageNum    int    `json:"barrage_num" example:"1"`            // 弹幕数
+  TimeElapsed   int    `json:"time_elapsed" example:"1"`           // 已播放的时长 毫秒
+  StatusCn      string `json:"status_cn" example:"审核中"`          // 审核状态（中文展示）
 }
 
 // 视频详情信息
 type VideoDetailInfo struct {
-	VideoId       int64                 `json:"video_id"`       // 视频id
-	Title         string                `json:"title"`          // 标题
-	Describe      string                `json:"describe"`       // 描述
-	Cover         string                `json:"cover"`          // 封面
-	VideoAddr     string                `json:"video_addr"`     // 视频地址
-	IsRecommend   int                   `json:"is_recommend"`   // 是否推荐
-	IsTop         int                   `json:"is_top"`         // 是否置顶
-	VideoDuration int                   `json:"video_duration"` // 视频时长
-	VideoWidth    int64                 `json:"video_width"`    // 视频宽
-	VideoHeight   int64                 `json:"video_height"`   // 视频高
-	Status        int32                 `json:"status"`         // 审核状态
-	CreateAt      int                   `json:"create_at"`      // 视频创建时间
-	FabulousNum   int                   `json:"fabulous_num"`   // 点赞数
-	CommentNum    int                   `json:"comment_num"`    // 评论数
-	BarrageNum    int                   `json:"barrage_num"`    // 弹幕数
-	ShareNum      int                   `json:"share_num"`      // 分享数
-	BrowseNum     int                   `json:"browse_num"`     // 浏览数（播放数）
-	UserId        string                `json:"user_id"`        // 发布视频的用户id
-	Avatar        string                `json:"avatar"`         // 头像
-	Nickname      string                `json:"nick_name"`      // 昵称
-	IsAttention   int                   `json:"is_attention"`   // 是否关注 1 关注 2 未关注
-	IsCollect     int                   `json:"is_collect"`     // 是否收藏
-	IsLike        int                   `json:"is_like"`        // 是否点赞
-	FansNum       int64                 `json:"fans_num"`       // 粉丝数
-	Labels        []*models.VideoLabels `json:"labels"`         // 视频标签
+	VideoId       int64                 `json:"video_id"  example:"1000000000"`       // 视频id
+	Title         string                `json:"title"  example:"标题"`                 // 标题
+	Describe      string                `json:"describe"  example:"描述"`              // 描述
+	Cover         string                `json:"cover"  example:"封面"`                 // 封面
+	VideoAddr     string                `json:"video_addr"  example:"视频地址"`         // 视频地址
+	IsRecommend   int                   `json:"is_recommend" example:"是否推荐"`        // 是否推荐
+	IsTop         int                   `json:"is_top"  example:"是否置顶"`             // 是否置顶
+	VideoDuration int                   `json:"video_duration" example:"100000"`       // 视频时长
+	VideoWidth    int64                 `json:"video_width"  example:"100"`            // 视频宽
+	VideoHeight   int64                 `json:"video_height"  example:"100"`           // 视频高
+	Status        int32                 `json:"status"  example:"1"`                   // 审核状态
+	CreateAt      int                   `json:"create_at" example:"1600000000"`        // 视频创建时间
+	FabulousNum   int                   `json:"fabulous_num" example:"10"`             // 点赞数
+	CommentNum    int                   `json:"comment_num" example:"10"`              // 评论数
+	BarrageNum    int                   `json:"barrage_num" example:"10"`              // 弹幕数
+	ShareNum      int                   `json:"share_num" example:"10"`               // 分享数
+	BrowseNum     int                   `json:"browse_num" example:"10"`              // 浏览数（播放数）
+	UserId        string                `json:"user_id" example:"发布视频的用户id"`      // 发布视频的用户id
+	Avatar        string                `json:"avatar" example:"头像"`                 // 头像
+	Nickname      string                `json:"nick_name"  example:"昵称"`             // 昵称
+	IsAttention   int                   `json:"is_attention" example:"1"`             // 是否关注 1 关注 2 未关注
+	IsCollect     int                   `json:"is_collect" example:"1"`               // 是否收藏
+	IsLike        int                   `json:"is_like" example:"1"`                  // 是否点赞
+	FansNum       int64                 `json:"fans_num" example:"100"`               // 粉丝数
+	Labels        []*models.VideoLabels `json:"labels"`                               // 视频标签
 }
 
 // 删除历史记录请求参数
