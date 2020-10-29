@@ -17,6 +17,7 @@ type VideoModel struct {
 	Statistic *models.VideoStatistic
 	Events    *models.TencentCloudEvents
   HotSearch *models.HotSearch
+	Report    *models.VideoReport
 }
 
 // 视频发布请求参数
@@ -163,6 +164,12 @@ type SetStatusParams struct {
   Status      int        `json:"status"`                        // 状态 0 展示 1 隐藏
 }
 
+// 视频举报
+type VideoReportParam struct {
+  VideoId    int64      `json:"video_id" binding:"required"`    // 视频id
+  UserId     string     `json:"user_id"`
+}
+
 // 实栗
 func NewVideoModel(engine *xorm.Session) *VideoModel {
 	return &VideoModel{
@@ -172,6 +179,7 @@ func NewVideoModel(engine *xorm.Session) *VideoModel {
 		Statistic: new(models.VideoStatistic),
 		Events: new(models.TencentCloudEvents),
     HotSearch: new(models.HotSearch),
+    Report: new(models.VideoReport),
 		Engine: engine,
 	}
 }
@@ -588,4 +596,9 @@ func (m *VideoModel) GetUserTotalBrowse(userId string) int64 {
 // 记录腾讯事件回调信息
 func (m *VideoModel) RecordTencentEvent() (int64, error) {
 	return m.Engine.InsertOne(m.Events)
+}
+
+// 添加视频举报
+func (m *VideoModel) AddVideoReport() (int64, error) {
+  return m.Engine.InsertOne(m.Report)
 }

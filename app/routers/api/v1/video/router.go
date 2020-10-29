@@ -40,5 +40,7 @@ func Router(engine *gin.Engine) {
 		video.POST("/custom/labels", CheckCustomLabels)
     // 获取视频标签列表
     video.GET("/label/list", VideoLabelList)
+		// 举报视频
+		video.POST("/report", VideoReport)
 	}
 }

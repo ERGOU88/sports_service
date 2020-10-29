@@ -12,6 +12,7 @@ type CommentModel struct {
 	Engine      *xorm.Session
 	Comment     *models.VideoComment
 	ReceiveAt   *models.ReceivedAt
+	Report      *models.CommentReport
 }
 
 // 视频评论列表
@@ -94,12 +95,20 @@ type DelCommentParam struct {
 	CommentId      string     `binding:"required" json:"comment_id"`       // 评论id
 }
 
+// 评论举报
+type CommentReportParam struct {
+  CommentId    int64      `json:"comment_id" binding:"required"`
+  UserId       string     `json:"user_id"`
+  Reason       string     `json:"reason"`
+}
+
 // 实栗
 func NewCommentModel(engine *xorm.Session) *CommentModel {
 	return &CommentModel{
 		Engine:  engine,
 		Comment: new(models.VideoComment),
 		ReceiveAt: new(models.ReceivedAt),
+		Report: new(models.CommentReport),
 	}
 }
 
@@ -319,5 +328,10 @@ func (m *CommentModel) GetCommentTotalByVideoId(videoId string) int64 {
   }
 
   return count
+}
+
+// 添加评论举报
+func (m *CommentModel) AddCommentReport() (int64, error) {
+  return m.Engine.InsertOne(m.Report)
 }
 

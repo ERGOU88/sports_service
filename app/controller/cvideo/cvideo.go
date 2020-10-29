@@ -791,4 +791,21 @@ func (svc *VideoModule) GetVideoLabelList() []*mlabel.VideoLabel {
   return svc.label.GetVideoLabelList()
 }
 
+// 添加视频举报
+func (svc *VideoModule) AddVideoReport(params *mvideo.VideoReportParam) int {
+  video := svc.video.FindVideoById(fmt.Sprint(params.VideoId))
+  if video == nil {
+    log.Log.Error("video_trace: video not found, videoId:%s", params.VideoId)
+    return errdef.VIDEO_NOT_EXISTS
+  }
+
+  svc.video.Report.UserId = params.UserId
+  svc.video.Report.VideoId = params.VideoId
+  if _, err := svc.video.AddVideoReport(); err != nil {
+    log.Log.Errorf("video_trace: add video report err:%s", err)
+    return errdef.VIDEO_REPORT_FAIL
+  }
+
+  return errdef.SUCCESS
+}
 

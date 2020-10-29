@@ -10,7 +10,7 @@ type User struct {
 	Country       int    `json:"country" xorm:"not null default 0 comment('国家') INT(3)"`
 	CreateAt      int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	DeviceType    int    `json:"device_type" xorm:"comment('设备类型 0 android 1 iOS 2 web') TINYINT(2)"`
-	Gender        int    `json:"gender" xorm:"not null default 0 comment('性别 0男性 1女性') TINYINT(1)"`
+	Gender        int    `json:"gender" xorm:"not null default 0 comment('性别 0人妖 1男性 2女性') TINYINT(1)"`
 	Id            int64  `json:"id" xorm:"pk autoincr comment('主键id') BIGINT(20)"`
 	IsAnchor      int    `json:"is_anchor" xorm:"not null default 0 comment('0不是主播 1为主播') TINYINT(1)"`
 	LastLoginTime int    `json:"last_login_time" xorm:"comment('最后登录时间') INT(11)"`

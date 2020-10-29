@@ -482,3 +482,24 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 
 	return errdef.SUCCESS, replyList
 }
+
+// 添加评论举报
+func (svc *CommentModule) AddCommentReport(params *mcomment.CommentReportParam) int {
+  // 查询评论是否存在
+  comment := svc.comment.GetVideoCommentById(fmt.Sprint(params.CommentId))
+  if comment == nil {
+    log.Log.Error("comment_trace: comment not found, commentId:%s", fmt.Sprint(params.CommentId))
+    return errdef.COMMENT_NOT_FOUND
+  }
+
+  svc.comment.Report.UserId = params.UserId
+  svc.comment.Report.CommentId = params.CommentId
+  svc.comment.Report.Reason = params.Reason
+  svc.comment.Report.CreateAt = int(time.Now().Unix())
+  if _, err := svc.comment.AddCommentReport(); err != nil {
+    log.Log.Errorf("comment_trace: add comment report err:%s", err)
+    return errdef.COMMENT_REPORT_FAIL
+  }
+
+  return errdef.SUCCESS
+}

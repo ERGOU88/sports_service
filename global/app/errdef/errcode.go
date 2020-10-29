@@ -73,6 +73,7 @@ const (
 	VIDEO_INVALID_DESCRIBE      = 4008
 	VIDEO_INVALID_TITLE         = 4009
 	VIDEO_INVALID_CUSTOM_LABEL  = 4010
+	VIDEO_REPORT_FAIL           = 4011
 
 	// 点赞相关错误码 5001-6000
 	LIKE_VIDEO_NOT_EXISTS       = 5001
@@ -95,6 +96,7 @@ const (
 	COMMENT_INVALID_LEN         = 7005
 	COMMENT_INVALID_CONTENT     = 7006
 	COMMENT_INVALID_REPLY       = 7007
+	COMMENT_REPORT_FAIL         = 7008
 
 	// 短信验证码相关错误 8001-9000
 	SMS_CODE_INTERVAL_ERROR     = 8001
@@ -178,6 +180,7 @@ var MsgFlags = map[int]string{
 	VIDEO_INVALID_DESCRIBE:      "视频描述含有违规文字",
 	VIDEO_INVALID_TITLE:         "视频标题含有违规文字",
   VIDEO_INVALID_CUSTOM_LABEL:  "自定义标签含有违规文字",
+  VIDEO_REPORT_FAIL:           "举报视频失败",
 
   LIKE_VIDEO_NOT_EXISTS:       "点赞的视频不存在",
 	LIKE_ALREADY_EXISTS:         "已点过赞",
@@ -197,8 +200,9 @@ var MsgFlags = map[int]string{
 	COMMENT_INVALID_LEN:     "评论最少10字符，最多1000字符",
 	COMMENT_INVALID_CONTENT: "评论中含有违规文字",
 	COMMENT_INVALID_REPLY:   "回复中含有违规文字",
+  COMMENT_REPORT_FAIL:     "举报评论失败",
 
-	SMS_CODE_INTERVAL_ERROR:     "一天内该手机获取验证码次数超限(最多10次)",
+  SMS_CODE_INTERVAL_ERROR:     "一天内该手机获取验证码次数超限(最多10次)",
 	SMS_CODE_INTERVAL_SHORT:     "获取短信验证间隔时间过短(间隔60秒)",
 	SMS_CODE_INVALID_SEND_TYPE:  "无效的短信类型",
 	SMS_CODE_SEND_FAIL:          "短信验证码发送失败",

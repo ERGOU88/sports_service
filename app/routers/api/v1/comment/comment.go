@@ -150,3 +150,33 @@ func ReplyList(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)
 }
+
+// @Summary 举报评论 (ok)
+// @Tags 评论模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   CommentReportParam  body mcomment.CommentReportParam true "举报评论请求参数"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/comment/report [post]
+// 举报评论
+func CommentReport(c *gin.Context) {
+  reply := errdef.New(c)
+  params := new(mcomment.CommentReportParam)
+  if err := c.BindJSON(params); err != nil {
+    log.Log.Errorf("comment_trace: comment report params err:%s, params:%+v", err, params)
+    reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := comment.New(c)
+  syscode := svc.AddCommentReport(params)
+  reply.Response(http.StatusOK, syscode)
+}

@@ -18,5 +18,7 @@ func Router(engine *gin.Engine) {
 		comment.GET("/list", CommentList)
 		// 回复列表
 		comment.GET("/reply/list", ReplyList)
+		// 举报评论
+		comment.POST("/report", CommentReport)
 	}
 }
