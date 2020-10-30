@@ -1,14 +1,14 @@
 package search
 
 import (
-	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/token"
+  "github.com/gin-gonic/gin"
+  "sports_service/server/middleware/token"
 )
 
 // 搜索模块路由
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
-	search := api.Group("/search", token.TokenAuth())
+	search := api.Group("/search")
 	{
 		// 搜索视频
 		search.GET("/videos", VideoSearch)
@@ -21,9 +21,11 @@ func Router(engine *gin.Engine) {
 		// 热门搜索
 		search.GET("/hot", HotSearch)
 		// 搜索关注的用户
-		search.GET("/attention", AttentionSearch)
+		search.GET("/attention", token.TokenAuth(), AttentionSearch)
 		// 搜索粉丝
-		search.GET("/fans", FansSearch)
+		search.GET("/fans", token.TokenAuth(), FansSearch)
+    // 获取历史搜索
+		search.GET("/history", HistorySearch)
 	}
 }
 

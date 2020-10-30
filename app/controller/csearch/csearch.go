@@ -40,7 +40,7 @@ func New(c *gin.Context) SearchModule {
 	}
 }
 
-// 综合搜索（视频+用户 默认各展示3条 视频默认播放量排序）
+// 综合搜索（视频+用户 默认视频取10条 用户取20条 视频默认播放量排序）
 func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDetailInfo, []*muser.UserSearchResults) {
 	if name == "" {
 		log.Log.Errorf("search_trace: search name can't empty, name:%s", name)
@@ -49,9 +49,9 @@ func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDe
 
 	// 搜索到的视频
 	videos := svc.VideoSearch(userId, name, consts.VIDEO_CONDITION_PLAY, string(consts.UNLIMITED_DURATION),
-		string(consts.UNLIMITED_TIME), consts.DEFAULT_SEARCH_PAGE, consts.DEFAULT_SEARCH_SIZE)
+		string(consts.UNLIMITED_TIME), consts.DEFAULT_SEARCH_VIDEO_PAGE, consts.DEFAULT_SEARCH_VIDEO_SIZE)
 	// 搜索到的用户
-	users := svc.UserSearch(userId, name, consts.DEFAULT_SEARCH_PAGE, consts.DEFAULT_SEARCH_SIZE)
+	users := svc.UserSearch(userId, name, consts.DEFAULT_SEARCH_USER_PAGE, consts.DEFAULT_SEARCH_USER_SIZE)
 
 	return videos, users
 }

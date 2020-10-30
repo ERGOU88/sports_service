@@ -22,9 +22,15 @@ const (
 	HALF_A_YEAR     LimitType = "3"
 )
 
-// 综合搜索默认展示3条
+// 综合搜索视频默认展示10条
 const (
-	DEFAULT_SEARCH_PAGE = 1
-	DEFAULT_SEARCH_SIZE = 3
+	DEFAULT_SEARCH_VIDEO_PAGE = 1
+	DEFAULT_SEARCH_VIDEO_SIZE = 10
+)
+
+// 综合搜索用户默认展示20条
+const (
+  DEFAULT_SEARCH_USER_PAGE = 1
+  DEFAULT_SEARCH_USER_SIZE = 20
 )
 

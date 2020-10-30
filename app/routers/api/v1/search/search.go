@@ -36,7 +36,8 @@ import (
 // 视频搜索
 func VideoSearch(c *gin.Context) {
 	reply := errdef.New(c)
-	userId, _ := c.Get(consts.USER_ID)
+	//userId, _ := c.Get(consts.USER_ID)
+	userId := c.Query("user_id")
 	name := c.Query("name")
 	sort := c.Query("sort")
 	duration := c.Query("duration")
@@ -45,7 +46,7 @@ func VideoSearch(c *gin.Context) {
 
 	svc := csearch.New(c)
 	// 搜索视频
-	list := svc.VideoSearch(userId.(string), name, sort, duration, publishTime, page, size)
+	list := svc.VideoSearch(userId, name, sort, duration, publishTime, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
@@ -70,12 +71,13 @@ func VideoSearch(c *gin.Context) {
 // 用户搜索
 func UserSearch(c *gin.Context) {
 	reply := errdef.New(c)
-	userId, _ := c.Get(consts.USER_ID)
+	//userId, _ := c.Get(consts.USER_ID)
+	userId := c.Query("user_id")
 	name := c.Query("name")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 
 	svc := csearch.New(c)
-	list := svc.UserSearch(userId.(string), name, page, size)
+	list := svc.UserSearch(userId, name, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
@@ -98,12 +100,13 @@ func UserSearch(c *gin.Context) {
 // 综合搜索（视频 + 用户）
 func ColligateSearch(c *gin.Context) {
 	reply := errdef.New(c)
-	userId, _ := c.Get(consts.USER_ID)
+	// userId, _ := c.Get(consts.USER_ID)
+	userId := c.Query("user_id")
 	name := c.Query("name")
 
 	svc := csearch.New(c)
 	// 综合搜索
-	videoList, userList := svc.ColligateSearch(userId.(string), name)
+	videoList, userList := svc.ColligateSearch(userId, name)
 	reply.Data["video_list"] = videoList
 	reply.Data["user_list"] = userList
 }
@@ -128,13 +131,14 @@ func ColligateSearch(c *gin.Context) {
 // 标签搜索视频
 func LabelSearch(c *gin.Context) {
 	reply := errdef.New(c)
-	userId, _ := c.Get(consts.USER_ID)
+	//userId, _ := c.Get(consts.USER_ID)
+	userId := c.Query("user_id")
 	labelId := c.Query("label_id")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 
 	svc := csearch.New(c)
 	// 标签搜索视频
-	list := svc.LabelSearch(userId.(string), labelId, page, size)
+	list := svc.LabelSearch(userId, labelId, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
@@ -221,4 +225,12 @@ func FansSearch(c *gin.Context) {
 	list := svc.SearchFans(userId.(string), name, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// 获取历史搜索记录
+func HistorySearch(c *gin.Context) {
+  //reply := errdef.New(c)
+  //userId := c.Query("user_id")
+
+
 }
