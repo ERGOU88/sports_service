@@ -170,6 +170,12 @@ type VideoReportParam struct {
   UserId     string     `json:"user_id"`
 }
 
+// 视频转码信息
+type PlayInfo struct {
+  Type    string   `json:"type" example:"1 流畅（FLU） 2 标清（SD）3 高清（HD）4 全高清（FHD）5 2K 6 4K"`    // 1 流畅（FLU） 2 标清（SD）3 高清（HD）4 全高清（FHD）5 2K 6 4K
+  Url     string   `json:"url" example:"对应类型的视频地址"`
+}
+
 // 实栗
 func NewVideoModel(engine *xorm.Session) *VideoModel {
 	return &VideoModel{
@@ -602,3 +608,14 @@ func (m *VideoModel) RecordTencentEvent() (int64, error) {
 func (m *VideoModel) AddVideoReport() (int64, error) {
   return m.Engine.InsertOne(m.Report)
 }
+
+// 更新视频转码数据
+func (m *VideoModel) UpdateVideoPlayInfo(videoId string) error {
+  if _, err := m.Engine.Where("video_id=?", videoId).Cols("play_info").Update(m.Videos); err != nil {
+    return err
+  }
+
+  return nil
+}
+
+

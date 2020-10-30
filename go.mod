@@ -5,6 +5,7 @@ go 1.14
 replace github.com/go-xorm/core v0.6.3 => xorm.io/core v0.6.3
 
 require (
+	github.com/DeanThompson/jpush-api-go-client v0.0.0-20160606124945-0c253969b0ca
 	github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc
 	github.com/antlinker/go-cmap v0.0.0-20160407022646-0c5e57012e96 // indirect
 	github.com/antlinker/go-dirtyfilter v1.2.0
@@ -26,6 +27,7 @@ require (
 	github.com/swaggo/swag v1.5.1
 	github.com/tencentcloud/tencentcloud-sdk-go v1.0.30
 	github.com/tidwall/gjson v1.6.1
+	github.com/ylywyn/jpush-api-go-client v0.0.0-20190906031852-8c4466c6e369 // indirect
 	github.com/zheng-ji/goSnowFlake v0.0.0-20180906112711-fc763800eec9
 	go.uber.org/zap v1.16.0
 	google.golang.org/protobuf v1.25.0 // indirect

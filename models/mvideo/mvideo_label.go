@@ -81,3 +81,14 @@ func (m *VideoModel) GetPublishInfo(userId string, taskId int64) (string, error)
 	rds := dao.NewRedisDao()
 	return rds.Get(key)
 }
+
+// 通过腾讯云返回的文件id查询视频
+func (m *VideoModel) GetVideoByFileId(fileId string) *models.Videos {
+  m.Videos = new(models.Videos)
+  ok, err := m.Engine.Where("file_id=?", fileId).Get(m.Videos)
+  if !ok || err != nil {
+    return nil
+  }
+
+  return m.Videos
+}

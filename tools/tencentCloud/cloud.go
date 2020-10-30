@@ -37,7 +37,7 @@ type SourceContext struct {
 	TaskId    int64    `json:"task_id"`   // 任务id
 }
 
-// 生成上传签名
+// 生成上传签名 todo: 任务流模版名  procedure
 func (tc *TencentCloud) GenerateSign(userId string, taskId int64) string {
 	timestamp := time.Now().Unix()
 	expireTime := timestamp + ONE_DAY

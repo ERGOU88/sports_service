@@ -25,5 +25,13 @@ const (
 // CreateSnapshotByTimeOffsetComplete：视频按时间点截图完成。
 const (
 	// 视频上传事件
-	EVENT_TYPE_UPLOAD = "NewFileUpload"
+	EVENT_TYPE_UPLOAD        = "NewFileUpload"
+  // 视频转码完成
+  EVENT_TRANSCODE_COMPLETE = "TranscodeComplete"
+)
+
+// 0 视频上传事件 1 视频转码事件
+const (
+  EVENT_UPLOAD_TYPE               int = iota
+  EVENT_TRANSCODE_COMPLETE_TYPE
 )

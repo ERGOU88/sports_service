@@ -7,6 +7,7 @@ type Videos struct {
 	FileId        int64  `json:"file_id" xorm:"not null default 0 comment('腾讯云文件id') BIGINT(20)"`
 	IsRecommend   int    `json:"is_recommend" xorm:"not null default 0 comment('推荐（0：不推荐；1：推荐）') TINYINT(1)"`
 	IsTop         int    `json:"is_top" xorm:"not null default 0 comment('置顶（0：不置顶；1：置顶；）') TINYINT(1)"`
+	PlayInfo      string `json:"play_info" xorm:"comment('视频转码信息') MEDIUMTEXT"`
 	RecContent    string `json:"rec_content" xorm:"comment('推荐理由') MEDIUMTEXT"`
 	Size          int64  `json:"size" xorm:"not null default 0 comment('视频大小（字节数）') BIGINT(20)"`
 	Sortorder     int    `json:"sortorder" xorm:"not null default 1 comment('排序') INT(11)"`
