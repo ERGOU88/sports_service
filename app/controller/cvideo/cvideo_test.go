@@ -26,3 +26,17 @@ func BenchmarkBrowseVideosRecord(b *testing.B) {
   }
 }
 
+func TestGetUserPublishList(t *testing.T) {
+  c, _ := gin.CreateTestContext(httptest.NewRecorder())
+  svc := New(c)
+  list := svc.GetUserPublishList("202010101545291936", "-1", "-1", 1, 10)
+  t.Logf("list:%v\n", list)
+}
+
+func BenchmarkGetUserPublishList(b *testing.B) {
+  for i := 0; i < b.N; i++ {
+    c, _ := gin.CreateTestContext(httptest.NewRecorder())
+    svc := New(c)
+    svc.GetUserPublishList("202010101545291936", "-1", "-1", 1, 10)
+  }
+}

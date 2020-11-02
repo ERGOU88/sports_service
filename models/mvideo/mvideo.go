@@ -6,6 +6,9 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"fmt"
+	"sports_service/server/global/rdskey"
+  "sports_service/server/dao"
+  "time"
 )
 
 // todo: 视频id自增 帖子可以使用分布式唯一id
@@ -616,6 +619,24 @@ func (m *VideoModel) UpdateVideoPlayInfo(videoId string) error {
   }
 
   return nil
+}
+
+// 记录用户搜索历史
+func (m *VideoModel) RecordHistorySearch(userId, name string) error {
+  rds := dao.NewRedisDao()
+  _, err:= rds.ZINCRBY(rdskey.MakeKey(rdskey.SEARCH_HISTORY_CONTENT, userId), time.Now().Unix(), name)
+  return err
+}
+
+// 获取历史搜索记录
+func (m *VideoModel) GetHistorySearch(userId string) []string {
+  rds := dao.NewRedisDao()
+  list, err := rds.ZREVRANGEString(rdskey.MakeKey(rdskey.SEARCH_HISTORY_CONTENT, userId), 0, 9)
+  if err != nil {
+    return nil
+  }
+
+  return list
 }
 
 

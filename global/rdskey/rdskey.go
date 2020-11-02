@@ -31,6 +31,8 @@ const (
 
 	VIDEO_UPLOAD_TASK         = SUGAR + "video_upload_task_%d"                     // 记录任务id 对应的 用户id {拼接任务id（唯一）}
 	VIDEO_UPLOAD_INFO         = SUGAR + "video_upload_info_%s_%d"                  // 记录用户上传的视频信息{拼接 userId + taskId}
+
+	SEARCH_HISTORY_CONTENT    = SUGAR + "search_history_content_%s"                // 记录历史搜索内容{拼接 userId}
 )
 
 // make redis key

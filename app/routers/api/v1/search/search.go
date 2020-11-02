@@ -106,9 +106,11 @@ func ColligateSearch(c *gin.Context) {
 
 	svc := csearch.New(c)
 	// 综合搜索
-	videoList, userList := svc.ColligateSearch(userId, name)
+	videoList, userList, history := svc.ColligateSearch(userId, name)
 	reply.Data["video_list"] = videoList
 	reply.Data["user_list"] = userList
+	reply.Data["history_list"] = history
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
 // @Summary 标签搜索视频[分页获取] (ok)
@@ -153,7 +155,7 @@ func LabelSearch(c *gin.Context) {
 // @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
-// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   Version 	    header    string 	true  "版本" default(1.0.0)
 // @Success 200 {object}  []string
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/search/hot [get]
@@ -161,6 +163,7 @@ func LabelSearch(c *gin.Context) {
 func HotSearch(c *gin.Context) {
 	reply := errdef.New(c)
 	svc := csearch.New(c)
+  //userId := c.Query("user_id")
 	// 获取后台配置的热门搜索内容
 	hotSearch := svc.GetHotSearch()
 	reply.Data["list"] = hotSearch
@@ -225,12 +228,4 @@ func FansSearch(c *gin.Context) {
 	list := svc.SearchFans(userId.(string), name, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
-}
-
-// 获取历史搜索记录
-func HistorySearch(c *gin.Context) {
-  //reply := errdef.New(c)
-  //userId := c.Query("user_id")
-
-
 }

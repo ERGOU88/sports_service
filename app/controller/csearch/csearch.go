@@ -1,19 +1,20 @@
 package csearch
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
+  "github.com/gin-gonic/gin"
+  "github.com/go-xorm/xorm"
+  "sports_service/server/dao"
+  "sports_service/server/global/app/log"
+  "sports_service/server/global/consts"
   "sports_service/server/models"
   "sports_service/server/models/mattention"
-	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	"strings"
-	"time"
+  "sports_service/server/models/mcollect"
+  "sports_service/server/models/mlike"
+  "sports_service/server/models/muser"
+  "sports_service/server/models/mvideo"
+  "sports_service/server/util"
+  "strings"
+  "time"
 )
 
 type SearchModule struct {
@@ -41,10 +42,28 @@ func New(c *gin.Context) SearchModule {
 }
 
 // 综合搜索（视频+用户 默认视频取10条 用户取20条 视频默认播放量排序）
-func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDetailInfo, []*muser.UserSearchResults) {
+func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDetailInfo, []*muser.UserSearchResults, []string) {
+  // 历史搜索记录
+  history := svc.video.GetHistorySearch(userId)
+  if history == nil {
+    history = []string{}
+  }
+
 	if name == "" {
 		log.Log.Errorf("search_trace: search name can't empty, name:%s", name)
-		return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}
+		return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, history
+	}
+
+  length := util.GetStrLen([]rune(name))
+  if length > 20 {
+    log.Log.Errorf("search_trace: invalid search name len, len:%s", length)
+    return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, history
+  }
+
+	if userId != "" {
+	  if err := svc.video.RecordHistorySearch(userId, name); err != nil {
+	    log.Log.Errorf("video_trace: record history search err:%s", err)
+    }
 	}
 
 	// 搜索到的视频
@@ -53,8 +72,9 @@ func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDe
 	// 搜索到的用户
 	users := svc.UserSearch(userId, name, consts.DEFAULT_SEARCH_USER_PAGE, consts.DEFAULT_SEARCH_USER_SIZE)
 
-	return videos, users
+	return videos, users, history
 }
+
 
 // 视频搜索 todo: 限制搜索的字符数
 func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime string, page, size int) []*mvideo.VideoDetailInfo {
@@ -62,6 +82,12 @@ func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime s
 		log.Log.Errorf("search_trace: search name can't empty, name:%s", name)
 		return []*mvideo.VideoDetailInfo{}
 	}
+
+	length := util.GetStrLen([]rune(name))
+	if length > 20 {
+	  log.Log.Errorf("search_trace: invalid search name len, len:%s", length)
+    return []*mvideo.VideoDetailInfo{}
+  }
 
 	sortField := svc.GetSortField(sort)
 	min, max := svc.GetDurationCondition(duration)
@@ -115,6 +141,12 @@ func (svc *SearchModule) UserSearch(userId, name string, page, size int) []*muse
 		log.Log.Errorf("search_trace: search user name can't empty, name:%s", name)
 		return []*muser.UserSearchResults{}
 	}
+
+  length := util.GetStrLen([]rune(name))
+  if length > 20 {
+    log.Log.Errorf("search_trace: invalid search name len, len:%s", length)
+    return []*muser.UserSearchResults{}
+  }
 
 	offset := (page - 1) * size
 	list := svc.user.SearchUser(name, offset, size)
@@ -315,3 +347,4 @@ func (svc *SearchModule) GetSortField(condition string) string {
 
 	return consts.CONDITION_FIELD_PLAY
 }
+

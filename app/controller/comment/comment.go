@@ -46,18 +46,27 @@ func New(c *gin.Context) CommentModule {
 
 // 发布评论
 func (svc *CommentModule) PublishComment(userId string, params *mcomment.PublishCommentParams) int {
+  // 开启事务
+  if err := svc.engine.Begin(); err != nil {
+    log.Log.Errorf("video_trace: session begin err:%s", err)
+    return errdef.ERROR
+  }
+
+  // 最少10字符 最多1000字符
+  contentLen := util.GetStrLen([]rune(params.Content))
+  if contentLen < consts.COMMENT_MIN_LEN || contentLen > consts.COMMENT_MAX_LEN {
+    log.Log.Errorf("comment_trace: invalid content length, len:%d", contentLen)
+    svc.engine.Rollback()
+    return errdef.COMMENT_INVALID_LEN
+  }
+
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测评论内容
 	isPass, err := client.TextModeration(params.Content)
 	if !isPass {
 		log.Log.Errorf("comment_trace: validate comment err: %s，pass: %v", err, isPass)
+    svc.engine.Rollback()
 		return errdef.COMMENT_INVALID_CONTENT
-	}
-
-	// 开启事务
-	if err := svc.engine.Begin(); err != nil {
-		log.Log.Errorf("video_trace: session begin err:%s", err)
-		return errdef.ERROR
 	}
 
 	// 查询用户是否存在
@@ -66,14 +75,6 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 		log.Log.Errorf("comment_trace: user not found, userId:%s", userId)
 		svc.engine.Rollback()
 		return errdef.USER_NOT_EXISTS
-	}
-
-	// 最少10字符 最多1000字符
-	contentLen := util.GetStrLen([]rune(params.Content))
-	if contentLen < consts.COMMENT_MIN_LEN || contentLen > consts.COMMENT_MAX_LEN {
-		log.Log.Errorf("comment_trace: invalid content length, len:%d", contentLen)
-		svc.engine.Rollback()
-		return errdef.COMMENT_INVALID_LEN
 	}
 
 	// 查找视频是否存在
@@ -129,34 +130,35 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 
 // 回复评论
 func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyCommentParams) int {
-	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
-	// 检测评论内容
-	isPass, err := client.TextModeration(params.Content)
-	if !isPass {
-		log.Log.Errorf("comment_trace: validate reply content err: %s，pass: %v", err, isPass)
-		return errdef.COMMENT_INVALID_REPLY
-	}
-
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("video_trace: session begin err:%s", err)
 		return errdef.ERROR
 	}
 
-	// 查询用户是否存在
+  // 最少10字符 最多1000字符
+  contentLen := util.GetStrLen([]rune(params.Content))
+  if contentLen < consts.COMMENT_MIN_LEN || contentLen > consts.COMMENT_MAX_LEN {
+    log.Log.Errorf("comment_trace: invalid content length, len:%d", contentLen)
+    svc.engine.Rollback()
+    return errdef.COMMENT_INVALID_LEN
+  }
+
+  client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+  // 检测评论内容
+  isPass, err := client.TextModeration(params.Content)
+  if !isPass {
+    log.Log.Errorf("comment_trace: validate reply content err: %s，pass: %v", err, isPass)
+    svc.engine.Rollback()
+    return errdef.COMMENT_INVALID_REPLY
+  }
+
+  // 查询用户是否存在
 	user := svc.user.FindUserByUserid(userId)
 	if user == nil {
 		log.Log.Errorf("comment_trace: user not found, userId:%s", userId)
 		svc.engine.Rollback()
 		return errdef.USER_NOT_EXISTS
-	}
-
-	// 最少10字符 最多1000字符
-	contentLen := util.GetStrLen([]rune(params.Content))
-	if contentLen < consts.COMMENT_MIN_LEN || contentLen > consts.COMMENT_MAX_LEN {
-		log.Log.Errorf("comment_trace: invalid content length, len:%d", contentLen)
-		svc.engine.Rollback()
-		return errdef.COMMENT_INVALID_LEN
 	}
 
 	// 查找视频是否存在
