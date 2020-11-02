@@ -30,6 +30,7 @@ import (
 // @Param   sort     	  query  	string 	true  "排序条件  0 播放数 1 弹幕数 2 点赞数 默认 播放数"
 // @Param   duration   	  query  	string 	true  "视频时长 0 表示没有限制 1 表示 1～5分钟  2：5～10分钟 3：10～30分钟 4：30分钟以上"
 // @Param   publish_time  query  	string 	true  "视频发布时间 0 不限制 1 一天内 2 一周内 3 半年内"
+// @Param   user_id	 	    query  	string 	true  "用户id"
 // @Success 200 {array}  mvideo.VideoDetailInfo
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/search/videos [get]
@@ -65,6 +66,7 @@ func VideoSearch(c *gin.Context) {
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
 // @Param   name	  	  query  	string 	true  "搜索的名称/userId"
+// @Param   user_id	 	  query  	string 	true  "用户id"
 // @Success 200 {array}  muser.UserSearchResults
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/search/users [get]
@@ -94,6 +96,7 @@ func UserSearch(c *gin.Context) {
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   name	  	  query  	string 	true  "搜索的名称"
+// @Param   user_id	 	  query  	string 	true  "用户id"
 // @Success 200 {object}  swag.ColligateSearchSwag
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/search/colligate [get]
@@ -127,6 +130,7 @@ func ColligateSearch(c *gin.Context) {
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
 // @Param   label_id	  query  	string 	true  "搜索的视频标签"
+// @Param   user_id	 	  query  	string 	true  "用户id"
 // @Success 200 {array}  mvideo.VideoDetailInfo
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/search/label [get]
