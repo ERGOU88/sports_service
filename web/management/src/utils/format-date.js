@@ -59,3 +59,24 @@ export function secondToDate(msd) {
   return time;
 
 }
+
+
+// 格式化文件大小 单位：Bytes、KB、MB、GB
+export function formatFileSize(fileSize) {
+  if (fileSize < 1024) {
+    return fileSize + 'B';
+  } else if (fileSize < (1024 * 1024)) {
+    var temp = fileSize / 1024;
+    temp = temp.toFixed(2);
+    return temp + 'KB';
+  } else if (fileSize < (1024 * 1024 * 1024)) {
+    var temp = fileSize / (1024 * 1024);
+    temp = temp.toFixed(2);
+    return temp + 'MB';
+  } else {
+    var temp = fileSize / (1024 * 1024 * 1024);
+    temp = temp.toFixed(2);
+    return temp + 'GB';
+  }
+}
+

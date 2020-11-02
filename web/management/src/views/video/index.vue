@@ -149,7 +149,7 @@
     editTopStatus
   } from '@/api/video'
   import Pagination from '@/components/Pagination'
-  import {formatDate, secondToDate} from '@/utils/format-date'
+  import {formatDate, formatFileSize, secondToDate} from '@/utils/format-date'
   export default {
     components: { Pagination },
     filters: {
@@ -160,6 +160,9 @@
       },
       secondToDate(time) {
         return secondToDate(time)
+      },
+      formatFileSize(size) {
+        return formatFileSize(size)
       }
     },
     data() {

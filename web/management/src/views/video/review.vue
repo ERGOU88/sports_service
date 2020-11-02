@@ -68,7 +68,7 @@
 
       <el-table-column width="90px" align="center" label="视频大小">
         <template slot-scope="scope">
-          <span>{{ scope.row.size }}</span>
+          <span>{{ scope.row.size | formatFileSize}}</span>
         </template>
       </el-table-column>
 
@@ -97,7 +97,7 @@
     editVideoStatus,
   } from '@/api/video'
   import Pagination from '@/components/Pagination'
-  import {formatDate, secondToDate} from '@/utils/format-date'
+  import {formatDate, secondToDate, formatFileSize} from '@/utils/format-date'
   export default {
     components: { Pagination },
     filters: {
@@ -108,6 +108,9 @@
       },
       secondToDate(time) {
         return secondToDate(time)
+      },
+      formatFileSize(size) {
+        return formatFileSize(size)
       }
     },
     data() {

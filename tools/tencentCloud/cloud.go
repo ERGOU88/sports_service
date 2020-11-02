@@ -48,7 +48,7 @@ func (tc *TencentCloud) GenerateSign(userId string, taskId int64) string {
 	}
 
 	context, _ := util.JsonFast.Marshal(sourceContext)
-	original := fmt.Sprintf("secretId=%s&currentTimeStamp=%d&sourceContext=%s&expireTime=%d&random=%d", tc.secretId, timestamp, string(context), expireTime, random)
+	original := fmt.Sprintf("secretId=%s&currentTimeStamp=%d&procedure=%s&sourceContext=%s&expireTime=%d&random=%d", tc.secretId, timestamp, "fpv-demo", string(context), expireTime, random)
 	signature := tc.generateHmacSHA1(original)
 	signature = append(signature, []byte(original)...)
 	signatureB64 := base64.StdEncoding.EncodeToString(signature)
