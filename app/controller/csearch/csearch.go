@@ -42,22 +42,16 @@ func New(c *gin.Context) SearchModule {
 }
 
 // 综合搜索（视频+用户 默认视频取10条 用户取20条 视频默认播放量排序）
-func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDetailInfo, []*muser.UserSearchResults, []string) {
-  // 历史搜索记录
-  history := svc.video.GetHistorySearch(userId)
-  if history == nil {
-    history = []string{}
-  }
-
+func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDetailInfo, []*muser.UserSearchResults) {
 	if name == "" {
 		log.Log.Errorf("search_trace: search name can't empty, name:%s", name)
-		return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, history
+		return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}
 	}
 
   length := util.GetStrLen([]rune(name))
   if length > 20 {
     log.Log.Errorf("search_trace: invalid search name len, len:%s", length)
-    return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, history
+    return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}
   }
 
 	if userId != "" {
@@ -72,7 +66,7 @@ func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDe
 	// 搜索到的用户
 	users := svc.UserSearch(userId, name, consts.DEFAULT_SEARCH_USER_PAGE, consts.DEFAULT_SEARCH_USER_SIZE)
 
-	return videos, users, history
+	return videos, users
 }
 
 
@@ -243,6 +237,16 @@ func (svc *SearchModule) LabelSearch(userId string, labelId string, page, size i
 // 获取热门搜索（后台配置的结果集）
 func (svc *SearchModule) GetHotSearch() []*models.HotSearch {
 	return  svc.video.GetHotSearch()
+}
+
+// 历史搜索记录
+func (svc *SearchModule) GetHistorySearch(userId string) []string {
+  history := svc.video.GetHistorySearch(userId)
+  if history == nil {
+    history = []string{}
+  }
+
+  return history
 }
 
 // 搜索关注的用户

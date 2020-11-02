@@ -36,6 +36,7 @@ module.exports = {
       warnings: false,
       errors: true
     },
+    disableHostCheck: true,
     proxy: {
       [process.env.VUE_APP_BASE_API]: {
         target: 'http://192.168.50.148:13002/backend/v1',
