@@ -15,9 +15,9 @@ export function formatDate(value) {
     return y + '-' + MM + '-' + d + ' ' + h + ':' + m + ':' + s;
 }
 
-// 秒数 转 天/时/分/秒
+// 毫秒数 转 天/时/分/秒
 export function secondToDate(msd) {
-  let time =msd
+  let time =msd / 1000.0
 
   if (null != time && "" != time) {
     if (time > 60 && time < 60 * 60) {
