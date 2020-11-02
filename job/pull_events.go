@@ -55,9 +55,9 @@ func pullEvents() error {
 		    log.Log.Errorf("job_trace: uploadEvent err:%s", err)
 		    continue
       }
-		// 视频转码事件
-    case consts.EVENT_TRANSCODE_COMPLETE:
-      log.Log.Debugf("transcode event:%+v", *event.TranscodeCompleteEvent)
+		// 任务流状态变更（包含视频转码完成）
+    case consts.EVENT_PROCEDURE_STATE_CHANGED:
+      log.Log.Debugf("transcode event:%+v", *event.ProcedureStateChangeEvent)
       transCodeCompleteEvent(event)
 
 		default:
@@ -77,54 +77,66 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
   }
 
   vmodel := mvideo.NewVideoModel(session)
-  video := vmodel.GetVideoByFileId(*event.TranscodeCompleteEvent.FileId)
+  video := vmodel.GetVideoByFileId(*event.ProcedureStateChangeEvent.FileId)
   if video == nil {
-    log.Log.Errorf("job_trace: video not found, fileId:%s", *event.TranscodeCompleteEvent.FileId)
+    log.Log.Errorf("job_trace: video not found, fileId:%s", *event.ProcedureStateChangeEvent.FileId)
+    session.Rollback()
     return errors.New("video not found")
   }
 
-  list := make([]*mvideo.PlayInfo, len(event.TranscodeCompleteEvent.PlayInfoSet))
-  for index, info := range event.TranscodeCompleteEvent.PlayInfoSet {
+  list := make([]*mvideo.PlayInfo, 0)
+  for _, info := range event.ProcedureStateChangeEvent.MediaProcessResultSet {
     log.Log.Debugf("info:%v", info)
     // todo:
-    // 流畅（FLU） 100010	MP4  100210	HLS
-    playInfo := new(mvideo.PlayInfo)
-    if *info.Definition == 100010 || *info.Definition == 100210 {
-      playInfo.Type = "1"
-    }
+    switch *info.Type {
+    case "Transcode":
+      if *info.TranscodeTask.ErrCode != 0 {
+        log.Log.Errorf("job_trace: media process errCode:%d", *info.TranscodeTask.ErrCode)
+        continue
+      }
 
-    // 标清（SD）	100020	MP4	 100220	 HLS
-    if *info.Definition == 100020 || *info.Definition == 100220 {
-      playInfo.Type = "2"
-    }
+      // 流畅（FLU） 100010	MP4  100210	HLS
+      playInfo := new(mvideo.PlayInfo)
+      if *info.TranscodeTask.Output.Definition == 100010 || *info.TranscodeTask.Output.Definition == 100210 {
+        playInfo.Type = "1"
+      }
 
-    // 高清（HD）	100030	MP4	 100230	HLS
-    if *info.Definition == 100030 || *info.Definition == 100230 {
-      playInfo.Type = "3"
-    }
+      // 标清（SD）	100020	MP4	 100220	 HLS
+      if *info.TranscodeTask.Output.Definition == 100020 || *info.TranscodeTask.Output.Definition == 100220 {
+        playInfo.Type = "2"
+      }
 
-    // 全高清（FHD）	100040	MP4 100240	HLS
-    if *info.Definition == 100040 || *info.Definition == 100240 {
-      playInfo.Type = "4"
-    }
+      // 高清（HD）	100030	MP4	 100230	HLS
+      if *info.TranscodeTask.Output.Definition == 100030 || *info.TranscodeTask.Output.Definition == 100230 {
+        playInfo.Type = "3"
+      }
 
-    // 全高清（FHD）	100040	MP4 100240	HLS
-    if *info.Definition == 100040 || *info.Definition == 100240 {
-      playInfo.Type = "4"
-    }
+      // 全高清（FHD）	100040	MP4 100240	HLS
+      if *info.TranscodeTask.Output.Definition == 100040 || *info.TranscodeTask.Output.Definition == 100240 {
+        playInfo.Type = "4"
+      }
 
-    // 2K	100070	MP4	100270	HLS
-    if *info.Definition == 100070 || *info.Definition == 100270 {
-      playInfo.Type = "5"
-    }
+      // 全高清（FHD）	100040	MP4 100240	HLS
+      if *info.TranscodeTask.Output.Definition == 100040 || *info.TranscodeTask.Output.Definition == 100240 {
+        playInfo.Type = "4"
+      }
 
-    // 4K	100080	MP4	100280	HLS
-    if *info.Definition == 100080 || *info.Definition == 100280 {
-      playInfo.Type = "6"
-    }
+      // 2K	100070	MP4	100270	HLS
+      if *info.TranscodeTask.Output.Definition == 100070 || *info.TranscodeTask.Output.Definition == 100270 {
+        playInfo.Type = "5"
+      }
 
-    playInfo.Url = *info.Url
-    list[index] = playInfo
+      // 4K	100080	MP4	100280	HLS
+      if *info.TranscodeTask.Output.Definition == 100080 || *info.TranscodeTask.Output.Definition == 100280 {
+        playInfo.Type = "6"
+      }
+
+      playInfo.Url = *info.TranscodeTask.Output.Url
+      playInfo.Size = *info.TranscodeTask.Output.Size
+      playInfo.Duration = int64(*info.TranscodeTask.Output.Duration * 1000)
+
+      list = append(list, playInfo)
+    }
   }
 
   playBts, err := util.JsonFast.Marshal(list)

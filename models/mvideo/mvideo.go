@@ -175,8 +175,10 @@ type VideoReportParam struct {
 
 // 视频转码信息
 type PlayInfo struct {
-  Type    string   `json:"type" example:"1 流畅（FLU） 2 标清（SD）3 高清（HD）4 全高清（FHD）5 2K 6 4K"`    // 1 流畅（FLU） 2 标清（SD）3 高清（HD）4 全高清（FHD）5 2K 6 4K
-  Url     string   `json:"url" example:"对应类型的视频地址"`
+  Type     string   `json:"type" example:"1 流畅（FLU） 2 标清（SD）3 高清（HD）4 全高清（FHD）5 2K 6 4K"`    // 1 流畅（FLU） 2 标清（SD）3 高清（HD）4 全高清（FHD）5 2K 6 4K
+  Url      string   `json:"url" example:"对应类型的视频地址"`
+  Size     int64    `json:"size" example:"1000000000"`
+  Duration int64    `json:"duration" example:"1000000000"`
 }
 
 // 实栗
