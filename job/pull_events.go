@@ -47,17 +47,17 @@ func pullEvents() error {
 
 	for _, event := range resp.Response.EventSet {
     log.Log.Debugf("eventType:%v", *event.EventType)
-    log.Log.Debugf("transcode event:%+v", *event.TranscodeCompleteEvent)
-    log.Log.Debugf("upload event:%+v", *event.FileUploadEvent)
 		switch *event.EventType {
 		// 上传事件
 		case consts.EVENT_TYPE_UPLOAD:
+      log.Log.Debugf("upload event:%+v", *event.FileUploadEvent)
 		  if err := uploadEvent(event); err != nil {
 		    log.Log.Errorf("job_trace: uploadEvent err:%s", err)
 		    continue
       }
 		// 视频转码事件
     case consts.EVENT_TRANSCODE_COMPLETE:
+      log.Log.Debugf("transcode event:%+v", *event.TranscodeCompleteEvent)
       transCodeCompleteEvent(event)
 
 		default:
