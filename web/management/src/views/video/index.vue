@@ -63,7 +63,7 @@
 
       <el-table-column width="90px" align="center" label="视频时长">
         <template slot-scope="scope">
-          <span>{{ scope.row.video_duration }}</span>
+          <span>{{ scope.row.video_duration | secondToDate}}</span>
         </template>
       </el-table-column>
 
@@ -149,7 +149,7 @@
     editTopStatus
   } from '@/api/video'
   import Pagination from '@/components/Pagination'
-  import {formatDate} from '@/utils/format-date'
+  import {formatDate, secondToDate} from '@/utils/format-date'
   export default {
     components: { Pagination },
     filters: {
@@ -158,6 +158,9 @@
         let date = new Date(time)
         return formatDate(date, 'yyyy-MM-dd hh:mm')
       },
+      secondToDate(time) {
+        return secondToDate(time)
+      }
     },
     data() {
       return {
