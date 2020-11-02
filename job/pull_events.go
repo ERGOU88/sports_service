@@ -46,7 +46,9 @@ func pullEvents() error {
 	}
 
 	for _, event := range resp.Response.EventSet {
-    log.Log.Debugf("tencentEvent event:%v", *event)
+    log.Log.Debugf("eventType:%v", *event.EventType)
+    log.Log.Debugf("transcode event:%+v", *event.TranscodeCompleteEvent)
+    log.Log.Debugf("upload event:%+v", *event.FileUploadEvent)
 		switch *event.EventType {
 		// 上传事件
 		case consts.EVENT_TYPE_UPLOAD:
