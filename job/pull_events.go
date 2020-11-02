@@ -152,7 +152,7 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
 
   now := time.Now().Unix()
   // 记录事件回调信息
-  fileId, _ := strconv.Atoi(*event.FileUploadEvent.FileId)
+  fileId, _ := strconv.Atoi(*event.ProcedureStateChangeEvent.FileId)
   vmodel.Events.FileId = int64(fileId)
   vmodel.Events.CreateAt = int(now)
   vmodel.Events.EventType = consts.EVENT_UPLOAD_TYPE
