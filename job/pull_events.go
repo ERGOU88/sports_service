@@ -155,7 +155,7 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
   fileId, _ := strconv.Atoi(*event.ProcedureStateChangeEvent.FileId)
   vmodel.Events.FileId = int64(fileId)
   vmodel.Events.CreateAt = int(now)
-  vmodel.Events.EventType = consts.EVENT_UPLOAD_TYPE
+  vmodel.Events.EventType = consts.EVENT_PROCEDURE_STATE_CHANGED_TYPE
   bts, _ := util.JsonFast.Marshal(event)
   vmodel.Events.Event = string(bts)
   affected, err := vmodel.RecordTencentEvent()
