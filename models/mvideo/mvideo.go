@@ -59,6 +59,8 @@ type VideosInfoResp struct {
 	Nickname      string `json:"nick_name" example:"昵称"`             // 昵称
 	IsAttention   int    `json:"is_attention" example:"1"`            // 是否关注 1 关注 2 未关注
 	OpTime        int    `json:"op_time" example:"1600000000"`        // 用户收藏/点赞等的操作时间
+
+	PlayInfo     []*PlayInfo `json:"play_info"`                       // 视频转码后的数据
 }
 
 // 视频信息
@@ -82,6 +84,8 @@ type VideosInfo struct {
 	BarrageNum    int    `json:"barrage_num" example:"1"`            // 弹幕数
   TimeElapsed   int    `json:"time_elapsed" example:"1"`           // 已播放的时长 毫秒
   StatusCn      string `json:"status_cn" example:"审核中"`          // 审核状态（中文展示）
+
+  PlayInfo      []*PlayInfo `json:"play_info"`                     // 转码后的视频数据
 }
 
 // 视频详情信息
@@ -111,6 +115,7 @@ type VideoDetailInfo struct {
 	IsLike        int                   `json:"is_like" example:"1"`                  // 是否点赞
 	FansNum       int64                 `json:"fans_num" example:"100"`               // 粉丝数
 	Labels        []*models.VideoLabels `json:"labels"`                               // 视频标签
+	PlayInfo      []*PlayInfo           `json:"play_info"`                            // 视频转码后数据
 }
 
 // 删除历史记录请求参数
