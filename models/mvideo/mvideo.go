@@ -509,17 +509,17 @@ func (m *VideoModel) SearchVideos(name, sortCondition string, minDuration, maxDu
 	}
 
 	if minDuration != 0 && maxDuration != 0 {
-		sql += "AND v.video_duration >= ? AND v.video_duration <= ? "
+		sql += fmt.Sprintf("AND v.video_duration >= %d AND v.video_duration <= %d ", minDuration, maxDuration)
 	}
 
 	if publishTime != 0 {
-		sql += "AND v.create_at >= ? "
+		sql += fmt.Sprintf("AND v.create_at >= %d ", publishTime)
 	}
 
 	sql += fmt.Sprintf("GROUP BY v.video_id ORDER BY s.%s DESC, v.is_top DESC, v.is_recommend DESC, v.sortorder DESC, v.video_id DESC LIMIT ?, ?", sortCondition)
 
 	var list []*VideoDetailInfo
-	if err := m.Engine.SQL(sql, minDuration, maxDuration, publishTime, offset, size).Find(&list); err != nil {
+	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
 		log.Log.Errorf("video_trace: search videos err:%s", err)
 		return nil
 	}
