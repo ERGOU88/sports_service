@@ -30,10 +30,10 @@ type VideoPublishParams struct {
 	Title          string  `binding:"required" json:"title"`          // 视频标题
 	Describe       string  `binding:"required" json:"describe"`       // 视频描述
 	VideoAddr      string  `binding:"required" json:"video_addr"`     // 视频地址
-	VideoDuration  int     `binding:"required" json:"video_duration"` // 视频时长
+	VideoDuration  int     `json:"video_duration"`                    // 视频时长
 	FileId         string  `binding:"required" json:"file_id"`        // 腾讯云文件id
-	VideoWidth     int64   `binding:"required" json:"video_width"`    // 视频宽
-	VideoHeight    int64   `binding:"required" json:"video_height"`   // 视频高
+	VideoWidth     int64   `json:"video_width"`                       // 视频宽
+	VideoHeight    int64   `json:"video_height"`                      // 视频高
 	VideoLabels    string  `binding:"required" json:"video_labels"`   // 视频标签id（多个用逗号分隔）
 	Size           int64   `json:"size"`                              // 视频字节数
 	CustomLabels   string  `json:"custom_labels"`                     // 字符串（多个用逗号分隔）
