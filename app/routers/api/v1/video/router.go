@@ -1,27 +1,27 @@
 package video
 
 import (
-	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/token"
+  "github.com/gin-gonic/gin"
+  "sports_service/server/middleware/token"
 )
 
 // 视频点播模块路由
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
-	video := api.Group("/video", token.TokenAuth())
+	video := api.Group("/video")
 	{
 		// 用户发布视频
-		video.POST("/publish", VideoPublish)
+		video.POST("/publish", token.TokenAuth(), VideoPublish)
 		// 用户视频浏览记录
-		video.GET("/browse/history", BrowseHistory)
+		video.GET("/browse/history", token.TokenAuth(), BrowseHistory)
 		// 用户发布的视频列表
 		video.GET("/publish/list", VideoPublishList)
 		// 其他用户发布的视频列表
 		video.GET("/other/publish", OtherUserPublishList)
 		// 删除浏览记录
-		video.POST("/delete/history", DeleteHistory)
+		video.POST("/delete/history", token.TokenAuth(), DeleteHistory)
 		// 删除发布的记录
-		video.POST("/delete/publish", DeletePublish)
+		video.POST("/delete/publish", token.TokenAuth(), DeletePublish)
 		// 首页推荐的视频列表
 		video.GET("/recommend", RecommendVideos)
 		// 首页推荐的banner列表
@@ -33,7 +33,7 @@ func Router(engine *gin.Engine) {
 		// 视频详情页推荐视频（同标签推荐）
 		video.GET("/detail/recommend", DetailRecommend)
 		// 获取上传签名（腾讯云）
-		video.GET("/upload/sign", UploadSign)
+		video.GET("/upload/sign", token.TokenAuth(), UploadSign)
 		// 事件回调
 		video.GET("/event/callback", EventCallback)
 		// 用户自定义视频标签检测
