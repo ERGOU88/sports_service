@@ -82,7 +82,7 @@ func (svc *CommentModule) GetVideoComments(queryId, sortType, condition string, 
 		if video != nil {
 			comment.Title = video.Title
 			comment.VideoDuration = video.VideoDuration
-			comment.VideoAddr = video.VideoAddr
+			comment.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 			comment.Cover = video.Cover
 			comment.Describe = video.Describe
 			comment.VideoHeight = video.VideoHeight
@@ -150,6 +150,10 @@ func (svc *CommentModule) GetVideoBarrageList(page, size int) []*mbarrage.VideoB
   list := svc.barrage.GetVideoBarrageList(offset, size)
   if len(list) == 0 {
     return []*mbarrage.VideoBarrageInfo{}
+  }
+
+  for _, v := range list {
+    v.VideoAddr = svc.video.AntiStealingLink(v.VideoAddr)
   }
 
   return list

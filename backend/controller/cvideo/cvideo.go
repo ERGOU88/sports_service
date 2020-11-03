@@ -104,6 +104,7 @@ func (svc *VideoModule) GetVideoList(page, size int) []*mvideo.VideoDetailInfo {
   }
 	for _, video := range list {
     video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+    video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
   }
 
   return list
@@ -183,6 +184,10 @@ func (svc *VideoModule) GetVideoReviewList(page, size int) []*models.Videos {
  	list := svc.video.GetVideoReviewList(offset, size)
  	if list == nil {
  	  return []*models.Videos{}
+  }
+
+  for _, v := range list {
+    v.VideoAddr  = svc.video.AntiStealingLink(v.VideoAddr)
   }
 
   return list
