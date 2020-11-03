@@ -222,7 +222,7 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 		resp.Title = video.Title
 		resp.Describe = video.Describe
 		resp.Cover = video.Cover
-		resp.VideoAddr = video.VideoAddr
+		resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		resp.IsRecommend = video.IsRecommend
 		resp.IsTop = video.IsTop
 		resp.VideoDuration = video.VideoDuration
@@ -293,6 +293,7 @@ func (svc *VideoModule) GetUserPublishList(userId, status, condition string, pag
 	  // todo: 已播时长（毫秒）
 	  val.TimeElapsed = 10000
 	  val.StatusCn = svc.GetConditionCn(condition)
+	  val.VideoAddr = svc.video.AntiStealingLink(val.VideoAddr)
   }
 
   return list
@@ -545,7 +546,7 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
 	resp.Title = video.Title
 	resp.Describe = video.Describe
 	resp.Cover = video.Cover
-	resp.VideoAddr = video.VideoAddr
+  resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 	resp.IsRecommend = video.IsRecommend
 	resp.IsTop = video.IsTop
 	resp.VideoDuration = video.VideoDuration
@@ -654,7 +655,7 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 		resp.Title = video.Title
 		resp.Describe = video.Describe
 		resp.Cover = video.Cover
-		resp.VideoAddr = video.VideoAddr
+    resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		resp.IsRecommend = video.IsRecommend
 		resp.IsTop = video.IsTop
 		resp.VideoDuration = video.VideoDuration

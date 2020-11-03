@@ -199,7 +199,7 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
 		resp.Title = video.Title
 		resp.Describe = video.Describe
 		resp.Cover = video.Cover
-		resp.VideoAddr = video.VideoAddr
+    resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		resp.IsRecommend = video.IsRecommend
 		resp.IsTop = video.IsTop
 		resp.VideoDuration = video.VideoDuration

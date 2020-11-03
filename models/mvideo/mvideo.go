@@ -8,7 +8,9 @@ import (
 	"fmt"
 	"sports_service/server/global/rdskey"
   "sports_service/server/dao"
+  "sports_service/server/util"
   "time"
+	"strings"
 )
 
 // todo: 视频id自增 帖子可以使用分布式唯一id
@@ -670,6 +672,25 @@ func (m *VideoModel) GetRecommendVideos(offset, limit int32) []*RecommendVideo {
   }
 
   return list
+}
+
+
+const (
+  LINK_KEY = "DbJatBpRxTSlGUavY7Iv"
+)
+// 视频防盗链(有效时长3个小时)
+func (m *VideoModel) AntiStealingLink(videoUrl string) string {
+  str := strings.TrimPrefix(videoUrl, "http://")
+  dir := str[strings.Index(str, "/"): strings.LastIndex(str, "/") + 1]
+  rand := util.GenSecret(util.MIX_MODE, 10)
+  tm := fmt.Sprintf("%x", time.Now().Unix() + 3600 * 3)
+  signStr := fmt.Sprintf("%s%s%s%s", LINK_KEY, dir, tm, rand)
+  signStr = strings.Trim(signStr, " ")
+  signStr = strings.Replace(signStr, "\n", "", -1)
+  sign := util.Md5String(signStr)
+
+  newUrl := fmt.Sprintf("%s?t=%s&us=%s&sign=%s", str, tm, rand, sign)
+  return newUrl
 }
 
 
