@@ -689,7 +689,7 @@ func (m *VideoModel) AntiStealingLink(videoUrl string) string {
   signStr = strings.Replace(signStr, "\n", "", -1)
   sign := util.Md5String(signStr)
 
-  newUrl := fmt.Sprintf("%s?t=%s&us=%s&sign=%s", str, tm, rand, sign)
+  newUrl := fmt.Sprintf("%s?t=%s&us=%s&sign=%s", videoUrl, tm, rand, sign)
   return newUrl
 }
 
