@@ -641,4 +641,36 @@ func (m *VideoModel) GetHistorySearch(userId string) []string {
   return list
 }
 
+type RecommendVideo struct {
+  VideoId       int64                 `json:"video_id"  example:"1000000000"`       // 视频id
+  Title         string                `json:"title"  example:"标题"`                 // 标题
+  Describe      string                `json:"describe"  example:"描述"`              // 描述
+  Cover         string                `json:"cover"  example:"封面"`                 // 封面
+  VideoAddr     string                `json:"video_addr"  example:"视频地址"`         // 视频地址
+  VideoDuration int                   `json:"video_duration" example:"100000"`       // 视频时长
+  CreateAt      int                   `json:"create_at" example:"1600000000"`        // 视频创建时间
+  CommentNum    int                   `json:"comment_num" example:"10"`              // 评论数
+  BrowseNum     int                   `json:"browse_num" example:"10"`              // 浏览数（播放数）
+  UserId        string                `json:"user_id" example:"发布视频的用户id"`      // 发布视频的用户id
+  Avatar        string                `json:"avatar" example:"头像"`                 // 头像
+  Nickname      string                `json:"nick_name"  example:"昵称"`             // 昵称
+  PlayInfo      []*PlayInfo           `json:"play_info" example:"视频转码数据"`       // 转码后视频数据
+}
+const (
+  QUERY_RECOMMEND_VIDEOS = "SELECT v.video_id, v.cover, v.title, v.`describe`, v.video_addr, v.user_id, v.size, " +
+    "v.play_info, v.video_duration, vs.`comment_num`, vs.`browse_num` FROM `videos` as v LEFT JOIN video_statistic as vs " +
+    "ON v.video_id=vs.video_id GROUP BY v.video_id ORDER BY v.is_top desc, v.is_recommend desc, v.create_at desc, " +
+    "v.video_id desc LIMIT ?, ?"
+)
+// 获取相关视频列表（暂时随机2个）
+func (m *VideoModel) GetRecommendVideos(offset, limit int32) []*RecommendVideo {
+  var list []*RecommendVideo
+  if err := dao.Engine.Sql(QUERY_RECOMMEND_VIDEOS, offset, limit).Find(&list); err != nil {
+    return nil
+  }
+
+  return list
+}
+
+
 

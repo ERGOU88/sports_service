@@ -40,3 +40,4 @@ func BenchmarkGetUserPublishList(b *testing.B) {
     svc.GetUserPublishList("202010101545291936", "-1", "-1", 1, 10)
   }
 }
+

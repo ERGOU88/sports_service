@@ -41,22 +41,22 @@ func New(c *gin.Context) SearchModule {
 	}
 }
 
-// 综合搜索（视频+用户 默认视频取10条 用户取20条 视频默认播放量排序）
-func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDetailInfo, []*muser.UserSearchResults) {
-	if name == "" {
+// 综合搜索（视频+用户 默认视频取10条 用户取20条 视频默认播放量排序） 如果视频和用户都未搜索到 则推荐两个视频
+func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDetailInfo, []*muser.UserSearchResults, []*mvideo.RecommendVideo) {
+  if name == "" {
 		log.Log.Errorf("search_trace: search name can't empty, name:%s", name)
-		return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}
+		return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, []*mvideo.RecommendVideo{}
 	}
 
   length := util.GetStrLen([]rune(name))
   if length > 20 {
     log.Log.Errorf("search_trace: invalid search name len, len:%s", length)
-    return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}
+    return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, []*mvideo.RecommendVideo{}
   }
 
 	if userId != "" {
 	  if err := svc.video.RecordHistorySearch(userId, name); err != nil {
-	    log.Log.Errorf("video_trace: record history search err:%s", err)
+	    log.Log.Errorf("search_trace: record history search err:%s", err)
     }
 	}
 
@@ -66,7 +66,32 @@ func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDe
 	// 搜索到的用户
 	users := svc.UserSearch(userId, name, consts.DEFAULT_SEARCH_USER_PAGE, consts.DEFAULT_SEARCH_USER_SIZE)
 
-	return videos, users
+	var recommend []*mvideo.RecommendVideo
+	if len(videos) == 0 && len(users) == 0 {
+    recommend = svc.RecommendVideo()
+  }
+
+	return videos, users, recommend
+}
+
+// 推荐视频 默认取两条
+func (svc *SearchModule) RecommendVideo() []*mvideo.RecommendVideo {
+  offset := util.GenerateRandnum(0, 10)
+  videos := svc.video.GetRecommendVideos(int32(offset), 2)
+  if videos == nil {
+    log.Log.Error("search_trace: get recommend video fail")
+    return []*mvideo.RecommendVideo{}
+  }
+
+  for _, val := range videos {
+     user := svc.user.FindUserByUserid(val.UserId)
+     if user != nil {
+       val.Nickname = user.NickName
+       val.Avatar = user.Avatar
+     }
+  }
+
+  return videos
 }
 
 
