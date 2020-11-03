@@ -230,6 +230,11 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 		resp.VideoHeight = video.VideoHeight
 		resp.CreateAt = video.CreateAt
 		resp.UserId = video.UserId
+		if err := util.JsonFast.Unmarshal([]byte(video.PlayInfo), &resp.PlayInfo); err != nil {
+		  log.Log.Errorf("video_trace: jsonFast unmarshal err:%s", err)
+		  resp.PlayInfo = []*mvideo.PlayInfo{}
+    }
+
 		// 获取用户信息
 		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
 			resp.Avatar = user.Avatar
@@ -240,6 +245,17 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
         resp.IsAttention = attentionInfo.Status
       }
 		}
+
+    if err := util.JsonFast.Unmarshal([]byte(video.PlayInfo), &resp.PlayInfo); err != nil {
+      log.Log.Errorf("video_trace: jsonFast unmarshal err:%s", err)
+      resp.PlayInfo = []*mvideo.PlayInfo{}
+    }
+
+    if len(resp.PlayInfo) > 0 {
+      for _, v := range resp.PlayInfo {
+        v.Url = svc.video.AntiStealingLink(v.Url)
+      }
+    }
 
 
 		collectAt, ok := mp[video.VideoId]
@@ -294,6 +310,9 @@ func (svc *VideoModule) GetUserPublishList(userId, status, condition string, pag
 	  val.TimeElapsed = 10000
 	  val.StatusCn = svc.GetConditionCn(condition)
 	  val.VideoAddr = svc.video.AntiStealingLink(val.VideoAddr)
+	  for _, v := range val.PlayInfo {
+	    v.Url = svc.video.AntiStealingLink(val.VideoAddr)
+    }
   }
 
   return list
@@ -441,6 +460,14 @@ func (svc *VideoModule) GetRecommendVideos(userId string, page, size int) []*mvi
 
 		video.Avatar = userInfo.Avatar
 		video.Nickname = userInfo.NickName
+		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+
+    if len(video.PlayInfo) > 0 {
+      for _, v := range video.PlayInfo {
+        v.Url = svc.video.AntiStealingLink(v.Url)
+      }
+    }
+
 		// 用户未登录
 		if userId == "" {
 			log.Log.Error("video_trace: no login")

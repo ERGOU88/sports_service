@@ -13,7 +13,8 @@ import (
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
-	"strings"
+  "sports_service/server/util"
+  "strings"
 	"time"
 )
 
@@ -215,13 +216,23 @@ func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*mvide
 		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
 			resp.Avatar = user.Avatar
 			resp.Nickname = user.NickName
+      // 是否关注
+      attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)
+      if attentionInfo != nil {
+        resp.IsAttention = attentionInfo.Status
+      }
 		}
 
-		// 是否关注
-		attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)
-		if attentionInfo != nil {
-			resp.IsAttention = attentionInfo.Status
-		}
+    if err := util.JsonFast.Unmarshal([]byte(video.PlayInfo), &resp.PlayInfo); err != nil {
+      log.Log.Errorf("video_trace: jsonFast unmarshal err:%s", err)
+      resp.PlayInfo = []*mvideo.PlayInfo{}
+    }
+
+    if len(resp.PlayInfo) > 0 {
+      for _, v := range resp.PlayInfo {
+        v.Url = svc.video.AntiStealingLink(v.Url)
+      }
+    }
 
 		likeAt, ok := mp[video.VideoId]
 		if ok {

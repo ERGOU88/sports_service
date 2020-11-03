@@ -264,10 +264,11 @@ func DeletePublish(c *gin.Context) {
 func RecommendVideos(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
-	userId, _ := c.Get(consts.USER_ID)
+	//userId, _ := c.Get(consts.USER_ID)
 
+	userId := c.Query("user_id")
 	svc := cvideo.New(c)
-	list := svc.GetRecommendVideos(userId.(string), page, size)
+	list := svc.GetRecommendVideos(userId, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
@@ -341,11 +342,12 @@ func AttentionVideos(c *gin.Context) {
 // 视频详情信息
 func VideoDetail(c *gin.Context) {
 	reply := errdef.New(c)
-	userId, _ := c.Get(consts.USER_ID)
+	//userId, _ := c.Get(consts.USER_ID)
 	videoId := c.Query("video_id")
+	userId := c.Query("user_id")
 
 	svc := cvideo.New(c)
-	detail := svc.GetVideoDetail(userId.(string), videoId)
+	detail := svc.GetVideoDetail(userId, videoId)
 	reply.Data["detail"] = detail
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
@@ -370,13 +372,14 @@ func VideoDetail(c *gin.Context) {
 // 详情页推荐视频（同标签推荐）
 func DetailRecommend(c *gin.Context) {
 	reply := errdef.New(c)
-	userId, _ := c.Get(consts.USER_ID)
+	//userId, _ := c.Get(consts.USER_ID)
 	videoId := c.Query("video_id")
+	userId := c.Query("user_id")
 
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	svc := cvideo.New(c)
 	// 获取详情页推荐视频（同标签推荐）
-	list := svc.GetDetailRecommend(userId.(string), videoId, page, size)
+	list := svc.GetDetailRecommend(userId, videoId, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }

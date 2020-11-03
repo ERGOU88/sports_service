@@ -27,7 +27,7 @@ func Router(engine *gin.Engine) {
 		// 首页推荐的banner列表
 		video.GET("/homepage/banner", RecommendBanners)
 		// 关注的人发布的视频列表
-		video.GET("/attention", AttentionVideos)
+		video.GET("/attention", token.TokenAuth(), AttentionVideos)
 		// 视频详情信息
 		video.GET("/detail", VideoDetail)
 		// 视频详情页推荐视频（同标签推荐）

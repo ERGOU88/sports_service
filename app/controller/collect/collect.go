@@ -217,6 +217,17 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
       }
 		}
 
+    if err := util.JsonFast.Unmarshal([]byte(video.PlayInfo), &resp.PlayInfo); err != nil {
+      log.Log.Errorf("video_trace: jsonFast unmarshal err:%s", err)
+      resp.PlayInfo = []*mvideo.PlayInfo{}
+    }
+
+    if len(resp.PlayInfo) > 0 {
+      for _, v := range resp.PlayInfo {
+        v.Url = svc.video.AntiStealingLink(v.Url)
+      }
+    }
+
 		collectAt, ok := mp[video.VideoId]
 		if ok {
 			// 用户收藏视频的时间
