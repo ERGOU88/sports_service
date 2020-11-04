@@ -107,9 +107,12 @@ const (
 	SMS_CODE_NOT_SEND           = 8006
 	SMS_CODE_NOT_MATCH          = 8007
 
-	// 弹幕相关错误码 9001- 10000
+	// 弹幕相关错误码 9001 - 10000
 	BARRAGE_VIDEO_SEND_FAIL     = 9001
 	BARRAGE_INVALID_CONTENT     = 9002
+
+	// 搜索相关错误码 10001 - 11000
+	SEARCH_CLEAN_HISTORY_FAIL   = 10001
 )
 
 var MsgFlags = map[int]string{
@@ -212,6 +215,8 @@ var MsgFlags = map[int]string{
 
 	BARRAGE_VIDEO_SEND_FAIL:     "发送视频弹幕失败",
 	BARRAGE_INVALID_CONTENT:     "弹幕内容含有违规文字",
+
+  SEARCH_CLEAN_HISTORY_FAIL:   "清空搜索记录失败",
 }
 
 func GetMsg(code int) string {

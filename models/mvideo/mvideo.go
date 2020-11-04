@@ -645,6 +645,13 @@ func (m *VideoModel) RecordHistorySearch(userId, name string) error {
   return err
 }
 
+// 清空用户搜索历史
+func (m *VideoModel) CleanHistorySearch(userId string) error {
+  rds := dao.NewRedisDao()
+  _, err := rds.Del(rdskey.MakeKey(rdskey.SEARCH_HISTORY_CONTENT, userId))
+  return err
+}
+
 // 获取历史搜索记录
 func (m *VideoModel) GetHistorySearch(userId string) []string {
   rds := dao.NewRedisDao()

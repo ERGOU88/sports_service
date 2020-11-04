@@ -4,6 +4,7 @@ import (
   "github.com/gin-gonic/gin"
   "github.com/go-xorm/xorm"
   "sports_service/server/dao"
+  "sports_service/server/global/app/errdef"
   "sports_service/server/global/app/log"
   "sports_service/server/global/consts"
   "sports_service/server/models"
@@ -313,6 +314,16 @@ func (svc *SearchModule) SearchFans(userId, name string, page, size int) []*matt
 	}
 
 	return list
+}
+
+// 清空搜索历史
+func (svc *SearchModule) CleanSearchHistory(userId string) int {
+  if err := svc.video.CleanHistorySearch(userId); err != nil {
+    log.Log.Errorf("search_trace: clean history search err:%s", err)
+    return errdef.SEARCH_CLEAN_HISTORY_FAIL
+  }
+
+  return errdef.SUCCESS
 }
 
 // 获取时长条件
