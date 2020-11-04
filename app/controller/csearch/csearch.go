@@ -42,16 +42,16 @@ func New(c *gin.Context) SearchModule {
 }
 
 // 综合搜索（视频+用户 默认视频取10条 用户取20条 视频默认播放量排序） 如果视频和用户都未搜索到 则推荐两个视频
-func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDetailInfo, []*muser.UserSearchResults, []*mvideo.RecommendVideo) {
+func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDetailInfo, []*muser.UserSearchResults, []*mvideo.VideoDetailInfo) {
   if name == "" {
 		log.Log.Errorf("search_trace: search name can't empty, name:%s", name)
-		return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, []*mvideo.RecommendVideo{}
+		return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, []*mvideo.VideoDetailInfo{}
 	}
 
   length := util.GetStrLen([]rune(name))
   if length > 20 {
     log.Log.Errorf("search_trace: invalid search name len, len:%s", length)
-    return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, []*mvideo.RecommendVideo{}
+    return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, []*mvideo.VideoDetailInfo{}
   }
 
 	if userId != "" {
@@ -66,7 +66,7 @@ func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDe
 	// 搜索到的用户
 	users := svc.UserSearch(userId, name, consts.DEFAULT_SEARCH_USER_PAGE, consts.DEFAULT_SEARCH_USER_SIZE)
 
-	var recommend []*mvideo.RecommendVideo
+	var recommend []*mvideo.VideoDetailInfo
 	if len(videos) == 0 && len(users) == 0 {
     recommend = svc.RecommendVideo()
   }
@@ -75,12 +75,12 @@ func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDe
 }
 
 // 推荐视频 默认取两条
-func (svc *SearchModule) RecommendVideo() []*mvideo.RecommendVideo {
+func (svc *SearchModule) RecommendVideo() []*mvideo.VideoDetailInfo {
   offset := util.GenerateRandnum(0, 10)
   videos := svc.video.GetRecommendVideos(int32(offset), 2)
   if videos == nil {
     log.Log.Error("search_trace: get recommend video fail")
-    return []*mvideo.RecommendVideo{}
+    return []*mvideo.VideoDetailInfo{}
   }
 
   for _, val := range videos {

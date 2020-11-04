@@ -10,7 +10,8 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
-	"sports_service/server/models/muser"
+  "sports_service/server/models/mlike"
+  "sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	"strings"
 	"time"
@@ -24,6 +25,7 @@ type CollectModule struct {
 	user        *muser.UserModel
 	video       *mvideo.VideoModel
 	attention   *mattention.AttentionModel
+	like        *mlike.LikeModel
 }
 
 func New(c *gin.Context) CollectModule {
@@ -35,6 +37,7 @@ func New(c *gin.Context) CollectModule {
 		user: muser.NewUserModel(socket),
 		video: mvideo.NewVideoModel(socket),
 		attention: mattention.NewAttentionModel(socket),
+		like: mlike.NewLikeModel(socket),
 		engine: socket,
 	}
 }
@@ -216,7 +219,25 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
       if attentionInfo != nil {
         resp.IsAttention = attentionInfo.Status
       }
+
+      // 获取点赞的信息
+      if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
+        resp.IsLike = likeInfo.Status
+      }
+
+      // 获取收藏的信息
+      if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
+        resp.IsCollect = collectInfo.Status
+      }
 		}
+
+    // 获取视频相关统计数据
+    info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
+    resp.BrowseNum = info.BrowseNum
+    resp.CommentNum = info.CommentNum
+    resp.FabulousNum = info.FabulousNum
+    resp.ShareNum = info.ShareNum
+    resp.BarrageNum = info.BarrageNum
 
     if err := util.JsonFast.Unmarshal([]byte(video.PlayInfo), &resp.PlayInfo); err != nil {
       log.Log.Errorf("video_trace: jsonFast unmarshal err:%s", err)

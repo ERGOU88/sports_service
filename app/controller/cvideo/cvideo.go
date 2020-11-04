@@ -244,7 +244,25 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
       if attentionInfo != nil {
         resp.IsAttention = attentionInfo.Status
       }
+
+      // 获取点赞的信息
+      if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
+        resp.IsLike = likeInfo.Status
+      }
+
+      // 获取收藏的信息
+      if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
+        resp.IsCollect = collectInfo.Status
+      }
 		}
+
+    // 获取视频相关统计数据
+    info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
+    resp.BrowseNum = info.BrowseNum
+    resp.CommentNum = info.CommentNum
+    resp.FabulousNum = info.FabulousNum
+    resp.ShareNum = info.ShareNum
+    resp.BarrageNum = info.BarrageNum
 
     if err := util.JsonFast.Unmarshal([]byte(video.PlayInfo), &resp.PlayInfo); err != nil {
       log.Log.Errorf("video_trace: jsonFast unmarshal err:%s", err)
