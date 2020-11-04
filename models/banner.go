@@ -6,6 +6,7 @@ type Banner struct {
 	EndTime   int    `json:"end_time" xorm:"not null default 0 comment('下架时间') INT(11)"`
 	Explain   string `json:"explain" xorm:"not null default '' comment('说明') VARCHAR(255)"`
 	Id        int    `json:"id" xorm:"not null pk autoincr comment('主键') INT(10)"`
+	JumpType  int    `json:"jump_type" xorm:"not null default 0 comment('0站内跳转 1站外跳转') TINYINT(1)"`
 	JumpUrl   string `json:"jump_url" xorm:"not null default '' comment('跳转地址') VARCHAR(512)"`
 	ShareUrl  string `json:"share_url" xorm:"not null default '' comment('分享地址') VARCHAR(255)"`
 	Sortorder int    `json:"sortorder" xorm:"not null default 0 comment('排序权重') INT(11)"`

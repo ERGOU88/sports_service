@@ -674,21 +674,21 @@ func (m *VideoModel) GetRecommendVideos(offset, limit int32) []*VideoDetailInfo 
 
 
 const (
-  LINK_KEY = "DbJatBpRxTSlGUavY7Iv"
+  LINK_KEY  = "DbJatBpRxTSlGUavY7Iv"
+  EXPIRE_TM = 3600 * 3
 )
 // 视频防盗链(有效时长3个小时)
 func (m *VideoModel) AntiStealingLink(videoUrl string) string {
   str := strings.TrimPrefix(videoUrl, "http://")
   dir := str[strings.Index(str, "/"): strings.LastIndex(str, "/") + 1]
   rand := util.GenSecret(util.MIX_MODE, 10)
-  tm := fmt.Sprintf("%x", time.Now().Unix() + 3600 * 3)
+  tm := fmt.Sprintf("%x", time.Now().Unix() + EXPIRE_TM)
   signStr := fmt.Sprintf("%s%s%s%s", LINK_KEY, dir, tm, rand)
   signStr = strings.Trim(signStr, " ")
   signStr = strings.Replace(signStr, "\n", "", -1)
   sign := util.Md5String(signStr)
 
-  newUrl := fmt.Sprintf("%s?t=%s&us=%s&sign=%s", videoUrl, tm, rand, sign)
-  return newUrl
+  return fmt.Sprintf("%s?t=%s&us=%s&sign=%s", videoUrl, tm, rand, sign)
 }
 
 

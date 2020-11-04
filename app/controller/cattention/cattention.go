@@ -65,6 +65,8 @@ func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 			log.Log.Errorf("attention_trace: update attention status err:%s", err)
 			return errdef.ATTENTION_USER_FAIL
 		}
+
+		return errdef.SUCCESS
 	}
 
 	// 添加关注记录
