@@ -275,7 +275,6 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
       }
     }
 
-
 		collectAt, ok := mp[video.VideoId]
 		if ok {
 			// 用户浏览视频的时间
@@ -468,7 +467,10 @@ func (svc *VideoModule) GetRecommendVideos(userId string, page, size int) []*mvi
 	// 重新组装数据
 	for _, video := range list {
 		// 获取视频标签信息
-		// video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.ComposeId))
+		video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+		if video.Labels == nil {
+		  video.Labels = []*models.VideoLabels{}
+    }
 		// 查询用户信息
 		userInfo := svc.user.FindUserByUserid(video.UserId)
 		if userInfo == nil {
@@ -540,7 +542,11 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 	// 重新组装数据
 	for _, video := range list {
 		// 获取视频标签信息
-		// video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.ComposeId))
+    video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+    if video.Labels == nil {
+      video.Labels = []*models.VideoLabels{}
+    }
+
 		// 查询用户信息
 		userInfo := svc.user.FindUserByUserid(video.UserId)
 		if userInfo == nil {
@@ -600,6 +606,9 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
 	resp.CreateAt = video.CreateAt
 	resp.UserId = video.UserId
 	resp.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+  if resp.Labels == nil {
+    resp.Labels = []*models.VideoLabels{}
+  }
 
 	// 获取视频相关统计数据
 	info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
@@ -709,6 +718,9 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 		resp.CreateAt = video.CreateAt
 		resp.UserId = video.UserId
 		resp.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+    if resp.Labels == nil {
+      resp.Labels = []*models.VideoLabels{}
+    }
 		// 获取用户信息
 		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
 			resp.Avatar = user.Avatar

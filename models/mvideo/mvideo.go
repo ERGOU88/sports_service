@@ -118,7 +118,7 @@ type VideoDetailInfo struct {
 	UserId        string                `json:"user_id" example:"发布视频的用户id"`      // 发布视频的用户id
 	Avatar        string                `json:"avatar" example:"头像"`                 // 头像
 	Nickname      string                `json:"nick_name"  example:"昵称"`             // 昵称
-	IsAttention   int                   `json:"is_attention" example:"1"`             // 是否关注 1 关注 2 未关注
+	IsAttention   int                   `json:"is_attention" example:"1"`             // 是否关注 1 关注 0 未关注
 	IsCollect     int                   `json:"is_collect" example:"1"`               // 是否收藏
 	IsLike        int                   `json:"is_like" example:"1"`                  // 是否点赞
 	FansNum       int64                 `json:"fans_num" example:"100"`               // 粉丝数
