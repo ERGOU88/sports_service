@@ -130,6 +130,11 @@ func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime s
 		video.Avatar = userInfo.Avatar
 		video.Nickname = userInfo.NickName
 		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+
+		if len(video.PlayInfo) == 0 {
+		  video.PlayInfo = []*mvideo.PlayInfo{}
+    }
+
 		// 用户未登录
 		if userId == "" {
 			log.Log.Error("search_trace: no login")
