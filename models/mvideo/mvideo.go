@@ -666,7 +666,7 @@ func (m *VideoModel) GetHistorySearch(userId string) []string {
 const (
   QUERY_RECOMMEND_VIDEOS = "SELECT v.video_id, v.cover, v.title, v.`describe`, v.video_addr, v.user_id, v.size, " +
     "v.play_info, v.video_duration, vs.`comment_num`, vs.`browse_num` FROM `videos` as v LEFT JOIN video_statistic as vs " +
-    "ON v.video_id=vs.video_id GROUP BY v.video_id ORDER BY v.is_top desc, v.is_recommend desc, v.create_at desc, " +
+    "ON v.video_id=vs.video_id WHERE v.status=1 GROUP BY v.video_id ORDER BY v.is_top desc, v.is_recommend desc, v.create_at desc, " +
     "v.video_id desc LIMIT ?, ?"
 )
 // 获取相关视频列表（暂时随机2个）
