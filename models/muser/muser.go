@@ -123,7 +123,7 @@ type LoginParams struct {
 
 // 修改用户信息请求参数
 type EditUserInfoParams struct {
-	Avatar    int32  `json:"avatar" example:"头像地址"`      // 头像地址（暂时仅支持更换系统默认头像）
+	Avatar    int32  `json:"avatar" example:"1"`            // 头像地址（暂时仅支持更换系统默认头像）
 	NickName  string `json:"nick_name" example:"陈二狗"`     // 昵称
 	Born      string `json:"born" example:"1993-06-20"`     // 出生年月
 	Gender    int32  `json:"gender" example:"1"`            // 性别 1 男 2 女
