@@ -561,7 +561,7 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
   }
 
   // 获取转码后的视频数据
-  if err := util.JsonFast.Unmarshal([]byte(video.PlayInfo), resp.PlayInfo); err != nil {
+  if err := util.JsonFast.UnmarshalFromString(video.PlayInfo, &resp.PlayInfo); err != nil {
     log.Log.Errorf("video_trace: jsonFast unmarshal err:%s", err)
     resp.PlayInfo = []*mvideo.PlayInfo{}
   }
@@ -588,16 +588,18 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
     log.Log.Errorf("video_trace: update video browse num err:%s", err)
   }
 
+  if user := svc.user.FindUserByUserid(video.UserId); user != nil {
+    resp.Avatar = user.Avatar
+    resp.Nickname = user.NickName
+  }
+
 	if userId == "" {
 		log.Log.Error("video_trace: user no login")
 		return resp
 	}
 
   // 获取用户信息
-  if user := svc.user.FindUserByUserid(video.UserId); user != nil {
-    resp.Avatar = user.Avatar
-    resp.Nickname = user.NickName
-
+  if user := svc.user.FindUserByUserid(userId); user != nil {
     svc.video.Browse.CreateAt = now
     svc.video.Browse.UpdateAt = now
     svc.video.Browse.UserId = userId
