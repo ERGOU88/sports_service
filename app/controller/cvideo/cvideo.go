@@ -230,10 +230,6 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 		resp.VideoHeight = video.VideoHeight
 		resp.CreateAt = video.CreateAt
 		resp.UserId = video.UserId
-		if err := util.JsonFast.Unmarshal([]byte(video.PlayInfo), &resp.PlayInfo); err != nil {
-		  log.Log.Errorf("video_trace: jsonFast unmarshal err:%s", err)
-		  resp.PlayInfo = []*mvideo.PlayInfo{}
-    }
 
 		// 获取用户信息
 		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
@@ -245,35 +241,7 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
         resp.IsAttention = attentionInfo.Status
       }
 
-      // 获取点赞的信息
-      if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
-        resp.IsLike = likeInfo.Status
-      }
-
-      // 获取收藏的信息
-      if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
-        resp.IsCollect = collectInfo.Status
-      }
 		}
-
-    // 获取视频相关统计数据
-    info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
-    resp.BrowseNum = info.BrowseNum
-    resp.CommentNum = info.CommentNum
-    resp.FabulousNum = info.FabulousNum
-    resp.ShareNum = info.ShareNum
-    resp.BarrageNum = info.BarrageNum
-
-    if err := util.JsonFast.Unmarshal([]byte(video.PlayInfo), &resp.PlayInfo); err != nil {
-      log.Log.Errorf("video_trace: jsonFast unmarshal err:%s", err)
-      resp.PlayInfo = []*mvideo.PlayInfo{}
-    }
-
-    if len(resp.PlayInfo) > 0 {
-      for _, v := range resp.PlayInfo {
-        v.Url = svc.video.AntiStealingLink(v.Url)
-      }
-    }
 
 		collectAt, ok := mp[video.VideoId]
 		if ok {
@@ -327,9 +295,6 @@ func (svc *VideoModule) GetUserPublishList(userId, status, condition string, pag
 	  val.TimeElapsed = 10000
 	  val.StatusCn = svc.GetConditionCn(condition)
 	  val.VideoAddr = svc.video.AntiStealingLink(val.VideoAddr)
-	  for _, v := range val.PlayInfo {
-	    v.Url = svc.video.AntiStealingLink(val.VideoAddr)
-    }
   }
 
   return list
@@ -457,20 +422,15 @@ func (svc *VideoModule) DeletePublishVideo(userId, videoId string) int {
 }
 
 // 获取推荐的视频列表
-func (svc *VideoModule) GetRecommendVideos(userId string, page, size int) []*mvideo.VideoDetailInfo {
+func (svc *VideoModule) GetRecommendVideos(userId string, page, size int) []*mvideo.RecommendVideoInfo {
 	offset := (page - 1) * size
-	list := svc.video.GetVideoList(offset, size)
+	list := svc.video.GetRecommendVideoList(offset, size)
 	if len(list) == 0 {
-		return []*mvideo.VideoDetailInfo{}
+		return []*mvideo.RecommendVideoInfo{}
 	}
 
 	// 重新组装数据
 	for _, video := range list {
-		// 获取视频标签信息
-		video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
-		if video.Labels == nil {
-		  video.Labels = []*models.VideoLabels{}
-    }
 		// 查询用户信息
 		userInfo := svc.user.FindUserByUserid(video.UserId)
 		if userInfo == nil {
@@ -482,20 +442,10 @@ func (svc *VideoModule) GetRecommendVideos(userId string, page, size int) []*mvi
 		video.Nickname = userInfo.NickName
 		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 
-    if len(video.PlayInfo) > 0 {
-      for _, v := range video.PlayInfo {
-        v.Url = svc.video.AntiStealingLink(v.Url)
-      }
-    }
-
 		// 用户未登录
 		if userId == "" {
 			log.Log.Error("video_trace: no login")
 			continue
-		}
-		// 是否关注
-		if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
-			video.IsAttention = attentionInfo.Status
 		}
 
 		// 获取点赞的信息
@@ -608,6 +558,19 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
 	resp.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
   if resp.Labels == nil {
     resp.Labels = []*models.VideoLabels{}
+  }
+
+  // 获取转码后的视频数据
+  if err := util.JsonFast.Unmarshal([]byte(video.PlayInfo), resp.PlayInfo); err != nil {
+    log.Log.Errorf("video_trace: jsonFast unmarshal err:%s", err)
+    resp.PlayInfo = []*mvideo.PlayInfo{}
+  }
+
+  if len(resp.PlayInfo) > 0 {
+    for _, v := range resp.PlayInfo {
+      // 添加防盗链
+      v.Url = svc.video.AntiStealingLink(v.Url)
+    }
   }
 
 	// 获取视频相关统计数据
