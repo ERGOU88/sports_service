@@ -601,20 +601,22 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
 
   // 获取用户信息
   if user := svc.user.FindUserByUserid(userId); user != nil {
-    svc.video.Browse.CreateAt = now
-    svc.video.Browse.UpdateAt = now
-    svc.video.Browse.UserId = userId
-    svc.video.Browse.ComposeId = video.VideoId
-    svc.video.Browse.ComposeType = consts.TYPE_VIDEO
 
     // 用户是否浏览过
     browse := svc.video.GetUserBrowseVideo(userId, consts.TYPE_VIDEO, video.VideoId)
     if browse != nil {
+      svc.video.Browse.CreateAt = now
+      svc.video.Browse.UpdateAt = now
       // 已有浏览记录 更新用户浏览的时间
-      if err := svc.video.UpdateUserBrowseVideo(); err != nil {
+      if err := svc.video.UpdateUserBrowseVideo(userId, consts.TYPE_VIDEO, video.VideoId); err != nil {
         log.Log.Errorf("video_trace: update user browse video err:%s", err)
       }
     } else {
+      svc.video.Browse.CreateAt = now
+      svc.video.Browse.UpdateAt = now
+      svc.video.Browse.UserId = userId
+      svc.video.Browse.ComposeId = video.VideoId
+      svc.video.Browse.ComposeType = consts.TYPE_VIDEO
       // 添加用户浏览的视频记录
       if err := svc.video.RecordUserBrowseVideo(); err != nil {
         log.Log.Errorf("video_trace: record user browse video err:%s", err)

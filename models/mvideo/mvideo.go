@@ -418,8 +418,8 @@ func (m *VideoModel) RecordUserBrowseVideo() error {
 }
 
 // 之前有浏览记录 更新浏览时间
-func (m *VideoModel) UpdateUserBrowseVideo() error {
-  if _, err := m.Engine.Where("user_id=? AND compose_id=? AND compose_type=?", m.Browse.UserId, m.Browse.ComposeId, m.Browse.ComposeType).Cols("create_at, update_at").Update(m.Browse); err != nil {
+func (m *VideoModel) UpdateUserBrowseVideo(userId string,  composeType int, composeId int64) error {
+  if _, err := m.Engine.Where("user_id=? AND compose_id=? AND compose_type=?", userId, composeId, composeType).Cols("create_at, update_at").Update(m.Browse); err != nil {
     return err
   }
 
