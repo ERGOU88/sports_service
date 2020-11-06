@@ -15,7 +15,7 @@ func init() {
 func TestGiveLikeForVideo(t *testing.T) {
   c, _ := gin.CreateTestContext(httptest.NewRecorder())
   svc := New(c)
-  syscode := svc.GiveLikeForVideo("202009101933004667", "202010101545291936", 59)
+  syscode := svc.GiveLikeForVideo("202009101933004667", 59)
   t.Logf("\n syscode:%v", syscode)
 }
 
@@ -23,7 +23,7 @@ func BenchmarkLikeForVideo(b *testing.B) {
   for i := 0; i < b.N; i++ {
     c, _ := gin.CreateTestContext(httptest.NewRecorder())
     svc := New(c)
-    svc.GiveLikeForVideo("202009101933004667", "202010101545291936", 59)
+    svc.GiveLikeForVideo("202009101933004667", 59)
   }
 }
 

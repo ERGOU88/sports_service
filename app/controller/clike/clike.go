@@ -45,7 +45,7 @@ func New(c *gin.Context) LikeModule {
 }
 
 // 点赞视频
-func (svc *LikeModule) GiveLikeForVideo(userId, toUserId string, videoId int64) int {
+func (svc *LikeModule) GiveLikeForVideo(userId string, videoId int64) int {
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("like_trace: session begin err:%s", err)
@@ -60,7 +60,8 @@ func (svc *LikeModule) GiveLikeForVideo(userId, toUserId string, videoId int64) 
 	}
 
 	// 查找视频是否存在
-	if video := svc.video.FindVideoById(fmt.Sprint(videoId)); video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS  {
+	video := svc.video.FindVideoById(fmt.Sprint(videoId))
+	if video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS  {
 		log.Log.Errorf("like_trace: like video not found, videoId:%d", videoId)
 		svc.engine.Rollback()
 		return errdef.LIKE_VIDEO_NOT_EXISTS
@@ -97,7 +98,7 @@ func (svc *LikeModule) GiveLikeForVideo(userId, toUserId string, videoId int64) 
 
 	} else {
 		// 添加点赞记录
-		if err := svc.like.AddGiveLikeByType(userId, toUserId, videoId, consts.ALREADY_GIVE_LIKE, consts.TYPE_VIDEOS); err != nil {
+		if err := svc.like.AddGiveLikeByType(userId, video.UserId, videoId, consts.ALREADY_GIVE_LIKE, consts.TYPE_VIDEOS); err != nil {
 			log.Log.Errorf("like_trace: add like video record err:%s", err)
 			svc.engine.Rollback()
 			return errdef.LIKE_VIDEO_FAIL
