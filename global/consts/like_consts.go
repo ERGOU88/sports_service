@@ -7,8 +7,8 @@ const (
 	TYPE_COMMENT = 3
 )
 
-// 1 已点赞 2 未点赞
+// 1 已点赞 0 未点赞
 const (
 	ALREADY_GIVE_LIKE  = 1
-	NOT_GIVE_LIKE      = 2
+	NOT_GIVE_LIKE      = 0
 )
