@@ -239,7 +239,7 @@ func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*mvide
 }
 
 // 点赞评论
-func (svc *LikeModule) GiveLikeForComment(userId, toUserId string, commentId int64) int {
+func (svc *LikeModule) GiveLikeForComment(userId string, commentId int64) int {
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("like_trace: session begin err:%s", err)
@@ -253,8 +253,9 @@ func (svc *LikeModule) GiveLikeForComment(userId, toUserId string, commentId int
 		return errdef.USER_NOT_EXISTS
 	}
 
-	// 查找视频是否存在
-	if video := svc.comment.GetVideoCommentById(fmt.Sprint(commentId)); video == nil {
+	// 查找评论是否存在
+	comment := svc.comment.GetVideoCommentById(fmt.Sprint(commentId))
+	if comment == nil {
 		log.Log.Errorf("like_trace: like comment not found, commentId:%d", commentId)
 		svc.engine.Rollback()
 		return errdef.LIKE_COMMENT_NOT_EXISTS
@@ -284,7 +285,7 @@ func (svc *LikeModule) GiveLikeForComment(userId, toUserId string, commentId int
 
 	} else {
 		// 添加点赞记录
-		if err := svc.like.AddGiveLikeByType(userId, toUserId, commentId, consts.ALREADY_GIVE_LIKE, consts.TYPE_COMMENT); err != nil {
+		if err := svc.like.AddGiveLikeByType(userId, comment.UserId, commentId, consts.ALREADY_GIVE_LIKE, consts.TYPE_COMMENT); err != nil {
 			log.Log.Errorf("like_trace: add like comment record err:%s", err)
 			svc.engine.Rollback()
 			return errdef.LIKE_COMMENT_FAIL

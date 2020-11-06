@@ -10937,3 +10937,582 @@ sports_service/server/job.pullEvents
 sports_service/server/job.PullEventsJob
 	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
 [2020-11-06 17:09:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:34	事件处理完毕
+[2020-11-06 17:10:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:30	开始拉取事件[腾讯云]
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:FileDeleted
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc000191ca0 MediaBasicInfo:0xc0003d74a0 ProcedureTaskId:0xc000191e40 MetaData:0xc000454b80}
+[2020-11-06 17:10:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602051
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:10:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc000191ea0 Status:0xc000191ec0 ErrCode:0xc000309b60 Message:0xc000191ed0 FileId:0xc000191ef0 FileName:0xc000191f00 FileUrl:0xc000191f80 MetaData:0xc000455180 MediaProcessResultSet:[0xc000675f00 0xc001976e00 0xc000731100 0xc0000b0140] AiContentReviewResultSet:[0xc00007de60 0xc00007dec0 0xc00007df80 0xc0004e2ae0 0xc0004e3200 0xc0004e3260 0xc0004e37a0] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0002ca4b0 TasksNotifyMode:0xc000358ea0 SessionContext:0xc000358ec0 SessionId:0xc000358ed0}
+[2020-11-06 17:10:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429451985
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc000358fe0 MediaBasicInfo:0xc0003d7540 ProcedureTaskId:0xc000359610 MetaData:0xc000455900}
+[2020-11-06 17:10:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602053
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:10:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc000359670 Status:0xc000359690 ErrCode:0xc0002ca630 Message:0xc0003596b0 FileId:0xc0003596d0 FileName:0xc0003596e0 FileUrl:0xc0003596f0 MetaData:0xc000455d00 MediaProcessResultSet:[0xc0000b0480 0xc0000b1f80 0xc0005b23c0 0xc0005b2a00] AiContentReviewResultSet:[0xc0004e3800 0xc0004e3860 0xc0004e38c0 0xc0004e3920 0xc0004e3980 0xc0004e39e0 0xc0004e3a40] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0002cabe0 TasksNotifyMode:0xc000032220 SessionContext:0xc000032230 SessionId:0xc000032240}
+[2020-11-06 17:10:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429396098
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc0000322d0 MediaBasicInfo:0xc0003d75e0 ProcedureTaskId:0xc000032660 MetaData:0xc0004ba380}
+[2020-11-06 17:10:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602055
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:10:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc000032690 Status:0xc000032710 ErrCode:0xc0002cad40 Message:0xc000032730 FileId:0xc000032740 FileName:0xc000032800 FileUrl:0xc000032810 MetaData:0xc0004ba500 MediaProcessResultSet:[0xc0005b2fc0 0xc0005b3540 0xc0005b35c0 0xc0005b3600] AiContentReviewResultSet:[0xc0004e3aa0 0xc0004e3b00 0xc0004e3b60 0xc0004e3bc0 0xc0004e3c20 0xc0004e3c80 0xc0004e3ce0] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0003f64b0 TasksNotifyMode:0xc000033680 SessionContext:0xc0000336a0 SessionId:0xc0000336b0}
+[2020-11-06 17:10:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429582401
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc000033730 MediaBasicInfo:0xc0003d7680 ProcedureTaskId:0xc000033b80 MetaData:0xc0004ba900}
+[2020-11-06 17:10:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602057
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:10:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc000033d30 Status:0xc000033d50 ErrCode:0xc0003f65f0 Message:0xc000033d60 FileId:0xc000033d70 FileName:0xc000033dc0 FileUrl:0xc000033dd0 MetaData:0xc0004bab00 MediaProcessResultSet:[0xc0005b3780 0xc0005b3840 0xc0005b38c0 0xc0005b3900] AiContentReviewResultSet:[0xc0004e3d40 0xc0004e3da0 0xc0004e3e00 0xc0004e3e60 0xc0004e3ec0 0xc0004e3f20 0xc0004e3f80] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0003f6ba0 TasksNotifyMode:0xc00049ed10 SessionContext:0xc00049ed30 SessionId:0xc00049ed40}
+[2020-11-06 17:10:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429716020
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:10:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:34	事件处理完毕
+[2020-11-06 17:11:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:30	开始拉取事件[腾讯云]
+[2020-11-06 17:11:52]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-11-06 17:11:52]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-11-06 17:11:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:32	job_trace: pull events err:[TencentCloudSDKError] Code=ClientError.NetworkError, Message=Fail to get response because Post "https://vod.tencentcloudapi.com/": EOF, RequestId=
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:32
+[2020-11-06 17:11:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:34	事件处理完毕
+[2020-11-06 17:12:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:30	开始拉取事件[腾讯云]
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:FileDeleted
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc000033680 MediaBasicInfo:0xc00034d2c0 ProcedureTaskId:0xc000033ad0 MetaData:0xc000454880}
+[2020-11-06 17:12:54]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602051
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:12:54]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc000033b50 Status:0xc000033b70 ErrCode:0xc0003f68c0 Message:0xc000033b80 FileId:0xc000033bb0 FileName:0xc000033bc0 FileUrl:0xc000033d30 MetaData:0xc000454d80 MediaProcessResultSet:[0xc0005b3600 0xc0005b3800 0xc0005b3880 0xc0005b38c0] AiContentReviewResultSet:[0xc0001aade0 0xc0001aae40 0xc0001ab260 0xc0001ab320 0xc0001ab5c0 0xc0001ab620 0xc0001ab860] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0003f6e40 TasksNotifyMode:0xc0001911a0 SessionContext:0xc0001911b0 SessionId:0xc0001911f0}
+[2020-11-06 17:12:54]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429451985
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc000191220 MediaBasicInfo:0xc00027a3c0 ProcedureTaskId:0xc0001913e0 MetaData:0xc000455580}
+[2020-11-06 17:12:54]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602053
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:12:54]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc000191430 Status:0xc000191440 ErrCode:0xc0003f6fb0 Message:0xc000191460 FileId:0xc000191480 FileName:0xc0001914a0 FileUrl:0xc0001914b0 MetaData:0xc000455900 MediaProcessResultSet:[0xc0005b3900 0xc0005b3a40 0xc0005b3ac0 0xc0005b3c00] AiContentReviewResultSet:[0xc00070ed20 0xc00070ed80 0xc00070ede0 0xc00070ee40 0xc00070eea0 0xc00070ef00 0xc00070ef60] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0003f7570 TasksNotifyMode:0xc000191a90 SessionContext:0xc000191aa0 SessionId:0xc000191af0}
+[2020-11-06 17:12:54]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429396098
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc000191b80 MediaBasicInfo:0xc00027a460 ProcedureTaskId:0xc000191cf0 MetaData:0xc0003d2100}
+[2020-11-06 17:12:54]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602055
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:12:54]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc000191d20 Status:0xc000191d30 ErrCode:0xc0003f76d0 Message:0xc000191d40 FileId:0xc000191d50 FileName:0xc000191d70 FileUrl:0xc000191d80 MetaData:0xc0003d2480 MediaProcessResultSet:[0xc0005b3c40 0xc0005b3f00 0xc000731100 0xc001976e00] AiContentReviewResultSet:[0xc00070efc0 0xc00070f020 0xc00070f080 0xc00070f0e0 0xc00070f140 0xc00070f1a0 0xc00070f200] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0003f7c60 TasksNotifyMode:0xc0003ca350 SessionContext:0xc0003ca360 SessionId:0xc0003ca370}
+[2020-11-06 17:12:54]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429582401
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc0003ca3a0 MediaBasicInfo:0xc00027a500 ProcedureTaskId:0xc0003ca4d0 MetaData:0xc0003d2c80}
+[2020-11-06 17:12:54]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602057
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:12:54]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc0003ca510 Status:0xc0003ca520 ErrCode:0xc0003f7dd0 Message:0xc0003ca530 FileId:0xc0003ca550 FileName:0xc0003ca560 FileUrl:0xc0003ca580 MetaData:0xc0003d3080 MediaProcessResultSet:[0xc001977c00 0xc0005e9680 0xc0006743c0 0xc0006746c0] AiContentReviewResultSet:[0xc00070f260 0xc00070f2c0 0xc00070f320 0xc00070f380 0xc00070f3e0 0xc00070f440 0xc00070f4a0] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc000308380 TasksNotifyMode:0xc0003caa20 SessionContext:0xc0003caa30 SessionId:0xc0003caa50}
+[2020-11-06 17:12:54]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429716020
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:12:54]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:34	事件处理完毕
+[2020-11-06 17:13:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:30	开始拉取事件[腾讯云]
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:FileDeleted
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc0002b4ff0 MediaBasicInfo:0xc00027b180 ProcedureTaskId:0xc0002b5130 MetaData:0xc00012a180}
+[2020-11-06 17:13:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602051
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:13:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc0002b5160 Status:0xc0002b5170 ErrCode:0xc000309f90 Message:0xc0002b5180 FileId:0xc0002b5190 FileName:0xc0002b51a0 FileUrl:0xc0002b51b0 MetaData:0xc00012a800 MediaProcessResultSet:[0xc00074c540 0xc00074c5c0 0xc00074c640 0xc00074c680] AiContentReviewResultSet:[0xc00070f800 0xc00070f860 0xc00070f8c0 0xc00070f920 0xc00070f980 0xc00070f9e0 0xc00070fa40] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0000f7270 TasksNotifyMode:0xc0002b56e0 SessionContext:0xc0002b56f0 SessionId:0xc0002b5700}
+[2020-11-06 17:13:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429451985
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc0002b5730 MediaBasicInfo:0xc00027b4a0 ProcedureTaskId:0xc0003d4260 MetaData:0xc00012ba00}
+[2020-11-06 17:13:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602053
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:13:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc0003d4290 Status:0xc0003d42a0 ErrCode:0xc0000f77d0 Message:0xc0003d42d0 FileId:0xc0003d42e0 FileName:0xc0003d4360 FileUrl:0xc0003d4380 MetaData:0xc00012be00 MediaProcessResultSet:[0xc00074c6c0 0xc00074c740 0xc00074c800 0xc00074c8c0] AiContentReviewResultSet:[0xc00070faa0 0xc00070fb00 0xc00070fb60 0xc00070fbc0 0xc00070fc20 0xc00070fc80 0xc00070fce0] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0002a3dd0 TasksNotifyMode:0xc0003d57b0 SessionContext:0xc0003d57c0 SessionId:0xc0003d57e0}
+[2020-11-06 17:13:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429396098
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc0003d5820 MediaBasicInfo:0xc00027b540 ProcedureTaskId:0xc0003d5a30 MetaData:0xc000462900}
+[2020-11-06 17:13:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602055
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:13:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc0003d5a60 Status:0xc0003d5a70 ErrCode:0xc000278340 Message:0xc0003d5a80 FileId:0xc0003d5aa0 FileName:0xc0003d5ab0 FileUrl:0xc0003d5ac0 MetaData:0xc000462d00 MediaProcessResultSet:[0xc00074c900 0xc00074c980 0xc00074ca00 0xc00074ca40] AiContentReviewResultSet:[0xc00070fd40 0xc00070fda0 0xc00070fe00 0xc00070fe60 0xc00070fec0 0xc00070ff20 0xc00070ff80] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc000279ad0 TasksNotifyMode:0xc0003d5f80 SessionContext:0xc0003d5f90 SessionId:0xc0003d5fe0}
+[2020-11-06 17:13:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429582401
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc000432020 MediaBasicInfo:0xc00027b5e0 ProcedureTaskId:0xc0004321e0 MetaData:0xc000463400}
+[2020-11-06 17:13:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602057
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:13:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc000432210 Status:0xc000432220 ErrCode:0xc00051e0b0 Message:0xc000432230 FileId:0xc000432240 FileName:0xc000432250 FileUrl:0xc000432260 MetaData:0xc000463c00 MediaProcessResultSet:[0xc00074ca80 0xc00074cb00 0xc00074cb80 0xc00074cbc0] AiContentReviewResultSet:[0xc00009e060 0xc00009e0c0 0xc00009e120 0xc00009e180 0xc00009e1e0 0xc00009e240 0xc00009e2a0] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0002fe2d0 TasksNotifyMode:0xc0004327f0 SessionContext:0xc000432800 SessionId:0xc000432810}
+[2020-11-06 17:13:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429716020
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:13:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:34	事件处理完毕
+[2020-11-06 17:14:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:30	开始拉取事件[腾讯云]
+[2020-11-06 17:14:52]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:19	开始检测banner 是否上架/是否已过期
+[2020-11-06 17:14:52]-48	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/check_banners.go:22	检测完毕
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:FileDeleted
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc0003d4360 MediaBasicInfo:0xc00027a3c0 ProcedureTaskId:0xc0003d5130 MetaData:0xc000462700}
+[2020-11-06 17:14:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602051
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:14:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc0003d5160 Status:0xc0003d51d0 ErrCode:0xc0002fea10 Message:0xc0003d51e0 FileId:0xc0003d52d0 FileName:0xc0003d52f0 FileUrl:0xc0003d53d0 MetaData:0xc000462d00 MediaProcessResultSet:[0xc000749d40 0xc000749dc0 0xc000749e40 0xc0000ff480] AiContentReviewResultSet:[0xc00070e240 0xc00070e2a0 0xc00070e300 0xc00070e360 0xc00070e720 0xc00070e7e0 0xc00070e840] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc00051eb60 TasksNotifyMode:0xc0003d59e0 SessionContext:0xc0003d5a10 SessionId:0xc0003d5a30}
+[2020-11-06 17:14:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429451985
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc0003d5a60 MediaBasicInfo:0xc00027a460 ProcedureTaskId:0xc0003d5bc0 MetaData:0xc000463400}
+[2020-11-06 17:14:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602053
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:14:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc0003d5c10 Status:0xc0003d5c30 ErrCode:0xc00051f540 Message:0xc0003d5c40 FileId:0xc0003d5c60 FileName:0xc0003d5c70 FileUrl:0xc0003d5c80 MetaData:0xc000463c00 MediaProcessResultSet:[0xc0000ff680 0xc0006746c0 0xc000675100 0xc000675980] AiContentReviewResultSet:[0xc00070eb40 0xc00070eba0 0xc00070ed20 0xc00070ed80 0xc00070ede0 0xc00070ee40 0xc00070eea0] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc000279090 TasksNotifyMode:0xc0002b41c0 SessionContext:0xc0002b41d0 SessionId:0xc0002b41e0}
+[2020-11-06 17:14:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429396098
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc0002b4210 MediaBasicInfo:0xc00027a500 ProcedureTaskId:0xc0002b44a0 MetaData:0xc00012a380}
+[2020-11-06 17:14:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602055
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:14:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc0002b44e0 Status:0xc0002b4500 ErrCode:0xc000279630 Message:0xc0002b4510 FileId:0xc0002b45f0 FileName:0xc0002b4600 FileUrl:0xc0002b4610 MetaData:0xc00012a800 MediaProcessResultSet:[0xc0006759c0 0xc000675f00 0xc001976e00 0xc001977c00] AiContentReviewResultSet:[0xc00070ef00 0xc00070ef60 0xc00070efc0 0xc00070f020 0xc00070f080 0xc00070f0e0 0xc00070f140] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0002a3b10 TasksNotifyMode:0xc0002b4b30 SessionContext:0xc0002b4b40 SessionId:0xc0002b4b50}
+[2020-11-06 17:14:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429582401
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc0002b4b80 MediaBasicInfo:0xc00027a5a0 ProcedureTaskId:0xc0002b4cd0 MetaData:0xc00012b600}
+[2020-11-06 17:14:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602057
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:14:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc0002b4d00 Status:0xc0002b4d10 ErrCode:0xc0000f6010 Message:0xc0002b4d20 FileId:0xc0002b4d50 FileName:0xc0002b4d60 FileUrl:0xc0002b4d70 MetaData:0xc00012bc00 MediaProcessResultSet:[0xc000731100 0xc0000b0480 0xc0005b2a00 0xc0005b2fc0] AiContentReviewResultSet:[0xc00070f1a0 0xc00070f200 0xc00070f260 0xc00070f2c0 0xc00070f320 0xc00070f380 0xc00070f3e0] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0000f7490 TasksNotifyMode:0xc0002b5200 SessionContext:0xc0002b5210 SessionId:0xc0002b5220}
+[2020-11-06 17:14:53]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429716020
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:14:53]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:34	事件处理完毕
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:30	开始拉取事件[腾讯云]
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:FileDeleted
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc0003cb2a0 MediaBasicInfo:0xc00027b180 ProcedureTaskId:0xc0003cb3d0 MetaData:0xc0004bdf00}
+[2020-11-06 17:15:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602051
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:15:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc0003cb400 Status:0xc0003cb410 ErrCode:0xc000309050 Message:0xc0003cb420 FileId:0xc0003cb430 FileName:0xc0003cb440 FileUrl:0xc0003cb450 MetaData:0xc000454480 MediaProcessResultSet:[0xc001a05ec0 0xc001a05f40 0xc001a05fc0 0xc001a80180] AiContentReviewResultSet:[0xc00070f680 0xc00070f6e0 0xc00070f740 0xc00070f7a0 0xc00070f800 0xc00070f860 0xc00070f8c0] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0003095d0 TasksNotifyMode:0xc0003cb900 SessionContext:0xc0003cb910 SessionId:0xc0003cb920}
+[2020-11-06 17:15:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429451985
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc0003cb950 MediaBasicInfo:0xc00027b4a0 ProcedureTaskId:0xc0003cba80 MetaData:0xc000454b80}
+[2020-11-06 17:15:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602053
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:15:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc0003cbab0 Status:0xc0003cbac0 ErrCode:0xc000309740 Message:0xc0003cbae0 FileId:0xc0003cbaf0 FileName:0xc0003cbb10 FileUrl:0xc0003cbb20 MetaData:0xc000454f80 MediaProcessResultSet:[0xc001a801c0 0xc001a80340 0xc001a80580 0xc001a805c0] AiContentReviewResultSet:[0xc00070f920 0xc00070f980 0xc00070f9e0 0xc00070fa40 0xc00070faa0 0xc00070fb00 0xc00070fb60] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc000309ce0 TasksNotifyMode:0xc0003cbfb0 SessionContext:0xc0003cbfc0 SessionId:0xc0003cbfe0}
+[2020-11-06 17:15:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429396098
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc000432020 MediaBasicInfo:0xc00027b540 ProcedureTaskId:0xc0004321e0 MetaData:0xc000455700}
+[2020-11-06 17:15:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602055
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:15:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc000432210 Status:0xc000432220 ErrCode:0xc000309e50 Message:0xc000432230 FileId:0xc000432240 FileName:0xc000432250 FileUrl:0xc000432260 MetaData:0xc000455b00 MediaProcessResultSet:[0xc001a80600 0xc001a80840 0xc001a80900 0xc001a80a00] AiContentReviewResultSet:[0xc00070fbc0 0xc00070fc20 0xc00070fc80 0xc00070fce0 0xc00070fd40 0xc00070fda0 0xc00070fe00] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0003f6420 TasksNotifyMode:0xc0004327f0 SessionContext:0xc000432800 SessionId:0xc000432810}
+[2020-11-06 17:15:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429582401
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc000432840 MediaBasicInfo:0xc00027b5e0 ProcedureTaskId:0xc000432a30 MetaData:0xc000484680}
+[2020-11-06 17:15:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602057
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:15:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc000432b10 Status:0xc000432b20 ErrCode:0xc0003f65c0 Message:0xc000432b40 FileId:0xc000432b50 FileName:0xc000432b60 FileUrl:0xc000432b70 MetaData:0xc000484a00 MediaProcessResultSet:[0xc001a80b40 0xc001a80bc0 0xc001a80c40 0xc001a80dc0] AiContentReviewResultSet:[0xc00070fe60 0xc00070fec0 0xc00070ff20 0xc00070ff80 0xc0004e2a80 0xc0004e2ae0 0xc0004e3200] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0003f6b60 TasksNotifyMode:0xc0004331a0 SessionContext:0xc0004331b0 SessionId:0xc0004331c0}
+[2020-11-06 17:15:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429716020
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:15:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:34	事件处理完毕
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:30	开始拉取事件[腾讯云]
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:FileDeleted
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc000468200 MediaBasicInfo:0xc00034c1e0 ProcedureTaskId:0xc0004687c0 MetaData:0xc000484500}
+[2020-11-06 17:16:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602051
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:16:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc0004687f0 Status:0xc000468810 ErrCode:0xc0004a74a0 Message:0xc000468820 FileId:0xc000468890 FileName:0xc0004688b0 FileUrl:0xc0004688c0 MetaData:0xc000484a00 MediaProcessResultSet:[0xc001a05380 0xc001a05bc0 0xc001a05c40 0xc001a05d40] AiContentReviewResultSet:[0xc0001aade0 0xc0001aae40 0xc0001ab260 0xc0001ab320 0xc0001ab5c0 0xc0001ab620 0xc0001ab860] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc000252f00 TasksNotifyMode:0xc0004695d0 SessionContext:0xc0004695e0 SessionId:0xc000469600}
+[2020-11-06 17:16:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429451985
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc000469680 MediaBasicInfo:0xc00034cb40 ProcedureTaskId:0xc000469be0 MetaData:0xc000485200}
+[2020-11-06 17:16:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602053
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:16:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc000469d40 Status:0xc000469d50 ErrCode:0xc000253240 Message:0xc000469e30 FileId:0xc000469e40 FileName:0xc000469e60 FileUrl:0xc000469e80 MetaData:0xc000485500 MediaProcessResultSet:[0xc001a05e00 0xc001a05e80 0xc001a05f00 0xc001a05f40] AiContentReviewResultSet:[0xc00070e240 0xc00070e2a0 0xc00070e300 0xc00070e360 0xc00070e720 0xc00070e7e0 0xc00070e840] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc000427fa0 TasksNotifyMode:0xc000432590 SessionContext:0xc0004325a0 SessionId:0xc0004325b0}
+[2020-11-06 17:16:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429396098
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc0004325f0 MediaBasicInfo:0xc00034d180 ProcedureTaskId:0xc000432740 MetaData:0xc000485b00}
+[2020-11-06 17:16:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602055
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:16:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc000432770 Status:0xc000432780 ErrCode:0xc000308160 Message:0xc000432790 FileId:0xc0004327b0 FileName:0xc0004327d0 FileUrl:0xc0004327e0 MetaData:0xc000485f00 MediaProcessResultSet:[0xc001a05f80 0xc0005b23c0 0xc0005b2fc0 0xc0005b3600] AiContentReviewResultSet:[0xc00070eb40 0xc00070eba0 0xc00070ed20 0xc00070ed80 0xc00070ede0 0xc00070ee40 0xc00070eea0] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0003086e0 TasksNotifyMode:0xc000432da0 SessionContext:0xc000432db0 SessionId:0xc000432de0}
+[2020-11-06 17:16:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429582401
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:NewFileUpload
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:53	upload event:{FileId:0xc000432e30 MediaBasicInfo:0xc00034d2c0 ProcedureTaskId:0xc000433000 MetaData:0xc0004eab00}
+[2020-11-06 17:16:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200	job_trace: invalid taskId, taskId:11602057
+sports_service/server/job.uploadEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:200
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:54
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:16:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55	job_trace: uploadEvent err:invalid taskId
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:55
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:49	eventType:ProcedureStateChanged
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:60	transcode event:{TaskId:0xc000433060 Status:0xc000433070 ErrCode:0xc000308870 Message:0xc000433090 FileId:0xc0004330a0 FileName:0xc0004330d0 FileUrl:0xc0004330e0 MetaData:0xc0004eae80 MediaProcessResultSet:[0xc0005b3780 0xc0005b3840 0xc0005b3a80 0xc0005b3ac0] AiContentReviewResultSet:[0xc00070ef00 0xc00070ef60 0xc00070efc0 0xc00070f020 0xc00070f080 0xc00070f0e0 0xc00070f140] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc000308e00 TasksNotifyMode:0xc000433650 SessionContext:0xc000433660 SessionId:0xc000433680}
+[2020-11-06 17:16:52]-49	ERROR	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82	job_trace: video not found, fileId:5285890809429716020
+sports_service/server/job.transCodeCompleteEvent
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:82
+sports_service/server/job.pullEvents
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:61
+sports_service/server/job.PullEventsJob
+	/Users/jelly/go/src/sports_service/server/job/pull_events.go:31
+[2020-11-06 17:16:52]-49	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/job/pull_events.go:34	事件处理完毕

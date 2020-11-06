@@ -186,7 +186,7 @@ func GiveLikeForComment(c *gin.Context) {
 
 	svc := clike.New(c)
 	// 视频点赞
-	syscode := svc.GiveLikeForComment(userId.(string), param.ToUserId, param.ComposeId)
+	syscode := svc.GiveLikeForComment(userId.(string), param.ComposeId)
 	reply.Response(http.StatusOK, syscode)
 }
 
