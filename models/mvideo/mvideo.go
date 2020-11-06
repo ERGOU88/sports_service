@@ -123,6 +123,7 @@ type VideoDetailInfo struct {
   FabulousNum   int                   `json:"fabulous_num" example:"10"`             // 点赞数
   CommentNum    int                   `json:"comment_num" example:"10"`              // 评论数
   BarrageNum    int                   `json:"barrage_num" example:"10"`              // 弹幕数
+  CollectNum    int                   `json:"collect_num" example:"10"`              // 收藏数
   ShareNum      int                   `json:"share_num" example:"10"`               // 分享数
   BrowseNum     int                   `json:"browse_num" example:"10"`              // 浏览数（播放数）
   UserId        string                `json:"user_id" example:"发布视频的用户id"`      // 发布视频的用户id

@@ -580,6 +580,7 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
 	resp.FabulousNum = info.FabulousNum
 	resp.ShareNum = info.ShareNum
 	resp.BarrageNum = info.BarrageNum
+	resp.CollectNum = info.CollectNum
 	// 粉丝数
 	resp.FansNum = svc.attention.GetTotalFans(fmt.Sprint(video.UserId))
   now := int(time.Now().Unix())
