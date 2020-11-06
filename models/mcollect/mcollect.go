@@ -16,7 +16,6 @@ type CollectModel struct {
 // 添加收藏请求参数
 type AddCollectParam struct {
 	VideoId       int64     `binding:"required" json:"video_id" example:"10001"`       // 收藏的视频id
-	ToUserId      string    `binding:"required" json:"to_user_id" example:"发布者uid"` // 发布者uid
 }
 
 // 取消收藏请求参数

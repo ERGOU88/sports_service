@@ -46,7 +46,7 @@ func CollectVideo(c *gin.Context) {
 
 	svc := collect.New(c)
 	// 添加收藏
-	syscode := svc.AddCollect(userId.(string), param.ToUserId, param.VideoId)
+	syscode := svc.AddCollect(userId.(string), param.VideoId)
 	reply.Response(http.StatusOK, syscode)
 }
 

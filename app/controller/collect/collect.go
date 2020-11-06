@@ -42,7 +42,7 @@ func New(c *gin.Context) CollectModule {
 }
 
 // 添加收藏
-func (svc *CollectModule) AddCollect(userId, toUserId string, videoId int64) int {
+func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("collect_trace: session begin err:%s", err)
@@ -57,7 +57,8 @@ func (svc *CollectModule) AddCollect(userId, toUserId string, videoId int64) int
 	}
 
 	// 查找视频是否存在
-	if video := svc.video.FindVideoById(fmt.Sprint(videoId)); video == nil {
+	video := svc.video.FindVideoById(fmt.Sprint(videoId))
+	if video == nil {
 		log.Log.Errorf("collect_trace: video not found, videoId:%d", videoId)
 		svc.engine.Rollback()
 		return errdef.COLLECT_VIDEO_NOT_EXISTS
@@ -93,7 +94,7 @@ func (svc *CollectModule) AddCollect(userId, toUserId string, videoId int64) int
 		}
 	} else {
 		// 添加收藏记录
-		if err := svc.collect.AddCollectVideo(userId, toUserId, videoId, consts.ALREADY_COLLECT, consts.TYPE_VIDEO); err != nil {
+		if err := svc.collect.AddCollectVideo(userId, video.UserId, videoId, consts.ALREADY_COLLECT, consts.TYPE_VIDEO); err != nil {
 			log.Log.Errorf("collect_trace: add collect record err:%s", err)
 			svc.engine.Rollback()
 			return errdef.COLLECT_VIDEO_FAIL
