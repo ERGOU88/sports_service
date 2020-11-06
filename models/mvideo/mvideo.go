@@ -397,9 +397,29 @@ func (m *VideoModel) GetBrowseRecord(userId string, composeType, offset, size in
 	return list
 }
 
+// 获取用户浏览过的视频
+func (m *VideoModel) GetUserBrowseVideo(userId string, composeType int, composeId int64) *models.UserBrowseRecord {
+  m.Browse = new(models.UserBrowseRecord)
+  ok, err := m.Engine.Where("user_id=? AND compose_type=? AND compose_id=?", userId, composeType, composeId).Get(m.Browse)
+  if !ok || err != nil {
+    return nil
+  }
+
+  return m.Browse
+}
+
 // 记录用户浏览的视频记录
 func (m *VideoModel) RecordUserBrowseVideo() error {
   if _, err := m.Engine.InsertOne(m.Browse); err != nil {
+    return err
+  }
+
+  return nil
+}
+
+// 之前有浏览记录 更新浏览时间
+func (m *VideoModel) UpdateUserBrowseVideo() error {
+  if _, err := m.Engine.Where("user_id=? AND compose_id=? AND compose_type=?", m.Browse.UserId, m.Browse.ComposeId, m.Browse.ComposeType).Cols("create_at, update_at").Update(m.Browse); err != nil {
     return err
   }
 

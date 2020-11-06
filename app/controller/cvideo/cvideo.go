@@ -606,9 +606,19 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
     svc.video.Browse.UserId = userId
     svc.video.Browse.ComposeId = video.VideoId
     svc.video.Browse.ComposeType = consts.TYPE_VIDEO
-    // 记录用户浏览的视频记录
-    if err := svc.video.RecordUserBrowseVideo(); err != nil {
-      log.Log.Errorf("video_trace: record user browse video err:%s", err)
+
+    // 用户是否浏览过
+    browse := svc.video.GetUserBrowseVideo(userId, consts.TYPE_VIDEO, video.VideoId)
+    if browse != nil {
+      // 已有浏览记录 更新用户浏览的时间
+      if err := svc.video.UpdateUserBrowseVideo(); err != nil {
+        log.Log.Errorf("video_trace: update user browse video err:%s", err)
+      }
+    } else {
+      // 添加用户浏览的视频记录
+      if err := svc.video.RecordUserBrowseVideo(); err != nil {
+        log.Log.Errorf("video_trace: record user browse video err:%s", err)
+      }
     }
   }
 
