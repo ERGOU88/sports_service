@@ -298,7 +298,12 @@ func (svc *SearchModule) SearchAttentionUser(userId, name string, page, size int
 	}
 
 	offset := (page - 1) * size
-	return svc.attention.SearchAttentionUser(userId, name, offset, size)
+	list := svc.attention.SearchAttentionUser(userId, name, offset, size)
+	if len(list) == 0 {
+	  return []*mattention.SearchContactRes{}
+  }
+
+  return list
 }
 
 // 搜索粉丝列表
@@ -315,6 +320,10 @@ func (svc *SearchModule) SearchFans(userId, name string, page, size int) []*matt
 
 	offset := (page - 1) * size
 	list := svc.attention.SearchFans(userId, name, offset, size)
+  if len(list) == 0 {
+    return []*mattention.SearchContactRes{}
+  }
+
 	for _, info := range list {
 		// 是否回关
 		if attentionInfo := svc.attention.GetAttentionInfo(userId, info.UserId); attentionInfo != nil {
