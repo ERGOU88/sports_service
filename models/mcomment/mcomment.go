@@ -232,7 +232,7 @@ func (m *CommentModel) GetVideoCommentListByLike(videoId string, offset, size in
 func (m *CommentModel) GetVideoReply(videoId, commentId string, offset, size int) []*ReplyComment {
 	var list []*ReplyComment
 	if err := m.Engine.Table(&models.VideoComment{}).Where("video_id=? AND comment_level=2 AND parent_comment_id=? AND status=1", videoId, commentId).
-		Desc("id").
+		Asc("id").
 		Limit(size, offset).
 		Find(&list); err != nil {
 			log.Log.Errorf("comment_trace: get video reply err:%s", err)

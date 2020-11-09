@@ -118,7 +118,7 @@ func AttentionList(c *gin.Context) {
 	svc := cattention.New(c)
 	// 获取关注的用户列表
 	list := svc.GetAttentionUserList(userId.(string), page, size)
-	reply.Data["attentionList"] = list
+	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
@@ -152,7 +152,7 @@ func FansList(c *gin.Context) {
 	svc := cattention.New(c)
 	// 获取用户的粉丝列表
 	list := svc.GetFansList(userId.(string), page, size)
-	reply.Data["attentionList"] = list
+	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 	return
 }

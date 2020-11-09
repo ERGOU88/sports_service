@@ -50,7 +50,7 @@ func SendBarrage(c *gin.Context) {
 }
 
 // @Summary 视频弹幕列表[视频时长区间获取] (ok)
-// @Tags 通知模块
+// @Tags 弹幕模块
 // @Version 1.0
 // @Description
 // @Accept json
@@ -76,6 +76,11 @@ func VideoBarrage(c *gin.Context) {
 	svc := cbarrage.New(c)
 	// 获取视频弹幕列表
 	syscode, list := svc.GetVideoBarrageList(videoId, minDuration, maxDuration)
+	if syscode != errdef.SUCCESS {
+	  reply.Response(http.StatusOK, errdef.BARRAGE_VIDEO_LIST_FAIL)
+	  return
+  }
+
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)
 }

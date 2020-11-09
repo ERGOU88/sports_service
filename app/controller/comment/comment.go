@@ -79,7 +79,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 
 	// 查找视频是否存在
 	video := svc.video.FindVideoById(fmt.Sprint(params.VideoId))
-	if video == nil {
+	if video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
 		log.Log.Errorf("comment_trace: video not found, videoId:%d", params.VideoId)
 		svc.engine.Rollback()
 		return errdef.VIDEO_NOT_EXISTS
@@ -163,7 +163,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 
 	// 查找视频是否存在
 	video := svc.video.FindVideoById(fmt.Sprint(params.VideoId))
-	if video == nil {
+	if video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS  {
 		log.Log.Errorf("comment_trace: video not found, videoId:%d", params.VideoId)
 		svc.engine.Rollback()
 		return errdef.VIDEO_NOT_EXISTS
