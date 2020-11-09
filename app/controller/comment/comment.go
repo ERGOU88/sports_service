@@ -330,6 +330,10 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 			}
 		}
 
+		if len(comment.ReplyList) == 0 {
+		  comment.ReplyList = []*mcomment.ReplyComment{}
+    }
+
 		list[index] = comment
 
 	}
@@ -443,7 +447,7 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 	replyList := svc.comment.GetVideoReply(videoId, commentId, offset, size)
 	if len(replyList) == 0 {
 		log.Log.Errorf("comment_trace: not found comment reply, commentId:%s", commentId)
-		return errdef.COMMENT_REPLY_NOT_FOUND, []*mcomment.ReplyComment{}
+		return errdef.SUCCESS, []*mcomment.ReplyComment{}
 	}
 
 	type tmpUser struct {
