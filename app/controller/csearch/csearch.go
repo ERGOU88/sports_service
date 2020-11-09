@@ -262,6 +262,9 @@ func (svc *SearchModule) LabelSearch(userId string, labelId string, page, size i
       }
 		}
 
+		resp.Labels = []*models.VideoLabels{}
+		resp.PlayInfo = []*mvideo.PlayInfo{}
+
 		list[index] = resp
 	}
 

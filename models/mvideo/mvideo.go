@@ -82,6 +82,7 @@ type VideosInfo struct {
 	BarrageNum    int    `json:"barrage_num" example:"1"`            // 弹幕数
   TimeElapsed   int    `json:"time_elapsed" example:"1"`           // 已播放的时长 毫秒
   StatusCn      string `json:"status_cn" example:"审核中"`          // 审核状态（中文展示）
+  UserId        string `json:"user_id"`                            // 发布者uid
 }
 
 // 首页推荐视频信息
