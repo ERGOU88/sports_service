@@ -215,6 +215,7 @@ func (svc *SearchModule) LabelSearch(userId string, labelId string, page, size i
 	}
 
 	vids := strings.Join(videoIds, ",")
+  log.Log.Debugf("videoIds:%v, vids:%s", videoIds, vids)
 	videos := svc.video.FindVideoListByIds(vids)
 	if len(videos) == 0 {
 		log.Log.Errorf("search_trace: not found videos, vids:%s", vids)
@@ -244,24 +245,21 @@ func (svc *SearchModule) LabelSearch(userId string, labelId string, page, size i
 		}
 
 		// 用户未登录
-		if userId == "" {
-			log.Log.Error("search_trace: no login")
-			continue
-		}
+		if userId != "" {
+      // 是否关注
+      if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
+        resp.IsAttention = attentionInfo.Status
+      }
 
-		// 是否关注
-		if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
-			resp.IsAttention = attentionInfo.Status
-		}
+      // 获取点赞的信息
+      if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
+        resp.IsLike = likeInfo.Status
+      }
 
-		// 获取点赞的信息
-		if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
-			resp.IsLike = likeInfo.Status
-		}
-
-		// 获取收藏的信息
-		if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
-			resp.IsCollect = collectInfo.Status
+      // 获取收藏的信息
+      if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
+        resp.IsCollect = collectInfo.Status
+      }
 		}
 
 		list[index] = resp
