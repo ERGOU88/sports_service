@@ -27,7 +27,7 @@ func (m *VideoModel) GetVideoLabels(videoId string) []*models.VideoLabels {
 // 通过标签id 查询视频id列表
 func (m *VideoModel) GetVideoIdsByLabelId(labelId string, offset, size int) []string {
 	var videoIds []string
-	if err := m.Engine.Where("label_id=?", labelId).Cols("video_id").Limit(size, offset).Find(&videoIds); err != nil {
+	if err := m.Engine.Table(&models.VideoLabels{}).Where("label_id=?", labelId).Cols("video_id").Limit(size, offset).Find(&videoIds); err != nil {
 		log.Log.Errorf("video_trace: get videoIds by labelid err:%s", err)
 		return nil
 	}
