@@ -733,6 +733,8 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
       }
 		}
 
+		resp.PlayInfo = []*mvideo.PlayInfo{}
+
 		res[index] = resp
 	}
 
