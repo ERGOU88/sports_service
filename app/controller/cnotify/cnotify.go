@@ -224,7 +224,6 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) []int
 			comment := svc.comment.GetVideoCommentById(fmt.Sprint(receiveAt.CommentId))
 			if comment != nil {
 				// 执行@的用户信息
-				info.Reply = comment.Content
 				info.UserId = comment.UserId
 				info.Avatar = comment.Avatar
 				info.Nickname = comment.UserName
@@ -265,6 +264,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) []int
 					if parent := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ReplyCommentId)); parent != nil {
 						info.CommentType = 2
 						info.Content = parent.Content
+            info.Reply = comment.Content
 					}
 
 				}
