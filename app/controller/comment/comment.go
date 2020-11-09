@@ -307,6 +307,8 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 				reply.ReplyCommentUserName = uinfo.NickName
 			}
 
+			// 默认回复的是1级评论
+      reply.ReplyContent = comment.Content
 			// 被回复的内容
 			content, ok := contents[reply.ReplyCommentId]
 			if ok {
@@ -468,6 +470,8 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 			reply.ReplyCommentUserName = uinfo.NickName
 		}
 
+		// 默认回复的是1级评论
+		reply.ReplyContent = comment.Content
 		// 被回复的内容
 		content, ok := contents[reply.ReplyCommentId]
 		if ok {
