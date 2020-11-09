@@ -132,7 +132,7 @@ func (m *AttentionModel) SearchAttentionUser(userId, name string, offset, size i
 		"AND u.nick_name LIKE '%" + name + "%' OR u.`user_id` LIKE '%" + name + "%' AND u.status=0 " +
 		"WHERE ua.`attention_uid`= ? AND is_attention=1 ORDER BY ua.id DESC LIMIT ?, ?"
 	var list []*SearchContactRes
-	if err := m.Engine.Table(&models.UserAttention{}).SQL(sql, userId, offset, size).Find(&list); err != nil {
+	if err := m.Engine.SQL(sql, userId, offset, size).Find(&list); err != nil {
 		log.Log.Errorf("search attention user err:%s", err)
 		return nil
 	}
@@ -149,7 +149,7 @@ func (m *AttentionModel) SearchFans(userId, name string, offset, size int) []*Se
 		"WHERE ua.user_id = ? AND ua.status=1 " +
 		"ORDER BY ua.id DESC LIMIT ?, ?"
 	var list []*SearchContactRes
-	if err := m.Engine.Table(&models.UserAttention{}).SQL(sql, userId, offset, size).Find(&list); err != nil {
+	if err := m.Engine.SQL(sql, userId, offset, size).Find(&list); err != nil {
 		log.Log.Errorf("search_trace: search fans err: %s", err)
 		return nil
 	}
