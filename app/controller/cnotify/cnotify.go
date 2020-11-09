@@ -256,7 +256,9 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) []int
 					info.ToUserName = user.NickName
 				}
 
+				// 默认1级评论
 				info.CommentType = 1
+        info.Content = comment.Content
 				// 如果父评论id为0 则表示 是1级评论 不为0 则表示是回复
 				if comment.ParentCommentId != 0 {
 					// 获取父级回复
@@ -264,6 +266,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) []int
 						info.CommentType = 2
 						info.Content = parent.Content
 					}
+
 				}
 
 				res[index] = info
