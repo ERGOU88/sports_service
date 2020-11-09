@@ -1,22 +1,22 @@
 package comment
 
 import (
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mcomment"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
-	"time"
+  "fmt"
+  "github.com/gin-gonic/gin"
+  "github.com/go-xorm/xorm"
+  "sports_service/server/dao"
+  "sports_service/server/global/app/errdef"
+  "sports_service/server/global/app/log"
+  "sports_service/server/global/consts"
+  "sports_service/server/models/mattention"
+  "sports_service/server/models/mcollect"
+  "sports_service/server/models/mcomment"
+  "sports_service/server/models/mlike"
+  "sports_service/server/models/muser"
+  "sports_service/server/models/mvideo"
+  "sports_service/server/tools/tencentCloud"
+  "sports_service/server/util"
+  "time"
 )
 
 type CommentModule struct {
@@ -421,6 +421,10 @@ func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, 
 				item.IsAttention = attention.Status
 			}
 		}
+
+    if len(item.ReplyList) == 0 {
+      item.ReplyList = []*mcomment.ReplyComment{}
+    }
 
 	}
 
