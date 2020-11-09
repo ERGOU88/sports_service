@@ -72,6 +72,10 @@ func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDe
     recommend = svc.RecommendVideo()
   }
 
+  if len(recommend) == 0 {
+    recommend = []*mvideo.VideoDetailInfo{}
+  }
+
 	return videos, users, recommend
 }
 
