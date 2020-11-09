@@ -715,24 +715,22 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 		// 粉丝数
 		resp.FansNum = svc.attention.GetTotalFans(fmt.Sprint(video.UserId))
 
-		if userId == "" {
+		if userId != "" {
 			log.Log.Error("video_trace: user no login")
-			continue
-		}
+      // 是否关注
+      if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
+        resp.IsAttention = attentionInfo.Status
+      }
 
-		// 是否关注
-		if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
-			resp.IsAttention = attentionInfo.Status
-		}
+      // 获取点赞的信息
+      if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
+        resp.IsLike = likeInfo.Status
+      }
 
-		// 获取点赞的信息
-		if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
-			resp.IsLike = likeInfo.Status
-		}
-
-		// 获取收藏的信息
-		if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
-			resp.IsCollect = collectInfo.Status
+      // 获取收藏的信息
+      if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
+        resp.IsCollect = collectInfo.Status
+      }
 		}
 
 		res[index] = resp

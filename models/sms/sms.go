@@ -27,8 +27,8 @@ type SendSmsCodeParams struct {
 
 // 手机验证码登陆 请求参数
 type SmsCodeLoginParams struct {
-	MobileNum      string     `json:"mobile_num"`   // 手机号码
-	Code           string     `json:"code"`         // 手机验证码
+	MobileNum      string     `binding:"required" json:"mobile_num"`   // 手机号码
+	Code           string     `binding:"required" json:"code"`         // 手机验证码
 	Platform       int        `json:"platform"`     // 平台 0 android 1 iOS 2 web
 }
 

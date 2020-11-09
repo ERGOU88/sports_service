@@ -272,7 +272,7 @@ func UserInfo(c *gin.Context) {
 		return
 	}
 
-	reply.Data["userInfo"] = userInfo
+	reply.Data["user_info"] = userInfo
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
