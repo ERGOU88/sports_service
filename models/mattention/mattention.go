@@ -127,10 +127,10 @@ type SearchContactRes struct {
 
 // 搜索关注的用户
 func (m *AttentionModel) SearchAttentionUser(userId, name string, offset, size int) []*SearchContactRes {
-	sql := "SELECT u.*, ua.status as is_attention FROM user_attention AS ua INNER JOIN user as u " +
+	sql := "SELECT u.*, ua.`status` as is_attention FROM user_attention AS ua INNER JOIN user as u " +
 		"ON u.`user_id` = ua.`user_id` " +
-		"AND u.nick_name LIKE '%" + name + "%' OR u.`user_id` LIKE '%" + name + "%' AND u.status=0 " +
-		"WHERE ua.`attention_uid`= ? AND is_attention=1 ORDER BY ua.id DESC LIMIT ?, ?"
+		"AND u.nick_name LIKE '%" + name + "%' OR u.`user_id` LIKE '%" + name + "%' AND u.`status`=0 " +
+		"WHERE ua.`attention_uid`= ? AND ua.`status`=1 ORDER BY ua.`id` DESC LIMIT ?, ?"
 	var list []*SearchContactRes
 	if err := m.Engine.SQL(sql, userId, offset, size).Find(&list); err != nil {
 		log.Log.Errorf("search attention user err:%s", err)
@@ -142,11 +142,11 @@ func (m *AttentionModel) SearchAttentionUser(userId, name string, offset, size i
 
 // 搜索粉丝
 func (m *AttentionModel) SearchFans(userId, name string, offset, size int) []*SearchContactRes {
-	sql :=  "SELECT u.*, ua.status as is_attention FROM user_attention AS ua INNER JOIN user as u " +
+	sql :=  "SELECT u.*, ua.`status` as is_attention FROM user_attention AS ua INNER JOIN user as u " +
 		"ON u.`user_id` = ua.`attention_uid` " +
 		"AND u.nick_name LIKE '%" + name + "%' " +
-		"OR u.`user_id` LIKE '%" + name + "%' AND u.status=0 " +
-		"WHERE ua.user_id = ? AND ua.status=1 " +
+		"OR u.`user_id` LIKE '%" + name + "%' AND u.`status`=0 " +
+		"WHERE ua.`user_id` = ? AND ua.`status`=1 " +
 		"ORDER BY ua.id DESC LIMIT ?, ?"
 	var list []*SearchContactRes
 	if err := m.Engine.SQL(sql, userId, offset, size).Find(&list); err != nil {
