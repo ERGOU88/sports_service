@@ -465,7 +465,12 @@ func (svc *VideoModule) GetRecommendVideos(userId string, page, size int) []*mvi
 
 // 获取app首页推荐的banner 默认取10条
 func (svc *VideoModule) GetRecommendBanners() []*models.Banner {
-	return svc.banner.GetRecommendBanners(int32(consts.HOMEPAGE_BANNERS), time.Now().Unix(), 0, 10)
+	banners := svc.banner.GetRecommendBanners(int32(consts.HOMEPAGE_BANNERS), time.Now().Unix(), 0, 10)
+	if len(banners) == 0 {
+	  return []*models.Banner{}
+  }
+
+  return banners
 }
 
 // 获取关注的用户发布的视频列表
@@ -824,7 +829,12 @@ func (svc *VideoModule) CheckCustomLabel(userId string, params *mvideo.CustomLab
 
 // 获取视频标签列表
 func (svc *VideoModule) GetVideoLabelList() []*mlabel.VideoLabel {
-  return svc.label.GetVideoLabelList()
+  list := svc.label.GetVideoLabelList()
+  if len(list) == 0 {
+    return []*mlabel.VideoLabel{}
+  }
+
+  return list
 }
 
 // 添加视频举报

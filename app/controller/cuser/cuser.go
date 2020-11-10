@@ -239,7 +239,12 @@ func (svc *UserModule) GetUserZoneInfo(userId string) (int, *muser.UserInfoResp,
 
 // 获取世界信息（暂时只有国家）
 func (svc *UserModule) GetWorldInfo() []*models.WorldMap {
-	return svc.user.GetWorldInfo()
+	list := svc.user.GetWorldInfo()
+	if len(list) == 0 {
+	  return []*models.WorldMap{}
+  }
+
+  return list
 }
 
 // 通过id获取世界信息（暂时只有国家）
@@ -249,7 +254,12 @@ func (svc *UserModule) GetWorldInfoById(id int32) *models.WorldMap {
 
 // 获取系统默认头像列表
 func (svc *UserModule) GetDefaultAvatarList() []*models.DefaultAvatar {
-	return svc.user.GetSystemAvatarList()
+	list := svc.user.GetSystemAvatarList()
+	if len(list) == 0 {
+	  return []*models.DefaultAvatar{}
+  }
+
+  return list
 }
 
 // 通过id获取系统默认头像
