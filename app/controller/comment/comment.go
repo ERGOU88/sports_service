@@ -328,6 +328,11 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 			if attention := svc.attention.GetAttentionInfo(userId, item.UserId); attention != nil {
 				comment.IsAttention = attention.Status
 			}
+
+      // 获取点赞的信息
+      if likeInfo := svc.like.GetLikeInfo(userId, comment.Id, consts.TYPE_COMMENT); likeInfo != nil {
+        comment.IsLike = likeInfo.Status
+      }
 		}
 
 		if len(comment.ReplyList) == 0 {

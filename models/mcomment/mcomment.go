@@ -31,6 +31,7 @@ type VideoComments struct {
 	LikeNum             int64               `json:"like_num" example:"100"`                      // 点赞数
 	IsAttention         int                 `json:"is_attention" example:"0"`                    // 是否关注
 	ReplyNum            int64               `json:"reply_num" example:"100"`                     // 总回复数
+	IsLike              int                 `json:"is_like" example:"0"`                         // 是否点赞
 }
 
 // 回复评论的内容
