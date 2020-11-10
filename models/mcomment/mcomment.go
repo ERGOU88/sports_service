@@ -32,6 +32,7 @@ type VideoComments struct {
 	IsAttention         int                 `json:"is_attention" example:"0"`                    // 是否关注
 	ReplyNum            int64               `json:"reply_num" example:"100"`                     // 总回复数
 	IsLike              int                 `json:"is_like" example:"0"`                         // 是否点赞
+	HasMore             int                 `json:"has_more" example:"0"`                        // 是否显示更多 0 不展示  1 展示
 }
 
 // 回复评论的内容

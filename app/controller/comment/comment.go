@@ -282,6 +282,12 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 		// 评论点赞数
 		comment.LikeNum = svc.like.GetLikeNumByType(item.Id, consts.TYPE_COMMENT)
 
+		// 如果总回复数 > 3 条
+		if comment.ReplyNum > 3 {
+		  // 1 客户端展示查看更多
+		  comment.HasMore = 1
+    }
+
 		user := new(tmpUser)
 		user.NickName = item.UserName
 		user.Avatar = item.Avatar
