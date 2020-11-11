@@ -315,6 +315,11 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 				reply.ReplyCommentUserName = uinfo.NickName
 			}
 
+      // 如果回复的是1级评论 不展示@内容 否则展示   0 不是@消息 1是
+      if reply.ParentCommentId != reply.ReplyCommentId || reply.ReplyCommentId != item.Id {
+        reply.IsAt = 1
+      }
+
 			// 默认回复的是1级评论
       reply.ReplyContent = comment.Content
 			// 被回复的内容
@@ -490,6 +495,11 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 			reply.ReplyCommentAvatar = uinfo.Avatar
 			reply.ReplyCommentUserName = uinfo.NickName
 		}
+
+		// 如果回复的是1级评论 不展示@内容 否则展示   0 不是@消息 1是
+		if reply.ParentCommentId != reply.ReplyCommentId || fmt.Sprint(reply.ReplyCommentId) != commentId {
+		  reply.IsAt = 1
+    }
 
 		// 默认回复的是1级评论
 		reply.ReplyContent = comment.Content

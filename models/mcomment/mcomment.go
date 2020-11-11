@@ -57,6 +57,7 @@ type ReplyComment struct {
 	LikeNum              int64               `json:"like_num" example:"100"`                             // 点赞数
 	IsAttention          int                 `json:"is_attention" example:"0"`                           // 是否关注
   IsLike               int                 `json:"is_like" example:"0"`                                // 是否点赞
+  IsAt                 int                 `json:"is_at" example:"0"`                                  // 是否为@消息 0不是@消息 1是
 }
 
 // 视频评论数据（后台展示）
