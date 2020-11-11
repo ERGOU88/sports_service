@@ -234,7 +234,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 
 	svc.engine.Commit()
 
-	return errdef.SUCCESS, svc.comment.Comment.Id
+	return errdef.SUCCESS, fmt.Sprint(svc.comment.Comment.Id)
 }
 
 // 获取视频评论
