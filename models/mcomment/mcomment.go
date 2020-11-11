@@ -56,6 +56,7 @@ type ReplyComment struct {
 	VideoId              int64               `json:"video_id" example:"1000000000"`                      // 视频id
 	LikeNum              int64               `json:"like_num" example:"100"`                             // 点赞数
 	IsAttention          int                 `json:"is_attention" example:"0"`                           // 是否关注
+  IsLike               int                 `json:"is_like" example:"0"`                                // 是否点赞
 }
 
 // 视频评论数据（后台展示）

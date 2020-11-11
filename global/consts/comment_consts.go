@@ -12,9 +12,9 @@ const (
 	SORT_HOT    = "1"
 )
 
-// 评论内容最少10个字符 最多1000个字符
+// 评论内容最少1个字符 最多1000个字符
 const (
-	COMMENT_MIN_LEN  = 10
+	COMMENT_MIN_LEN  = 1
 	COMMENT_MAX_LEN  = 1000
 )
 
