@@ -8,7 +8,7 @@ import (
   "sports_service/server/global/app/errdef"
   "sports_service/server/global/app/log"
   "sports_service/server/global/consts"
-  "sports_service/server/models"
+  //"sports_service/server/models"
   "sports_service/server/models/mattention"
   "sports_service/server/models/mcollect"
   "sports_service/server/models/mcomment"
