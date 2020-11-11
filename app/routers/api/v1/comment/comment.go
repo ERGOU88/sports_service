@@ -44,7 +44,8 @@ func PublishComment(c *gin.Context) {
 	}
 
 	svc := comment.New(c)
-	syscode := svc.PublishComment(userId.(string), params)
+	syscode, commentId := svc.PublishComment(userId.(string), params)
+	reply.Data["comment_id"] = commentId
 	reply.Response(http.StatusOK, syscode)
 }
 

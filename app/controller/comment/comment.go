@@ -8,6 +8,7 @@ import (
   "sports_service/server/global/app/errdef"
   "sports_service/server/global/app/log"
   "sports_service/server/global/consts"
+  "sports_service/server/models"
   "sports_service/server/models/mattention"
   "sports_service/server/models/mcollect"
   "sports_service/server/models/mcomment"
@@ -45,19 +46,20 @@ func New(c *gin.Context) CommentModule {
 }
 
 // 发布评论
-func (svc *CommentModule) PublishComment(userId string, params *mcomment.PublishCommentParams) int {
+func (svc *CommentModule) PublishComment(userId string, params *mcomment.PublishCommentParams) (int, string) {
   // 开启事务
   if err := svc.engine.Begin(); err != nil {
     log.Log.Errorf("video_trace: session begin err:%s", err)
-    return errdef.ERROR
+    return errdef.ERROR, ""
   }
 
-  // 最少10字符 最多1000字符
-  contentLen := util.GetStrLen([]rune(params.Content))
+  //contentLen := util.GetStrLen([]rune(params.Content))
+  // 最少1字符 最多1000字符
+  contentLen := len(params.Content)
   if contentLen < consts.COMMENT_MIN_LEN || contentLen > consts.COMMENT_MAX_LEN {
     log.Log.Errorf("comment_trace: invalid content length, len:%d", contentLen)
     svc.engine.Rollback()
-    return errdef.COMMENT_INVALID_LEN
+    return errdef.COMMENT_INVALID_LEN, ""
   }
 
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
@@ -66,7 +68,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	if !isPass {
 		log.Log.Errorf("comment_trace: validate comment err: %s，pass: %v", err, isPass)
     svc.engine.Rollback()
-		return errdef.COMMENT_INVALID_CONTENT
+		return errdef.COMMENT_INVALID_CONTENT, ""
 	}
 
 	// 查询用户是否存在
@@ -74,7 +76,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	if user == nil {
 		log.Log.Errorf("comment_trace: user not found, userId:%s", userId)
 		svc.engine.Rollback()
-		return errdef.USER_NOT_EXISTS
+		return errdef.USER_NOT_EXISTS, ""
 	}
 
 	// 查找视频是否存在
@@ -82,7 +84,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	if video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
 		log.Log.Errorf("comment_trace: video not found, videoId:%d", params.VideoId)
 		svc.engine.Rollback()
-		return errdef.VIDEO_NOT_EXISTS
+		return errdef.VIDEO_NOT_EXISTS, ""
 	}
 
 	now := time.Now().Unix()
@@ -99,7 +101,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	if err := svc.comment.AddVideoComment(); err != nil {
 		log.Log.Errorf("comment_trace: add video comment err:%s", err)
 		svc.engine.Rollback()
-		return errdef.COMMENT_PUBLISH_FAIL
+		return errdef.COMMENT_PUBLISH_FAIL, ""
 	}
 
 	svc.comment.ReceiveAt.UserId = userId
@@ -113,19 +115,21 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	if err := svc.comment.AddReceiveAt(); err != nil {
 		log.Log.Errorf("comment_trace: add receive at err:%s", err)
 		svc.engine.Rollback()
-		return errdef.COMMENT_PUBLISH_FAIL
+		return errdef.COMMENT_PUBLISH_FAIL, ""
 	}
 
 	// 更新视频总计（视频评论总数）
 	if err := svc.video.UpdateVideoCommentNum(video.VideoId, int(now), 1); err != nil {
 		log.Log.Errorf("comment_trace: update video comment num err:%s", err)
 		svc.engine.Rollback()
-		return errdef.COMMENT_PUBLISH_FAIL
+		return errdef.COMMENT_PUBLISH_FAIL, ""
 	}
 
 	svc.engine.Commit()
 
-	return errdef.SUCCESS
+	commentId := fmt.Sprint(svc.comment.Comment.Id)
+
+	return errdef.SUCCESS, commentId
 }
 
 // 回复评论
