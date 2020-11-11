@@ -199,10 +199,10 @@ func (m *UserModel) GetUserList(offset, size int) []*models.User {
 
 // 根据用户id、手机号查询用户(后台用户列表排序 0 按注册时间倒序 1 关注数 2 粉丝数 3 发布数 4 浏览数 5 点赞数 6 收藏数 7 评论数 8 弹幕数)
 func (m *UserModel) GetUserListBySort(userId, mobileNum, sortType, condition string, offset, size int) []*UserInfo {
-  sql := " SELECT u.*, count(ua.id) as total_attention, count(ua2.id) as total_fans, " +
-    "count(tu.id) as total_be_liked, count(cr.id) as total_collect, count(tu2.id) as total_likes, " +
-    "count(v.video_id) as total_publish, count(vb.id) as total_barrage, count(vc.id) as total_comment, " +
-    "count(ubr.id) as total_browse FROM user as u LEFT JOIN user_attention as ua " +
+  sql := " SELECT u.*, count(distinct(ua.id)) as total_attention, count(distinct(ua2.id)) as total_fans, " +
+    "count(distinct(tu.id)) as total_be_liked, count(distinct(cr.id)) as total_collect, count(distinct(tu2.id)) as total_likes, " +
+    "count(distinct(v.video_id)) as total_publish, count(distinct(vb.id)) as total_barrage, count(distinct(vc.id)) as total_comment, " +
+    "count(distinct(ubr.id)) as total_browse FROM user as u LEFT JOIN user_attention as ua " +
     "ON u.user_id = ua.attention_uid and ua.status=1 LEFT JOIN user_attention as ua2 " +
     "ON u.user_id=ua2.user_id and ua2.status=1 LEFT JOIN thumbs_up as tu " +
     "ON u.user_id=tu.to_user_id AND tu.status=1 LEFT JOIN collect_record as cr " +
