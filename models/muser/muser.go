@@ -218,7 +218,7 @@ func (m *UserModel) GetUserListBySort(userId, mobileNum, sortType, condition str
     "LEFT JOIN (select vc.user_id, count(vc.id) as total_comment from video_comment as vc " +
     "WHERE vc.status=1 group by vc.user_id) as vc on u.user_id=vc.user_id " +
     "LEFT JOIN (select ubr.user_id, count(ubr.id) as total_browse from user_browse_record as ubr " +
-    "group by ubr.user_id) as ubr on u.user_id=ubr.user_id"
+    "group by ubr.user_id) as ubr on u.user_id=ubr.user_id "
 
    if userId != "" {
      sql += fmt.Sprintf("WHERE u.user_id=%s ", userId)
