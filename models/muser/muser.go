@@ -199,19 +199,26 @@ func (m *UserModel) GetUserList(offset, size int) []*models.User {
 
 // 根据用户id、手机号查询用户(后台用户列表排序 0 按注册时间倒序 1 关注数 2 粉丝数 3 发布数 4 浏览数 5 点赞数 6 收藏数 7 评论数 8 弹幕数)
 func (m *UserModel) GetUserListBySort(userId, mobileNum, sortType, condition string, offset, size int) []*UserInfo {
-  sql := " SELECT u.*, count(distinct(ua.id)) as total_attention, count(distinct(ua2.id)) as total_fans, " +
-    "count(distinct(tu.id)) as total_be_liked, count(distinct(cr.id)) as total_collect, count(distinct(tu2.id)) as total_likes, " +
-    "count(distinct(v.video_id)) as total_publish, count(distinct(vb.id)) as total_barrage, count(distinct(vc.id)) as total_comment, " +
-    "count(distinct(ubr.id)) as total_browse FROM user as u LEFT JOIN user_attention as ua " +
-    "ON u.user_id = ua.attention_uid and ua.status=1 LEFT JOIN user_attention as ua2 " +
-    "ON u.user_id=ua2.user_id and ua2.status=1 LEFT JOIN thumbs_up as tu " +
-    "ON u.user_id=tu.to_user_id AND tu.status=1 LEFT JOIN collect_record as cr " +
-    "ON u.user_id=cr.user_id and cr.status=1 LEFT JOIN thumbs_up as tu2 " +
-    "ON u.user_id=tu2.user_id and tu2.status=1 LEFT JOIN videos as v " +
-    "ON v.user_id=u.user_id AND v.status=1 LEFT JOIN video_barrage as vb " +
-    "ON vb.user_id=u.user_id LEFT JOIN video_comment as vc " +
-    "ON vc.user_id=u.user_id LEFT JOIN user_browse_record as ubr " +
-    "ON ubr.user_id=u.user_id "
+  sql := "SELECT u.*, total_attention, total_fans, tu.total_be_liked, total_likes, total_collect, total_publish, " +
+    "total_barrage, total_comment, total_browse from user as u " +
+    "LEFT JOIN (select ua.attention_uid, ua.user_id, count(ua.id) as total_attention from user_attention as ua " +
+    "where ua.status=1 group by ua.attention_uid) as ua on u.user_id=ua.attention_uid " +
+    "LEFT JOIN (select ua.attention_uid, ua.user_id, count(ua.user_id) as total_fans from user_attention as ua " +
+    "where ua.status=1 group by ua.user_id) as ua2 on u.user_id=ua2.user_id  " +
+    "LEFT JOIN (select tu.to_user_id, tu.user_id, count(tu.id) as total_be_liked from thumbs_up as tu " +
+    "where tu.status=1 group by tu.to_user_id) as tu on u.user_id=tu.to_user_id  " +
+    "LEFT JOIN (select tu.to_user_id, tu.user_id, count(tu.id) as total_likes from thumbs_up as tu " +
+    "where tu.status=1 group by tu.user_id) as tu2 on u.user_id=tu2.user_id  " +
+    "LEFT JOIN (select cr.user_id, count(cr.id) as total_collect from collect_record as cr " +
+    "where cr.status=1 group by cr.user_id) as cr on u.user_id=cr.user_id " +
+    "LEFT JOIN (select v.user_id, count(v.video_id) as total_publish from videos as v " +
+    "where v.status=1 group by v.user_id) as v on u.user_id=v.user_id " +
+    "LEFT JOIN (select vb.user_id, count(vb.id) as total_barrage from video_barrage as vb " +
+    "group by vb.user_id) as vb on u.user_id=vb.user_id  " +
+    "LEFT JOIN (select vc.user_id, count(vc.id) as total_comment from video_comment as vc " +
+    "WHERE vc.status=1 group by vc.user_id) as vc on u.user_id=vc.user_id " +
+    "LEFT JOIN (select ubr.user_id, count(ubr.id) as total_browse from user_browse_record as ubr " +
+    "group by ubr.user_id) as ubr on u.user_id=ubr.user_id"
 
    if userId != "" {
      sql += fmt.Sprintf("WHERE u.user_id=%s ", userId)
@@ -220,8 +227,6 @@ func (m *UserModel) GetUserListBySort(userId, mobileNum, sortType, condition str
    if mobileNum != "" {
      sql += fmt.Sprintf("WHERE u.mobile_num=%s ", mobileNum)
    }
-
-   sql += "GROUP BY u.user_id "
 
    switch condition {
    case consts.USER_SORT_BY_TIME:
