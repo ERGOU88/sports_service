@@ -20,7 +20,7 @@ func TestPublishComment(t *testing.T) {
   }
   c, _ := gin.CreateTestContext(httptest.NewRecorder())
   svc := New(c)
-  syscode := svc.PublishComment("202009101933004667", params)
+  syscode, _ := svc.PublishComment("202009101933004667", params)
   t.Logf("syscode:%d\n", syscode)
 }
 
@@ -32,7 +32,7 @@ func BenchmarkPublishComment(b *testing.B) {
     }
     c, _ := gin.CreateTestContext(httptest.NewRecorder())
     svc := New(c)
-    syscode := svc.PublishComment("202009101933004667", params)
+    syscode, _ := svc.PublishComment("202009101933004667", params)
     b.Logf("syscode:%d\n", syscode)
   }
 }
@@ -47,7 +47,7 @@ func TestPublishReply(t *testing.T) {
 
   c, _ := gin.CreateTestContext(httptest.NewRecorder())
   svc := New(c)
-  syscode := svc.PublishReply("202009181548217779", params)
+  syscode, _ := svc.PublishReply("202009181548217779", params)
   t.Logf("syscode:%d\n", syscode)
 }
 
@@ -60,7 +60,7 @@ func BenchmarkPublishReply(b *testing.B) {
     }
     c, _ := gin.CreateTestContext(httptest.NewRecorder())
     svc := New(c)
-    syscode := svc.PublishReply("202009181548217779", params)
+    syscode, _ := svc.PublishReply("202009181548217779", params)
     b.Logf("syscode:%d\n", syscode)
   }
 }
