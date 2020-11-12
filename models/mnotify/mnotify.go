@@ -49,6 +49,7 @@ type ReceiveCommentAtInfo struct {
 	AtTime        int                   `json:"at_time" example:"1600000000"`          // 用户@的时间
 	Type          int                   `json:"type" example:"1"`                      // 类型 1 视频 2 帖子 3 评论
 	CommentType   int                   `json:"comment_type" example:"1"`              // 1 为评论 2 为回复
+	IsAt          int                   `json:"is_at"`                                 // 1为回复的回复 0 为1级评论/1级评论的回复
 }
 
 // 实例

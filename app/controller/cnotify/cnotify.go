@@ -261,12 +261,17 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) []int
 				// 如果父评论id为0 则表示 是1级评论 不为0 则表示是回复
 				if comment.ParentCommentId != 0 {
 					// 获取父级回复
-					if parent := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ReplyCommentId)); parent != nil {
+					parent := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ReplyCommentId))
+					if parent != nil {
 						info.CommentType = 2
 						info.Content = parent.Content
             info.Reply = comment.Content
-					}
 
+            // 回复的不是1级评论 则为1 @消息
+            if parent.CommentLevel != 1 {
+              info.IsAt = 1
+            }
+					}
 				}
 
 				res[index] = info

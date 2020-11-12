@@ -18,7 +18,7 @@ func Router(engine *gin.Engine) {
 		search.GET("/colligate", ColligateSearch)
 		// 标签搜索
 		search.GET("/label", LabelSearch)
-		// 热门搜索
+		// 热门搜索 及 历史搜索记录
 		search.GET("/hot", HotSearch)
 		// 搜索关注的用户
 		search.GET("/attention", token.TokenAuth(), AttentionSearch)

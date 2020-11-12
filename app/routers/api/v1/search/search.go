@@ -149,7 +149,7 @@ func LabelSearch(c *gin.Context) {
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
-// @Summary 热门搜索 (ok)
+// @Summary 热门搜索及历史搜索记录 (ok)
 // @Tags 搜索模块
 // @Version 1.0
 // @Description
