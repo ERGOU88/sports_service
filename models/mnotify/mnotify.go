@@ -42,7 +42,7 @@ type ReceiveCommentAtInfo struct {
 	Avatar        string                `json:"avatar" example:"执行@的用户头像"`        // 执行@的用户头像
 	Nickname      string                `json:"nick_name" example:"执行@的用户昵称"`     // 执行@的用户昵称
 	ToUserId      string                `json:"to_user_id" example:"被@的用户id"`       // 被@的用户id
-	ToUserAvatar  string                `json:"avatar" example:"被@的用户头像"`          // 被@用户头像
+	ToUserAvatar  string                `json:"to_user_avatar" example:"被@的用户头像"`  // 被@用户头像
 	ToUserName    string                `json:"to_user_name" example:"被@的用户昵称"`    // 被@的用户昵称
 	Content       string                `json:"content" example:"内容"`                 // 评论内容
 	Reply         string                `json:"reply"  example:"回复的内容"`             // 回复的内容
