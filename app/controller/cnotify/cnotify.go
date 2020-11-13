@@ -263,19 +263,32 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) []int
         info.Content = comment.Content
 				// 如果父评论id为0 则表示 是1级评论 不为0 则表示是回复
 				if comment.ParentCommentId != 0 {
-					// 获取父级回复
-					parent := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ReplyCommentId))
-					if parent != nil {
+					// 获取被回复的内容
+					beReply := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ReplyCommentId))
+					if beReply != nil {
 						info.CommentType = 2
-						info.Content = parent.Content
+						info.Content = beReply.Content
             info.Reply = comment.Content
 
-            // 回复的不是1级评论 则为1 @消息
-            if parent.CommentLevel != 1 {
+            // 被回复的不是1级评论 则@消息 为1
+            if beReply.CommentLevel != 1 {
               info.IsAt = 1
             }
 					}
+
+					// 获取最上级的评论内容
+					parent := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ParentCommentId))
+					if parent != nil {
+					  info.ParentComment = parent.Content
+          }
 				}
+
+        if userId != "" {
+          // 获取点赞的信息
+          if likeInfo := svc.like.GetLikeInfo(userId, comment.Id, consts.TYPE_COMMENT); likeInfo != nil {
+            info.IsLike = likeInfo.Status
+          }
+        }
 
 				res[index] = info
 
