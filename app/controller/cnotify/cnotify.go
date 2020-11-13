@@ -223,6 +223,8 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) []int
 			// 获取评论信息
 			comment := svc.comment.GetVideoCommentById(fmt.Sprint(receiveAt.CommentId))
 			if comment != nil {
+			  // 评论id
+			  info.CommentId = receiveAt.CommentId
         // 被@的用户信息
         if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
           // 执行@的用户信息
