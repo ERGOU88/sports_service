@@ -101,23 +101,25 @@ func CancelAttention(c *gin.Context) {
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
+// @Param   user_id		  query  	string 	true  "用户id"
 // @Success 200 {array}  muser.UserInfoResp
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/attention/list [get]
 // 关注的用户列表
 func AttentionList(c *gin.Context) {
 	reply := errdef.New(c)
-	userId, ok := c.Get(consts.USER_ID)
-	if !ok {
-		log.Log.Errorf("attention_trace: user not found, uid:%s", userId.(string))
-		reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
-		return
-	}
+	//userId, ok := c.Get(consts.USER_ID)
+	//if !ok {
+	//	log.Log.Errorf("attention_trace: user not found, uid:%s", userId.(string))
+	//	reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
+	//	return
+	//}
+	userId := c.Query("user_id")
 
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	svc := cattention.New(c)
 	// 获取关注的用户列表
-	list := svc.GetAttentionUserList(userId.(string), page, size)
+	list := svc.GetAttentionUserList(userId, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
@@ -135,23 +137,26 @@ func AttentionList(c *gin.Context) {
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
+// @Param   user_id		  query  	string 	true  "用户id"
 // @Success 200 {array}  muser.UserInfoResp
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/fans/list [get]
 // 用户的粉丝列表
 func FansList(c *gin.Context) {
 	reply := errdef.New(c)
-	userId, ok := c.Get(consts.USER_ID)
-	if !ok {
-		log.Log.Errorf("attention_trace: user not found, uid:%s", userId.(string))
-		reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
-		return
-	}
+	//userId, ok := c.Get(consts.USER_ID)
+	//if !ok {
+	//	log.Log.Errorf("attention_trace: user not found, uid:%s", userId.(string))
+	//	reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
+	//	return
+	//}
+	//
+	userId := c.Query("user_id")
 
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	svc := cattention.New(c)
 	// 获取用户的粉丝列表
-	list := svc.GetFansList(userId.(string), page, size)
+	list := svc.GetFansList(userId, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 	return
