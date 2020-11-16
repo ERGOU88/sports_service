@@ -1,0 +1,12 @@
+stages:
+  - build
+  - test
+build-job-1:
+  tags:
+    - gitlab_build_theseus
+  stage: build
+  only:
+    - develop
+  script:
+    - GOOS=linux GOARCH=amd64 go build -o fpv main.go
+    - rsync -avz fpv 10.6.176.147::fpv
