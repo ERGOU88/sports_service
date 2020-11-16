@@ -134,7 +134,7 @@ func (svc *UserModule) EditUserInfo(userId string, params *muser.EditUserInfoPar
 	}
 
 	// 昵称是否重复
-	if isRepeat := svc.user.IsRepeatOfNickName(nickName); isRepeat {
+	if isRepeat := svc.user.IsRepeatOfNickName(nickName, userId); isRepeat {
 		log.Log.Errorf("user_trace: nick name has exists, nickname:%s", nickName)
 		return errdef.USER_NICK_NAME_EXISTS
 	}

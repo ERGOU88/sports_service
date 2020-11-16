@@ -280,8 +280,8 @@ func (m *UserModel) AddUser() error {
 }
 
 // 昵称是否重复
-func (m *UserModel) IsRepeatOfNickName(nickName string) bool {
-	count, _ := m.Engine.Where("nick_name = ?", nickName).Count(&models.User{})
+func (m *UserModel) IsRepeatOfNickName(nickName, userId string) bool {
+	count, _ := m.Engine.Where("nick_name = ? and user_id != ?", nickName, userId).Count(&models.User{})
 	if count > 0 {
 		return true
 	}
