@@ -8,5 +8,5 @@ build-job-1:
   only:
     - develop
   script:
-    - GOOS=linux GOARCH=amd64 go build -o fpv main.go
+    - GOOS=linux GOARCH=amd64 go build -o fpv ./app/main.go
     - rsync -avz fpv 10.6.176.147::fpv
