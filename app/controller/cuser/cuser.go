@@ -139,7 +139,7 @@ func (svc *UserModule) EditUserInfo(userId string, params *muser.EditUserInfoPar
 		return errdef.USER_NICK_NAME_EXISTS
 	}
 
-	if params.Avatar == 0 {
+	if params.Avatar != 0 {
     // 查看系统头像是否存在
     avatarInfo := svc.GetDefaultAvatarById(params.Avatar)
     if avatarInfo == nil {
