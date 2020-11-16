@@ -139,12 +139,16 @@ func (svc *UserModule) EditUserInfo(userId string, params *muser.EditUserInfoPar
 		return errdef.USER_NICK_NAME_EXISTS
 	}
 
-	// 查看系统头像是否存在
-	avatarInfo := svc.GetDefaultAvatarById(params.Avatar)
-	if avatarInfo == nil {
-		log.Log.Errorf("user_trace: avatar not exists, avatar id:%d", params.Avatar)
-		return errdef.USER_AVATAR_NOT_EXISTS
-	}
+	if params.Avatar == 0 {
+    // 查看系统头像是否存在
+    avatarInfo := svc.GetDefaultAvatarById(params.Avatar)
+    if avatarInfo == nil {
+      log.Log.Errorf("user_trace: avatar not exists, avatar id:%d", params.Avatar)
+      return errdef.USER_AVATAR_NOT_EXISTS
+    }
+
+    info.Avatar = avatarInfo.Avatar
+  }
 
 	// 查看国家是否存在
 	countryInfo := svc.GetWorldInfoById(params.CountryId)
@@ -160,7 +164,6 @@ func (svc *UserModule) EditUserInfo(userId string, params *muser.EditUserInfoPar
 	info.NickName = nickName
 	info.Signature = params.Signature
 	info.Country = int(params.CountryId)
-	info.Avatar = avatarInfo.Avatar
 	info.UpdateAt = int(time.Now().Unix())
 	if err := svc.user.UpdateUserInfo(); err != nil {
 		log.Log.Errorf("user_trace: update user info err:%s", err)
