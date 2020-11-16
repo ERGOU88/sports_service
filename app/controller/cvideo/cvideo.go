@@ -293,11 +293,25 @@ func (svc *VideoModule) GetUserPublishList(userId, status, condition string, pag
 	for _, val := range list {
 	  // todo: 已播时长（毫秒）
 	  val.TimeElapsed = 10000
-	  val.StatusCn = svc.GetConditionCn(condition)
+	  val.StatusCn = svc.GetVideoStatusCn(fmt.Sprint(val.Status))
 	  val.VideoAddr = svc.video.AntiStealingLink(val.VideoAddr)
   }
 
   return list
+}
+
+// 获取视频状态（中文展示）
+func (svc *VideoModule) GetVideoStatusCn(status string) string {
+  switch status {
+  case consts.VIDEO_UNDER_REVIEW:
+    return "审核中"
+  case consts.VIDEO_AUDIT_SUCCESS:
+    return "已发布"
+  case consts.VIDEO_AUDIT_FAILURE:
+    return "未通过"
+  }
+
+  return "未知"
 }
 
 // -1 发布时间 0 播放数 1 弹幕数 2 评论数 3 点赞数 4 分享数
