@@ -212,7 +212,7 @@ func (m *UserModel) GetUserListBySort(userId, mobileNum, sortType, condition str
     "LEFT JOIN (select cr.user_id, count(cr.id) as total_collect from collect_record as cr " +
     "where cr.status=1 group by cr.user_id) as cr on u.user_id=cr.user_id " +
     "LEFT JOIN (select v.user_id, count(v.video_id) as total_publish from videos as v " +
-    "where v.status=1 group by v.user_id) as v on u.user_id=v.user_id " +
+    " group by v.user_id) as v on u.user_id=v.user_id " +
     "LEFT JOIN (select vb.user_id, count(vb.id) as total_barrage from video_barrage as vb " +
     "group by vb.user_id) as vb on u.user_id=vb.user_id  " +
     "LEFT JOIN (select vc.user_id, count(vc.id) as total_comment from video_comment as vc " +
