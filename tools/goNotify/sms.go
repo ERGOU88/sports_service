@@ -19,7 +19,7 @@ import (
 )
 
 var (
-  SMS_URI = "http://sms.uuzuonline.com/api/sp/sendSMS"
+  SMS_URI = "http://notify.youzu.com/api/sp/sendSMS"
 )
 
 type Sms struct {
