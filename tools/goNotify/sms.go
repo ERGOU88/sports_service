@@ -22,12 +22,6 @@ var (
   SMS_URI = "http://sms.uuzuonline.com/api/sp/sendSMS"
 )
 
-//type Sms struct {
-//	content
-//	AppId  string
-//	AppKey string
-//}
-
 type Sms struct {
   AppId           string
   AppKey          string
@@ -55,22 +49,6 @@ func (s Sms) Send() error {
   }
 
   return nil
-
-
-  //t := time.Now().Unix()
-  //query := fmt.Sprintf("app_id=%s&mobile=%s&template_code=%s&template_params=%s&time=%d", s.AppId, s.Mobile, s.TemplateCode, s.TemplateParams,  t)
-  //query = fmt.Sprintf("%s&verify=%s", query, s.sign(query))
-  //header := http.Header{}
-  //header.Set("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
-  //resp, status, err := util.HttpDo(SMS_URI, http.MethodGet, s.ServiceName, []byte(query), 5, header)
-  //if err != nil || status != 200 {
-  //  return err
-  //}
-  //code := gjson.GetBytes(resp, "status").String()
-  //if code != "0" {
-  //  return errors.New("短信发送失败,err:" + gjson.GetBytes(resp, "desc").String())
-  //}
-  //return nil
 }
 
 func (s Sms) sign(query string) string {
