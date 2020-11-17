@@ -77,11 +77,17 @@ func (svc *UserModule) SendSmsCode(params *sms.SendSmsCodeParams) int {
 		return errdef.ERROR
 	}
 
-	// 重发验证码的限制时间
-	if err := svc.sms.SetSmsIntervalTm(params.SendType, params.MobileNum); err != nil {
-		log.Log.Errorf("sms_trace: set sms interval tm err:%s", err)
-		return errdef.ERROR
-	}
+  // 发送短信验证码
+  if err := svc.sms.Send(params.MobileNum, code); err != nil {
+    log.Log.Errorf("sms_trace: send sms code err:%s", err)
+    return errdef.SMS_CODE_SEND_FAIL
+  }
+
+  // 重发验证码的限制时间
+  if err := svc.sms.SetSmsIntervalTm(params.SendType, params.MobileNum); err != nil {
+    log.Log.Errorf("sms_trace: set sms interval tm err:%s", err)
+    return errdef.ERROR
+  }
 
 	// 记录发送验证码的次数
 	if err := svc.sms.IncrSendSmsNum(params.MobileNum); err != nil {
@@ -94,12 +100,6 @@ func (svc *UserModule) SendSmsCode(params *sms.SendSmsCodeParams) int {
 		if _, err := svc.sms.SetSmsIntervalExpire(params.MobileNum); err != nil {
 			log.Log.Errorf("sms_trace: set sms interval expire err:%s", err)
 		}
-	}
-
-	// 发送短信验证码
-	if err := svc.sms.Send(params.MobileNum, code); err != nil {
-		log.Log.Errorf("sms_trace: send sms code err:%s", err)
-		return errdef.SMS_CODE_SEND_FAIL
 	}
 
 	return errdef.SUCCESS
