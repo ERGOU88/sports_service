@@ -10,3 +10,12 @@ build-job-1:
   script:
     - GOOS=linux GOARCH=amd64 go build -o fpv ./app/main.go
     - rsync -avz fpv 10.6.176.147::fpv
+build-job-2:
+  tags:
+    - gitlab_build_theseus
+  stage: build
+  only:
+    - develop
+  script:
+    - GOOS=linux GOARCH=amd64 go build -o fpv_backend ./app/main.go
+    - rsync -avz fpv_backend 10.6.176.147::fpv_backend
