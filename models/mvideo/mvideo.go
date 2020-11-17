@@ -106,6 +106,7 @@ type RecommendVideoInfo struct {
 	Nickname      string                `json:"nick_name"  example:"昵称"`             // 昵称
 	IsCollect     int                   `json:"is_collect" example:"1"`               // 是否收藏
 	IsLike        int                   `json:"is_like" example:"1"`                  // 是否点赞
+	Size          int                   `json:"size"`                                 // 视频总字节数
 }
 
 type VideoDetailInfo struct {

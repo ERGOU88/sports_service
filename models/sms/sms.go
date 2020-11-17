@@ -59,6 +59,7 @@ func (m *SmsModel) GetSendMod(sendType string) string {
 const (
   TEMPLATE_CODE = "SMS_000042"             // fpv短信模版code
 )
+
 // 发送短信验证码
 func (m *SmsModel) Send(mobileNum, code string) error {
 	s := &notify.Sms{}
@@ -73,6 +74,7 @@ func (m *SmsModel) Send(mobileNum, code string) error {
 
 	return nil
 }
+
 type TemplateParams struct {
   Code       string    `json:"code"`
 }
