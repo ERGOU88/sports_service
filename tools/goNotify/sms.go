@@ -19,7 +19,7 @@ import (
 )
 
 var (
-  SMS_URI = "http://notify.youzu.com/api/sp/sendSMS"
+  SMS_URI = "http://sms.uuzuonline.com/api/sp/sendSMS"
 )
 
 //type Sms struct {
@@ -135,10 +135,10 @@ func (s Sms) GetKeysAndValuesBySortKeys(urlValues url.Values) (values []string) 
 
 // 返回值
 type Resp struct {
-  Status   string  `json:"status"`
+  Status   int     `json:"status"`
   Desc     string  `json:"desc"`
-  Data    struct {
-    SpId   string  `json:"sp_id"`
+  Data     struct {
+   SpId    int  `json:"sp_id"`
   } `json:"data"`
 }
 
@@ -150,14 +150,14 @@ func (s Sms) doRequest() error {
 
   fmt.Printf("\n params:%s", params)
 
-  req, err := http.NewRequest("GET",  strings.Trim(fmt.Sprintf("%s?%s", SMS_URI, params), " "), nil)
+  req, err := http.NewRequest("GET", fmt.Sprintf("%s?%s", SMS_URI, params), nil)
   if err != nil {
     return err
   }
   req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-  req.Header.Set("User-Agent", "youzu-go-notify")
-  req.Header.Set("Service-Name", s.ServiceName)
-  fmt.Printf("\nreq:%+v", req)
+  //req.Header.Set("User-Agent", "youzu-go-notify")
+  //req.Header.Set("Service-Name", s.ServiceName)
+  fmt.Printf("\nreq:%+v, \nurl:%s", req, req.URL)
 
   client := http.Client{
     Timeout: time.Second * time.Duration(3),
@@ -186,7 +186,9 @@ func (s Sms) doRequest() error {
     return err
   }
 
-  if res.Status != "0" {
+  fmt.Printf("res:%+v", res)
+
+  if res.Status != 0 {
     return errors.New("短信发送失败, err:" + res.Desc)
   }
 
