@@ -12,7 +12,6 @@ import (
 
 type TemplateParams struct {
   Code       string    `json:"code"`
-  Username   string    `json:"username"`
 }
 
 func TestSms_Send(t *testing.T) {

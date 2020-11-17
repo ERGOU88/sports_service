@@ -155,8 +155,8 @@ func (s Sms) doRequest() error {
     return err
   }
   req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-  //req.Header.Set("User-Agent", "youzu-go-notify")
-  //req.Header.Set("Service-Name", s.ServiceName)
+  req.Header.Set("User-Agent", "youzu-go-notify")
+  req.Header.Set("Service-Name", s.ServiceName)
   fmt.Printf("\nreq:%+v, \nurl:%s", req, req.URL)
 
   client := http.Client{
