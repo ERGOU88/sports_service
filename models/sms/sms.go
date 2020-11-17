@@ -1,7 +1,8 @@
 package sms
 
 import (
-	"math/rand"
+  "encoding/json"
+  "math/rand"
 	"sports_service/server/global/rdskey"
 	notify "sports_service/server/tools/goNotify"
 	"sports_service/server/global/consts"
@@ -55,17 +56,34 @@ func (m *SmsModel) GetSendMod(sendType string) string {
 	return ""
 }
 
+const (
+  TEMPLATE_CODE = "SMS_000042"             // fpv短信模版code
+)
 // 发送短信验证码
-func (m *SmsModel) Send(sendMod, mobileNum, code string) error {
+func (m *SmsModel) Send(mobileNum, code string) error {
 	s := &notify.Sms{}
-	s.To = mobileNum
+	s.Mobile = mobileNum
+	s.TemplateParams = m.GetTemplateParams(code)
+	s.TemplateCode = TEMPLATE_CODE
+	s.Time = time.Now().Unix()
 	s.ServiceName = consts.SERVICE_NAME
-	s.Content = []byte(fmt.Sprintf(sendMod, code))
 	if err := s.Send(); err != nil {
 		return err
 	}
 
 	return nil
+}
+type TemplateParams struct {
+  Code       string    `json:"code"`
+}
+
+func (m *SmsModel) GetTemplateParams(code string) string {
+  params := &TemplateParams{
+    Code:   code,
+  }
+
+  bts, _ := json.Marshal(params)
+  return string(bts)
 }
 
 // 获取24小时内发送短信的限制数量

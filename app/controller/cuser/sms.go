@@ -27,11 +27,11 @@ func (svc *UserModule) SendSmsCode(params *sms.SendSmsCodeParams) int {
 	}
 
 	// 获取短信模版
-	mod := svc.sms.GetSendMod(params.SendType)
-	if mod == "" {
-		log.Log.Error("sms_trace: invalid send type" )
-		return errdef.SMS_CODE_INVALID_SEND_TYPE
-	}
+	//mod := svc.sms.GetSendMod(params.SendType)
+	//if mod == "" {
+	//	log.Log.Error("sms_trace: invalid send type" )
+	//	return errdef.SMS_CODE_INVALID_SEND_TYPE
+	//}
 
 	// 获取当前手机号发送的短信验证码次数
 	limitNum, err := svc.sms.GetSendSmsLimitNum(params.MobileNum)
@@ -97,7 +97,7 @@ func (svc *UserModule) SendSmsCode(params *sms.SendSmsCodeParams) int {
 	}
 
 	// 发送短信验证码
-	if err := svc.sms.Send(mod, params.MobileNum, code); err != nil {
+	if err := svc.sms.Send(params.MobileNum, code); err != nil {
 		log.Log.Errorf("sms_trace: send sms code err:%s", err)
 		return errdef.SMS_CODE_SEND_FAIL
 	}

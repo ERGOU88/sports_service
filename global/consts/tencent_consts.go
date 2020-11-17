@@ -7,6 +7,9 @@ const (
 	TMS_API_DOMAIN      = "tms.tencentcloudapi.com"
 	TX_CLOUD_SECRET_ID  = "AKIDSfbHjxhcmiV3ECAVqvzoNgme8NTIr9C0"
 	TX_CLOUD_SECRET_KEY = "g6FDvRkmZ5KJ1SijWpse9OM4XmmJZZke"
+
+	// 任务流模版名称
+  VOD_PROCEDURE_NAME  = "fpv-demo"
 )
 
 // NewFileUpload：视频上传完成；

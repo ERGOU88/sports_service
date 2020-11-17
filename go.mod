@@ -26,6 +26,8 @@ require (
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.5.1
 	github.com/tencentcloud/tencentcloud-sdk-go v1.0.30
+	github.com/tencentyun/cos-go-sdk-v5 v0.7.11 // indirect
+	github.com/tencentyun/vod-go-sdk v1.0.0
 	github.com/tidwall/gjson v1.6.1
 	github.com/ylywyn/jpush-api-go-client v0.0.0-20190906031852-8c4466c6e369 // indirect
 	github.com/zheng-ji/goSnowFlake v0.0.0-20180906112711-fc763800eec9

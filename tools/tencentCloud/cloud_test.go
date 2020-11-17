@@ -21,7 +21,7 @@ func TestTextModeration(t *testing.T) {
 // 生成签名
 func TestGenerateSign(t *testing.T) {
 	client := New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
-	sign := client.GenerateSign("1234567", 7654321)
+	sign := client.GenerateSign("1234567", consts.VOD_PROCEDURE_NAME, 7654321)
 	t.Logf("upload sign: %s", sign)
 }
 
@@ -44,4 +44,13 @@ func TestConfirmEvent(t *testing.T) {
 		t.Errorf("confirm events err:%v", err)
 		return
 	}
+}
+
+// 上传
+func TestUpload(t *testing.T) {
+  client := New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
+  if err := client.Upload("", "./test.mp4", "ap-shanghai", consts.VOD_PROCEDURE_NAME); err != nil {
+    t.Errorf("upload err:%v", err)
+    return
+  }
 }

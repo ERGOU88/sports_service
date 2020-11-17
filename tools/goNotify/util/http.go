@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
+  "strings"
 	"time"
 )
 
@@ -28,6 +28,8 @@ func HttpDo(uri, method, serviceName string, query []byte, timeout int64, header
 		return nil, 0, err
 	}
 
+	fmt.Printf("\nreq:%+v", req)
+
 	req.Header = header
 	req.Header.Set("User-Agent", "youzu-go-notify")
 	req.Header.Set("Service-Name", serviceName)
@@ -36,7 +38,16 @@ func HttpDo(uri, method, serviceName string, query []byte, timeout int64, header
 		return nil, 0, err
 	}
 
+	fmt.Println("\nresp", resp)
+
 	if resp.StatusCode != 200 {
+	  fmt.Printf("resp.StatusCode:%d", resp.StatusCode)
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+      return nil, 0, errors.New("读取body内容时返回error,err:" + err.Error())
+    }
+
+    fmt.Printf("\nbody:%s", string(body))
 		return nil, resp.StatusCode, errors.New("请求返回的状态码非200")
 	}
 
@@ -49,3 +60,4 @@ func HttpDo(uri, method, serviceName string, query []byte, timeout int64, header
 	return body, 200, nil
 
 }
+

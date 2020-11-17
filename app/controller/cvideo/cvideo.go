@@ -776,7 +776,7 @@ func (svc *VideoModule) GetUploadSign(userId string) (int, string, int64) {
 
 	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
 	taskId := util.GetXID()
-	sign := client.GenerateSign(userId, taskId)
+	sign := client.GenerateSign(userId, consts.VOD_PROCEDURE_NAME, taskId)
 
 	if err := svc.video.RecordUploadTaskId(userId, taskId); err != nil {
 		log.Log.Errorf("video_trace: record upload taskid err:%s", err)

@@ -1,19 +1,19 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"sports_service/server/tools/nsq"
-	"sports_service/server/app/config"
-	"sports_service/server/app/routers"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/job"
-	"sports_service/server/log/zap"
-	"sports_service/server/models/pprof"
-	"sports_service/server/util"
+  "flag"
+  "fmt"
+  "github.com/gin-gonic/gin"
+  "sports_service/server/app/config"
+  "sports_service/server/app/routers"
+  "sports_service/server/dao"
+  "sports_service/server/global/app/log"
+  "sports_service/server/global/consts"
+  "sports_service/server/job"
+  "sports_service/server/log/zap"
+  "sports_service/server/models/pprof"
+  "sports_service/server/tools/nsq"
+  "sports_service/server/util"
 )
 
 var (

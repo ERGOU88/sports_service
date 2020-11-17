@@ -4,12 +4,29 @@
 
 package notify
 
-import "testing"
+import (
+  "encoding/json"
+  "testing"
+  "time"
+)
+
+type TemplateParams struct {
+  Code       string    `json:"code"`
+}
 
 func TestSms_Send(t *testing.T) {
-	s := &Sms{}
-	s.To = "17721473132"
-	s.ServiceName = "test"
-	s.Content = []byte("test")
-	t.Log(s.Send())
+  params := &TemplateParams{
+    Code:   "4321",
+  }
+
+  bts, _ := json.Marshal(params)
+
+  s := &Sms{}
+  s.Mobile = "13177656222"
+  s.TemplateCode = "SMS_000042"
+  s.TemplateParams = string(bts)
+  s.Time = time.Now().Unix()
+  s.ServiceName = "test"
+  t.Log(s.Send())
 }
+
