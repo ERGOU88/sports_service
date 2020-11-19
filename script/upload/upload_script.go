@@ -26,7 +26,7 @@ var (
   rdshost = flag.String("r", "", "-r redis地址")
   pwd = flag.String("p", "", "-p redis密码")
   uid = flag.String("u", "", "-u 指定用户id")
-  exec = flag.String("e", "", "-e up 执行upload")
+  exec = flag.String("e", "", "-e upload 执行upload")
 )
 
 func main() {
