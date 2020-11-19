@@ -7,6 +7,7 @@ import (
   "github.com/go-xorm/xorm"
   "io/ioutil"
   "net/http/httptest"
+  "regexp"
   "sports_service/server/dao"
   "sports_service/server/global/app/errdef"
   "sports_service/server/global/consts"
@@ -128,8 +129,9 @@ func main() {
     info := GetSpiderInfoByFileName(file)
     fmt.Printf("info:%v", info)
     if info != nil {
-      params.Title = info.Title
-      params.Describe = info.Description
+      params.Title = TrimHtml(info.Title)
+      fmt.Println("\ntitle:", params.Title)
+      params.Describe = TrimHtml(info.Description)
       params.Cover = info.Pic
     }
 
@@ -170,6 +172,30 @@ func GetSpiderInfo() []*Bili {
   }
 
   return list
+}
+
+func TrimHtml(src string) string {
+  // 将HTML标签全转换成小写
+  re, _ := regexp.Compile("\\<[\\S\\s]+?\\>")
+  src = re.ReplaceAllStringFunc(src, strings.ToLower)
+
+  // 去除STYLE
+  re, _ = regexp.Compile("\\<style[\\S\\s]+?\\</style\\>")
+  src = re.ReplaceAllString(src, "")
+
+  // 去除SCRIPT
+  re, _ = regexp.Compile("\\<script[\\S\\s]+?\\</script\\>")
+  src = re.ReplaceAllString(src, "")
+
+  // 去除所有尖括号内的HTML代码，并换成换行符
+  re, _ = regexp.Compile("\\<[\\S\\s]+?\\>")
+  src = re.ReplaceAllString(src, "\n")
+
+  // 去除连续的换行符
+  re, _ = regexp.Compile("\\s{2,}")
+  src = re.ReplaceAllString(src, "\n")
+
+  return strings.TrimSpace(src)
 }
 
 // 通过文件名获取爬虫数据
