@@ -92,8 +92,8 @@ type RecommendVideoInfo struct {
 	Describe      string                `json:"describe"  example:"描述"`              // 描述
 	Cover         string                `json:"cover"  example:"封面"`                 // 封面
 	VideoAddr     string                `json:"video_addr"  example:"视频地址"`         // 视频地址
-	IsRecommend   int                   `json:"is_recommend" example:"是否推荐"`        // 是否推荐
-	IsTop         int                   `json:"is_top"  example:"是否置顶"`             // 是否置顶
+	IsRecommend   int                   `json:"is_recommend" example:"0"`             // 是否推荐
+	IsTop         int                   `json:"is_top"  example:"0"`                  // 是否置顶
 	VideoDuration int                   `json:"video_duration" example:"100000"`       // 视频时长
 	VideoWidth    int64                 `json:"video_width"  example:"100"`            // 视频宽
 	VideoHeight   int64                 `json:"video_height"  example:"100"`           // 视频高
@@ -115,8 +115,8 @@ type VideoDetailInfo struct {
   Describe      string                `json:"describe"  example:"描述"`              // 描述
   Cover         string                `json:"cover"  example:"封面"`                 // 封面
   VideoAddr     string                `json:"video_addr"  example:"视频地址"`         // 视频地址
-  IsRecommend   int                   `json:"is_recommend" example:"是否推荐"`        // 是否推荐
-  IsTop         int                   `json:"is_top"  example:"是否置顶"`             // 是否置顶
+  IsRecommend   int                   `json:"is_recommend" example:"0"`             // 是否推荐
+  IsTop         int                   `json:"is_top"  example:"0"`                 // 是否置顶
   VideoDuration int                   `json:"video_duration" example:"100000"`       // 视频时长
   VideoWidth    int64                 `json:"video_width"  example:"100"`            // 视频宽
   VideoHeight   int64                 `json:"video_height"  example:"100"`           // 视频高

@@ -19,7 +19,8 @@ import (
 )
 
 var (
-  SMS_URI = "http://notify.youzu.com/api/sp/sendSMS"
+  SMS_URI_NEW = "http://notify.youzu.com/api/sp/sendSMS"
+  SMS_URI     = "http://sms.uuzuonline.com/api/sp/sendSMS"
 )
 
 type Sms struct {
@@ -33,8 +34,8 @@ type Sms struct {
 }
 
 const (
-  APP_ID        = "dhlQN9jYck"
-  APP_KEY       = "WKbPKSr8TuRfrfmzch"
+  APP_ID        = "Gb9cIfURgH"
+  APP_KEY       = "fO2txAmo5FOjgn4jAj"
 )
 
 func (s Sms) Send() error {
@@ -113,22 +114,22 @@ func (s Sms) GetKeysAndValuesBySortKeys(urlValues url.Values) (values []string) 
 
 // 返回值
 type Resp struct {
-  Status   int     `json:"status"`
+  Status   string     `json:"status"`
   Desc     string  `json:"desc"`
-  Data     struct {
-   SpId    int  `json:"sp_id"`
-  } `json:"data"`
+  //Data     struct {
+  //  SpId    int  `json:"sp_id"`
+  //} `json:"data"`
 }
 
 func (s Sms) doRequest() error {
-  params, _, err := s.URLValues()
+  params, p, err := s.URLValues()
   if err != nil {
     return err
   }
 
   fmt.Printf("\n params:%s", params)
 
-  req, err := http.NewRequest("GET", fmt.Sprintf("%s?%s", SMS_URI, params), nil)
+  req, err := http.NewRequest("GET", fmt.Sprintf("%s?%s", SMS_URI_NEW, p.Encode()), nil)
   if err != nil {
     return err
   }
@@ -166,7 +167,7 @@ func (s Sms) doRequest() error {
 
   fmt.Printf("res:%+v", res)
 
-  if res.Status != 0 {
+  if res.Status != "0" {
     return errors.New("短信发送失败, err:" + res.Desc)
   }
 

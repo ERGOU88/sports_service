@@ -174,11 +174,12 @@ func (tc *TencentCloud) TextModeration(content string) (bool, error) {
   return true, nil
 }
 
-// token: 临时签名
+// taskId 任务id
+// userId 用户id
 // path: 文件路径
 // region: 区域 例如 ap-shanghai
 // procedure: 任务流模版名称
-func (tc *TencentCloud) Upload(token, path, region, procedure string) error {
+func (tc *TencentCloud) Upload(taskId int64, userId, token, path, region, procedure string) (*vodSdk.VodUploadResponse, error) {
   vodClient := &vodSdk.VodUploadClient{}
   vodClient.SecretId = tc.secretId
   vodClient.SecretKey = tc.secretKey
@@ -188,15 +189,21 @@ func (tc *TencentCloud) Upload(token, path, region, procedure string) error {
   req := vodSdk.NewVodUploadRequest()
   req.MediaFilePath = common.StringPtr(path)
   req.Procedure = common.StringPtr(procedure)
+  context, _ := util.JsonFast.Marshal(&SourceContext{
+    TaskId: taskId,
+    UserId: userId,
+  })
+  req.SourceContext = common.StringPtr(string(context))
+
   rsp, err := vodClient.Upload(region, req)
   if err != nil {
     fmt.Printf("Request Upload error: %s", err)
-    return err
+    return nil, err
   }
 
   fmt.Println(*rsp.Response.FileId)
   fmt.Println(*rsp.Response.MediaUrl)
   fmt.Println(*rsp.Response.CoverUrl)
 
-  return nil
+  return rsp, nil
 }

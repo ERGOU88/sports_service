@@ -72,14 +72,10 @@ definitions:
     type: object
   mcollect.AddCollectParam:
     properties:
-      to_user_id:
-        example: 发布者uid
-        type: string
       video_id:
         example: 10001
         type: integer
     required:
-    - to_user_id
     - video_id
     type: object
   mcollect.CancelCollectParam:
@@ -98,6 +94,17 @@ definitions:
         type: array
     required:
     - compose_ids
+    type: object
+  mcomment.CommentReportParam:
+    properties:
+      comment_id:
+        type: integer
+      reason:
+        type: string
+      user_id:
+        type: string
+    required:
+    - comment_id
     type: object
   mcomment.PublishCommentParams:
     properties:
@@ -126,7 +133,13 @@ definitions:
       id:
         example: 1600000000
         type: integer
+      is_at:
+        example: 0
+        type: integer
       is_attention:
+        example: 0
+        type: integer
+      is_like:
         example: 0
         type: integer
       is_top:
@@ -196,10 +209,16 @@ definitions:
       create_at:
         example: 1600000000
         type: integer
+      has_more:
+        example: 0
+        type: integer
       id:
         example: 1000000000
         type: integer
       is_attention:
+        example: 0
+        type: integer
+      is_like:
         example: 0
         type: integer
       is_top:
@@ -264,12 +283,8 @@ definitions:
       compose_id:
         example: 10000000000
         type: integer
-      to_user_id:
-        example: 被点赞的用户
-        type: string
     required:
     - compose_id
-    - to_user_id
     type: object
   mnotify.NotifySettingParams:
     properties:
@@ -300,6 +315,8 @@ definitions:
       explain:
         type: string
       id:
+        type: integer
+      jump_type:
         type: integer
       jump_url:
         type: string
@@ -362,8 +379,8 @@ definitions:
     type: object
   muser.EditUserInfoParams:
     properties:
-      avatar_id:
-        example: 6
+      avatar:
+        example: 1
         type: integer
       born:
         example: "1993-06-20"
@@ -558,54 +575,85 @@ definitions:
   mvideo.VideoDetailInfo:
     properties:
       avatar:
+        example: 头像
         type: string
       barrage_num:
+        example: 10
         type: integer
       browse_num:
+        example: 10
+        type: integer
+      collect_num:
+        example: 10
         type: integer
       comment_num:
+        example: 10
         type: integer
       cover:
+        example: 封面
         type: string
       create_at:
+        example: 1600000000
         type: integer
       describe:
+        example: 描述
         type: string
       fabulous_num:
+        example: 10
         type: integer
       fans_num:
+        example: 100
         type: integer
       is_attention:
+        example: 1
         type: integer
       is_collect:
+        example: 1
         type: integer
       is_like:
+        example: 1
         type: integer
       is_recommend:
+        example: 0
         type: integer
       is_top:
+        example: 0
         type: integer
       labels:
         type: string
       nick_name:
+        example: 昵称
         type: string
+      play_info:
+        items:
+          type: PlayInfo
+        type: array
       share_num:
+        example: 10
         type: integer
       status:
+        example: 1
         type: integer
       title:
+        example: 标题
         type: string
       user_id:
+        example: 发布视频的用户id
         type: string
       video_addr:
+        example: 视频地址
         type: string
       video_duration:
+        example: 100000
         type: integer
       video_height:
+        example: 100
         type: integer
       video_id:
+        example: 1000000000
         type: integer
       video_width:
+        example: 100
         type: integer
     type: object
   mvideo.VideoPublishParams:
@@ -640,50 +688,77 @@ definitions:
     - task_id
     - title
     - video_addr
-    - video_duration
-    - video_height
     - video_labels
-    - video_width
+    type: object
+  mvideo.VideoReportParam:
+    properties:
+      user_id:
+        type: string
+      video_id:
+        type: integer
+    required:
+    - video_id
     type: object
   mvideo.VideosInfo:
     properties:
       barrage_num:
+        example: 1
         type: integer
       browse_num:
+        example: 1
         type: integer
       comment_num:
+        example: 1
         type: integer
       cover:
+        example: 封面
         type: string
       create_at:
+        example: 1600000000
         type: integer
       describe:
+        example: 描述
         type: string
       fabulous_num:
+        example: 1
         type: integer
       is_recommend:
+        example: 0
         type: integer
       is_top:
+        example: 0
         type: integer
       share_num:
+        example: 1
         type: integer
       status:
+        example: 0
         type: integer
       status_cn:
+        example: 审核中
         type: string
       time_elapsed:
+        example: 1
         type: integer
       title:
+        example: 标题
+        type: string
+      user_id:
         type: string
       video_addr:
+        example: 视频地址
         type: string
       video_duration:
+        example: 1000000
         type: integer
       video_height:
+        example: 1000
         type: integer
       video_id:
+        example: 1000000000
         type: integer
       video_width:
+        example: 1000
         type: integer
     type: object
   mvideo.VideosInfoResp:
@@ -752,6 +827,9 @@ definitions:
         type: string
       platform:
         type: integer
+    required:
+    - code
+    - mobile_num
     type: object
   swag.ClientInitSwag:
     properties:
@@ -1005,6 +1083,11 @@ paths:
         name: size
         required: true
         type: string
+      - description: 用户id
+        in: query
+        name: user_id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1182,7 +1265,7 @@ paths:
             type: string
       summary: 视频弹幕列表[视频时长区间获取] (ok)
       tags:
-      - 通知模块
+      - 弹幕模块
   /api/v1/client/init:
     get:
       consumes:
@@ -1547,6 +1630,11 @@ paths:
         name: sort_type
         required: true
         type: string
+      - description: 用户id
+        in: query
+        name: user_id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1711,6 +1799,11 @@ paths:
         name: video_id
         required: true
         type: string
+      - description: 用户id
+        in: query
+        name: user_id
+        required: true
+        type: string
       - description: 评论id
         in: query
         name: comment_id
@@ -1730,6 +1823,57 @@ paths:
           schema:
             type: string
       summary: 回复列表[分页获取] (ok)
+      tags:
+      - 评论模块
+  /api/v1/comment/report:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 举报评论请求参数
+        in: body
+        name: CommentReportParam
+        required: true
+        schema:
+          $ref: '#/definitions/mcomment.CommentReportParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 举报评论 (ok)
       tags:
       - 评论模块
   /api/v1/fans/list:
@@ -1771,6 +1915,11 @@ paths:
       - description: 每页展示多少 最多50条
         in: query
         name: size
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: user_id
         required: true
         type: string
       produces:
@@ -2431,6 +2580,51 @@ paths:
       summary: 搜索关注的用户[分页获取] (ok)
       tags:
       - 搜索模块
+  /api/v1/search/clean/history:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 清空搜索历史记录 (ok)
+      tags:
+      - 搜索模块
   /api/v1/search/colligate:
     get:
       consumes:
@@ -2465,6 +2659,11 @@ paths:
       - description: 搜索的名称
         in: query
         name: name
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: user_id
         required: true
         type: string
       produces:
@@ -2574,6 +2773,11 @@ paths:
         name: Version
         required: true
         type: string
+      - description: 用户id
+        in: query
+        name: user_id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2587,7 +2791,7 @@ paths:
           description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
           schema:
             type: string
-      summary: 热门搜索 (ok)
+      summary: 热门搜索及历史搜索记录 (ok)
       tags:
       - 搜索模块
   /api/v1/search/label:
@@ -2634,6 +2838,11 @@ paths:
       - description: 搜索的视频标签
         in: query
         name: label_id
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: user_id
         required: true
         type: string
       produces:
@@ -2696,6 +2905,11 @@ paths:
       - description: 搜索的名称/userId
         in: query
         name: name
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: user_id
         required: true
         type: string
       produces:
@@ -2773,6 +2987,11 @@ paths:
       - description: 视频发布时间 0 不限制 1 一天内 2 一周内 3 半年内
         in: query
         name: publish_time
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: user_id
         required: true
         type: string
       produces:
@@ -3967,6 +4186,57 @@ paths:
           schema:
             type: string
       summary: 首页推荐的视频列表[分页获取] (ok)
+      tags:
+      - 视频模块
+  /api/v1/video/report:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 举报视频请求参数 游客userid传空字符串
+        in: body
+        name: VideoReportParam
+        required: true
+        schema:
+          $ref: '#/definitions/mvideo.VideoReportParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 举报视频 (ok)
       tags:
       - 视频模块
 swagger: "2.0"

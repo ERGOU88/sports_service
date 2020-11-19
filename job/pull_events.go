@@ -76,11 +76,17 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
     return err
   }
 
+  client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
   vmodel := mvideo.NewVideoModel(session)
   video := vmodel.GetVideoByFileId(*event.ProcedureStateChangeEvent.FileId)
   if video == nil {
     log.Log.Errorf("job_trace: video not found, fileId:%s", *event.ProcedureStateChangeEvent.FileId)
     session.Rollback()
+    // 确认事件回调
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+      log.Log.Errorf("job_trace: confirm events err:%s", err)
+    }
+
     return errors.New("video not found")
   }
 
@@ -165,7 +171,6 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
     return errors.New("record tencent complete event fail")
   }
 
-  client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
   // 确认事件回调
   if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
     log.Log.Errorf("job_trace: confirm events err:%s", err)
@@ -185,10 +190,16 @@ func uploadEvent(event *v20180717.EventContent) error {
     return err
   }
 
+  client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
   source := new(cloud.SourceContext)
   if err := util.JsonFast.Unmarshal([]byte(*event.FileUploadEvent.MediaBasicInfo.SourceInfo.SourceContext), source); err != nil {
     log.Log.Errorf("job_trace: jsonfast unmarshal event sourceContext err:%s", err)
+    // 确认事件回调
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+      log.Log.Errorf("job_trace: confirm events err:%s", err)
+    }
 
+    session.Rollback()
     return errors.New("jsonfast unmarshal event sourceContext err")
   }
 
@@ -198,6 +209,11 @@ func uploadEvent(event *v20180717.EventContent) error {
   userId, err := vmodel.GetUploadUserIdByTaskId(source.TaskId)
   if err != nil || userId == "" {
     log.Log.Errorf("job_trace: invalid taskId, taskId:%d", source.TaskId)
+    // 确认事件回调
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+      log.Log.Errorf("job_trace: confirm events err:%s", err)
+    }
+
     session.Rollback()
     return errors.New("invalid taskId")
   }
@@ -256,7 +272,7 @@ func uploadEvent(event *v20180717.EventContent) error {
   vmodel.Videos.Size = *event.FileUploadEvent.MetaData.Size
   fileId, _ := strconv.Atoi(*event.FileUploadEvent.FileId)
   vmodel.Videos.FileId = int64(fileId)
-  vmodel.Videos.Size = pubInfo.Size
+  //vmodel.Videos.Size = pubInfo.Size
   // todo: 如果有 记录用户自定义标签
 
   // 视频发布
@@ -318,7 +334,6 @@ func uploadEvent(event *v20180717.EventContent) error {
     return errors.New("record tencent event fail")
   }
 
-  client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
   // 确认事件回调
   if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
     log.Log.Errorf("job_trace: confirm events err:%s", err)

@@ -49,7 +49,8 @@ func TestConfirmEvent(t *testing.T) {
 // 上传
 func TestUpload(t *testing.T) {
   client := New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
-  if err := client.Upload("", "./test.mp4", "ap-shanghai", consts.VOD_PROCEDURE_NAME); err != nil {
+  err, _ := client.Upload(123, "321", "", "./test.mp4", "ap-shanghai", consts.VOD_PROCEDURE_NAME)
+  if err != nil {
     t.Errorf("upload err:%v", err)
     return
   }

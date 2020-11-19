@@ -78,6 +78,7 @@ func (m *VideoModel) RecordPublishInfo(userId, pubInfo string, taskId int64) err
 // 获取用户发布的视频信息
 func (m *VideoModel) GetPublishInfo(userId string, taskId int64) (string, error) {
 	key := rdskey.MakeKey(rdskey.VIDEO_UPLOAD_INFO, userId, taskId)
+	log.Log.Debugf("publishInfo key:%s", key)
 	rds := dao.NewRedisDao()
 	return rds.Get(key)
 }

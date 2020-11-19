@@ -1,7 +1,8 @@
 package video
 
 import (
-	"github.com/gin-gonic/gin"
+  "fmt"
+  "github.com/gin-gonic/gin"
 	"net/http"
 	"sports_service/server/app/controller/cvideo"
 	"sports_service/server/global/app/errdef"
@@ -9,7 +10,8 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mvideo"
   _ "sports_service/server/models/mlabel"
-	"sports_service/server/util"
+  cloud "sports_service/server/tools/tencentCloud"
+  "sports_service/server/util"
 	_ "sports_service/server/models"
 	"sports_service/server/tools/tencentCloud/vod"
 )
@@ -477,4 +479,39 @@ func VideoReport(c *gin.Context) {
   svc := cvideo.New(c)
   syscode := svc.AddVideoReport(param)
   reply.Response(http.StatusOK, syscode)
+}
+
+func TestUpload(c *gin.Context) {
+  reply := errdef.New(c)
+  svc := cvideo.New(c)
+  syscode, _, taskId := svc.GetUploadSign("202009101933004667")
+  if syscode != errdef.SUCCESS {
+   reply.Response(http.StatusOK, syscode)
+   return
+  }
+
+  client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
+  resp, err := client.Upload(taskId,"202009101933004667", "", "/Users/jelly/go/src/sports_service/server/tools/tencentCloud/test.mp4",
+    "ap-shanghai", consts.VOD_PROCEDURE_NAME)
+  if err != nil {
+    fmt.Printf("upload err:%s", err)
+    reply.Response(http.StatusOK, errdef.ERROR)
+    return
+  }
+
+  params := new(mvideo.VideoPublishParams)
+  params.Title = "test"
+  params.Describe = "test"
+  params.FileId = *resp.Response.FileId
+  params.VideoAddr = *resp.Response.MediaUrl
+  params.Cover = *resp.Response.CoverUrl
+  params.VideoLabels = "1,2"
+  params.TaskId = taskId
+  if syscode := svc.RecordPubVideoInfo("202009101933004667", params); syscode != errdef.SUCCESS {
+    reply.Response(http.StatusOK, errdef.VIDEO_PUBLISH_FAIL)
+    return
+  }
+
+
+  reply.Response(http.StatusOK, errdef.SUCCESS)
 }

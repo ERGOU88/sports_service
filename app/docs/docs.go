@@ -162,6 +162,13 @@ var doc = `{
                         "name": "size",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -342,7 +349,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "通知模块"
+                    "弹幕模块"
                 ],
                 "summary": "视频弹幕列表[视频时长区间获取] (ok)",
                 "parameters": [
@@ -954,6 +961,13 @@ var doc = `{
                         "name": "sort_type",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1197,6 +1211,13 @@ var doc = `{
                     },
                     {
                         "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "评论id",
                         "name": "comment_id",
                         "in": "query",
@@ -1211,6 +1232,81 @@ var doc = `{
                             "items": {
                                 "$ref": "#/definitions/mcomment.ReplyComment"
                             }
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/comment/report": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "评论模块"
+                ],
+                "summary": "举报评论 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "举报评论请求参数",
+                        "name": "CommentReportParam",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/mcomment.CommentReportParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -1282,6 +1378,13 @@ var doc = `{
                         "type": "string",
                         "description": "每页展示多少 最多50条",
                         "name": "size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
                         "in": "query",
                         "required": true
                     }
@@ -2244,6 +2347,72 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/search/clean/history": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "搜索模块"
+                ],
+                "summary": "清空搜索历史记录 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/search/colligate": {
             "get": {
                 "consumes": [
@@ -2297,6 +2466,13 @@ var doc = `{
                         "type": "string",
                         "description": "搜索的名称",
                         "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
                         "in": "query",
                         "required": true
                     }
@@ -2418,7 +2594,7 @@ var doc = `{
                 "tags": [
                     "搜索模块"
                 ],
-                "summary": "热门搜索 (ok)",
+                "summary": "热门搜索及历史搜索记录 (ok)",
                 "parameters": [
                     {
                         "type": "string",
@@ -2454,6 +2630,13 @@ var doc = `{
                         "description": "版本",
                         "name": "Version",
                         "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -2545,6 +2728,13 @@ var doc = `{
                         "name": "label_id",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2633,6 +2823,13 @@ var doc = `{
                         "type": "string",
                         "description": "搜索的名称/userId",
                         "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
                         "in": "query",
                         "required": true
                     }
@@ -2744,6 +2941,13 @@ var doc = `{
                         "type": "string",
                         "description": "视频发布时间 0 不限制 1 一天内 2 一周内 3 半年内",
                         "name": "publish_time",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
                         "in": "query",
                         "required": true
                     }
@@ -4490,6 +4694,81 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/api/v1/video/report": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频模块"
+                ],
+                "summary": "举报视频 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "举报视频请求参数 游客userid传空字符串",
+                        "name": "VideoReportParam",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/mvideo.VideoReportParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -4597,14 +4876,9 @@ var doc = `{
         "mcollect.AddCollectParam": {
             "type": "object",
             "required": [
-                "to_user_id",
                 "video_id"
             ],
             "properties": {
-                "to_user_id": {
-                    "type": "string",
-                    "example": "发布者uid"
-                },
                 "video_id": {
                     "type": "integer",
                     "example": 10001
@@ -4634,6 +4908,23 @@ var doc = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "mcomment.CommentReportParam": {
+            "type": "object",
+            "required": [
+                "comment_id"
+            ],
+            "properties": {
+                "comment_id": {
+                    "type": "integer"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
                 }
             }
         },
@@ -4675,7 +4966,15 @@ var doc = `{
                     "type": "integer",
                     "example": 1600000000
                 },
+                "is_at": {
+                    "type": "integer",
+                    "example": 0
+                },
                 "is_attention": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "is_like": {
                     "type": "integer",
                     "example": 0
                 },
@@ -4771,11 +5070,19 @@ var doc = `{
                     "type": "integer",
                     "example": 1600000000
                 },
+                "has_more": {
+                    "type": "integer",
+                    "example": 0
+                },
                 "id": {
                     "type": "integer",
                     "example": 1000000000
                 },
                 "is_attention": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "is_like": {
                     "type": "integer",
                     "example": 0
                 },
@@ -4865,17 +5172,12 @@ var doc = `{
         "mlike.GiveLikeParam": {
             "type": "object",
             "required": [
-                "compose_id",
-                "to_user_id"
+                "compose_id"
             ],
             "properties": {
                 "compose_id": {
                     "type": "integer",
                     "example": 10000000000
-                },
-                "to_user_id": {
-                    "type": "string",
-                    "example": "被点赞的用户"
                 }
             }
         },
@@ -4920,6 +5222,9 @@ var doc = `{
                     "type": "string"
                 },
                 "id": {
+                    "type": "integer"
+                },
+                "jump_type": {
                     "type": "integer"
                 },
                 "jump_url": {
@@ -5015,9 +5320,9 @@ var doc = `{
         "muser.EditUserInfoParams": {
             "type": "object",
             "properties": {
-                "avatar_id": {
+                "avatar": {
                     "type": "integer",
-                    "example": 6
+                    "example": 1
                 },
                 "born": {
                     "type": "string",
@@ -5290,79 +5595,113 @@ var doc = `{
             "type": "object",
             "properties": {
                 "avatar": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "头像"
                 },
                 "barrage_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 10
                 },
                 "browse_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 10
+                },
+                "collect_num": {
+                    "type": "integer",
+                    "example": 10
                 },
                 "comment_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 10
                 },
                 "cover": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "封面"
                 },
                 "create_at": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1600000000
                 },
                 "describe": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "描述"
                 },
                 "fabulous_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 10
                 },
                 "fans_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 100
                 },
                 "is_attention": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "is_collect": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "is_like": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "is_recommend": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "is_top": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "labels": {
                     "type": "string"
                 },
                 "nick_name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "昵称"
+                },
+                "play_info": {
+                    "type": "array",
+                    "items": {
+                        "type": "PlayInfo"
+                    }
                 },
                 "share_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 10
                 },
                 "status": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "标题"
                 },
                 "user_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "发布视频的用户id"
                 },
                 "video_addr": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "视频地址"
                 },
                 "video_duration": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 100000
                 },
                 "video_height": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 100
                 },
                 "video_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1000000000
                 },
                 "video_width": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 100
                 }
             }
         },
@@ -5374,10 +5713,7 @@ var doc = `{
                 "task_id",
                 "title",
                 "video_addr",
-                "video_duration",
-                "video_height",
-                "video_labels",
-                "video_width"
+                "video_labels"
             ],
             "properties": {
                 "cover": {
@@ -5418,65 +5754,101 @@ var doc = `{
                 }
             }
         },
+        "mvideo.VideoReportParam": {
+            "type": "object",
+            "required": [
+                "video_id"
+            ],
+            "properties": {
+                "user_id": {
+                    "type": "string"
+                },
+                "video_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "mvideo.VideosInfo": {
             "type": "object",
             "properties": {
                 "barrage_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "browse_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "comment_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "cover": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "封面"
                 },
                 "create_at": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1600000000
                 },
                 "describe": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "描述"
                 },
                 "fabulous_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "is_recommend": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "is_top": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "share_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "status": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "status_cn": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "审核中"
                 },
                 "time_elapsed": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "title": {
+                    "type": "string",
+                    "example": "标题"
+                },
+                "user_id": {
                     "type": "string"
                 },
                 "video_addr": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "视频地址"
                 },
                 "video_duration": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1000000
                 },
                 "video_height": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1000
                 },
                 "video_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1000000000
                 },
                 "video_width": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1000
                 }
             }
         },
@@ -5562,6 +5934,10 @@ var doc = `{
         },
         "sms.SmsCodeLoginParams": {
             "type": "object",
+            "required": [
+                "code",
+                "mobile_num"
+            ],
             "properties": {
                 "code": {
                     "type": "string"
