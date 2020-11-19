@@ -210,9 +210,9 @@ func uploadEvent(event *v20180717.EventContent) error {
   if err != nil || userId == "" {
     log.Log.Errorf("job_trace: invalid taskId, taskId:%d", source.TaskId)
     // 确认事件回调
-    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-      log.Log.Errorf("job_trace: confirm events err:%s", err)
-    }
+    //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+    //  log.Log.Errorf("job_trace: confirm events err:%s", err)
+    //}
 
     session.Rollback()
     return errors.New("invalid taskId")

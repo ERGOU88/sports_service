@@ -20,7 +20,7 @@ import (
 )
 
 var (
-  server = flag.String("svr", "", "-svr 指定服务器(本地/测试服/qa服/自定义)")
+  server = flag.String("svr", "", "-svr 指定服务器(本地(local)/测试服(test)/qa服(qa)/自定义(custom))")
   masterDb = flag.String("m", "", "-m 主数据库地址")
   spiderDb = flag.String("s", "", "-s 爬虫数据库地址")
   rdshost = flag.String("r", "", "-r redis地址")
@@ -94,18 +94,20 @@ func main() {
     return
   }
 
-  spiderInfo := GetSpiderInfo()
-  if len(spiderInfo) == 0 {
-    fmt.Println("spider info not found")
-    return
-  }
+  //spiderInfo := GetSpiderInfo()
+  //if len(spiderInfo) == 0 {
+  //  fmt.Println("spider info not found")
+  //  return
+  //}
 
   for _, file := range listFile {
-    randNum := util.GenerateRandnum(0, len(spiderInfo) - 1)
+    //randNum := util.GenerateRandnum(0, len(spiderInfo) - 1)
     randIndex := util.GenerateRandnum(0, len(uids) - 1)
     if *uid == "" {
       *uid = uids[randIndex]
     }
+
+    info := GetSpiderInfoByFileName(file)
 
     c, _ := gin.CreateTestContext(httptest.NewRecorder())
     svc := cvideo.New(c)
@@ -124,8 +126,8 @@ func main() {
     }
 
     params := new(mvideo.VideoPublishParams)
-    params.Title = spiderInfo[randNum].Title
-    params.Describe = spiderInfo[randNum].Description
+    params.Title = info.Title
+    params.Describe = info.Description
     params.FileId = *resp.Response.FileId
     params.VideoAddr = *resp.Response.MediaUrl
     if *resp.Response.CoverUrl != "" {
@@ -165,6 +167,17 @@ func GetSpiderInfo() []*Bili {
   return list
 }
 
+// 通过文件名获取爬虫数据
+func GetSpiderInfoByFileName(fileName string) *Bili {
+  info := new(Bili)
+  ok, err := engine2.Where("video_url like %?", fileName).Get(info)
+  if !ok || err != nil {
+    return nil
+  }
+
+  return info
+}
+
 func ReadDirInfo() []string {
   dir, err := ioutil.ReadDir("./")
   if err != nil {
@@ -195,3 +208,4 @@ func GetUserIds() []string {
 
   return uids
 }
+
