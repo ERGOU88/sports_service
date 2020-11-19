@@ -735,7 +735,7 @@ const (
 )
 // 视频防盗链(有效时长3个小时)
 func (m *VideoModel) AntiStealingLink(videoUrl string) string {
-  str := strings.TrimPrefix(videoUrl, "http://")
+  str := strings.TrimPrefix(videoUrl, "https://")
   dir := str[strings.Index(str, "/"): strings.LastIndex(str, "/") + 1]
   rand := util.GenSecret(util.MIX_MODE, 10)
   tm := fmt.Sprintf("%x", time.Now().Unix() + EXPIRE_TM)
