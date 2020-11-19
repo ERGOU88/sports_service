@@ -60,13 +60,14 @@ func main() {
     if *spiderDb != "" {
       engine2 = dao.InitXorm(fmt.Sprintf("%s", *spiderDb), nil)
     } else {
-      dao.Engine = dao.InitXorm("root:root@2020@tcp(10.6.176.147:3306)/spider?charset=utf8mb4", []string{"root:root@2020@tcp(10.6.176.147:3306)/spider?charset=utf8mb4"})
+      engine2 = dao.InitXorm("root:root@2020@tcp(10.6.176.147:3306)/spider?charset=utf8mb4", []string{"root:root@2020@tcp(10.6.176.147:3306)/spider?charset=utf8mb4"})
     }
 
   // 自定义
   case "custom":
     dao.Engine = dao.InitXorm(fmt.Sprintf("%s", *masterDb), nil)
     dao.InitRedis(*rdshost, *pwd)
+    engine2 = dao.InitXorm(fmt.Sprintf("%s", *spiderDb), nil)
   default:
     fmt.Printf("unsupport svr flag:%s\nUSAGE: -svr=local | test | online | custom\n", *server)
     return
