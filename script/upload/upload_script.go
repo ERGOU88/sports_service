@@ -107,8 +107,6 @@ func main() {
       *uid = uids[randIndex]
     }
 
-    info := GetSpiderInfoByFileName(file)
-
     c, _ := gin.CreateTestContext(httptest.NewRecorder())
     svc := cvideo.New(c)
     syscode, _, taskId := svc.GetUploadSign(*uid)
@@ -126,15 +124,22 @@ func main() {
     }
 
     params := new(mvideo.VideoPublishParams)
-    params.Title = info.Title
-    params.Describe = info.Description
+
+    info := GetSpiderInfoByFileName(file)
+    fmt.Printf("info:%v", info)
+    if info != nil {
+      params.Title = info.Title
+      params.Describe = info.Description
+      params.Cover = info.Pic
+    }
+
     params.FileId = *resp.Response.FileId
     params.VideoAddr = *resp.Response.MediaUrl
     if *resp.Response.CoverUrl != "" {
       params.Cover = *resp.Response.CoverUrl
-    } else {
-      params.Cover = spiderInfo[randNum].Pic
     }
+
+
 
     params.VideoLabels = "1,2"
     params.TaskId = taskId
@@ -170,7 +175,8 @@ func GetSpiderInfo() []*Bili {
 // 通过文件名获取爬虫数据
 func GetSpiderInfoByFileName(fileName string) *Bili {
   info := new(Bili)
-  ok, err := engine2.Where("video_url like %?", fileName).Get(info)
+  sql := "SELECT * FROM bili WHERE video_url like '%" + fileName + "' LIMIT 1"
+  ok, err := engine2.SQL(sql).Get(info)
   if !ok || err != nil {
     return nil
   }
