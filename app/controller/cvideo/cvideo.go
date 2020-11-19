@@ -525,6 +525,7 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 
 		video.Avatar = userInfo.Avatar
 		video.Nickname = userInfo.NickName
+    video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 
 		if userId == "" {
 			log.Log.Error("video_trace: user no login")
