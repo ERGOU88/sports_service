@@ -277,15 +277,15 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) ([]interf
 }
 
 // 获取用户 @ 通知
-func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) []interface{} {
+func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]interface{}, int32) {
 	if userId == "" {
 		log.Log.Error("notify_trace: need login")
-		return []interface{}{}
+		return []interface{}{}, -1
 	}
 
 	if info := svc.user.FindUserByUserid(userId); info == nil {
 		log.Log.Errorf("notify_trace: user not found, userId:%s", userId)
-		return []interface{}{}
+		return []interface{}{}, -1
 	}
 
 	offset := (page - 1) * size
@@ -293,9 +293,26 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) []int
 	list := svc.comment.GetReceiveAtList(userId, offset, size)
 	if len(list) == 0 {
 		log.Log.Error("notify_trace: receive at list empty")
-		return []interface{}{}
+		return []interface{}{}, -1
 	}
 
+  // 用户上次读取被@列表数据的时间
+  var lastRead int
+  // 获取用户上次读取被@通知消息的时间
+  readAt, err := svc.notify.GetReadAtTime(userId)
+  if err == nil {
+    tm, err := strconv.Atoi(readAt)
+    if err != nil {
+      log.Log.Errorf("notify_trace: strconv atoi err:%s", err)
+    }
+
+    lastRead = tm
+  }
+
+  // 是否已记录读取的位置
+  var b bool
+  // 上次已读取的数据下标（默认-1未读取）
+  var readIndex int32 = -1
 	res := make([]interface{}, len(list))
 	for index, receiveAt := range list {
 		switch receiveAt.TopicType {
@@ -381,6 +398,15 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) []int
 
 			}
 		}
+
+    // 未记录读取的下标
+    if !b {
+      // 用户上次读取的数据下标
+      if lastRead >= receiveAt.CreateAt {
+        readIndex = int32(len(res)-1)
+        b = true
+      }
+    }
 	}
 
 	// 记录读取@通知消息的时间
@@ -388,7 +414,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) []int
 		log.Log.Errorf("notify_trace: record read at notify time err:%s", err)
 	}
 
-	return res
+	return res, readIndex
 }
 
 // 获取未读消息数量

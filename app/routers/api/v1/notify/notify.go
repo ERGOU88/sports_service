@@ -69,12 +69,11 @@ func NotifySetting(c *gin.Context) {
 // 被点赞通知
 func BeLikedNotify(c *gin.Context) {
 	reply := errdef.New(c)
-	//userId, _ := c.Get(consts.USER_ID)
+	userId, _ := c.Get(consts.USER_ID)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 
-	userId :="202010101545291936"
 	svc := cnotify.New(c)
-	list, readIndex := svc.GetBeLikedList(userId, page, size)
+	list, readIndex := svc.GetBeLikedList(userId.(string), page, size)
 	reply.Data["list"] = list
 	reply.Data["read_index"] = readIndex
 	reply.Response(http.StatusOK, errdef.SUCCESS)
@@ -103,8 +102,9 @@ func ReceiveAtNotify(c *gin.Context) {
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 
 	svc := cnotify.New(c)
-	list := svc.GetReceiveAtNotify(userId.(string), page, size)
+	list, readIndex := svc.GetReceiveAtNotify(userId.(string), page, size)
 	reply.Data["list"] = list
+  reply.Data["read_index"] = readIndex
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 

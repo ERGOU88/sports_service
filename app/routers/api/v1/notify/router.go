@@ -2,12 +2,13 @@ package notify
 
 import (
   "github.com/gin-gonic/gin"
+  "sports_service/server/middleware/token"
 )
 
 // 通知模块路由
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
-	notify := api.Group("/notify")
+	notify := api.Group("/notify", token.TokenAuth())
 	{
 		// 通知设置
 		notify.POST("/setting", NotifySetting)
