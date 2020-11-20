@@ -58,6 +58,7 @@ func (svc *CommentModule) GetVideoComments(queryId, sortType, condition string, 
     // 查询视频是否存在
     video := svc.video.FindVideoById(queryId)
     if video != nil {
+      video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
       videoId = fmt.Sprint(video.VideoId)
       total = svc.GetCommentTotalByVideoId(videoId)
     }
