@@ -1,22 +1,24 @@
 package cnotify
 
 import (
-	"fmt"
+  "fmt"
   "github.com/garyburd/redigo/redis"
   "github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mcomment"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/mnotify"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	"time"
+  "github.com/go-xorm/xorm"
+  "sports_service/server/dao"
+  "sports_service/server/global/app/errdef"
+  "sports_service/server/global/app/log"
+  "sports_service/server/global/consts"
+  "sports_service/server/models"
+  "sports_service/server/models/mcollect"
+  "sports_service/server/models/mcomment"
+  "sports_service/server/models/mlike"
+  "sports_service/server/models/mnotify"
+  "sports_service/server/models/muser"
+  "sports_service/server/models/mvideo"
+  "strconv"
+  "strings"
+  "time"
 )
 
 type NotifyModule struct {
@@ -68,127 +70,210 @@ func (svc *NotifyModule) SaveUserNotifySetting(userId string, params *mnotify.No
 	return errdef.SUCCESS
 }
 
+// todo: review
 // 获取用户被点赞的作品列表 返回值：map中key表示类型 1 点赞视频 2 点赞帖子 3 点赞评论
-func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interface{} {
+func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) ([]interface{}, int32) {
 	if userId == "" {
 		log.Log.Error("notify_trace: need login")
-		return []interface{}{}
-	}
+		return []interface{}{}, -1
+  }
 
 	if info := svc.user.FindUserByUserid(userId); info == nil {
 		log.Log.Errorf("notify_trace: user not found, userId:%s", userId)
-		return []interface{}{}
-	}
+		return []interface{}{}, -1
+  }
 
 	offset := (page - 1) * size
 	// 被点赞的作品列表
 	list := svc.like.GetBeLikedList(userId, offset, size)
 	if len(list) == 0 {
 		log.Log.Error("notify_trace: be liked list empty")
-		return []interface{}{}
-	}
+		return []interface{}{}, -1
+  }
 
-	res := make([]interface{}, len(list))
-	for index, liked := range list {
-		switch liked.ZanType {
-		// 被点赞的视频
-		case consts.TYPE_VIDEOS:
-			info := new(mlike.BeLikedVideoInfo)
-			info.OpTime = liked.CreateAt
-			info.Type = consts.TYPE_VIDEOS
-			// 视频作品
-			if video := svc.video.FindVideoById(fmt.Sprint(liked.TypeId)); video != nil {
-				info.ComposeId = video.VideoId
-				info.Title = video.Title
-				info.Describe = video.Describe
-				info.Cover = video.Cover
-				info.VideoAddr = video.VideoAddr
-				info.VideoDuration = video.VideoDuration
-				info.VideoWidth = video.VideoWidth
-				info.VideoHeight = video.VideoHeight
-				info.CreateAt = video.CreateAt
-				info.Status = int32(video.Status)
-			}
+  mp := make(map[string]string)
+  videoMp := make(map[int64]*models.Videos)
+  commentMp := make(map[int64]*models.VideoComment)
+  userMp := make(map[string]*models.User)
+  for _, liked := range list {
+    switch liked.ZanType {
+    // 被点赞的视频
+    case consts.TYPE_VIDEOS:
+      // 视频作品
+      if video := svc.video.FindVideoById(fmt.Sprint(liked.TypeId)); video != nil {
+        videoMp[video.VideoId] = video
+        if user := svc.user.FindUserByUserid(liked.UserId); user != nil {
+          log.Log.Errorf("user.Id:%s", user.UserId)
+          userMp[user.UserId] = user
+          nickNames, ok := mp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)]
+          // 如果点赞的是同一视频  昵称整合为一条数据
+          if ok {
+            if find := strings.Contains(nickNames, user.NickName); !find {
+              nickNames += "," + user.NickName
+              mp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)] = nickNames
+            }
 
-			// 视频统计数据
-			if statistic := svc.video.GetVideoStatistic(fmt.Sprint(liked.TypeId)); statistic != nil {
-				info.BarrageNum = statistic.BarrageNum
-				info.BrowseNum = statistic.BrowseNum
-			}
+          } else {
+            // 存储 视频id_点赞类型 -> 点赞的用户昵称
+            mp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)] = user.NickName
+          }
+        }
+      }
+    // 被点赞的帖子
+    case consts.TYPE_POSTS:
+    // 被点赞的评论
+    case consts.TYPE_COMMENT:
+      // 获取评论信息
+      comment := svc.comment.GetVideoCommentById(fmt.Sprint(liked.TypeId))
+      if comment != nil {
+        commentMp[comment.Id] = comment
+        // 点赞用户
+        if user := svc.user.FindUserByUserid(liked.UserId); user != nil {
+          userMp[user.UserId] = user
+          nickNames, ok := mp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)]
+          // 如果点赞的是同一评论  整合为一条数据
+          if ok {
+            if find := strings.Contains(nickNames, user.NickName); !find {
+              nickNames += "," + user.NickName
+              // 存储评论id_点赞类型 -> 点赞的用户昵称
+              mp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)] = user.NickName
+            }
+            log.Log.Debugf("nickNames:%s", nickNames)
 
-			// 点赞用户
-			if user := svc.user.FindUserByUserid(liked.UserId); user != nil {
-				info.UserId = user.UserId
-				info.Avatar = user.Avatar
-				info.Nickname = user.NickName
-			}
+            continue
+          } else {
+            // 存储评论id_点赞类型 -> 点赞的用户昵称
+            mp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)] = user.NickName
+          }
+        }
+      }
+    }
+  }
 
-			// 被点赞用户
-			if toUser := svc.user.FindUserByUserid(userId); toUser != nil {
-				info.ToUserId = toUser.UserId
-				info.ToUserAvatar = toUser.Avatar
-				info.ToUserName = toUser.NickName
-			}
+  var lastRead int
+  // 获取用户上次读取被点赞通知消息的时间
+  readTm, err := svc.notify.GetReadBeLikedTime(userId)
+  if err == nil {
+    tm, err := strconv.Atoi(readTm)
+    if err != nil {
+      log.Log.Errorf("notify_trace: strconv atoi err:%s", err)
+    }
 
-			res[index] = info
+    lastRead = tm
+  }
 
+  // 是否已记录读取的位置
+  var b bool
+  // 上次已读取的数据下标（默认-1未读取）
+  var readIndex int32 = -1
+  res := make([]interface{}, 0)
+  for _, liked := range list {
+    switch liked.ZanType {
+    // 被点赞的视频
+    case consts.TYPE_VIDEOS:
+      info := new(mlike.BeLikedVideoInfo)
+      nickNames, ok := mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)]
+      if ok && nickNames != "" {
+        log.Log.Errorf("ok:%b, nicknames:%s", ok, nickNames)
+        info.OpTime = liked.CreateAt
+        info.Type = consts.TYPE_VIDEOS
+        // 视频作品
+        video, ok := videoMp[liked.TypeId]
+        if ok {
+          mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)] = ""
+          info.ComposeId = video.VideoId
+          info.Title = video.Title
+          info.Describe = video.Describe
+          info.Cover = video.Cover
+          info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+          info.VideoDuration = video.VideoDuration
+          info.VideoWidth = video.VideoWidth
+          info.VideoHeight = video.VideoHeight
+          info.CreateAt = video.CreateAt
+          // 视频统计数据
+          if statistic := svc.video.GetVideoStatistic(fmt.Sprint(liked.TypeId)); statistic != nil {
+            info.BarrageNum = statistic.BarrageNum
+            info.BrowseNum = statistic.BrowseNum
+          }
 
-		// 被点赞的帖子
-		case consts.TYPE_POSTS:
-		// 被点赞的评论
-		case consts.TYPE_COMMENT:
-			info := new(mlike.BeLikedCommentInfo)
-			info.OpTime = liked.CreateAt
-			info.Type = consts.TYPE_COMMENT
-			// 获取评论信息
-			comment := svc.comment.GetVideoCommentById(fmt.Sprint(liked.TypeId))
-			if comment != nil {
-				// 被点赞的信息
-				info.Content = comment.Content
-				info.ToUserId = comment.UserId
-				info.ToUserAvatar = comment.Avatar
-				info.ToUserName = comment.UserName
+          user, ok := userMp[liked.UserId]
+          if ok {
+            log.Log.Errorf("user.Id:%s", user.UserId)
+            info.Avatar = user.Avatar
+          }
 
-				// 获取评论对应的视频信息
-				if video := svc.video.FindVideoById(fmt.Sprint(comment.VideoId)); video != nil {
-					info.ComposeId = video.VideoId
-					info.Title = video.Title
-					info.Describe = video.Describe
-					info.Cover = video.Cover
-					info.VideoAddr = video.VideoAddr
-					info.VideoDuration = video.VideoDuration
-					info.VideoWidth = video.VideoWidth
-					info.VideoHeight = video.VideoHeight
-					info.CreateAt = video.CreateAt
-					info.Status = int32(video.Status)
-				}
+          // 同一视频点赞的用户昵称（多个）
+          info.UserNames = strings.Split(nickNames, ",")
 
-				// 视频统计数据
-				if statistic := svc.video.GetVideoStatistic(fmt.Sprint(liked.TypeId)); statistic != nil {
-					info.BarrageNum = statistic.BarrageNum
-					info.BrowseNum = statistic.BrowseNum
-				}
+          res = append(res, info)
+        }
+      }
+      // 被点赞的帖子
+    case consts.TYPE_POSTS:
+    // 被点赞的评论
+    case consts.TYPE_COMMENT:
+      info := new(mlike.BeLikedCommentInfo)
+      info.OpTime = liked.CreateAt
+      info.Type = consts.TYPE_COMMENT
 
-				// 点赞用户
-				if user := svc.user.FindUserByUserid(liked.UserId); user != nil {
-					info.UserId = user.UserId
-					info.Avatar = user.Avatar
-					info.Nickname = user.NickName
-				}
+      nickNames, ok := mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)]
+      if ok && nickNames != "" {
 
-				res[index] = info
+        // 获取评论信息
+        comment, ok := commentMp[liked.TypeId]
+        if ok {
+          mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)] = ""
+          // 被点赞的信息
+          info.Content = comment.Content
+          info.ComposeId = comment.Id
 
-			}
+          // 获取评论对应的视频信息
+          video, ok := videoMp[comment.VideoId]
+          if ok {
+            info.Title = video.Title
+            info.Describe = video.Describe
+            info.Cover = video.Cover
+            info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+            info.VideoDuration = video.VideoDuration
+            info.VideoWidth = video.VideoWidth
+            info.VideoHeight = video.VideoHeight
+            info.CreateAt = video.CreateAt
+            // 视频统计数据
+            if statistic := svc.video.GetVideoStatistic(fmt.Sprint(liked.TypeId)); statistic != nil {
+              info.BarrageNum = statistic.BarrageNum
+              info.BrowseNum = statistic.BrowseNum
+            }
+          }
 
-		}
-	}
+          user, ok := userMp[liked.UserId]
+          if ok {
+            info.Avatar = user.Avatar
+          }
+
+          info.Nicknames = strings.Split(nickNames, ",")
+
+          res = append(res, info)
+        }
+
+      }
+    }
+
+    // 未记录读取的下标
+    if !b {
+      // 用户上次读取的数据下标
+      if lastRead >= liked.CreateAt {
+        readIndex = int32(len(res)-1)
+        b = true
+      }
+    }
+  }
 
 	// 记录读取被点赞通知消息的时间
 	if err := svc.notify.RecordReadBeLikedTime(userId); err != nil {
 		log.Log.Errorf("notify_trace: record read liked notify time err:%s", err)
 	}
 
-	return res
+	return res, readIndex
 }
 
 // 获取用户 @ 通知
