@@ -175,7 +175,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
     switch liked.ZanType {
     // 被点赞的视频
     case consts.TYPE_VIDEOS:
-      info := new(mlike.BeLikedVideoInfo)
+      info := new(mlike.BeLikedInfo)
       nickNames, ok := mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)]
       if ok && nickNames != "" {
         log.Log.Errorf("ok:%b, nicknames:%s", ok, nickNames)
@@ -207,12 +207,12 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
           }
 
           // 同一视频点赞的用户昵称（多个）
-          info.UserNames = strings.Split(nickNames, ",")
-          if len(info.UserNames) > 3 {
-            info.UserNames = info.UserNames[0:3]
+          info.Nicknames = strings.Split(nickNames, ",")
+          if len(info.Nicknames) > 3 {
+            info.Nicknames = info.Nicknames[0:3]
           }
 
-          info.TotalLikeNum = len(info.UserNames)
+          info.TotalLikeNum = len(info.Nicknames)
           res = append(res, info)
         }
       }
@@ -220,7 +220,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
     case consts.TYPE_POSTS:
     // 被点赞的评论
     case consts.TYPE_COMMENT:
-      info := new(mlike.BeLikedCommentInfo)
+      info := new(mlike.BeLikedInfo)
       info.OpTime = liked.CreateAt
       info.Type = consts.TYPE_COMMENT
 
