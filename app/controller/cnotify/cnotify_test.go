@@ -67,7 +67,7 @@ func init() {
 func TestGetReceiveAtNotify(t *testing.T) {
   c, _ := gin.CreateTestContext(httptest.NewRecorder())
   svc := New(c)
-  list := svc.GetReceiveAtNotify("202009181548217779", 1, 10)
+  list, _ := svc.GetReceiveAtNotify("202009181548217779", 1, 10)
   t.Logf("\n list len: %d", len(list))
 
   for _, v := range list {

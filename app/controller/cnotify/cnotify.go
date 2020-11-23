@@ -409,6 +409,11 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
     }
 	}
 
+	// 如果数据长度 - 1 == 已读取的下标 表示当前页数据读取完毕 返回-2
+  if len(res) - 1 == int(readIndex)  {
+    readIndex = -2
+  }
+
 	// 记录读取@通知消息的时间
 	if err := svc.notify.RecordReadAtTime(userId); err != nil {
 		log.Log.Errorf("notify_trace: record read at notify time err:%s", err)
