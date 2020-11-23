@@ -289,7 +289,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 }
 
 // 获取用户 @ 通知
-func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]interface{}, int32) {
+func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]interface{}, int) {
 	if userId == "" {
 		log.Log.Error("notify_trace: need login")
 		return []interface{}{}, -1
@@ -324,7 +324,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
   // 是否已记录读取的位置
   var b bool
   // 上次已读取的数据下标（默认-1未读取）
-  var readIndex int32 = -1
+  var readIndex int = -1
 	res := make([]interface{}, len(list))
 	for index, receiveAt := range list {
 		switch receiveAt.TopicType {
@@ -415,7 +415,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
     if !b {
       // 用户上次读取的数据下标
       if lastRead >= receiveAt.CreateAt {
-        readIndex = int32(len(res)-1)
+        readIndex = index
         // 如果数据长度 - 1 == 已读取的下标 表示当前页数据读取完毕 返回-2
         if len(res) - 1 == int(readIndex)  {
           readIndex = -2
