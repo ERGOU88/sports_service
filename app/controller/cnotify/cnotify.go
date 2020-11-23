@@ -110,10 +110,10 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
           if ok {
             if find := strings.Contains(nickNames, user.NickName); !find {
               nickNames += "," + user.NickName
-              if len(strings.Split(nickNames, ","))  <= 3 {
+              //if len(strings.Split(nickNames, ","))  <= 3 {
                 // 存储评论id_点赞类型 -> 点赞的用户昵称
                 mp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)] = nickNames
-              }
+              //}
             }
 
           } else {
@@ -207,7 +207,11 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
           }
 
           // 同一视频点赞的用户昵称（多个）
-          info.UserNames = strings.Split(nickNames, ",")[0:3]
+          info.UserNames = strings.Split(nickNames, ",")
+          if len(info.UserNames) > 3 {
+            info.UserNames = info.UserNames[0:3]
+          }
+
           info.TotalLikeNum = len(info.UserNames)
           res = append(res, info)
         }
@@ -254,7 +258,10 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
             info.Avatar = user.Avatar
           }
 
-          info.Nicknames = strings.Split(nickNames, ",")[0:3]
+          info.Nicknames = strings.Split(nickNames, ",")
+          if len(info.Nicknames) > 3 {
+            info.Nicknames = info.Nicknames[0:3]
+          }
           info.TotalLikeNum = len(info.Nicknames)
 
           res = append(res, info)
