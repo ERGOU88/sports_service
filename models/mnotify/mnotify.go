@@ -6,10 +6,12 @@ import (
 	"sports_service/server/global/rdskey"
 	"sports_service/server/models"
 	"time"
+	"fmt"
 )
 
 type NotifyModel struct {
 	NofitySetting  *models.SystemNoticeSettings
+	SystemNotify   *models.SystemMessage
 	Engine         *xorm.Session
 }
 
@@ -59,7 +61,8 @@ type ReceiveCommentAtInfo struct {
 func NewNotifyModel(engine *xorm.Session) *NotifyModel {
 	return &NotifyModel{
 		NofitySetting: new(models.SystemNoticeSettings),
-		Engine: engine,
+    SystemNotify: new(models.SystemMessage),
+    Engine: engine,
 	}
 }
 
@@ -93,6 +96,44 @@ func (m *NotifyModel) GetUserNotifySetting(userId string) *models.SystemNoticeSe
 	}
 
 	return setting
+}
+
+// 获取系统通知
+func (m *NotifyModel) GetSystemNotify(userId string, offset, size int) []*models.SystemMessage {
+  sql := "SELECT `system_id`, `receive_id`, `system_topic`, `system_content`, `send_time`, `extra` FROM system_message "
+  if userId != "" {
+    sql = fmt.Sprintf("%s WHERE receive_id=%s", sql, userId)
+  } else {
+    sql = fmt.Sprintf("%s WHERE receive_id='' AND send_default=1", sql)
+  }
+
+  var list []*models.SystemMessage
+  if err := m.Engine.SQL(sql).Limit(size, offset).Find(&list); err != nil {
+    return nil
+  }
+
+  return list
+
+}
+
+// 更新系统通知消息状态
+func (m *NotifyModel) UpdateSystemNotifyStatus(ids string) error {
+  sql := fmt.Sprintf("UPDATE `system_message` SET `status`=1 WHERE system_id in (%s)", ids)
+  if _, err := m.Engine.Exec(sql); err != nil {
+    return err
+  }
+
+  return nil
+}
+
+// 获取未读系统消息总数
+func (m *NotifyModel) GetUnreadSystemMsgNum(userId string) int64 {
+  count, err := m.Engine.Where("status=0 AND receive_id=?", userId).Count(&models.SystemMessage{})
+  if err != nil {
+    return 0
+  }
+
+  return count
 }
 
 // 记录用户读取被点赞通知消息的时间

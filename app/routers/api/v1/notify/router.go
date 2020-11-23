@@ -8,17 +8,19 @@ import (
 // 通知模块路由
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
-	notify := api.Group("/notify", token.TokenAuth())
+	notify := api.Group("/notify")
 	{
 		// 通知设置
-		notify.POST("/setting", NotifySetting)
+		notify.POST("/setting", token.TokenAuth(), NotifySetting)
 		// 被赞通知
-		notify.GET("/beliked", BeLikedNotify)
+		notify.GET("/beliked", token.TokenAuth(), BeLikedNotify)
 		// 被@通知
-		notify.GET("/receive/at", ReceiveAtNotify)
+		notify.GET("/receive/at", token.TokenAuth(), ReceiveAtNotify)
 		// 未读数量
-		notify.GET("/unread/quantity", UnreadNum)
+		notify.GET("/unread/quantity", token.TokenAuth(), UnreadNum)
 		// 通知设置信息
-		notify.GET("/setting/info", NotifySettingInfo)
+		notify.GET("/setting/info", token.TokenAuth(), NotifySettingInfo)
+		// 系统通知列表
+		notify.GET("/system", SystemNotify)
 	}
 }

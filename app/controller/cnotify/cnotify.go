@@ -423,9 +423,10 @@ func (svc *NotifyModule) GetUnreadNum(userId string) map[string]int64 {
 	mp["sys_notify"] = 0
 	mp["liked_notify"] = 0
 	mp["comment_notify"] = 0
+  mp["at_notify"] = 0
 
 	if userId == "" {
-		log.Log.Error("notify_trace: need login")
+	  log.Log.Errorf("notify_trace: user need login")
 		return mp
 	}
 
@@ -433,6 +434,8 @@ func (svc *NotifyModule) GetUnreadNum(userId string) map[string]int64 {
 		log.Log.Errorf("notify_trace: user not found, userId:%s", userId)
 		return mp
 	}
+
+  mp["sys_notify"] = svc.notify.GetUnreadSystemMsgNum(userId)
 
 	// 获取用户上次读取被点赞列表的时间
 	readTm, err := svc.notify.GetReadBeLikedTime(userId)
@@ -473,3 +476,33 @@ func (svc *NotifyModule) GetUserNotifySetting(userId string) *models.SystemNotic
 	return svc.notify.GetUserNotifySetting(userId)
 }
 
+// 获取系统通知列表
+func (svc *NotifyModule) GetSystemNotify(userId string, page, size int) []*models.SystemMessage {
+  offset := (page - 1) * size
+  list := svc.notify.GetSystemNotify(userId, offset, size)
+  if list == nil {
+    return []*models.SystemMessage{}
+  }
+
+  if userId == "" {
+    return list
+  }
+
+  ids := make([]string, len(list))
+  var msgIds string
+  for index, msg := range list {
+    // 0 未读 1 已读
+    if msg.Status == 0 {
+      ids[index] = fmt.Sprint(msg.SystemId)
+    }
+  }
+
+
+  msgIds = strings.Join(ids, ",")
+  // 更新为已读
+  if err := svc.notify.UpdateSystemNotifyStatus(msgIds); err != nil {
+    log.Log.Errorf("notify_trace: update system notify status err:%s", err)
+  }
+
+  return list
+}

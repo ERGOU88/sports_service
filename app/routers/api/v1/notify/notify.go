@@ -156,3 +156,31 @@ func NotifySettingInfo(c *gin.Context) {
 	reply.Data["notify_setting"] = info
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
+
+// @Summary 系统通知消息列表 (ok)
+// @Tags 通知模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	    header    string 	true  "版本" default(1.0.0)
+// @Param   page	  	    query  	string 	true  "页码 从1开始"
+// @Param   size	  	    query  	string 	true  "每页展示多少 最多50条"
+// @Param   user_id       query   string  false "用户id 非必传"
+// @Success 200 {string}  json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
+// @Failure 500 {string}  json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/notify/system [get]
+// 系统通知
+func SystemNotify(c *gin.Context) {
+  reply := errdef.New(c)
+  userId := c.Query("user_id")
+  page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+  svc := cnotify.New(c)
+  list := svc.GetSystemNotify(userId, page, size)
+  reply.Data["list"] = list
+  reply.Response(http.StatusOK, errdef.SUCCESS)
+}
