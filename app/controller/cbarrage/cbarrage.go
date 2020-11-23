@@ -126,7 +126,12 @@ func (svc *BarrageModule) GetVideoBarrageList(videoId, minDuration, maxDuration 
 		return errdef.VIDEO_NOT_EXISTS, nil
 	}
 
-	return errdef.SUCCESS, svc.barrage.GetBarrageByDuration(videoId, minDuration, maxDuration, 0, 1000)
+  list := svc.barrage.GetBarrageByDuration(videoId, minDuration, maxDuration, 0, 1000)
+  if list == nil {
+    list = []*models.VideoBarrage{}
+  }
+
+	return errdef.SUCCESS, list
 }
 
 // 获取用户视频弹幕总数
