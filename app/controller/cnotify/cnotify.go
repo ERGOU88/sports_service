@@ -409,15 +409,15 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
       // 用户上次读取的数据下标
       if lastRead >= receiveAt.CreateAt {
         readIndex = int32(len(res)-1)
+        // 如果数据长度 - 1 == 已读取的下标 表示当前页数据读取完毕 返回-2
+        if len(res) - 1 == int(readIndex)  {
+          readIndex = -2
+        }
+
         b = true
       }
     }
 	}
-
-	// 如果数据长度 - 1 == 已读取的下标 表示当前页数据读取完毕 返回-2
-  if len(res) - 1 == int(readIndex)  {
-    readIndex = -2
-  }
 
 	// 记录读取@通知消息的时间
 	if err := svc.notify.RecordReadAtTime(userId); err != nil {
