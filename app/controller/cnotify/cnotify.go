@@ -419,6 +419,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 
     // 未记录读取的下标
     if !b {
+      log.Log.Errorf("id: %d, receiveId: %s", id, receiveAt.Id)
       // 用户上次读取的数据下标
       if lastRead >= receiveAt.CreateAt && id != int(receiveAt.Id) {
         id = int(receiveAt.Id)
