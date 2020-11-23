@@ -73,9 +73,9 @@ func BeLikedNotify(c *gin.Context) {
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 
 	svc := cnotify.New(c)
-	list, readIndex := svc.GetBeLikedList(userId.(string), page, size)
+	list := svc.GetBeLikedList(userId.(string), page, size)
 	reply.Data["list"] = list
-	reply.Data["read_index"] = readIndex
+	//reply.Data["read_index"] = readIndex
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 

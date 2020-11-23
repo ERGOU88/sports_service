@@ -72,15 +72,15 @@ func (svc *NotifyModule) SaveUserNotifySetting(userId string, params *mnotify.No
 
 // todo: review
 // 获取用户被点赞的作品列表 返回值：map中key表示类型 1 点赞视频 2 点赞帖子 3 点赞评论
-func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) ([]interface{}, int32) {
+func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interface{} {
 	if userId == "" {
 		log.Log.Error("notify_trace: need login")
-		return []interface{}{}, -1
+		return []interface{}{}
   }
 
 	if info := svc.user.FindUserByUserid(userId); info == nil {
 		log.Log.Errorf("notify_trace: user not found, userId:%s", userId)
-		return []interface{}{}, -1
+		return []interface{}{}
   }
 
 	offset := (page - 1) * size
@@ -88,7 +88,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) ([]interf
 	list := svc.like.GetBeLikedList(userId, offset, size)
 	if len(list) == 0 {
 		log.Log.Error("notify_trace: be liked list empty")
-		return []interface{}{}, -1
+		return []interface{}{}
   }
 
   mp := make(map[string]string)
@@ -110,7 +110,10 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) ([]interf
           if ok {
             if find := strings.Contains(nickNames, user.NickName); !find {
               nickNames += "," + user.NickName
-              mp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)] = nickNames
+              if len(strings.Split(nickNames, ","))  <= 3 {
+                // 存储评论id_点赞类型 -> 点赞的用户昵称
+                mp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)] = nickNames
+              }
             }
 
           } else {
@@ -135,10 +138,11 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) ([]interf
           if ok {
             if find := strings.Contains(nickNames, user.NickName); !find {
               nickNames += "," + user.NickName
-              // 存储评论id_点赞类型 -> 点赞的用户昵称
-              mp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)] = user.NickName
+              //if len(strings.Split(nickNames, ","))  <= 3 {
+                // 存储评论id_点赞类型 -> 点赞的用户昵称
+              mp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)] = nickNames
+              //}
             }
-            log.Log.Debugf("nickNames:%s", nickNames)
 
             continue
           } else {
@@ -150,22 +154,22 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) ([]interf
     }
   }
 
-  var lastRead int
+  //var lastRead int
   // 获取用户上次读取被点赞通知消息的时间
-  readTm, err := svc.notify.GetReadBeLikedTime(userId)
-  if err == nil {
-    tm, err := strconv.Atoi(readTm)
-    if err != nil {
-      log.Log.Errorf("notify_trace: strconv atoi err:%s", err)
-    }
-
-    lastRead = tm
-  }
+  //readTm, err := svc.notify.GetReadBeLikedTime(userId)
+  //if err == nil {
+  //  tm, err := strconv.Atoi(readTm)
+  //  if err != nil {
+  //    log.Log.Errorf("notify_trace: strconv atoi err:%s", err)
+  //  }
+  //
+  //  lastRead = tm
+  //}
 
   // 是否已记录读取的位置
-  var b bool
+  //var b bool
   // 上次已读取的数据下标（默认-1未读取）
-  var readIndex int32 = -1
+  //var readIndex int32 = -1
   res := make([]interface{}, 0)
   for _, liked := range list {
     switch liked.ZanType {
@@ -203,8 +207,8 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) ([]interf
           }
 
           // 同一视频点赞的用户昵称（多个）
-          info.UserNames = strings.Split(nickNames, ",")
-
+          info.UserNames = strings.Split(nickNames, ",")[0:3]
+          info.TotalLikeNum = len(info.UserNames)
           res = append(res, info)
         }
       }
@@ -250,7 +254,8 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) ([]interf
             info.Avatar = user.Avatar
           }
 
-          info.Nicknames = strings.Split(nickNames, ",")
+          info.Nicknames = strings.Split(nickNames, ",")[0:3]
+          info.TotalLikeNum = len(info.Nicknames)
 
           res = append(res, info)
         }
@@ -259,13 +264,13 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) ([]interf
     }
 
     // 未记录读取的下标
-    if !b {
-      // 用户上次读取的数据下标
-      if lastRead >= liked.CreateAt {
-        readIndex = int32(len(res)-1)
-        b = true
-      }
-    }
+    //if !b {
+    //  // 用户上次读取的数据下标
+    //  if lastRead >= liked.CreateAt {
+    //    readIndex = int32(len(res)-1)
+    //    b = true
+    //  }
+    //}
   }
 
 	// 记录读取被点赞通知消息的时间
@@ -273,7 +278,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) ([]interf
 		log.Log.Errorf("notify_trace: record read liked notify time err:%s", err)
 	}
 
-	return res, readIndex
+	return res
 }
 
 // 获取用户 @ 通知

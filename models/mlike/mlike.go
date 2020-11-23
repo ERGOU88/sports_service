@@ -38,6 +38,7 @@ type BeLikedVideoInfo struct {
 	//ToUserId      string                `json:"to_user_id"`      // 被点赞的用户id
 	//ToUserName    string                `json:"to_user_name"`    // 被点赞的用户昵称
   UserNames     []string              `json:"user_names"`      // 点赞用户昵称（多个）
+  TotalLikeNum  int                   `json:"total_like_num"`  // 总点赞数
   Avatar        string                `json:"avatar"`          // 最近点赞的用户头像
 	OpTime        int                   `json:"op_time"`         // 用户点赞操作时间
 	Type          int                   `json:"type"`            // 类型 1 视频 2 帖子 3 评论
@@ -67,6 +68,7 @@ type BeLikedCommentInfo struct {
 	//UserId        string                `json:"user_id"`         // 点赞的用户id
 	Avatar        string                `json:"avatar"`          // 点赞用户头像
 	Nicknames     []string              `json:"nick_name"`       // 点赞的用户昵称
+	TotalLikeNum  int                   `json:"total_like_num"`  // 总点赞数
 	//ToUserId      string                `json:"to_user_id"`      // 被点赞的用户id
 	//ToUserAvatar  string                `json:"avatar"`          // 被点赞用户头像
 	//ToUserName    string                `json:"to_user_name"`    // 被点赞的用户昵称
