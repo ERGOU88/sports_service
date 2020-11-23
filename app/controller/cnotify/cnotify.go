@@ -324,7 +324,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
   // 是否已记录读取的位置
   var b bool
   // 上次已读取的数据下标（默认-1未读取）
-  var readIndex int = -1
+  var readIndex = -1
 	res := make([]interface{}, len(list))
 	for index, receiveAt := range list {
 		switch receiveAt.TopicType {
@@ -415,9 +415,10 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
     if !b {
       // 用户上次读取的数据下标
       if lastRead >= receiveAt.CreateAt {
+        log.Log.Errorf("lastRead:%d, createAt:%d, index:%d, len(res):%d", lastRead, receiveAt.CreateAt, index, len(res)-1)
         readIndex = index
         // 如果数据长度 - 1 == 已读取的下标 表示当前页数据读取完毕 返回-2
-        if len(res) - 1 == int(readIndex)  {
+        if len(res) - 1 == readIndex  {
           readIndex = -2
         }
 
