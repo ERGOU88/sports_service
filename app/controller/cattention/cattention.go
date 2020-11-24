@@ -181,16 +181,18 @@ func (svc *AttentionModule) GetOtherUserAttentionList(userId, toUserId string, p
       Country: int32(user.Country),
     }
 
-    // 查看人是否关注 被查看人的关注用户
-    attentionInfo := svc.attention.GetAttentionInfo(userId, user.UserId)
-    if attentionInfo != nil {
-      info.IsAttention = int32(attentionInfo.Status)
-    }
+    if userId != "" {
+      // 查看人是否关注 被查看人的关注用户
+      attentionInfo := svc.attention.GetAttentionInfo(userId, user.UserId)
+      if attentionInfo != nil {
+        info.IsAttention = int32(attentionInfo.Status)
+      }
 
-    // 被查看人的关注用户 是否关注 查看人
-    attentionInfo = svc.attention.GetAttentionInfo(user.UserId, userId)
-    if attentionInfo != nil {
-      info.IsReplyFocus = int32(attentionInfo.Status)
+      // 被查看人的关注用户 是否关注 查看人
+      attentionInfo = svc.attention.GetAttentionInfo(user.UserId, userId)
+      if attentionInfo != nil {
+        info.IsReplyFocus = int32(attentionInfo.Status)
+      }
     }
 
     resp[index] = info
@@ -327,16 +329,18 @@ func (svc *AttentionModule) GetOtherUserFansList(userId, toUserId string, page, 
       Country: int32(user.Country),
     }
 
-    // 查看人是否关注了 被查看人的粉丝
-    attention := svc.attention.GetAttentionInfo(userId, user.UserId)
-    if attention != nil {
-      info.IsAttention = int32(attention.Status)
-    }
+    if userId != "" {
+      // 查看人是否关注了 被查看人的粉丝
+      attention := svc.attention.GetAttentionInfo(userId, user.UserId)
+      if attention != nil {
+        info.IsAttention = int32(attention.Status)
+      }
 
-    // 查询被查看人的粉丝 是否 关注了 查看人
-    attention = svc.attention.GetAttentionInfo(user.UserId, userId)
-    if attention != nil {
-      info.IsReplyFocus = int32(attention.Status)
+      // 查询被查看人的粉丝 是否 关注了 查看人
+      attention = svc.attention.GetAttentionInfo(user.UserId, userId)
+      if attention != nil {
+        info.IsReplyFocus = int32(attention.Status)
+      }
     }
 
     resp[index] = info
