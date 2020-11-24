@@ -149,9 +149,9 @@ func (m *NotifyModel) GetReadBeLikedTime(userId string) (string, error) {
 }
 
 // 记录用户读取@通知消息的时间
-func (m *NotifyModel) RecordReadAtTime(userId string, id int) error {
+func (m *NotifyModel) RecordReadAtTime(userId string) error {
 	rds := dao.NewRedisDao()
-	return rds.Set(rdskey.MakeKey(rdskey.USER_READ_AT_NOTIFY, userId), fmt.Sprintf("%d_%d", time.Now().Unix(), id))
+	return rds.Set(rdskey.MakeKey(rdskey.USER_READ_AT_NOTIFY, userId), time.Now().Unix())
 }
 
 // 获取用户读取@通知消息的时间

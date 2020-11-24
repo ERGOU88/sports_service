@@ -310,21 +310,16 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 
   // 用户上次读取被@列表数据的时间
   var lastRead int
-  var id int
   // 获取用户上次读取被@通知消息的时间
   readAt, err := svc.notify.GetReadAtTime(userId)
   if err == nil {
-    readInfo := strings.Split(readAt, ",")
-    if len(readInfo) == 2 {
-      tm, err := strconv.Atoi(readInfo[0])
-      if err != nil {
-        log.Log.Errorf("notify_trace: strconv atoi err:%s", err)
-      }
-
-      lastRead = tm
-
-      id, _ = strconv.Atoi(readInfo[1])
+    tm, err := strconv.Atoi(readAt)
+    if err != nil {
+      log.Log.Errorf("notify_trace: strconv atoi err:%s", err)
     }
+
+    lastRead = tm
+
   }
 
   // 是否已记录读取的位置
@@ -419,24 +414,29 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 
     // 未记录读取的下标
     if !b {
-      log.Log.Errorf("id: %d, receiveId: %s", id, receiveAt.Id)
-      // 用户上次读取的数据下标
-      if lastRead >= receiveAt.CreateAt && id != int(receiveAt.Id) {
-        id = int(receiveAt.Id)
-        log.Log.Errorf("lastRead:%d, createAt:%d, index:%d, len(res):%d", lastRead, receiveAt.CreateAt, index, len(res)-1)
+      log.Log.Errorf("receiveId: %d", receiveAt.Id)
+      if lastRead < receiveAt.CreateAt {
+        // 用户上次读取的数据下标
         readIndex = index
-        // 如果数据长度 - 1 == 已读取的下标 表示当前页数据读取完毕 返回-2
-        if len(res) == readIndex  {
-          readIndex = -2
-        }
-
         b = true
       }
+
+      //if lastRead >= receiveAt.CreateAt && id != int(receiveAt.Id) {
+      //  id = int(receiveAt.Id)
+      //  log.Log.Errorf("lastRead:%d, createAt:%d, index:%d, len(res):%d", lastRead, receiveAt.CreateAt, index, len(res)-1)
+      //  readIndex = index
+      //  // 如果数据长度 - 1 == 已读取的下标 表示当前页数据读取完毕 返回-2
+      //  if len(res) == readIndex  {
+      //    readIndex = -2
+      //  }
+      //
+      //  b = true
+      //}
     }
 	}
 
 	// 记录读取@通知消息的时间
-	if err := svc.notify.RecordReadAtTime(userId, id); err != nil {
+	if err := svc.notify.RecordReadAtTime(userId); err != nil {
 		log.Log.Errorf("notify_trace: record read at notify time err:%s", err)
 	}
 

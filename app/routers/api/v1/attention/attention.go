@@ -114,12 +114,14 @@ func AttentionList(c *gin.Context) {
 	//	reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
 	//	return
 	//}
+	types := c.Query("type")
 	userId := c.Query("user_id")
+	toUserId := c.Query("to_user_id")
 
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	svc := cattention.New(c)
 	// 获取关注的用户列表
-	list := svc.GetAttentionUserList(userId, page, size)
+	list := svc.GetAttentionUserListByType(types, userId, toUserId, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
@@ -152,11 +154,13 @@ func FansList(c *gin.Context) {
 	//}
 	//
 	userId := c.Query("user_id")
+	toUserId := c.Query("to_user_id")
+	types := c.Query("types")
 
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	svc := cattention.New(c)
 	// 获取用户的粉丝列表
-	list := svc.GetFansList(userId, page, size)
+	list := svc.GetFansListByType(types, userId, toUserId, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 	return

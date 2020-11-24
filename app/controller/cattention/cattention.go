@@ -117,9 +117,91 @@ func (svc *AttentionModule) CancelAttention(attentionUid, userId string) int {
 	return errdef.SUCCESS
 }
 
+// type 1 查看自己关注的用户列表
+// type 2 查看其他用户关注的列表
+func (svc *AttentionModule) GetAttentionUserListByType(types, uid, toUserId string, page, size int) []*muser.UserInfoResp {
+  switch types {
+  // 查看自己
+  case "1":
+    return svc.GetAttentionUserList(uid, page, size)
+  // 查看别人
+  case "2":
+    return svc.GetOtherUserAttentionList(uid, toUserId, page, size)
+  }
+
+  return []*muser.UserInfoResp{}
+}
+
+// type 1 查看自己的粉丝列表
+// type 2 查看其他用户的粉丝列表
+func (svc *AttentionModule) GetFansListByType(types, uid, toUserId string, page, size int) []*muser.UserInfoResp {
+  switch types {
+  // 查看自己
+  case "1":
+    return svc.GetFansList(uid, page, size)
+  // 查看别人
+  case "2":
+    return svc.GetOtherUserFansList(uid, toUserId, page, size)
+  }
+
+  return []*muser.UserInfoResp{}
+}
+
+// 查看其他用户的关注列表 uid查看人id toUserId 被查看的用户id
+func (svc *AttentionModule) GetOtherUserAttentionList(userId, toUserId string, page, size int) []*muser.UserInfoResp {
+  userIds := svc.attention.GetAttentionList(toUserId)
+  if len(userIds) == 0 {
+    log.Log.Errorf("attention_trace: not following any users")
+    return []*muser.UserInfoResp{}
+  }
+
+  offset := (page - 1) * size
+  uids := strings.Join(userIds, ",")
+  userList := svc.user.FindUserByUserids(uids, offset, size)
+  if len(userList) == 0 {
+    log.Log.Errorf("attention_trace: not found user list info, len:%d, uids:%s", len(userList), uids)
+    return []*muser.UserInfoResp{}
+  }
+
+  resp := make([]*muser.UserInfoResp, len(userList))
+  for index, user := range userList {
+    info := &muser.UserInfoResp{
+      NickName:  user.NickName,
+      UserId: user.UserId,
+      Avatar: user.Avatar,
+      MobileNum: user.MobileNum,
+      Gender: int32(user.Gender),
+      Signature: user.Signature,
+      Status: int32(user.Status),
+      IsAnchor: int32(user.IsAnchor),
+      BackgroundImg: user.BackgroundImg,
+      Born: user.Born,
+      Age: user.Age,
+      UserType: user.UserType,
+      Country: int32(user.Country),
+    }
+
+    // 查看人是否关注 被查看人的关注用户
+    attentionInfo := svc.attention.GetAttentionInfo(userId, user.UserId)
+    if attentionInfo != nil {
+      info.IsAttention = int32(attentionInfo.Status)
+    }
+
+    // 被查看人的关注用户 是否关注 查看人
+    attentionInfo = svc.attention.GetAttentionInfo(user.UserId, userId)
+    if attentionInfo != nil {
+      info.IsReplyFocus = int32(attentionInfo.Status)
+    }
+
+    resp[index] = info
+  }
+
+  return resp
+}
+
 // 获取关注的用户列表
-func (svc *AttentionModule) GetAttentionUserList(attentionUid string, page, size int) []*muser.UserInfoResp {
-	userIds := svc.attention.GetAttentionList(attentionUid)
+func (svc *AttentionModule) GetAttentionUserList(userId string, page, size int) []*muser.UserInfoResp {
+	userIds := svc.attention.GetAttentionList(userId)
 	if len(userIds) == 0 {
 		log.Log.Errorf("attention_trace: not following any users")
 		return []*muser.UserInfoResp{}
@@ -152,7 +234,12 @@ func (svc *AttentionModule) GetAttentionUserList(attentionUid string, page, size
 			IsAttention: consts.ALREADY_ATTENTION,
 		}
 
-		resp[index] = info
+    // 对方是否回关了当前用户
+    if attention := svc.attention.GetAttentionInfo(user.UserId, userId); attention != nil {
+      info.IsReplyFocus = int32(attention.Status)
+    }
+
+    resp[index] = info
 	}
 
 	return resp
@@ -191,15 +278,69 @@ func (svc *AttentionModule) GetFansList(userId string, page, size int) []*muser.
 			Age: user.Age,
 			UserType: user.UserType,
 			Country: int32(user.Country),
+			IsAttention: consts.ALREADY_ATTENTION,
 		}
 
-		// 查询是否回关了
+		// 查询是否回关了粉丝
 		if attention := svc.attention.GetAttentionInfo(userId, user.UserId); attention != nil {
-			info.IsAttention = int32(attention.Status)
+			info.IsReplyFocus = int32(attention.Status)
 		}
 
 		resp[index] = info
 	}
 
 	return resp
+}
+
+// 获取其他用户粉丝列表
+func (svc *AttentionModule) GetOtherUserFansList(userId, toUserId string, page, size int) []*muser.UserInfoResp {
+  userIds := svc.attention.GetFansList(toUserId)
+  if len(userIds) == 0 {
+    log.Log.Errorf("attention_trace: not has any fans")
+    return []*muser.UserInfoResp{}
+  }
+
+  offset := (page - 1) * size
+  uids := strings.Join(userIds, ",")
+  userList := svc.user.FindUserByUserids(uids, offset, size)
+  if len(userList) == 0 {
+    log.Log.Errorf("attention_trace: not found user list info, len:%d, uids:%s", len(userList), uids)
+    return []*muser.UserInfoResp{}
+  }
+
+  // 重新组装数据
+  resp := make([]*muser.UserInfoResp, len(userList))
+  for index, user := range userList {
+    info := &muser.UserInfoResp{
+      NickName:  user.NickName,
+      UserId: user.UserId,
+      Avatar: user.Avatar,
+      MobileNum: user.MobileNum,
+      Gender: int32(user.Gender),
+      Signature: user.Signature,
+      Status: int32(user.Status),
+      IsAnchor: int32(user.IsAnchor),
+      BackgroundImg: user.BackgroundImg,
+      Born: user.Born,
+      Age: user.Age,
+      UserType: user.UserType,
+      Country: int32(user.Country),
+    }
+
+    // 查看人是否关注了 被查看人的粉丝
+    attention := svc.attention.GetAttentionInfo(userId, user.UserId)
+    if attention != nil {
+      info.IsAttention = int32(attention.Status)
+    }
+
+    // 查询被查看人的粉丝 是否 关注了 查看人
+    attention = svc.attention.GetAttentionInfo(user.UserId, userId)
+    if attention != nil {
+      info.IsReplyFocus = int32(attention.Status)
+    }
+
+    resp[index] = info
+  }
+
+  return resp
 }

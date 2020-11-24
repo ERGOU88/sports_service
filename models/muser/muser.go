@@ -84,6 +84,7 @@ type UserInfoResp struct {
 	UserType      int    `json:"user_type" example:"0"`
 	Country       int32  `json:"country" example:"0"`
 	IsAttention   int32  `json:"is_attention" example:"0"`
+	IsReplyFocus  int32  `json:"is_reply_focus"`               // 对方是否关注
 }
 
 // 个人空间用户信息
