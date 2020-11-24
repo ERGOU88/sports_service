@@ -166,8 +166,6 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
   //  lastRead = tm
   //}
 
-  // 是否已记录读取的位置
-  //var b bool
   // 上次已读取的数据下标（默认-1未读取）
   //var readIndex int32 = -1
   res := make([]interface{}, 0)
@@ -271,12 +269,9 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
     }
 
     // 未记录读取的下标
-    //if !b {
-    //  // 用户上次读取的数据下标
-    //  if lastRead >= liked.CreateAt {
-    //    readIndex = int32(len(res)-1)
-    //    b = true
-    //  }
+    // 用户上次读取的数据下标
+    //if lastRead < liked.CreateAt {
+    //  readIndex = int32(index)
     //}
   }
 
@@ -322,8 +317,6 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 
   }
 
-  // 是否已记录读取的位置
-  //var b bool
   // 上次已读取的数据下标（默认-1未读取）
   var readIndex = -1
 	res := make([]interface{}, len(list))
@@ -418,17 +411,6 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
       readIndex = index
     }
 
-    //if lastRead >= receiveAt.CreateAt && id != int(receiveAt.Id) {
-    //  id = int(receiveAt.Id)
-    //  log.Log.Errorf("lastRead:%d, createAt:%d, index:%d, len(res):%d", lastRead, receiveAt.CreateAt, index, len(res)-1)
-    //  readIndex = index
-    //  // 如果数据长度 - 1 == 已读取的下标 表示当前页数据读取完毕 返回-2
-    //  if len(res) == readIndex  {
-    //    readIndex = -2
-    //  }
-    //
-    //  b = true
-    //}
   }
 
 
