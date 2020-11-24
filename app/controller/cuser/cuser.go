@@ -181,13 +181,15 @@ func (svc *UserModule) RecordUserFeedback(userId string, param *muser.FeedbackPa
 		return errdef.USER_NOT_EXISTS
 	}
 
-	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
-	// 检测反馈的内容
-	isPass, err := client.TextModeration(param.Describe)
-	if !isPass {
-		log.Log.Errorf("user_trace: validate feedback describe err: %s，pass: %v", err, isPass)
-		return errdef.USER_INVALID_FEEDBACK
-	}
+	if param.Describe != "" {
+    client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+    // 检测反馈的内容
+    isPass, err := client.TextModeration(param.Describe)
+    if !isPass {
+      log.Log.Errorf("user_trace: validate feedback describe err: %s，pass: %v", err, isPass)
+      return errdef.USER_INVALID_FEEDBACK
+    }
+  }
 
 	if err := svc.user.RecordUserFeedback(userId, param, int(time.Now().Unix())); err != nil {
 		log.Log.Errorf("user_trace: record user feedback err:%s", err)
