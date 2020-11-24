@@ -114,6 +114,9 @@ const (
 
 	// 搜索相关错误码 10001 - 11000
 	SEARCH_CLEAN_HISTORY_FAIL   = 10001
+
+	// 腾讯云相关错误码 11001 - 12000
+	CLOUD_COS_ACCESS_FAIL       = 11001
 )
 
 var MsgFlags = map[int]string{
@@ -219,6 +222,8 @@ var MsgFlags = map[int]string{
   BARRAGE_VIDEO_LIST_FAIL:     "视频弹幕获取失败",
 
   SEARCH_CLEAN_HISTORY_FAIL:   "清空搜索记录失败",
+
+  CLOUD_COS_ACCESS_FAIL:       "通行证获取失败",
 }
 
 func GetMsg(code int) string {
