@@ -10,6 +10,7 @@ import (
 	"sports_service/server/app/routers/api/v1/notify"
 	"sports_service/server/app/routers/api/v1/search"
 	"sports_service/server/app/routers/api/v1/video"
+  "sports_service/server/app/routers/api/v1/tencentCloud"
 	"sports_service/server/middleware"
 	"sports_service/server/global/consts"
 	"sports_service/server/app/routers/api/v1/user"
@@ -52,4 +53,6 @@ func InitRouters(engine *gin.Engine) {
 	comment.Router(engine)
 	// 弹幕模块
 	barrage.Router(engine)
+	// 腾讯云
+	tencentCloud.Router(engine)
 }
