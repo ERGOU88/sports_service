@@ -323,7 +323,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
   }
 
   // 是否已记录读取的位置
-  var b bool
+  //var b bool
   // 上次已读取的数据下标（默认-1未读取）
   var readIndex = -1
 	res := make([]interface{}, len(list))
@@ -412,28 +412,25 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			}
 		}
 
-    // 未记录读取的下标
-    if !b {
-      log.Log.Errorf("receiveId: %d", receiveAt.Id)
-      if lastRead < receiveAt.CreateAt {
-        // 用户上次读取的数据下标
-        readIndex = index
-        b = true
-      }
-
-      //if lastRead >= receiveAt.CreateAt && id != int(receiveAt.Id) {
-      //  id = int(receiveAt.Id)
-      //  log.Log.Errorf("lastRead:%d, createAt:%d, index:%d, len(res):%d", lastRead, receiveAt.CreateAt, index, len(res)-1)
-      //  readIndex = index
-      //  // 如果数据长度 - 1 == 已读取的下标 表示当前页数据读取完毕 返回-2
-      //  if len(res) == readIndex  {
-      //    readIndex = -2
-      //  }
-      //
-      //  b = true
-      //}
+    log.Log.Errorf("receiveId: %d", receiveAt.Id)
+    if lastRead < receiveAt.CreateAt {
+      // 用户上次读取的数据下标
+      readIndex = index
     }
-	}
+
+    //if lastRead >= receiveAt.CreateAt && id != int(receiveAt.Id) {
+    //  id = int(receiveAt.Id)
+    //  log.Log.Errorf("lastRead:%d, createAt:%d, index:%d, len(res):%d", lastRead, receiveAt.CreateAt, index, len(res)-1)
+    //  readIndex = index
+    //  // 如果数据长度 - 1 == 已读取的下标 表示当前页数据读取完毕 返回-2
+    //  if len(res) == readIndex  {
+    //    readIndex = -2
+    //  }
+    //
+    //  b = true
+    //}
+  }
+
 
 	// 记录读取@通知消息的时间
 	if err := svc.notify.RecordReadAtTime(userId); err != nil {
