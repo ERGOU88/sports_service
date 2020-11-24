@@ -134,10 +134,10 @@ type EditUserInfoParams struct {
 
 // 用户反馈请求参数
 type FeedbackParam struct {
-	Phone    string `json:"phone" example:"手机号"`
-	Describe string `binding:"required" json:"describe" example:"问题描述"`     // 反馈内容
-	Problem  string `json:"problem" example:"遇到的问题"`                       // 遇到的问题
-	Pics     string `json:"pics" example:"图片列表"`                           // 图片（多张逗号分隔）
+	Phone    string `binding:"required" json:"phone" example:"手机号"`
+	Describe string `json:"describe" example:"问题描述"`                              // 反馈内容
+	Problem  string `binding:"required" json:"problem" example:"遇到的问题"`           // 遇到的问题
+	Pics     string `json:"pics" example:"图片列表"`                                  // 图片（多张逗号分隔）
 }
 
 // 个人空间 用户信息请求参数
