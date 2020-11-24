@@ -12,7 +12,7 @@ import (
 // 获取腾讯cos临时通行证
 func CosTempAccess(c *gin.Context) {
   reply := errdef.New(c)
-  client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+  client := tencentCloud.New(consts.TX_CLOUD_COS_SECRET_ID, consts.TX_CLOUD_COS_SECRET_KEY, consts.TMS_API_DOMAIN)
   info, err := client.GetCosTempAccess("ap-shanghai")
   if err != nil {
     log.Log.Errorf("cloud_trace: get cos temp access err:%s", err)

@@ -8,6 +8,9 @@ const (
 	TX_CLOUD_SECRET_ID  = "AKIDSfbHjxhcmiV3ECAVqvzoNgme8NTIr9C0"
 	TX_CLOUD_SECRET_KEY = "g6FDvRkmZ5KJ1SijWpse9OM4XmmJZZke"
 
+  TX_CLOUD_COS_SECRET_ID  = "AKIDjU25ybRyZ4EHVyzemjOoIcZGrIH6NEYk"
+  TX_CLOUD_COS_SECRET_KEY = "6v96wZaOjnmKbbWS9qGZfeqofKzSfz9h"
+
 	// 任务流模版名称
   VOD_PROCEDURE_NAME  = "fpv-demo"
 )
