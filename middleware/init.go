@@ -12,5 +12,5 @@ func InitMiddleware(engine *gin.Engine, log log.ILogger, showColor bool) {
   // 日志中间件
   engine.Use(engineLog.EngineLog(log, showColor))
 	// 跨域处理
-	engine.Use(header.Options)
+	//engine.Use(header.Options)
 }
