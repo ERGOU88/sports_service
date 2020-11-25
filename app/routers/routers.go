@@ -25,7 +25,7 @@ import (
 func InitRouters(engine *gin.Engine) {
   engine.Use(func(c *gin.Context) {
       c.Header("Access-Control-Allow-Origin", "*")
-      c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS")
+      c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE")
       c.Header("Access-Control-Allow-Headers", "x-requested-with")
       c.Header("Access-Control-Allow-Headers", "Cookie")
       c.Header("Access-Control-Allow-Headers", "Authorization")
