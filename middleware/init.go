@@ -9,8 +9,8 @@ import (
 
 // 初始化部分中间件
 func InitMiddleware(engine *gin.Engine, log log.ILogger, showColor bool) {
+  // 跨域处理
+  engine.Use(header.Options)
   // 日志中间件
   engine.Use(engineLog.EngineLog(log, showColor))
-	// 跨域处理
-	engine.Use(header.Options)
 }
