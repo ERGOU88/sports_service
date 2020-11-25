@@ -136,6 +136,7 @@ func TrimHtml(src string) string {
   re, _ = regexp.Compile("\\s{2,}")
   src = re.ReplaceAllString(src, "\n")
 
+  src = strings.Replace(src, "\n", "", -1)
   return strings.TrimSpace(src)
 }
 
