@@ -103,7 +103,7 @@ func PublishReply(c *gin.Context) {
 // @Param   video_id	  query  	string 	true  "视频id"
 // @Param   sort_type     query     string  true  "排序规则 0 时间 1 热度"
 // @Param   user_id	    query  	string 	true  "用户id"
-// @Success 200 {array}  mcomment.VideoComments
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/comment/list [get]
 // 评论列表
@@ -137,7 +137,7 @@ func CommentList(c *gin.Context) {
 // @Param   video_id	  query  	string 	true  "视频id"
 // @Param   user_id	    query  	string 	true  "用户id"
 // @Param   comment_id	  query  	string 	true  "评论id"
-// @Success 200 {array}  mcomment.ReplyComment
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/comment/reply/list [get]
 // 回复列表

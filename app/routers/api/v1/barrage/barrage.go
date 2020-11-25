@@ -63,7 +63,7 @@ func SendBarrage(c *gin.Context) {
 // @Param   min_duration  query     string  true  "时长区间 最小时长"
 // @Param   max_duration  query     string  true  "时长区间 最大时长"
 // @Param   video_id      query     string  true  "视频id"
-// @Success 200 {object}  models.VideoBarrage
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/barrage/video/list [get]
 // 视频弹幕列表（通过时长区间查询）

@@ -63,7 +63,7 @@ func NotifySetting(c *gin.Context) {
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
-// @Success 200 {object}  []interface{}
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/notify/beliked [get]
 // 被点赞通知
@@ -92,7 +92,7 @@ func BeLikedNotify(c *gin.Context) {
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
-// @Success 200 {object}  []interface{}
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/notify/receive/at [get]
 // 被@通知
@@ -119,7 +119,7 @@ func ReceiveAtNotify(c *gin.Context) {
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
-// @Success 200 {object}  map[string]int64
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/notify/unread/quantity [get]
 // 未读数量
@@ -143,7 +143,7 @@ func UnreadNum(c *gin.Context) {
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
-// @Success 200 {object}  models.SystemNoticeSettings
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/notify/setting/info [get]
 // 通知设置信息

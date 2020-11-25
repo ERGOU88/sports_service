@@ -55,7 +55,7 @@ func SmsCode(c *gin.Context) {
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   SmsCodeLoginParams  body sms.SmsCodeLoginParams true "短信验证码登陆/注册 请求参数"
-// @Success 200 {object} swag.LoginSwag
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/user/smscode/login [post]
 // 短信验证码登陆
@@ -94,7 +94,7 @@ func SmsCodeLogin(c *gin.Context) {
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   LoginParams  body muser.LoginParams true "手机号登陆/注册 请求参数"
-// @Success 200 {object} swag.LoginSwag
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/user/mobile/login [post]
 // 手机一键登陆
@@ -135,7 +135,7 @@ func MobilePhoneLogin(c *gin.Context) {
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   WxLoginParam  body muser.WxLoginParam true "微信登陆/注册 请求参数"
-// @Success 200 {object} swag.LoginSwag
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/user/wechat/login [post]
 // 用户微信登陆
@@ -174,7 +174,7 @@ func UserWechatLogin(c *gin.Context) {
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   WeiboLoginParams  body muser.WeiboLoginParams true "微博登陆/注册 请求参数"
-// @Success 200 {object} swag.LoginSwag
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/user/weibo/login [post]
 // 用户微博登陆
@@ -213,7 +213,7 @@ func UserWeiboLogin(c *gin.Context) {
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   WeiboLoginParams  body muser.QQLoginParams true "QQ登陆/注册 请求参数"
-// @Success 200 {object} swag.LoginSwag
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/user/qq/login [post]
 // 用户微博登陆
@@ -251,7 +251,7 @@ func UserQQLogin(c *gin.Context) {
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
-// @Success 200 {object}  muser.UserInfoResp
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/user/info [get]
 // 用户信息
@@ -371,7 +371,7 @@ func UserFeedback(c *gin.Context) {
 // @Param   Version 	    header    string 	true  "版本" default(1.0.0)
 // @Param   user_id 	    query     string 	true  "用户id"
 // @Param   UserZoneInfoParam  body muser.UserZoneInfoParam true "个人空间用户信息 请求参数"
-// @Success 200 {object}  swag.ZoneInfoSwag
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/user/zone/info [get]
 // 个人空间用户信息

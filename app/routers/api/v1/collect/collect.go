@@ -102,7 +102,7 @@ func CancelCollect(c *gin.Context) {
 // @Param   user_id	    query  	string 	true  "查看的用户id"
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
-// @Success 200 {array}   mvideo.VideosInfoResp
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/collect/video/list [get]
 // 用户收藏的视频列表
@@ -130,7 +130,7 @@ func CollectVideoList(c *gin.Context) {
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
-// @Success 200 {array}   mvideo.VideosInfoResp
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/collect/other/list [get]
 // 查看其他用户收藏的视频列表

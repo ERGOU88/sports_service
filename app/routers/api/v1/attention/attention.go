@@ -102,7 +102,7 @@ func CancelAttention(c *gin.Context) {
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
 // @Param   user_id		  query  	string 	true  "用户id"
-// @Success 200 {array}  muser.UserInfoResp
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/attention/list [get]
 // 关注的用户列表
@@ -140,7 +140,7 @@ func AttentionList(c *gin.Context) {
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
 // @Param   user_id		  query  	string 	true  "用户id"
-// @Success 200 {array}  muser.UserInfoResp
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/fans/list [get]
 // 用户的粉丝列表

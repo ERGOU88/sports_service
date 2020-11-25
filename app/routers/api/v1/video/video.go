@@ -75,7 +75,7 @@ func VideoPublish(c *gin.Context) {
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
-// @Success 200 {array}  mvideo.VideosInfoResp
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/video/browse/history [get]
 // 视频浏览记录 todo: 分页数据重复问题 客户端传递最后一条记录创建时间
@@ -112,7 +112,7 @@ func BrowseHistory(c *gin.Context) {
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
 // @Param   status	  	  query  	string 	true  "status 状态 -1 查询全部 0 审核中 1 已发布 2 不通过"
 // @Param   condition	  query  	string 	true  "条件 -1 默认时间排序 0 播放数 1 弹幕数 2 点赞数 3 评论数 4 分享数"
-// @Success 200 {array}  mvideo.VideosInfo
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/video/publish/list [get]
 // 用户发布的视频列表
@@ -151,7 +151,7 @@ func VideoPublishList(c *gin.Context) {
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
 // @Param   status	  	  query  	string 	true  "status 状态 -1 查询全部 0 审核中 1 已发布 2 不通过"
 // @Param   condition	  query  	string 	true  "条件 -1 默认时间排序 0 播放数 1 弹幕数 2 点赞数 3 评论数 4 分享数"
-// @Success 200 {array}  mvideo.VideosInfo
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/video/other/publish [get]
 // 获取其他用户发布的视频列表
@@ -259,7 +259,7 @@ func DeletePublish(c *gin.Context) {
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
-// @Success 200 {array}  mvideo.VideoDetailInfo
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/video/recommend [get]
 // 首页推荐列表
@@ -286,7 +286,7 @@ func RecommendVideos(c *gin.Context) {
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
-// @Success 200 {array}  models.Banner
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/video/homepage/banner [get]
 // 首页推荐的banner
@@ -311,7 +311,7 @@ func RecommendBanners(c *gin.Context) {
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
-// @Success 200 {array}  mvideo.VideoDetailInfo
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/video/attention [get]
 // 关注的人发布的视频
@@ -338,7 +338,7 @@ func AttentionVideos(c *gin.Context) {
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   video_id	  query  	string 	true  "视频id"
-// @Success 200 {object}  mvideo.VideoDetailInfo
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/video/detail [get]
 // 视频详情信息
@@ -368,7 +368,7 @@ func VideoDetail(c *gin.Context) {
 // @Param   video_id	  query  	string 	true  "视频id"
 // @Param   page	  	  query  	string 	true  "页码 从1开始"
 // @Param   size	  	  query  	string 	true  "每页展示多少 最多50条"
-// @Success 200 {array}  mvideo.VideoDetailInfo
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/video/detail/recommend [get]
 // 详情页推荐视频（同标签推荐）
@@ -439,7 +439,7 @@ func CheckCustomLabels(c *gin.Context) {
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
-// @Success 200 {array}  mlabel.VideoLabel
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/video/label/list [get]
 // 获取视频标签列表

@@ -173,12 +173,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/muser.UserInfoResp"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -413,9 +410,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "$ref": "#/definitions/models.VideoBarrage"
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -473,9 +470,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "$ref": "#/definitions/swag.ClientInitSwag"
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -628,12 +625,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mvideo.VideosInfoResp"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -868,12 +862,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mvideo.VideosInfoResp"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -972,12 +963,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mcomment.VideoComments"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -1226,12 +1214,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mcomment.ReplyComment"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -1391,12 +1376,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/muser.UserInfoResp"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -1624,12 +1606,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mvideo.VideosInfoResp"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -1864,12 +1843,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mvideo.VideosInfoResp"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -1947,12 +1923,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "object"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -2030,12 +2003,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "object"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -2174,9 +2144,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "$ref": "#/definitions/models.SystemNoticeSettings"
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -2326,12 +2296,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "integer"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -2416,12 +2383,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mattention.SearchContactRes"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -2565,9 +2529,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "$ref": "#/definitions/swag.ColligateSearchSwag"
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -2652,12 +2616,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mattention.SearchContactRes"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -2728,12 +2689,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -2825,12 +2783,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mvideo.VideoDetailInfo"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -2922,12 +2877,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/muser.UserSearchResults"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -3040,12 +2992,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mvideo.VideoDetailInfo"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -3259,9 +3208,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "$ref": "#/definitions/muser.UserInfoResp"
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -3334,9 +3283,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "$ref": "#/definitions/swag.LoginSwag"
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -3409,9 +3358,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "$ref": "#/definitions/swag.LoginSwag"
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -3559,9 +3508,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "$ref": "#/definitions/swag.LoginSwag"
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -3634,9 +3583,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "$ref": "#/definitions/swag.LoginSwag"
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -3709,9 +3658,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "$ref": "#/definitions/swag.LoginSwag"
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -3791,9 +3740,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "$ref": "#/definitions/swag.ZoneInfoSwag"
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -3871,12 +3820,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mvideo.VideoDetailInfo"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -3954,12 +3900,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mvideo.VideosInfoResp"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -4180,9 +4123,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "$ref": "#/definitions/mvideo.VideoDetailInfo"
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -4267,12 +4210,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mvideo.VideoDetailInfo"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -4336,12 +4276,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Banner"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -4405,12 +4342,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mlabel.VideoLabel"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -4502,12 +4436,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mvideo.VideosInfo"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -4681,12 +4612,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mvideo.VideosInfo"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -4764,12 +4692,9 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/mvideo.VideoDetailInfo"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -4882,55 +4807,6 @@ var doc = `{
                 }
             }
         },
-        "mattention.SearchContactRes": {
-            "type": "object",
-            "properties": {
-                "age": {
-                    "type": "integer",
-                    "example": 27
-                },
-                "avatar": {
-                    "type": "string",
-                    "example": "头像地址"
-                },
-                "background_img": {
-                    "type": "string",
-                    "example": "背景图"
-                },
-                "born": {
-                    "type": "string",
-                    "example": "出生日期"
-                },
-                "gender": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "is_anchor": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "is_attention": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "nick_name": {
-                    "type": "string",
-                    "example": "昵称 陈二狗"
-                },
-                "signature": {
-                    "type": "string",
-                    "example": "个性签名"
-                },
-                "status": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "user_id": {
-                    "type": "string",
-                    "example": "2009011314521111"
-                }
-            }
-        },
         "mbarrage.SendBarrageParams": {
             "type": "object",
             "required": [
@@ -5029,95 +4905,6 @@ var doc = `{
                 }
             }
         },
-        "mcomment.ReplyComment": {
-            "type": "object",
-            "properties": {
-                "avatar": {
-                    "type": "string",
-                    "example": "头像"
-                },
-                "comment_level": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "content": {
-                    "type": "string",
-                    "example": "评论内容"
-                },
-                "create_at": {
-                    "type": "integer",
-                    "example": 1600000000
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1600000000
-                },
-                "is_at": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "is_attention": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "is_like": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "is_top": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "like_num": {
-                    "type": "integer",
-                    "example": 100
-                },
-                "parent_comment_id": {
-                    "type": "integer",
-                    "example": 1000000000
-                },
-                "parent_comment_user_id": {
-                    "type": "string",
-                    "example": "父评论的用户id"
-                },
-                "reply_comment_avatar": {
-                    "type": "string",
-                    "example": "被回复评论的用户头像"
-                },
-                "reply_comment_id": {
-                    "type": "integer",
-                    "example": 1000000000
-                },
-                "reply_comment_user_id": {
-                    "type": "string",
-                    "example": "被回复的评论用户id"
-                },
-                "reply_comment_user_name": {
-                    "type": "string",
-                    "example": "被回复评论的用户昵称"
-                },
-                "reply_content": {
-                    "type": "string",
-                    "example": "被回复的内容"
-                },
-                "status": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "user_id": {
-                    "type": "string",
-                    "example": "用户id"
-                },
-                "user_name": {
-                    "type": "string",
-                    "example": "用户昵称"
-                },
-                "video_id": {
-                    "type": "integer",
-                    "example": 1000000000
-                }
-            }
-        },
         "mcomment.ReplyCommentParams": {
             "type": "object",
             "required": [
@@ -5133,112 +4920,6 @@ var doc = `{
                     "type": "string"
                 },
                 "video_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "mcomment.VideoComments": {
-            "type": "object",
-            "properties": {
-                "avatar": {
-                    "type": "string",
-                    "example": "用户头像"
-                },
-                "comment_level": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "content": {
-                    "type": "string",
-                    "example": "评论的内容"
-                },
-                "create_at": {
-                    "type": "integer",
-                    "example": 1600000000
-                },
-                "has_more": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1000000000
-                },
-                "is_attention": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "is_like": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "is_top": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "like_num": {
-                    "type": "integer",
-                    "example": 100
-                },
-                "reply_list": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/mcomment.ReplyComment"
-                    }
-                },
-                "reply_num": {
-                    "type": "integer",
-                    "example": 100
-                },
-                "status": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "user_id": {
-                    "type": "string",
-                    "example": "用户id"
-                },
-                "user_name": {
-                    "type": "string",
-                    "example": "用户昵称"
-                },
-                "video_id": {
-                    "type": "integer",
-                    "example": 1000000000
-                }
-            }
-        },
-        "mlabel.VideoLabel": {
-            "type": "object",
-            "properties": {
-                "child": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/mlabel.VideoLabel"
-                    }
-                },
-                "create_at": {
-                    "type": "integer"
-                },
-                "icon": {
-                    "type": "string"
-                },
-                "label_id": {
-                    "type": "integer"
-                },
-                "label_name": {
-                    "type": "string"
-                },
-                "pid": {
-                    "type": "integer"
-                },
-                "sortorder": {
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "update_at": {
                     "type": "integer"
                 }
             }
@@ -5289,117 +4970,6 @@ var doc = `{
                 "thumb_up_push_set": {
                     "type": "integer",
                     "example": 0
-                }
-            }
-        },
-        "models.Banner": {
-            "type": "object",
-            "properties": {
-                "cover": {
-                    "type": "string"
-                },
-                "create_at": {
-                    "type": "integer"
-                },
-                "end_time": {
-                    "type": "integer"
-                },
-                "explain": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "jump_type": {
-                    "type": "integer"
-                },
-                "jump_url": {
-                    "type": "string"
-                },
-                "share_url": {
-                    "type": "string"
-                },
-                "sortorder": {
-                    "type": "integer"
-                },
-                "start_time": {
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "integer"
-                },
-                "update_at": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.SystemNoticeSettings": {
-            "type": "object",
-            "properties": {
-                "attention_push_set": {
-                    "type": "integer"
-                },
-                "comment_push_set": {
-                    "type": "integer"
-                },
-                "create_at": {
-                    "type": "integer"
-                },
-                "share_push_set": {
-                    "type": "integer"
-                },
-                "slot_push_set": {
-                    "type": "integer"
-                },
-                "thumb_up_push_set": {
-                    "type": "integer"
-                },
-                "update_at": {
-                    "type": "integer"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.VideoBarrage": {
-            "type": "object",
-            "properties": {
-                "barrage_type": {
-                    "type": "integer"
-                },
-                "color": {
-                    "type": "string"
-                },
-                "content": {
-                    "type": "string"
-                },
-                "font": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "location": {
-                    "type": "integer"
-                },
-                "send_time": {
-                    "type": "integer"
-                },
-                "user_id": {
-                    "type": "string"
-                },
-                "video_cur_duration": {
-                    "type": "integer"
-                },
-                "video_id": {
-                    "type": "integer"
                 }
             }
         },
@@ -5499,127 +5069,6 @@ var doc = `{
                 }
             }
         },
-        "muser.UserInfoResp": {
-            "type": "object",
-            "properties": {
-                "age": {
-                    "type": "integer",
-                    "example": 27
-                },
-                "avatar": {
-                    "type": "string",
-                    "example": "头像地址"
-                },
-                "background_img": {
-                    "type": "string",
-                    "example": "背景图"
-                },
-                "born": {
-                    "type": "string",
-                    "example": "出生日期"
-                },
-                "country": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "gender": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "is_anchor": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "is_attention": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "is_reply_focus": {
-                    "type": "integer"
-                },
-                "mobile_num": {
-                    "type": "integer",
-                    "example": 13177656222
-                },
-                "nick_name": {
-                    "type": "string",
-                    "example": "昵称 陈二狗"
-                },
-                "signature": {
-                    "type": "string",
-                    "example": "个性签名"
-                },
-                "status": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "user_id": {
-                    "type": "string",
-                    "example": "2009011314521111"
-                },
-                "user_type": {
-                    "type": "integer",
-                    "example": 0
-                }
-            }
-        },
-        "muser.UserSearchResults": {
-            "type": "object",
-            "properties": {
-                "age": {
-                    "type": "integer",
-                    "example": 27
-                },
-                "avatar": {
-                    "type": "string",
-                    "example": "头像地址"
-                },
-                "background_img": {
-                    "type": "string",
-                    "example": "背景图"
-                },
-                "born": {
-                    "type": "string",
-                    "example": "出生日期"
-                },
-                "fans_num": {
-                    "type": "integer",
-                    "example": 100
-                },
-                "gender": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "is_anchor": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "is_attention": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "nick_name": {
-                    "type": "string",
-                    "example": "昵称 陈二狗"
-                },
-                "signature": {
-                    "type": "string",
-                    "example": "个性签名"
-                },
-                "status": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "user_id": {
-                    "type": "string",
-                    "example": "2009011314521111"
-                },
-                "works_num": {
-                    "type": "integer",
-                    "example": 100
-                }
-            }
-        },
         "muser.UserZoneInfoParam": {
             "type": "object",
             "properties": {
@@ -5678,120 +5127,6 @@ var doc = `{
             "properties": {
                 "composeIds": {
                     "type": "string"
-                }
-            }
-        },
-        "mvideo.VideoDetailInfo": {
-            "type": "object",
-            "properties": {
-                "avatar": {
-                    "type": "string",
-                    "example": "头像"
-                },
-                "barrage_num": {
-                    "type": "integer",
-                    "example": 10
-                },
-                "browse_num": {
-                    "type": "integer",
-                    "example": 10
-                },
-                "collect_num": {
-                    "type": "integer",
-                    "example": 10
-                },
-                "comment_num": {
-                    "type": "integer",
-                    "example": 10
-                },
-                "cover": {
-                    "type": "string",
-                    "example": "封面"
-                },
-                "create_at": {
-                    "type": "integer",
-                    "example": 1600000000
-                },
-                "describe": {
-                    "type": "string",
-                    "example": "描述"
-                },
-                "fabulous_num": {
-                    "type": "integer",
-                    "example": 10
-                },
-                "fans_num": {
-                    "type": "integer",
-                    "example": 100
-                },
-                "is_attention": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "is_collect": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "is_like": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "is_recommend": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "is_top": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "labels": {
-                    "type": "string"
-                },
-                "nick_name": {
-                    "type": "string",
-                    "example": "昵称"
-                },
-                "play_info": {
-                    "type": "array",
-                    "items": {
-                        "type": "PlayInfo"
-                    }
-                },
-                "share_num": {
-                    "type": "integer",
-                    "example": 10
-                },
-                "status": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "title": {
-                    "type": "string",
-                    "example": "标题"
-                },
-                "user_id": {
-                    "type": "string",
-                    "example": "发布视频的用户id"
-                },
-                "video_addr": {
-                    "type": "string",
-                    "example": "视频地址"
-                },
-                "video_duration": {
-                    "type": "integer",
-                    "example": 100000
-                },
-                "video_height": {
-                    "type": "integer",
-                    "example": 100
-                },
-                "video_id": {
-                    "type": "integer",
-                    "example": 1000000000
-                },
-                "video_width": {
-                    "type": "integer",
-                    "example": 100
                 }
             }
         },
@@ -5858,159 +5193,6 @@ var doc = `{
                 }
             }
         },
-        "mvideo.VideosInfo": {
-            "type": "object",
-            "properties": {
-                "barrage_num": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "browse_num": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "comment_num": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "cover": {
-                    "type": "string",
-                    "example": "封面"
-                },
-                "create_at": {
-                    "type": "integer",
-                    "example": 1600000000
-                },
-                "describe": {
-                    "type": "string",
-                    "example": "描述"
-                },
-                "fabulous_num": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "is_recommend": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "is_top": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "share_num": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "status": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "status_cn": {
-                    "type": "string",
-                    "example": "审核中"
-                },
-                "time_elapsed": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "title": {
-                    "type": "string",
-                    "example": "标题"
-                },
-                "user_id": {
-                    "type": "string"
-                },
-                "video_addr": {
-                    "type": "string",
-                    "example": "视频地址"
-                },
-                "video_duration": {
-                    "type": "integer",
-                    "example": 1000000
-                },
-                "video_height": {
-                    "type": "integer",
-                    "example": 1000
-                },
-                "video_id": {
-                    "type": "integer",
-                    "example": 1000000000
-                },
-                "video_width": {
-                    "type": "integer",
-                    "example": 1000
-                }
-            }
-        },
-        "mvideo.VideosInfoResp": {
-            "type": "object",
-            "properties": {
-                "avatar": {
-                    "type": "string",
-                    "example": "头像"
-                },
-                "cover": {
-                    "type": "string",
-                    "example": "视频封面"
-                },
-                "create_at": {
-                    "type": "integer",
-                    "example": 1600000000
-                },
-                "describe": {
-                    "type": "string",
-                    "example": "视频描述"
-                },
-                "is_attention": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "is_recommend": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "is_top": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "nick_name": {
-                    "type": "string",
-                    "example": "昵称"
-                },
-                "op_time": {
-                    "type": "integer",
-                    "example": 1600000000
-                },
-                "title": {
-                    "type": "string",
-                    "example": "视频标题"
-                },
-                "user_id": {
-                    "type": "string",
-                    "example": "用户id"
-                },
-                "video_addr": {
-                    "type": "string",
-                    "example": "视频地址"
-                },
-                "video_duration": {
-                    "type": "integer",
-                    "example": 1000000
-                },
-                "video_height": {
-                    "type": "integer",
-                    "example": 1000
-                },
-                "video_id": {
-                    "type": "integer",
-                    "example": 1000000000
-                },
-                "video_width": {
-                    "type": "integer",
-                    "example": 1000
-                }
-            }
-        },
         "sms.SendSmsCodeParams": {
             "type": "object",
             "properties": {
@@ -6037,184 +5219,6 @@ var doc = `{
                 },
                 "platform": {
                     "type": "integer"
-                }
-            }
-        },
-        "swag.ClientInitSwag": {
-            "type": "object",
-            "properties": {
-                "about": {
-                    "type": "string",
-                    "example": "关于h5页"
-                },
-                "avatar_list": {
-                    "type": "string"
-                },
-                "faq_h5": {
-                    "type": "string",
-                    "example": "常见问题h5页"
-                },
-                "label_list": {
-                    "type": "string"
-                },
-                "login_treaty": {
-                    "type": "string",
-                    "example": "登陆协议h5页"
-                },
-                "secret": {
-                    "type": "string",
-                    "example": "密钥"
-                },
-                "upload_treaty": {
-                    "type": "string",
-                    "example": "上传协议h5页"
-                },
-                "world_list": {
-                    "type": "string"
-                }
-            }
-        },
-        "swag.ColligateSearchSwag": {
-            "type": "object",
-            "properties": {
-                "user_list": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/muser.UserSearchResults"
-                    }
-                },
-                "video_list": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/mvideo.VideoDetailInfo"
-                    }
-                }
-            }
-        },
-        "swag.LoginSwag": {
-            "type": "object",
-            "properties": {
-                "token": {
-                    "description": "token",
-                    "type": "string"
-                },
-                "user_info": {
-                    "description": "用户信息",
-                    "type": "object",
-                    "$ref": "#/definitions/swag.User"
-                }
-            }
-        },
-        "swag.User": {
-            "type": "object",
-            "properties": {
-                "age": {
-                    "type": "integer"
-                },
-                "avatar": {
-                    "type": "string"
-                },
-                "background_img": {
-                    "type": "string"
-                },
-                "born": {
-                    "type": "string"
-                },
-                "channel_id": {
-                    "type": "integer"
-                },
-                "city": {
-                    "type": "string"
-                },
-                "create_at": {
-                    "type": "integer"
-                },
-                "device_type": {
-                    "type": "integer"
-                },
-                "gender": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "is_anchor": {
-                    "type": "integer"
-                },
-                "last_login_time": {
-                    "type": "integer"
-                },
-                "mobile_num": {
-                    "type": "integer"
-                },
-                "nick_name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "signature": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "update_at": {
-                    "type": "integer"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "swag.UserZoneInfoResp": {
-            "type": "object",
-            "properties": {
-                "totalAttention": {
-                    "description": "关注数",
-                    "type": "integer",
-                    "example": 100
-                },
-                "totalBeLiked": {
-                    "description": "被点赞数",
-                    "type": "integer",
-                    "example": 100
-                },
-                "totalCollect": {
-                    "description": "收藏的作品数",
-                    "type": "integer",
-                    "example": 100
-                },
-                "totalFans": {
-                    "description": "粉丝数",
-                    "type": "integer",
-                    "example": 100
-                },
-                "totalLikes": {
-                    "description": "点赞的作品数",
-                    "type": "integer",
-                    "example": 100
-                },
-                "totalPublish": {
-                    "description": "发布的作品数",
-                    "type": "integer",
-                    "example": 100
-                }
-            }
-        },
-        "swag.ZoneInfoSwag": {
-            "type": "object",
-            "properties": {
-                "user_info": {
-                    "type": "object",
-                    "$ref": "#/definitions/muser.UserInfoResp"
-                },
-                "zone_info": {
-                    "type": "object",
-                    "$ref": "#/definitions/swag.UserZoneInfoResp"
                 }
             }
         }
