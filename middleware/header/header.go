@@ -29,7 +29,7 @@ func Options(c *gin.Context) {
   // //c.Header("Content-Type", "application/json")
   // c.AbortWithStatus(200)
   //}
-	c.Header("Access-Control-Allow-Origin", "http://fpv-web-qa.youzu.com")
+	c.Header("Access-Control-Allow-Origin", "*")
   c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS")
 	c.Header("Access-Control-Allow-Headers", "x-requested-with")
 	c.Header("Access-Control-Allow-Headers", "Cookie")
