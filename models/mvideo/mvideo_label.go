@@ -1,11 +1,9 @@
 package mvideo
 
 import (
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/rdskey"
-	"sports_service/server/models"
-	"fmt"
-	"sports_service/server/dao"
+  "fmt"
+  "sports_service/server/global/app/log"
+  "sports_service/server/models"
 )
 
 // 添加视频标签(一次插入多条)
@@ -54,42 +52,4 @@ func (m *VideoModel) DelVideoLabels(videoId string) error {
 	}
 
 	return nil
-}
-
-// 记录任务id -> 用户id
-func (m *VideoModel) RecordUploadTaskId(userId string, taskId int64) error {
-	rds := dao.NewRedisDao()
-	return rds.SETEX(rdskey.MakeKey(rdskey.VIDEO_UPLOAD_TASK, taskId), rdskey.KEY_EXPIRE_WEEK, userId)
-}
-
-// 通过任务id 获取 用户id
-func (m *VideoModel) GetUploadUserIdByTaskId(taskId int64) (string, error) {
-	rds := dao.NewRedisDao()
-	return rds.Get(rdskey.MakeKey(rdskey.VIDEO_UPLOAD_TASK, taskId))
-}
-
-// 记录用户发布的视频信息
-func (m *VideoModel) RecordPublishInfo(userId, pubInfo string, taskId int64) error {
-	key := rdskey.MakeKey(rdskey.VIDEO_UPLOAD_INFO, userId, taskId)
-	rds := dao.NewRedisDao()
-	return rds.SETEX(key, rdskey.KEY_EXPIRE_DAY * 3,  pubInfo)
-}
-
-// 获取用户发布的视频信息
-func (m *VideoModel) GetPublishInfo(userId string, taskId int64) (string, error) {
-	key := rdskey.MakeKey(rdskey.VIDEO_UPLOAD_INFO, userId, taskId)
-	log.Log.Debugf("publishInfo key:%s", key)
-	rds := dao.NewRedisDao()
-	return rds.Get(key)
-}
-
-// 通过腾讯云返回的文件id查询视频
-func (m *VideoModel) GetVideoByFileId(fileId string) *models.Videos {
-  m.Videos = new(models.Videos)
-  ok, err := m.Engine.Where("file_id=?", fileId).Get(m.Videos)
-  if !ok || err != nil {
-    return nil
-  }
-
-  return m.Videos
 }
