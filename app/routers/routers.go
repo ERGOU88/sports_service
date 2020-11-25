@@ -19,10 +19,22 @@ import (
 	"sports_service/server/app/routers/api/v1/client"
 	"sports_service/server/app/config"
 	"sports_service/server/global/app/log"
+	"fmt"
 )
 
 // 路由初始化
 func InitRouters(engine *gin.Engine) {
+  engine.Use(func(c *gin.Context) {
+   c.Header("Access-Control-Allow-Origin", "*")
+   c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS")
+   c.Header("Access-Control-Allow-Headers", "x-requested-with")
+   c.Header("Access-Control-Allow-Headers", "Cookie")
+   c.Header("Access-Control-Allow-Headers", "Authorization")
+   c.Header("Access-Control-Allow-Headers", "auth")
+   c.Header("Access-Control-Allow-Headers", "Content-Type")
+   // 允许请求带有验证信息
+   c.Header("Access-Control-Allow-Credentials", "true")
+  })
 	// 初始化中间件
 	middleware.InitMiddleware(engine, log.Log, config.Global.Log.ShowColor)
 	// 生产环境 不展示api文档 及 错误码文档
