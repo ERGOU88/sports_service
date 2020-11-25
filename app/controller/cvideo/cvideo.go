@@ -122,8 +122,8 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	now := time.Now().Unix()
 	svc.video.Videos.UserId = userId
 	svc.video.Videos.Cover = params.Cover
-	svc.video.Videos.Title = params.Title
-	svc.video.Videos.Describe = params.Describe
+	svc.video.Videos.Title = util.TrimHtml(params.Title)
+	svc.video.Videos.Describe = util.TrimHtml(params.Describe)
 	svc.video.Videos.VideoAddr = params.VideoAddr
 	svc.video.Videos.VideoDuration = params.VideoDuration
 	svc.video.Videos.CreateAt = int(now)
@@ -219,8 +219,8 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 	for index, video := range videoList {
 		resp := new(mvideo.VideosInfoResp)
 		resp.VideoId = video.VideoId
-		resp.Title = video.Title
-		resp.Describe = video.Describe
+		resp.Title = util.TrimHtml(video.Title)
+		resp.Describe = util.TrimHtml(video.Describe)
 		resp.Cover = video.Cover
 		resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		resp.IsRecommend = video.IsRecommend
@@ -295,6 +295,8 @@ func (svc *VideoModule) GetUserPublishList(userId, status, condition string, pag
 	  val.TimeElapsed = 10000
 	  val.StatusCn = svc.GetVideoStatusCn(fmt.Sprint(val.Status))
 	  val.VideoAddr = svc.video.AntiStealingLink(val.VideoAddr)
+	  val.Describe = util.TrimHtml(val.Describe)
+	  val.Title = util.TrimHtml(val.Title)
   }
 
   return list
@@ -452,6 +454,9 @@ func (svc *VideoModule) GetRecommendVideos(userId string, page, size int) []*mvi
 			continue
 		}
 
+    video.Describe = util.TrimHtml(video.Describe)
+    video.Title = util.TrimHtml(video.Title)
+
 		video.Avatar = userInfo.Avatar
 		video.Nickname = userInfo.NickName
 		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
@@ -523,6 +528,9 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 			continue
 		}
 
+    video.Describe = util.TrimHtml(video.Describe)
+    video.Title = util.TrimHtml(video.Title)
+
 		video.Avatar = userInfo.Avatar
 		video.Nickname = userInfo.NickName
     video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
@@ -564,8 +572,8 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
 
 	resp := new(mvideo.VideoDetailInfo)
 	resp.VideoId = video.VideoId
-	resp.Title = video.Title
-	resp.Describe = video.Describe
+	resp.Title = util.TrimHtml(video.Title)
+	resp.Describe = util.TrimHtml(video.Describe)
 	resp.Cover = video.Cover
   resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 	resp.IsRecommend = video.IsRecommend
@@ -704,8 +712,8 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 	for index, video := range videos {
 		resp := new(mvideo.VideoDetailInfo)
 		resp.VideoId = video.VideoId
-		resp.Title = video.Title
-		resp.Describe = video.Describe
+		resp.Title = util.TrimHtml(video.Title)
+		resp.Describe = util.TrimHtml(video.Describe)
 		resp.Cover = video.Cover
     resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		resp.IsRecommend = video.IsRecommend

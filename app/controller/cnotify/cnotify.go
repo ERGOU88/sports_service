@@ -16,6 +16,7 @@ import (
   "sports_service/server/models/mnotify"
   "sports_service/server/models/muser"
   "sports_service/server/models/mvideo"
+  "sports_service/server/util"
   "strconv"
   "strings"
   "time"
@@ -184,8 +185,8 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
         if ok {
           mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)] = ""
           info.ComposeId = video.VideoId
-          info.Title = video.Title
-          info.Describe = video.Describe
+          info.Title = util.TrimHtml(video.Title)
+          info.Describe = util.TrimHtml(video.Describe)
           info.Cover = video.Cover
           info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
           info.VideoDuration = video.VideoDuration
@@ -236,8 +237,8 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
           // 获取评论对应的视频信息
           video, ok := videoMp[comment.VideoId]
           if ok {
-            info.Title = video.Title
-            info.Describe = video.Describe
+            info.Title = util.TrimHtml(video.Title)
+            info.Describe = util.TrimHtml(video.Describe)
             info.Cover = video.Cover
             info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
             info.VideoDuration = video.VideoDuration
@@ -344,8 +345,8 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				// 获取评论对应的视频信息
 				if video := svc.video.FindVideoById(fmt.Sprint(comment.VideoId)); video != nil {
 					info.ComposeId = video.VideoId
-					info.Title = video.Title
-					info.Describe = video.Describe
+					info.Title = util.TrimHtml(video.Title)
+					info.Describe = util.TrimHtml(video.Describe)
 					info.Cover = video.Cover
 					info.VideoAddr = video.VideoAddr
 					info.VideoDuration = video.VideoDuration

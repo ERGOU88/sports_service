@@ -13,6 +13,7 @@ import (
   "sports_service/server/models/mlike"
   "sports_service/server/models/muser"
   "sports_service/server/models/mvideo"
+  "sports_service/server/util"
   "strings"
   "time"
 )
@@ -200,8 +201,8 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
 	for index, video := range videoList {
 		resp := new(mvideo.VideosInfoResp)
 		resp.VideoId = video.VideoId
-		resp.Title = video.Title
-		resp.Describe = video.Describe
+		resp.Title = util.TrimHtml(video.Title)
+		resp.Describe = util.TrimHtml(video.Describe)
 		resp.Cover = video.Cover
     resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		resp.IsRecommend = video.IsRecommend

@@ -89,6 +89,8 @@ func (svc *SearchModule) RecommendVideo() []*mvideo.VideoDetailInfo {
   }
 
   for _, val := range videos {
+    val.Title = util.TrimHtml(val.Title)
+    val.Describe = util.TrimHtml(val.Describe)
      user := svc.user.FindUserByUserid(val.UserId)
      if user != nil {
        val.Nickname = user.NickName
@@ -130,6 +132,9 @@ func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime s
 			log.Log.Errorf("video_trace: user not found, uid:%s", video.UserId)
 			continue
 		}
+
+    video.Title = util.TrimHtml(video.Title)
+    video.Describe = util.TrimHtml(video.Describe)
 
 		video.Avatar = userInfo.Avatar
 		video.Nickname = userInfo.NickName
@@ -231,8 +236,8 @@ func (svc *SearchModule) LabelSearch(userId string, labelId string, page, size i
 	for index, video := range videos {
 		resp := new(mvideo.VideoDetailInfo)
 		resp.VideoId = video.VideoId
-		resp.Title = video.Title
-		resp.Describe = video.Describe
+		resp.Title = util.TrimHtml(video.Title)
+		resp.Describe = util.TrimHtml(video.Describe)
 		resp.Cover = video.Cover
 		resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		resp.IsRecommend = video.IsRecommend
