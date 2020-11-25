@@ -117,6 +117,8 @@ func init() {
 
 // @title 电竞社区平台（应用服）
 // @version 1.0
+// @host fpv-web.youzu.com
+// @schemes https
 // @description ### 一、公共参数说明（此栏参数均为Headers请求头传递）
 // @description | 参数名 | 说明 | 示例 |
 // @description | ------ | :----- | :----- |

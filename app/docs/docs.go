@@ -5435,7 +5435,8 @@ var doc = `{
         "muser.FeedbackParam": {
             "type": "object",
             "required": [
-                "describe"
+                "phone",
+                "problem"
             ],
             "properties": {
                 "describe": {
@@ -5532,6 +5533,9 @@ var doc = `{
                 "is_attention": {
                     "type": "integer",
                     "example": 0
+                },
+                "is_reply_focus": {
+                    "type": "integer"
                 },
                 "mobile_num": {
                     "type": "integer",
@@ -6229,9 +6233,9 @@ type swaggerInfo struct {
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
-	Host:        "",
+	Host:        "fpv-web.youzu.com",
 	BasePath:    "",
-	Schemes:     []string{},
+	Schemes:     []string{"https"},
 	Title:       "电竞社区平台（应用服）",
 	Description: "### 一、公共参数说明（此栏参数均为Headers请求头传递）\n| 参数名 | 说明 | 示例 |\n| ------ | :----- | :----- |\n| AppId | AppId(区分Android,iOS,web) | 5EesXF1i |\n| Secret | 服务端下发的secret 通过/api/v1/client/init接口获取 调用该接口时无需传 且 不参与签名 | DnaukFwVILpcewX6 |\n| Timestamp | 请求时间戳 单位：秒 | 1588888888 |\n| Sign | 签名 | 签名 md5签名32位值 |\n| Version | 当前版本 | 1.0.1 |\n### 二、请求体说明（此栏参数均为POST JSON传递，不可用form-data提交）\n\n{\n'mobileNum': '13177656222',\n'platform': 0\n}\n### 三、接口签名生成方式\n签名加密示例:\nparams = 请求的url路径(不包含域名与参数) + & + Header头参数以`&`拼接（无需按照字典序，具体看以下栗子） + & + appKey\nappKey由服务端下发 并进行保存\nsign = md5(params) 取md5 32位小写\n如：md5(/api/v1/user/mobile/login&AppId=5EesXF1i&Timestamp=1588888888&Version=1.0.1&Secret=DnaukFwVILpcewX6&RfhHecN9zsNcy19Y)\nappKey为RfhHecN9zsNcy19Y\n### 四、API错误码文档\n[点击查看](/api/v1/doc)\n### 五、HTTP状态码说明\n| 状态码 | 说明 |\n| ------ | :----- |\n| 200 | 操作成功 |\n| 400 | 参数错误 |\n| 500 | 内部错误 |",
 }

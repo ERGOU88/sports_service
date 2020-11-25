@@ -413,7 +413,8 @@ definitions:
         example: 遇到的问题
         type: string
     required:
-    - describe
+    - phone
+    - problem
     type: object
   muser.LoginParams:
     properties:
@@ -470,6 +471,8 @@ definitions:
         type: integer
       is_attention:
         example: 0
+        type: integer
+      is_reply_focus:
         type: integer
       mobile_num:
         example: 13177656222
@@ -955,6 +958,7 @@ definitions:
         $ref: '#/definitions/swag.UserZoneInfoResp'
         type: object
     type: object
+host: fpv-web.youzu.com
 info:
   contact: {}
   description: |-
@@ -4298,4 +4302,6 @@ paths:
       summary: 举报视频 (ok)
       tags:
       - 视频模块
+schemes:
+- https
 swagger: "2.0"
