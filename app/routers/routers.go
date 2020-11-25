@@ -24,7 +24,7 @@ import (
 // 路由初始化
 func InitRouters(engine *gin.Engine) {
   engine.Use(func(c *gin.Context) {
-    if c.Request.Method != "OPTIONS" {
+    if c.Request.Method == "OPTIONS" {
       c.Header("Access-Control-Allow-Origin", "*")
       c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE")
       c.Header("Access-Control-Allow-Headers", "x-requested-with")
