@@ -2,6 +2,8 @@ package header
 
 import (
 	"github.com/gin-gonic/gin"
+  //"sports_service/server/global/app/log"
+  //"fmt"
 )
 
 // 跨域处理
@@ -38,4 +40,5 @@ func Options(c *gin.Context) {
 	c.Header("Access-Control-Allow-Headers", "Content-Type")
 	// 允许请求带有验证信息
 	c.Header("Access-Control-Allow-Credentials", "true")
+	return
 }
