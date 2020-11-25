@@ -155,7 +155,7 @@ func FansList(c *gin.Context) {
 	//
 	userId := c.Query("user_id")
 	toUserId := c.Query("to_user_id")
-	types := c.Query("types")
+	types := c.Query("type")
 
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	svc := cattention.New(c)
