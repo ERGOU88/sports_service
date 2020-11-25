@@ -24,7 +24,6 @@ import (
 // 路由初始化
 func InitRouters(engine *gin.Engine) {
   engine.Use(func(c *gin.Context) {
-    if c.Request.Method != "OPTIONS" {
       c.Header("Access-Control-Allow-Origin", "*")
       c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS")
       c.Header("Access-Control-Allow-Headers", "x-requested-with")
@@ -34,8 +33,6 @@ func InitRouters(engine *gin.Engine) {
       c.Header("Access-Control-Allow-Headers", "Content-Type")
       // 允许请求带有验证信息
       c.Header("Access-Control-Allow-Credentials", "true")
-      c.AbortWithStatus(200)
-    }
   })
 	// 初始化中间件
 	middleware.InitMiddleware(engine, log.Log, config.Global.Log.ShowColor)
