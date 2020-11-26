@@ -14,6 +14,7 @@ func Options(c *gin.Context) {
     c.Header("Access-Control-Allow-Headers", "Cookie")
     c.Header("Access-Control-Allow-Headers", "Authorization")
     c.Header("Access-Control-Allow-Headers", "auth")
+    c.Header("Access-Control-Expose-Headers", "auth")
     c.Header("Access-Control-Allow-Headers", "Content-Type")
     // 允许请求带有验证信息
     c.Header("Access-Control-Allow-Credentials", "true")
@@ -25,6 +26,7 @@ func Options(c *gin.Context) {
     c.Header("Access-Control-Allow-Headers", "Cookie")
     c.Header("Access-Control-Allow-Headers", "Authorization")
     c.Header("Access-Control-Allow-Headers", "auth")
+    c.Header("Access-Control-Expose-Headers", "auth")
     c.Header("Access-Control-Allow-Headers", "Content-Type")
     // 允许请求带有验证信息
     c.Header("Access-Control-Allow-Credentials", "true")
