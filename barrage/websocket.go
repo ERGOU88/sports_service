@@ -87,12 +87,12 @@ func handleSocketConn(webConn *websocket.Conn) {
 	}()
 
 	webConn.SetReadDeadline(time.Now().Add(time.Second * AUTH_DEAD_LINE))
-	//xid := auth(webConn)
-	//if xid == "" {
-	//	fmt.Printf("\nxid empty, xid:%s", xid)
-	//	return
-	//}
-	xid := "1"
+	xid := auth(webConn)
+	if xid == "" {
+		fmt.Printf("\nxid empty, xid:%s", xid)
+		return
+	}
+	//xid := "1"
 
 	user := NewUser(xid)
 	// 用户存储到全局map

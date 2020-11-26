@@ -136,6 +136,10 @@ func (tc *TencentCloud) ConfirmEvents(events []string) error {
 
 // 文本内容检测
 func (tc *TencentCloud) TextModeration(content string) (bool, error) {
+  if content == "" {
+    return true, nil
+  }
+
   credential := common.NewCredential(
     tc.secretId,
     tc.secretKey,
