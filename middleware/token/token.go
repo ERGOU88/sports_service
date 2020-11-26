@@ -15,24 +15,27 @@ import (
 func TokenAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		reply := errdef.New(c)
-		var userid string
-		var hashcode string
+		var userid, hashcode, auth string
 		c.Set(consts.USER_ID, userid)
 		val, err := c.Request.Cookie(consts.COOKIE_NAME)
 		if err != nil {
-			log.Log.Errorf("c.Request.Cookie() err is %s", err.Error())
-			reply.Response(http.StatusUnauthorized, errdef.INVALID_TOKEN)
-			c.Abort()
-			return
-		}
+		  auth = c.Request.Header.Get("auth")
+		  if auth == "" {
+        log.Log.Errorf("c.Request.Cookie() err is %s", err.Error())
+        reply.Response(http.StatusUnauthorized, errdef.INVALID_TOKEN)
+        c.Abort()
+        return
+      }
+		} else {
+		  auth = val.Value
+    }
 
-		log.Log.Debugf("val:%v", val)
-		v := val.Value
+		log.Log.Debugf("auth:%v", auth)
 		//v := c.Request.Header.Get("auth")
-		ks := strings.Split(v, "_")
+		ks := strings.Split(auth, "_")
 		if len(ks) != 2 {
 			log.Log.Errorf("len(ks) != 2")
-			ks = strings.Split(v, "%09")
+			ks = strings.Split(auth, "%09")
 		}
 
 		if len(ks) == 2 {
@@ -58,18 +61,18 @@ func TokenAuth() gin.HandlerFunc {
 		}
 
 		// 客户端token是否和redis存储的一致
-		if res := strings.Compare(v, token); res != 0 {
-			log.Log.Errorf("token_trace: token not match, server token:%s, client token:%s", token, v)
+		if res := strings.Compare(auth, token); res != 0 {
+			log.Log.Errorf("token_trace: token not match, server token:%s, client token:%s", token, auth)
 			reply.Response(http.StatusUnauthorized, errdef.INVALID_TOKEN)
 			c.Abort()
 			return
 		}
 
-		log.Log.Debugf("client token:%s, server token:%s", v, token)
+		log.Log.Debugf("client token:%s, server token:%s", auth, token)
 
 		if userid != "" {
 			// 给token续约
-			if err := model.SaveUserToken(userid, v); err != nil {
+			if err := model.SaveUserToken(userid, auth); err != nil {
 				log.Log.Errorf("token_trace: save user token err:%s", err)
 			}
 		}
