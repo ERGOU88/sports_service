@@ -280,12 +280,13 @@ func (svc *AttentionModule) GetFansList(userId string, page, size int) []*muser.
 			Age: user.Age,
 			UserType: user.UserType,
 			Country: int32(user.Country),
-			IsAttention: consts.ALREADY_ATTENTION,
+			// 粉丝对当前用户的状态
+			IsReplyFocus: consts.ALREADY_ATTENTION,
 		}
 
-		// 查询是否回关了粉丝
+		// 查询用户是否关注了粉丝
 		if attention := svc.attention.GetAttentionInfo(userId, user.UserId); attention != nil {
-			info.IsReplyFocus = int32(attention.Status)
+			info.IsAttention = int32(attention.Status)
 		}
 
 		resp[index] = info
