@@ -213,7 +213,7 @@ func (tc *TencentCloud) Upload(taskId int64, userId, token, path, region, proced
   return rsp, nil
 }
 
-// 获取腾讯对象存储临时签名
+// 获取腾讯对象存储临时通行证
 func (tc *TencentCloud) GetCosTempAccess(region string) (map[string]interface{}, error) {
   credential := sts.NewClient(
     tc.secretId,

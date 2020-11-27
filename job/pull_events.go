@@ -195,9 +195,9 @@ func uploadEvent(event *v20180717.EventContent) error {
   if err := util.JsonFast.Unmarshal([]byte(*event.FileUploadEvent.MediaBasicInfo.SourceInfo.SourceContext), source); err != nil {
     log.Log.Errorf("job_trace: jsonfast unmarshal event sourceContext err:%s", err)
     // 确认事件回调
-    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-      log.Log.Errorf("job_trace: confirm events err:%s", err)
-    }
+    //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+    //  log.Log.Errorf("job_trace: confirm events err:%s", err)
+    //}
 
     session.Rollback()
     return errors.New("jsonfast unmarshal event sourceContext err")
