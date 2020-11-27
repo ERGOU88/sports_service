@@ -354,26 +354,26 @@ func (svc *SearchModule) CleanSearchHistory(userId string) int {
   return errdef.SUCCESS
 }
 
-// 获取时长条件
+// 获取时长条件（数据库存储的视频时长是毫秒）
 func (svc *SearchModule) GetDurationCondition(durationType string) (minDuration, maxDuration int64) {
 	switch durationType {
 	case string(consts.UNLIMITED_DURATION):
 		return
 	case string(consts.ONE_TO_FIVE_MINUTES):
-		minDuration = 1 * 60
-		maxDuration = 5 * 60
+		minDuration = 1 * 60 * 1000
+		maxDuration = 5 * 60 * 1000
 		return
 	case string(consts.FIVE_TO_TEN_MINUTES):
-		minDuration = 5 * 60
-		maxDuration = 10 * 60
+		minDuration = 5 * 60 * 1000
+		maxDuration = 10 * 60 * 1000
 		return
 	case string(consts.TEN_TO_HALF_HOUR):
-		minDuration = 10 * 60
-		maxDuration = 30 * 60
+		minDuration = 10 * 60 * 1000
+		maxDuration = 30 * 60 * 1000
 		return
 	case string(consts.MORE_THAN_HALF_HOUR):
-		minDuration = 30 * 60
-		maxDuration = 9e10
+		minDuration = 30 * 60 * 1000
+		maxDuration = 9e10 * 1000
 	default:
 		log.Log.Errorf("search_trace: unsupported duration condition, durationType: %s", durationType)
 	}
