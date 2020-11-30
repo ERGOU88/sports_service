@@ -4,3 +4,4 @@
 [2020-10-27 14:59:12]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:220	labelMp:map[1:0xc00027dea0 5:0xc00027de30]
 [2020-10-27 14:59:12]-52	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
 [2020-10-27 17:50:30]-7	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/models/mlabel/mlabel.go:170	load mem
+[2020-11-30 10:03:22]-1	DEBUG	fpv	/Users/jelly/go/src/sports_service/server/backend/main.go:40	setup log success
