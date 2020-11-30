@@ -50,7 +50,7 @@
 
       <el-table-column width="160px" align="center" label="时间节点">
         <template slot-scope="scope">
-          <span>{{ scope.row.video_cur_duration | secondToDate }}</span>
+          <span>{{ scope.row.video_cur_duration * 1000 | secondToDate }}</span>
         </template>
       </el-table-column>
 
