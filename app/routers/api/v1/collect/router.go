@@ -19,6 +19,6 @@ func Router(engine *gin.Engine) {
     // 其他用户收藏的视频列表 todo:预留
 		collect.GET("/other/list", OtherUserCollectVideoList)
 		// 删除收藏
-		collect.POST("/delete", DeleteCollect)
+		collect.POST("/delete", token.TokenAuth(), DeleteCollect)
 	}
 }
