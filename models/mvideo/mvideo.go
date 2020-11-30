@@ -141,12 +141,12 @@ type VideoDetailInfo struct {
 
 // 删除历史记录请求参数
 type DeleteHistoryParam struct {
-	ComposeIds        []string     `binding:"required" json:"composeIds"` // 作品id列表
+	ComposeIds        []string     `binding:"required" json:"compose_ids"` // 作品id列表
 }
 
 // 删除发布记录请求参数(不支持批量删除)
 type DeletePublishParam struct {
-	ComposeIds        string       `binding:"required" json:"composeIds"` // 作品id
+	ComposeIds        string       `binding:"required" json:"compose_ids"` // 作品id
 }
 
 // 后台修改视频状态请求参数
