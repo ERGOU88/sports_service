@@ -21,7 +21,7 @@ import (
 
 // 主动拉取事件（腾讯云）
 func PullEventsJob() {
-	ticker := time.NewTicker(time.Minute * 1)
+	ticker := time.NewTicker(time.Second * 10)
 	defer ticker.Stop()
 
 	for {
@@ -237,9 +237,8 @@ func uploadEvent(event *v20180717.EventContent) error {
   if err != nil || info == "" {
     log.Log.Errorf("job_trace: get publish info err:%s", err)
     // 确认事件回调
-    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-     log.Log.Errorf("job_trace: confirm events err:%s", err)
-    }
+
+
     session.Rollback()
     return errors.New("get publish info fail")
   }
