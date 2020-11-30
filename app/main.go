@@ -87,7 +87,7 @@ func setupJob() {
 }
 
 // 初始化nsq（生产者）
-func setupNsq() {
+func setupNsqProduct() {
 	nsq.ConnectNsqProduct(config.Global.NsqAddr)
 }
 
@@ -112,7 +112,7 @@ func init() {
 	// 任务
 	setupJob()
 	// 初始化nsq
-	setupNsq()
+	setupNsqProduct()
 }
 
 // @title 电竞社区平台（应用服）
