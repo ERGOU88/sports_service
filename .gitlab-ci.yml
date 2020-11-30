@@ -15,7 +15,7 @@ build-job-2:
     - gitlab_build_theseus
   stage: build
   only:
-    - develop
+    - test
   script:
     - GOOS=linux GOARCH=amd64 go build -o fpv_backend ./backend/main.go
     - rsync -avz fpv_backend 10.6.176.147::fpv_backend
