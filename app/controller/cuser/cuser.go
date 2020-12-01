@@ -203,7 +203,7 @@ func (svc *UserModule) RecordUserFeedback(userId string, param *muser.FeedbackPa
 }
 
 // 获取个人空间用户信息
-func (svc *UserModule) GetUserZoneInfo(userId string) (int, *muser.UserInfoResp, *muser.UserZoneInfoResp) {
+func (svc *UserModule) GetUserZoneInfo(userId, toUserId string) (int, *muser.UserInfoResp, *muser.UserZoneInfoResp) {
 	info := svc.user.FindUserByUserid(userId)
 	if info == nil {
 		log.Log.Errorf("user_trace: user not found, uid:%s", userId)
@@ -226,6 +226,14 @@ func (svc *UserModule) GetUserZoneInfo(userId string) (int, *muser.UserInfoResp,
 		UserType: info.UserType,
 		Country: int32(info.Country),
 	}
+
+  if userId != toUserId {
+    // 当前用户 是否关注 被查看人
+    attentionInfo := svc.attention.GetAttentionInfo(userId, toUserId)
+    if attentionInfo != nil {
+      resp.IsAttention = int32(attentionInfo.Status)
+    }
+  }
 
 	zoneRes := &muser.UserZoneInfoResp{
 		// 被点赞总数

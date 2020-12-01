@@ -370,6 +370,7 @@ func UserFeedback(c *gin.Context) {
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	    header    string 	true  "版本" default(1.0.0)
 // @Param   user_id 	    query     string 	true  "用户id"
+// @Param   to_user_id 	  query     string 	true  "被查看人的用户id"
 // @Param   UserZoneInfoParam  body muser.UserZoneInfoParam true "个人空间用户信息 请求参数"
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
@@ -378,15 +379,17 @@ func UserFeedback(c *gin.Context) {
 func UserZoneInfo(c *gin.Context) {
 	reply := errdef.New(c)
 	userId := c.Query("user_id")
-	if userId == "" {
-		log.Log.Errorf("user_trace: request userId is empty, userId:%s", userId)
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
-		return
-	}
+
+	toUserId := c.Query("to_user_id")
+  if toUserId == "" {
+    log.Log.Errorf("user_trace: request toUserId is empty, toUserId:%s", userId)
+    reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+    return
+  }
 
 	svc := cuser.New(c)
 	// 获取用户个人空间信息
-	syscode, userInfo, zoneInfo := svc.GetUserZoneInfo(userId)
+	syscode, userInfo, zoneInfo := svc.GetUserZoneInfo(userId, toUserId)
 	reply.Data["user_info"] = userInfo
 	reply.Data["zone_info"] = zoneInfo
 	reply.Response(http.StatusOK, syscode)
