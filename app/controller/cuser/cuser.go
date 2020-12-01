@@ -202,11 +202,11 @@ func (svc *UserModule) RecordUserFeedback(userId string, param *muser.FeedbackPa
 	return errdef.SUCCESS
 }
 
-// 获取个人空间用户信息
+// 获取个人空间用户信息 toUserId 被查看人
 func (svc *UserModule) GetUserZoneInfo(userId, toUserId string) (int, *muser.UserInfoResp, *muser.UserZoneInfoResp) {
-	info := svc.user.FindUserByUserid(userId)
+	info := svc.user.FindUserByUserid(toUserId)
 	if info == nil {
-		log.Log.Errorf("user_trace: user not found, uid:%s", userId)
+		log.Log.Errorf("user_trace: user not found, toUserid:%s", toUserId)
 		return errdef.USER_NOT_EXISTS, nil, nil
 	}
 
@@ -237,17 +237,17 @@ func (svc *UserModule) GetUserZoneInfo(userId, toUserId string) (int, *muser.Use
 
 	zoneRes := &muser.UserZoneInfoResp{
 		// 被点赞总数
-		TotalBeLiked: svc.like.GetUserTotalBeLiked(userId),
+		TotalBeLiked: svc.like.GetUserTotalBeLiked(toUserId),
 		// 用户关注总数
-		TotalAttention: svc.attention.GetTotalAttention(userId),
+		TotalAttention: svc.attention.GetTotalAttention(toUserId),
 		// 用户粉丝总数
-		TotalFans: svc.attention.GetTotalFans(userId),
+		TotalFans: svc.attention.GetTotalFans(toUserId),
 		// 用户总收藏（包含视频 和 后续的帖子）
-		TotalCollect: svc.collect.GetUserTotalCollect(userId),
+		TotalCollect: svc.collect.GetUserTotalCollect(toUserId),
 		// 用户点赞的总数
-		TotalLikes: svc.like.GetUserTotalLikes(userId),
+		TotalLikes: svc.like.GetUserTotalLikes(toUserId),
 		// 用户发布的视频总数（已审核）
-		TotalPublish: svc.video.GetTotalPublish(userId),
+		TotalPublish: svc.video.GetTotalPublish(toUserId),
 	}
 
 	return errdef.SUCCESS, resp, zoneRes
