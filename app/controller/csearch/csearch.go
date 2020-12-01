@@ -14,7 +14,6 @@ import (
   "sports_service/server/models/muser"
   "sports_service/server/models/mvideo"
   "sports_service/server/util"
-  "strings"
   "time"
 )
 
@@ -217,19 +216,26 @@ func (svc *SearchModule) UserSearch(userId, name string, page, size int) []*muse
 // 标签搜索
 func (svc *SearchModule) LabelSearch(userId string, labelId string, page, size int) []*mvideo.VideoDetailInfo {
 	offset := (page - 1) * size
-	videoIds := svc.video.GetVideoIdsByLabelId(labelId, offset, size)
-	if len(videoIds) == 0 {
-		log.Log.Errorf("search_trace: not found videos by label id, labelId:%s", labelId)
-		return []*mvideo.VideoDetailInfo{}
-	}
+	//videoIds := svc.video.GetVideoIdsByLabelId(labelId, offset, size)
+	//if len(videoIds) == 0 {
+	//	log.Log.Errorf("search_trace: not found videos by label id, labelId:%s", labelId)
+	//	return []*mvideo.VideoDetailInfo{}
+	//}
+  //
+	//vids := strings.Join(videoIds, ",")
+  //log.Log.Debugf("videoIds:%v, vids:%s", videoIds, vids)
+	//videos := svc.video.FindVideoListByIds(vids)
+	//if len(videos) == 0 {
+	//	log.Log.Errorf("search_trace: not found videos, vids:%s", vids)
+	//	return []*mvideo.VideoDetailInfo{}
+	//}
 
-	vids := strings.Join(videoIds, ",")
-  log.Log.Debugf("videoIds:%v, vids:%s", videoIds, vids)
-	videos := svc.video.FindVideoListByIds(vids)
-	if len(videos) == 0 {
-		log.Log.Errorf("search_trace: not found videos, vids:%s", vids)
-		return []*mvideo.VideoDetailInfo{}
-	}
+	// 通过标签id 获取同标签视频列表
+	videos := svc.video.SearchVideosByLabelId(labelId, offset, size)
+  if len(videos) == 0 {
+  	log.Log.Errorf("search_trace: not found videos, labelId:%s", labelId)
+  	return []*mvideo.VideoDetailInfo{}
+  }
 
 	// 重新组装数据
 	list := make([]*mvideo.VideoDetailInfo, len(videos))

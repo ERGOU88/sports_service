@@ -380,6 +380,20 @@ func (m *VideoModel) FindVideoListByIds(videoIds string) []*models.Videos {
 	return list
 }
 
+const (
+  SEARCH_VIDEOS_BY_LABEL_ID = "SELECT v.* FROM videos AS v LEFT JOIN video_labels as vl ON v.video_id=vl.video_id AND vl.label_id=?  WHERE v.status=1 ORDER BY is_top DESC, is_recommend DESC, sortorder DESC, video_id LIMIT ?, ?"
+)
+// 通过标签id搜索视频
+func (m *VideoModel) SearchVideosByLabelId(labelId string, offset, size int) []*models.Videos {
+  var list []*models.Videos
+  if err := m.Engine.SQL(SEARCH_VIDEOS_BY_LABEL_ID, labelId, offset, size).Find(&list); err != nil {
+    log.Log.Errorf("video_trace: search video list by labelId err:%s", err)
+    return nil
+  }
+
+  return list
+}
+
 type BrowseRecord struct {
 	ComposeId       int64     `json:"compose_id"`    // 视频id
 	UpdateAt        int       `json:"update_at"`     // 浏览时间
