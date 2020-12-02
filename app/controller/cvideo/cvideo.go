@@ -192,67 +192,56 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 	}
 
 	offset := (page - 1) * size
-	records := svc.video.GetBrowseRecord(userId, consts.TYPE_BROWSE_VIDEOS, offset, size)
-	if len(records) == 0 {
-		return []*mvideo.VideosInfoResp{}
-	}
+	//records := svc.video.GetBrowseRecord(userId, consts.TYPE_BROWSE_VIDEOS, offset, size)
+	//if len(records) == 0 {
+	//	return []*mvideo.VideosInfoResp{}
+	//}
 
 	// mp key composeId   value 用户浏览的时间
-	mp := make(map[int64]int)
+	//mp := make(map[int64]int)
 	// 当前页所有视频id
-	videoIds := make([]string, len(records))
-	for index, info := range records {
-		mp[info.ComposeId] = info.UpdateAt
-		videoIds[index] = fmt.Sprint(info.ComposeId)
-	}
+	//videoIds := make([]string, len(records))
+	//for index, info := range records {
+	//	mp[info.ComposeId] = info.UpdateAt
+	//	videoIds[index] = fmt.Sprint(info.ComposeId)
+	//}
 
-	vids := strings.Join(videoIds, ",")
+	//vids := strings.Join(videoIds, ",")
 	// 获取浏览的视频列表信息
-	videoList := svc.video.FindVideoListByIds(vids)
-	if len(videoList) == 0 {
-		log.Log.Errorf("video_trace: not found browse video list info, len:%d, videoIds:%s", len(videoList), vids)
-		return []*mvideo.VideosInfoResp{}
-	}
+	//videoList := svc.video.FindVideoListByIds(vids)
+	//if len(videoList) == 0 {
+	//	log.Log.Errorf("video_trace: not found browse video list info, len:%d, videoIds:%s", len(videoList), vids)
+	//	return []*mvideo.VideosInfoResp{}
+	//}
+
+  // 获取浏览的视频列表信息
+	videoList := svc.video.GetUserBrowseVideos(userId, offset, size)
+  if len(videoList) == 0 {
+  	log.Log.Errorf("video_trace: not found browse video list info, len:%d", len(videoList))
+  	return []*mvideo.VideosInfoResp{}
+  }
 
 	// 重新组装数据
-	list := make([]*mvideo.VideosInfoResp, len(videoList))
-	for index, video := range videoList {
-		resp := new(mvideo.VideosInfoResp)
-		resp.VideoId = video.VideoId
-		resp.Title = util.TrimHtml(video.Title)
-		resp.Describe = util.TrimHtml(video.Describe)
-		resp.Cover = video.Cover
-		resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
-		resp.IsRecommend = video.IsRecommend
-		resp.IsTop = video.IsTop
-		resp.VideoDuration = video.VideoDuration
-		resp.VideoWidth = video.VideoWidth
-		resp.VideoHeight = video.VideoHeight
-		resp.CreateAt = video.CreateAt
-		resp.UserId = video.UserId
+	for _, video := range videoList {
+		video.Title = util.TrimHtml(video.Title)
+    video.Describe = util.TrimHtml(video.Describe)
+    video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 
 		// 获取用户信息
 		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
-			resp.Avatar = user.Avatar
-			resp.Nickname = user.NickName
+      video.Avatar = user.Avatar
+      video.Nickname = user.NickName
       // 是否关注
       attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)
       if attentionInfo != nil {
-        resp.IsAttention = attentionInfo.Status
+        video.IsAttention = attentionInfo.Status
       }
 
 		}
 
-		collectAt, ok := mp[video.VideoId]
-		if ok {
-			// 用户浏览视频的时间
-			resp.OpTime = collectAt
-		}
-
-		list[index] = resp
 	}
 
-	return list
+	return videoList
 }
 
 // 删除历史浏览记录

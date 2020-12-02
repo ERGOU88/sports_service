@@ -58,7 +58,7 @@ type VideosInfoResp struct {
 	Avatar        string `json:"avatar" example:"头像"`                // 头像
 	Nickname      string `json:"nick_name" example:"昵称"`             // 昵称
 	IsAttention   int    `json:"is_attention" example:"1"`            // 是否关注 1 关注 2 未关注
-	OpTime        int    `json:"op_time" example:"1600000000"`        // 用户收藏/点赞等的操作时间
+	OpTime        int    `json:"op_time" example:"1600000000"`        // 用户收藏/点赞/浏览等的操作时间
 }
 
 // 视频信息
@@ -411,6 +411,21 @@ func (m *VideoModel) GetBrowseRecord(userId string, composeType, offset, size in
 	}
 
 	return list
+}
+
+const (
+  QUERY_USER_BROWSE_VIDEOS = "SELECT ubr.`update_at` as op_time, v.* FROM user_browse_record AS ubr " +
+    "LEFT JOIN videos AS v ON ubr.compose_id=v.video_id AND ubr.compose_type=0 " +
+    "WHERE ubr.user_id=? AND v.status=1 ORDER BY ubr.id LIMIT ?, ?"
+)
+// 获取用户浏览过的视频
+func (m *VideoModel) GetUserBrowseVideos(userId string, offset, size int) []*VideosInfoResp {
+  var list []*VideosInfoResp
+  if err := m.Engine.SQL(QUERY_USER_BROWSE_VIDEOS, userId, offset, size).Find(&list); err != nil {
+    return nil
+  }
+
+  return list
 }
 
 // 获取用户浏览过的视频
