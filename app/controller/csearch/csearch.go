@@ -15,6 +15,7 @@ import (
   "sports_service/server/models/mvideo"
   "sports_service/server/util"
   "time"
+  "fmt"
 )
 
 type SearchModule struct {
@@ -168,6 +169,11 @@ func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime s
 			video.IsCollect = collectInfo.Status
 		}
 
+		// 获取视频统计数据
+    info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
+    if info != nil {
+      video.BrowseNum = info.BrowseNum
+    }
 	}
 
 	return list
