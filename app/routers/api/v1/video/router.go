@@ -44,5 +44,7 @@ func Router(engine *gin.Engine) {
 		video.POST("/report", VideoReport)
 		// 上传测试
 		video.GET("/test/upload", TestUpload)
+
+		vide
 	}
 }
