@@ -60,6 +60,7 @@ func VideoPublish(c *gin.Context) {
 
 	// 修改逻辑 用户发布视频 先记录到缓存
 	syscode := svc.RecordPubVideoInfo(userId.(string), params)
+	log.Log.Errorf("##### publish video syscode:%d", syscode)
 	reply.Response(http.StatusOK, syscode)
 
 }
