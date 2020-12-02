@@ -44,6 +44,8 @@ func NotifySetting(c *gin.Context) {
 		return
 	}
 
+	log.Log.Errorf("params:%+v", params)
+
 	svc := cnotify.New(c)
 	// 保存用户通知设置
 	syscode := svc.SaveUserNotifySetting(userId.(string), params)
