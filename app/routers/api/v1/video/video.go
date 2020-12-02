@@ -42,12 +42,13 @@ func VideoPublish(c *gin.Context) {
 	}
 
 	params := new(mvideo.VideoPublishParams)
-	log.Log.Errorf("##### publish video params:%+v", params)
 	if err := c.BindJSON(params); err != nil {
 		log.Log.Errorf("video_trace: video publish params err:%s, params:%+v", err, params)
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
+
+  log.Log.Errorf("##### publish video params:%+v", params)
 
 	svc := cvideo.New(c)
 	// 用户发布视频
