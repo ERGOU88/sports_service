@@ -166,7 +166,7 @@ func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime s
 		}
 
 		// 获取点赞的信息
-		if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
+		if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEOS); likeInfo != nil {
 			video.IsLike = likeInfo.Status
 		}
 
@@ -274,7 +274,7 @@ func (svc *SearchModule) LabelSearch(userId string, labelId string, page, size i
       }
 
       // 获取点赞的信息
-      if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
+      if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEOS); likeInfo != nil {
         resp.IsLike = likeInfo.Status
       }
 

@@ -468,7 +468,7 @@ func (svc *VideoModule) GetRecommendVideos(userId string, page, size int) []*mvi
 		}
 
 		// 获取点赞的信息
-		if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
+		if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEOS); likeInfo != nil {
 			video.IsLike = likeInfo.Status
 		}
 
@@ -543,7 +543,7 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 		video.IsAttention = consts.ALREADY_ATTENTION
 
 		// 获取点赞的信息
-		if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
+		if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEOS); likeInfo != nil {
 			video.IsLike = likeInfo.Status
 		}
 
@@ -658,7 +658,7 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
 	}
 
 	// 获取点赞的信息
-	if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
+	if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEOS); likeInfo != nil {
 		resp.IsLike = likeInfo.Status
 	}
 
@@ -751,7 +751,7 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
       }
 
       // 获取点赞的信息
-      if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEO); likeInfo != nil {
+      if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEOS); likeInfo != nil {
         resp.IsLike = likeInfo.Status
       }
 
