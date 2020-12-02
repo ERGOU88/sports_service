@@ -148,6 +148,12 @@ func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime s
       video.Labels = []*models.VideoLabels{}
     }
 
+    // 获取视频统计数据
+    info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
+    if info != nil {
+      video.BarrageNum = info.BarrageNum
+    }
+
 		// 用户未登录
 		if userId == "" {
 			log.Log.Error("search_trace: no login")
@@ -169,11 +175,6 @@ func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime s
 			video.IsCollect = collectInfo.Status
 		}
 
-		// 获取视频统计数据
-    info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
-    if info != nil {
-      video.BarrageNum = info.BarrageNum
-    }
 	}
 
 	return list
