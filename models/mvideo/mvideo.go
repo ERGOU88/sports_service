@@ -557,7 +557,7 @@ func (m *VideoModel) GetVideoReviewTotalCount() int64 {
 const (
 	QUERY_ATTENTION_VIDEOS = "SELECT v.*, s.fabulous_num,s.share_num,s.comment_num, s.browse_num FROM `videos` as v " +
 		"LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status = 1 AND v.user_id in(%s) GROUP BY v.video_id " +
-		"ORDER BY v.is_top DESC, v.is_recommend DESC, v.sortorder DESC, v.video_id DESC LIMIT ?, ?"
+		"ORDER BY v.video_id DESC LIMIT ?, ?"
 )
 // 获取关注的用户发布的视频
 func (m *VideoModel) GetAttentionVideos(userIds string, offset, size int) []*VideoDetailInfo {
