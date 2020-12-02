@@ -172,7 +172,7 @@ func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime s
 		// 获取视频统计数据
     info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
     if info != nil {
-      video.BrowseNum = info.BrowseNum
+      video.BarrageNum = info.BarrageNum
     }
 	}
 
