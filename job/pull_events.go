@@ -261,6 +261,10 @@ func uploadEvent(event *v20180717.EventContent) error {
   now := time.Now().Unix()
   vmodel.Videos.UserId = userId
   vmodel.Videos.Cover = *event.FileUploadEvent.MediaBasicInfo.CoverUrl
+  if pubInfo.Cover != "" {
+    vmodel.Videos.Cover = pubInfo.Cover
+  }
+
   vmodel.Videos.Title = pubInfo.Title
   vmodel.Videos.Describe = pubInfo.Describe
   vmodel.Videos.VideoAddr = pubInfo.VideoAddr
