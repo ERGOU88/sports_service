@@ -340,6 +340,7 @@ func AttentionVideos(c *gin.Context) {
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
 // @Param   video_id	  query  	string 	true  "视频id"
+// @Param   user_id	    query  	string 	true  "用户id"
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/video/detail [get]
@@ -397,6 +398,8 @@ func UploadSign(c *gin.Context) {
 	syscode, sign, taskId := svc.GetUploadSign(userId.(string))
 	reply.Data["sign"] = sign
 	reply.Data["task_id"] = taskId
+
+	log.Log.Errorf("#####taskId:%s", taskId)
 	reply.Response(http.StatusOK, syscode)
 }
 
@@ -516,4 +519,9 @@ func TestUpload(c *gin.Context) {
 
 
   reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// 记录视频播放时长
+func RecordPlayDuration(c *gin.Context) {
+
 }
