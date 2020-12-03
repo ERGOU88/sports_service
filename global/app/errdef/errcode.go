@@ -74,6 +74,8 @@ const (
 	VIDEO_INVALID_TITLE         = 4009
 	VIDEO_INVALID_CUSTOM_LABEL  = 4010
 	VIDEO_REPORT_FAIL           = 4011
+	VIDEO_INVALID_PLAY_DURATION = 4012
+	VIDEO_RECORD_PLAY_DURATION  = 4013
 
 	// 点赞相关错误码 5001-6000
 	LIKE_VIDEO_NOT_EXISTS       = 5001
@@ -188,6 +190,8 @@ var MsgFlags = map[int]string{
 	VIDEO_INVALID_TITLE:         "视频标题含有违规文字",
   VIDEO_INVALID_CUSTOM_LABEL:  "自定义标签含有违规文字",
   VIDEO_REPORT_FAIL:           "举报视频失败",
+  VIDEO_INVALID_PLAY_DURATION: "播放时长 > 视频时长！！wtf?",
+  VIDEO_RECORD_PLAY_DURATION:  "记录用户播放的视频时长失败",
 
   LIKE_VIDEO_NOT_EXISTS:       "点赞的视频不存在",
 	LIKE_ALREADY_EXISTS:         "已点过赞",

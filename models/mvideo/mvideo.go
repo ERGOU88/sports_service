@@ -15,14 +15,15 @@ import (
 
 // todo: 视频id自增 帖子可以使用分布式唯一id
 type VideoModel struct {
-	Videos    *models.Videos
-	Engine    *xorm.Session
-	Browse    *models.UserBrowseRecord
-	Labels    *models.VideoLabels
-	Statistic *models.VideoStatistic
-	Events    *models.TencentCloudEvents
-  HotSearch *models.HotSearch
-	Report    *models.VideoReport
+	Videos       *models.Videos
+	Engine       *xorm.Session
+	Browse       *models.UserBrowseRecord
+	Labels       *models.VideoLabels
+	Statistic    *models.VideoStatistic
+	Events       *models.TencentCloudEvents
+  HotSearch    *models.HotSearch
+	Report       *models.VideoReport
+	PlayRecord   *models.UserPlayDurationRecord
 }
 
 // 视频发布请求参数
@@ -139,6 +140,12 @@ type VideoDetailInfo struct {
   PlayInfo      []*PlayInfo           `json:"play_info"`                            // 视频转码后数据
 }
 
+// 记录视频播放时长 请求参数
+type PlayDurationParams struct {
+  VideoId         int64   `json:"video_id"`         // 视频id
+  Duration        int     `json:"duration"`       // 时长
+}
+
 // 删除历史记录请求参数
 type DeleteHistoryParam struct {
 	ComposeIds        []string     `binding:"required" json:"compose_ids"` // 作品id列表
@@ -219,6 +226,7 @@ func NewVideoModel(engine *xorm.Session) *VideoModel {
 		Events: new(models.TencentCloudEvents),
     HotSearch: new(models.HotSearch),
     Report: new(models.VideoReport),
+    PlayRecord: new(models.UserPlayDurationRecord),
 		Engine: engine,
 	}
 }
@@ -806,6 +814,13 @@ func (m *VideoModel) GetPublishInfo(userId string, taskId int64) (string, error)
   return rds.Get(key)
 }
 
+// 接收回调成功 删除 存储发布视频信息的key
+func (m *VideoModel) DelPublishInfo(userId string, taskId int64) (int, error) {
+  key := rdskey.MakeKey(rdskey.VIDEO_UPLOAD_INFO, userId, taskId)
+  rds := dao.NewRedisDao()
+  return rds.Del(key)
+}
+
 // 通过腾讯云返回的文件id查询视频
 func (m *VideoModel) GetVideoByFileId(fileId string) *models.Videos {
   m.Videos = new(models.Videos)
@@ -815,6 +830,34 @@ func (m *VideoModel) GetVideoByFileId(fileId string) *models.Videos {
   }
 
   return m.Videos
+}
+
+// 获取用户视频播放时长记录
+func (m *VideoModel) GetUserPlayDurationRecord(userId, videoId string) *models.UserPlayDurationRecord {
+  m.PlayRecord = new(models.UserPlayDurationRecord)
+  ok, err := m.Engine.Where("user_id=? AND video_id=?", userId, videoId).Get(m.PlayRecord)
+  if !ok || err != nil {
+    return nil
+  }
+
+  return m.PlayRecord
+}
+
+// 添加用户播放时长记录
+func (m *VideoModel) AddUserPlayDurationRecord() error {
+  if _, err := m.Engine.InsertOne(m.PlayRecord); err != nil {
+    return err
+  }
+
+  return nil
+}
+
+func (m *VideoModel) UpdateUserPlayDurationRecord() error {
+  if _, err := m.Engine.ID(m.PlayRecord.Id).Cols("duration, update_at").Update(m.PlayRecord); err != nil {
+    return err
+  }
+
+  return nil
 }
 
 

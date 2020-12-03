@@ -867,3 +867,51 @@ func (svc *VideoModule) AddVideoReport(params *mvideo.VideoReportParam) int {
   return errdef.SUCCESS
 }
 
+// 记录用户播放的视频时长
+func (svc *VideoModule) RecordPlayDuration(userId string, params *mvideo.PlayDurationParams) int {
+  user := svc.user.FindUserByUserid(userId)
+  if user != nil {
+    log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+    return errdef.USER_NOT_EXISTS
+  }
+
+  video := svc.video.FindVideoById(fmt.Sprint(params.VideoId))
+  if video == nil {
+    log.Log.Errorf("video_trace: video not found, videoId:%s", params.VideoId)
+    return errdef.VIDEO_NOT_EXISTS
+  }
+
+  totalDuration := video.VideoDuration/1000
+  if totalDuration < params.Duration {
+    log.Log.Errorf("video_trace: invalid play duration, videoId:%s, videoDuration:%d, palyDuration:%d", params.VideoId, totalDuration, params.Duration)
+    return errdef.VIDEO_INVALID_PLAY_DURATION
+  }
+
+  now := time.Now().Unix()
+  // 获取用户播放该视频的时长记录
+  record := svc.video.GetUserPlayDurationRecord(userId, fmt.Sprint(params.VideoId))
+  if record == nil {
+    // 不存在 则添加
+    svc.video.PlayRecord.VideoId = params.VideoId
+    svc.video.PlayRecord.UpdateAt = int(now)
+    svc.video.PlayRecord.PlayDuration = params.Duration
+    svc.video.PlayRecord.TotalDuration = totalDuration
+    svc.video.PlayRecord.UserId = userId
+    svc.video.PlayRecord.CreateAt = int(now)
+    if err := svc.video.AddUserPlayDurationRecord(); err != nil {
+      log.Log.Errorf("video_trace: add user play duration record err:%s", err)
+      return errdef.VIDEO_RECORD_PLAY_DURATION
+    }
+
+  } else {
+    // 存在 则 更新时长
+    record.PlayDuration = params.Duration
+    record.UpdateAt = int(now)
+    if err := svc.video.UpdateUserPlayDurationRecord(); err != nil {
+      log.Log.Errorf("video_trace: update user plauy duration record err:%s", err)
+      return errdef.VIDEO_RECORD_PLAY_DURATION
+    }
+  }
+
+  return errdef.SUCCESS
+}

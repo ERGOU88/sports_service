@@ -524,5 +524,15 @@ func TestUpload(c *gin.Context) {
 
 // 记录视频播放时长
 func RecordPlayDuration(c *gin.Context) {
+  userId, _ := c.Get(consts.USER_ID)
+  reply := errdef.New(c)
+  param := new(mvideo.PlayDurationParams)
+  if err := c.BindJSON(param); err != nil {
+    log.Log.Errorf("video_trace: invalid param, param:%+v", param)
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
 
+  svc := cvideo.New(c)
+  svc.RecordPlayDuration(userId.(string), param)
 }

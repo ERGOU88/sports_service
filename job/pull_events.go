@@ -194,11 +194,6 @@ func uploadEvent(event *v20180717.EventContent) error {
   source := new(cloud.SourceContext)
   if err := util.JsonFast.Unmarshal([]byte(*event.FileUploadEvent.MediaBasicInfo.SourceInfo.SourceContext), source); err != nil {
     log.Log.Errorf("job_trace: jsonfast unmarshal event sourceContext err:%s", err)
-    // 确认事件回调
-    //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-    //  log.Log.Errorf("job_trace: confirm events err:%s", err)
-    //}
-
     session.Rollback()
     return errors.New("jsonfast unmarshal event sourceContext err")
   }
@@ -209,11 +204,6 @@ func uploadEvent(event *v20180717.EventContent) error {
   userId, err := vmodel.GetUploadUserIdByTaskId(source.TaskId)
   if err != nil || userId == "" {
     log.Log.Errorf("job_trace: invalid taskId, taskId:%d", source.TaskId)
-    // 确认事件回调
-    //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-    //  log.Log.Errorf("job_trace: confirm events err:%s", err)
-    //}
-
     session.Rollback()
     return errors.New("invalid taskId")
   }
@@ -236,6 +226,11 @@ func uploadEvent(event *v20180717.EventContent) error {
   info, err := vmodel.GetPublishInfo(source.UserId, source.TaskId)
   if err != nil || info == "" {
     log.Log.Errorf("job_trace: get publish info err:%s", err)
+    // 确认事件回调
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+      log.Log.Errorf("job_trace: confirm events err:%s", err)
+    }
+
     session.Rollback()
     return errors.New("get publish info fail")
   }
@@ -346,6 +341,11 @@ func uploadEvent(event *v20180717.EventContent) error {
   }
 
   session.Commit()
+
+  // 删除存储发布信息的key
+  if _, err := vmodel.DelPublishInfo(userId, source.TaskId); err != nil {
+    log.Log.Errorf("job_trace: del publish info key err:%s", err)
+  }
 
   return nil
 }

@@ -44,7 +44,7 @@ func Router(engine *gin.Engine) {
 		video.POST("/report", VideoReport)
 		// 上传测试
 		video.GET("/test/upload", TestUpload)
-    // 记录视频播放的时长
-		video.GET("/record/play/duration", RecordPlayDuration)
+    // 记录用户视频播放的时长
+		video.GET("/record/play/duration", token.TokenAuth(), RecordPlayDuration)
 	}
 }
