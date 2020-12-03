@@ -737,7 +737,6 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 		resp.FansNum = svc.attention.GetTotalFans(fmt.Sprint(video.UserId))
 
 		if userId != "" {
-			log.Log.Error("video_trace: user no login")
       // 是否关注
       if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
         resp.IsAttention = attentionInfo.Status
@@ -874,7 +873,7 @@ func (svc *VideoModule) AddVideoReport(params *mvideo.VideoReportParam) int {
 // 记录用户播放的视频时长
 func (svc *VideoModule) RecordPlayDuration(userId string, params *mvideo.PlayDurationParams) int {
   user := svc.user.FindUserByUserid(userId)
-  if user != nil {
+  if user == nil {
     log.Log.Errorf("video_trace: user not found, userId:%s", userId)
     return errdef.USER_NOT_EXISTS
   }
