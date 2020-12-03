@@ -130,8 +130,8 @@ definitions:
   muser.EditUserInfoParams:
     properties:
       avatar:
-        example: 1
-        type: integer
+        example: "1"
+        type: string
       born:
         example: "1993-06-20"
         type: string
@@ -222,19 +222,26 @@ definitions:
     type: object
   mvideo.DeleteHistoryParam:
     properties:
-      composeIds:
+      compose_ids:
         items:
           type: string
         type: array
     required:
-    - composeIds
+    - compose_ids
     type: object
   mvideo.DeletePublishParam:
     properties:
-      composeIds:
+      compose_ids:
         type: string
     required:
-    - composeIds
+    - compose_ids
+    type: object
+  mvideo.PlayDurationParams:
+    properties:
+      duration:
+        type: integer
+      video_id:
+        type: integer
     type: object
   mvideo.VideoPublishParams:
     properties:
@@ -2868,6 +2875,11 @@ paths:
         name: user_id
         required: true
         type: string
+      - description: 被查看人的用户id
+        in: query
+        name: to_user_id
+        required: true
+        type: string
       - description: 个人空间用户信息 请求参数
         in: body
         name: UserZoneInfoParam
@@ -3134,6 +3146,11 @@ paths:
       - description: 视频id
         in: query
         name: video_id
+        required: true
+        type: string
+      - description: 用户id
+        in: query
+        name: user_id
         required: true
         type: string
       produces:
@@ -3539,6 +3556,57 @@ paths:
           schema:
             type: string
       summary: 首页推荐的视频列表[分页获取] (ok)
+      tags:
+      - 视频模块
+  /api/v1/video/record/play/duration:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 用户播放视频的时长
+        in: body
+        name: PlayDurationParams
+        required: true
+        schema:
+          $ref: '#/definitions/mvideo.PlayDurationParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 记录用户视频播放时长 (ok)
       tags:
       - 视频模块
   /api/v1/video/report:

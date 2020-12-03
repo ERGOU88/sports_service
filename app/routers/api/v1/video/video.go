@@ -522,6 +522,21 @@ func TestUpload(c *gin.Context) {
   reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
+// @Summary 记录用户视频播放时长 (ok)
+// @Tags 视频模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   PlayDurationParams  body mvideo.PlayDurationParams true "用户播放视频的时长"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/video/record/play/duration [post]
 // 记录视频播放时长
 func RecordPlayDuration(c *gin.Context) {
   userId, _ := c.Get(consts.USER_ID)
@@ -534,5 +549,6 @@ func RecordPlayDuration(c *gin.Context) {
   }
 
   svc := cvideo.New(c)
-  svc.RecordPlayDuration(userId.(string), param)
+  syscode := svc.RecordPlayDuration(userId.(string), param)
+  reply.Response(http.StatusOK, syscode)
 }

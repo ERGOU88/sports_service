@@ -3729,6 +3729,13 @@ var doc = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "被查看人的用户id",
+                        "name": "to_user_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "description": "个人空间用户信息 请求参数",
                         "name": "UserZoneInfoParam",
                         "in": "body",
@@ -4117,6 +4124,13 @@ var doc = `{
                         "type": "string",
                         "description": "视频id",
                         "name": "video_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
                         "in": "query",
                         "required": true
                     }
@@ -4706,6 +4720,81 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/video/record/play/duration": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频模块"
+                ],
+                "summary": "记录用户视频播放时长 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "用户播放视频的时长",
+                        "name": "PlayDurationParams",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/mvideo.PlayDurationParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/video/report": {
             "post": {
                 "consumes": [
@@ -4977,8 +5066,8 @@ var doc = `{
             "type": "object",
             "properties": {
                 "avatar": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "string",
+                    "example": "1"
                 },
                 "born": {
                     "type": "string",
@@ -5108,10 +5197,10 @@ var doc = `{
         "mvideo.DeleteHistoryParam": {
             "type": "object",
             "required": [
-                "composeIds"
+                "compose_ids"
             ],
             "properties": {
-                "composeIds": {
+                "compose_ids": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -5122,11 +5211,22 @@ var doc = `{
         "mvideo.DeletePublishParam": {
             "type": "object",
             "required": [
-                "composeIds"
+                "compose_ids"
             ],
             "properties": {
-                "composeIds": {
+                "compose_ids": {
                     "type": "string"
+                }
+            }
+        },
+        "mvideo.PlayDurationParams": {
+            "type": "object",
+            "properties": {
+                "duration": {
+                    "type": "integer"
+                },
+                "video_id": {
+                    "type": "integer"
                 }
             }
         },
