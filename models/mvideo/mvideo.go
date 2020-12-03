@@ -467,8 +467,7 @@ func (m *VideoModel) UpdateUserBrowseVideo(userId string,  composeType int, comp
 }
 
 // 通过id列表删除浏览的历史记录
-func (m *VideoModel) DeleteHistoryByIds(userId string, ids string) error {
-	sql := fmt.Sprintf("DELETE FROM `user_browse_record` WHERE user_id=? AND compose_id in(%s)", ids)
+func (m *VideoModel) DeleteHistoryByIds(userId string, sql string) error {
 	if _, err := m.Engine.Exec(sql, userId); err != nil {
 		return err
 	}

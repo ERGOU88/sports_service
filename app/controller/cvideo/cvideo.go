@@ -257,7 +257,14 @@ func (svc *VideoModule) DeleteHistoryByIds(userId string, param *mvideo.DeleteHi
 	}
 
 	ids := strings.Join(param.ComposeIds, ",")
-	if err := svc.video.DeleteHistoryByIds(userId, ids); err != nil {
+	var sql string
+	if ids == "-1" {
+    sql = fmt.Sprintf("DELETE FROM `user_browse_record` WHERE user_id=?")
+  } else {
+    sql = fmt.Sprintf("DELETE FROM `user_browse_record` WHERE user_id=? AND compose_id in(%s)", ids)
+  }
+
+	if err := svc.video.DeleteHistoryByIds(userId, sql); err != nil {
 		log.Log.Errorf("video_trace: delete history by ids err:%s", err)
 		return errdef.VIDEO_DELETE_HISTORY_FAIL
 	}

@@ -184,7 +184,7 @@ func OtherUserPublishList(c *gin.Context) {
 // @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
 // @Param   Sign          header    string 	true  "签名 md5签名32位值"
 // @Param   Version 	  header    string 	true  "版本" default(1.0.0)
-// @Param   DeleteHistoryParam  body mvideo.DeleteHistoryParam true "删除浏览历史记录 请求参数"
+// @Param   DeleteHistoryParam  body mvideo.DeleteHistoryParam true "删除浏览历史记录 请求参数 -1删除所有"
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
 // @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
 // @Router /api/v1/video/delete/history [post]
