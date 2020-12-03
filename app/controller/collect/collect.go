@@ -220,8 +220,12 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
       if attentionInfo != nil {
         resp.IsAttention = attentionInfo.Status
       }
-		}
 
+      // 获取该视频的用户已播时长
+      if record := svc.video.GetUserPlayDurationRecord(userId, fmt.Sprint(video.VideoId)); record != nil {
+        resp.TimeElapsed = record.PlayDuration
+      }
+		}
 
 		collectAt, ok := mp[video.VideoId]
 		if ok {

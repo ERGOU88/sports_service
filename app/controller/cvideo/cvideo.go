@@ -284,12 +284,15 @@ func (svc *VideoModule) GetUserPublishList(userId, status, condition string, pag
   }
 
 	for _, val := range list {
-	  // todo: 已播时长（毫秒）
 	  val.TimeElapsed = 10000
 	  val.StatusCn = svc.GetVideoStatusCn(fmt.Sprint(val.Status))
 	  val.VideoAddr = svc.video.AntiStealingLink(val.VideoAddr)
 	  val.Describe = util.TrimHtml(val.Describe)
 	  val.Title = util.TrimHtml(val.Title)
+    // 获取该视频的用户已播时长
+    if record := svc.video.GetUserPlayDurationRecord(userId, fmt.Sprint(val.VideoId)); record != nil {
+      val.TimeElapsed = record.PlayDuration
+    }
   }
 
   return list
