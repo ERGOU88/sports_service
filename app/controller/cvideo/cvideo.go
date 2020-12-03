@@ -913,7 +913,7 @@ func (svc *VideoModule) RecordPlayDuration(userId string, params *mvideo.PlayDur
     record.PlayDuration = params.Duration
     record.UpdateAt = int(now)
     if err := svc.video.UpdateUserPlayDurationRecord(); err != nil {
-      log.Log.Errorf("video_trace: update user plauy duration record err:%s", err)
+      log.Log.Errorf("video_trace: update user play duration record err:%s", err)
       return errdef.VIDEO_RECORD_PLAY_DURATION
     }
   }

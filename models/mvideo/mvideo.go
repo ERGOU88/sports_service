@@ -853,8 +853,9 @@ func (m *VideoModel) AddUserPlayDurationRecord() error {
   return nil
 }
 
+// 更新用户已播视频时长记录
 func (m *VideoModel) UpdateUserPlayDurationRecord() error {
-  if _, err := m.Engine.ID(m.PlayRecord.Id).Cols("duration, update_at").Update(m.PlayRecord); err != nil {
+  if _, err := m.Engine.ID(m.PlayRecord.Id).Cols("play_duration, update_at").Update(m.PlayRecord); err != nil {
     return err
   }
 
