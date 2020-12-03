@@ -198,6 +198,18 @@ func uploadEvent(event *v20180717.EventContent) error {
     return errors.New("jsonfast unmarshal event sourceContext err")
   }
 
+  // 修改封面 没有视频时长
+  if int(*event.FileUploadEvent.MetaData.VideoDuration) == 0 {
+    log.Log.Errorf("job_trace: invalid video duration, duration:%v", *event.FileUploadEvent.MetaData.VideoDuration)
+    // 确认事件回调
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+      log.Log.Errorf("job_trace: confirm events err:%s", err)
+    }
+
+    session.Rollback()
+    return errors.New("invalid video duration")
+  }
+
   vmodel := mvideo.NewVideoModel(session)
 
   // 通过任务id 获取 用户id
