@@ -60,6 +60,7 @@ type VideosInfoResp struct {
 	Nickname      string `json:"nick_name" example:"昵称"`             // 昵称
 	IsAttention   int    `json:"is_attention" example:"1"`            // 是否关注 1 关注 2 未关注
 	OpTime        int    `json:"op_time" example:"1600000000"`        // 用户收藏/点赞/浏览等的操作时间
+  TimeElapsed   int    `json:"time_elapsed" example:"1"`           // 已播放的时长 秒
 }
 
 // 视频信息
@@ -81,7 +82,7 @@ type VideosInfo struct {
 	ShareNum      int    `json:"share_num" example:"1"`               // 分享数
 	BrowseNum     int    `json:"browse_num" example:"1"`             // 浏览数（播放数）
 	BarrageNum    int    `json:"barrage_num" example:"1"`            // 弹幕数
-  TimeElapsed   int    `json:"time_elapsed" example:"1"`           // 已播放的时长 毫秒
+  TimeElapsed   int    `json:"time_elapsed" example:"1"`           // 已播放的时长 秒
   StatusCn      string `json:"status_cn" example:"审核中"`          // 审核状态（中文展示）
   UserId        string `json:"user_id"`                            // 发布者uid
 }
@@ -143,7 +144,7 @@ type VideoDetailInfo struct {
 // 记录视频播放时长 请求参数
 type PlayDurationParams struct {
   VideoId         int64   `json:"video_id"`         // 视频id
-  Duration        int     `json:"duration"`       // 时长
+  Duration        int     `json:"duration"`         // 已播时长
 }
 
 // 删除历史记录请求参数

@@ -266,6 +266,13 @@ func (svc *SearchModule) LabelSearch(userId string, labelId string, page, size i
 			resp.Nickname = user.NickName
 		}
 
+    // 获取视频统计数据
+    info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
+    if info != nil {
+       resp.BarrageNum = info.BarrageNum
+       resp.BrowseNum = info.BrowseNum
+    }
+
 		// 用户未登录
 		if userId != "" {
       // 是否关注

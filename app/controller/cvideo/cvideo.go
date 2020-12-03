@@ -226,6 +226,10 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 		video.Title = util.TrimHtml(video.Title)
     video.Describe = util.TrimHtml(video.Describe)
     video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+    // 获取该视频的用户已播时长
+    if record := svc.video.GetUserPlayDurationRecord(userId, fmt.Sprint(video.VideoId)); record != nil {
+      video.TimeElapsed = record.PlayDuration
+    }
 
 		// 获取用户信息
 		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
