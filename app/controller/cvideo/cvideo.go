@@ -284,7 +284,6 @@ func (svc *VideoModule) GetUserPublishList(userId, status, condition string, pag
   }
 
 	for _, val := range list {
-	  val.TimeElapsed = 10000
 	  val.StatusCn = svc.GetVideoStatusCn(fmt.Sprint(val.Status))
 	  val.VideoAddr = svc.video.AntiStealingLink(val.VideoAddr)
 	  val.Describe = util.TrimHtml(val.Describe)
