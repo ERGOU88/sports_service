@@ -43,7 +43,7 @@ func Router(engine *gin.Engine) {
 		// 举报视频
 		video.POST("/report", VideoReport)
 		// 上传测试
-		video.GET("/test/upload", TestUpload)
+		//video.GET("/test/upload", TestUpload)
     // 记录用户视频播放的时长
 		video.POST("/record/play/duration", RecordPlayDuration)
 	}
