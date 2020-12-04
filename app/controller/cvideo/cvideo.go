@@ -259,7 +259,7 @@ func (svc *VideoModule) DeleteHistoryByIds(userId string, param *mvideo.DeleteHi
 	ids := strings.Join(param.ComposeIds, ",")
 	var sql string
 	if ids == "-1" {
-    sql = fmt.Sprintf("DELETE FROM `user_browse_record` WHERE user_id=?")
+    sql = fmt.Sprintf("DELETE FROM `user_browse_record` WHERE user_id=? AND compose_type=0")
   } else {
     sql = fmt.Sprintf("DELETE FROM `user_browse_record` WHERE user_id=? AND compose_id in(%s)", ids)
   }
@@ -880,10 +880,14 @@ func (svc *VideoModule) AddVideoReport(params *mvideo.VideoReportParam) int {
 }
 
 // 记录用户播放的视频时长
-func (svc *VideoModule) RecordPlayDuration(userId string, params *mvideo.PlayDurationParams) int {
-  user := svc.user.FindUserByUserid(userId)
+func (svc *VideoModule) RecordPlayDuration(params *mvideo.PlayDurationParams) int {
+  if params.UserId == "" {
+    return errdef.SUCCESS
+  }
+
+  user := svc.user.FindUserByUserid(params.UserId)
   if user == nil {
-    log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+    log.Log.Errorf("video_trace: user not found, userId:%s", params.UserId)
     return errdef.USER_NOT_EXISTS
   }
 
@@ -901,14 +905,14 @@ func (svc *VideoModule) RecordPlayDuration(userId string, params *mvideo.PlayDur
 
   now := time.Now().Unix()
   // 获取用户播放该视频的时长记录
-  record := svc.video.GetUserPlayDurationRecord(userId, fmt.Sprint(params.VideoId))
+  record := svc.video.GetUserPlayDurationRecord(params.UserId, fmt.Sprint(params.VideoId))
   if record == nil {
     // 不存在 则添加
     svc.video.PlayRecord.VideoId = params.VideoId
     svc.video.PlayRecord.UpdateAt = int(now)
     svc.video.PlayRecord.PlayDuration = params.Duration
     svc.video.PlayRecord.TotalDuration = totalDuration
-    svc.video.PlayRecord.UserId = userId
+    svc.video.PlayRecord.UserId = params.UserId
     svc.video.PlayRecord.CreateAt = int(now)
     if err := svc.video.AddUserPlayDurationRecord(); err != nil {
       log.Log.Errorf("video_trace: add user play duration record err:%s", err)

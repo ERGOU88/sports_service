@@ -145,6 +145,7 @@ type VideoDetailInfo struct {
 type PlayDurationParams struct {
   VideoId         int64   `json:"video_id"`         // 视频id
   Duration        int     `json:"duration"`         // 已播时长
+  UserId          string  `json:"user_id"`          // 用户id
 }
 
 // 删除历史记录请求参数

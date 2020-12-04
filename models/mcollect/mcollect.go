@@ -95,7 +95,14 @@ func (m *CollectModel) GetCollectList(userId string, offset, size int) []*Collec
 
 // 通过id列表删除收藏记录
 func (m *CollectModel) DeleteCollectByIds(userId string, ids string) error {
-	sql := fmt.Sprintf("DELETE FROM `collect_record` WHERE `user_id`=%s AND compose_id in(%s)", userId,  ids)
+  var sql string
+  if ids == "-1" {
+    // -1 删除所有收藏的视频
+    sql = fmt.Sprintf("DELETE FROM `collect_record` WHERE `user_id`=%s AND compose_type = 0", userId)
+  } else {
+    sql = fmt.Sprintf("DELETE FROM `collect_record` WHERE `user_id`=%s AND compose_id in(%s)", userId,  ids)
+  }
+
 	if _, err := m.Engine.Exec(sql); err != nil {
 		return err
 	}

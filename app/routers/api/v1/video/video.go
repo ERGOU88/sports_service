@@ -539,7 +539,6 @@ func TestUpload(c *gin.Context) {
 // @Router /api/v1/video/record/play/duration [post]
 // 记录视频播放时长
 func RecordPlayDuration(c *gin.Context) {
-  userId, _ := c.Get(consts.USER_ID)
   reply := errdef.New(c)
   param := new(mvideo.PlayDurationParams)
   if err := c.BindJSON(param); err != nil {
@@ -549,6 +548,6 @@ func RecordPlayDuration(c *gin.Context) {
   }
 
   svc := cvideo.New(c)
-  syscode := svc.RecordPlayDuration(userId.(string), param)
+  syscode := svc.RecordPlayDuration(param)
   reply.Response(http.StatusOK, syscode)
 }
