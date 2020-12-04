@@ -83,7 +83,7 @@ func (m *CollectModel) GetCollectList(userId string, offset, size int) []*Collec
 	var list []*CollectVideosInfo
 	if err := m.Engine.Table(&models.CollectRecord{}).Where("status=1 AND user_id=?", userId).
 		Cols("compose_id, update_at").
-		Desc("update_at，id").
+		Desc("update_at, id").
 		Limit(size, offset).
 		Find(&list); err != nil {
 		log.Log.Errorf("collect_trace: get collect videos err:%s", err)
