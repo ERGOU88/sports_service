@@ -23,7 +23,7 @@ type ConfigModule struct {
 }
 
 func New(c *gin.Context) ConfigModule {
-	socket := dao.Engine.Context(c)
+  socket := dao.Engine.NewSession()
 	defer socket.Close()
 	return ConfigModule{
 		context: c,

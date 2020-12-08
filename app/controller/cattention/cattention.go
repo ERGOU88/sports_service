@@ -21,7 +21,7 @@ type AttentionModule struct {
 }
 
 func New(c *gin.Context) AttentionModule {
-	socket := dao.Engine.Context(c)
+	socket := dao.Engine.NewSession()
 	defer socket.Close()
 	return AttentionModule{
 		context: c,

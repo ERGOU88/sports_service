@@ -29,7 +29,7 @@ type SearchModule struct {
 }
 
 func New(c *gin.Context) SearchModule {
-	socket := dao.Engine.Context(c)
+  socket := dao.Engine.NewSession()
 	defer socket.Close()
 	return SearchModule{
 		context: c,

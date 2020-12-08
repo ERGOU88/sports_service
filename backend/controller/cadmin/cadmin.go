@@ -19,7 +19,7 @@ type AdminModule struct {
 }
 
 func New(c *gin.Context) AdminModule {
-  socket := dao.Engine.Context(c)
+  socket := dao.Engine.NewSession()
   defer socket.Close()
   return AdminModule{
     context: c,

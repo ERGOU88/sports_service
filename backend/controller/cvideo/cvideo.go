@@ -23,7 +23,7 @@ type VideoModule struct {
 }
 
 func New(c *gin.Context) VideoModule {
-	socket := dao.Engine.Context(c)
+  socket := dao.Engine.NewSession()
 	defer socket.Close()
 	return VideoModule{
 		context: c,

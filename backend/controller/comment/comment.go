@@ -25,7 +25,7 @@ type CommentModule struct {
 }
 
 func New(c *gin.Context) CommentModule {
-	socket := dao.Engine.Context(c)
+  socket := dao.Engine.NewSession()
 	defer socket.Close()
 	return CommentModule{
 		context: c,
