@@ -1,7 +1,8 @@
 package job
 
 import (
-  "context"
+  "errors"
+  "fmt"
   "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod/v20180717"
   "sports_service/server/dao"
   "sports_service/server/global/app/log"
@@ -11,12 +12,10 @@ import (
   "sports_service/server/models/muser"
   "sports_service/server/models/mvideo"
   cloud "sports_service/server/tools/tencentCloud"
-  "fmt"
   "sports_service/server/util"
   "strconv"
   "strings"
   "time"
-  "errors"
 )
 
 // 主动拉取事件（腾讯云）
@@ -70,7 +69,8 @@ func pullEvents() error {
 
 // 视频转码事件
 func transCodeCompleteEvent(event *v20180717.EventContent) error {
-  session := dao.Engine.Context(context.Background())
+  session := dao.Engine.NewSession()
+  defer session.Close()
   if err := session.Begin(); err != nil {
     log.Log.Errorf("job_trace: session begin err:%s", err)
     return err
@@ -184,7 +184,8 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
 
 // 上传事件
 func uploadEvent(event *v20180717.EventContent) error {
-  session := dao.Engine.Context(context.Background())
+  session := dao.Engine.NewSession()
+  defer session.Close()
   if err := session.Begin(); err != nil {
     log.Log.Errorf("job_trace: session begin err:%s", err)
     return err
@@ -239,9 +240,9 @@ func uploadEvent(event *v20180717.EventContent) error {
   if err != nil || info == "" {
     log.Log.Errorf("job_trace: get publish info err:%s", err)
     // 确认事件回调
-    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-      log.Log.Errorf("job_trace: confirm events err:%s", err)
-    }
+    //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+    //  log.Log.Errorf("job_trace: confirm events err:%s", err)
+    //}
 
     session.Rollback()
     return errors.New("get publish info fail")
