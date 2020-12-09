@@ -5,9 +5,11 @@ import (
 	"net/http"
 	"sports_service/server/backend/controller/configure"
 	"sports_service/server/global/backend/errdef"
-	"sports_service/server/models/mbanner"
+  "sports_service/server/global/consts"
+  "sports_service/server/models/mbanner"
 	"sports_service/server/models/muser"
   "sports_service/server/models/mvideo"
+  "sports_service/server/tools/tencentCloud"
   "sports_service/server/util"
 )
 
@@ -155,3 +157,18 @@ func SetStatusByHotSearch(c *gin.Context) {
   syscode := svc.SetStatusByHotSearch(param)
   reply.Response(http.StatusOK, syscode)
 }
+
+// 获取腾讯cos临时通行证
+func CosTempAccess(c *gin.Context) {
+  reply := errdef.New(c)
+  client := tencentCloud.New(consts.TX_CLOUD_COS_SECRET_ID, consts.TX_CLOUD_COS_SECRET_KEY, consts.TMS_API_DOMAIN)
+  info, err := client.GetCosTempAccess("ap-shanghai")
+  if err != nil {
+    reply.Response(http.StatusOK, errdef.CONFIG_COS_ACCESS_FAIL)
+    return
+  }
+
+  reply.Data["access_info"] = info
+  reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+

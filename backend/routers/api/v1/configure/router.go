@@ -28,5 +28,7 @@ func Router(engine *gin.Engine) {
 		configure.POST("/set/hot/sort", SetSortByHotSearch)
     // 设置热搜状态
     configure.POST("/set/hot/status", SetStatusByHotSearch)
+    // 获取腾讯cos通行证
+    configure.GET("/cos/access", CosTempAccess)
 	}
 }

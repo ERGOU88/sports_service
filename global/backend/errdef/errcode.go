@@ -39,6 +39,7 @@ const (
   CONFIG_SET_SORT_HOT_FAIL    = 12009
   CONFIG_INVALID_HOT_SEARCH   = 12010
   CONFIG_HOT_NAME_EXISTS      = 12011
+  CONFIG_COS_ACCESS_FAIL      = 12012
 
 	// 13001 - 14000 用户相关错误码
 	USER_FORBID_FAIL            = 13001
@@ -49,6 +50,7 @@ const (
 	ADMIN_HAS_EXISTS            = 14002
 	ADMIN_NOT_EXISTS            = 14003
 	ADMIN_PASSWORD_NOT_MATCH    = 14004
+
 )
 
 var MsgFlags = map[int]string{
@@ -87,6 +89,7 @@ var MsgFlags = map[int]string{
   CONFIG_SET_SORT_HOT_FAIL:    "设置热搜权重失败",
   CONFIG_INVALID_HOT_SEARCH:   "热搜词含有违规文字",
   CONFIG_HOT_NAME_EXISTS:      "热搜词已存在",
+  CONFIG_COS_ACCESS_FAIL:      "获取cos通行证失败",
 
   USER_FORBID_FAIL:            "用户封禁失败",
 	USER_UNFORBID_FAIL:          "用户解封失败",
