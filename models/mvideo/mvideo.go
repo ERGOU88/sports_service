@@ -517,7 +517,7 @@ func (m *VideoModel) UpdateVideoRecommendStatus(videoId string) error {
 
 // 获取用户总发布数 (审核通过的)
 func (m *VideoModel) GetTotalPublish(userId string) int64 {
-	total, err := m.Engine.Where("user_id=? AND status=1", userId).Count(m.Videos)
+	total, err := m.Engine.Where("user_id=? AND status=1", userId).Count(&models.Videos{})
 	if err != nil {
 		log.Log.Errorf("video_trace: get user total publish err:%s, uid:%s", err, userId)
 		return 0

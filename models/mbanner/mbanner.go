@@ -102,7 +102,7 @@ func (m *BannerModel) GetBannerList(offset, size int) []*models.Banner {
 
 // 后台获取banner总数目
 func (m *BannerModel) GetBannerTotal() int64 {
-  total, err := m.Engine.Count(m.Banners)
+  total, err := m.Engine.Count(&models.Banner{})
   if err != nil {
     return 0
   }

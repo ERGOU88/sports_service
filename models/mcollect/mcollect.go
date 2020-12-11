@@ -112,7 +112,7 @@ func (m *CollectModel) DeleteCollectByIds(userId string, ids string) error {
 
 // 获取用户收藏的作品总数
 func (m *CollectModel) GetUserTotalCollect(userId string) int64 {
-	total, err := m.Engine.Where("user_id=? AND status=1", userId).Count(m.CollectRecord)
+	total, err := m.Engine.Where("user_id=? AND status=1", userId).Count(&models.CollectRecord{})
 	if err != nil {
 		log.Log.Errorf("collect_trace: get collect total err:%s, uid:%s", err, userId)
 		return 0
