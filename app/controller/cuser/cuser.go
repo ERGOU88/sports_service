@@ -20,6 +20,7 @@ import (
 	"strings"
 	"time"
 	"unicode"
+	"fmt"
 )
 
 type UserModule struct {
@@ -251,6 +252,33 @@ func (svc *UserModule) GetUserZoneInfo(userId, toUserId string) (int, *muser.Use
 	}
 
 	return errdef.SUCCESS, resp, zoneRes
+}
+
+// 绑定设备token
+func (svc *UserModule) BindDeviceToken(userId string, param *muser.BindDeviceTokenParam) int {
+  user := svc.user.FindUserByUserid(userId)
+  if user == nil {
+    log.Log.Errorf("user_trace: user not found, userId:%s", userId)
+    return errdef.USER_NOT_EXISTS
+  }
+
+  // 一致 则不做操作
+  if strings.Compare(user.DeviceToken, param.DeviceToken) == 0 {
+    return errdef.SUCCESS
+  }
+
+  svc.user.SetDeviceToken(param.DeviceToken)
+  svc.user.SetDeviceType(param.Platform)
+  // 条件
+  condition := fmt.Sprintf("id=%d", user.Id)
+  // 字段
+  cols := "device_token, device_type"
+  if _, err := svc.user.UpdateUserInfos(condition, cols); err != nil {
+    log.Log.Errorf("user_trace: bind device token fail, userId:%s", userId)
+    return errdef.USER_BIND_DEVICE_TOKEN
+  }
+
+  return errdef.SUCCESS
 }
 
 // 获取世界信息（暂时只有国家）

@@ -32,6 +32,8 @@ func Router(engine *gin.Engine) {
 		user.POST("/feedback", token.TokenAuth(), UserFeedback)
 		// 个人空间信息
 		user.GET("/zone/info", UserZoneInfo)
+    // 绑定设备token
+    user.POST("/bind/deviceToken", token.TokenAuth(), BindDeviceToken)
 	}
 
 }

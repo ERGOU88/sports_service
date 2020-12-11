@@ -395,4 +395,27 @@ func UserZoneInfo(c *gin.Context) {
 	reply.Response(http.StatusOK, syscode)
 }
 
+// 绑定设备token
+func BindDeviceToken(c *gin.Context) {
+  reply := errdef.New(c)
+  userId, _ := c.Get(consts.USER_ID)
+  if userId == "" {
+    log.Log.Errorf("user_trace: user not found, uid:%s", userId)
+    reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
+    return
+  }
+
+  param := new(muser.BindDeviceTokenParam)
+  if err := c.BindJSON(param); err != nil {
+    log.Log.Errorf("user_trace: invalid param, param:%+v", param)
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := cuser.New(c)
+  syscode := svc.BindDeviceToken(userId.(string), param)
+  reply.Response(http.StatusOK, syscode)
+}
+
+
 

@@ -29,6 +29,7 @@ const (
 	USER_ADD_NOTIFY_SET_FAIL= 1018
 	USER_NO_LOGIN           = 1019
 	USER_INVALID_FEEDBACK   = 1020
+  USER_BIND_DEVICE_TOKEN  = 1021
 
 	WX_USER_INFO_FAIL       = 1101
 	WX_ACCESS_TOKEN_FAIL    = 1102
@@ -148,6 +149,7 @@ var MsgFlags = map[int]string{
 	USER_ADD_NOTIFY_SET_FAIL:"系统设置初始化失败",
 	USER_NO_LOGIN:           "用户未登录",
 	USER_INVALID_FEEDBACK:   "反馈信息含有违规字段",
+  USER_BIND_DEVICE_TOKEN:  "绑定设备token失败",
 
 	WX_USER_INFO_FAIL:    "获取微信用户信息失败",
 	WX_ACCESS_TOKEN_FAIL: "获取微信授权token失败",

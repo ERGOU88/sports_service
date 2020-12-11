@@ -145,6 +145,12 @@ type UserZoneInfoParam struct {
 	UserId  string `json:"user_id"`            // 用户userid
 }
 
+// 绑定设备token
+type BindDeviceTokenParam struct {
+  DeviceToken       string     `json:"device_token" binding:"required"`    // 设备token（推送）
+  Platform          int        `json:"platform"`                           // 平台 0 android 1 ios 2 web
+}
+
 var validPhone = regexp.MustCompile(`^1\d{10}$`)
 // 检验手机号
 func (m *UserModel) CheckCellPhoneNumber(mobileNum string) bool {
@@ -299,6 +305,11 @@ func (m *UserModel) UpdateUserInfo() error {
 	}
 
 	return nil
+}
+
+// 更新用户信息
+func (m *UserModel) UpdateUserInfos(condition, cols string) (int64, error) {
+  return m.Engine.Where(condition).Cols(cols).Update(m.User)
 }
 
 // 更新用户状态
@@ -459,6 +470,11 @@ func (m *UserModel) SetAvatar(avatar string) {
 // 设置用户类型
 func (m *UserModel) SetUserDeviceType(utype int) {
 	m.User.DeviceType = utype
+}
+
+// 设置设备token
+func (m *UserModel) SetDeviceToken(deviceToken string) {
+  m.User.DeviceToken = deviceToken
 }
 
 // 设备类型
