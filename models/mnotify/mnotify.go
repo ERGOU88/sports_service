@@ -107,8 +107,10 @@ func (m *NotifyModel) GetSystemNotify(userId string, offset, size int) []*models
     sql = fmt.Sprintf("%s WHERE receive_id='' AND send_default=1", sql)
   }
 
+  sql += " LIMIT ?, ?"
+
   var list []*models.SystemMessage
-  if err := m.Engine.SQL(sql).Limit(size, offset).Find(&list); err != nil {
+  if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
     return nil
   }
 
