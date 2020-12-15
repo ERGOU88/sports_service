@@ -67,7 +67,7 @@ func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 			log.Log.Errorf("attention_trace: update attention status err:%s", err)
 			return errdef.ATTENTION_USER_FAIL
 		}
-
+    log.Log.Errorf("event_trace: userId:%s", userId)
     // 发送关注推送
     event.PushEventMsg(userId, user.NickName, "", "", consts.FOCUS_USER_MSG)
 
@@ -80,6 +80,7 @@ func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 		return errdef.ATTENTION_USER_FAIL
 	}
 
+	log.Log.Errorf("event_trace: userId:%s", userId)
 	// 发送关注推送
   event.PushEventMsg(userId, user.NickName, "", "", consts.FOCUS_USER_MSG)
 
