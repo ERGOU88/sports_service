@@ -75,7 +75,7 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
     body.Title = title
     body.Img = cover
 
-    log.Log.Errorf("order_trace: msg:%+v", m.Data)
+    log.Log.Errorf("event_trace: msg:%+v", m.Data)
     resp := m.Data.Push(body, nil, nil, nil)
     if resp.Code != "SUCCESS" {
       log.Log.Errorf("event_trace: umeng push errCode:%s", resp.Code)
@@ -104,6 +104,7 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
     }
   }
 
+  log.Log.Error("event_trace: push notify success")
   return nil
 
 }
