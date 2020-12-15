@@ -68,6 +68,9 @@ func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 			return errdef.ATTENTION_USER_FAIL
 		}
 
+    // 发送关注推送
+    event.PushEventMsg(userId, user.NickName, "", "", consts.FOCUS_USER_MSG)
+
 		return errdef.SUCCESS
 	}
 
