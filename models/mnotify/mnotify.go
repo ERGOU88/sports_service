@@ -118,9 +118,19 @@ func (m *NotifyModel) GetSystemNotify(userId string, offset, size int) []*models
 
 }
 
-// 更新系统通知消息状态
-func (m *NotifyModel) UpdateSystemNotifyStatus(ids string) error {
-  sql := fmt.Sprintf("UPDATE `system_message` SET `status`=1 WHERE system_id in (%s)", ids)
+// 通过id获取通知详情
+func (m *NotifyModel) GetSystemNotifyById(systemId string) *models.SystemMessage {
+  msg := new(models.SystemMessage)
+  ok, err := m.Engine.Where("system_id=?", systemId).Get(msg)
+  if !ok || err != nil {
+    return nil
+  }
+
+  return msg
+}
+
+func (m *NotifyModel) UpdateSystemNotifyStatus(id int64) error {
+  sql := fmt.Sprintf("UPDATE `system_message` SET `status`=1 WHERE id <= ?", id)
   if _, err := m.Engine.Exec(sql); err != nil {
     return err
   }

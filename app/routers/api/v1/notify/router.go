@@ -22,5 +22,7 @@ func Router(engine *gin.Engine) {
 		notify.GET("/setting/info", token.TokenAuth(), NotifySettingInfo)
 		// 系统通知列表
 		notify.GET("/system", SystemNotify)
+    // 系统消息详情
+    notify.GET("/system/message/detail", SystemMessageDetail)
 	}
 }

@@ -494,21 +494,34 @@ func (svc *NotifyModule) GetSystemNotify(userId string, page, size int) []*model
     return list
   }
 
-  ids := make([]string, len(list))
-  var msgIds string
-  for index, msg := range list {
+  // 最后读取的消息id
+  var lastReadId int64
+  for _, msg := range list {
     // 0 未读 1 已读
-    if msg.Status == 0 {
-      ids[index] = fmt.Sprint(msg.SystemId)
+    if msg.Status == 0 && lastReadId == 0 {
+      lastReadId = msg.SystemId
     }
+
+    // 剔除h5标签
+    msg.SystemContent = util.TrimHtml(msg.SystemContent)
   }
 
-
-  msgIds = strings.Join(ids, ",")
-  // 更新为已读
-  if err := svc.notify.UpdateSystemNotifyStatus(msgIds); err != nil {
-    log.Log.Errorf("notify_trace: update system notify status err:%s", err)
-  }
+  // 状态更新为已读
+  svc.UpdateNotifyStatus(lastReadId)
 
   return list
+}
+
+// 状态更新为已读
+func (svc *NotifyModule) UpdateNotifyStatus(lastReadId int64) {
+  go func() {
+    if err := svc.notify.UpdateSystemNotifyStatus(lastReadId); err != nil {
+      log.Log.Errorf("notify_trace: update system notify status err:%s", err)
+    }
+  }()
+}
+
+// 获取系统消息详情
+func (svc *NotifyModule) GetSystemMsgById(systemId string) *models.SystemMessage {
+  return svc.notify.GetSystemNotifyById(systemId)
 }

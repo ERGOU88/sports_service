@@ -186,3 +186,28 @@ func SystemNotify(c *gin.Context) {
   reply.Data["list"] = list
   reply.Response(http.StatusOK, errdef.SUCCESS)
 }
+
+// @Summary 系统消息详情 (ok)
+// @Tags 通知模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	    header    string 	true  "版本" default(1.0.0)
+// @Param   system_id     query     string  true  "系统消息id"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/notify/system/message/detail [get]
+// 系统消息详情
+func SystemMessageDetail(c *gin.Context) {
+  reply := errdef.New(c)
+  systemId := c.Query("system_id")
+  svc := cnotify.New(c)
+  msg := svc.GetSystemMsgById(systemId)
+  reply.Data["detail_info"] = msg
+  reply.Response(http.StatusOK, errdef.SUCCESS)
+}
