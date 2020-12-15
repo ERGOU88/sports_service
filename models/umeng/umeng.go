@@ -48,7 +48,7 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
   m.Data.TimeStamp = time.Now().Unix()
   m.Data.DeviceTokens = deviceToken
   //m.Data.Description = ""
-  m.Data.ProductionMode = false
+  m.Data.ProductionMode = true
   body := PushMessage{
     MsgId: fmt.Sprint(util.GetSnowId()),
     SendTime: time.Now().Unix(),
