@@ -17,7 +17,7 @@ var (
   PostPath                      = "/api/send"
   AndroidAppKey                 = "5fab8a2545b2b751a929328c"
   IOSAppKey                     = "5fc60a125a31bc1b28ee9cb7"
-  AndroidAppMasterSecret        = "1f650800f47cb9719a5082f3b0591d69"
+  AndroidAppMasterSecret        = "ultl2ip6u5x75vljp9zcwht9qbgdsinv"
   IOSAppMasterSecret            = "zynivoaugy5nja5tsui2dhrsuerndzmp"
   DataByte               []byte = nil
 )

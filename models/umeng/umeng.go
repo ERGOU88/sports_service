@@ -78,7 +78,7 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
     log.Log.Errorf("order_trace: msg:%+v", m.Data)
     resp := m.Data.Push(body, nil, nil, nil)
     if resp.Code != "SUCCESS" {
-      log.Log.Errorf("order_trace: umeng push errCode:%s", resp.Code)
+      log.Log.Errorf("event_trace: umeng push errCode:%s", resp.Code)
       return errors.New("push notify fail, error_msg" + resp.Data["error_msg"])
     }
   }
