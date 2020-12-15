@@ -130,7 +130,7 @@ func (m *NotifyModel) GetSystemNotifyById(systemId string) *models.SystemMessage
 }
 
 func (m *NotifyModel) UpdateSystemNotifyStatus(id int64) error {
-  sql := fmt.Sprintf("UPDATE `system_message` SET `status`=1 WHERE id <= ?", id)
+  sql := fmt.Sprintf("UPDATE `system_message` SET `status`=1 WHERE system_id <= ?", id)
   if _, err := m.Engine.Exec(sql); err != nil {
     return err
   }
