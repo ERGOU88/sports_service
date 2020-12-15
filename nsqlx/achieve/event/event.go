@@ -118,6 +118,8 @@ func handleEvent(event *protocol.Event) error {
   	content string
   	msgType int32
   )
+
+  log.Log.Errorf("event_trace: event:%+v", event)
   switch event.EventType {
   // 系统类
   case consts.SYSTEM_MSG:

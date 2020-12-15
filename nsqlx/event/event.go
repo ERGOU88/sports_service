@@ -11,7 +11,7 @@ import (
 
 // 事件消息
 func PushEventMsg(userId, nickname, cover, content string, eventType int32) {
-  log.Log.Debugf("event_trace: 事件推送，eventType:%d", eventType)
+  log.Log.Errorf("event_trace: 事件推送，eventType:%d", eventType)
   eventNSQPub(userId, nickname, cover, content, eventType)
 }
 
