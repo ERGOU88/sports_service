@@ -13,6 +13,7 @@ import (
   "sports_service/server/models/mlike"
   "sports_service/server/models/muser"
   "sports_service/server/models/mvideo"
+  "sports_service/server/nsqlx/event"
   "sports_service/server/util"
   "strings"
   "time"
@@ -65,6 +66,14 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 		return errdef.COLLECT_VIDEO_NOT_EXISTS
 	}
 
+	// up主是否存在
+	up := svc.user.FindUserByUserid(video.UserId)
+	if up == nil {
+    log.Log.Errorf("collect_trace: up user not found, userId:%s", video.UserId)
+    svc.engine.Rollback()
+    return errdef.USER_NOT_EXISTS
+  }
+
 	// 获取收藏的信息
 	info := svc.collect.GetCollectInfo(userId, videoId, consts.TYPE_VIDEO)
 	// 是否已收藏
@@ -103,6 +112,9 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 	}
 
 	svc.engine.Commit()
+
+  // 发送收藏视频推送
+  event.PushEventMsg(userId, up.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG)
 
 	return errdef.SUCCESS
 }

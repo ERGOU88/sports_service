@@ -14,6 +14,7 @@ import (
   "sports_service/server/models/pprof"
   "sports_service/server/tools/nsq"
   "sports_service/server/util"
+  "sports_service/server/nsqlx"
 )
 
 var (
@@ -90,6 +91,11 @@ func setupJob() {
 func setupNsqProduct() {
 	nsq.ConnectNsqProduct(config.Global.NsqAddr)
 }
+// 初始化nsql消费者
+func setupNsqConsumer() {
+  go nsqlx.InitNsqConsumer()
+}
+
 
 func init() {
 	// 配置
@@ -113,6 +119,8 @@ func init() {
 	setupJob()
 	// 初始化nsq
 	setupNsqProduct()
+  // 初始化nsq消费者
+  setupNsqConsumer()
 }
 
 // @title 电竞社区平台（应用服）

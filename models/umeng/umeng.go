@@ -23,18 +23,18 @@ type PushMessage struct {
 }
 
 const (
-  SAI_ANDROID  = 1
-  SAI_IOS      = 2
+  FPV_ANDROID = 1
+  FPV_IOS     = 2
 )
 
 func New(pf int32) (umodel *UmengModel) {
   umodel = new(UmengModel)
-  if pf == SAI_ANDROID {
+  if pf == FPV_ANDROID {
     umodel.Data = umeng.NewData(umeng.APP_ANDROID)
     return
   }
 
-  if pf == SAI_IOS {
+  if pf == FPV_IOS {
     umodel.Data = umeng.NewData(umeng.APP_IOS)
     return
   }
@@ -43,7 +43,7 @@ func New(pf int32) (umodel *UmengModel) {
 }
 
 // 推送消息(单播)
-func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, content string, extra map[string]interface{}) error {
+func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, content, cover string, extra map[string]interface{}) error {
   m.Data.Type = "unicast"
   m.Data.TimeStamp = time.Now().Unix()
   m.Data.DeviceTokens = deviceToken
@@ -65,7 +65,7 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
 
   bts, _ := util.JsonFast.Marshal(body)
 
-  if pf == SAI_ANDROID {
+  if pf == FPV_ANDROID {
     body := umeng.AndroidBody{}
     // android: notification 通知栏推送  message 自定义推送
     body.DisplayType = consts.ANDROID_PUSH_TYPE_NOTIFICATION
@@ -73,6 +73,7 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
     body.Custom = string(bts)
     body.Text = content
     body.Title = title
+    body.Img = cover
 
     log.Log.Errorf("order_trace: msg:%+v", m.Data)
     resp := m.Data.Push(body, nil, nil, nil)
@@ -82,7 +83,7 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
     }
   }
 
-  if pf == SAI_IOS {
+  if pf == FPV_IOS {
     extras := make(map[string]string, 0)
     extras["extra"] = string(bts)
 

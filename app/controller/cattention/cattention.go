@@ -9,7 +9,8 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/muser"
-	"strings"
+  "sports_service/server/nsqlx/event"
+  "strings"
 	"time"
 )
 
@@ -44,7 +45,8 @@ func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 	}
 
 	// 被关注的用户是否存在
-	if user := svc.user.FindUserByUserid(userId); user == nil {
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
 		log.Log.Errorf("attention_trace: user not found, userId:%s", userId)
 		return errdef.ATTENTION_USER_NOT_EXISTS
 	}
@@ -74,6 +76,9 @@ func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 		log.Log.Errorf("attention_trace: add attention err:%s", err)
 		return errdef.ATTENTION_USER_FAIL
 	}
+
+	// 发送关注推送
+  event.PushEventMsg(userId, user.NickName, "", "", consts.FOCUS_USER_MSG)
 
 	return errdef.SUCCESS
 }

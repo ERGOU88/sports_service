@@ -14,6 +14,7 @@ import (
   "sports_service/server/models/mlike"
   "sports_service/server/models/muser"
   "sports_service/server/models/mvideo"
+  "sports_service/server/nsqlx/event"
   "sports_service/server/util"
   "strings"
   "time"
@@ -68,6 +69,14 @@ func (svc *LikeModule) GiveLikeForVideo(userId string, videoId int64) int {
 		return errdef.LIKE_VIDEO_NOT_EXISTS
 	}
 
+  // up主是否存在
+  up := svc.user.FindUserByUserid(video.UserId)
+  if up == nil {
+    log.Log.Errorf("collect_trace: up user not found, userId:%s", video.UserId)
+    svc.engine.Rollback()
+    return errdef.USER_NOT_EXISTS
+  }
+
 	// 获取点赞的视频信息
 	info := svc.like.GetLikeInfo(userId, videoId, consts.TYPE_VIDEOS)
 	// 是否已点赞
@@ -107,6 +116,9 @@ func (svc *LikeModule) GiveLikeForVideo(userId string, videoId int64) int {
 	}
 
 	svc.engine.Commit()
+
+  // 发送视频点赞推送
+  event.PushEventMsg(userId, up.NickName, video.Cover, "", consts.VIDEO_LIKE_MSG)
 
 	return errdef.SUCCESS
 }
@@ -248,7 +260,8 @@ func (svc *LikeModule) GiveLikeForComment(userId string, commentId int64) int {
 	}
 
 	// 查询用户是否存在
-	if user := svc.user.FindUserByUserid(userId); user == nil {
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
 		log.Log.Errorf("like_trace: user not found, userId:%s", userId)
 		svc.engine.Rollback()
 		return errdef.USER_NOT_EXISTS
@@ -294,6 +307,9 @@ func (svc *LikeModule) GiveLikeForComment(userId string, commentId int64) int {
 	}
 
 	svc.engine.Commit()
+
+  // 发送评论点赞推送
+  event.PushEventMsg(userId, user.NickName, "", comment.Content, consts.COMMENT_LIKE_MSG)
 
 	return errdef.SUCCESS
 }

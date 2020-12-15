@@ -8,6 +8,8 @@ import (
   "sports_service/server/global/app/errdef"
   "sports_service/server/global/app/log"
   "sports_service/server/global/consts"
+  "sports_service/server/nsqlx/event"
+
   //"sports_service/server/models"
   "sports_service/server/models/mattention"
   "sports_service/server/models/mcollect"
@@ -87,6 +89,14 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 		return errdef.VIDEO_NOT_EXISTS, 0
 	}
 
+  // up主是否存在
+  up := svc.user.FindUserByUserid(video.UserId)
+  if up == nil {
+    log.Log.Errorf("comment_trace: up user not found, userId:%s", video.UserId)
+    svc.engine.Rollback()
+    return errdef.USER_NOT_EXISTS, 0
+  }
+
 	now := time.Now().Unix()
 	svc.comment.Comment.UserId = userId
 	svc.comment.Comment.Content = params.Content
@@ -126,6 +136,9 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	}
 
 	svc.engine.Commit()
+
+  // 视频评论推送
+  event.PushEventMsg(userId, up.NickName, video.Cover, params.Content, consts.VIDEO_COMMENT_MSG)
 
 	return errdef.SUCCESS, svc.comment.Comment.Id
 }
@@ -179,6 +192,14 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		return errdef.COMMENT_NOT_FOUND, 0
 	}
 
+	// 被回复评论的用户信息
+  uinfo := svc.user.FindUserByUserid(replyInfo.UserId)
+  if uinfo == nil {
+    log.Log.Errorf("comment_trace: user info not exists, userId:%s", replyInfo.UserId)
+    svc.engine.Rollback()
+    return errdef.USER_NOT_EXISTS, 0
+  }
+
 	// todo: 用户是否能回复自己？
 	//if strings.Compare(userId, replyInfo.UserId) != -1 {
 	//
@@ -231,7 +252,8 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	}
 
 	svc.engine.Commit()
-
+  // 视频回复推送
+  event.PushEventMsg(userId, uinfo.NickName, video.Cover, replyInfo.Content, consts.VIDEO_REPLY_MSG)
 	return errdef.SUCCESS, svc.comment.Comment.Id
 }
 
