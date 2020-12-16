@@ -52,7 +52,8 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 	}
 
 	// 查询用户是否存在
-	if user := svc.user.FindUserByUserid(userId); user == nil {
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
 		log.Log.Errorf("collect_trace: user not found, userId:%s", userId)
 		svc.engine.Rollback()
 		return errdef.USER_NOT_EXISTS
@@ -65,14 +66,6 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 		svc.engine.Rollback()
 		return errdef.COLLECT_VIDEO_NOT_EXISTS
 	}
-
-	// up主是否存在
-	up := svc.user.FindUserByUserid(video.UserId)
-	if up == nil {
-    log.Log.Errorf("collect_trace: up user not found, userId:%s", video.UserId)
-    svc.engine.Rollback()
-    return errdef.USER_NOT_EXISTS
-  }
 
 	// 获取收藏的信息
 	info := svc.collect.GetCollectInfo(userId, videoId, consts.TYPE_VIDEO)
@@ -114,7 +107,7 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 	svc.engine.Commit()
 
   // 发送收藏视频推送
-  event.PushEventMsg(userId, up.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG)
+  event.PushEventMsg(video.UserId, user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG)
 
 	return errdef.SUCCESS
 }
