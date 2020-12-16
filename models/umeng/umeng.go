@@ -67,9 +67,6 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
 
   bts, _ := util.JsonFast.Marshal(body)
 
-  extras := make(map[string]string, 0)
-  extras["extra"] = string(bts)
-
   if pf == FPV_ANDROID {
     body := umeng.AndroidBody{}
     // android: notification 通知栏推送  message 自定义推送
@@ -88,8 +85,10 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
     }
   }
 
-  if pf == FPV_IOS {
 
+  if pf == FPV_IOS {
+    extras := make(map[string]string, 0)
+    extras["extra"] = string(bts)
     info := umeng.Alert{
       Title: title,
       SubTitle: title,
