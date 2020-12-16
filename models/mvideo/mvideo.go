@@ -596,13 +596,13 @@ func (m *VideoModel) GetAttentionVideos(userIds string, offset, size int) []*Vid
 }
 
 // 获取未浏览的视频数（关注的用户发布的视频）
-func (m *VideoModel) GetUnBrowsedAttentionVideos(userIds string) int64 {
+func (m *VideoModel) GetUnBrowsedAttentionVideos(userIds, browseTm string) int64 {
   type tmp struct {
     Count    int64  `json:"count"`
   }
 
   unBrowsed := new(tmp)
-  sql := fmt.Sprintf("SELECT count(1) as count FROM `videos` WHERE user_id in(%s) AND status=1", userIds)
+  sql := fmt.Sprintf("SELECT count(1) as count FROM `videos` WHERE user_id in(%s) AND status=1 AND create_at > %s", userIds, browseTm)
   ok, err := m.Engine.SQL(sql).Get(unBrowsed)
   if !ok || err != nil {
     return 0

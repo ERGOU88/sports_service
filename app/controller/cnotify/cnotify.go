@@ -461,10 +461,10 @@ func (svc *NotifyModule) GetUnreadTotalNum(userId string) *mnotify.HomePageNotif
   }
 
   // 用户上次浏览时间（关注用户发布的视频列表 ）
-  tm, err := svc.notify.GetReadAttentionPubVideo(userId)
+  browseTm, err := svc.notify.GetReadAttentionPubVideo(userId)
   if err == nil || err == redis.ErrNil {
-    if tm == "" {
-      tm = "0"
+    if browseTm == "" {
+      browseTm = "0"
     }
 
     userIds := svc.attention.GetAttentionList(userId)
@@ -474,7 +474,7 @@ func (svc *NotifyModule) GetUnreadTotalNum(userId string) *mnotify.HomePageNotif
     }
 
     uids := strings.Join(userIds, ",")
-    resp.UnBrowsedNum = svc.video.GetUnBrowsedAttentionVideos(uids)
+    resp.UnBrowsedNum = svc.video.GetUnBrowsedAttentionVideos(uids, browseTm)
   }
 
   return resp
