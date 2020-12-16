@@ -70,7 +70,7 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
   if pf == FPV_ANDROID {
     body := umeng.AndroidBody{}
     // android: notification 通知栏推送  message 自定义推送
-    body.DisplayType = consts.ANDROID_PUSH_TYPE_CUSTOM
+    body.DisplayType = consts.ANDROID_PUSH_TYPE_NOTIFICATION
 
     body.Custom = string(bts)
     body.Text = content
