@@ -179,7 +179,7 @@ func (m *LikeModel) UpdateLikeStatus() error {
 
 // 获取用户被点赞总数
 func (m *LikeModel) GetUserTotalBeLiked(userId string) int64 {
-	total, err := m.Engine.Where("to_user_id=? AND status=1", userId).Count(&models.VideoLive{})
+	total, err := m.Engine.Where("to_user_id=? AND status=1", userId).Count(&models.ThumbsUp{})
 	if err != nil {
 		log.Log.Errorf("like_trace: get user total be liked err:%s, uid:%s", err, userId)
 		return 0
@@ -190,7 +190,7 @@ func (m *LikeModel) GetUserTotalBeLiked(userId string) int64 {
 
 // 获取用户点赞总数
 func (m *LikeModel) GetUserTotalLikes(userId string) int64 {
-	total, err := m.Engine.Where("user_id=? AND status=1", userId).Count(&models.VideoLive{})
+	total, err := m.Engine.Where("user_id=? AND status=1", userId).Count(&models.ThumbsUp{})
 	if err != nil {
 		log.Log.Errorf("like_trace: get user total likes err:%s, uid:%s", err, userId)
 		return 0

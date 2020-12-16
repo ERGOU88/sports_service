@@ -49,6 +49,8 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
   m.Data.DeviceTokens = deviceToken
   //m.Data.Description = ""
   m.Data.ProductionMode = false
+  extras := make(map[string]string, 0)
+  extras["key"] = 111111
   body := PushMessage{
     MsgId: fmt.Sprint(util.GetSnowId()),
     SendTime: time.Now().Unix(),
@@ -76,7 +78,7 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
     body.Img = cover
 
     log.Log.Errorf("event_trace: msg:%+v", m.Data)
-    resp := m.Data.Push(body, nil, nil, nil)
+    resp := m.Data.Push(body, nil, nil, extras)
     if resp.Code != "SUCCESS" {
       log.Log.Errorf("event_trace: umeng push errCode:%s", resp.Code)
       return errors.New("push notify fail, error_msg" + resp.Data["error_msg"])
@@ -84,8 +86,6 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
   }
 
   if pf == FPV_IOS {
-    extras := make(map[string]string, 0)
-    extras["extra"] = string(bts)
 
     info := umeng.Alert{
       Title: title,
