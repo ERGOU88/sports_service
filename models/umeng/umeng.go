@@ -1,13 +1,13 @@
 package umeng
 
 import (
+  "errors"
+  "fmt"
+  "sports_service/server/global/app/log"
   "sports_service/server/global/consts"
   "sports_service/server/tools/umeng"
   "sports_service/server/util"
-  "sports_service/server/global/app/log"
   "time"
-  "errors"
-  "fmt"
 )
 
 type UmengModel struct {
@@ -73,7 +73,7 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
   if pf == FPV_ANDROID {
     body := umeng.AndroidBody{}
     // android: notification 通知栏推送  message 自定义推送
-    body.DisplayType = consts.ANDROID_PUSH_TYPE_NOTIFICATION
+    body.DisplayType = consts.ANDROID_PUSH_TYPE_CUSTOM
 
     body.Custom = string(bts)
     body.Text = content
