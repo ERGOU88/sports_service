@@ -49,14 +49,14 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
   m.Data.DeviceTokens = deviceToken
   //m.Data.Description = ""
   m.Data.ProductionMode = false
-  extras := make(map[string]string, 0)
-  extras["key"] = 111111
+
   body := PushMessage{
     MsgId: fmt.Sprint(util.GetSnowId()),
     SendTime: time.Now().Unix(),
     MsgType: msgType,
     Display: true,
   }
+
 
   body.Data = make(map[string]interface{}, 0)
   if len(extra) > 0 {
@@ -66,6 +66,9 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
   }
 
   bts, _ := util.JsonFast.Marshal(body)
+
+  extras := make(map[string]string, 0)
+  extras["extra"] = string(bts)
 
   if pf == FPV_ANDROID {
     body := umeng.AndroidBody{}
