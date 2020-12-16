@@ -57,6 +57,12 @@ type ReceiveCommentAtInfo struct {
   CommentId     int64                 `json:"comment_id"`                            // 评论id
 }
 
+// 首页通知
+type HomePageNotify struct {
+  UnBrowsedNum     int64       `json:"un_browsed_num"` // 未浏览的视频（关注模块 关注用户发布的视频） 客户端处理：当前用户有未浏览的 则展示红点）
+  UnreadNum        int64       `json:"unread_num"`     // 首页未读消息总数
+}
+
 // 实例
 func NewNotifyModel(engine *xorm.Session) *NotifyModel {
 	return &NotifyModel{
@@ -158,6 +164,18 @@ func (m *NotifyModel) RecordReadBeLikedTime(userId string) error {
 func (m *NotifyModel) GetReadBeLikedTime(userId string) (string, error) {
 	rds := dao.NewRedisDao()
 	return rds.Get(rdskey.MakeKey(rdskey.USER_READ_BELIKED_NOTIFY, userId))
+}
+
+// 记录用户读取关注用户发布的视频的时间
+func (m *NotifyModel) RecordReadAttentionPubVideo(userId string) error {
+  rds := dao.NewRedisDao()
+  return rds.Set(rdskey.MakeKey(rdskey.USER_READ_ATTENTION_VIDEO, userId), time.Now().Unix())
+}
+
+// 获取用户读取关注用户发布的视频的时间
+func (m *NotifyModel) GetReadAttentionPubVideo(userId string) (string, error) {
+  rds := dao.NewRedisDao()
+  return rds.Get(rdskey.MakeKey(rdskey.USER_READ_ATTENTION_VIDEO, userId))
 }
 
 // 记录用户读取@通知消息的时间

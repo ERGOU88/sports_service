@@ -15,7 +15,8 @@ import (
 	"sports_service/server/models/mcollect"
 	"sports_service/server/models/mlabel"
 	"sports_service/server/models/mlike"
-	"sports_service/server/models/muser"
+  "sports_service/server/models/mnotify"
+  "sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	"sports_service/server/tools/tencentCloud/vod"
 	"sports_service/server/util"
@@ -35,6 +36,7 @@ type VideoModule struct {
 	like         *mlike.LikeModel
 	collect      *mcollect.CollectModel
 	label        *mlabel.LabelModel
+	notify       *mnotify.NotifyModel
 }
 
 func New(c *gin.Context) VideoModule {
@@ -49,6 +51,7 @@ func New(c *gin.Context) VideoModule {
 		like: mlike.NewLikeModel(socket),
 		collect: mcollect.NewCollectModel(socket),
 		label: mlabel.NewLabelModel(socket),
+		notify: mnotify.NewNotifyModel(socket),
 		engine: socket,
 	}
 }
@@ -555,6 +558,13 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 		}
 
 	}
+
+	// 表示刷新列表 记录最新一次的刷新时间
+	if page == 1 {
+    if err := svc.notify.RecordReadAttentionPubVideo(userId); err != nil {
+      log.Log.Errorf("video_trace: record read attention pub video err:%s", err)
+    }
+  }
 
 	return list
 }

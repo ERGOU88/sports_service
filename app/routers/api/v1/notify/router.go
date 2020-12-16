@@ -24,5 +24,7 @@ func Router(engine *gin.Engine) {
 		notify.GET("/system", SystemNotify)
     // 系统消息详情
     notify.GET("/system/message/detail", SystemMessageDetail)
+		// 首页通知信息
+		notify.GET("/homepage/info", HomePageNotify)
 	}
 }

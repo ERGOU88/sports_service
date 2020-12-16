@@ -10,6 +10,7 @@ import (
   "sports_service/server/global/app/log"
   "sports_service/server/global/consts"
   "sports_service/server/models"
+  "sports_service/server/models/mattention"
   "sports_service/server/models/mcollect"
   "sports_service/server/models/mcomment"
   "sports_service/server/models/mlike"
@@ -31,6 +32,7 @@ type NotifyModule struct {
 	video      *mvideo.VideoModel
 	user       *muser.UserModel
 	comment    *mcomment.CommentModel
+	attention  *mattention.AttentionModel
 }
 
 func New(c *gin.Context) NotifyModule {
@@ -44,6 +46,7 @@ func New(c *gin.Context) NotifyModule {
 		video: mvideo.NewVideoModel(socket),
 		user: muser.NewUserModel(socket),
 		comment: mcomment.NewCommentModel(socket),
+		attention: mattention.NewAttentionModel(socket),
 		engine: socket,
 	}
 }
@@ -421,6 +424,60 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 	}
 
 	return res, readIndex
+}
+
+// 获取未读消息总数 及 未浏览视频数[关注用户发布的视频]（首页展示）
+func (svc *NotifyModule) GetUnreadTotalNum(userId string) *mnotify.HomePageNotify {
+  resp := &mnotify.HomePageNotify{
+    UnBrowsedNum: 0,
+    UnreadNum: 0,
+  }
+
+  if user := svc.user.FindUserByUserid(userId); user == nil {
+    log.Log.Errorf("notify_trace: user not found, userId:%s", userId)
+    return resp
+  }
+
+  // 获取未读的系统消息数
+  resp.UnreadNum = svc.notify.GetUnreadSystemMsgNum(userId)
+  // 获取用户上次读取被点赞列表的时间
+  readTm, err := svc.notify.GetReadBeLikedTime(userId)
+  if err == nil || err == redis.ErrNil {
+    if readTm == "" {
+      readTm = "0"
+    }
+    // 获取未读的被点赞的数量
+    resp.UnreadNum += svc.like.GetUnreadBeLikedCount(userId, readTm)
+  }
+
+  // 获取用户上次读取被@列表数据的时间
+  readAt, err := svc.notify.GetReadAtTime(userId)
+  if err == nil || err == redis.ErrNil {
+    if readAt == "" {
+      readAt = "0"
+    }
+    // 获取未读的被@的数量
+    resp.UnreadNum += svc.comment.GetUnreadAtCount(userId, readAt)
+  }
+
+  // 用户上次浏览时间（关注用户发布的视频列表 ）
+  tm, err := svc.notify.GetReadAttentionPubVideo(userId)
+  if err == nil || err == redis.ErrNil {
+    if tm == "" {
+      tm = "0"
+    }
+
+    userIds := svc.attention.GetAttentionList(userId)
+    if len(userIds) == 0 {
+      log.Log.Errorf("video_trace: not following any users")
+      return resp
+    }
+
+    uids := strings.Join(userIds, ",")
+    resp.UnBrowsedNum = svc.video.GetUnBrowsedAttentionVideos(uids)
+  }
+
+  return resp
 }
 
 // 获取未读消息数量

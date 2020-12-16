@@ -22,6 +22,7 @@ const (
   USER_ID_INCR              = SUGAR + "user_id_incr"                             // 用户id自增
 	USER_READ_BELIKED_NOTIFY  = SUGAR + "user_read_beliked_notify_%s"              // 记录用户读取被点赞消息的最新时间{拼接user_id}
 	USER_READ_AT_NOTIFY       = SUGAR + "user_read_at_notify_%s"                   // 记录用户读取被@消息的最新时间{拼接user_id}
+	USER_READ_ATTENTION_VIDEO = SUGAR + "user_read_attention_pub_%s"               // 记录用户读取关注用户发布的视频的最新时间（刷新列表时才记录）{拼接user_id}
 
 	SMS_INTERVAL_NUM          = SUGAR + "sms:interval_num:%s_%s"                   // 一天内同一手机发送验证码次数{拼接年月日_手机号码}
 	SMS_INTERVAL_TM           = SUGAR + "sms:interval_tm:%s_%s"                    // 验证码间隔时间60秒 {拼接短信类型_手机号}

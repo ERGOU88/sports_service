@@ -211,3 +211,14 @@ func SystemMessageDetail(c *gin.Context) {
   reply.Data["detail_info"] = msg
   reply.Response(http.StatusOK, errdef.SUCCESS)
 }
+
+// 首页通知
+// 获取未读消息总数 及 未浏览视频数[关注用户发布的视频]
+func HomePageNotify(c *gin.Context) {
+  reply := errdef.New(c)
+  userId := c.Query("user_id")
+  svc := cnotify.New(c)
+  resp := svc.GetUnreadTotalNum(userId)
+  reply.Data["info"] = resp
+  reply.Response(http.StatusOK, errdef.SUCCESS)
+}
