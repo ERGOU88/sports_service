@@ -39,7 +39,8 @@ func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 		return errdef.ATTENTION_YOURSELF_FAIL
 	}
 	// 关注的用户是否存在
-	if attentionUser := svc.user.FindUserByUserid(attentionUid); attentionUser == nil {
+	attentionUser := svc.user.FindUserByUserid(attentionUid)
+	if attentionUser == nil {
 		log.Log.Errorf("attention_trace: user not found, attentionUid:%s", attentionUid)
 		return errdef.USER_NOT_EXISTS
 	}
@@ -69,7 +70,7 @@ func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 		}
     log.Log.Errorf("event_trace: userId:%s", userId)
     // 发送关注推送
-    event.PushEventMsg(userId, user.NickName, "", "", consts.FOCUS_USER_MSG)
+    event.PushEventMsg(userId, attentionUser.NickName, "", "", consts.FOCUS_USER_MSG)
 
 		return errdef.SUCCESS
 	}
@@ -82,7 +83,7 @@ func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 
 	log.Log.Errorf("event_trace: userId:%s", userId)
 	// 发送关注推送
-  event.PushEventMsg(userId, user.NickName, "", "", consts.FOCUS_USER_MSG)
+  event.PushEventMsg(userId, attentionUser.NickName, "", "", consts.FOCUS_USER_MSG)
 
 	return errdef.SUCCESS
 }
