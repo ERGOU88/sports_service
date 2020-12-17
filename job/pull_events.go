@@ -215,10 +215,21 @@ func uploadEvent(event *v20180717.EventContent) error {
 
   // 通过任务id 获取 用户id
   userId, err := vmodel.GetUploadUserIdByTaskId(source.TaskId)
-  if err != nil || userId == "" {
+  if err != nil {
     log.Log.Errorf("job_trace: invalid taskId, taskId:%d", source.TaskId)
     session.Rollback()
     return errors.New("invalid taskId")
+  }
+
+  // userId 为空 表示该上传任务已过期（三天过期）
+  if userId == "" {
+    log.Log.Error("job_trace: user id not exists")
+    // 确认事件回调
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+     log.Log.Errorf("job_trace: confirm events err:%s", err)
+    }
+    session.Rollback()
+    return errors.New("user id not exists")
   }
 
   umodel := muser.NewUserModel(session)

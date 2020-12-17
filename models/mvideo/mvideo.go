@@ -807,7 +807,7 @@ func (m *VideoModel) AntiStealingLink(videoUrl string) string {
 // 记录任务id -> 用户id
 func (m *VideoModel) RecordUploadTaskId(userId string, taskId int64) error {
   rds := dao.NewRedisDao()
-  return rds.SETEX(rdskey.MakeKey(rdskey.VIDEO_UPLOAD_TASK, taskId), rdskey.KEY_EXPIRE_WEEK, userId)
+  return rds.SETEX(rdskey.MakeKey(rdskey.VIDEO_UPLOAD_TASK, taskId), rdskey.KEY_EXPIRE_DAY * 3, userId)
 }
 
 // 通过任务id 获取 用户id
