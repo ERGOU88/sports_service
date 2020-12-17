@@ -3,6 +3,7 @@ package job
 import (
   "errors"
   "fmt"
+  "github.com/garyburd/redigo/redis"
   "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod/v20180717"
   "sports_service/server/dao"
   "sports_service/server/global/app/log"
@@ -199,6 +200,12 @@ func uploadEvent(event *v20180717.EventContent) error {
     return errors.New("jsonfast unmarshal event sourceContext err")
   }
 
+  if source.UserId == "" || source.TaskId == 0 {
+    log.Log.Errorf("job_trace: invalid source info, source:%+v", source)
+    session.Rollback()
+    return errors.New("invalid source info")
+  }
+
   // 修改封面 没有视频时长
   if int(*event.FileUploadEvent.MetaData.VideoDuration) == 0 {
     log.Log.Errorf("job_trace: invalid video duration, duration:%v", *event.FileUploadEvent.MetaData.VideoDuration)
@@ -215,7 +222,7 @@ func uploadEvent(event *v20180717.EventContent) error {
 
   // 通过任务id 获取 用户id
   userId, err := vmodel.GetUploadUserIdByTaskId(source.TaskId)
-  if err != nil {
+  if err != nil && err != redis.ErrNil {
     log.Log.Errorf("job_trace: invalid taskId, taskId:%d", source.TaskId)
     session.Rollback()
     return errors.New("invalid taskId")
