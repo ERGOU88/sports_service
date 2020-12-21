@@ -7,6 +7,7 @@ import (
 	"time"
 	"github.com/gin-gonic/gin"
 	"sports_service/server/log/smartLog"
+	"strings"
 )
 
 var (
@@ -43,7 +44,7 @@ func EngineLog(log log.ILogger, showColor bool) gin.HandlerFunc {
 		methodColor := colorForMethod(method)
 		var args string
 
-		if c.Request.Header.Get("Content-Type") == "application/json" {
+		if strings.Contains(c.Request.Header.Get("Content-Type"), "application/json") {
 			b, _ := ioutil.ReadAll(c.Request.Body)
 			args = string(b)
 		} else {
