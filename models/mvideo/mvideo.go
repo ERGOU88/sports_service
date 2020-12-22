@@ -428,7 +428,7 @@ func (m *VideoModel) GetBrowseRecord(userId string, composeType, offset, size in
 const (
   QUERY_USER_BROWSE_VIDEOS = "SELECT ubr.`update_at` as op_time, v.* FROM user_browse_record AS ubr " +
     "LEFT JOIN videos AS v ON ubr.compose_id=v.video_id AND ubr.compose_type=0 " +
-    "WHERE ubr.user_id=? AND v.status=1 ORDER BY ubr.update_at, ubr.id DESC LIMIT ?, ?"
+    "WHERE ubr.user_id=? AND v.status=1 ORDER BY ubr.update_at DESC, ubr.id DESC LIMIT ?, ?"
 )
 // 获取用户浏览过的视频
 func (m *VideoModel) GetUserBrowseVideos(userId string, offset, size int) []*VideosInfoResp {
