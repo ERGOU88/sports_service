@@ -515,7 +515,7 @@ func (svc *VideoModule) GetStatisticTab(videoId int64) string {
       if chinese == "0" {
         statisticsTab = ""
       } else {
-        statisticsTab = fmt.Sprintf(util.TransferChinese(num), "点赞")
+        statisticsTab = fmt.Sprintf("%s点赞", chinese)
       }
 
     case 1:
@@ -525,7 +525,7 @@ func (svc *VideoModule) GetStatisticTab(videoId int64) string {
       if chinese == "0" {
         statisticsTab = ""
       } else {
-        statisticsTab = fmt.Sprintf(util.TransferChinese(num), "收藏")
+        statisticsTab = fmt.Sprintf("%s收藏", chinese)
       }
 
     case 2:
@@ -535,7 +535,7 @@ func (svc *VideoModule) GetStatisticTab(videoId int64) string {
       if chinese == "0" {
         statisticsTab = ""
       } else {
-        statisticsTab = fmt.Sprintf(util.TransferChinese(num), "弹幕")
+        statisticsTab = fmt.Sprintf("%s弹幕", chinese)
       }
 
     case 3:
@@ -545,7 +545,7 @@ func (svc *VideoModule) GetStatisticTab(videoId int64) string {
       if chinese == "0" {
         statisticsTab = ""
       } else {
-        statisticsTab = fmt.Sprintf(chinese, "评论")
+        statisticsTab = fmt.Sprintf("%s评论", chinese)
       }
     }
 
