@@ -193,6 +193,11 @@ func uploadEvent(event *v20180717.EventContent) error {
   }
 
   client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
+  if event.FileUploadEvent.MediaBasicInfo.SourceInfo == nil {
+    log.Log.Error("job_trace: get source info fail")
+    return errors.New("get source info fail")
+  }
+
   source := new(cloud.SourceContext)
   if err := util.JsonFast.Unmarshal([]byte(*event.FileUploadEvent.MediaBasicInfo.SourceInfo.SourceContext), source); err != nil {
     log.Log.Errorf("job_trace: jsonfast unmarshal event sourceContext err:%s", err)
