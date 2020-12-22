@@ -1,29 +1,29 @@
 package cvideo
 
 import (
-	"errors"
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mbanner"
-	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mlabel"
-	"sports_service/server/models/mlike"
+  "errors"
+  "fmt"
+  "github.com/gin-gonic/gin"
+  "github.com/go-xorm/xorm"
+  "sports_service/server/dao"
+  "sports_service/server/global/app/errdef"
+  "sports_service/server/global/app/log"
+  "sports_service/server/global/consts"
+  "sports_service/server/models"
+  "sports_service/server/models/mattention"
+  "sports_service/server/models/mbanner"
+  "sports_service/server/models/mcollect"
+  "sports_service/server/models/mlabel"
+  "sports_service/server/models/mlike"
   "sports_service/server/models/mnotify"
   "sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	"sports_service/server/tools/tencentCloud/vod"
-	"sports_service/server/util"
-	"strconv"
-	"strings"
-	"time"
-	cloud "sports_service/server/tools/tencentCloud"
+  "sports_service/server/models/mvideo"
+  cloud "sports_service/server/tools/tencentCloud"
+  "sports_service/server/tools/tencentCloud/vod"
+  "sports_service/server/util"
+  "strconv"
+  "strings"
+  "time"
 )
 
 type VideoModule struct {
@@ -482,9 +482,76 @@ func (svc *VideoModule) GetRecommendVideos(userId string, page, size int) []*mvi
 			video.IsCollect = collectInfo.Status
 		}
 
+		// 获取统计标签
+		video.StatisticsTab = svc.GetStatisticTab(video.VideoId)
 	}
 
 	return list
+}
+
+// 获取统计标签
+func (svc *VideoModule) GetStatisticTab(videoId int64) string {
+  var statisticsTab string
+  // 获取视频相关统计数据
+  // 1个点赞:2分 1个收藏:5分 1个弹幕:10分  1个评论:10分  四项中，哪个分数最高，显示哪个
+  info := svc.video.GetVideoStatistic(fmt.Sprint(videoId))
+  if info == nil {
+    return ""
+  }
+  mp := util.NewIntMap(4)
+  // key 统计相关分数  val 统计类型 0 点赞 1 收藏 2 弹幕 3 评论
+  mp.Insert(info.FabulousNum * 2, 0)
+  mp.Insert(info.CollectNum * 5, 1)
+  mp.Insert(info.BarrageNum * 10, 2)
+  mp.Insert(info.CommentNum * 10, 3)
+  key, val, b := mp.GetByOrderIndex(mp.Size() - 1)
+  if b {
+    // 0 点赞 1 收藏 2 弹幕 3 评论
+    switch val {
+    case 0:
+      // 总数 = 总分/2
+      num := key/2
+      chinese := util.TransferChinese(num)
+      if chinese == "0" {
+        statisticsTab = ""
+      } else {
+        statisticsTab = fmt.Sprintf(util.TransferChinese(num), "点赞")
+      }
+
+    case 1:
+      // 总数 = 总分/5
+      num := key/5
+      chinese := util.TransferChinese(num)
+      if chinese == "0" {
+        statisticsTab = ""
+      } else {
+        statisticsTab = fmt.Sprintf(util.TransferChinese(num), "收藏")
+      }
+
+    case 2:
+      // 总数 = 总分/10
+      num := key/10
+      chinese := util.TransferChinese(num)
+      if chinese == "0" {
+        statisticsTab = ""
+      } else {
+        statisticsTab = fmt.Sprintf(util.TransferChinese(num), "弹幕")
+      }
+
+    case 3:
+      // 总数 = 总分/10
+      num := key/10
+      chinese := util.TransferChinese(num)
+      if chinese == "0" {
+        statisticsTab = ""
+      } else {
+        statisticsTab = fmt.Sprintf(chinese, "评论")
+      }
+    }
+
+  }
+
+  return statisticsTab
 }
 
 // 获取app首页推荐的banner 默认取10条
@@ -539,6 +606,8 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 		video.Avatar = userInfo.Avatar
 		video.Nickname = userInfo.NickName
     video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+    // 获取统计标签
+    video.StatisticsTab = svc.GetStatisticTab(video.VideoId)
 
 		if userId == "" {
 			log.Log.Error("video_trace: user no login")

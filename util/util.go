@@ -140,5 +140,47 @@ func TrimHtml(src string) string {
   return strings.TrimSpace(src)
 }
 
+// 转化为中文展示 小于100不展示
+func TransferChinese(num int) string{
+  count := num/100
+  if count <= 0 {
+    return "0"
+  }
 
+  chineseMap:= []string{"百", "千", "万", "十万", "百万", "千万", "亿", "十亿", "百亿", "千亿"}
+  chinese := fmt.Sprintf("%d%s", count/int(Pow(float64(10), len(fmt.Sprint(count))-1)), chineseMap[len(fmt.Sprint(count))-1])
+
+  return chinese
+}
+
+func Pow(x float64, n int) float64 {
+  if x == 0 {
+    return 0
+  }
+  result := calPow(x, n)
+  if n < 0 {
+    result = 1 / result
+  }
+  return result
+}
+
+func calPow(x float64, n int) float64 {
+  if n == 0 {
+    return 1
+  }
+  if n == 1 {
+    return x
+  }
+
+  // 向右移动一位
+  result := calPow(x, n>>1)
+  result *= result
+
+  // 如果n是奇数
+  if n&1 == 1 {
+    result *= x
+  }
+
+  return result
+}
 

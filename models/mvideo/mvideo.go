@@ -102,6 +102,7 @@ type RecommendVideoInfo struct {
 	Status        int32                 `json:"status"  example:"1"`                   // 审核状态
 	CreateAt      int                   `json:"create_at" example:"1600000000"`        // 视频创建时间
 	FabulousNum   int                   `json:"fabulous_num" example:"10"`             // 点赞数
+  StatisticsTab string                `json:"statistics_tab"`                        // 统计标签 1个点赞  2分 1个收藏  5分 1个弹幕  10分  1个评论  10分  四项中，哪个分数最高，显示哪个
 	BrowseNum     int                   `json:"browse_num" example:"10"`              // 浏览数（播放数）
 	UserId        string                `json:"user_id" example:"发布视频的用户id"`      // 发布视频的用户id
 	Avatar        string                `json:"avatar" example:"头像"`                 // 头像
@@ -139,6 +140,7 @@ type VideoDetailInfo struct {
   FansNum       int64                 `json:"fans_num" example:"100"`               // 粉丝数
   Labels        []*models.VideoLabels `json:"labels"`                               // 视频标签
   PlayInfo      []*PlayInfo           `json:"play_info"`                            // 视频转码后数据
+  StatisticsTab string                `json:"statistics_tab"`                       // 统计标签
 }
 
 // 记录视频播放时长 请求参数
