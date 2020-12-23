@@ -184,3 +184,23 @@ func calPow(x float64, n int) float64 {
   return result
 }
 
+// 检查map里面是否存在某个key，返回bool
+func MapExist(m map[string]interface{}, key string) bool {
+  if _, ok := m[key]; ok {
+    return true
+  }
+
+  return false
+}
+
+// 解析json字符串成 map
+func JsonStringToMap(jsonStr string) (m map[string]interface{}, err error) {
+  mp := map[string]interface{}{}
+  if err := JsonFast.Unmarshal([]byte(jsonStr), &mp); err != nil {
+    return nil, err
+  }
+
+  return mp, nil
+}
+
+

@@ -192,6 +192,18 @@ func uploadEvent(event *v20180717.EventContent) error {
     return err
   }
 
+  bts, _ := util.JsonFast.Marshal(event.FileUploadEvent)
+  mp, err := util.JsonStringToMap(string(bts))
+  if err != nil {
+    log.Log.Errorf("job_trace: jsonStringToMap err:%s", err)
+    return err
+  }
+
+  if b := util.MapExist(mp, "MediaBasicInfo"); !b {
+    log.Log.Error("job_trace: MediaBasicInfo Not Exists")
+    return errors.New("MediaBasicInfo Not Exists")
+  }
+
   client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
   if event.FileUploadEvent.MediaBasicInfo.SourceInfo == nil {
     log.Log.Error("job_trace: get source info fail")
@@ -360,7 +372,7 @@ func uploadEvent(event *v20180717.EventContent) error {
   vmodel.Events.FileId = int64(fileId)
   vmodel.Events.CreateAt = int(now)
   vmodel.Events.EventType = consts.EVENT_UPLOAD_TYPE
-  bts, _ := util.JsonFast.Marshal(event)
+  bts, _ = util.JsonFast.Marshal(event)
   vmodel.Events.Event = string(bts)
   affected, err = vmodel.RecordTencentEvent()
   if err != nil || affected != 1 {
