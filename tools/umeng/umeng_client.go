@@ -314,11 +314,15 @@ func (data *Data) Sign(reqPath string) (api string) {
 func (data *Data) Send(url string) (result Result) {
   fmt.Printf("\n data:%s", string(DataByte))
   req, err := http.NewRequest("POST", url, bytes.NewBuffer(DataByte))
+  if err != nil {
+    return
+  }
+
   req.Header.Set("Content-Type", "application/json")
   client := &http.Client{}
   resp, err := client.Do(req)
   if err != nil {
-    panic(err)
+    return
   }
   defer resp.Body.Close()
   body, _ := ioutil.ReadAll(resp.Body)
