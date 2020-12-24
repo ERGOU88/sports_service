@@ -264,22 +264,20 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 	}
 
 	list := make([]*mcomment.VideoComments, len(comments))
-	type tmpUser struct {
-		NickName   string
-		Avatar     string
-	}
+	//type tmpUser struct {
+	//	NickName   string
+	//	Avatar     string
+	//}
 	// contents 存储 评论id——>评论的内容
 	contents := make(map[int64]string, 0)
 	// userInfo 存储 用户id——>头像、昵称
-	userInfo := make(map[string]*tmpUser, 0)
+	//userInfo := make(map[string]*tmpUser, 0)
 	for index, item := range comments {
 		comment := new(mcomment.VideoComments)
 		comment.Id = item.Id
 		comment.Status = item.Status
 		comment.VideoId = item.VideoId
 		comment.UserId = item.UserId
-		comment.Avatar = item.Avatar
-		comment.UserName = item.UserName
 		comment.CreateAt = item.CreateAt
 		comment.IsTop = item.IsTop
 		comment.Content = item.Content
@@ -295,30 +293,45 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 		  comment.HasMore = 1
     }
 
-		user := new(tmpUser)
-		user.NickName = item.UserName
-		user.Avatar = item.Avatar
-		userInfo[item.UserId] = user
+    //comment.Avatar = item.Avatar
+    //comment.UserName = item.UserName
+		//user := new(tmpUser)
+		//user.NickName = item.UserName
+		//user.Avatar = item.Avatar
+		//userInfo[item.UserId] = user
+		// todo: 用户信息需使用最新数据
+		user := svc.user.FindUserByUserid(comment.UserId)
+		if user != nil {
+      comment.Avatar = item.Avatar
+      comment.UserName = item.UserName
+    }
 
 		contents[item.Id] = item.Content
 
 		// 获取每个评论下的回复列表 (默认取三条)
 		comment.ReplyList = svc.comment.GetVideoReply(videoId, fmt.Sprint(item.Id), 0, 3)
 		for _, reply := range comment.ReplyList {
-			user := new(tmpUser)
-			user.NickName = reply.UserName
-			user.Avatar = reply.Avatar
-			userInfo[reply.UserId] = user
+			//user := new(tmpUser)
+			//user.NickName = reply.UserName
+			//user.Avatar = reply.Avatar
+			//userInfo[reply.UserId] = user
 
 			contents[reply.Id] = reply.Content
 			// 评论点赞数
 			reply.LikeNum = svc.like.GetLikeNumByType(reply.Id, consts.TYPE_COMMENT)
+
 			// 被回复的用户名、用户头像
-			uinfo, ok := userInfo[reply.ReplyCommentUserId]
-			if ok {
-				reply.ReplyCommentAvatar = uinfo.Avatar
-				reply.ReplyCommentUserName = uinfo.NickName
-			}
+			//uinfo, ok := userInfo[reply.ReplyCommentUserId]
+			//if ok {
+			//	reply.ReplyCommentAvatar = uinfo.Avatar
+			//	reply.ReplyCommentUserName = uinfo.NickName
+			//}
+			// todo: 被回复的用户名、用户头像使用最新数据
+			user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
+			if user != nil {
+        reply.ReplyCommentAvatar = user.Avatar
+        reply.ReplyCommentUserName = user.NickName
+      }
 
       // 如果回复的是1级评论 不展示@内容 否则展示   0 不是@消息 1是
       if reply.ParentCommentId != reply.ReplyCommentId || reply.ReplyCommentId != item.Id {
@@ -387,44 +400,56 @@ func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, 
 		return []*mcomment.VideoComments{}
 	}
 
-	type tmpUser struct {
-		NickName   string
-		Avatar     string
-	}
+	//type tmpUser struct {
+	//	NickName   string
+	//	Avatar     string
+	//}
 	// contents 存储 评论id——>评论的内容
 	contents := make(map[int64]string, 0)
 	// userInfo 存储 用户id——>头像、昵称
-	userInfo := make(map[string]*tmpUser, 0)
+	//userInfo := make(map[string]*tmpUser, 0)
 	for _, item := range comments {
 		// 总回复数
 		item.ReplyNum = svc.comment.GetTotalReplyByComment(fmt.Sprint(item.Id))
 
-		user := new(tmpUser)
-		user.NickName = item.UserName
-		user.Avatar = item.Avatar
-		userInfo[item.UserId] = user
+		//user := new(tmpUser)
+		//user.NickName = item.UserName
+		//user.Avatar = item.Avatar
+		//userInfo[item.UserId] = user
+		// todo: 评论用户的头像、昵称需使用最新的数据
+    user := svc.user.FindUserByUserid(item.UserId)
+    if user != nil {
+      item.Avatar = user.Avatar
+      item.UserName = user.NickName
+    }
 
 		contents[item.Id] = item.Content
 
 		// 获取每个评论下的回复列表 (默认取三条)
 		item.ReplyList = svc.comment.GetVideoReply(videoId, fmt.Sprint(item.Id), 0, 3)
 		for _, reply := range item.ReplyList {
-			user := new(tmpUser)
-			user.NickName = reply.UserName
-			user.Avatar = reply.Avatar
-			userInfo[reply.UserId] = user
+			//user := new(tmpUser)
+			//user.NickName = reply.UserName
+			//user.Avatar = reply.Avatar
+			//userInfo[reply.UserId] = user
 
 			contents[reply.Id] = reply.Content
 			// 评论点赞数
 			reply.LikeNum = svc.like.GetLikeNumByType(reply.Id, consts.TYPE_COMMENT)
 			// 被回复的用户名、用户头像
-			uinfo, ok := userInfo[reply.ReplyCommentUserId]
-			if ok {
-				reply.ReplyCommentAvatar = uinfo.Avatar
-				reply.ReplyCommentUserName = uinfo.NickName
-			}
+			//uinfo, ok := userInfo[reply.ReplyCommentUserId]
+			//if ok {
+			//	reply.ReplyCommentAvatar = uinfo.Avatar
+			//	reply.ReplyCommentUserName = uinfo.NickName
+			//}
+      // todo: 被回复的用户名、用户头像使用最新数据
+      user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
+      if user != nil {
+        reply.ReplyCommentAvatar = user.Avatar
+        reply.ReplyCommentUserName = user.NickName
+      }
 
-			// 被回复的内容
+      // 被回复的内容
 			content, ok := contents[reply.ReplyCommentId]
 			if ok {
 				reply.ReplyContent = content
@@ -477,29 +502,35 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 		return errdef.SUCCESS, []*mcomment.ReplyComment{}
 	}
 
-	type tmpUser struct {
-		NickName   string
-		Avatar     string
-	}
+	//type tmpUser struct {
+	//	NickName   string
+	//	Avatar     string
+	//}
 	// contents 存储 评论id——>评论的内容
 	contents := make(map[int64]string, 0)
 	// userInfo 存储 用户id——>头像、昵称
-	userInfo := make(map[string]*tmpUser, 0)
+	//userInfo := make(map[string]*tmpUser, 0)
 	for _, reply := range replyList {
-		user := new(tmpUser)
-		user.NickName = reply.UserName
-		user.Avatar = reply.Avatar
-		userInfo[reply.UserId] = user
+		//user := new(tmpUser)
+		//user.NickName = reply.UserName
+		//user.Avatar = reply.Avatar
+		//userInfo[reply.UserId] = user
 
 		contents[reply.Id] = reply.Content
 		// 评论点赞数
 		reply.LikeNum = svc.like.GetLikeNumByType(reply.Id, consts.TYPE_COMMENT)
 		// 被回复的用户名、用户头像
-		uinfo, ok := userInfo[reply.ReplyCommentUserId]
-		if ok {
-			reply.ReplyCommentAvatar = uinfo.Avatar
-			reply.ReplyCommentUserName = uinfo.NickName
-		}
+		//uinfo, ok := userInfo[reply.ReplyCommentUserId]
+		//if ok {
+		//	reply.ReplyCommentAvatar = uinfo.Avatar
+		//	reply.ReplyCommentUserName = uinfo.NickName
+		//}
+    // todo: 用户信息需使用最新数据
+    user := svc.user.FindUserByUserid(reply.ReplyCommentUserId)
+    if user != nil {
+      reply.ReplyCommentAvatar = user.Avatar
+      reply.ReplyCommentUserName = user.NickName
+    }
 
 		// 如果回复的是1级评论 不展示@内容 否则展示   0 不是@消息 1是
 		if reply.ParentCommentId != reply.ReplyCommentId || fmt.Sprint(reply.ReplyCommentId) != commentId {
