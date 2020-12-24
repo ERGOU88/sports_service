@@ -302,8 +302,8 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 		// todo: 用户信息需使用最新数据
 		user := svc.user.FindUserByUserid(comment.UserId)
 		if user != nil {
-      comment.Avatar = item.Avatar
-      comment.UserName = item.UserName
+      comment.Avatar = user.Avatar
+      comment.UserName = user.NickName
     }
 
 		contents[item.Id] = item.Content
