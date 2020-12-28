@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 8.0.12)
 # Database: fpv2
-# Generation Time: 2020-10-22 01:54:08 +0000
+# Generation Time: 2020-10-26 10:08:14 +0000
 # ************************************************************
 
 
@@ -81,8 +81,8 @@ CREATE TABLE `circle_attention` (
 
 CREATE TABLE `collect_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-  `user_id` varchar(60) NOT NULL COMMENT '用户id',
-  `to_user_id` varchar(60) NOT NULL COMMENT '作品发布者用户id',
+  `user_id` varchar(60) COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户id',
+  `to_user_id` varchar(60) COLLATE utf8mb4_general_ci NOT NULL COMMENT '作品发布者用户id',
   `compose_id` bigint(20) NOT NULL COMMENT '作品id',
   `compose_type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '0 视频 1 帖子',
   `status` tinyint(1) NOT NULL COMMENT '1 收藏 2 取消收藏',
@@ -92,7 +92,7 @@ CREATE TABLE `collect_record` (
   KEY `user_id` (`user_id`),
   KEY `video_id` (`compose_id`),
   KEY `to_user_id` (`to_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='收藏的视频';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='收藏的视频';
 
 
 
@@ -513,8 +513,8 @@ CREATE TABLE `tencent_cloud_events` (
 CREATE TABLE `thumbs_up` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `type_id` bigint(20) NOT NULL COMMENT '作品id （视频id/帖子id/评论id）',
-  `user_id` varchar(60) NOT NULL COMMENT '用户id',
-  `to_user_id` varchar(60) NOT NULL COMMENT '被点赞的用户id',
+  `user_id` varchar(60) COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户id',
+  `to_user_id` varchar(60) COLLATE utf8mb4_general_ci NOT NULL COMMENT '被点赞的用户id',
   `zan_type` tinyint(2) NOT NULL COMMENT '1 视频点赞 2 帖子点赞 3 评论点赞',
   `status` tinyint(1) NOT NULL COMMENT '1赞 2取消点赞',
   `create_at` int(11) NOT NULL COMMENT '创建时间',
@@ -522,7 +522,7 @@ CREATE TABLE `thumbs_up` (
   KEY `user_id` (`user_id`),
   KEY `to_user_id` (`to_user_id`),
   KEY `type_id` (`type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='点赞表（针对帖子/视频/评论）';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='点赞表（针对帖子/视频/评论）';
 
 
 
@@ -531,31 +531,31 @@ CREATE TABLE `thumbs_up` (
 
 CREATE TABLE `user` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
-  `nick_name` varchar(45) NOT NULL DEFAULT '' COMMENT '昵称',
+  `nick_name` varchar(45) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '昵称',
   `mobile_num` bigint(20) NOT NULL COMMENT '手机号码',
-  `password` varchar(128) NOT NULL COMMENT '用户密码',
-  `user_id` varchar(60) NOT NULL COMMENT '用户id',
-  `gender` tinyint(1) NOT NULL DEFAULT '0' COMMENT '性别 0男性 1女性',
-  `born` varchar(128) NOT NULL DEFAULT '' COMMENT '出生日期',
+  `password` varchar(128) COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户密码',
+  `user_id` varchar(60) COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户id',
+  `gender` tinyint(1) NOT NULL DEFAULT '0' COMMENT '性别 0人妖 1男性 2女性',
+  `born` varchar(128) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '出生日期',
   `age` int(3) NOT NULL DEFAULT '0' COMMENT '年龄',
-  `avatar` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '头像',
+  `avatar` varchar(300) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '头像',
   `status` tinyint(1) DEFAULT '0' COMMENT '0 正常 1 封禁',
   `last_login_time` int(11) DEFAULT NULL COMMENT '最后登录时间',
-  `signature` varchar(200) NOT NULL DEFAULT '' COMMENT '签名',
+  `signature` varchar(200) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '签名',
   `device_type` tinyint(2) DEFAULT NULL COMMENT '设备类型 0 android 1 iOS 2 web',
-  `city` varchar(64) NOT NULL DEFAULT '' COMMENT '城市',
+  `city` varchar(64) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '城市',
   `is_anchor` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0不是主播 1为主播',
   `channel_id` int(11) NOT NULL DEFAULT '0' COMMENT '渠道id',
-  `background_img` varchar(255) NOT NULL DEFAULT '' COMMENT '背景图',
-  `title` varchar(255) NOT NULL DEFAULT '' COMMENT '称号/特殊身份',
+  `background_img` varchar(255) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '背景图',
+  `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '称号/特殊身份',
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `user_type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '用户类型 0 手机号 1 微信 2 QQ 3 微博',
   `country` int(3) NOT NULL DEFAULT '0' COMMENT '国家',
-  `reg_ip` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT ' ' COMMENT '注册ip',
+  `reg_ip` varchar(30) COLLATE utf8mb4_general_ci DEFAULT ' ' COMMENT '注册ip',
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='用户表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='用户表';
 
 
 
@@ -564,14 +564,14 @@ CREATE TABLE `user` (
 
 CREATE TABLE `user_attention` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
-  `user_id` varchar(60) NOT NULL COMMENT '被关注的用户id',
-  `attention_uid` varchar(60) NOT NULL COMMENT '关注的用户id',
+  `user_id` varchar(60) COLLATE utf8mb4_general_ci NOT NULL COMMENT '被关注的用户id',
+  `attention_uid` varchar(60) COLLATE utf8mb4_general_ci NOT NULL COMMENT '关注的用户id',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1表示关注 2表示取消关注',
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `attention_uid` (`attention_uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户关注表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户关注表';
 
 
 
@@ -580,14 +580,14 @@ CREATE TABLE `user_attention` (
 
 CREATE TABLE `user_browse_record` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `user_id` varchar(60) NOT NULL COMMENT '用户id',
+  `user_id` varchar(60) COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户id',
   `compose_id` bigint(20) NOT NULL COMMENT '作品id',
   `compose_type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '0 视频 1 帖子',
   `create_at` int(11) NOT NULL COMMENT '创建时间',
   `update_at` int(11) NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户浏览过的作品记录（包含帖子、视频）';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户浏览过的作品记录（包含帖子、视频）';
 
 
 
@@ -613,16 +613,16 @@ CREATE TABLE `video_barrage` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `video_id` bigint(20) unsigned NOT NULL COMMENT '视频id',
   `video_cur_duration` int(8) NOT NULL COMMENT '视频当前时长节点（单位：秒）',
-  `content` varchar(512) NOT NULL DEFAULT '' COMMENT '弹幕内容',
-  `user_id` varchar(60) NOT NULL COMMENT '用户id',
-  `color` varchar(100) NOT NULL DEFAULT '' COMMENT '弹幕字体颜色',
-  `font` varchar(100) NOT NULL DEFAULT '' COMMENT '弹幕字体',
+  `content` varchar(512) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '弹幕内容',
+  `user_id` varchar(60) COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户id',
+  `color` varchar(100) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '弹幕字体颜色',
+  `font` varchar(100) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '弹幕字体',
   `barrage_type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '预留字段',
   `location` tinyint(2) NOT NULL DEFAULT '0' COMMENT '弹幕位置',
   `send_time` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '弹幕发送时间',
   PRIMARY KEY (`id`),
   KEY `video_id` (`video_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='视频弹幕';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='视频弹幕';
 
 
 
@@ -631,16 +631,16 @@ CREATE TABLE `video_barrage` (
 
 CREATE TABLE `video_comment` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '评论id',
-  `user_id` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '评论人userId',
-  `user_name` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '评论人名称',
-  `avatar` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '头像',
+  `user_id` varchar(60) COLLATE utf8mb4_general_ci NOT NULL COMMENT '评论人userId',
+  `user_name` varchar(45) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '评论人名称',
+  `avatar` varchar(100) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '头像',
   `video_id` bigint(20) NOT NULL COMMENT '视频id',
   `parent_comment_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '父评论id',
-  `parent_comment_user_id` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '父评论的用户id',
+  `parent_comment_user_id` varchar(60) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '父评论的用户id',
   `reply_comment_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '被回复的评论id',
-  `reply_comment_user_id` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '被回复的评论用户id',
+  `reply_comment_user_id` varchar(60) COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '被回复的评论用户id',
   `comment_level` tinyint(4) NOT NULL DEFAULT '1' COMMENT '评论等级[ 1 一级评论 默认 ，2 二级评论]',
-  `content` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '评论的内容',
+  `content` varchar(1000) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '评论的内容',
   `status` tinyint(2) NOT NULL DEFAULT '1' COMMENT '状态 (1 有效，0 逻辑删除)',
   `is_top` tinyint(2) NOT NULL DEFAULT '0' COMMENT '置顶状态[ 1 置顶，0 不置顶 默认 ]',
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
@@ -649,7 +649,7 @@ CREATE TABLE `video_comment` (
   KEY `idx_user_id` (`user_id`) USING BTREE,
   KEY `idx_create_time` (`create_at`),
   KEY `idx_parent_comment_id` (`parent_comment_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='视频评论表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='视频评论表';
 
 
 
@@ -738,19 +738,19 @@ CREATE TABLE `video_statistic` (
 
 CREATE TABLE `videos` (
   `video_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '视频id',
-  `title` mediumtext COMMENT '视频标题',
-  `describe` mediumtext COMMENT '视频描述',
-  `cover` varchar(521) NOT NULL DEFAULT '' COMMENT '视频封面',
-  `video_addr` varchar(521) NOT NULL DEFAULT '' COMMENT '视频地址',
-  `user_id` varchar(60) NOT NULL COMMENT '用户id',
+  `title` mediumtext COLLATE utf8mb4_general_ci COMMENT '视频标题',
+  `describe` mediumtext COLLATE utf8mb4_general_ci COMMENT '视频描述',
+  `cover` varchar(521) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '视频封面',
+  `video_addr` varchar(521) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '视频地址',
+  `user_id` varchar(60) COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户id',
   `user_type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '添加用户类型（0：管理员[sys_user]，1：用户[user]）',
   `sortorder` int(11) unsigned NOT NULL DEFAULT '1' COMMENT '排序',
   `status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '审核状态（0：审核中，1：审核通过 2：审核不通过 3：逻辑删除）',
   `is_recommend` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '推荐（0：不推荐；1：推荐）',
   `is_top` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '置顶（0：不置顶；1：置顶；）',
   `video_duration` int(8) NOT NULL DEFAULT '0' COMMENT '视频时长（单位：秒）',
-  `rec_content` mediumtext COMMENT '推荐理由',
-  `top_content` mediumtext COMMENT '置顶理由',
+  `rec_content` mediumtext COLLATE utf8mb4_general_ci COMMENT '推荐理由',
+  `top_content` mediumtext COLLATE utf8mb4_general_ci COMMENT '置顶理由',
   `video_width` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '视频宽',
   `video_height` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '视频高',
   `create_at` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
@@ -759,7 +759,7 @@ CREATE TABLE `videos` (
   `size` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '视频大小（字节数）',
   PRIMARY KEY (`video_id`),
   KEY `user_id` (`user_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='视频表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='视频表';
 
 
 
