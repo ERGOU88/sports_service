@@ -4,6 +4,8 @@ import (
   "flag"
   "fmt"
   "github.com/gin-gonic/gin"
+  "os"
+  "os/signal"
   "sports_service/server/app/config"
   "sports_service/server/app/routers"
   "sports_service/server/dao"
@@ -15,6 +17,7 @@ import (
   "sports_service/server/tools/nsq"
   "sports_service/server/util"
   "sports_service/server/nsqlx"
+  "syscall"
 )
 
 var (
@@ -96,6 +99,22 @@ func setupNsqConsumer() {
   go nsqlx.InitNsqConsumer()
 }
 
+// register signals handler
+func setupSignal() {
+  log.Log.Info("优雅关闭web服务")
+  sigChan := make(chan os.Signal, 1)
+  signal.Notify(sigChan, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT, syscall.SIGSTOP)
+  go func() {
+    select {
+    case <-sigChan:
+      // 停止消费
+      nsq.Stop()
+      // 停止生产
+      nsq.NsqProducer.Stop()
+      os.Exit(-1)
+    }
+  }()
+}
 
 func init() {
 	// 配置
@@ -121,6 +140,8 @@ func init() {
 	setupNsqProduct()
   // 初始化nsq消费者
   setupNsqConsumer()
+  // register signals handler
+  setupSignal()
 }
 
 // @title 电竞社区平台（应用服）
