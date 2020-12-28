@@ -99,6 +99,11 @@ func setupNsqConsumer() {
   go nsqlx.InitNsqConsumer()
 }
 
+// SIGHUP 终端控制进程结束(终端连接断开), 十进制：1
+// SIGQUIT 用户发送QUIT字符(Ctrl+/)触发, 十进制值：3
+// SIGTERM 结束程序(可以被捕获、阻塞或忽略), 十进制值：15
+// SIGINT 用户发送INTR字符(Ctrl+C)触发, 十进制值：2
+// SIGSTOP 停止进程(不能被捕获、阻塞或忽略), 十进制值：17,19,23
 // register signals handler
 func setupSignal() {
   log.Log.Info("优雅关闭web服务")
