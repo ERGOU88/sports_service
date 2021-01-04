@@ -546,13 +546,13 @@ func (m *VideoModel) GetVideoList(offset, size int) []*VideoDetailInfo {
 
 const (
   QUERY_RECOMMEND_VIDEO_LIST = "SELECT v.*, s.fabulous_num,s.browse_num FROM `videos` as v " +
-    "LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status = 1 GROUP BY v.video_id " +
+    "LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status = 1 AND v.video_id < ? GROUP BY v.video_id " +
     "ORDER BY v.is_top DESC, v.is_recommend DESC, v.sortorder DESC, v.video_id DESC LIMIT ?, ?"
 )
 // 获取推荐的视频列表
-func (m *VideoModel) GetRecommendVideoList(offset, size int) []*RecommendVideoInfo {
+func (m *VideoModel) GetRecommendVideoList(index string, offset, size int) []*RecommendVideoInfo {
   var list []*RecommendVideoInfo
-  if err := m.Engine.SQL(QUERY_RECOMMEND_VIDEO_LIST, offset, size).Find(&list); err != nil {
+  if err := m.Engine.SQL(QUERY_RECOMMEND_VIDEO_LIST, index, offset, size).Find(&list); err != nil {
     log.Log.Errorf("video_trace: get recommend videos err:%s", err)
     return nil
   }

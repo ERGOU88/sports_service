@@ -443,9 +443,9 @@ func (svc *VideoModule) DeletePublishVideo(userId, videoId string) int {
 }
 
 // 获取推荐的视频列表
-func (svc *VideoModule) GetRecommendVideos(userId string, page, size int) []*mvideo.RecommendVideoInfo {
+func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int) []*mvideo.RecommendVideoInfo {
 	offset := (page - 1) * size
-	list := svc.video.GetRecommendVideoList(offset, size)
+	list := svc.video.GetRecommendVideoList(index, offset, size)
 	if len(list) == 0 {
 		return []*mvideo.RecommendVideoInfo{}
 	}
