@@ -787,7 +787,8 @@ func (m *VideoModel) GetRecommendVideos(offset, limit int32) []*VideoDetailInfo 
 
 const (
   LINK_KEY  = "DbJatBpRxTSlGUavY7Iv"
-  EXPIRE_TM = 3600 * 3
+  // todo: 测试改为 3分钟
+  EXPIRE_TM = 60 * 3
 )
 // 视频防盗链(有效时长3个小时)
 func (m *VideoModel) AntiStealingLink(videoUrl string) string {
