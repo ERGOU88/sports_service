@@ -271,7 +271,10 @@ func RecommendVideos(c *gin.Context) {
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	//userId, _ := c.Get(consts.USER_ID)
 	// 视频id
-	index := c.DefaultQuery("id", fmt.Sprint(1e6))
+	index := c.Query("id")
+	if index == "-1" {
+	  index = fmt.Sprint(1e6)
+  }
 
 	userId := c.Query("user_id")
 	svc := cvideo.New(c)
