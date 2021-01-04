@@ -335,8 +335,6 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			// 获取评论信息
 			comment := svc.comment.GetVideoCommentById(fmt.Sprint(receiveAt.CommentId))
 			if comment != nil {
-			  // 评论id
-			  info.CommentId = receiveAt.CommentId
         // 被@的用户信息
         if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
           // 执行@的用户信息
@@ -374,6 +372,10 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 
 				// 默认1级评论
 				info.CommentType = 1
+        // 评论id（1级评论id）
+        info.CommentId = receiveAt.CommentId
+        // 进行回复使用的id
+        info.ReplyCommentId = receiveAt.CommentId
         info.Content = comment.Content
 				// 如果父评论id为0 则表示 是1级评论 不为0 则表示是回复
 				if comment.ParentCommentId != 0 {
@@ -387,13 +389,20 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
             // 被回复的不是1级评论 则@消息 为1
             if beReply.CommentLevel != 1 {
               info.IsAt = 1
+            } else {
+              // 1级评论id
+              info.CommentId = beReply.Id
             }
 					}
 
-					// 获取最上级的评论内容
-					parent := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ParentCommentId))
-					if parent != nil {
-					  info.ParentComment = parent.Content
+					if comment.ParentCommentId != 0 {
+            // 获取最上级的评论内容
+            parent := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ParentCommentId))
+            if parent != nil {
+              info.ParentComment = parent.Content
+              // 1级评论id
+              info.CommentId = parent.Id
+            }
           }
 				}
 

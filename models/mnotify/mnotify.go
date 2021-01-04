@@ -54,7 +54,9 @@ type ReceiveCommentAtInfo struct {
 	IsAt          int                   `json:"is_at"`                                 // 1为回复的回复 0 为1级评论/1级评论的回复
 	ParentComment string                `json:"parent_comment"`                        // 父级评论（1级评论）
   IsLike        int                   `json:"is_like" example:"0"`                   // 是否点赞
-  CommentId     int64                 `json:"comment_id"`                            // 评论id
+  CommentId     int64                 `json:"comment_id"`                            // 评论id（1级评论的id）
+
+  ReplyCommentId int64                `json:"reply_comment_id"`                      // 回复评论所用id
 }
 
 // 首页通知
