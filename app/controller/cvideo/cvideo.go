@@ -443,28 +443,33 @@ func (svc *VideoModule) DeletePublishVideo(userId, videoId string) int {
 }
 
 // 获取推荐的视频列表
-func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int) []*mvideo.RecommendVideoInfo {
+func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int) (int64, []*mvideo.RecommendVideoInfo) {
 	offset := (page - 1) * size
 	list := svc.video.GetRecommendVideoList(index, offset, size)
 	if len(list) == 0 {
-		return []*mvideo.RecommendVideoInfo{}
+		return -1, []*mvideo.RecommendVideoInfo{}
 	}
 
+	// 最小视频id
+	var minId int64
 	// 重新组装数据
 	for _, video := range list {
-		// 查询用户信息
-		userInfo := svc.user.FindUserByUserid(video.UserId)
-		if userInfo == nil {
-			log.Log.Errorf("video_trace: user not found, uid:%s", video.UserId)
-			continue
-		}
+	  if video.VideoId < minId || minId == 0 {
+	    minId = video.VideoId
+    }
 
     video.Describe = util.TrimHtml(video.Describe)
     video.Title = util.TrimHtml(video.Title)
+    video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+    // 查询用户信息
+    userInfo := svc.user.FindUserByUserid(video.UserId)
+    if userInfo == nil {
+      log.Log.Errorf("video_trace: user not found, uid:%s", video.UserId)
+      continue
+    }
 
 		video.Avatar = userInfo.Avatar
 		video.Nickname = userInfo.NickName
-		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 
 		// 用户未登录
 		if userId == "" {
@@ -486,7 +491,7 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 		video.StatisticsTab = svc.GetStatisticTab(video.VideoId)
 	}
 
-	return list
+	return minId, list
 }
 
 // 获取统计标签

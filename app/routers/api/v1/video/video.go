@@ -275,7 +275,8 @@ func RecommendVideos(c *gin.Context) {
 
 	userId := c.Query("user_id")
 	svc := cvideo.New(c)
-	list := svc.GetRecommendVideos(userId, index, page, size)
+	minId, list := svc.GetRecommendVideos(userId, index, page, size)
+	reply.Data["id"] = minId
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
