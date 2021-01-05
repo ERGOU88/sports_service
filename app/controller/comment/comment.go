@@ -241,11 +241,11 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 }
 
 // 获取视频评论
-func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, page, size int) []*mcomment.VideoComments {
-	// 热门排序（按点赞数）
+func (svc *CommentModule) GetVideoComments(userId, videoId, sortType, commentId string, page, size int) []*mcomment.VideoComments {
+  // 热门排序（按点赞数）
 	if sortType == consts.SORT_HOT {
 		log.Log.Debugf("comment_trace: get video comments by hot")
-		return svc.GetVideoCommentsByLiked(userId, videoId, page, size)
+		return svc.GetVideoCommentsByLiked(userId, videoId, commentId, page, size)
 	}
 
 	video := svc.video.FindVideoById(videoId)
@@ -384,7 +384,7 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 }
 
 // 根据评论点赞数排序 获取视频评论列表
-func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, size int) []*mcomment.VideoComments {
+func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId, commentId string, page, size int) []*mcomment.VideoComments {
 	video := svc.video.FindVideoById(videoId)
 	// 视频不存在 或 视频未过审
 	if video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
@@ -559,6 +559,66 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 	}
 
 	return errdef.SUCCESS, replyList
+}
+
+// 如果从消息页 点击某条@数据跳转到视频详情时 则 需要组装@消息的详情
+func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.VideoComments {
+  var first *mcomment.VideoComments
+  // 如果从消息页 点击某条@数据跳转到视频详情时 则 需要组装点击的@消息的详情
+  if commentId != "" {
+    comment := svc.comment.GetVideoCommentById(commentId)
+    if comment != nil {
+      // todo:
+      first := &mcomment.VideoComments{
+        Id: comment.Id,
+        LikeNum:  svc.like.GetLikeNumByType(comment.Id, consts.TYPE_COMMENT),
+        IsTop: comment.IsTop,
+        CommentLevel: comment.CommentLevel,
+        Content: comment.Content,
+        CreateAt: comment.CreateAt,
+        Status: comment.Status,
+        VideoId: comment.VideoId,
+        ReplyNum:  svc.comment.GetTotalReplyByComment(fmt.Sprint(comment.Id)),
+      }
+
+      user := svc.user.FindUserByUserid(comment.UserId)
+      if user != nil {
+        first.Avatar = user.Avatar
+        first.UserName = user.NickName
+      }
+
+      // contents 存储 评论id——>评论的内容
+      content := make(map[int64]string, 0)
+      content[comment.Id] = comment.Content
+      first.ReplyList = svc.comment.GetVideoReply(fmt.Sprint(comment.VideoId), fmt.Sprint(comment.Id), 0, 3)
+      for _, reply := range first.ReplyList {
+        content[reply.Id] = reply.Content
+        // 评论点赞数
+        reply.LikeNum = svc.like.GetLikeNumByType(reply.Id, consts.TYPE_COMMENT)
+        // todo: 被回复的用户名、用户头像使用最新数据
+        user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
+        if user != nil {
+          reply.ReplyCommentAvatar = user.Avatar
+          reply.ReplyCommentUserName = user.NickName
+        }
+
+        // 被回复的内容
+        content, ok := content[reply.ReplyCommentId]
+        if ok {
+          reply.ReplyContent = content
+        }
+
+        if userId != "" {
+          // 是否关注
+          if attention := svc.attention.GetAttentionInfo(userId, reply.UserId); attention != nil {
+            reply.IsAttention = attention.Status
+          }
+        }
+      }
+    }
+  }
+
+  return first
 }
 
 // 添加评论举报

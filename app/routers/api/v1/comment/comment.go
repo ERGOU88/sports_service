@@ -113,10 +113,13 @@ func CommentList(c *gin.Context) {
 	videoId := c.Query("video_id")
 	sortType := c.DefaultQuery("sort_type", "0")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	commentId := c.Query("comment_id")
 
 	svc := comment.New(c)
-	list := svc.GetVideoComments(userId, videoId, sortType, page, size)
+	list := svc.GetVideoComments(userId, videoId, sortType, commentId, page, size)
+	first := svc.GetFirstComment(userId, commentId)
 
+	reply.Data["first"] = first
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
