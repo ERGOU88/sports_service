@@ -569,7 +569,7 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Vi
     comment := svc.comment.GetVideoCommentById(commentId)
     if comment != nil {
       // todo:
-      first := &mcomment.VideoComments{
+      first = &mcomment.VideoComments{
         Id: comment.Id,
         LikeNum:  svc.like.GetLikeNumByType(comment.Id, consts.TYPE_COMMENT),
         IsTop: comment.IsTop,
