@@ -196,17 +196,20 @@ func uploadEvent(event *v20180717.EventContent) error {
   mp, err := util.JsonStringToMap(string(bts))
   if err != nil {
     log.Log.Errorf("job_trace: jsonStringToMap err:%s", err)
+    session.Rollback()
     return err
   }
 
   if b := util.MapExist(mp, "MediaBasicInfo"); !b {
     log.Log.Error("job_trace: MediaBasicInfo Not Exists")
+    session.Rollback()
     return errors.New("MediaBasicInfo Not Exists")
   }
 
   client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
   if event.FileUploadEvent.MediaBasicInfo.SourceInfo == nil {
     log.Log.Error("job_trace: get source info fail")
+    session.Rollback()
     return errors.New("get source info fail")
   }
 
