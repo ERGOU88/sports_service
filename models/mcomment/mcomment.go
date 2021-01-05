@@ -221,7 +221,7 @@ func (m *CommentModel) GetVideoCommentListByLike(videoId string, offset, size in
 	sql := "SELECT vc.*, count(tu.Id) AS like_num FROM video_comment AS vc " +
 		"LEFT JOIN thumbs_up AS tu ON vc.id = tu.type_id AND tu.zan_type=3 AND tu.status=1 WHERE vc.video_id=? " +
 		"AND vc.comment_level = 1 AND vc.status=1 " +
-		"GROUP BY vc.Id ORDER BY like_num DESC LIMIT ?, ?"
+		"GROUP BY vc.Id ORDER BY like_num DESC, vc.id DESC LIMIT ?, ?"
 
 	var list []*VideoComments
 	if err := m.Engine.SQL(sql, videoId, offset, size).Find(&list); err != nil {
