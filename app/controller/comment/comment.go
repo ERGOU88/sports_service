@@ -241,11 +241,11 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 }
 
 // 获取视频评论
-func (svc *CommentModule) GetVideoComments(userId, videoId, sortType, commentId string, page, size int) []*mcomment.VideoComments {
+func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, page, size int) []*mcomment.VideoComments {
   // 热门排序（按点赞数）
 	if sortType == consts.SORT_HOT {
 		log.Log.Debugf("comment_trace: get video comments by hot")
-		return svc.GetVideoCommentsByLiked(userId, videoId, commentId, page, size)
+		return svc.GetVideoCommentsByLiked(userId, videoId, page, size)
 	}
 
 	video := svc.video.FindVideoById(videoId)
@@ -384,7 +384,7 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType, commentId 
 }
 
 // 根据评论点赞数排序 获取视频评论列表
-func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId, commentId string, page, size int) []*mcomment.VideoComments {
+func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, size int) []*mcomment.VideoComments {
 	video := svc.video.FindVideoById(videoId)
 	// 视频不存在 或 视频未过审
 	if video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
