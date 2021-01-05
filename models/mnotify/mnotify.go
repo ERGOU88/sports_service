@@ -108,23 +108,23 @@ func (m *NotifyModel) GetUserNotifySetting(userId string) *models.SystemNoticeSe
 
 // 获取系统通知
 func (m *NotifyModel) GetSystemNotify(userId string, offset, size int) []*models.SystemMessage {
-  sql := "SELECT `system_id`, `receive_id`, `system_topic`, `system_content`, `send_time`, `extra` FROM system_message "
+  sql := "SELECT `system_id`, `cover`, `send_type`, `receive_id`, `system_topic`, `system_content`, `send_time`, `extra` FROM system_message "
   if userId != "" {
-    sql = fmt.Sprintf("%s WHERE receive_id=%s", sql, userId)
+    sql = fmt.Sprintf("%s WHERE receive_id=%s AND send_status=0 OR send_default=1 AND send_status=0", sql, userId)
   } else {
-    sql = fmt.Sprintf("%s WHERE receive_id='' AND send_default=1", sql)
+    sql = fmt.Sprintf("%s WHERE receive_id='' AND send_default=1 AND send_status=0", sql)
   }
 
-  sql += " LIMIT ?, ?"
+  sql = fmt.Sprintf("%s ORDER BY system_id DESC LIMIT %d, %d", sql, offset, size)
 
   var list []*models.SystemMessage
-  if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
+  if err := m.Engine.SQL(sql).Find(&list); err != nil {
     return nil
   }
 
   return list
-
 }
+
 
 // 通过id获取通知详情
 func (m *NotifyModel) GetSystemNotifyById(systemId string) *models.SystemMessage {
@@ -138,7 +138,7 @@ func (m *NotifyModel) GetSystemNotifyById(systemId string) *models.SystemMessage
 }
 
 func (m *NotifyModel) UpdateSystemNotifyStatus(id int64) error {
-  sql := fmt.Sprintf("UPDATE `system_message` SET `status`=1 WHERE system_id <= %d", id)
+  sql := fmt.Sprintf("UPDATE `system_message` SET `status`=1 WHERE system_id <= %d AND send_status=0", id)
   if _, err := m.Engine.Exec(sql); err != nil {
     return err
   }
@@ -148,7 +148,7 @@ func (m *NotifyModel) UpdateSystemNotifyStatus(id int64) error {
 
 // 获取未读系统消息总数
 func (m *NotifyModel) GetUnreadSystemMsgNum(userId string) int64 {
-  count, err := m.Engine.Where("status=0 AND receive_id=?", userId).Count(&models.SystemMessage{})
+  count, err := m.Engine.Where("status=0 AND receive_id=? AND send_status=0", userId).Count(&models.SystemMessage{})
   if err != nil {
     return 0
   }

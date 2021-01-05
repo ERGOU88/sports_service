@@ -149,7 +149,7 @@ type IOSPayload map[string]interface{}
 
 type Alert struct {
   Title    string  `json:"title"`
-  SubTitle string `json:"subtitle"`
+  SubTitle string  `json:"subtitle"`
   Body     string  `json:"body"`
 }
 

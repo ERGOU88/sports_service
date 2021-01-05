@@ -9,10 +9,12 @@ import (
 	"sports_service/server/backend/routers/api/v1/user"
 	"sports_service/server/backend/routers/api/v1/video"
   "sports_service/server/backend/routers/api/v1/admin"
+  "sports_service/server/backend/routers/api/v1/notify"
 	"sports_service/server/global/consts"
 	"sports_service/server/backend/routers/api/v1/configure"
   "sports_service/server/middleware"
   "sports_service/server/global/backend/log"
+
 )
 
 func InitRouters(engine *gin.Engine) {
@@ -36,5 +38,6 @@ func InitRouters(engine *gin.Engine) {
 	user.Router(engine)
 	// 后台管理员模块
 	admin.Router(engine)
-
+  // 站内信模块
+  notify.Router(engine)
 }

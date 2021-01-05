@@ -51,6 +51,17 @@ const (
 	ADMIN_NOT_EXISTS            = 14003
 	ADMIN_PASSWORD_NOT_MATCH    = 14004
 
+  // 15001 - 16000 通知相关错误码
+  NOTIFY_INVALID_SEND_TM      = 15001
+  NOTIFY_INVALID_CONTENT      = 15002
+  NOTIFY_INVALID_USER_IDS     = 15003
+  NOTIFY_USER_NOT_FOUND       = 15004
+  NOTIFY_PUSH_FAIL            = 15005
+  NOTIFY_MSG_NOT_EXISTS       = 15006
+  NOTIFY_CAN_NOT_CANCEL       = 15007
+  NOTIFY_CANCEL_FAIL          = 15008
+  NOTIFY_INVALID_START_TM     = 15009
+
 )
 
 var MsgFlags = map[int]string{
@@ -98,6 +109,16 @@ var MsgFlags = map[int]string{
   ADMIN_HAS_EXISTS:            "管理员已存在",
   ADMIN_NOT_EXISTS:            "管理员不存在",
   ADMIN_PASSWORD_NOT_MATCH:    "帐号/密码不正确",
+
+  NOTIFY_INVALID_SEND_TM:         "无效的发送时间，发送时间必须大于当前时间",
+  NOTIFY_INVALID_CONTENT:         "推送内容含有违规文字",
+  NOTIFY_INVALID_USER_IDS:        "无效的用户id列表",
+  NOTIFY_USER_NOT_FOUND:          "用户未查找到",
+  NOTIFY_PUSH_FAIL:               "系统消息推送失败",
+  NOTIFY_MSG_NOT_EXISTS:          "系统通知不存在",
+  NOTIFY_CAN_NOT_CANCEL:          "该通知无法撤回",
+  NOTIFY_CANCEL_FAIL:             "系统通知撤回失败",
+  NOTIFY_INVALID_START_TM:        "最大可设置当前时间 + 7天",
 }
 
 func GetMsg(code int) string {

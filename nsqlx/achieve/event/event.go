@@ -120,6 +120,9 @@ func handleEvent(event *protocol.Event) error {
   )
 
   log.Log.Errorf("event_trace: event:%+v", event)
+  setting := nmodel.GetUserNotifySetting(event.UserId)
+
+  var pushSet int
   switch event.EventType {
   // 系统类
   case consts.SYSTEM_MSG:
@@ -131,10 +134,12 @@ func handleEvent(event *protocol.Event) error {
   case consts.VIDEO_LIKE_MSG:
     content = fmt.Sprintf("%s 赞了你的作品", info.NickName)
     msgType = int32(consts.MSG_TYPE_VIDEO_LIKE_NOTIFY)
+    pushSet = setting.ThumbUpPushSet
   // 评论/回复 点赞
   case consts.COMMENT_LIKE_MSG:
     content = fmt.Sprintf("%s 赞了你的评论 @%s", info.NickName, info.Content)
     msgType = int32(consts.MSG_TYPE_COMMENT_LIKE_NOTIFY)
+    pushSet = setting.ThumbUpPushSet
   // 收藏视频
   case consts.COLLECT_VIDEO_MSG:
     content = fmt.Sprintf("%s 收藏了你的作品", info.NickName)
@@ -143,27 +148,35 @@ func handleEvent(event *protocol.Event) error {
   case consts.FOCUS_USER_MSG:
     content = fmt.Sprintf("%s 关注了你", info.NickName)
     msgType = int32(consts.MSG_TYPE_FOCUS_NOTIFY)
+    pushSet = setting.AttentionPushSet
   // 关注的用户发布视频
   case consts.FOCUS_USER_PUBLISH_MSG:
     content = fmt.Sprintf("你关注的 %s 发布了新视频", info.NickName)
     msgType = int32(consts.MSG_TYPE_FOCUS_USER_PUBLISH_NOTIFY)
+    pushSet = setting.AttentionPushSet
   // 视频评论
   case consts.VIDEO_COMMENT_MSG:
     content = fmt.Sprintf("%s 评论了你的作品", info.NickName)
     msgType = int32(consts.MSG_TYPE_VIDEO_COMMENT_NOTIFY)
+    pushSet = setting.CommentPushSet
   // 视频回复
   case consts.VIDEO_REPLY_MSG:
     // @ 用户发布的评论
     content = fmt.Sprintf("%s 回复了你的评论 @%s", info.NickName, info.Content)
     msgType = int32(consts.MSG_TYPE_VIDEO_REPLY_NOTIFY)
+    pushSet = setting.CommentPushSet
   default:
     log.Log.Errorf("event_trace: unsupported eventType, eventType:%d", event.EventType)
     return nil
 
   }
 
-  // 推送通知
-  PushNotify(user, "", content, info.Cover, msgType, unReadNum)
+  // 0为接收推送 1为拒绝接收
+  if pushSet == 0 {
+    // 推送通知
+    PushNotify(user, "", content, info.Cover, msgType, unReadNum)
+  }
+
   return nil
 }
 
@@ -174,16 +187,16 @@ func PushNotify(user *models.User, title, content, cover string, msgType int32, 
   title = "X-FLY官方"
   // android推送
   if user.DeviceType == int(consts.ANDROID_PLATFORM) && user.DeviceToken != "" {
-    client := umeng.New(umeng.FPV_ANDROID)
-    if err := client.PushUnicastNotify(msgType, umeng.FPV_ANDROID, user.DeviceToken, title, content, cover, extra); err != nil {
+    client := umeng.New()
+    if err := client.PushUnicastNotify(msgType, umeng.FPV_ANDROID, user.DeviceToken, title, content, cover, extra, nil); err != nil {
       log.Log.Errorf("event_trace: push notify by user err:%s", err)
     }
   }
 
   // iOS推送
   if user.DeviceType == int(consts.IOS_PLATFORM) && user.DeviceToken != "" {
-    client := umeng.New(umeng.FPV_IOS)
-    if err := client.PushUnicastNotify(msgType, umeng.FPV_IOS, user.DeviceToken, title, content, cover, extra); err != nil {
+    client := umeng.New()
+    if err := client.PushUnicastNotify(msgType, umeng.FPV_IOS, user.DeviceToken, title, content, cover, extra, nil); err != nil {
       log.Log.Errorf("event_trace: push notify by user err:%s", err)
     }
   }

@@ -515,6 +515,11 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 		//user.NickName = reply.UserName
 		//user.Avatar = reply.Avatar
 		//userInfo[reply.UserId] = user
+    user := svc.user.FindUserByUserid(reply.UserId)
+    if user != nil {
+      reply.UserName = user.NickName
+      reply.Avatar = user.Avatar
+    }
 
 		contents[reply.Id] = reply.Content
 		// 评论点赞数
@@ -526,7 +531,7 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 		//	reply.ReplyCommentUserName = uinfo.NickName
 		//}
     // todo: 用户信息需使用最新数据
-    user := svc.user.FindUserByUserid(reply.ReplyCommentUserId)
+    user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
     if user != nil {
       reply.ReplyCommentAvatar = user.Avatar
       reply.ReplyCommentUserName = user.NickName
@@ -585,6 +590,7 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Vi
       if user != nil {
         first.Avatar = user.Avatar
         first.UserName = user.NickName
+        first.UserId = user.UserId
       }
 
       // contents 存储 评论id——>评论的内容
@@ -600,6 +606,7 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Vi
         if user != nil {
           reply.ReplyCommentAvatar = user.Avatar
           reply.ReplyCommentUserName = user.NickName
+          reply.ReplyCommentUserId = user.UserId
         }
 
         // 被回复的内容
