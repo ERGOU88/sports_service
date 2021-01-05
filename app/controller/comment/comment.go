@@ -557,7 +557,7 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 			}
 
       // 获取点赞的信息
-      if likeInfo := svc.like.GetLikeInfo(userId, comment.Id, consts.TYPE_COMMENT); likeInfo != nil {
+      if likeInfo := svc.like.GetLikeInfo(userId, reply.Id, consts.TYPE_COMMENT); likeInfo != nil {
         reply.IsLike = likeInfo.Status
       }
 		}
