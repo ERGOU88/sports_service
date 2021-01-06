@@ -26,7 +26,7 @@ func CheckSign() gin.HandlerFunc {
 		secret := c.GetHeader("Secret")
 		timestamp := c.GetHeader("Timestamp")
 		version := c.GetHeader("Version")
-		uri := c.Request.RequestURI
+		uri := c.Request.URL.Path
 		str := fmt.Sprintf("%s&AppId=%s&Timestamp=%s&Version=%s", uri, appId, timestamp, version)
 
 		if !strings.Contains(uri, "/api/v1/client/init") && secret == "" {
