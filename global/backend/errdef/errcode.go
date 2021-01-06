@@ -40,6 +40,9 @@ const (
   CONFIG_INVALID_HOT_SEARCH   = 12010
   CONFIG_HOT_NAME_EXISTS      = 12011
   CONFIG_COS_ACCESS_FAIL      = 12012
+  CONFIG_ADD_PACKAGE_FAIL     = 12013
+  CONFIG_UPDATE_PACKAGE_FAIL  = 12014
+  CONFIG_DEL_PACKAGE_FAIL     = 12015
 
 	// 13001 - 14000 用户相关错误码
 	USER_FORBID_FAIL            = 13001
@@ -101,6 +104,9 @@ var MsgFlags = map[int]string{
   CONFIG_INVALID_HOT_SEARCH:   "热搜词含有违规文字",
   CONFIG_HOT_NAME_EXISTS:      "热搜词已存在",
   CONFIG_COS_ACCESS_FAIL:      "获取cos通行证失败",
+  CONFIG_ADD_PACKAGE_FAIL:     "添加新包失败",
+  CONFIG_UPDATE_PACKAGE_FAIL:  "更新包信息失败",
+  CONFIG_DEL_PACKAGE_FAIL:     "删除包信息失败",
 
   USER_FORBID_FAIL:            "用户封禁失败",
 	USER_UNFORBID_FAIL:          "用户解封失败",

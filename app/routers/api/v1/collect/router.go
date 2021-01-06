@@ -2,6 +2,7 @@ package collect
 
 import (
   "github.com/gin-gonic/gin"
+  "sports_service/server/middleware/sign"
   "sports_service/server/middleware/token"
 )
 
@@ -9,6 +10,7 @@ import (
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
 	collect := api.Group("/collect")
+  collect.Use(sign.CheckSign())
 	{
 		// 收藏视频
 		collect.POST("/video", token.TokenAuth(), CollectVideo)

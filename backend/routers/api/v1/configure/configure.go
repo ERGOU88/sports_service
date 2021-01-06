@@ -172,3 +172,68 @@ func CosTempAccess(c *gin.Context) {
   reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
+// 添加新包
+func AddPackage(c *gin.Context) {
+  reply := errdef.New(c)
+  param := &mconfigure.AddPackageParams{}
+  if err := c.BindJSON(param); err != nil {
+    log.Log.Errorf("configure_trace: invalid param, param:%+v, err:%s", param, err)
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := configure.New(c)
+  syscode := svc.AddNewPackage(param)
+  reply.Response(http.StatusOK, syscode)
+}
+
+// 更新包数据
+func UpdatePackage(c *gin.Context) {
+  reply := errdef.New(c)
+  param := &mconfigure.UpdatePackageParams{}
+  if err := c.BindJSON(param); err != nil {
+    log.Log.Errorf("configure_trace: invalid param, param:%+v, err:%s", param, err)
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := configure.New(c)
+  syscode := svc.UpdatePackageInfo(param)
+  reply.Response(http.StatusOK, syscode)
+}
+
+// 删除更新包
+func DelPackage(c *gin.Context) {
+  reply := errdef.New(c)
+  param := &mconfigure.DelPackageParam{}
+  if err := c.BindJSON(param); err != nil {
+    log.Log.Errorf("configure_trace: invalid param, param:%+v, err:%s", param, err)
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := configure.New(c)
+  syscode := svc.DelPackage(param.Id)
+  reply.Response(http.StatusOK, syscode)
+}
+
+// 包列表
+func PackageList(c *gin.Context) {
+  reply := errdef.New(c)
+  page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+  svc := configure.New(c)
+  list := svc.GetPackageList(page, size)
+  reply.Data["list"] = list
+  reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// 包详情
+func PackageDetail(c *gin.Context) {
+  reply := errdef.New(c)
+  id := c.Query("id")
+
+  svc := configure.New(c)
+  detail := svc.GetPackageDetail(id)
+  reply.Data["detail"] = detail
+  reply.Response(http.StatusOK, errdef.SUCCESS)
+}

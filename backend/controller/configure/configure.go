@@ -8,7 +8,8 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mbanner"
-	"sports_service/server/models/muser"
+  "sports_service/server/models/mconfigure"
+  "sports_service/server/models/muser"
   "sports_service/server/models/mvideo"
   "sports_service/server/tools/tencentCloud"
   "time"
@@ -20,6 +21,7 @@ type ConfigModule struct {
 	banner      *mbanner.BannerModel
 	user        *muser.UserModel
 	video       *mvideo.VideoModel
+	configure   *mconfigure.ConfigModel
 }
 
 func New(c *gin.Context) ConfigModule {
@@ -30,6 +32,7 @@ func New(c *gin.Context) ConfigModule {
 		banner: mbanner.NewBannerMolde(socket),
 		user: muser.NewUserModel(socket),
 		video: mvideo.NewVideoModel(socket),
+		configure: mconfigure.NewConfigModel(socket),
 		engine: socket,
 	}
 }
@@ -172,4 +175,73 @@ func (svc *ConfigModule) SetStatusByHotSearch(params *mvideo.SetStatusParams) in
   }
 
   return errdef.SUCCESS
+}
+
+// 添加新包
+func (svc *ConfigModule) AddNewPackage(param *mconfigure.AddPackageParams) int {
+  now := int(time.Now().Unix())
+  svc.configure.VersionControl.CreateAt = now
+  svc.configure.VersionControl.UpdateAt = now
+  svc.configure.VersionControl.Platform = int(param.Platform)
+  svc.configure.VersionControl.Status = int(param.Status)
+  svc.configure.VersionControl.Size = param.Size
+  svc.configure.VersionControl.IsForce = int(param.IsForce)
+  svc.configure.VersionControl.UpgradeUrl = param.UpgradeUrl
+  svc.configure.VersionControl.Version = param.Version
+  svc.configure.VersionControl.VersionCode = param.VersionCode
+  svc.configure.VersionControl.VersionName = param.VersionName
+  // 添加新包
+  affected, err := svc.configure.AddNewPackage()
+  if affected != 1 || err != nil {
+    return errdef.CONFIG_ADD_PACKAGE_FAIL
+  }
+
+  return errdef.SUCCESS
+}
+
+// 更新包信息
+func (svc *ConfigModule) UpdatePackageInfo(param *mconfigure.UpdatePackageParams) int {
+  now := int(time.Now().Unix())
+  svc.configure.VersionControl.UpdateAt = now
+  svc.configure.VersionControl.Platform = int(param.Platform)
+  svc.configure.VersionControl.Status = int(param.Status)
+  svc.configure.VersionControl.Size = param.Size
+  svc.configure.VersionControl.IsForce = int(param.IsForce)
+  svc.configure.VersionControl.UpgradeUrl = param.UpgradeUrl
+  svc.configure.VersionControl.Version = param.Version
+  svc.configure.VersionControl.VersionCode = param.VersionCode
+  svc.configure.VersionControl.VersionName = param.VersionName
+
+  affected, err := svc.configure.UpdatePackageInfo(param.Id)
+  if affected != 1 || err != nil {
+    return errdef.CONFIG_UPDATE_PACKAGE_FAIL
+  }
+
+  return errdef.SUCCESS
+}
+
+// 删除包
+func (svc *ConfigModule) DelPackage(id int64) int {
+  affected, err := svc.configure.DelPackage(id)
+  if affected != 1 || err != nil {
+    return errdef.CONFIG_DEL_PACKAGE_FAIL
+  }
+
+  return errdef.SUCCESS
+}
+
+// 获取包列表
+func (svc *ConfigModule) GetPackageList(page, size int) []*models.AppVersionControl {
+  offset := (page - 1) * size
+  list := svc.configure.GetPackageInfoList(offset, size)
+  if list == nil {
+    return []*models.AppVersionControl{}
+  }
+
+  return list
+}
+
+// 获取包详情
+func (svc *ConfigModule) GetPackageDetail(id string) *models.AppVersionControl {
+  return svc.configure.GetPackageDetail(id)
 }

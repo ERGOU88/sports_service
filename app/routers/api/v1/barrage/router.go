@@ -2,6 +2,7 @@ package barrage
 
 import (
   "github.com/gin-gonic/gin"
+  "sports_service/server/middleware/sign"
   "sports_service/server/middleware/token"
 )
 
@@ -9,6 +10,7 @@ import (
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
 	barrage := api.Group("/barrage")
+  barrage.Use(sign.CheckSign())
 	{
 		// 发送弹幕
 		barrage.POST("/send", token.TokenAuth(), SendBarrage)

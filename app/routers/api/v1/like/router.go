@@ -2,6 +2,7 @@ package like
 
 import (
   "github.com/gin-gonic/gin"
+  "sports_service/server/middleware/sign"
   "sports_service/server/middleware/token"
 )
 
@@ -9,6 +10,7 @@ import (
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
 	like := api.Group("/like")
+  like.Use(sign.CheckSign())
 	{
 		// 视频点赞
 		like.POST("/video", token.TokenAuth(), GiveLikeForVideo)

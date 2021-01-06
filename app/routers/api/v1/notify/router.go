@@ -2,6 +2,7 @@ package notify
 
 import (
   "github.com/gin-gonic/gin"
+  "sports_service/server/middleware/sign"
   "sports_service/server/middleware/token"
 )
 
@@ -9,6 +10,7 @@ import (
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
 	notify := api.Group("/notify")
+  notify.Use(sign.CheckSign())
 	{
 		// 通知设置
 		notify.POST("/setting", token.TokenAuth(), NotifySetting)

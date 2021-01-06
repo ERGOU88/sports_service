@@ -10,7 +10,8 @@ import (
 	"sports_service/server/models"
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mlike"
+  "sports_service/server/models/mconfigure"
+  "sports_service/server/models/mlike"
 	"sports_service/server/models/mnotify"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
@@ -34,6 +35,7 @@ type UserModule struct {
 	collect     *mcollect.CollectModel
 	video       *mvideo.VideoModel
 	sms         *sms.SmsModel
+	configure   *mconfigure.ConfigModel
 }
 
 func New(c *gin.Context) UserModule {
@@ -49,6 +51,7 @@ func New(c *gin.Context) UserModule {
 		collect: mcollect.NewCollectModel(socket),
 		video: mvideo.NewVideoModel(socket),
 		sms: sms.NewSmsModel(),
+		configure: mconfigure.NewConfigModel(socket),
 		engine: socket,
 	}
 }

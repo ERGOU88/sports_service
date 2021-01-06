@@ -2,6 +2,7 @@ package video
 
 import (
   "github.com/gin-gonic/gin"
+  "sports_service/server/middleware/sign"
   "sports_service/server/middleware/token"
 )
 
@@ -9,6 +10,7 @@ import (
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
 	video := api.Group("/video")
+  video.Use(sign.CheckSign())
 	{
 		// 用户发布视频
 		video.POST("/publish", token.TokenAuth(), VideoPublish)
