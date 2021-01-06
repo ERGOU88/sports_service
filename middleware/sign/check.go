@@ -38,7 +38,7 @@ func CheckSign() gin.HandlerFunc {
 
 
 		log.Log.Errorf("sign_trace: uri:%s, match: %d", uri, strings.Compare(uri, "/api/v1/client/init"))
-		if strings.Compare(uri, "/api/v1/client/init") == - 1 {
+		if !strings.Contains(uri, "/api/v1/client/init")  {
 		  log.Log.Infof("sign_trace: add secret, secret:%s", secret)
 			str = fmt.Sprintf("%s&Secret=%s", str, secret)
 		}
@@ -50,9 +50,9 @@ func CheckSign() gin.HandlerFunc {
 			return
 		}
 
-		if strings.Compare(appId, string(consts.IOS_APP_ID)) == -1 &&
-			strings.Compare(appId, string(consts.AND_APP_ID)) == -1 &&
-			strings.Compare(appId, string(consts.WEB_APP_ID)) == -1 {
+		if strings.Compare(appId, string(consts.IOS_APP_ID)) != 0 &&
+			strings.Compare(appId, string(consts.AND_APP_ID)) != 0 &&
+			strings.Compare(appId, string(consts.WEB_APP_ID)) != 0 {
       log.Log.Errorf("sign_trace: appId not match, appId:%s", appId)
 			reply.Response(http.StatusUnauthorized, errdef.UNAUTHORIZED)
 			c.Abort()
