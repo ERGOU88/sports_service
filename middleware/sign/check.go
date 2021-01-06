@@ -30,6 +30,7 @@ func CheckSign() gin.HandlerFunc {
 		str := fmt.Sprintf("%s&AppId=%s&Timestamp=%s&Version=%s", uri, appId, timestamp, version)
 
 		if !strings.Contains(uri, "/api/v1/client/init") && secret == "" {
+		  log.Log.Errorf("sign_trace: secret not exists, secret:%s", secret)
 			reply.Response(http.StatusUnauthorized, errdef.UNAUTHORIZED)
 			c.Abort()
 			return
@@ -40,6 +41,7 @@ func CheckSign() gin.HandlerFunc {
 		}
 
 		if appId == "" || sign == "" || timestamp == "" || version == "" {
+      log.Log.Errorf("sign_trace: param error,appId:%s, sign:%s, timestamp:%s, version:%s", appId, sign, timestamp, version)
 			reply.Response(http.StatusUnauthorized, errdef.UNAUTHORIZED)
 			c.Abort()
 			return
@@ -48,6 +50,7 @@ func CheckSign() gin.HandlerFunc {
 		if strings.Compare(appId, string(consts.IOS_APP_ID)) == -1 &&
 			strings.Compare(appId, string(consts.AND_APP_ID)) == -1 &&
 			strings.Compare(appId, string(consts.WEB_APP_ID)) == -1 {
+      log.Log.Errorf("sign_trace: appId not match, appId:%s", appId)
 			reply.Response(http.StatusUnauthorized, errdef.UNAUTHORIZED)
 			c.Abort()
 			return
@@ -78,6 +81,7 @@ func verifySign(str, appId, sign string) bool {
 		return true
 	}
 
+  log.Log.Errorf("sign_trace: sign not match, client sign:%s, real sign:%s", sign, md5Str)
 	return false
 }
 
