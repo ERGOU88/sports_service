@@ -37,6 +37,7 @@ func CheckSign() gin.HandlerFunc {
 		}
 
 		if strings.Compare(uri, "/api/v1/client/init") == - 1 {
+		  log.Log.Infof("sign_trace: add secret, secret:%s", secret)
 			str = fmt.Sprintf("%s&Secret=%s", str, secret)
 		}
 
