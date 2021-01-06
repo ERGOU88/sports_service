@@ -29,6 +29,7 @@ type AddPackageParams struct {
   Status          int32      `json:"status"`                               // 0 可用 1 不可用
   Platform        int32      `json:"platform"`                             // 0 android 1 ios
   UpgradeUrl      string     `json:"upgrade_url"  binding:"required"`      // 新包地址
+  Describe        string     `json:"describe"`                             // 版本说明
 }
 
 // 更新包数据请求参数
@@ -42,11 +43,20 @@ type UpdatePackageParams struct {
   Status          int32      `json:"status"`                               // 0 可用 1 不可用
   Platform        int32      `json:"platform"`                             // 0 android 1 ios
   UpgradeUrl      string     `json:"upgrade_url"  binding:"required"`      // 新包地址
+  Describe        string     `json:"describe"`                             // 版本说明
 }
 
 // 删除包请求参数
 type DelPackageParam struct {
   Id              int64      `json:"id" binding:"required"`               // 数据id
+}
+
+type UpgradeInfo struct {
+  Version          string   `json:"version"`
+  VersionCode      int      `json:"version_code"`
+  Size             string   `json:"size"`
+  Describe         string   `json:"describe"`
+  UpgradeURL       string   `json:"upgrade_url"`
 }
 
 // 添加新包
@@ -99,7 +109,7 @@ func (m *ConfigModel) GetPackageDetailByVersion(plt int32, versionCode string) *
 // 获取最新包信息
 func (m *ConfigModel) GetLatestPackageInfo(plt int32) *models.AppVersionControl {
   m.VersionControl = new(models.AppVersionControl)
-  ok, err := m.Engine.Where("platform=?", plt).Desc("version_code").Limit(1).Get(m.VersionControl)
+  ok, err := m.Engine.Where("platform=? AND status=0", plt).Desc("version_code").Limit(1).Get(m.VersionControl)
   if !ok || err != nil {
     return nil
   }

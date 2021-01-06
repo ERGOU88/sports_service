@@ -3,8 +3,8 @@ package cuser
 import (
   "sports_service/server/global/app/errdef"
   "sports_service/server/global/consts"
+  "sports_service/server/models/mconfigure"
   "strings"
-  "fmt"
 )
 
 type AndroidUpgrade struct {
@@ -24,7 +24,7 @@ type IOSUpgrade struct {
 }
 
 // 通过版本code获取包信息
-func (svc *UserModule) VersionUp(versionCode string) (int, bool, interface{}) {
+func (svc *UserModule) VersionUp(versionCode string) (int, bool, *mconfigure.UpgradeInfo) {
   var plt int32
   appId := svc.context.GetHeader("AppId")
   if strings.Compare(appId, string(consts.IOS_APP_ID)) == 0 {
@@ -53,26 +53,13 @@ func (svc *UserModule) VersionUp(versionCode string) (int, bool, interface{}) {
     isForce = true
   }
 
-  var update interface{}
-  if plt == int32(consts.ANDROID_PLATFORM) {
-    update = &AndroidUpgrade{
-      AndroidVersion: latestPkg.Version,
-      AndroidPromptHeader: "发现新版本",
-      AndroidPromptBody: fmt.Sprintf("赛赛V%s版本（%s）", latestPkg.Version, latestPkg.Size),
-      AndroidPromptButton: "立即更新",
-      AndroidUpgradeURL: latestPkg.UpgradeUrl,
-    }
+  upgrade := &mconfigure.UpgradeInfo{
+    Version:  latestPkg.Version,
+    VersionCode: latestPkg.VersionCode,
+    Size: latestPkg.Size,
+    Describe: latestPkg.Describe,
+    UpgradeURL: latestPkg.UpgradeUrl,
   }
 
-  if plt == int32(consts.IOS_PLATFORM) {
-    update = &IOSUpgrade{
-      IOSVersion: latestPkg.Version,
-      IOSPromptHeader: "发现新版本",
-      IOSPromptBody: fmt.Sprintf("赛赛V%s版本（%s）", latestPkg.Version, latestPkg.Size),
-      IOSPromptButton: "立即更新",
-      IOSUpgradeURL: latestPkg.UpgradeUrl,
-    }
-  }
-
-  return errdef.SUCCESS, isForce, update
+  return errdef.SUCCESS, isForce, upgrade
 }

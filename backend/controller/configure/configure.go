@@ -190,6 +190,7 @@ func (svc *ConfigModule) AddNewPackage(param *mconfigure.AddPackageParams) int {
   svc.configure.VersionControl.Version = param.Version
   svc.configure.VersionControl.VersionCode = param.VersionCode
   svc.configure.VersionControl.VersionName = param.VersionName
+  svc.configure.VersionControl.Describe = param.Describe
   // 添加新包
   affected, err := svc.configure.AddNewPackage()
   if affected != 1 || err != nil {
@@ -211,6 +212,7 @@ func (svc *ConfigModule) UpdatePackageInfo(param *mconfigure.UpdatePackageParams
   svc.configure.VersionControl.Version = param.Version
   svc.configure.VersionControl.VersionCode = param.VersionCode
   svc.configure.VersionControl.VersionName = param.VersionName
+  svc.configure.VersionControl.Describe = param.Describe
 
   affected, err := svc.configure.UpdatePackageInfo(param.Id)
   if affected != 1 || err != nil {

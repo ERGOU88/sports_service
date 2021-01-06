@@ -2,6 +2,7 @@ package models
 
 type AppVersionControl struct {
 	CreateAt    int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
+	Describe    string `json:"describe" xorm:"not null default '' comment('版本说明') VARCHAR(500)"`
 	Id          int64  `json:"id" xorm:"pk autoincr comment('自增ID') BIGINT(20)"`
 	IsForce     int    `json:"is_force" xorm:"not null default 0 comment('0 不需要强更 1 需要强更') TINYINT(1)"`
 	Platform    int    `json:"platform" xorm:"not null default 0 comment('0 android 1 ios') TINYINT(1)"`

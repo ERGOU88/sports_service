@@ -9,6 +9,7 @@ import (
   "sports_service/server/models/mbanner"
 	"sports_service/server/models/muser"
   "sports_service/server/models/mvideo"
+  "sports_service/server/models/mconfigure"
   "sports_service/server/tools/tencentCloud"
   "sports_service/server/util"
 )
@@ -177,7 +178,6 @@ func AddPackage(c *gin.Context) {
   reply := errdef.New(c)
   param := &mconfigure.AddPackageParams{}
   if err := c.BindJSON(param); err != nil {
-    log.Log.Errorf("configure_trace: invalid param, param:%+v, err:%s", param, err)
     reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
     return
   }
@@ -192,7 +192,6 @@ func UpdatePackage(c *gin.Context) {
   reply := errdef.New(c)
   param := &mconfigure.UpdatePackageParams{}
   if err := c.BindJSON(param); err != nil {
-    log.Log.Errorf("configure_trace: invalid param, param:%+v, err:%s", param, err)
     reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
     return
   }
@@ -207,7 +206,6 @@ func DelPackage(c *gin.Context) {
   reply := errdef.New(c)
   param := &mconfigure.DelPackageParam{}
   if err := c.BindJSON(param); err != nil {
-    log.Log.Errorf("configure_trace: invalid param, param:%+v, err:%s", param, err)
     reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
     return
   }
