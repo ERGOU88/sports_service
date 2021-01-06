@@ -57,6 +57,8 @@ type UpgradeInfo struct {
   Size             string   `json:"size"`
   Describe         string   `json:"describe"`
   UpgradeURL       string   `json:"upgrade_url"`
+  HasNewPkg        bool     `json:"has_new_pkg"`
+  IsForce          bool     `json:"is_force"`
 }
 
 // 添加新包

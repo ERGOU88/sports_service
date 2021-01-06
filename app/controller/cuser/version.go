@@ -4,6 +4,7 @@ import (
   "sports_service/server/global/app/errdef"
   "sports_service/server/global/consts"
   "sports_service/server/models/mconfigure"
+  "strconv"
   "strings"
 )
 
@@ -24,7 +25,8 @@ type IOSUpgrade struct {
 }
 
 // 通过版本code获取包信息
-func (svc *UserModule) VersionUp(versionCode string) (int, bool, *mconfigure.UpgradeInfo) {
+func (svc *UserModule) VersionUp(versionCode string) (int, *mconfigure.UpgradeInfo) {
+  code, _ := strconv.Atoi(versionCode)
   var plt int32
   appId := svc.context.GetHeader("AppId")
   if strings.Compare(appId, string(consts.IOS_APP_ID)) == 0 {
@@ -36,21 +38,15 @@ func (svc *UserModule) VersionUp(versionCode string) (int, bool, *mconfigure.Upg
   }
 
   // 通过版本code及平台 获取当前包信息
-  info := svc.configure.GetPackageDetailByVersion(plt, versionCode)
-  if info == nil {
-    return errdef.USER_PACKAGE_NOT_EXISTS, false, nil
-  }
+  //info := svc.configure.GetPackageDetailByVersion(plt, versionCode)
+  //if info == nil {
+  //  return errdef.USER_PACKAGE_NOT_EXISTS, false, nil
+  //}
 
   // 获取平台最新包信息
   latestPkg := svc.configure.GetLatestPackageInfo(plt)
   if latestPkg == nil {
-    return errdef.USER_LATEST_PACKAGE_FAIL, false, nil
-  }
-
-  var isForce bool
-  // isForce == 1 需要强更
-  if info.IsForce == 1 {
-    isForce = true
+    return errdef.USER_LATEST_PACKAGE_FAIL, nil
   }
 
   upgrade := &mconfigure.UpgradeInfo{
@@ -61,5 +57,14 @@ func (svc *UserModule) VersionUp(versionCode string) (int, bool, *mconfigure.Upg
     UpgradeURL: latestPkg.UpgradeUrl,
   }
 
-  return errdef.SUCCESS, isForce, upgrade
+  if latestPkg.VersionCode > code {
+    upgrade.HasNewPkg = true
+  }
+
+  // isForce == 1 需要强更
+  if latestPkg.IsForce == 1 {
+    upgrade.IsForce = true
+  }
+
+  return errdef.SUCCESS, upgrade
 }

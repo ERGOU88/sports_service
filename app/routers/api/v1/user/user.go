@@ -436,14 +436,13 @@ func VersionUp(c *gin.Context) {
   //}
 
   svc := cuser.New(c)
-  syscode, isForce, upgrade := svc.VersionUp(version)
+  syscode, upgrade := svc.VersionUp(version)
   if syscode != errdef.SUCCESS {
     reply.Response(http.StatusOK, syscode)
     return
   }
 
   reply.Data["upgrade"] = upgrade
-  reply.Data["is_force"] = isForce
   reply.Response(http.StatusOK, errdef.SUCCESS)
   return
 }
