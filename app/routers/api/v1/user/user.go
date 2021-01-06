@@ -338,13 +338,12 @@ func EditUserInfo(c *gin.Context) {
 // 用户反馈
 func UserFeedback(c *gin.Context) {
 	reply := errdef.New(c)
-	//userId, ok := c.Get(consts.USER_ID)
-	//if !ok {
-	//	log.Log.Errorf("user_trace: user not found, uid:%s", userId.(string))
-	//	reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
-	//	return
-	//}
-	userId := c.Query("user_id")
+	userId, ok := c.Get(consts.USER_ID)
+	if !ok {
+		log.Log.Errorf("user_trace: user not found, uid:%s", userId.(string))
+		reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
+		return
+	}
 
 	params := new(muser.FeedbackParam)
 	if err := c.BindJSON(params); err != nil {
@@ -355,7 +354,7 @@ func UserFeedback(c *gin.Context) {
 
 	svc := cuser.New(c)
 	// 记录用户反馈的问题
-	syscode := svc.RecordUserFeedback(userId, params)
+	syscode := svc.RecordUserFeedback(userId.(string), params)
 	reply.Response(http.StatusOK, syscode)
 }
 
