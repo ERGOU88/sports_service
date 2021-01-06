@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/gin-gonic/gin"
+  "github.com/gin-gonic/gin"
   "sports_service/server/middleware/sign"
   "sports_service/server/middleware/token"
 )
@@ -11,32 +11,31 @@ func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
 	user := api.Group("/user")
 	// todo: 先不校验签名
-	user.Use(sign.CheckSign())
 	{
 		// 获取短信验证码
-		user.POST("/smscode", SmsCode)
+		user.POST("/smscode", sign.CheckSign(), SmsCode)
 		// 短信验证码登陆
-		user.POST("/smscode/login", SmsCodeLogin)
+		user.POST("/smscode/login", sign.CheckSign(), SmsCodeLogin)
 		// 手机一键登陆
-		user.POST("/mobile/login", MobilePhoneLogin)
+		user.POST("/mobile/login", sign.CheckSign(), MobilePhoneLogin)
 		// 用户微信登陆
-		user.POST("/wechat/login", UserWechatLogin)
+		user.POST("/wechat/login", sign.CheckSign(), UserWechatLogin)
 		// 用户微博登陆
-		user.POST("/weibo/login", UserWeiboLogin)
+		user.POST("/weibo/login", sign.CheckSign(), UserWeiboLogin)
 		// 用户QQ登陆
-		user.POST("/qq/login", UserQQLogin)
+		user.POST("/qq/login", sign.CheckSign(), UserQQLogin)
 		// 用户信息
-		user.GET("/info", token.TokenAuth(), UserInfo)
+		user.GET("/info", sign.CheckSign(), token.TokenAuth(), UserInfo)
 		// 修改用户信息
-		user.POST("/edit/info", token.TokenAuth(), EditUserInfo)
+		user.POST("/edit/info", sign.CheckSign(), token.TokenAuth(), EditUserInfo)
 		// 用户反馈
-		user.POST("/feedback", UserFeedback)
+		user.POST("/feedback", token.TokenAuth(), UserFeedback)
 		// 个人空间信息
-		user.GET("/zone/info", UserZoneInfo)
+		user.GET("/zone/info", sign.CheckSign(), UserZoneInfo)
     // 绑定设备token
-    user.POST("/bind/deviceToken", token.TokenAuth(), BindDeviceToken)
+    user.POST("/bind/deviceToken", sign.CheckSign(), token.TokenAuth(), BindDeviceToken)
     // 版本更新（数据库控制）
-    user.GET("/version/up", VersionUp)
+    user.GET("/version/up", sign.CheckSign(), VersionUp)
 	}
 
 }
