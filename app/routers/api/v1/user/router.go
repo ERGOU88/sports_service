@@ -30,7 +30,7 @@ func Router(engine *gin.Engine) {
 		// 修改用户信息
 		user.POST("/edit/info", token.TokenAuth(), EditUserInfo)
 		// 用户反馈
-		user.POST("/feedback", token.TokenAuth(), UserFeedback)
+		user.POST("/feedback", UserFeedback)
 		// 个人空间信息
 		user.GET("/zone/info", UserZoneInfo)
     // 绑定设备token
