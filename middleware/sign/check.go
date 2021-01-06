@@ -26,19 +26,18 @@ func CheckSign() gin.HandlerFunc {
 		secret := c.GetHeader("Secret")
 		timestamp := c.GetHeader("Timestamp")
 		version := c.GetHeader("Version")
-		uri := c.Request.URL.Path
-		str := fmt.Sprintf("%s&AppId=%s&Timestamp=%s&Version=%s", uri, appId, timestamp, version)
+		path := c.Request.URL.Path
+		str := fmt.Sprintf("%s&AppId=%s&Timestamp=%s&Version=%s", path, appId, timestamp, version)
 
-		if !strings.Contains(uri, "/api/v1/client/init") && secret == "" {
+		if !strings.Contains(path, "/api/v1/client/init") && secret == "" {
 		  log.Log.Errorf("sign_trace: secret not exists, secret:%s", secret)
 			reply.Response(http.StatusUnauthorized, errdef.UNAUTHORIZED)
 			c.Abort()
 			return
 		}
 
-
-		log.Log.Errorf("sign_trace: uri:%s, match: %d", uri, strings.Compare(uri, "/api/v1/client/init"))
-		if !strings.Contains(uri, "/api/v1/client/init")  {
+		log.Log.Errorf("sign_trace: path:%s, match: %d", path, strings.Compare(path, "/api/v1/client/init"))
+		if !strings.Contains(path, "/api/v1/client/init")  {
 		  log.Log.Infof("sign_trace: add secret, secret:%s", secret)
 			str = fmt.Sprintf("%s&Secret=%s", str, secret)
 		}
@@ -75,7 +74,7 @@ func verifySign(str, appId, sign string) bool {
 	appKey := getAppKey(appId)
 	str += fmt.Sprintf("&%s", appKey)
 
-	log.Log.Debugf("str:%s", str)
+	log.Log.Debugf("sign_trace: str:%s", str)
 	data := []byte(str)
 	has := md5.Sum(data)
 	md5Str := fmt.Sprintf("%x", has)
