@@ -155,7 +155,7 @@ func init() {
   // 初始化nsq消费者
   //setupNsqConsumer()
 	// 初始化rabbitmq消费者
-	setupRabbitmqConsumer()
+	//setupRabbitmqConsumer()
   // register signals handler
   setupSignal()
 }
