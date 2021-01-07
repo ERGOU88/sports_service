@@ -128,7 +128,7 @@ func setupSignal() {
 
 // 初始化rabbitmq消费者
 func setupRabbitmqConsumer() {
-  go rabbitmq.InitRabbitmqConsumer()
+  rabbitmq.InitRabbitmqConsumer()
 }
 
 func init() {
