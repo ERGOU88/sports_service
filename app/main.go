@@ -15,6 +15,7 @@ import (
   "sports_service/server/log/zap"
   "sports_service/server/models/pprof"
   "sports_service/server/nsqlx"
+  "sports_service/server/rabbitmq"
   "sports_service/server/tools/nsq"
   "sports_service/server/util"
   "syscall"
@@ -127,7 +128,7 @@ func setupSignal() {
 
 // 初始化rabbitmq消费者
 func setupRabbitmqConsumer() {
-  //rabbitmq.InitRabbitmqConsumer()
+   go rabbitmq.InitRabbitmqConsumer()
 }
 
 func init() {
@@ -155,7 +156,7 @@ func init() {
   // 初始化nsq消费者
   //setupNsqConsumer()
 	// 初始化rabbitmq消费者
-	//setupRabbitmqConsumer()
+	setupRabbitmqConsumer()
   // register signals handler
   setupSignal()
 }
