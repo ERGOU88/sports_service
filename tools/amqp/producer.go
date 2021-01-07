@@ -62,6 +62,23 @@ func (p *Producer) Publish(routingKey, contentType, body string) error {
   return err
 }
 
+// DeferredPublish 延时消息投递 （delayTm 毫秒转string）
+func (p *Producer) DeferredPublish(routingKey, contentType, body, delayTm string) error {
+  err := p.Ch.Publish(
+    // 交换机为空 不选择exchange
+    "",
+    routingKey,
+    false, false,
+    amqp.Publishing{
+      ContentType:  contentType,
+      Body:         []byte(body),
+      DeliveryMode: amqp.Transient,
+      Expiration:   delayTm,
+    })
+
+  return err
+}
+
 // Close  关闭通道
 func (p *Producer) Close() error {
   return p.Ch.Close()

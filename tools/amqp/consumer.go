@@ -18,7 +18,7 @@ type Consumer struct {
 }
 
 // NewConsumer 得到消费者对象
-func NewConsumer(session *Session, queueName, exchangeName, exchangeType, routingKey string) (*Consumer, error) {
+func NewConsumer(session *Session, queueName, delayQueue, exchangeName, exchangeType, routingKey string) (*Consumer, error) {
   consumer := &Consumer{
     Session:      session,
     QueueName:    queueName,
@@ -60,6 +60,26 @@ func NewConsumer(session *Session, queueName, exchangeName, exchangeType, routin
   )
   if err != nil {
     return nil, err
+  }
+
+  // 延时消息队列名
+  if delayQueue != "" {
+    // 延时消息队列
+    if _, err = consumer.Ch.QueueDeclare(
+      delayQueue, // name
+      true,       // durable  持久性的,如果事前已经声明了该队列，不能重复声明
+      false,      // delete when unused
+      false,      // exclusive 如果是真，连接一断开，队列删除
+      false,      // no-wait
+      amqp.Table{
+        // 将过期的消息发送到指定的 exchange 中
+        "x-dead-letter-exchange": exchangeName,
+        // 将过期的消息发送到自定的 route当中
+        "x-dead-letter-routing-key": routingKey,
+      }, // arguments
+    ); err != nil {
+      return nil, err
+    }
   }
 
   // 队列和交换机绑定，即是队列订阅了发到这个交换机的消息

@@ -28,7 +28,7 @@ func ConnectEventConsumer() error {
   defer session.Close()
 
   // 消费者
-  consumer, err := amqp.NewConsumer(session, consts.EVENT_QUEUE, consts.EVENT_EXCHANGE_NAME, consts.EXCHANGE_DIRECT, consts.EVENT_ROUTING_KEY)
+  consumer, err := amqp.NewConsumer(session, consts.EVENT_QUEUE, "", consts.EVENT_EXCHANGE_NAME, consts.EXCHANGE_DIRECT, consts.EVENT_ROUTING_KEY)
   if err != nil {
     log.Log.Errorf("amqp_trace: new consumer fail, err:%s", err)
     return err

@@ -22,6 +22,8 @@ func TestProducer(t *testing.T) {
 
 
   producer.Publish(consts.EVENT_ROUTING_KEY, "application/json", "hello world~")
+  // 延时消息 2000毫秒
+  producer.DeferredPublish("delayMsg", "application/json", "delay msg~", "2000")
 }
 
 func TestConsumer(t *testing.T) {
@@ -32,7 +34,7 @@ func TestConsumer(t *testing.T) {
   }
   defer session.Close()
 
-  consumer, err := NewConsumer(session, consts.EVENT_QUEUE, consts.EVENT_EXCHANGE_NAME, "direct", consts.EVENT_ROUTING_KEY)
+  consumer, err := NewConsumer(session, consts.EVENT_QUEUE, "delayMsg", consts.EVENT_EXCHANGE_NAME, "direct", consts.EVENT_ROUTING_KEY)
   if err != nil {
     t.Logf("new consumer fail, err:%s", err)
     return
