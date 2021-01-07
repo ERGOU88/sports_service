@@ -14,6 +14,7 @@ import (
   "sports_service/server/job"
   "sports_service/server/log/zap"
   "sports_service/server/models/pprof"
+  "sports_service/server/rabbitmq"
   "sports_service/server/tools/nsq"
   "sports_service/server/util"
   "sports_service/server/nsqlx"
@@ -125,6 +126,11 @@ func setupSignal() {
   }()
 }
 
+// 初始化rabbitmq消费者
+func setupRabbitmqConsumer() {
+  rabbitmq.InitRabbitmqConsumer()
+}
+
 func init() {
 	// 配置
 	if err := setupConfig(); err != nil {
@@ -145,10 +151,12 @@ func init() {
 	setupRunMode()
 	// 任务
 	setupJob()
-	// 初始化nsq
-	setupNsqProduct()
+	// 初始化nsq生产者
+	//setupNsqProduct()
   // 初始化nsq消费者
-  setupNsqConsumer()
+  //setupNsqConsumer()
+	// 初始化rabbitmq消费者
+	setupRabbitmqConsumer()
   // register signals handler
   setupSignal()
 }

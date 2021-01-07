@@ -9,7 +9,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/muser"
-  "sports_service/server/nsqlx/event"
+  "sports_service/server/rabbitmq/event"
   "strings"
 	"time"
 )

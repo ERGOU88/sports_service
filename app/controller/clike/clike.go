@@ -14,7 +14,7 @@ import (
   "sports_service/server/models/mlike"
   "sports_service/server/models/muser"
   "sports_service/server/models/mvideo"
-  "sports_service/server/nsqlx/event"
+  "sports_service/server/rabbitmq/event"
   "sports_service/server/util"
   "strings"
   "time"

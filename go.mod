@@ -23,6 +23,7 @@ require (
 	github.com/parnurzeal/gorequest v0.2.16
 	github.com/rs/xid v1.2.1
 	github.com/spf13/viper v1.7.1
+	github.com/streadway/amqp v1.0.0
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.5.1
 	github.com/tencentcloud/tencentcloud-sdk-go v1.0.30
@@ -30,7 +31,6 @@ require (
 	github.com/tencentyun/qcloud-cos-sts-sdk v0.0.0-20201001014220-f25178b7257d
 	github.com/tencentyun/vod-go-sdk v1.0.0
 	github.com/tidwall/gjson v1.6.1
-	github.com/ylywyn/jpush-api-go-client v0.0.0-20190906031852-8c4466c6e369 // indirect
 	github.com/zheng-ji/goSnowFlake v0.0.0-20180906112711-fc763800eec9
 	go.uber.org/zap v1.16.0
 	google.golang.org/protobuf v1.25.0 // indirect
