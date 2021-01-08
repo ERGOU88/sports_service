@@ -6,12 +6,15 @@ import (
 	"sports_service/server/global/backend/errdef"
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
-	"sports_service/server/models/mlabel"
-	"sports_service/server/models/mvideo"
+  "sports_service/server/models/mattention"
+  "sports_service/server/models/mlabel"
+  "sports_service/server/models/muser"
+  "sports_service/server/models/mvideo"
 	"github.com/go-xorm/xorm"
 	"fmt"
   "sports_service/server/tools/tencentCloud"
   "sports_service/server/util"
+	"sports_service/server/rabbitmq/event"
 	"time"
 )
 
@@ -20,6 +23,8 @@ type VideoModule struct {
 	engine       *xorm.Session
 	video        *mvideo.VideoModel
 	label        *mlabel.LabelModel
+	attention    *mattention.AttentionModel
+	user         *muser.UserModel
 }
 
 func New(c *gin.Context) VideoModule {
@@ -29,6 +34,8 @@ func New(c *gin.Context) VideoModule {
 		context: c,
 		video: mvideo.NewVideoModel(socket),
 		label: mlabel.NewLabelModel(socket),
+		attention: mattention.NewAttentionModel(socket),
+		user: muser.NewUserModel(socket),
 		engine: socket,
 	}
 }
@@ -91,6 +98,17 @@ func (svc *VideoModule) EditVideoStatus(param *mvideo.EditVideoStatusParam) int 
 
 		svc.engine.Commit()
 	}
+
+	// 获取发布者用户信息
+	user := svc.user.FindUserByUserid(video.UserId)
+	if user != nil {
+	  // 获取发布者粉丝们的userId
+	  userIds := svc.attention.GetFansList(user.UserId)
+	  for _, userId := range userIds {
+      // 给发布者的粉丝 发送 发布新视频推送
+      event.PushEventMsg(userId, user.NickName, video.Cover, "", consts.FOCUS_USER_PUBLISH_MSG)
+    }
+  }
 
 	return errdef.SUCCESS
 }
