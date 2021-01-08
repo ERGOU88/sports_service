@@ -1,7 +1,6 @@
 package event
 
 import (
-  "sports_service/server/app/config"
   "sports_service/server/global/app/log"
   "sports_service/server/global/consts"
   "sports_service/server/nsqlx/protocol"
@@ -11,15 +10,15 @@ import (
 )
 
 // 事件消息
-func PushEventMsg(userId, nickname, cover, content string, eventType int32) {
+func PushEventMsg(amqpDsn, userId, nickname, cover, content string, eventType int32) {
   log.Log.Errorf("event_trace: 事件推送，eventType:%d", eventType)
-  eventPublish(userId, nickname, cover, content, eventType)
+  eventPublish(amqpDsn, userId, nickname, cover, content, eventType)
 }
 
 // 事件
-func eventPublish(userId, nickname, cover, content string, eventType int32) {
+func eventPublish(amqpDsn, userId, nickname, cover, content string, eventType int32) {
   // 建立会话
-  session, err := amqp.NewSession(config.Global.AmqpDsn)
+  session, err := amqp.NewSession(amqpDsn)
   if err != nil {
     log.Log.Errorf("amqp_trace: new session fail, err:%s", err)
     return

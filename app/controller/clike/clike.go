@@ -18,6 +18,7 @@ import (
   "sports_service/server/util"
   "strings"
   "time"
+  "sports_service/server/app/config"
 )
 
 type LikeModule struct {
@@ -111,7 +112,7 @@ func (svc *LikeModule) GiveLikeForVideo(userId string, videoId int64) int {
 	svc.engine.Commit()
 
   // 发送视频点赞推送
-  event.PushEventMsg(video.UserId, user.NickName, video.Cover, "", consts.VIDEO_LIKE_MSG)
+  event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, "", consts.VIDEO_LIKE_MSG)
 
 	return errdef.SUCCESS
 }
@@ -302,7 +303,7 @@ func (svc *LikeModule) GiveLikeForComment(userId string, commentId int64) int {
 	svc.engine.Commit()
 
   // 发送评论点赞推送
-  event.PushEventMsg(comment.UserId, user.NickName, "", comment.Content, consts.COMMENT_LIKE_MSG)
+  event.PushEventMsg(config.Global.AmqpDsn, comment.UserId, user.NickName, "", comment.Content, consts.COMMENT_LIKE_MSG)
 
 	return errdef.SUCCESS
 }

@@ -48,6 +48,8 @@ type Config struct {
 	NsqAddr      string
 	// 文件地址
 	FileAddr     string
+  // amqp dsn
+  AmqpDsn      string
 	// 日志
 	Log struct {
 		Path      string

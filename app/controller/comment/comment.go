@@ -9,8 +9,7 @@ import (
   "sports_service/server/global/app/log"
   "sports_service/server/global/consts"
   "sports_service/server/rabbitmq/event"
-
-  //"sports_service/server/models"
+  "sports_service/server/app/config"
   "sports_service/server/models/mattention"
   "sports_service/server/models/mcollect"
   "sports_service/server/models/mcomment"
@@ -130,7 +129,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	svc.engine.Commit()
 
   // 视频评论推送
-  event.PushEventMsg(video.UserId, user.NickName, video.Cover, params.Content, consts.VIDEO_COMMENT_MSG)
+  event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, params.Content, consts.VIDEO_COMMENT_MSG)
 
 	return errdef.SUCCESS, svc.comment.Comment.Id
 }
@@ -236,7 +235,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 
 	svc.engine.Commit()
   // 视频回复推送
-  event.PushEventMsg(replyInfo.UserId, user.NickName, video.Cover, replyInfo.Content, consts.VIDEO_REPLY_MSG)
+  event.PushEventMsg(config.Global.AmqpDsn, replyInfo.UserId, user.NickName, video.Cover, replyInfo.Content, consts.VIDEO_REPLY_MSG)
 	return errdef.SUCCESS, svc.comment.Comment.Id
 }
 

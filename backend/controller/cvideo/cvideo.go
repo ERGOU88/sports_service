@@ -16,6 +16,7 @@ import (
   "sports_service/server/util"
 	"sports_service/server/rabbitmq/event"
 	"time"
+	"sports_service/server/backend/config"
 )
 
 type VideoModule struct {
@@ -106,7 +107,7 @@ func (svc *VideoModule) EditVideoStatus(param *mvideo.EditVideoStatusParam) int 
 	  userIds := svc.attention.GetFansList(user.UserId)
 	  for _, userId := range userIds {
       // 给发布者的粉丝 发送 发布新视频推送
-      event.PushEventMsg(userId, user.NickName, video.Cover, "", consts.FOCUS_USER_PUBLISH_MSG)
+      event.PushEventMsg(config.Global.AmqpDsn, userId, user.NickName, video.Cover, "", consts.FOCUS_USER_PUBLISH_MSG)
     }
   }
 

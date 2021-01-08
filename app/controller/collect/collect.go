@@ -17,6 +17,7 @@ import (
   "sports_service/server/util"
   "strings"
   "time"
+  "sports_service/server/app/config"
 )
 
 type CollectModule struct {
@@ -107,7 +108,7 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 	svc.engine.Commit()
 
   // 发送收藏视频推送
-  event.PushEventMsg(video.UserId, user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG)
+  event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG)
 
 	return errdef.SUCCESS
 }

@@ -12,6 +12,7 @@ import (
   "sports_service/server/rabbitmq/event"
   "strings"
 	"time"
+	"sports_service/server/app/config"
 )
 
 type AttentionModule struct {
@@ -70,7 +71,7 @@ func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 		}
     log.Log.Errorf("event_trace: userId:%s", userId)
     // 发送关注推送
-    event.PushEventMsg(userId, attentionUser.NickName, "", "", consts.FOCUS_USER_MSG)
+    event.PushEventMsg(config.Global.AmqpDsn, userId, attentionUser.NickName, "", "", consts.FOCUS_USER_MSG)
 
 		return errdef.SUCCESS
 	}
@@ -83,7 +84,7 @@ func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 
 	log.Log.Errorf("event_trace: userId:%s", userId)
 	// 发送关注推送
-  event.PushEventMsg(userId, attentionUser.NickName, "", "", consts.FOCUS_USER_MSG)
+  event.PushEventMsg(config.Global.AmqpDsn, userId, attentionUser.NickName, "", "", consts.FOCUS_USER_MSG)
 
 	return errdef.SUCCESS
 }
