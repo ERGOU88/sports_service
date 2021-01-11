@@ -1,22 +1,19 @@
 package cbarrage
 
 import (
-	"github.com/gin-gonic/gin"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	pbBarrage "sports_service/server/proto/barrage"
-	"sports_service/server/tools/nsq"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/models/mbarrage"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
-	"github.com/golang/protobuf/proto"
-	"fmt"
-	"sports_service/server/tools/tencentCloud"
-	"time"
+  "fmt"
+  "github.com/gin-gonic/gin"
+  "github.com/go-xorm/xorm"
+  "sports_service/server/dao"
+  "sports_service/server/global/app/errdef"
+  "sports_service/server/global/app/log"
+  "sports_service/server/global/consts"
+  "sports_service/server/models"
+  "sports_service/server/models/mbarrage"
+  "sports_service/server/models/muser"
+  "sports_service/server/models/mvideo"
+  "sports_service/server/tools/tencentCloud"
+  "time"
 )
 
 type BarrageModule struct {
@@ -95,25 +92,26 @@ func (svc *BarrageModule) SendVideoBarrage(userId string, params *mbarrage.SendB
 
 	svc.engine.Commit()
 
-	barrageMsg := &pbBarrage.BarrageMessage{
-		Barrage: &pbBarrage.BarrageInfo{
-			Uid: userId,
-			Content: params.Content,
-			VideoId: fmt.Sprint(params.VideoId),
-			CurDuration: int64(params.VideoCurDuration),
-			SendTime: now,
-		},
-	}
+	// todo: nsq 已停用
+	//barrageMsg := &pbBarrage.BarrageMessage{
+	//	Barrage: &pbBarrage.BarrageInfo{
+	//		Uid: userId,
+	//		Content: params.Content,
+	//		VideoId: fmt.Sprint(params.VideoId),
+	//		CurDuration: int64(params.VideoCurDuration),
+	//		SendTime: now,
+	//	},
+	//}
 
-	bts, err := proto.Marshal(barrageMsg)
-	if err != nil {
-		log.Log.Errorf("barrage_trace: proto marshal err:%s", err)
-	}
+	//bts, err := proto.Marshal(barrageMsg)
+	//if err != nil {
+	//	log.Log.Errorf("barrage_trace: proto marshal err:%s", err)
+	//}
 
 	// 发布到topic
-	if err := nsq.NsqProducer.Publish(consts.MESSAGE_TOPIC, bts); err != nil {
-		log.Log.Errorf("barrage_trace: publish msg err:%s", err)
-	}
+	//if err := nsq.NsqProducer.Publish(consts.MESSAGE_TOPIC, bts); err != nil {
+	//	log.Log.Errorf("barrage_trace: publish msg err:%s", err)
+	//}
 
 	return errdef.SUCCESS
 }

@@ -514,3 +514,153 @@
 {"level":"ERROR","time":"2021-01-11T12:33:25.344+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=3e3e909d-1676-4e34-8c17-7d0fa5132680","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
 {"level":"DEBUG","time":"2021-01-11T12:33:25.346+0800","app_id":"fpv","msg":"事件处理完毕"}
 {"level":"DEBUG","time":"2021-01-11T12:33:32.017+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:33:35.340+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=ea275908-332a-43af-aed6-de0c51454b70","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:33:35.340+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:33:42.017+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"DEBUG","time":"2021-01-11T12:33:43.567+0800","app_id":"fpv","msg":"eventType:ProcedureStateChanged"}
+{"level":"DEBUG","time":"2021-01-11T12:33:43.567+0800","app_id":"fpv","msg":"transcode event:{TaskId:0xc0007bce50 Status:0xc0007bce60 ErrCode:0xc0006b2b80 Message:0xc0007bce70 FileId:0xc0007bce80 FileName:0xc0007bce90 FileUrl:0xc0007bcea0 MetaData:0xc000529080 MediaProcessResultSet:[0xc00067f100 0xc00067f180 0xc00067f1c0] AiContentReviewResultSet:[] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0006b2de8 TasksNotifyMode:0xc0007bd010 SessionContext:0xc0007bd020 SessionId:0xc0007bd030}"}
+{"level":"ERROR","time":"2021-01-11T12:33:43.568+0800","app_id":"fpv","msg":"job_trace: video not found, fileId:5285890812393198955","S":"sports_service/server/job.transCodeCompleteEvent\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:84\nsports_service/server/job.pullEvents\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:61\nsports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:31"}
+{"level":"DEBUG","time":"2021-01-11T12:33:43.568+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:33:52.019+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:33:55.383+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=7fa36209-86c5-49e9-bcf4-b69f0bb4d743","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:33:55.383+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:34:02.016+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:34:05.442+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=abfa492c-6934-4072-9e03-fa8675484ab6","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:34:05.442+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:34:12.017+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"DEBUG","time":"2021-01-11T12:34:13.861+0800","app_id":"fpv","msg":"eventType:ProcedureStateChanged"}
+{"level":"DEBUG","time":"2021-01-11T12:34:13.862+0800","app_id":"fpv","msg":"transcode event:{TaskId:0xc0007bdfb0 Status:0xc0007bdfc0 ErrCode:0xc0006b3730 Message:0xc0007bdfd0 FileId:0xc0007bdfe0 FileName:0xc0007bdff0 FileUrl:0xc000032010 MetaData:0xc0007b6600 MediaProcessResultSet:[0xc00067f740 0xc00067f7c0 0xc00067f800] AiContentReviewResultSet:[] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0006b3998 TasksNotifyMode:0xc000032f80 SessionContext:0xc000032f90 SessionId:0xc000032fa0}"}
+{"level":"ERROR","time":"2021-01-11T12:34:13.863+0800","app_id":"fpv","msg":"job_trace: video not found, fileId:5285890812393198955","S":"sports_service/server/job.transCodeCompleteEvent\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:84\nsports_service/server/job.pullEvents\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:61\nsports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:31"}
+{"level":"DEBUG","time":"2021-01-11T12:34:13.863+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:34:22.015+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:34:25.266+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=88da2291-a126-4fd9-83e9-ffdfcabd7d0c","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:34:25.267+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:34:32.016+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:34:35.361+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=8e08f9d1-d5e2-4518-852a-f269e3503a70","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:34:35.361+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:34:42.014+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"DEBUG","time":"2021-01-11T12:34:44.117+0800","app_id":"fpv","msg":"eventType:ProcedureStateChanged"}
+{"level":"DEBUG","time":"2021-01-11T12:34:44.117+0800","app_id":"fpv","msg":"transcode event:{TaskId:0xc0003661b0 Status:0xc0003661c0 ErrCode:0xc000038960 Message:0xc0003661d0 FileId:0xc0003661e0 FileName:0xc0003661f0 FileUrl:0xc000366200 MetaData:0xc0007b7100 MediaProcessResultSet:[0xc00067fd80 0xc00067fe00 0xc00067fe40] AiContentReviewResultSet:[] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc000038e38 TasksNotifyMode:0xc000366350 SessionContext:0xc000366360 SessionId:0xc000366370}"}
+{"level":"ERROR","time":"2021-01-11T12:34:44.118+0800","app_id":"fpv","msg":"job_trace: video not found, fileId:5285890812393198955","S":"sports_service/server/job.transCodeCompleteEvent\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:84\nsports_service/server/job.pullEvents\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:61\nsports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:31"}
+{"level":"DEBUG","time":"2021-01-11T12:34:44.119+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:34:52.012+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:34:55.282+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=f66f6d62-d2d6-4f24-80bd-33b1c6b9d393","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:34:55.282+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:35:02.017+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:35:05.360+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=210f5de4-e4c8-4297-b8b5-dfb257ce13f9","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:35:05.360+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:35:12.015+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"DEBUG","time":"2021-01-11T12:35:14.260+0800","app_id":"fpv","msg":"eventType:ProcedureStateChanged"}
+{"level":"DEBUG","time":"2021-01-11T12:35:14.260+0800","app_id":"fpv","msg":"transcode event:{TaskId:0xc0002c0680 Status:0xc0002c0690 ErrCode:0xc0004460f0 Message:0xc0002c06a0 FileId:0xc0002c07c0 FileName:0xc0002c07f0 FileUrl:0xc0002c0810 MetaData:0xc0004be200 MediaProcessResultSet:[0xc000585100 0xc000585300 0xc000585480] AiContentReviewResultSet:[] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc000446758 TasksNotifyMode:0xc0002c0be0 SessionContext:0xc0002c0bf0 SessionId:0xc0002c0c00}"}
+{"level":"ERROR","time":"2021-01-11T12:35:14.261+0800","app_id":"fpv","msg":"job_trace: video not found, fileId:5285890812393198955","S":"sports_service/server/job.transCodeCompleteEvent\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:84\nsports_service/server/job.pullEvents\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:61\nsports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:31"}
+{"level":"DEBUG","time":"2021-01-11T12:35:14.261+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:35:22.014+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:35:25.326+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=b114dc9c-06cd-4664-980c-fe1fb87e44fd","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:35:25.327+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:35:32.016+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:35:35.352+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=ecad632f-5b18-49f2-9a21-9d7df981e4a4","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:35:35.352+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:35:42.012+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"DEBUG","time":"2021-01-11T12:35:44.408+0800","app_id":"fpv","msg":"eventType:ProcedureStateChanged"}
+{"level":"DEBUG","time":"2021-01-11T12:35:44.408+0800","app_id":"fpv","msg":"transcode event:{TaskId:0xc0007bce20 Status:0xc0007bce30 ErrCode:0xc000038a20 Message:0xc0007bce50 FileId:0xc0007bce60 FileName:0xc0007bce70 FileUrl:0xc0007bce80 MetaData:0xc0007f0700 MediaProcessResultSet:[0xc0005ab4c0 0xc0005ab700 0xc0005ab740] AiContentReviewResultSet:[] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc000038f28 TasksNotifyMode:0xc0007bcff0 SessionContext:0xc0007bd000 SessionId:0xc0007bd010}"}
+{"level":"ERROR","time":"2021-01-11T12:35:44.409+0800","app_id":"fpv","msg":"job_trace: video not found, fileId:5285890812393198955","S":"sports_service/server/job.transCodeCompleteEvent\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:84\nsports_service/server/job.pullEvents\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:61\nsports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:31"}
+{"level":"DEBUG","time":"2021-01-11T12:35:44.409+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:35:52.011+0800","app_id":"fpv","msg":"开始检测banner 是否上架/是否已过期"}
+{"level":"DEBUG","time":"2021-01-11T12:35:52.011+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"DEBUG","time":"2021-01-11T12:35:52.013+0800","app_id":"fpv","msg":"检测完毕"}
+{"level":"ERROR","time":"2021-01-11T12:35:55.236+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=98b89dba-7182-405f-a631-b3a743f36257","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:35:55.236+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:36:02.011+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:36:05.458+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=1c317103-635c-482d-871c-201b9c5b17f6","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:36:05.458+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:36:12.012+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"DEBUG","time":"2021-01-11T12:36:14.825+0800","app_id":"fpv","msg":"eventType:ProcedureStateChanged"}
+{"level":"DEBUG","time":"2021-01-11T12:36:14.826+0800","app_id":"fpv","msg":"transcode event:{TaskId:0xc000366880 Status:0xc000366890 ErrCode:0xc0006b2ca0 Message:0xc0003668a0 FileId:0xc0003668b0 FileName:0xc0003668c0 FileUrl:0xc0003668e0 MetaData:0xc000529080 MediaProcessResultSet:[0xc00067f300 0xc00067f380 0xc00067f480] AiContentReviewResultSet:[] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc0006b2f08 TasksNotifyMode:0xc000366ad0 SessionContext:0xc000366ae0 SessionId:0xc000366b80}"}
+{"level":"ERROR","time":"2021-01-11T12:36:14.827+0800","app_id":"fpv","msg":"job_trace: video not found, fileId:5285890812393198955","S":"sports_service/server/job.transCodeCompleteEvent\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:84\nsports_service/server/job.pullEvents\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:61\nsports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:31"}
+{"level":"DEBUG","time":"2021-01-11T12:36:14.828+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:36:22.014+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:36:25.351+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=25e1d73b-dc7f-4870-9a2f-bf74587032d2","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:36:25.353+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:36:32.011+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:36:35.257+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=d315a0e9-3f56-40b1-81b9-e6e9db8c630c","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:36:35.257+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:36:42.011+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:36:45.364+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=5f7d9ff5-381a-413b-b354-1f8cf8bf9550","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:36:45.365+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:36:52.011+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:36:55.328+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=badcc22d-626d-4167-84f0-119147133227","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:36:55.328+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:37:02.013+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:37:05.363+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=15cc557d-24a5-4e27-bc20-af1037372b7e","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:37:05.363+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:37:12.008+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:37:15.296+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=d3f8ae3a-21dd-4608-86d6-4f92c7b98c1a","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:37:15.296+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:37:22.010+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:37:25.306+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=94e11295-dde8-4532-9da8-376cdaac16f1","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:37:25.307+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:37:32.008+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:37:35.366+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=6cc84f7b-4e07-4d85-83ff-d17d80f018cb","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:37:35.366+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:37:42.009+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:37:45.307+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=f79441ce-103e-428e-bce9-9a3ac116f7d0","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:37:45.307+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:37:52.009+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:37:55.305+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=3c67b7bc-47bb-4e3c-b7d5-2570b6bddf87","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:37:55.306+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:38:02.010+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:38:05.303+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=59bea369-4ee6-4806-97ae-541da601e5de","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:38:05.303+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:38:12.008+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:38:15.097+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=401b9001-f861-4285-8b59-666fdb737747","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:38:15.097+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:38:22.008+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:38:25.323+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=4d53f2b6-17b7-429e-82b7-e2b9a4371c16","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:38:25.323+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:38:32.006+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:38:35.475+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=4ed5b047-8aed-4e0a-9d69-a34f0e7fb1f4","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:38:35.475+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:38:42.008+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:38:45.408+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=6c3dcd81-3cf4-4cff-9c72-343b0a6ceb79","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:38:45.408+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:38:52.009+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"DEBUG","time":"2021-01-11T12:38:52.009+0800","app_id":"fpv","msg":"开始检测banner 是否上架/是否已过期"}
+{"level":"DEBUG","time":"2021-01-11T12:38:52.011+0800","app_id":"fpv","msg":"检测完毕"}
+{"level":"ERROR","time":"2021-01-11T12:38:55.325+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=6637f114-929e-474c-8fdf-84a5d26bdc11","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:38:55.325+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:39:02.004+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:39:05.379+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=f5005d79-2f26-4e94-b427-5fe627969518","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:39:05.379+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:39:12.003+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:39:15.107+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=9f05f066-5ebb-4311-afbe-7612b66b08ff","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:39:15.107+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:39:22.005+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:39:25.329+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=ca3f4386-30d1-4a2d-80e4-e461f574c5da","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:39:25.373+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:39:32.004+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:39:35.380+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=3797cdae-cf82-40aa-9683-a52c9635a876","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:39:35.380+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:39:42.006+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:39:45.321+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=402809ea-d90c-4fdc-a81a-1d9747d71c6d","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:39:45.321+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:39:52.002+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:39:55.336+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=6dff47e2-8893-408c-b2bc-e100a1655d76","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:39:55.336+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:40:02.004+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:40:05.078+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=8f8953eb-406d-43ca-b859-d0122c8d33ed","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:40:05.078+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:40:12.003+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:40:15.317+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=51356af9-6016-4be7-87a8-db8d9c5c3302","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:40:15.317+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:40:22.004+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:40:25.291+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=1311966b-4a9c-4a99-9250-4e5d13e56f86","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:40:25.349+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:40:32.002+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:40:35.285+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=ababe82e-5672-41c7-9dfc-e1297f9105c0","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:40:35.285+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:40:42.002+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:40:45.346+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=fd43db19-2b43-4e3a-9cc2-d2c7a901b991","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:40:45.346+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:40:52.005+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:40:55.345+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=8a43a756-21f7-4cf5-ab54-d23cb26f6959","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:40:55.345+0800","app_id":"fpv","msg":"事件处理完毕"}
