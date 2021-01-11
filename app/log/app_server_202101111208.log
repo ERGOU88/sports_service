@@ -1,0 +1,13 @@
+{"level":"DEBUG","time":"2021-01-11T12:08:01.901+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:08:05.360+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=76a660ec-23da-433d-ac34-651a8fe1ea6c","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:08:05.361+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:08:11.902+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:08:15.191+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=f290e683-5e34-46d3-ae65-343e05458119","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:08:15.191+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:08:21.900+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:08:25.104+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=1cf79a41-d126-4ac2-b13f-ec6f68b1abec","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:08:25.104+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:08:31.897+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:08:35.262+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=479b9394-bb62-46d8-a1df-6ead7ce19948","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:08:35.262+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:08:41.899+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}

@@ -38,8 +38,8 @@ staticDomain: :11001
 
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
-  path: ./log/app_server.log
+  path: ./log/app_server_%s.log
   level: 0
-  showColor: true
+  showColor: false
 
 debug: true

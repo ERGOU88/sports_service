@@ -1,0 +1,13 @@
+{"level":"DEBUG","time":"2021-01-11T12:06:21.899+0800","app_id":"fpv","msg":"setup log success"}
+{"level":"INFO","time":"2021-01-11T12:06:21.901+0800","app_id":"fpv","msg":"优雅关闭web服务"}
+{"level":"DEBUG","time":"2021-01-11T12:06:31.902+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"DEBUG","time":"2021-01-11T12:06:35.149+0800","app_id":"fpv","msg":"eventType:ProcedureStateChanged"}
+{"level":"DEBUG","time":"2021-01-11T12:06:35.149+0800","app_id":"fpv","msg":"transcode event:{TaskId:0xc001b88970 Status:0xc001b88980 ErrCode:0xc001b90f70 Message:0xc001b88990 FileId:0xc001b889a0 FileName:0xc001b889b0 FileUrl:0xc001b889c0 MetaData:0xc000719480 MediaProcessResultSet:[0xc00030dd00 0xc00030dd80 0xc00030ddc0] AiContentReviewResultSet:[] AiAnalysisResultSet:[] AiRecognitionResultSet:[] TasksPriority:0xc001b911d8 TasksNotifyMode:0xc001b88b20 SessionContext:0xc001b88b30 SessionId:0xc001b88b40}"}
+{"level":"ERROR","time":"2021-01-11T12:06:35.152+0800","app_id":"fpv","msg":"job_trace: video not found, fileId:5285890812380381104","S":"sports_service/server/job.transCodeCompleteEvent\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:84\nsports_service/server/job.pullEvents\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:61\nsports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:31"}
+{"level":"DEBUG","time":"2021-01-11T12:06:35.152+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:06:41.903+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:06:45.178+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=64711813-a795-4727-935d-e2ea0d3f44dd","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:06:45.178+0800","app_id":"fpv","msg":"事件处理完毕"}
+{"level":"DEBUG","time":"2021-01-11T12:06:51.903+0800","app_id":"fpv","msg":"开始拉取事件[腾讯云]"}
+{"level":"ERROR","time":"2021-01-11T12:06:54.907+0800","app_id":"fpv","msg":"job_trace: pull events err:[TencentCloudSDKError] Code=ResourceNotFound, Message=no event, RequestId=3b8550f8-f826-4ac3-a0c7-88c862ea93cd","S":"sports_service/server/job.PullEventsJob\n\t/Users/jelly/go/src/sports_service/server/job/pull_events.go:32"}
+{"level":"DEBUG","time":"2021-01-11T12:06:54.907+0800","app_id":"fpv","msg":"事件处理完毕"}

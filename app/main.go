@@ -118,9 +118,9 @@ func setupSignal() {
     select {
     case <-sigChan:
       // 停止消费
-      nsq.Stop()
+      //nsq.Stop()
       // 停止生产
-      nsq.NsqProducer.Stop()
+      //nsq.NsqProducer.Stop()
       os.Exit(-1)
     }
   }()
