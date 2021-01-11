@@ -10,6 +10,7 @@ require (
 	github.com/antlinker/go-cmap v0.0.0-20160407022646-0c5e57012e96 // indirect
 	github.com/antlinker/go-dirtyfilter v1.2.0
 	github.com/elazarl/goproxy v0.0.0-20200809112317-0581fc3aee2d // indirect
+	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/garyburd/redigo v1.6.2
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-sql-driver/mysql v1.5.0
@@ -18,7 +19,11 @@ require (
 	github.com/golang/protobuf v1.4.2
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.4.2
+	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
 	github.com/json-iterator/go v1.1.10
+	github.com/lestrrat/go-envload v0.0.0-20180220120943-6ed08b54a570 // indirect
+	github.com/lestrrat/go-file-rotatelogs v0.0.0-20180223000712-d3151e2a480f
+	github.com/lestrrat/go-strftime v0.0.0-20180220042222-ba3bf9c1d042 // indirect
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/parnurzeal/gorequest v0.2.16
 	github.com/rs/xid v1.2.1
@@ -26,6 +31,7 @@ require (
 	github.com/streadway/amqp v1.0.0
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.5.1
+	github.com/tebeka/strftime v0.1.5 // indirect
 	github.com/tencentcloud/tencentcloud-sdk-go v1.0.30
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.11 // indirect
 	github.com/tencentyun/qcloud-cos-sts-sdk v0.0.0-20201001014220-f25178b7257d
