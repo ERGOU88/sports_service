@@ -470,7 +470,8 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 
 		video.Avatar = userInfo.Avatar
 		video.Nickname = userInfo.NickName
-
+    // 获取统计标签
+    video.StatisticsTab = svc.GetStatisticTab(video.VideoId)
 		// 用户未登录
 		if userId == "" {
 			log.Log.Error("video_trace: no login")
@@ -486,9 +487,6 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 		if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
 			video.IsCollect = collectInfo.Status
 		}
-
-		// 获取统计标签
-		video.StatisticsTab = svc.GetStatisticTab(video.VideoId)
 	}
 
 	return minId, list
