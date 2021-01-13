@@ -81,6 +81,12 @@ func (svc *UserModule) GetUserInfoByUserid(userId string) (int, *muser.UserInfoR
 		Country: int32(info.Country),
 	}
 
+  // 查看国家是否存在
+  countryInfo := svc.GetWorldInfoById(int32(info.Country))
+  if countryInfo != nil {
+    resp.CountryName = countryInfo.Name
+  }
+
 	return errdef.SUCCESS, resp
 }
 

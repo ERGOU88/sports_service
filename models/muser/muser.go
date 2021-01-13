@@ -83,6 +83,7 @@ type UserInfoResp struct {
 	Age           int    `json:"age" example:"27"`
 	UserType      int    `json:"user_type" example:"0"`
 	Country       int32  `json:"country" example:"0"`
+	CountryName   string `json:"country_name"`
 	IsAttention   int32  `json:"is_attention" example:"0"`
 	IsReplyFocus  int32  `json:"is_reply_focus"`               // 对方是否关注
 }
