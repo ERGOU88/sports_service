@@ -23,7 +23,7 @@ func TestProducer(t *testing.T) {
 
   producer.Publish(consts.EVENT_ROUTING_KEY, "application/json", "hello world~")
   // 延时消息 2000毫秒
-  producer.DeferredPublish("delayMsg", "application/json", "delay msg~", "2000")
+  producer.DeferredPublish("delayMsg", "application/json", "delay msg~", "5000")
 }
 
 func TestConsumer(t *testing.T) {
