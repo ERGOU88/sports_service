@@ -95,11 +95,14 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 		return []interface{}{}
   }
 
-  mp := make(map[string]string)
-  avatarMp := make(map[string]string)
+  //mp := make(map[string]string)
+  //avatarMp := make(map[string]string)
   videoMp := make(map[int64]*models.Videos)
   commentMp := make(map[int64]*models.VideoComment)
-  userMp := make(map[string]*models.User)
+  // 视频点赞的用户列表
+  vlikeList := make([]*models.User, 0)
+  // 评论点赞的用户列表
+  clikeList := make([]*models.User, 0)
   for _, liked := range list {
     switch liked.ZanType {
     // 被点赞的视频
@@ -109,36 +112,37 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
         videoMp[video.VideoId] = video
         if user := svc.user.FindUserByUserid(liked.UserId); user != nil {
           log.Log.Errorf("user.Id:%s", user.UserId)
-          userMp[user.UserId] = user
-          nickNames, ok := mp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)]
-          // 如果点赞的是同一视频  昵称整合为一条数据
-          if ok && nickNames != "" {
-            if find := strings.Contains(nickNames, user.NickName); !find {
-              nickNames += "," + user.NickName
-              //if len(strings.Split(nickNames, ","))  <= 3 {
-                // 存储视频id_点赞类型 -> 点赞的用户昵称
-                mp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)] = nickNames
-              //}
-            }
-
-          } else {
-            // 存储 视频id_点赞类型 -> 点赞的用户昵称
-            mp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)] = user.NickName
-          }
-
-          avatars, ok := avatarMp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)]
-          // 如果点赞的是同一视频  头像整合为一条数据
-          if ok && avatars != "" {
-            if find := strings.Contains(avatars, user.Avatar); !find {
-             avatars += "," + user.Avatar
-              // 存储视频id_点赞类型 -> 点赞的用户头像
-              avatarMp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)] = avatars
-            }
-
-          } else {
-            // 存储 视频id_点赞类型 -> 点赞的用户头像
-            avatarMp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)] = user.Avatar
-          }
+          //userMp[fmt.Sprintf("%s_%d", user.UserId, liked.TypeId)] = user
+          vlikeList = append(vlikeList, user)
+          //nickNames, ok := mp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)]
+          //// 如果点赞的是同一视频  昵称整合为一条数据
+          //if ok && nickNames != "" {
+          //  if find := strings.Contains(nickNames, user.NickName); !find {
+          //    nickNames += "," + user.NickName
+          //    //if len(strings.Split(nickNames, ","))  <= 3 {
+          //      // 存储视频id_点赞类型 -> 点赞的用户昵称
+          //      mp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)] = nickNames
+          //    //}
+          //  }
+          //
+          //} else {
+          //  // 存储 视频id_点赞类型 -> 点赞的用户昵称
+          //  mp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)] = user.NickName
+          //}
+          //
+          //avatars, ok := avatarMp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)]
+          //// 如果点赞的是同一视频  头像整合为一条数据
+          //if ok && avatars != "" {
+          //  if find := strings.Contains(avatars, user.Avatar); !find {
+          //   avatars += "," + user.Avatar
+          //    // 存储视频id_点赞类型 -> 点赞的用户头像
+          //    avatarMp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)] = avatars
+          //  }
+          //
+          //} else {
+          //  // 存储 视频id_点赞类型 -> 点赞的用户头像
+          //  avatarMp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)] = user.Avatar
+          //}
         }
       }
     // 被点赞的帖子
@@ -151,36 +155,37 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
         commentMp[comment.Id] = comment
         // 点赞用户
         if user := svc.user.FindUserByUserid(liked.UserId); user != nil {
-          userMp[user.UserId] = user
-          nickNames, ok := mp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)]
-          // 如果点赞的是同一评论  整合为一条数据
-          if ok && nickNames != "" {
-            if find := strings.Contains(nickNames, user.NickName); !find {
-              nickNames += "," + user.NickName
-              //if len(strings.Split(nickNames, ","))  <= 3 {
-                // 存储评论id_点赞类型 -> 点赞的用户昵称
-              mp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)] = nickNames
-              //}
-            }
-
-          } else {
-            // 存储评论id_点赞类型 -> 点赞的用户昵称
-            mp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)] = user.NickName
-          }
-
-          avatars, ok := avatarMp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)]
-          // 如果点赞的是同一评论 头像整合为一条数据
-          if ok && avatars != "" {
-            if find := strings.Contains(avatars, user.Avatar); !find {
-              avatars += "," + user.Avatar
-              // 存储评论id_点赞类型 -> 点赞的用户头像
-              avatarMp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)] = avatars
-            }
-
-          } else {
-            // 存储 评论id_点赞类型 -> 点赞的用户头像
-            avatarMp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)] = user.Avatar
-          }
+          clikeList = append(clikeList, user)
+          //userMp[fmt.Sprintf("%s_%d", user.UserId, liked.TypeId)] = user
+          //nickNames, ok := mp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)]
+          //// 如果点赞的是同一评论  整合为一条数据
+          //if ok && nickNames != "" {
+          //  if find := strings.Contains(nickNames, user.NickName); !find {
+          //    nickNames += "," + user.NickName
+          //    //if len(strings.Split(nickNames, ","))  <= 3 {
+          //      // 存储评论id_点赞类型 -> 点赞的用户昵称
+          //    mp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)] = nickNames
+          //    //}
+          //  }
+          //
+          //} else {
+          //  // 存储评论id_点赞类型 -> 点赞的用户昵称
+          //  mp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)] = user.NickName
+          //}
+          //
+          //avatars, ok := avatarMp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)]
+          //// 如果点赞的是同一评论 头像整合为一条数据
+          //if ok && avatars != "" {
+          //  if find := strings.Contains(avatars, user.Avatar); !find {
+          //    avatars += "," + user.Avatar
+          //    // 存储评论id_点赞类型 -> 点赞的用户头像
+          //    avatarMp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)] = avatars
+          //  }
+          //
+          //} else {
+          //  // 存储 评论id_点赞类型 -> 点赞的用户头像
+          //  avatarMp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)] = user.Avatar
+          //}
         }
       }
     }
@@ -211,8 +216,8 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
       // 视频作品
       video, ok := videoMp[liked.TypeId]
       if ok {
-        mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)] = ""
-        avatarMp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)] = ""
+        //mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)] = ""
+        //avatarMp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)] = ""
         info.ComposeId = video.VideoId
         info.Title = util.TrimHtml(video.Title)
         info.Describe = util.TrimHtml(video.Describe)
@@ -233,27 +238,31 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
         //  log.Log.Errorf("user.Id:%s", user.UserId)
         //  info.Avatar = user.Avatar
         //}
-        avatars, ok := mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)]
-        if ok && avatars != "" {
-          log.Log.Errorf("ok:%b, avatars:%s", ok, avatars)
-          // 同一视频点赞的用户头像（多个）
-          info.Avatars = strings.Split(avatars, ",")
-          if len(info.Avatars) > 3 {
-            info.Avatars = info.Avatars[0:3]
-          }
+        //avatars, ok := mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)]
+        //if ok && avatars != "" {
+        //  log.Log.Errorf("ok:%b, avatars:%s", ok, avatars)
+        //  // 同一视频点赞的用户头像（多个）
+        //  info.Avatars = strings.Split(avatars, ",")
+        //  if len(info.Avatars) > 3 {
+        //    info.Avatars = info.Avatars[0:3]
+        //  }
+        //}
+        //
+        //nickNames, ok := mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)]
+        //if ok && nickNames != "" {
+        //  log.Log.Errorf("ok:%b, nicknames:%s", ok, nickNames)
+        //  // 同一视频点赞的用户昵称（多个）
+        //  info.Nicknames = strings.Split(nickNames, ",")
+        //  if len(info.Nicknames) > 3 {
+        //    info.Nicknames = info.Nicknames[0:3]
+        //  }
+        //}
+
+        if len(vlikeList) > 3 {
+          info.UserList = vlikeList[:3]
         }
 
-        nickNames, ok := mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)]
-        if ok && nickNames != "" {
-          log.Log.Errorf("ok:%b, nicknames:%s", ok, nickNames)
-          // 同一视频点赞的用户昵称（多个）
-          info.Nicknames = strings.Split(nickNames, ",")
-          if len(info.Nicknames) > 3 {
-            info.Nicknames = info.Nicknames[0:3]
-          }
-        }
-
-        info.TotalLikeNum = len(info.Nicknames)
+        info.TotalLikeNum = len(vlikeList)
         res = append(res, info)
       }
       // 被点赞的帖子
@@ -267,8 +276,8 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
       // 获取评论信息
       comment, ok := commentMp[liked.TypeId]
       if ok {
-        mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)] = ""
-        avatarMp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)] = ""
+        //mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)] = ""
+        //avatarMp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)] = ""
         // 被点赞的信息
         info.Content = comment.Content
         info.ComposeId = comment.Id
@@ -295,26 +304,30 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
         //if ok {
         //  info.Avatar = user.Avatar
         //}
-        avatars, ok := mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)]
-        if ok && avatars != "" {
-          log.Log.Errorf("ok:%b, avatars:%s", ok, avatars)
-          // 同一视频点赞的用户头像（多个）
-          info.Avatars = strings.Split(avatars, ",")
-          if len(info.Avatars) > 3 {
-            info.Avatars = info.Avatars[0:3]
-          }
+        //avatars, ok := mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)]
+        //if ok && avatars != "" {
+        //  log.Log.Errorf("ok:%b, avatars:%s", ok, avatars)
+        //  // 同一视频点赞的用户头像（多个）
+        //  info.Avatars = strings.Split(avatars, ",")
+        //  if len(info.Avatars) > 3 {
+        //    info.Avatars = info.Avatars[0:3]
+        //  }
+        //}
+        //
+        //nickNames, ok := mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)]
+        //if ok && nickNames != "" {
+        //  info.Nicknames = strings.Split(nickNames, ",")
+        //  if len(info.Nicknames) > 3 {
+        //    info.Nicknames = info.Nicknames[0:3]
+        //  }
+        //
+        //}
+
+        if len(clikeList) > 3 {
+          info.UserList = clikeList[:3]
         }
 
-        nickNames, ok := mp[fmt.Sprintf("%d_%d", liked.TypeId, liked.ZanType)]
-        if ok && nickNames != "" {
-          info.Nicknames = strings.Split(nickNames, ",")
-          if len(info.Nicknames) > 3 {
-            info.Nicknames = info.Nicknames[0:3]
-          }
-
-        }
-
-        info.TotalLikeNum = len(info.Nicknames)
+        info.TotalLikeNum = len(clikeList)
 
         res = append(res, info)
       }

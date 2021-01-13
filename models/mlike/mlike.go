@@ -69,6 +69,7 @@ type BeLikedInfo struct {
   Avatars       []string              `json:"avatars"`          // 点赞用户头像
   Nicknames     []string              `json:"nick_name"`       // 点赞的用户昵称
   TotalLikeNum  int                   `json:"total_like_num"`  // 总点赞数
+  UserList      []*models.User        `json:"user_list"`       // 点赞的用户列表
   //ToUserId      string                `json:"to_user_id"`      // 被点赞的用户id
   //ToUserAvatar  string                `json:"avatar"`          // 被点赞用户头像
   //ToUserName    string                `json:"to_user_name"`    // 被点赞的用户昵称
