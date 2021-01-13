@@ -237,6 +237,12 @@ func (svc *UserModule) GetUserZoneInfo(userId, toUserId string) (int, *muser.Use
 		Country: int32(info.Country),
 	}
 
+  // 查看国家是否存在
+  countryInfo := svc.GetWorldInfoById(int32(info.Country))
+  if countryInfo != nil {
+    resp.CountryName = countryInfo.Name
+  }
+
   if userId != toUserId {
     // 当前用户 是否关注 被查看人
     attentionInfo := svc.attention.GetAttentionInfo(userId, toUserId)

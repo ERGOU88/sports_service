@@ -3,7 +3,7 @@ pprofAddr: :14001
 mode: dev
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
-  path: ./log/barrage_server.log
+  path: ./log/barrage_server_%s.log
   level: 0
   showColor: true
 nsqAddr: 127.0.0.1:4150
