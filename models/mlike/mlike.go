@@ -52,6 +52,13 @@ type ZanUserInfo struct {
   Nickname      string                `json:"nick_name"`       // 点赞的用户昵称
 }
 
+// 点赞用户信息
+type LikedUserInfo struct {
+  UserId    string   `json:"user_id"`
+  NickName  string   `json:"nick_name"`
+  Avatar    string   `json:"avatar"`
+}
+
 // 被点赞的信息
 type BeLikedInfo struct {
   ComposeId     int64                 `json:"compose_id"`      // 作品id
@@ -66,10 +73,10 @@ type BeLikedInfo struct {
   BarrageNum    int                   `json:"barrage_num"`     // 弹幕数
   BrowseNum     int                   `json:"browse_num"`      // 浏览数（播放数）
   //UserId        string                `json:"user_id"`         // 点赞的用户id
-  Avatars       []string              `json:"avatars"`          // 点赞用户头像
-  Nicknames     []string              `json:"nick_name"`       // 点赞的用户昵称
+  //Avatars       []string              `json:"avatars"`          // 点赞用户头像
+  //Nicknames     []string              `json:"nick_name"`       // 点赞的用户昵称
   TotalLikeNum  int                   `json:"total_like_num"`  // 总点赞数
-  UserList      []*models.User        `json:"user_list"`       // 点赞的用户列表
+  UserList      []*LikedUserInfo      `json:"user_list"`       // 点赞的用户列表
   //ToUserId      string                `json:"to_user_id"`      // 被点赞的用户id
   //ToUserAvatar  string                `json:"avatar"`          // 被点赞用户头像
   //ToUserName    string                `json:"to_user_name"`    // 被点赞的用户昵称

@@ -99,10 +99,11 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
   //avatarMp := make(map[string]string)
   videoMp := make(map[int64]*models.Videos)
   commentMp := make(map[int64]*models.VideoComment)
+
   // 视频点赞的用户列表
-  vlikeList := make([]*models.User, 0)
+  vlikeList := make([]*mlike.LikedUserInfo, 0)
   // 评论点赞的用户列表
-  clikeList := make([]*models.User, 0)
+  clikeList := make([]*mlike.LikedUserInfo, 0)
   for _, liked := range list {
     switch liked.ZanType {
     // 被点赞的视频
@@ -113,7 +114,13 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
         if user := svc.user.FindUserByUserid(liked.UserId); user != nil {
           log.Log.Errorf("user.Id:%s", user.UserId)
           //userMp[fmt.Sprintf("%s_%d", user.UserId, liked.TypeId)] = user
-          vlikeList = append(vlikeList, user)
+          uinfo := &mlike.LikedUserInfo{
+            UserId: user.UserId,
+            Avatar: user.Avatar,
+            NickName: user.NickName,
+          }
+
+          vlikeList = append(vlikeList, uinfo)
           //nickNames, ok := mp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)]
           //// 如果点赞的是同一视频  昵称整合为一条数据
           //if ok && nickNames != "" {
@@ -155,7 +162,13 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
         commentMp[comment.Id] = comment
         // 点赞用户
         if user := svc.user.FindUserByUserid(liked.UserId); user != nil {
-          clikeList = append(clikeList, user)
+          uinfo := &mlike.LikedUserInfo{
+            UserId: user.UserId,
+            Avatar: user.Avatar,
+            NickName: user.NickName,
+          }
+
+          clikeList = append(clikeList, uinfo)
           //userMp[fmt.Sprintf("%s_%d", user.UserId, liked.TypeId)] = user
           //nickNames, ok := mp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)]
           //// 如果点赞的是同一评论  整合为一条数据
