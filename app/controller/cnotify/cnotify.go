@@ -258,11 +258,15 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
         //  }
         //}
 
-        if len(vlikeList) > 3 {
-          info.UserList = vlikeList[:3]
+        lenth := len(vlikeList)
+        if lenth >= 2 {
+          // 最多取两个
+          info.UserList = vlikeList[:2]
+        } else {
+          info.UserList = vlikeList
         }
 
-        info.TotalLikeNum = len(vlikeList)
+        info.TotalLikeNum = lenth
         res = append(res, info)
       }
       // 被点赞的帖子
@@ -322,12 +326,14 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
         //  }
         //
         //}
-
-        if len(clikeList) > 3 {
-          info.UserList = clikeList[:3]
+        lenth := len(clikeList)
+        if lenth >= 2 {
+          info.UserList = clikeList[:2]
+        } else {
+          info.UserList = clikeList
         }
 
-        info.TotalLikeNum = len(clikeList)
+        info.TotalLikeNum = lenth
 
         res = append(res, info)
       }
