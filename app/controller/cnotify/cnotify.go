@@ -101,9 +101,9 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
   commentMp := make(map[int64]*models.VideoComment)
 
   // 视频点赞的用户列表
-  vlikeList := make([]*mlike.LikedUserInfo, 0)
+  vlikeMap := make(map[int64][]*mlike.LikedUserInfo, 0)
   // 评论点赞的用户列表
-  clikeList := make([]*mlike.LikedUserInfo, 0)
+  clikeMap := make(map[int64][]*mlike.LikedUserInfo, 0)
   for _, liked := range list {
     switch liked.ZanType {
     // 被点赞的视频
@@ -114,13 +114,14 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
         if user := svc.user.FindUserByUserid(liked.UserId); user != nil {
           log.Log.Errorf("user.Id:%s", user.UserId)
           //userMp[fmt.Sprintf("%s_%d", user.UserId, liked.TypeId)] = user
-          uinfo := &mlike.LikedUserInfo{
+
+          vlikeMap[video.VideoId] = append(vlikeMap[video.VideoId], &mlike.LikedUserInfo{
             UserId: user.UserId,
             Avatar: user.Avatar,
             NickName: user.NickName,
-          }
+          })
 
-          vlikeList = append(vlikeList, uinfo)
+          //vlikeMap = append(vlikeMap, uinfo)
           //nickNames, ok := mp[fmt.Sprintf("%d_%d", video.VideoId, liked.ZanType)]
           //// 如果点赞的是同一视频  昵称整合为一条数据
           //if ok && nickNames != "" {
@@ -162,13 +163,11 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
         commentMp[comment.Id] = comment
         // 点赞用户
         if user := svc.user.FindUserByUserid(liked.UserId); user != nil {
-          uinfo := &mlike.LikedUserInfo{
+          clikeMap[comment.Id] = append(clikeMap[comment.Id], &mlike.LikedUserInfo{
             UserId: user.UserId,
             Avatar: user.Avatar,
             NickName: user.NickName,
-          }
-
-          clikeList = append(clikeList, uinfo)
+          })
           //userMp[fmt.Sprintf("%s_%d", user.UserId, liked.TypeId)] = user
           //nickNames, ok := mp[fmt.Sprintf("%d_%d", comment.Id, liked.ZanType)]
           //// 如果点赞的是同一评论  整合为一条数据
@@ -271,15 +270,19 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
         //  }
         //}
 
-        lenth := len(vlikeList)
-        if lenth >= 2 {
-          // 最多取两个
-          info.UserList = vlikeList[:2]
-        } else {
-          info.UserList = vlikeList
+        users, ok := vlikeMap[liked.TypeId]
+        if ok && users != nil {
+          lenth := len(users)
+          if lenth >= 2 {
+            // 最多取两个
+            info.UserList = users[:2]
+          } else {
+            info.UserList = users
+          }
+
+          info.TotalLikeNum = lenth
         }
 
-        info.TotalLikeNum = lenth
         res = append(res, info)
       }
       // 被点赞的帖子
@@ -339,14 +342,18 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
         //  }
         //
         //}
-        lenth := len(clikeList)
-        if lenth >= 2 {
-          info.UserList = clikeList[:2]
-        } else {
-          info.UserList = clikeList
-        }
+        users, ok := clikeMap[liked.TypeId]
+        if ok && users != nil {
+          lenth := len(users)
+          if lenth >= 2 {
+            // 最多取两个
+            info.UserList = users[:2]
+          } else {
+            info.UserList = users
+          }
 
-        info.TotalLikeNum = lenth
+          info.TotalLikeNum = lenth
+        }
 
         res = append(res, info)
       }

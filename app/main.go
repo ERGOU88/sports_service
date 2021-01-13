@@ -195,7 +195,7 @@ func init() {
 // @description | 400 | 参数错误 |
 // @description | 500 | 内部错误 |
 func main() {
-	// 启动服务
+  // 启动服务
 	engine := gin.New()
   engine.Static("/static", "./static")
 	routers.InitRouters(engine)
