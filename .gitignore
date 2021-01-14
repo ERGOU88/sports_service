@@ -18,4 +18,5 @@ _cgo_defun.c
 _cgo_gotypes.go
 _cgo_export.*
 
+*.log
 
