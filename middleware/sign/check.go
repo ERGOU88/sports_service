@@ -9,6 +9,7 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"strings"
+  "sports_service/server/app/config"
 )
 
 var AppInfo = map[string]string{
@@ -20,6 +21,12 @@ var AppInfo = map[string]string{
 // 检查签名
 func CheckSign() gin.HandlerFunc {
 	return func(c *gin.Context) {
+    // debug模式下 不校验签名
+    if config.Global.Debug == true {
+      c.Next()
+      return
+    }
+
 		reply := errdef.New(c)
 		appId := c.GetHeader("AppId")
 		sign := c.GetHeader("Sign")
