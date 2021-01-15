@@ -157,6 +157,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
   // 上次已读取的数据下标（默认-1未读取）
   //var readIndex int32 = -1
   res := make([]interface{}, 0)
+  log.Log.Debugf("notify_trace: length:%d", len(res))
   for _, liked := range list {
     switch liked.ZanType {
     // 被点赞的视频
@@ -167,6 +168,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
       // 视频作品
       video, ok := videoMp[liked.TypeId]
       if ok && video != nil {
+        videoMp[liked.TypeId] = nil
         info.ComposeId = video.VideoId
         info.Title = util.TrimHtml(video.Title)
         info.Describe = util.TrimHtml(video.Describe)
@@ -208,6 +210,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
       // 获取评论信息
       comment, ok := commentMp[liked.TypeId]
       if ok && comment != nil {
+        commentMp[liked.TypeId] = nil
         // 被点赞的信息
         info.Content = comment.Content
         info.ComposeId = comment.Id
