@@ -248,8 +248,8 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 	}
 
 	video := svc.video.FindVideoById(videoId)
-	// 视频不存在 或 视频未过审
-	if video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
+	// 视频不存在
+	if video == nil {
 		log.Log.Errorf("comment_trace: video not found or not pass, videoId:%s", videoId)
 		return []*mcomment.VideoComments{}
 	}
@@ -385,8 +385,8 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 // 根据评论点赞数排序 获取视频评论列表
 func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, size int) []*mcomment.VideoComments {
 	video := svc.video.FindVideoById(videoId)
-	// 视频不存在 或 视频未过审
-	if video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
+	// 视频不存在
+	if video == nil {
 		log.Log.Errorf("comment_trace: video not found or not pass, videoId:%s", videoId)
 		return []*mcomment.VideoComments{}
 	}
