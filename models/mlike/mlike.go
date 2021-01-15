@@ -54,9 +54,10 @@ type ZanUserInfo struct {
 
 // 点赞用户信息
 type LikedUserInfo struct {
-  UserId    string   `json:"user_id"`
-  NickName  string   `json:"nick_name"`
-  Avatar    string   `json:"avatar"`
+  UserId      string   `json:"user_id"`
+  NickName    string   `json:"nick_name"`
+  Avatar      string   `json:"avatar"`
+  OpTm        int      `json:"op_tm"`       // 用户点赞时间
 }
 
 // 被点赞的信息
