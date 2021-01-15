@@ -152,7 +152,7 @@ func (svc *NotifyModule) PushSystemNotify(param *umeng.SystemNotifyParams) int {
       return errdef.NOTIFY_USER_NOT_FOUND
     }
 
-    notifyList := make([]*models.SystemMessage, len(userIds))
+    notifyList := make([]*models.SystemMessage, 0)
     for index, user := range list {
       if user.DeviceToken == "" {
         log.Log.Errorf("notify_trace: user device token empty, userId:%s, token:%s", user.UserId, user.DeviceToken)
@@ -190,7 +190,7 @@ func (svc *NotifyModule) PushSystemNotify(param *umeng.SystemNotifyParams) int {
         notify.UmengPlatform = umeng.FPV_IOS
       }
 
-      notifyList[index] = notify
+      notifyList = append(notifyList, notify)
     }
 
     if len(notifyList) == 0 {

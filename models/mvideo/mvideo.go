@@ -393,7 +393,8 @@ func (m *VideoModel) FindVideoListByIds(videoIds string) []*models.Videos {
 }
 
 const (
-  SEARCH_VIDEOS_BY_LABEL_ID = "SELECT v.* FROM videos AS v LEFT JOIN video_labels as vl ON v.video_id=vl.video_id AND vl.label_id=?  WHERE v.status=1 ORDER BY is_top DESC, is_recommend DESC, sortorder DESC, video_id LIMIT ?, ?"
+  SEARCH_VIDEOS_BY_LABEL_ID = "SELECT v.* FROM videos AS v LEFT JOIN video_labels as vl ON v.video_id=vl.video_id " +
+    "AND vl.label_id=?  WHERE v.status=1 ORDER BY is_top DESC, is_recommend DESC, sortorder DESC, video_id LIMIT ?, ?"
 )
 // 通过标签id搜索视频
 func (m *VideoModel) SearchVideosByLabelId(labelId string, offset, size int) []*models.Videos {
