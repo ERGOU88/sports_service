@@ -166,7 +166,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
       info.Type = consts.TYPE_VIDEOS
       // 视频作品
       video, ok := videoMp[liked.TypeId]
-      if ok {
+      if ok && video != nil {
         info.ComposeId = video.VideoId
         info.Title = util.TrimHtml(video.Title)
         info.Describe = util.TrimHtml(video.Describe)
@@ -207,10 +207,16 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 
       // 获取评论信息
       comment, ok := commentMp[liked.TypeId]
-      if ok {
+      if ok && comment != nil {
         // 被点赞的信息
         info.Content = comment.Content
         info.ComposeId = comment.Id
+        // 顶级评论id
+        info.ParentCommentId = comment.ParentCommentId
+        if info.ParentCommentId == 0 {
+          // 当前评论即顶级评论
+          info.ParentCommentId = comment.Id
+        }
 
         // 获取评论对应的视频信息
         video, ok := videoMp[comment.VideoId]
@@ -310,7 +316,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			// 获取评论信息
 			comment := svc.comment.GetVideoCommentById(fmt.Sprint(receiveAt.CommentId))
 			if comment != nil {
-        // 被@的用户信息
+        // 执行@的用户信息
         if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
           // 执行@的用户信息
           info.UserId = user.UserId
@@ -370,15 +376,16 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
             }
 					}
 
-					if comment.ParentCommentId != 0 {
-            // 获取最上级的评论内容
-            parent := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ParentCommentId))
-            if parent != nil {
-              info.ParentComment = parent.Content
-              // 1级评论id
-              info.CommentId = parent.Id
-            }
+          // 获取当前评论 / 回复的被点赞数
+          info.TotalLikeNum = svc.like.GetLikeNumByType(info.CommentId, consts.TYPE_COMMENT)
+          // 获取最上级的评论内容
+          parent := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ParentCommentId))
+          if parent != nil {
+            info.ParentComment = parent.Content
+            // 1级评论id
+            info.CommentId = parent.Id
           }
+
 				}
 
         if userId != "" {
@@ -393,7 +400,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			}
 		}
 
-    log.Log.Errorf("receiveId: %d", receiveAt.Id)
+    log.Log.Debugf("receiveId: %d", receiveAt.Id)
     if lastRead < receiveAt.CreateAt {
       // 用户上次读取的数据下标
       readIndex = index

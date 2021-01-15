@@ -619,6 +619,11 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Vi
           if attention := svc.attention.GetAttentionInfo(userId, reply.UserId); attention != nil {
             reply.IsAttention = attention.Status
           }
+
+          // 获取点赞的信息
+          if likeInfo := svc.like.GetLikeInfo(userId, reply.Id, consts.TYPE_COMMENT); likeInfo != nil {
+            reply.IsLike = likeInfo.Status
+          }
         }
       }
     }

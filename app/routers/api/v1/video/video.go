@@ -359,7 +359,12 @@ func VideoDetail(c *gin.Context) {
 	userId := c.Query("user_id")
 
 	svc := cvideo.New(c)
-	detail := svc.GetVideoDetail(userId, videoId)
+	detail, syscode := svc.GetVideoDetail(userId, videoId)
+	if syscode != errdef.SUCCESS {
+	  reply.Response(http.StatusOK, syscode)
+	  return
+  }
+
 	reply.Data["detail"] = detail
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }

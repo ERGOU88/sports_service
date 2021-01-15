@@ -57,6 +57,7 @@ type ReceiveCommentAtInfo struct {
   CommentId     int64                 `json:"comment_id"`                            // 评论id（1级评论的id）
 
   ReplyCommentId int64                `json:"reply_comment_id"`                      // 回复评论所用id
+  TotalLikeNum   int64                `json:"total_like_num"`                        // 总点赞数
 }
 
 // 首页通知

@@ -83,6 +83,8 @@ type BeLikedInfo struct {
   Content       string                `json:"content"`         // 被点赞的评论内容
   OpTime        int                   `json:"op_time"`         // 用户点赞操作时间
   Type          int                   `json:"type"`            // 类型 1 视频 2 帖子 3 评论
+
+  ParentCommentId  int64              `json:"parent_comment_id,omitempty"`  // 父级评论id
 }
 
 // 被点赞的评论信息

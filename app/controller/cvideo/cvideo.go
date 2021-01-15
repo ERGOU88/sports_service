@@ -642,17 +642,22 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 }
 
 // 获取视频详情页数据
-func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDetailInfo {
+func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDetailInfo, int) {
 	if videoId == "" {
 		log.Log.Error("video_trace: videoId can't empty")
-		return nil
+		return nil, errdef.VIDEO_NOT_EXISTS
 	}
 
 	video := svc.video.FindVideoById(videoId)
 	if video == nil {
 		log.Log.Error("video_trace: video not found, videoId:%s", videoId)
-		return nil
+		return nil, errdef.VIDEO_NOT_EXISTS
 	}
+
+	if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
+    log.Log.Error("video_trace: video not audit , videoId:%s", videoId)
+    return nil, errdef.VIDEO_NOT_EXISTS
+  }
 
 	resp := new(mvideo.VideoDetailInfo)
 	resp.VideoId = video.VideoId
@@ -708,7 +713,7 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
 
 	if userId == "" {
 		log.Log.Error("video_trace: user no login")
-		return resp
+		return resp, errdef.SUCCESS
 	}
 
   // 获取用户信息
@@ -751,7 +756,7 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) *mvideo.VideoDeta
 		resp.IsCollect = collectInfo.Status
 	}
 
-	return resp
+	return resp, errdef.SUCCESS
 
 }
 
