@@ -153,7 +153,7 @@ func (svc *NotifyModule) PushSystemNotify(param *umeng.SystemNotifyParams) int {
     }
 
     notifyList := make([]*models.SystemMessage, 0)
-    for index, user := range list {
+    for _, user := range list {
       if user.DeviceToken == "" {
         log.Log.Errorf("notify_trace: user device token empty, userId:%s, token:%s", user.UserId, user.DeviceToken)
         continue
