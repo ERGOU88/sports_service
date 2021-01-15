@@ -117,6 +117,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
             UserId: user.UserId,
             Avatar: user.Avatar,
             NickName: user.NickName,
+            OpTm: liked.CreateAt,
           })
 
         }
@@ -135,6 +136,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
             UserId: user.UserId,
             Avatar: user.Avatar,
             NickName: user.NickName,
+            OpTm: liked.CreateAt,
           })
 
         }
@@ -188,8 +190,10 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
         if ok && users != nil {
           lenth := len(users)
           if lenth >= 2 {
-            // 最多取两个
-            info.UserList = users[:2]
+            // 最多取两个 取最新
+            info.UserList = users[lenth - 2:]
+            // 返回最新的点赞时间
+            info.OpTime = users[lenth].OpTm
           } else {
             info.UserList = users
           }
@@ -210,6 +214,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
       // 获取评论信息
       comment, ok := commentMp[liked.TypeId]
       if ok && comment != nil {
+        // 评论/视频点赞 多条记录整合为一条
         commentMp[liked.TypeId] = nil
         // 被点赞的信息
         info.Content = comment.Content
@@ -244,8 +249,10 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
         if ok && users != nil {
           lenth := len(users)
           if lenth >= 2 {
-            // 最多取两个
-            info.UserList = users[:2]
+            // 最多取两个 取最新
+            info.UserList = users[lenth - 2:]
+            // 返回最新的点赞时间
+            info.OpTime = users[lenth].OpTm
           } else {
             info.UserList = users
           }
