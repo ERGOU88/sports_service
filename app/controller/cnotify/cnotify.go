@@ -223,7 +223,8 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 
         // 获取评论对应的视频信息
         video, ok := videoMp[comment.VideoId]
-        if ok {
+        log.Log.Debugf("notify_trace: get video by comment id, videoId:%d", comment.VideoId)
+        if ok && video != nil {
           info.Title = util.TrimHtml(video.Title)
           info.Describe = util.TrimHtml(video.Describe)
           info.Cover = video.Cover
