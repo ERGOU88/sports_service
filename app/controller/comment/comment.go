@@ -590,6 +590,10 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Vi
         first.Avatar = user.Avatar
         first.UserName = user.NickName
         first.UserId = user.UserId
+        // 获取点赞的信息
+        if likeInfo := svc.like.GetLikeInfo(userId, comment.Id, consts.TYPE_COMMENT); likeInfo != nil {
+          first.IsLike = likeInfo.Status
+        }
       }
 
       // contents 存储 评论id——>评论的内容
@@ -606,24 +610,23 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Vi
           reply.ReplyCommentAvatar = user.Avatar
           reply.ReplyCommentUserName = user.NickName
           reply.ReplyCommentUserId = user.UserId
+          if user.UserId != "" {
+            // 是否关注
+            if attention := svc.attention.GetAttentionInfo(userId, reply.UserId); attention != nil {
+              reply.IsAttention = attention.Status
+            }
+
+            // 获取点赞的信息
+            if likeInfo := svc.like.GetLikeInfo(userId, reply.Id, consts.TYPE_COMMENT); likeInfo != nil {
+              reply.IsLike = likeInfo.Status
+            }
+          }
         }
 
         // 被回复的内容
         content, ok := content[reply.ReplyCommentId]
         if ok {
           reply.ReplyContent = content
-        }
-
-        if userId != "" {
-          // 是否关注
-          if attention := svc.attention.GetAttentionInfo(userId, reply.UserId); attention != nil {
-            reply.IsAttention = attention.Status
-          }
-
-          // 获取点赞的信息
-          if likeInfo := svc.like.GetLikeInfo(userId, reply.Id, consts.TYPE_COMMENT); likeInfo != nil {
-            reply.IsLike = likeInfo.Status
-          }
         }
       }
     }
