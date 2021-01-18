@@ -32,12 +32,12 @@ type SystemNotifyParams struct {
 
 // 撤回系统推送请求参数
 type CancelSystemNotifyParam struct {
-  SystemId        int64        `json:"system_id"`   // 系统消息id
+  SystemId        int64        `json:"system_id" binding:"required"`   // 系统消息id
 }
 
 // 删除系统推送请求参数
 type DelSystemNotifyParam struct {
-  SystemId        int64        `json:"system_id"`   // 系统消息id
+  SystemId        int64        `json:"system_id" binding:"required"`   // 系统消息id
 }
 
 const (
