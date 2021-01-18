@@ -74,10 +74,10 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
   res := make([]interface{}, len(list))
   log.Log.Debugf("notify_trace: length:%d", len(res))
   for index, liked := range list {
+    info := new(mlike.BeLikedInfo)
     switch liked.ZanType {
     // 被点赞的视频
     case consts.TYPE_VIDEOS:
-      info := new(mlike.BeLikedInfo)
       info.OpTime = liked.CreateAt
       info.Type = consts.TYPE_VIDEOS
       info.JumpVideoId = liked.TypeId
@@ -104,7 +104,6 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
     case consts.TYPE_POSTS:
     // 被点赞的评论
     case consts.TYPE_COMMENT:
-      info := new(mlike.BeLikedInfo)
       info.OpTime = liked.CreateAt
       info.Type = consts.TYPE_COMMENT
 
@@ -141,31 +140,32 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 
 
       }
-
-      var userList []*models.User
-      userIds := strings.Split(liked.UserId, ",")
-      lenth := len(userIds)
-      if lenth >= 2 {
-        // 最多取两个 取最新
-        userList = svc.user.FindUserByUserids(strings.Join(userIds[lenth-2:], ","), 0, 2)
-
-      } else {
-        userList = svc.user.FindUserByUserids(strings.Join(userIds, ""), 0, 1)
-      }
-
-      for _, user := range userList {
-        info.UserList = append(info.UserList, &mlike.LikedUserInfo{
-          UserId: user.UserId,
-          NickName: user.NickName,
-          Avatar: user.Avatar,
-          OpTm:  liked.CreateAt,
-        })
-      }
-
-      info.TotalLikeNum = lenth
-      log.Log.Debugf("notify_trace: beLiked info:%+v", info)
-      res[index] = info
     }
+
+
+    var userList []*models.User
+    userIds := strings.Split(liked.UserId, ",")
+    lenth := len(userIds)
+    if lenth >= 2 {
+      // 最多取两个 取最新
+      userList = svc.user.FindUserByUserids(strings.Join(userIds[lenth-2:], ","), 0, 2)
+
+    } else {
+      userList = svc.user.FindUserByUserids(strings.Join(userIds, ""), 0, 1)
+    }
+
+    for _, user := range userList {
+      info.UserList = append(info.UserList, &mlike.LikedUserInfo{
+        UserId: user.UserId,
+        NickName: user.NickName,
+        Avatar: user.Avatar,
+        OpTm:  liked.CreateAt,
+      })
+    }
+
+    info.TotalLikeNum = lenth
+    log.Log.Debugf("notify_trace: beLiked info:%+v", info)
+    res[index] = info
   }
 
   // 记录读取被点赞通知消息的时间
