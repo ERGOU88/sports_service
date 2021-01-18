@@ -244,9 +244,9 @@ func (svc *NotifyModule) DelSystemNotify(systemId int64) int {
     return errdef.NOTIFY_CAN_NOT_DEL
   }
 
-  // 将消息状态设置为已删除(send_status 3)
-  if err := svc.notify.UpdateSendStatus(3, systemId); err != nil {
-    log.Log.Errorf("notify_trace: update send status err:%s", err)
+  affected, err := svc.notify.DelSystemNotify(systemId)
+  if affected != 1 || err != nil {
+    log.Log.Errorf("notify_trace: del system notify err:%s", err)
     return errdef.NOTIFY_DEL_FAIL
   }
 

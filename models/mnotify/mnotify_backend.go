@@ -48,4 +48,9 @@ func (m *NotifyModel) GetAllSystemNotify() []*models.SystemMessage {
 
 }
 
+// 删除系统通知
+func (m *NotifyModel) DelSystemNotify(id int64) (int64, error) {
+  return m.Engine.ID(id).Delete(&models.SystemMessage{})
+}
+
 

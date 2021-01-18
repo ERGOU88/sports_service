@@ -169,7 +169,7 @@ func (m *LikeModel) GetLikeInfo(userId string, composeId int64, zanType int) *mo
 // 获取用户被点赞的记录 包含 视频、评论等
 func (m *LikeModel) GetBeLikedList(toUserId string, offset, size int) []*models.ThumbsUp {
 	var list []*models.ThumbsUp
-	if err := m.Engine.Where("to_user_id=? AND status=1", toUserId).Desc("id").Limit(size, offset).Find(&list); err != nil {
+	if err := m.Engine.Where("to_user_id=? AND status=1", toUserId).Desc("create_at", "id").Limit(size, offset).Find(&list); err != nil {
 		log.Log.Errorf("like_trace: get be liked list err:%s", err)
 		return nil
 	}

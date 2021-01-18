@@ -34,7 +34,7 @@ wechatAppid: wx9306bf43be47830b
 wechatSecret: 3af44d06170ecdab4b49d1c70268c71f
 nsqAddr: 127.0.0.1:4150
 amqpDsn: amqp://admin:admin@127.0.0.1:5672
-staticDomain: :11001
+staticDomain: http://fpv-web-qa.youzu.com
 
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:

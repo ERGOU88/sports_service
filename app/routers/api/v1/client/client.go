@@ -42,13 +42,27 @@ func InitInfo(c *gin.Context) {
 	reply.Data["avatar_list"] = avatarList
   reply.Data["world_list"] = worldList
   reply.Data["label_list"] = labelList
-  // 登陆协议
-  reply.Data["login_treaty"] = fmt.Sprintf("%s%s", config.Global.StaticDomain, "/static/template/login_treaty.html")
-  // 上传协议
-  reply.Data["upload_treaty"] = fmt.Sprintf("%s%s", config.Global.StaticDomain, "/static/template/upload_treaty.html")
-  // 常见问题
-  reply.Data["faq_h5"] = fmt.Sprintf("%s%s", config.Global.StaticDomain, "/static/template/faq.html")
-  // 关于
-  reply.Data["about"] = fmt.Sprintf("%s%s", config.Global.StaticDomain, "/static/template/about_content.html")
+
+  type H5Info struct {
+    PrivacyTreaty    string   `json:"privacy_treaty"`           // 隐私协议
+    UserTreaty       string   `json:"user_treaty"`              // 用户协议
+    CommentReport    string   `json:"comment_report"`           // 举报评论
+    CommonProblem    string   `json:"common_problem"`           // 常见问题
+    AboutFpv         string   `json:"about_fpv"`                // 关于fpv
+    Feedback         string   `json:"feedback"`                 // 问题反馈
+    NoticeDetail     string   `json:"notice_detail"`            // 消息详情
+  }
+
+  h5Info := &H5Info{
+    PrivacyTreaty: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/privacyagreement"),
+    UserTreaty: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/useragreement"),
+    CommentReport: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/commentreport"),
+    Feedback: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/problemfeedback"),
+    AboutFpv: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/about"),
+    CommonProblem: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/problemcommon"),
+    NoticeDetail: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/noticedetail"),
+  }
+
+  reply.Data["h5_info"] = h5Info
   reply.Response(http.StatusOK, errdef.SUCCESS)
 }
