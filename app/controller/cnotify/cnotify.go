@@ -51,6 +51,130 @@ func New(c *gin.Context) NotifyModule {
 	}
 }
 
+// 所有数据 同一视频/评论点赞 整合为一条数据
+func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []interface{} {
+  if userId == "" {
+    log.Log.Error("notify_trace: need login")
+    return []interface{}{}
+  }
+
+  if info := svc.user.FindUserByUserid(userId); info == nil {
+    log.Log.Errorf("notify_trace: user not found, userId:%s", userId)
+    return []interface{}{}
+  }
+
+  offset := (page - 1) * size
+  // 被点赞的作品列表
+  list := svc.like.GetNewBeLikedList(userId, offset, size)
+  if len(list) == 0 {
+    log.Log.Error("notify_trace: be liked list empty")
+    return []interface{}{}
+  }
+
+  res := make([]interface{}, len(list))
+  log.Log.Debugf("notify_trace: length:%d", len(res))
+  for index, liked := range list {
+    switch liked.ZanType {
+    // 被点赞的视频
+    case consts.TYPE_VIDEOS:
+      info := new(mlike.BeLikedInfo)
+      info.OpTime = liked.CreateAt
+      info.Type = consts.TYPE_VIDEOS
+      info.JumpVideoId = liked.TypeId
+      video := svc.video.FindVideoById(fmt.Sprint(liked.TypeId))
+      if video != nil {
+        info.ComposeId = video.VideoId
+        info.Title = util.TrimHtml(video.Title)
+        info.Describe = util.TrimHtml(video.Describe)
+        info.Cover = video.Cover
+        info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+        info.VideoDuration = video.VideoDuration
+        info.VideoWidth = video.VideoWidth
+        info.VideoHeight = video.VideoHeight
+        info.CreateAt = video.CreateAt
+        // 视频统计数据
+        if statistic := svc.video.GetVideoStatistic(fmt.Sprint(liked.TypeId)); statistic != nil {
+          info.BarrageNum = statistic.BarrageNum
+          info.BrowseNum = statistic.BrowseNum
+        }
+      }
+
+
+      // 被点赞的帖子
+    case consts.TYPE_POSTS:
+    // 被点赞的评论
+    case consts.TYPE_COMMENT:
+      info := new(mlike.BeLikedInfo)
+      info.OpTime = liked.CreateAt
+      info.Type = consts.TYPE_COMMENT
+
+      // 获取评论信息
+      comment := svc.comment.GetVideoCommentById(fmt.Sprint(liked.TypeId))
+      if comment != nil {
+        // 被点赞的信息
+        info.Content = comment.Content
+        info.ComposeId = comment.Id
+        // 顶级评论id
+        info.ParentCommentId = comment.ParentCommentId
+        if info.ParentCommentId == 0 {
+          // 当前评论即顶级评论
+          info.ParentCommentId = comment.Id
+        }
+
+        // 获取评论对应的视频信息
+        video := svc.video.FindVideoById(fmt.Sprint(comment.VideoId))
+        if video != nil {
+          info.Title = util.TrimHtml(video.Title)
+          info.Describe = util.TrimHtml(video.Describe)
+          info.Cover = video.Cover
+          info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+          info.VideoDuration = video.VideoDuration
+          info.VideoWidth = video.VideoWidth
+          info.VideoHeight = video.VideoHeight
+          info.CreateAt = video.CreateAt
+          // 视频统计数据
+          if statistic := svc.video.GetVideoStatistic(fmt.Sprint(liked.TypeId)); statistic != nil {
+            info.BarrageNum = statistic.BarrageNum
+            info.BrowseNum = statistic.BrowseNum
+          }
+        }
+
+
+      }
+
+      var userList []*models.User
+      userIds := strings.Split(liked.UserId, ",")
+      lenth := len(userIds)
+      if lenth >= 2 {
+        // 最多取两个 取最新
+        userList = svc.user.FindUserByUserids(strings.Join(userIds[lenth-2:], ","), 0, 2)
+
+      } else {
+        userList = svc.user.FindUserByUserids(strings.Join(userIds, ""), 0, 1)
+      }
+
+      for index, user := range userList {
+        info.UserList[index] = &mlike.LikedUserInfo{
+          UserId: user.UserId,
+          NickName: user.NickName,
+          Avatar: user.Avatar,
+          OpTm:  liked.CreateAt,
+        }
+      }
+
+      info.TotalLikeNum = lenth
+      res[index] = info
+    }
+  }
+
+  // 记录读取被点赞通知消息的时间
+  if err := svc.notify.RecordReadBeLikedTime(userId); err != nil {
+    log.Log.Errorf("notify_trace: record read liked notify time err:%s", err)
+  }
+
+  return res
+}
+
 // 保存用户通知设置
 func (svc *NotifyModule) SaveUserNotifySetting(userId string, params *mnotify.NotifySettingParams) int {
 	if info := svc.user.FindUserByUserid(userId); info == nil {

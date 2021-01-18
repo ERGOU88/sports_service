@@ -178,6 +178,20 @@ func (m *LikeModel) GetBeLikedList(toUserId string, offset, size int) []*models.
 	return list
 }
 
+const (
+  QUERY_BE_LIKED_LIST = "SELECT GROUP_CONCAT(tu.user_id) AS user_id, tu.* FROM `thumbs_up` AS tu WHERE tu.`status` = 1 " +
+    "AND tu.to_user_id=? GROUP BY `type_id`, `zan_type` ORDER BY tu.`create_at` DESC, tu.`id` DESC LIMIT ?, ?"
+)
+// 获取用户被点赞的记录 包含 视频、评论等 所有数据 相同的视频/评论点赞 整合为一条数据
+func (m *LikeModel) GetNewBeLikedList(toUserId string, offset, size int) []*models.ThumbsUp {
+  var list []*models.ThumbsUp
+  if err := m.Engine.SQL(QUERY_BE_LIKED_LIST, toUserId, offset, size).Find(&list); err != nil {
+    return nil
+  }
+
+  return list
+}
+
 // 更新点赞状态 点赞/取消点赞
 func (m *LikeModel) UpdateLikeStatus() error {
 	if _, err := m.Engine.ID(m.Like.Id).
