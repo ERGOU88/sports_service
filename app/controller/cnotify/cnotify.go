@@ -369,6 +369,8 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
         // 进行回复使用的id
         info.ReplyCommentId = receiveAt.CommentId
         info.Content = comment.Content
+        // 获取当前评论 / 回复的被点赞数
+        info.TotalLikeNum = svc.like.GetLikeNumByType(receiveAt.CommentId, consts.TYPE_COMMENT)
 				// 如果父评论id为0 则表示 是1级评论 不为0 则表示是回复
 				if comment.ParentCommentId != 0 {
 					// 获取被回复的内容
@@ -387,8 +389,6 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
             }
 					}
 
-          // 获取当前评论 / 回复的被点赞数
-          info.TotalLikeNum = svc.like.GetLikeNumByType(info.CommentId, consts.TYPE_COMMENT)
           // 获取最上级的评论内容
           parent := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ParentCommentId))
           if parent != nil {

@@ -203,7 +203,7 @@ var MsgFlags = map[int]string{
 	LIKE_ALREADY_EXISTS:         "已点过赞",
 	LIKE_VIDEO_FAIL:             "视频点赞失败",
 	LIKE_RECORD_NOT_EXISTS:      "未点赞该视频",
-	LIKE_REPEAT_CANCEL:          "已取消收藏，请勿重复操作",
+	LIKE_REPEAT_CANCEL:          "已取消点赞，请勿重复操作",
 	LIKE_CANCEL_FAIL:            "取消点赞失败",
 	LIKE_COMMENT_NOT_EXISTS:     "点赞的评论不存在",
 	LIKE_COMMENT_FAIL:           "评论点赞失败",
