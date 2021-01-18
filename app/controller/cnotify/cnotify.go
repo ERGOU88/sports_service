@@ -153,13 +153,13 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
         userList = svc.user.FindUserByUserids(strings.Join(userIds, ""), 0, 1)
       }
 
-      for index, user := range userList {
-        info.UserList[index] = &mlike.LikedUserInfo{
+      for _, user := range userList {
+        info.UserList = append(info.UserList, &mlike.LikedUserInfo{
           UserId: user.UserId,
           NickName: user.NickName,
           Avatar: user.Avatar,
           OpTm:  liked.CreateAt,
-        }
+        })
       }
 
       info.TotalLikeNum = lenth
