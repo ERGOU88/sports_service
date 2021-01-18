@@ -6,14 +6,23 @@ import (
 )
 
 // 管理后台获取系统通知
-func (m *NotifyModel) GetSystemNotifyList(offset, size int) []*models.SystemMessage {
-  sql := "SELECT * FROM system_message WHERE send_type=0 ORDER BY system_id DESC LIMIT ?, ?"
+// 管理后台获取系统通知
+// sendStatus 发送状态 -1 全部 0 已发送 1 未发送
+// sendDefault 通知类型 0 指定玩家 1 全部玩家
+func (m *NotifyModel) GetSystemNotifyList(offset, size int, sendStatus, sendDefault string) []*models.SystemMessage {
+  sql := fmt.Sprintf("SELECT * FROM system_message WHERE send_type=0 AND send_default=%s ", sendDefault)
+  if sendStatus != "-1" {
+    sql += fmt.Sprintf("AND send_status=%s", sendStatus)
+  }
+
+  sql += " ORDER BY system_id DESC LIMIT ?, ?"
   var list []*models.SystemMessage
   if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
     return nil
   }
 
   return list
+
 }
 
 // 添加系统通知

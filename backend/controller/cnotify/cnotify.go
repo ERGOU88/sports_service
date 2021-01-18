@@ -37,9 +37,9 @@ func New(c *gin.Context) NotifyModule {
 }
 
 // 获取系统推送列表
-func (svc *NotifyModule) GetSystemNotifyList(page, size int) []*models.SystemMessage {
+func (svc *NotifyModule) GetSystemNotifyList(page, size int, sendStatus, sendDefault string) []*models.SystemMessage {
   offset := (page - 1) * size
-  list := svc.notify.GetSystemNotifyList(offset, size)
+  list := svc.notify.GetSystemNotifyList(offset, size, sendStatus, sendDefault)
   if list == nil {
     return []*models.SystemMessage{}
   }

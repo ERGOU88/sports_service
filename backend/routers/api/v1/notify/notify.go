@@ -30,9 +30,12 @@ func PushSystemNotify(c *gin.Context) {
 func SystemNotifyList(c *gin.Context) {
   reply := errdef.New(c)
   page, size := util.PageInfo(c.Query("page"), c.Query("size"))
-
+  // 发送状态 -1 全部 0 已发送 1 未发送
+  sendStatus := c.Query("send_status")
+  // 通知类型 0 指定玩家 1 全部玩家
+  sendDefault := c.Query("send_default")
   svc := cnotify.New(c)
-  list := svc.GetSystemNotifyList(page, size)
+  list := svc.GetSystemNotifyList(page, size, sendStatus, sendDefault)
   reply.Data["list"] = list
   reply.Response(http.StatusOK, errdef.SUCCESS)
 }
