@@ -62,7 +62,7 @@ type LikedUserInfo struct {
 
 // 被点赞的信息
 type BeLikedInfo struct {
-  ComposeId     int64                 `json:"compose_id"`      // 作品id
+  ComposeId     int64                 `json:"compose_id"`      // 作品id 视频id/评论id/帖子id
   Title         string                `json:"title"`           // 标题
   Describe      string                `json:"describe"`        // 描述
   Cover         string                `json:"cover"`           // 封面
@@ -84,6 +84,7 @@ type BeLikedInfo struct {
   Content       string                `json:"content"`         // 被点赞的评论内容
   OpTime        int                   `json:"op_time"`         // 用户点赞操作时间
   Type          int                   `json:"type"`            // 类型 1 视频 2 帖子 3 评论
+  JumpVideoId   int64                 `json:"jump_video_id"`   // 跳转所需视频id
 
   ParentCommentId  int64              `json:"parent_comment_id,omitempty"`  // 父级评论id
 }

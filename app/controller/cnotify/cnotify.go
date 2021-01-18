@@ -167,6 +167,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
       info := new(mlike.BeLikedInfo)
       info.OpTime = liked.CreateAt
       info.Type = consts.TYPE_VIDEOS
+      info.JumpVideoId = liked.TypeId
       // 视频作品
       video, ok := videoMp[liked.TypeId]
       if ok && video != nil {
@@ -214,6 +215,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
       // 获取评论信息
       comment, ok := commentMp[liked.TypeId]
       if ok && comment != nil {
+        info.JumpVideoId = comment.VideoId
         // 评论/视频点赞 多条记录整合为一条
         commentMp[liked.TypeId] = nil
         // 被点赞的信息
