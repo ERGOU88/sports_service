@@ -193,7 +193,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
             // 最多取两个 取最新
             info.UserList = users[lenth - 2:]
             // 返回最新的点赞时间
-            info.OpTime = users[lenth-1].OpTm
+            info.OpTime = users[0].OpTm
           } else {
             info.UserList = users
           }
@@ -252,7 +252,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
             // 最多取两个 取最新
             info.UserList = users[lenth - 2:]
             // 返回最新的点赞时间
-            info.OpTime = users[lenth-1].OpTm
+            info.OpTime = users[0].OpTm
           } else {
             info.UserList = users
           }
