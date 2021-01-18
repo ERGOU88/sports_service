@@ -163,6 +163,7 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
       }
 
       info.TotalLikeNum = lenth
+      log.Log.Debugf("notify_trace: beLiked info:%+v", info)
       res[index] = info
     }
   }
