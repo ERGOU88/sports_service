@@ -95,7 +95,6 @@ func (svc *NotifyModule) PushSystemNotify(param *umeng.SystemNotifyParams) int {
       return errdef.NOTIFY_PUSH_FAIL
     }
 
-    notifyList := make([]*models.SystemMessage, 2)
     notify := new(models.SystemMessage)
     notify.SendType = 0
     notify.Status = 0
@@ -106,34 +105,19 @@ func (svc *NotifyModule) PushSystemNotify(param *umeng.SystemNotifyParams) int {
     notify.SendDefault = 1
     notify.SendId = "admin"
     notify.CreateAt = now
-    notify.TaskId = taskId
-    notify.UmengPlatform = umeng.FPV_ANDROID
+    notify.AndroidTaskId = taskId
     notify.SendStatus = sendStatus
-    notifyList[0] = notify
 
     // ios端广播推送
     taskId, err = umodel.PushBroadcastNotifyByIos(param.Topic, param.Content, nil, policy)
     if err != nil {
       log.Log.Errorf("notify_trace: push ios broadcast notify err:%s", err)
     }
+    notify.IosTaskId = taskId
 
-    iosNotify := new(models.SystemMessage)
-    iosNotify.UmengPlatform = umeng.FPV_IOS
-    iosNotify.SendType = 0
-    iosNotify.Status = 0
-    iosNotify.SendTime = param.SendTm
-    iosNotify.ReceiveId = ""
-    iosNotify.SystemContent = param.Content
-    iosNotify.SystemTopic = param.Topic
-    iosNotify.SendDefault = 1
-    iosNotify.SendId = "admin"
-    iosNotify.CreateAt = now
-    iosNotify.TaskId = taskId
-    iosNotify.SendStatus = sendStatus
-    notifyList[1] = iosNotify
-    affected, err := svc.notify.AddMultiSystemNotify(notifyList)
-    if affected != 2 || err != nil {
-      log.Log.Errorf("notify_trace: add multi system notify err:%s", err)
+    affected, err := svc.notify.AddSystemNotify(notify)
+    if affected != 1 || err != nil {
+      log.Log.Errorf("notify_trace: add system notify err:%s", err)
       return errdef.NOTIFY_PUSH_FAIL
     }
 
@@ -215,7 +199,7 @@ func (svc *NotifyModule) CancelSystemNotify(systemId int64) int {
     return errdef.NOTIFY_MSG_NOT_EXISTS
   }
 
-  if msg.TaskId == "" {
+  if msg.AndroidTaskId == "" && msg.IosTaskId == "" {
     log.Log.Error("notify_trace: can not cancel, taskId is empty")
     return errdef.NOTIFY_CAN_NOT_CANCEL
   }
@@ -227,8 +211,13 @@ func (svc *NotifyModule) CancelSystemNotify(systemId int64) int {
   }
 
   umodel := umeng.New()
-  if err := umodel.CancelNotify(msg.TaskId, msg.UmengPlatform); err != nil {
-    log.Log.Errorf("notify_trace: cancel notify err:%s", err)
+  if err := umodel.CancelNotify(msg.AndroidTaskId, umeng.FPV_ANDROID); err != nil {
+    log.Log.Errorf("notify_trace: cancel android notify err:%s", err)
+    return errdef.NOTIFY_CANCEL_FAIL
+  }
+
+  if err := umodel.CancelNotify(msg.IosTaskId, umeng.FPV_IOS); err != nil {
+    log.Log.Errorf("notify_trace: cancel ios notify err:%s", err)
     return errdef.NOTIFY_CANCEL_FAIL
   }
 
@@ -236,6 +225,29 @@ func (svc *NotifyModule) CancelSystemNotify(systemId int64) int {
   if err := svc.notify.UpdateSendStatus(2, systemId); err != nil {
     log.Log.Errorf("notify_trace: update send status err:%s", err)
     return errdef.NOTIFY_CANCEL_FAIL
+  }
+
+  return errdef.SUCCESS
+}
+
+// 撤回系统推送
+func (svc *NotifyModule) DelSystemNotify(systemId int64) int {
+  msg := svc.notify.GetSystemNotifyById(fmt.Sprint(systemId))
+  if msg == nil {
+    log.Log.Errorf("notify_trace: system notify not found, id:%d", systemId)
+    return errdef.NOTIFY_MSG_NOT_EXISTS
+  }
+
+  // 未发送状态的消息 需要先撤回 方可删除
+  if msg.SendStatus == 1 {
+    log.Log.Error("notify_trace: can not del, send status is 1")
+    return errdef.NOTIFY_CAN_NOT_DEL
+  }
+
+  // 将消息状态设置为已删除(send_status 3)
+  if err := svc.notify.UpdateSendStatus(3, systemId); err != nil {
+    log.Log.Errorf("notify_trace: update send status err:%s", err)
+    return errdef.NOTIFY_DEL_FAIL
   }
 
   return errdef.SUCCESS

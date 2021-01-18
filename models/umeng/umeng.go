@@ -35,6 +35,11 @@ type CancelSystemNotifyParam struct {
   SystemId        int64        `json:"system_id"`   // 系统消息id
 }
 
+// 删除系统推送请求参数
+type DelSystemNotifyParam struct {
+  SystemId        int64        `json:"system_id"`   // 系统消息id
+}
+
 const (
   FPV_ANDROID = 1
   FPV_IOS     = 2

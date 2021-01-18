@@ -64,6 +64,8 @@ const (
   NOTIFY_CAN_NOT_CANCEL       = 15007
   NOTIFY_CANCEL_FAIL          = 15008
   NOTIFY_INVALID_START_TM     = 15009
+  NOTIFY_CAN_NOT_DEL          = 15010
+  NOTIFY_DEL_FAIL             = 15011
 
 )
 
@@ -125,6 +127,8 @@ var MsgFlags = map[int]string{
   NOTIFY_CAN_NOT_CANCEL:          "该通知无法撤回",
   NOTIFY_CANCEL_FAIL:             "系统通知撤回失败",
   NOTIFY_INVALID_START_TM:        "最大可设置当前时间 + 7天",
+  NOTIFY_CAN_NOT_DEL:             "无法删除！请先撤回该通知",
+  NOTIFY_DEL_FAIL:                "删除失败",
 }
 
 func GetMsg(code int) string {

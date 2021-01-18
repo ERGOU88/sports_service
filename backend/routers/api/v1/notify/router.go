@@ -13,5 +13,7 @@ func Router(engine *gin.Engine) {
     notify.GET("/list", SystemNotifyList)
     // 撤回定时推送 todo: 添加发送状态 已发送 未发送 已撤回
     notify.POST("/cancel", CancelSystemNotify)
+    // 删除系统消息
+    notify.POST("/del", DelSystemNotify)
   }
 }

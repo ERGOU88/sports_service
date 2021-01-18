@@ -52,3 +52,19 @@ func CancelSystemNotify(c *gin.Context) {
   syscode := svc.CancelSystemNotify(param.SystemId)
   reply.Response(http.StatusOK, syscode)
 }
+
+// 删除系统通知
+func DelSystemNotify(c *gin.Context) {
+  reply := errdef.New(c)
+  param := &umeng.DelSystemNotifyParam{}
+  if err := c.BindJSON(param); err != nil {
+    log.Log.Errorf("notify_trace: del system notify param err:%s, param:%+v", err, param)
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := cnotify.New(c)
+  // 删除系统推送
+  syscode := svc.DelSystemNotify(param.SystemId)
+  reply.Response(http.StatusOK, syscode)
+}
