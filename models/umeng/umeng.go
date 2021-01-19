@@ -23,7 +23,7 @@ type PushMessage struct {
 
 // 后台系统推送通知请求参数
 type SystemNotifyParams struct {
-  SendType        int32       `json:"send_type" binding:"required"`   // -1 全部 1 指定用户发送
+  SendDefault     int32       `json:"send_default"`                   // 1 全部 0 指定用户发送
   UserIds         string      `json:"user_ids"`                       // 如果指定用户id 多个用逗号分隔
   Content         string      `json:"content" binding:"required"`     // 推送内容
   Topic           string      `json:"topic"`                          // 推送标题
