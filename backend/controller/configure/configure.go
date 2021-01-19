@@ -39,13 +39,13 @@ func New(c *gin.Context) ConfigModule {
 
 // 后台添加banner
 func (svc *ConfigModule) AddBanner(params *mbanner.AddBannerParams) int {
+  now := int(time.Now().Unix())
   if params.EndTime - params.StartTime < 1800 ||
     params.EndTime <= params.StartTime ||
-    params.EndTime <= int(time.Now().Unix()) {
+    params.EndTime <= now {
     return errdef.CONFIG_INVALID_END_TIME
   }
 
-	now := int(time.Now().Unix())
 	svc.banner.Banners.UpdateAt = now
 	svc.banner.Banners.CreateAt = now
 	svc.banner.Banners.Cover = params.Cover
@@ -59,13 +59,43 @@ func (svc *ConfigModule) AddBanner(params *mbanner.AddBannerParams) int {
 	svc.banner.Banners.Sortorder = params.Sortorder
 	svc.banner.Banners.Type = params.Type
 	// todo: 后台可选跳转形式
-	svc.banner.Banners.JumpType = 1
+	svc.banner.Banners.JumpType = params.JumpType
 	if err := svc.banner.AddBanner(); err != nil {
 		return errdef.CONFIG_ADD_BANNER_FAIL
 	}
 
 	return errdef.SUCCESS
 }
+
+// 后台更新banner
+func (svc *ConfigModule) UpdateBanner(params *mbanner.UpdateBannerParams) int {
+  now := int(time.Now().Unix())
+  if params.EndTime - params.StartTime < 1800 ||
+    params.EndTime <= params.StartTime ||
+    params.EndTime <= now {
+    return errdef.CONFIG_INVALID_END_TIME
+  }
+
+  svc.banner.Banners.UpdateAt = now
+  svc.banner.Banners.Cover = params.Cover
+  svc.banner.Banners.Status = params.Status
+  svc.banner.Banners.Title = params.Title
+  svc.banner.Banners.Explain = params.Explain
+  svc.banner.Banners.JumpUrl = params.JumpUrl
+  svc.banner.Banners.ShareUrl = params.ShareUrl
+  svc.banner.Banners.StartTime = params.StartTime
+  svc.banner.Banners.EndTime = params.EndTime
+  svc.banner.Banners.Sortorder = params.Sortorder
+  svc.banner.Banners.Type = params.Type
+  svc.banner.Banners.JumpType = params.JumpType
+  cols := "update_at,cover,status,title,explain,jump_url,share_url,start_time,end_time,sortorder,type,jump_type"
+  if err := svc.banner.UpdateBanner(params.Id, cols); err != nil {
+    return errdef.CONFIG_UPDATE_BANNER_FAIL
+  }
+
+  return errdef.SUCCESS
+}
+
 
 // 后台删除banner
 func (svc *ConfigModule) DelBanner(param *mbanner.DelBannerParam) int {

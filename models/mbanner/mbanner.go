@@ -1,10 +1,9 @@
 package mbanner
 
 import (
-	"github.com/go-xorm/xorm"
-	"sports_service/server/models"
-	"sports_service/server/global/app/log"
-	"time"
+  "github.com/go-xorm/xorm"
+  "sports_service/server/global/app/log"
+  "sports_service/server/models"
 )
 
 type BannerModel struct {
@@ -23,6 +22,23 @@ type AddBannerParams struct {
 	StartTime int    `binding:"required" json:"start_time"`
 	Title     string `json:"title"`
 	Type      int    `json:"type"`
+	JumpType  int    `json:"jump_type"`
+}
+
+// 后台更新banner请求参数
+type UpdateBannerParams struct {
+  Id        int64  `json:"id" binding:"required"`
+  Cover     string `json:"cover" binding:"required"`
+  EndTime   int    `json:"end_time" binding:"required"`
+  Explain   string `json:"explain"`
+  JumpUrl   string `json:"jump_url"`
+  ShareUrl  string `json:"share_url"`
+  Sortorder int    `json:"sortorder"`
+  StartTime int    `json:"start_time" binding:"required"`
+  Title     string `json:"title"`
+  Type      int    `json:"type"`
+  JumpType  int    `json:"jump_type"`
+  Status    int    `json:"status"`
 }
 
 // 后台删除banner请求参数
@@ -73,11 +89,10 @@ func (m *BannerModel) DelBanner(bannerId string) error {
 	return nil
 }
 
-// 更新banner状态 0.待上架 1.上架 2.已过期
-func (m *BannerModel) UpdateBanner(bannerId string, status int) error {
-	m.Banners.Status = status
-	m.Banners.UpdateAt = int(time.Now().Unix())
-	if _, err := m.Engine.Where("id = ?", bannerId).Cols("update_at, status").Update(m.Banners); err != nil {
+// 更新banner
+// 状态 0.待上架 1.上架 2.已过期
+func (m *BannerModel) UpdateBanner(id int64, cols string) error {
+	if _, err := m.Engine.Where("id = ?", id).Cols(cols).Update(m.Banners); err != nil {
 		log.Log.Errorf("banner_trace: update banner err:%s", err)
 		return err
 	}

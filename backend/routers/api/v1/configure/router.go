@@ -8,6 +8,8 @@ func Router(engine *gin.Engine) {
 	{
 		// 添加banner
 		configure.POST("/add/banner", AddBanner)
+		// 更新banner
+		configure.POST("/update/banner", UpdateBanner)
 		// 删除banner
 		configure.POST("/del/banner", DelBanner)
 		// 获取banner列表

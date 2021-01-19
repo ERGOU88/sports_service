@@ -28,6 +28,20 @@ func AddBanner(c *gin.Context) {
 	reply.Response(http.StatusOK, syscode)
 }
 
+// 更新banner
+func UpdateBanner(c *gin.Context) {
+  reply := errdef.New(c)
+  params := new(mbanner.UpdateBannerParams)
+  if err := c.BindJSON(params); err != nil {
+    reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := configure.New(c)
+  syscode := svc.UpdateBanner(params)
+  reply.Response(http.StatusOK, syscode)
+}
+
 // 删除banner
 func DelBanner(c *gin.Context) {
 	reply := errdef.New(c)

@@ -43,6 +43,7 @@ const (
   CONFIG_ADD_PACKAGE_FAIL     = 12013
   CONFIG_UPDATE_PACKAGE_FAIL  = 12014
   CONFIG_DEL_PACKAGE_FAIL     = 12015
+  CONFIG_UPDATE_BANNER_FAIL   = 12016
 
 	// 13001 - 14000 用户相关错误码
 	USER_FORBID_FAIL            = 13001
@@ -109,6 +110,7 @@ var MsgFlags = map[int]string{
   CONFIG_ADD_PACKAGE_FAIL:     "添加新包失败",
   CONFIG_UPDATE_PACKAGE_FAIL:  "更新包信息失败",
   CONFIG_DEL_PACKAGE_FAIL:     "删除包信息失败",
+  CONFIG_UPDATE_BANNER_FAIL:   "banner更新失败",
 
   USER_FORBID_FAIL:            "用户封禁失败",
 	USER_UNFORBID_FAIL:          "用户解封失败",
