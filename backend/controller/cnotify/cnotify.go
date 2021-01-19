@@ -85,9 +85,9 @@ func (svc *NotifyModule) PushSystemNotify(param *umeng.SystemNotifyParams) int {
   }
 
   umodel := umeng.New()
-  switch param.SendType {
-  // -1 全部用户推送
-  case -1:
+  switch param.SendDefault {
+  // 1 全部用户推送
+  case 1:
     // android端广播推送
     taskId, err := umodel.PushBroadcastNotifyByAndroid(param.Topic, param.Content, nil, policy)
     if err != nil {
@@ -121,8 +121,8 @@ func (svc *NotifyModule) PushSystemNotify(param *umeng.SystemNotifyParams) int {
       return errdef.NOTIFY_PUSH_FAIL
     }
 
-  // 1 指定用户推送
-  case 1:
+  // 0 指定用户推送
+  case 0:
     userIds := strings.Split(param.UserIds, ",")
     if len(userIds) == 0 {
       log.Log.Errorf("notify_trace: invalid userId:%s", param.UserIds)
