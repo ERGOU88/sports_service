@@ -783,11 +783,19 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 	labelIds := strings.Join(ids, ",")
 	offset := (page - 1) * size
 	// 通过标签列表 获取拥有该标签的视频们
-	videoIds := svc.video.FindVideoIdsByLabelIds(labelIds, offset, size)
-	if len(videoIds) == 0 {
-		log.Log.Errorf("search_trace: not found videos by label ids, labelIds:%s", labelIds)
-		return []*mvideo.VideoDetailInfo{}
-	}
+	//videoIds := svc.video.FindVideoIdsByLabelIds(labelIds, offset, size)
+	//if len(videoIds) == 0 {
+	//	log.Log.Errorf("search_trace: not found videos by label ids, labelIds:%s", labelIds)
+	//	return []*mvideo.VideoDetailInfo{}
+	//}
+	//
+
+	// 通过标签列表 随机获取同标签类型的视频们
+	videoIds := svc.video.RandomGetVideoIdByLabels(videoId, labelIds, offset, size)
+  if len(videoIds) == 0 {
+    log.Log.Errorf("search_trace: not found videos by label ids, labelIds:%s", labelIds)
+    return []*mvideo.VideoDetailInfo{}
+  }
 
 	vids := strings.Join(videoIds, ",")
 	videos := svc.video.FindVideoListByIds(vids)
@@ -816,11 +824,6 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
     if resp.Labels == nil {
       resp.Labels = []*models.VideoLabels{}
     }
-		// 获取用户信息
-		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
-			resp.Avatar = user.Avatar
-			resp.Nickname = user.NickName
-		}
 
 		// 获取视频相关统计数据
 		info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
@@ -833,6 +836,12 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 		resp.FansNum = svc.attention.GetTotalFans(fmt.Sprint(video.UserId))
 
 		if userId != "" {
+      // 获取用户信息
+      if user := svc.user.FindUserByUserid(video.UserId); user != nil {
+        resp.Avatar = user.Avatar
+        resp.Nickname = user.NickName
+      }
+
       // 是否关注
       if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
         resp.IsAttention = attentionInfo.Status
