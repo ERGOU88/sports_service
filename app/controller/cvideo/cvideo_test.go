@@ -5,6 +5,7 @@ import (
   "net/http/httptest"
   "sports_service/server/dao"
   "testing"
+  "sports_service/server/util"
 )
 
 func init() {
