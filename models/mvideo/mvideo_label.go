@@ -54,7 +54,7 @@ const (
   RANDOM_QUERY_VIDEO_BY_LABELS = "SELECT DISTINCT(vl.video_id) FROM `video_labels` AS vl " +
     "JOIN (SELECT RAND() * ((SELECT MAX(video_id) FROM `video_labels`)-(SELECT MIN(video_id) FROM `video_labels`)) " +
     "+ (SELECT MIN(video_id) FROM `video_labels`) AS video_id) AS vl2 " +
-    "WHERE vl.video_id >= vl2.video_id-%d AND vl.video_id != %s AND vl.label_id in(%s) AND vl.status=1" +
+    "WHERE vl.video_id >= vl2.video_id-%d AND vl.video_id != %s AND vl.label_id in(%s) AND vl.status=1 " +
     "ORDER BY vl.video_id LIMIT %d"
 )
 // 通过标签列表 随机获取同标签类型的视频列表 (取20条)
