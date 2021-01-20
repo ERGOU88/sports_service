@@ -49,13 +49,13 @@ const (
   RANDOM_QUERY_VIDEO_BY_LABELS = "SELECT DISTINCT(vl.video_id) FROM `video_labels` AS vl " +
     "JOIN (SELECT RAND() * ((SELECT MAX(video_id) FROM `video_labels`)-(SELECT MIN(video_id) FROM `video_labels`)) " +
     "+ (SELECT MIN(video_id) FROM `video_labels`) AS video_id) AS vl2 " +
-    "WHERE vl.video_id >= vl2.video_id-10 AND vl.video_id != %s AND vl.label_id in(%s) " +
-    "ORDER BY vl.video_id LIMIT %d, %d"
+    "WHERE vl.video_id >= vl2.video_id-%d AND vl.video_id != %s AND vl.label_id in(%s) " +
+    "ORDER BY vl.video_id LIMIT %d"
 )
-// 通过标签列表 随机获取同标签类型的视频列表
-func (m *VideoModel) RandomGetVideoIdByLabels(videoId, labelIds string, offset, size int) []string {
+// 通过标签列表 随机获取同标签类型的视频列表 (取20条)
+func (m *VideoModel) RandomGetVideoIdByLabels(videoId, labelIds string, size int) []string {
   var videoIds []string
-  sql := fmt.Sprintf(RANDOM_QUERY_VIDEO_BY_LABELS, videoId, labelIds, offset, size)
+  sql := fmt.Sprintf(RANDOM_QUERY_VIDEO_BY_LABELS, size, videoId, labelIds, size)
   if err := m.Engine.Table(&models.VideoLabels{}).SQL(sql).Find(&videoIds); err != nil {
     log.Log.Errorf("video_trace: find videoIds by label ids err:%s", err)
     return nil

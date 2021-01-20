@@ -781,7 +781,7 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 	}
 
 	labelIds := strings.Join(ids, ",")
-	offset := (page - 1) * size
+	//offset := (page - 1) * size
 	// 通过标签列表 获取拥有该标签的视频们
 	//videoIds := svc.video.FindVideoIdsByLabelIds(labelIds, offset, size)
 	//if len(videoIds) == 0 {
@@ -791,7 +791,7 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 	//
 
 	// 通过标签列表 随机获取同标签类型的视频们
-	videoIds := svc.video.RandomGetVideoIdByLabels(videoId, labelIds, offset, size)
+	videoIds := svc.video.RandomGetVideoIdByLabels(videoId, labelIds, size)
   if len(videoIds) == 0 {
     log.Log.Errorf("search_trace: not found videos by label ids, labelIds:%s", labelIds)
     return []*mvideo.VideoDetailInfo{}
