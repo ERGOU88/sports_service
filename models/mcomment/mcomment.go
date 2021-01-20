@@ -171,11 +171,16 @@ func (m *CommentModel) GetUnreadAtCount(userId, readTm string) int64 {
 // 通过评论id获取评论信息
 func (m *CommentModel) GetVideoCommentById(commentId string) *models.VideoComment {
 	comment := new(models.VideoComment)
-	ok, err := m.Engine.Where("id=? AND status=1", commentId).Get(comment)
+	ok, err := m.Engine.Where("id=?", commentId).Get(comment)
 	if !ok || err != nil {
 		log.Log.Errorf("comment_trace: video comment not found, commentId:%s", commentId)
 		return nil
 	}
+
+	// 已逻辑删除
+	if comment.Status == 0 {
+	  comment.Content = "原内容已删除"
+  }
 
 	return comment
 }
@@ -183,7 +188,7 @@ func (m *CommentModel) GetVideoCommentById(commentId string) *models.VideoCommen
 // 通过评论id 查询该评论下的所有回复id
 func (m *CommentModel) GetVideoReplyIdsById(commentId string) []string {
 	var replyIds []string
-	if err := m.Engine.Table(&models.VideoComment{}).Cols("id").Where("reply_comment_id=? AND status=1", commentId).Find(&replyIds); err != nil {
+	if err := m.Engine.Table(&models.VideoComment{}).Cols("id").Where("reply_comment_id=?", commentId).Find(&replyIds); err != nil {
 		log.Log.Errorf("comment_trace: get video reply ids err:%s", err)
 	}
 
@@ -204,7 +209,7 @@ func (m *CommentModel) DelVideoComments(commentIds string) error {
 // 获取视频评论列表(1级评论)
 func (m *CommentModel) GetVideoCommentList(videoId string, offset, size int) []*models.VideoComment {
 	var list []*models.VideoComment
-	if err := m.Engine.Where("video_id=? AND comment_level=1 AND status=1", videoId).
+	if err := m.Engine.Where("video_id=? AND comment_level=1", videoId).
 		Desc("is_top").
 		Asc("id").
 		Limit(size, offset).
@@ -220,7 +225,7 @@ func (m *CommentModel) GetVideoCommentList(videoId string, offset, size int) []*
 func (m *CommentModel) GetVideoCommentListByLike(videoId string, offset, size int) []*VideoComments {
 	sql := "SELECT vc.*, count(tu.Id) AS like_num FROM video_comment AS vc " +
 		"LEFT JOIN thumbs_up AS tu ON vc.id = tu.type_id AND tu.zan_type=3 AND tu.status=1 WHERE vc.video_id=? " +
-		"AND vc.comment_level = 1 AND vc.status=1 " +
+		"AND vc.comment_level = 1 " +
 		"GROUP BY vc.Id ORDER BY like_num DESC, vc.id DESC LIMIT ?, ?"
 
 	var list []*VideoComments
@@ -235,7 +240,7 @@ func (m *CommentModel) GetVideoCommentListByLike(videoId string, offset, size in
 // 获取评论下的回复列表
 func (m *CommentModel) GetVideoReply(videoId, commentId string, offset, size int) []*ReplyComment {
 	var list []*ReplyComment
-	if err := m.Engine.Table(&models.VideoComment{}).Where("video_id=? AND comment_level=2 AND parent_comment_id=? AND status=1", videoId, commentId).
+	if err := m.Engine.Table(&models.VideoComment{}).Where("video_id=? AND comment_level=2 AND parent_comment_id=?", videoId, commentId).
 		Asc("id").
 		Limit(size, offset).
 		Find(&list); err != nil {
@@ -248,7 +253,7 @@ func (m *CommentModel) GetVideoReply(videoId, commentId string, offset, size int
 
 // 获取评论总回复数
 func (m *CommentModel) GetTotalReplyByComment(commentId string) int64 {
-	total, err := m.Engine.Where("parent_comment_id=? AND status=1", commentId).Count(&models.VideoComment{})
+	total, err := m.Engine.Where("parent_comment_id=?", commentId).Count(&models.VideoComment{})
 	if err != nil {
 		log.Log.Errorf("comment_trace get total reply by comment err:%s", err)
 		return 0
@@ -339,3 +344,7 @@ func (m *CommentModel) AddCommentReport() (int64, error) {
   return m.Engine.InsertOne(m.Report)
 }
 
+// 更新评论/回复 信息
+func (m *CommentModel) UpdateCommentInfo(condition, cols string) (int64, error) {
+  return m.Engine.Where(condition).Cols(cols).Update(m.Comment)
+}

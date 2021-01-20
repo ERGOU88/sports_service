@@ -9,7 +9,7 @@ func Router(engine *gin.Engine) {
 	{
 		// 获取用户的评论列表(后台)
 		comment.GET("/list", VideoCommentList)
-		// 删除评论（物理删除）
+		// 删除评论（物理删除）todo: 改为逻辑删除 且 只删除单条
 		comment.POST("/delete", DelVideoComments)
 		// 视频弹幕列表
 		comment.GET("/barrage", VideoBarrageList)

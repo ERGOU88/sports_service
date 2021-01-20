@@ -280,6 +280,11 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 		comment.CreateAt = item.CreateAt
 		comment.IsTop = item.IsTop
 		comment.Content = item.Content
+		// 已被逻辑删除
+		if comment.Status == 0 {
+		  comment.Content = "原内容已删除"
+    }
+
 		comment.CommentLevel = item.CommentLevel
 		// 总回复数
 		comment.ReplyNum = svc.comment.GetTotalReplyByComment(fmt.Sprint(comment.Id))
@@ -345,6 +350,10 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 				reply.ReplyContent = content
 			}
 
+			if reply.Status == 0 {
+			  reply.ReplyContent = "原内容已删除"
+      }
+
 			if userId != "" {
 				// 是否关注
 				if attention := svc.attention.GetAttentionInfo(userId, reply.UserId); attention != nil {
@@ -408,6 +417,9 @@ func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, 
 	// userInfo 存储 用户id——>头像、昵称
 	//userInfo := make(map[string]*tmpUser, 0)
 	for _, item := range comments {
+	  if item.Status == 0 {
+	    item.Content = "原内容已删除"
+    }
 		// 总回复数
 		item.ReplyNum = svc.comment.GetTotalReplyByComment(fmt.Sprint(item.Id))
 
@@ -431,6 +443,10 @@ func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, 
 			//user.NickName = reply.UserName
 			//user.Avatar = reply.Avatar
 			//userInfo[reply.UserId] = user
+		  // 已被逻辑删除
+		  if reply.Status == 0 {
+		    reply.Content = "原内容已删除"
+      }
 
 			contents[reply.Id] = reply.Content
 			// 评论点赞数
@@ -453,6 +469,11 @@ func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, 
 			if ok {
 				reply.ReplyContent = content
 			}
+
+			// 已逻辑删除
+			if reply.Status == 0 {
+			  reply.ReplyContent = "原内容已删除"
+      }
 
 			if userId != "" {
 				// 是否关注
@@ -518,6 +539,10 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
     if user != nil {
       reply.UserName = user.NickName
       reply.Avatar = user.Avatar
+    }
+
+    if reply.Status == 0 {
+      reply.Content = "原内容已删除"
     }
 
 		contents[reply.Id] = reply.Content
@@ -601,6 +626,11 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Vi
       content[comment.Id] = comment.Content
       first.ReplyList = svc.comment.GetVideoReply(fmt.Sprint(comment.VideoId), fmt.Sprint(comment.Id), 0, 3)
       for _, reply := range first.ReplyList {
+        // 已被逻辑删除
+        if reply.Status == 0 {
+          reply.Content = "原内容已删除"
+        }
+
         content[reply.Id] = reply.Content
         // 评论点赞数
         reply.LikeNum = svc.like.GetLikeNumByType(reply.Id, consts.TYPE_COMMENT)

@@ -6,13 +6,11 @@ import (
   "github.com/go-xorm/xorm"
   "sports_service/server/dao"
   "sports_service/server/global/backend/errdef"
-  "sports_service/server/global/backend/log"
   "sports_service/server/models/mbarrage"
   "sports_service/server/models/mcomment"
   "sports_service/server/models/muser"
   "sports_service/server/models/mvideo"
   "strconv"
-  "strings"
 )
 
 type CommentModule struct {
@@ -116,20 +114,30 @@ func (svc *CommentModule) DelVideoComments(param *mcomment.DelCommentParam) int 
 		return errdef.COMMENT_NOT_EXISTS
 	}
 
-	commentIds := svc.comment.GetVideoReplyIdsById(param.CommentId)
-	ids := make([]string, 0)
-	// 递归查询
-	svc.recursionComments(&ids, &commentIds)
+	// 0 逻辑删除
+	comment.Status = 0
+	condition := fmt.Sprintf("id=%d", comment.Id)
+	cols := "status"
+  affected, err := svc.comment.UpdateCommentInfo(condition, cols)
+  if affected != 1 || err != nil {
+    return errdef.COMMENT_DELETE_FAIL
+  }
 
-	// 当前评论 及 回复 一并删除
-	ids = append(ids, param.CommentId)
 
-	log.Log.Errorf("++++++++commentIds:%v", strings.Join(ids, ","))
-
-	// 删除视频评论及当前评论下的回复
-	if err := svc.comment.DelVideoComments(strings.Join(ids,",")); err != nil {
-		return errdef.COMMENT_DELETE_FAIL
-	}
+	//commentIds := svc.comment.GetVideoReplyIdsById(param.CommentId)
+	//ids := make([]string, 0)
+	//// 递归查询
+	//svc.recursionComments(&ids, &commentIds)
+  //
+	//// 当前评论 及 回复 一并删除
+	//ids = append(ids, param.CommentId)
+  //
+	//log.Log.Errorf("++++++++commentIds:%v", strings.Join(ids, ","))
+  //
+	//// 删除视频评论及当前评论下的回复
+	//if err := svc.comment.DelVideoComments(strings.Join(ids,",")); err != nil {
+	//	return errdef.COMMENT_DELETE_FAIL
+	//}
 
 	return errdef.SUCCESS
 }
