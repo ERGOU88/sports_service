@@ -71,7 +71,13 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 		return errdef.SUCCESS, token, svc.user.User
 	}
 
-	// 用户已注册过, 则直接从redis中获取token并返回
+  // 登陆的时候 检查用户状态
+  if !svc.CheckUserStatus(svc.user.User.Status) {
+    log.Log.Errorf("user_trace: forbid status, userId:%s", svc.user.User.UserId)
+    return errdef.USER_FORBID_STATUS, "", nil
+  }
+
+  // 用户已注册过, 则直接从redis中获取token并返回
 	token, err := svc.user.GetUserToken(svc.user.User.UserId)
 	if err != nil && err == redis.ErrNil {
 		// redis 没有，重新生成token

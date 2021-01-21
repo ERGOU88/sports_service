@@ -22,8 +22,8 @@ type SmsModel struct {
 
 // 发送短信验证码请求参数
 type SendSmsCodeParams struct {
-	SendType       string     `json:"send_type"`    // 短信类型 1 账户登陆/注册
-	MobileNum      string     `json:"mobile_num"`   // 手机号码
+	SendType       string     `json:"send_type" binding:"required"`    // 短信类型 1 账户登陆/注册
+	MobileNum      string     `json:"mobile_num" binding:"required"`   // 手机号码
 }
 
 // 手机验证码登陆 请求参数

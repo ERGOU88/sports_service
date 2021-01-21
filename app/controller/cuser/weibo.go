@@ -75,16 +75,24 @@ func (svc *UserModule) WeiboLoginOrReg(params *muser.WeiboLoginParams) (int, str
 	}
 
 	// 通过uid查询用户信息
-	if user := svc.user.FindUserByUserid(info.UserId); user == nil {
+	user := svc.user.FindUserByUserid(info.UserId)
+	if user == nil {
 		return errdef.USER_GET_INFO_FAIL, "", nil
 	}
+
+  // 登陆的时候 检查用户状态
+  if !svc.CheckUserStatus(user.Status) {
+    log.Log.Errorf("user_trace: forbid status, userId:%s", user.UserId)
+    return errdef.USER_FORBID_STATUS, "", nil
+  }
+
 	// 用户已注册过, 则直接从redis中获取token并返回
-	token, err := svc.user.GetUserToken(svc.user.User.UserId)
+	token, err := svc.user.GetUserToken(user.UserId)
 	if err != nil && err == redis.ErrNil {
 		// redis 没有，重新生成token
-		token = svc.user.GenUserToken(svc.user.User.UserId, util.Md5String(svc.user.User.Password))
+		token = svc.user.GenUserToken(user.UserId, util.Md5String(user.Password))
 		// 重新保存到redis
-		if err := svc.user.SaveUserToken(svc.user.User.UserId, token); err != nil {
+		if err := svc.user.SaveUserToken(user.UserId, token); err != nil {
 			log.Log.Errorf("weibo_trace: save user token err:%s", err)
 		}
 	}

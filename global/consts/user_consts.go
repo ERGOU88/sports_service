@@ -32,6 +32,7 @@ const (
 	// cookie存储的key
 	COOKIE_NAME    = "auth"
 	USER_ID        = "user_id"
+	USER_STATUS    = "user_status"
 	// todo: 默认头像
 	DEFAULT_AVATAR = "http://qafpv-backend.youzu.com/upload/2020_11_02/543195997677817856.png"
 )
