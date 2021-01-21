@@ -72,8 +72,8 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 	}
 
   // 登陆的时候 检查用户状态
-  if !svc.CheckUserStatus(svc.user.User.Status) {
-    log.Log.Errorf("user_trace: forbid status, userId:%s", svc.user.User.UserId)
+  if !svc.CheckUserStatus(user.Status) {
+    log.Log.Errorf("user_trace: forbid status, userId:%s", user.Status)
     return errdef.USER_FORBID_STATUS, "", nil
   }
 
