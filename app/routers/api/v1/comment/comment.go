@@ -116,7 +116,12 @@ func CommentList(c *gin.Context) {
 	commentId := c.Query("comment_id")
 
 	svc := comment.New(c)
-	list := svc.GetVideoComments(userId, videoId, sortType, page, size)
+	syscode, list := svc.GetVideoComments(userId, videoId, sortType, page, size)
+	if syscode != errdef.SUCCESS {
+    reply.Response(http.StatusOK, syscode)
+    return
+  }
+
 	first := svc.GetFirstComment(userId, commentId)
 
 	reply.Data["first"] = first

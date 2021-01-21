@@ -82,11 +82,18 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 
 	// 查找视频是否存在
 	video := svc.video.FindVideoById(fmt.Sprint(params.VideoId))
-	if video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
+	if video == nil {
 		log.Log.Errorf("comment_trace: video not found, videoId:%d", params.VideoId)
 		svc.engine.Rollback()
 		return errdef.VIDEO_NOT_EXISTS, 0
 	}
+
+	// 视频状态 != 1 (视频审核成功)
+	if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
+    log.Log.Errorf("comment_trace: video status not audit success, videoId:%d", params.VideoId)
+    svc.engine.Rollback()
+    return errdef.VIDEO_NOT_EXISTS, 0
+  }
 
 	now := time.Now().Unix()
 	svc.comment.Comment.UserId = userId
@@ -169,11 +176,18 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 
 	// 查找视频是否存在
 	video := svc.video.FindVideoById(fmt.Sprint(params.VideoId))
-	if video == nil || fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS  {
+	if video == nil  {
 		log.Log.Errorf("comment_trace: video not found, videoId:%d", params.VideoId)
 		svc.engine.Rollback()
 		return errdef.VIDEO_NOT_EXISTS, 0
 	}
+
+  // 视频状态 != 1 (视频审核成功)
+  if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
+    log.Log.Errorf("comment_trace: video status not audit success, videoId:%d", params.VideoId)
+    svc.engine.Rollback()
+    return errdef.VIDEO_NOT_EXISTS, 0
+  }
 
 	// 查询被回复的评论是否存在
 	replyInfo := svc.comment.GetVideoCommentById(params.ReplyId)
@@ -240,18 +254,24 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 }
 
 // 获取视频评论
-func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, page, size int) []*mcomment.VideoComments {
+func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, page, size int) (int, []*mcomment.VideoComments) {
+  video := svc.video.FindVideoById(videoId)
+  // 视频不存在
+  if video == nil {
+    log.Log.Errorf("comment_trace: video not found or not pass, videoId:%s", videoId)
+    return errdef.VIDEO_NOT_EXISTS, []*mcomment.VideoComments{}
+  }
+
+  // 视频状态 != 1 (审核成功)
+  if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
+    log.Log.Errorf("comment_trace: video not audit success, videoId:%s", video.VideoId)
+    return errdef.VIDEO_NOT_EXISTS, []*mcomment.VideoComments{}
+  }
+
   // 热门排序（按点赞数）
 	if sortType == consts.SORT_HOT {
 		log.Log.Debugf("comment_trace: get video comments by hot")
-		return svc.GetVideoCommentsByLiked(userId, videoId, page, size)
-	}
-
-	video := svc.video.FindVideoById(videoId)
-	// 视频不存在
-	if video == nil {
-		log.Log.Errorf("comment_trace: video not found or not pass, videoId:%s", videoId)
-		return []*mcomment.VideoComments{}
+		return errdef.SUCCESS, svc.GetVideoCommentsByLiked(userId, videoId, page, size)
 	}
 
 	offset := (page - 1) * size
@@ -259,7 +279,7 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 	comments := svc.comment.GetVideoCommentList(videoId, offset, size)
 	if len(comments) == 0 {
 		log.Log.Errorf("comment_trace: no comments, videoId:%s", videoId)
-		return []*mcomment.VideoComments{}
+		return errdef.SUCCESS, []*mcomment.VideoComments{}
 	}
 
 	list := make([]*mcomment.VideoComments, len(comments))
@@ -388,18 +408,11 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 	//	util.PartialSort(SortComment(list), len(list))
 	//}
 
-	return list
+	return errdef.SUCCESS, list
 }
 
 // 根据评论点赞数排序 获取视频评论列表
 func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, size int) []*mcomment.VideoComments {
-	video := svc.video.FindVideoById(videoId)
-	// 视频不存在
-	if video == nil {
-		log.Log.Errorf("comment_trace: video not found or not pass, videoId:%s", videoId)
-		return []*mcomment.VideoComments{}
-	}
-
 	offset := (page - 1) * size
 	// 获取评论(按点赞数排序)
 	comments := svc.comment.GetVideoCommentListByLike(videoId, offset, size)
@@ -507,6 +520,12 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 		log.Log.Errorf("comment_trace: video not found or not pass, videoId:%s", videoId)
 		return errdef.VIDEO_NOT_EXISTS, []*mcomment.ReplyComment{}
 	}
+
+	// 视频状态 != 1（视频审核成功）
+	if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
+	  log.Log.Errorf("comment_trace: video status not audit success, videoId:%s", videoId)
+	  return errdef.VIDEO_NOT_EXISTS, []*mcomment.ReplyComment{}
+  }
 
 	// 查询评论是否存在
 	comment := svc.comment.GetVideoCommentById(commentId)
