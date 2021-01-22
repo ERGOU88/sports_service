@@ -240,6 +240,8 @@ definitions:
     properties:
       duration:
         type: integer
+      user_id:
+        type: string
       video_id:
         type: integer
     type: object
@@ -292,6 +294,9 @@ definitions:
         type: string
       send_type:
         type: string
+    required:
+    - mobile_num
+    - send_type
     type: object
   sms.SmsCodeLoginParams:
     properties:
@@ -338,6 +343,69 @@ info:
     | 200 | 操作成功 |
     | 400 | 参数错误 |
     | 500 | 内部错误 |
+    ### 六、推送通知文档
+    推送通知类型
+    ↓↓↓
+    [点击查看](/api/v1/notify/doc)
+
+    透传（自定义推送）说明
+    | 客户端 | 字段 | 类型 | 说明 | 示例 |
+    | ------ | :----- | :----- | :----- | :----- |
+    | android | custom | string | android透传数据（参考 自定义消息结构说明） | {'msg_id':'123456','data':{'unread_num':100},'msg_type':20000,'send_time':1607665370,'display':true}' |
+    | iOS | extra | string | iOS透传数据（参考 自定义消息结构说明） | {'msg_id':'123456','data':{'unread_num':100},'msg_type':20000,'send_time':1607665370,'display':true} |
+
+    自定义消息结构说明
+    | 字段 | 类型 | 说明 |
+    | ------ | :----- | :----- |
+    | msg_id | string | 消息id |
+    | msg_type | int32 | 消息类型 |
+    | send_time | int64 | 发送时间 |
+    | display | bool | false不展示 true展示 |
+    | data | map[string]interface{} | 业务场景透传数据[参考接口返回data] |
+
+    推送数据结构（iOS）
+
+    {
+    'appkey':'5fc60a125a31bc1b28ee9cb7',
+    'timestamp':1607658719,
+    'type':'unicast',
+    'device_tokens':'3fa23e7d5afa9705f7a3d7161a64bb99531100bf818b2ea6d35a14d8dec6b6ce',
+    'payload':{
+    'aps':{
+    'alert':{
+    'title':'订单消息',
+    'subtitle':'订单消息',
+    'body':'订单快超时啦，赶紧付款～'
+    },
+    'sound':'default'
+    },
+    'extra':'{'msg_id':'123456','data':{'unread_num':100},'msg_send_time':1607658720,'display':false}'
+    },
+    'policy':{
+    'expire_time':'2020-12-15 15:52:00'
+    },
+    'production_mode':false,
+    'description':'风暴英雄'
+    }
+
+    推送数据结构（android）
+
+    {
+    'appkey':'5fabde2445b2b751a929c2d5',
+    'timestamp':1607665369,
+    'type':'unicast',
+    'device_tokens':'AqfCkpFEey_nfS13tOtF6epRVhOcA0Ny9vPelVd7dGl1',
+    'payload':{
+    'display_type':'message',
+    'body':{
+    'title':'订单通知',
+    'text':'付款倒计时10分钟',
+    'custom':'{'msg_id':'123456','data':{'unread_num':100},'msg_type':20000,'send_time':1607665370,'display':true}'
+    }
+    },
+    'policy':{},
+    'production_mode':false
+    }
   license: {}
   title: 电竞社区平台（应用服）
   version: "1.0"
@@ -1861,6 +1929,56 @@ paths:
       summary: 系统通知消息列表 (ok)
       tags:
       - 通知模块
+  /api/v1/notify/system/message/detail:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: AppId
+        in: header
+        name: AppId
+        required: true
+        type: string
+      - description: 调用/api/v1/client/init接口 服务端下发的secret
+        in: header
+        name: Secret
+        required: true
+        type: string
+      - description: 请求时间戳 单位：秒
+        in: header
+        name: Timestamp
+        required: true
+        type: string
+      - description: 签名 md5签名32位值
+        in: header
+        name: Sign
+        required: true
+        type: string
+      - default: 1.0.0
+        description: 版本
+        in: header
+        name: Version
+        required: true
+        type: string
+      - description: 系统消息id
+        in: query
+        name: system_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"success","tm":"1588888888"}'
+          schema:
+            type: string
+        "500":
+          description: '{"code":500,"data":{},"msg":"fail","tm":"1588888888"}'
+          schema:
+            type: string
+      summary: 系统消息详情 (ok)
+      tags:
+      - 通知模块
   /api/v1/notify/unread/quantity:
     get:
       consumes:
@@ -3041,7 +3159,7 @@ paths:
         name: Version
         required: true
         type: string
-      - description: 删除浏览历史记录 请求参数
+      - description: 删除浏览历史记录 请求参数 -1删除所有
         in: body
         name: DeleteHistoryParam
         required: true

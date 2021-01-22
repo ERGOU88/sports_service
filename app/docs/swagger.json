@@ -4,7 +4,7 @@
     ],
     "swagger": "2.0",
     "info": {
-        "description": "### 一、公共参数说明（此栏参数均为Headers请求头传递）\n| 参数名 | 说明 | 示例 |\n| ------ | :----- | :----- |\n| AppId | AppId(区分Android,iOS,web) | 5EesXF1i |\n| Secret | 服务端下发的secret 通过/api/v1/client/init接口获取 调用该接口时无需传 且 不参与签名 | DnaukFwVILpcewX6 |\n| Timestamp | 请求时间戳 单位：秒 | 1588888888 |\n| Sign | 签名 | 签名 md5签名32位值 |\n| Version | 当前版本 | 1.0.1 |\n### 二、请求体说明（此栏参数均为POST JSON传递，不可用form-data提交）\n\n{\n'mobileNum': '13177656222',\n'platform': 0\n}\n### 三、接口签名生成方式\n签名加密示例:\nparams = 请求的url路径(不包含域名与参数) + \u0026 + Header头参数以`\u0026`拼接（无需按照字典序，具体看以下栗子） + \u0026 + appKey\nappKey由服务端下发 并进行保存\nsign = md5(params) 取md5 32位小写\n如：md5(/api/v1/user/mobile/login\u0026AppId=5EesXF1i\u0026Timestamp=1588888888\u0026Version=1.0.1\u0026Secret=DnaukFwVILpcewX6\u0026RfhHecN9zsNcy19Y)\nappKey为RfhHecN9zsNcy19Y\n### 四、API错误码文档\n[点击查看](/api/v1/doc)\n### 五、HTTP状态码说明\n| 状态码 | 说明 |\n| ------ | :----- |\n| 200 | 操作成功 |\n| 400 | 参数错误 |\n| 500 | 内部错误 |",
+        "description": "### 一、公共参数说明（此栏参数均为Headers请求头传递）\n| 参数名 | 说明 | 示例 |\n| ------ | :----- | :----- |\n| AppId | AppId(区分Android,iOS,web) | 5EesXF1i |\n| Secret | 服务端下发的secret 通过/api/v1/client/init接口获取 调用该接口时无需传 且 不参与签名 | DnaukFwVILpcewX6 |\n| Timestamp | 请求时间戳 单位：秒 | 1588888888 |\n| Sign | 签名 | 签名 md5签名32位值 |\n| Version | 当前版本 | 1.0.1 |\n### 二、请求体说明（此栏参数均为POST JSON传递，不可用form-data提交）\n\n{\n'mobileNum': '13177656222',\n'platform': 0\n}\n### 三、接口签名生成方式\n签名加密示例:\nparams = 请求的url路径(不包含域名与参数) + \u0026 + Header头参数以`\u0026`拼接（无需按照字典序，具体看以下栗子） + \u0026 + appKey\nappKey由服务端下发 并进行保存\nsign = md5(params) 取md5 32位小写\n如：md5(/api/v1/user/mobile/login\u0026AppId=5EesXF1i\u0026Timestamp=1588888888\u0026Version=1.0.1\u0026Secret=DnaukFwVILpcewX6\u0026RfhHecN9zsNcy19Y)\nappKey为RfhHecN9zsNcy19Y\n### 四、API错误码文档\n[点击查看](/api/v1/doc)\n### 五、HTTP状态码说明\n| 状态码 | 说明 |\n| ------ | :----- |\n| 200 | 操作成功 |\n| 400 | 参数错误 |\n| 500 | 内部错误 |\n### 六、推送通知文档\n推送通知类型\n↓↓↓\n[点击查看](/api/v1/notify/doc)\n\n透传（自定义推送）说明\n| 客户端 | 字段 | 类型 | 说明 | 示例 |\n| ------ | :----- | :----- | :----- | :----- |\n| android | custom | string | android透传数据（参考 自定义消息结构说明） | {'msg_id':'123456','data':{'unread_num':100},'msg_type':20000,'send_time':1607665370,'display':true}' |\n| iOS | extra | string | iOS透传数据（参考 自定义消息结构说明） | {'msg_id':'123456','data':{'unread_num':100},'msg_type':20000,'send_time':1607665370,'display':true} |\n\n自定义消息结构说明\n| 字段 | 类型 | 说明 |\n| ------ | :----- | :----- |\n| msg_id | string | 消息id |\n| msg_type | int32 | 消息类型 |\n| send_time | int64 | 发送时间 |\n| display | bool | false不展示 true展示 |\n| data | map[string]interface{} | 业务场景透传数据[参考接口返回data] |\n\n推送数据结构（iOS）\n\n{\n'appkey':'5fc60a125a31bc1b28ee9cb7',\n'timestamp':1607658719,\n'type':'unicast',\n'device_tokens':'3fa23e7d5afa9705f7a3d7161a64bb99531100bf818b2ea6d35a14d8dec6b6ce',\n'payload':{\n'aps':{\n'alert':{\n'title':'订单消息',\n'subtitle':'订单消息',\n'body':'订单快超时啦，赶紧付款～'\n},\n'sound':'default'\n},\n'extra':'{'msg_id':'123456','data':{'unread_num':100},'msg_send_time':1607658720,'display':false}'\n},\n'policy':{\n'expire_time':'2020-12-15 15:52:00'\n},\n'production_mode':false,\n'description':'风暴英雄'\n}\n\n推送数据结构（android）\n\n{\n'appkey':'5fabde2445b2b751a929c2d5',\n'timestamp':1607665369,\n'type':'unicast',\n'device_tokens':'AqfCkpFEey_nfS13tOtF6epRVhOcA0Ny9vPelVd7dGl1',\n'payload':{\n'display_type':'message',\n'body':{\n'title':'订单通知',\n'text':'付款倒计时10分钟',\n'custom':'{'msg_id':'123456','data':{'unread_num':100},'msg_type':20000,'send_time':1607665370,'display':true}'\n}\n},\n'policy':{},\n'production_mode':false\n}",
         "title": "电竞社区平台（应用服）",
         "contact": {},
         "license": {},
@@ -2231,6 +2231,79 @@
                 }
             }
         },
+        "/api/v1/notify/system/message/detail": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "通知模块"
+                ],
+                "summary": "系统消息详情 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "系统消息id",
+                        "name": "system_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/notify/unread/quantity": {
             "get": {
                 "consumes": [
@@ -3958,7 +4031,7 @@
                         "required": true
                     },
                     {
-                        "description": "删除浏览历史记录 请求参数",
+                        "description": "删除浏览历史记录 请求参数 -1删除所有",
                         "name": "DeleteHistoryParam",
                         "in": "body",
                         "required": true,
@@ -5212,6 +5285,9 @@
                 "duration": {
                     "type": "integer"
                 },
+                "user_id": {
+                    "type": "string"
+                },
                 "video_id": {
                     "type": "integer"
                 }
@@ -5282,6 +5358,10 @@
         },
         "sms.SendSmsCodeParams": {
             "type": "object",
+            "required": [
+                "mobile_num",
+                "send_type"
+            ],
             "properties": {
                 "mobile_num": {
                     "type": "string"

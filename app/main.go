@@ -194,6 +194,69 @@ func init() {
 // @description | 200 | 操作成功 |
 // @description | 400 | 参数错误 |
 // @description | 500 | 内部错误 |
+// @description ### 六、推送通知文档
+// @description 推送通知类型
+// @description   ↓↓↓
+// @description [点击查看](/api/v1/notify/doc)
+// @description
+// @description 透传（自定义推送）说明
+// @description | 客户端 | 字段 | 类型 | 说明 | 示例 |
+// @description | ------ | :----- | :----- | :----- | :----- |
+// @description | android | custom | string | android透传数据（参考 自定义消息结构说明） | {'msg_id':'123456','data':{'unread_num':100},'msg_type':20000,'send_time':1607665370,'display':true}' |
+// @description | iOS | extra | string | iOS透传数据（参考 自定义消息结构说明） | {'msg_id':'123456','data':{'unread_num':100},'msg_type':20000,'send_time':1607665370,'display':true} |
+// @description
+// @description 自定义消息结构说明
+// @description | 字段 | 类型 | 说明 |
+// @description | ------ | :----- | :----- |
+// @description | msg_id | string | 消息id |
+// @description | msg_type | int32 | 消息类型 |
+// @description | send_time | int64 | 发送时间 |
+// @description | display | bool | false不展示 true展示 |
+// @description | data | map[string]interface{} | 业务场景透传数据[参考接口返回data] |
+// @description
+// @description 推送数据结构（iOS）
+// @description
+// @description {
+// @description    'appkey':'5fc60a125a31bc1b28ee9cb7',
+// @description    'timestamp':1607658719,
+// @description    'type':'unicast',
+// @description    'device_tokens':'3fa23e7d5afa9705f7a3d7161a64bb99531100bf818b2ea6d35a14d8dec6b6ce',
+// @description    'payload':{
+// @description    'aps':{
+// @description       'alert':{
+// @description       'title':'订单消息',
+// @description       'subtitle':'订单消息',
+// @description       'body':'订单快超时啦，赶紧付款～'
+// @description      },
+// @description      'sound':'default'
+// @description    },
+// @description    'extra':'{'msg_id':'123456','data':{'unread_num':100},'msg_send_time':1607658720,'display':false}'
+// @description    },
+// @description    'policy':{
+// @description       'expire_time':'2020-12-15 15:52:00'
+// @description    },
+// @description    'production_mode':false,
+// @description    'description':'风暴英雄'
+// @description }
+// @description
+// @description 推送数据结构（android）
+// @description
+// @description {
+// @description    'appkey':'5fabde2445b2b751a929c2d5',
+// @description    'timestamp':1607665369,
+// @description    'type':'unicast',
+// @description    'device_tokens':'AqfCkpFEey_nfS13tOtF6epRVhOcA0Ny9vPelVd7dGl1',
+// @description    'payload':{
+// @description      'display_type':'message',
+// @description      'body':{
+// @description        'title':'订单通知',
+// @description        'text':'付款倒计时10分钟',
+// @description        'custom':'{'msg_id':'123456','data':{'unread_num':100},'msg_type':20000,'send_time':1607665370,'display':true}'
+// @description      }
+// @description    },
+// @description    'policy':{},
+// @description    'production_mode':false
+// @description }
 func main() {
   // 启动服务
 	engine := gin.New()
