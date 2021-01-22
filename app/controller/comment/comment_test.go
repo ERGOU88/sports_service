@@ -69,7 +69,7 @@ func BenchmarkPublishReply(b *testing.B) {
 func TestGetVideoComments(t *testing.T) {
   c, _ := gin.CreateTestContext(httptest.NewRecorder())
   svc := New(c)
-  list := svc.GetVideoComments("202009181548217779", "97", "0", 1, 10)
+  _, list := svc.GetVideoComments("202009181548217779", "97", "0", 1, 10)
   for _, v := range list {
     t.Logf("comment:%+v\n", v)
   }
@@ -79,7 +79,7 @@ func BenchmarkGetVideoComments(b *testing.B) {
   for i := 0; i < b.N; i++ {
     c, _ := gin.CreateTestContext(httptest.NewRecorder())
     svc := New(c)
-    list := svc.GetVideoComments("202009181548217779", "97", "0", 1, 10)
+    _, list := svc.GetVideoComments("202009181548217779", "97", "0", 1, 10)
     b.Logf("list:%+v\n", list)
   }
 }
