@@ -25,16 +25,24 @@ type IOSUpgrade struct {
 }
 
 // 通过版本code获取包信息
-func (svc *UserModule) VersionUp(versionCode string) (int, *mconfigure.UpgradeInfo) {
-  code, _ := strconv.Atoi(versionCode)
-  var plt int32
+// iOS version 例如：v1.0.1,v1.0.2
+// Android version 例如：1001 1002
+func (svc *UserModule) VersionUp(version string) (int, *mconfigure.UpgradeInfo) {
+  var (
+    plt int32
+    code int
+  )
+
   appId := svc.context.GetHeader("AppId")
   if strings.Compare(appId, string(consts.IOS_APP_ID)) == 0 {
     plt = int32(consts.IOS_PLATFORM)
+    pkgInfo := svc.configure.GetPackageByVersion(version, plt)
+    code = pkgInfo.VersionCode
   }
 
   if strings.Compare(appId, string(consts.AND_APP_ID)) == 0 {
     plt = int32(consts.ANDROID_PLATFORM)
+    code, _ = strconv.Atoi(version)
   }
 
   // 通过版本code及平台 获取当前包信息

@@ -118,3 +118,14 @@ func (m *ConfigModel) GetLatestPackageInfo(plt int32) *models.AppVersionControl 
 
   return m.VersionControl
 }
+
+// 通过版本号(例如：v1.0.1) 获取包信息
+func (m *ConfigModel) GetPackageByVersion(version string, plt int32) *models.AppVersionControl {
+  m.VersionControl = new(models.AppVersionControl)
+  ok, err := m.Engine.Where("version=? and platform=?", version, plt).Desc("version_code").Limit(1).Get(m.VersionControl)
+  if !ok || err != nil {
+    return nil
+  }
+
+  return m.VersionControl
+}
