@@ -3,19 +3,19 @@ stages:
   - test
 build-job-1:
   tags:
-    - gitlab_build_theseus
+    - fpv
   stage: build
   only:
-    - test
+    - develop
   script:
     - GOOS=linux GOARCH=amd64 go build -o fpv ./app/main.go
-    - rsync -avz fpv 10.6.176.147::fpv
+    - rsync -avz fpv 192.168.5.12::fpv
 build-job-2:
   tags:
-    - gitlab_build_theseus
+    - fpv
   stage: build
   only:
-    - test
+    - develop
   script:
     - GOOS=linux GOARCH=amd64 go build -o fpv_backend ./backend/main.go
-    - rsync -avz fpv_backend 10.6.176.147::fpv_backend
+    - rsync -avz fpv_backend 192.168.5.12::fpv_backend
