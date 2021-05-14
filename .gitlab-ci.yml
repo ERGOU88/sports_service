@@ -3,7 +3,7 @@ stages:
   - test
 build-job-1:
   tags:
-    - fpv
+    - gitlab_build_theseus
   stage: build
   only:
     - develop
@@ -12,7 +12,7 @@ build-job-1:
     - rsync -avz fpv 192.168.5.12::fpv
 build-job-2:
   tags:
-    - fpv
+    - gitlab_build_theseus
   stage: build
   only:
     - develop
