@@ -1,24 +1,24 @@
 package main
 
 import (
-  "flag"
-  "fmt"
-  "github.com/gin-gonic/gin"
-  "os"
-  "os/signal"
-  "sports_service/server/app/config"
-  "sports_service/server/app/routers"
-  "sports_service/server/dao"
-  "sports_service/server/global/app/log"
-  "sports_service/server/global/consts"
-  "sports_service/server/job"
-  "sports_service/server/log/zap"
-  "sports_service/server/models/pprof"
-  "sports_service/server/nsqlx"
-  "sports_service/server/rabbitmq"
-  "sports_service/server/tools/nsq"
-  "sports_service/server/util"
-  "syscall"
+	"flag"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"os"
+	"os/signal"
+	"sports_service/server/app/config"
+	"sports_service/server/app/routers"
+	"sports_service/server/dao"
+	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
+	"sports_service/server/job"
+	"sports_service/server/log/zap"
+	"sports_service/server/models/pprof"
+	"sports_service/server/nsqlx"
+	"sports_service/server/rabbitmq"
+	"sports_service/server/tools/nsq"
+	"sports_service/server/util"
+	"syscall"
 )
 
 var (
@@ -90,9 +90,9 @@ func setupJob() {
 	go job.PullEventsJob()
 	/*----主动拉取腾讯云回调事件任务----*/
 
-  /*----检测管理后台定时推送 是否已发送----*/
-  go job.CheckTimedNotify()
-  /*----检测管理后台定时推送 是否已发送----*/
+	/*----检测管理后台定时推送 是否已发送----*/
+	go job.CheckTimedNotify()
+	/*----检测管理后台定时推送 是否已发送----*/
 }
 
 // 初始化nsq（生产者）
@@ -101,7 +101,7 @@ func setupNsqProduct() {
 }
 // 初始化nsql消费者
 func setupNsqConsumer() {
-  go nsqlx.InitNsqConsumer()
+	go nsqlx.InitNsqConsumer()
 }
 
 // SIGHUP 终端控制进程结束(终端连接断开), 十进制：1
@@ -111,24 +111,24 @@ func setupNsqConsumer() {
 // SIGSTOP 停止进程(不能被捕获、阻塞或忽略), 十进制值：17,19,23
 // register signals handler
 func setupSignal() {
-  log.Log.Info("优雅关闭web服务")
-  sigChan := make(chan os.Signal, 1)
-  signal.Notify(sigChan, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT, syscall.SIGSTOP)
-  go func() {
-    select {
-    case <-sigChan:
-      // 停止消费
-      //nsq.Stop()
-      // 停止生产
-      //nsq.NsqProducer.Stop()
-      os.Exit(-1)
-    }
-  }()
+	log.Log.Info("优雅关闭web服务")
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT, syscall.SIGSTOP)
+	go func() {
+		select {
+		case <-sigChan:
+			// 停止消费
+			//nsq.Stop()
+			// 停止生产
+			//nsq.NsqProducer.Stop()
+			os.Exit(-1)
+		}
+	}()
 }
 
 // 初始化rabbitmq消费者
 func setupRabbitmqConsumer() {
-   go rabbitmq.InitRabbitmqConsumer()
+	go rabbitmq.InitRabbitmqConsumer()
 }
 
 func init() {
@@ -153,12 +153,12 @@ func init() {
 	setupJob()
 	// 初始化nsq生产者
 	//setupNsqProduct()
-  // 初始化nsq消费者
-  //setupNsqConsumer()
+	// 初始化nsq消费者
+	//setupNsqConsumer()
 	// 初始化rabbitmq消费者
 	setupRabbitmqConsumer()
-  // register signals handler
-  setupSignal()
+	// register signals handler
+	setupSignal()
 }
 
 // @title 电竞社区平台（应用服）
@@ -258,9 +258,9 @@ func init() {
 // @description    'production_mode':false
 // @description }
 func main() {
-  // 启动服务
+	// 启动服务
 	engine := gin.New()
-  engine.Static("/static", "./static")
+	engine.Static("/static", "./static")
 	routers.InitRouters(engine)
 	if err := engine.Run(config.Global.PublicAddr); err != nil {
 		fmt.Printf("engine.Run err:%v", err)

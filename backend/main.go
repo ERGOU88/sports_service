@@ -127,7 +127,7 @@ func init() {
 func main() {
 	// 启动服务
 	engine := gin.New()
-  engine.Static("/upload", "./upload")
+	engine.Static("/upload", "./upload")
 	routers.InitRouters(engine)
 	if err := engine.Run(config.Global.PublicAddr); err != nil {
 		fmt.Printf("engine.Run err:%v", err)
