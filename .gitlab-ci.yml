@@ -8,7 +8,7 @@ build-job-1:
   only:
     - develop
   script:
-    - GOOS=linux GOARCH=amd64 go build -o fpv ./app/main.go
+    #- GOOS=linux GOARCH=amd64 go build -o fpv ./app/main.go
     - rsync -avz fpv 192.168.5.12::fpv
 build-job-2:
   tags:
@@ -17,5 +17,5 @@ build-job-2:
   only:
     - develop
   script:
-    - GOOS=linux GOARCH=amd64 go build -o fpv_backend ./backend/main.go
+    #- GOOS=linux GOARCH=amd64 go build -o fpv_backend ./backend/main.go
     - rsync -avz fpv_backend 192.168.5.12::fpv_backend
