@@ -4,6 +4,7 @@ import (
   "github.com/gin-gonic/gin"
   "github.com/go-xorm/xorm"
   "sports_service/server/dao"
+  "sports_service/server/global/backend/log"
   "sports_service/server/global/backend/errdef"
   "sports_service/server/models/madmin"
   "sports_service/server/util"
@@ -48,6 +49,7 @@ func (svc *AdminModule) AddAdminUser(params *madmin.AdminRegOrLoginParams) int {
   svc.admin.User.CreateAt = int(now)
   svc.admin.User.UpdateAt = int(now)
   if err := svc.admin.AddAdminUser(); err != nil {
+    log.Log.Errorf("user_trace: add admin fail, err:%s", err)
     return errdef.ADMIN_ADD_FAIL
   }
 
