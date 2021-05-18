@@ -7,6 +7,7 @@ import (
   "sports_service/server/global/backend/log"
   "sports_service/server/global/backend/errdef"
   "sports_service/server/models/madmin"
+  "sports_service/server/models/mldap"
   "sports_service/server/util"
   "strings"
   "time"
@@ -17,6 +18,7 @@ type AdminModule struct {
   context     *gin.Context
   engine      *xorm.Session
   admin       *madmin.AdminModel
+  ldap        *mldap.LdapService
 }
 
 func New(c *gin.Context) AdminModule {
@@ -25,6 +27,7 @@ func New(c *gin.Context) AdminModule {
   return AdminModule{
     context: c,
     admin: madmin.NewAdminModel(socket),
+    ldap: mldap.NewAdModel(),
     engine: socket,
   }
 }
@@ -70,3 +73,14 @@ func (svc *AdminModule) AdminLogin(params *madmin.AdminRegOrLoginParams) int {
 
   return errdef.SUCCESS
 }
+
+// 域用户登录
+func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) int {
+  if err := svc.ldap.CheckLogin(params.UserName, params.Password); err != nil {
+    log.Log.Errorf("user_trace: check login err:%s", err)
+    return errdef.ADMIN_PASSWORD_NOT_MATCH
+  }
+
+  return errdef.SUCCESS
+}
+

@@ -40,7 +40,8 @@ func LoginByPassword(c *gin.Context) {
   }
 
   svc := cadmin.New(c)
-  syscode := svc.AdminLogin(params)
+  //syscode := svc.AdminLogin(params)
+  syscode := svc.AdUserLogin(params)
   reply.Response(http.StatusOK, syscode)
 }
 
