@@ -1,15 +1,15 @@
 package sms
 
 import (
-  "encoding/json"
-  "math/rand"
-	"sports_service/server/global/rdskey"
-	notify "sports_service/server/tools/goNotify"
-	"sports_service/server/global/consts"
-	"time"
+	"encoding/json"
 	"fmt"
-	"sports_service/server/global/app/log"
+	"math/rand"
 	"sports_service/server/dao"
+	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
+	"sports_service/server/global/rdskey"
+	"sports_service/server/tools/tencentCloud"
+	"time"
 )
 
 var (
@@ -60,15 +60,28 @@ const (
   TEMPLATE_CODE = "SMS_000042"             // fpv短信模版code
 )
 
+// 已废弃
+// 发送短信验证码
+//func (m *SmsModel) Send(mobileNum, code string) error {
+//	s := &notify.Sms{}
+//	s.Mobile = mobileNum
+//	s.TemplateParams = m.GetTemplateParams(code)
+//	s.TemplateCode = TEMPLATE_CODE
+//	s.Time = time.Now().Unix()
+//	s.ServiceName = consts.SERVICE_NAME
+//	if err := s.Send(); err != nil {
+//		return err
+//	}
+//
+//	return nil
+//}
+
 // 发送短信验证码
 func (m *SmsModel) Send(mobileNum, code string) error {
-	s := &notify.Sms{}
-	s.Mobile = mobileNum
-	s.TemplateParams = m.GetTemplateParams(code)
-	s.TemplateCode = TEMPLATE_CODE
-	s.Time = time.Now().Unix()
-	s.ServiceName = consts.SERVICE_NAME
-	if err := s.Send(); err != nil {
+	client := tencentCloud.New(consts.TX_SMS_SECRET_ID, consts.TX_SMS_SECRET_KEY, consts.TMS_API_DOMAIN)
+	rsp, err := client.SendSms(mobileNum, code)
+	if err != nil {
+		log.Log.Errorf("sms_trace: send sms fail, rsp:%+v, err:%s", rsp, err)
 		return err
 	}
 
