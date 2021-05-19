@@ -71,29 +71,30 @@ func (svc *VideoModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPu
 		return errdef.USER_NOT_EXISTS
 	}
 
-	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	// todo: 应该在用户填写完毕时 进行单独校验
+	//client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测视频描述
-	isPass, err := client.TextModeration(params.Describe)
-	if !isPass {
-		log.Log.Errorf("video_trace: validate describe err: %s，pass: %v", err, isPass)
-		return errdef.VIDEO_INVALID_DESCRIBE
-	}
+	//isPass, err := client.TextModeration(params.Describe)
+	//if !isPass {
+	//	log.Log.Errorf("video_trace: validate describe err: %s，pass: %v", err, isPass)
+	//	return errdef.VIDEO_INVALID_DESCRIBE
+	//}
 
 	// 检测视频标题
-	isPass, err = client.TextModeration(params.Title)
-	if !isPass {
-		log.Log.Errorf("video_trace: validate title err: %s，pass: %v", err, isPass)
-		return errdef.VIDEO_INVALID_TITLE
-	}
+	//isPass, err = client.TextModeration(params.Title)
+	//if !isPass {
+	//	log.Log.Errorf("video_trace: validate title err: %s，pass: %v", err, isPass)
+	//	return errdef.VIDEO_INVALID_TITLE
+	//}
 
 	// 检测自定义标签
-	if params.CustomLabels != "" {
-    isPass, err = client.TextModeration(params.CustomLabels)
-    if !isPass {
-      log.Log.Errorf("video_trace: validate title err: %s，pass: %v", err, isPass)
-      return errdef.VIDEO_INVALID_CUSTOM_LABEL
-    }
-  }
+	//if params.CustomLabels != "" {
+    //isPass, err = client.TextModeration(params.CustomLabels)
+    //if !isPass {
+    //  log.Log.Errorf("video_trace: validate title err: %s，pass: %v", err, isPass)
+    //  return errdef.VIDEO_INVALID_CUSTOM_LABEL
+    //}
+    //}
 
 	info, _ := util.JsonFast.Marshal(params)
 	// 先记录到缓存
