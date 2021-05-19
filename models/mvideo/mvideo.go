@@ -791,7 +791,7 @@ func (m *VideoModel) GetRecommendVideos(offset, limit int32) []*VideoDetailInfo 
 
 
 const (
-  LINK_KEY  = "JjGU5ErGl6POMl0ENoGp"
+  LINK_KEY  = "jdlk0ctZy3992xMv2CLW"
   // todo: 测试改为 3分钟
   EXPIRE_TM = 60 * 3
 )
