@@ -36,9 +36,9 @@ func main() {
   fmt.Printf("当前时间点:%s\n", now)
   switch *server {
   case "local":
-    dao.Engine = dao.InitXorm("root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4", []string{"root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4"})
-    dao.InitRedis("127.0.0.1:6379", "")
-    engine2 = dao.InitXorm("root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4", []string{"root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4"})
+    dao.Engine = dao.InitXorm("root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4", []string{"root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4"})
+    dao.InitRedis("192.168.5.12:6378", "")
+    engine2 = dao.InitXorm("root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4", []string{"root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4"})
   // 测试服
   case "test":
     dao.Engine = dao.InitXorm(fmt.Sprintf("%s", *masterDb), nil)
@@ -47,7 +47,7 @@ func main() {
   // qa服
   case "qa":
     if *rdshost == "" {
-      dao.InitRedis("127.0.0.1:7916", "n8R39KbtEfCEfyIk")
+      dao.InitRedis("192.168.5.12:6378", "")
     } else {
       dao.InitRedis(*rdshost, *pwd)
     }
@@ -55,13 +55,13 @@ func main() {
     if *masterDb != "" {
       dao.Engine = dao.InitXorm(fmt.Sprintf("%s", *masterDb), nil)
     } else {
-      dao.Engine = dao.InitXorm("root:root@2020@tcp(10.6.176.147:3306)/sports_service?charset=utf8mb4", []string{"root:root@2020@tcp(10.6.176.147:3306)/sports_service?charset=utf8mb4"})
+      dao.Engine = dao.InitXorm("root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4", []string{"root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4"})
     }
 
     if *spiderDb != "" {
       engine2 = dao.InitXorm(fmt.Sprintf("%s", *spiderDb), nil)
     } else {
-      engine2 = dao.InitXorm("root:root@2020@tcp(10.6.176.147:3306)/spider?charset=utf8mb4", []string{"root:root@2020@tcp(10.6.176.147:3306)/spider?charset=utf8mb4"})
+      engine2 = dao.InitXorm("root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4", []string{"root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4"})
     }
 
   // 自定义
