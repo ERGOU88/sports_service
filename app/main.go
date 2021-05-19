@@ -86,7 +86,7 @@ func setupJob() {
 	go job.CheckBanners()
 	/*----检测banner(是否上架/是否过期)任务----*/
 
-	// todo: 先停止任务g
+	// todo: 先停止任务
 	/*----主动拉取腾讯云回调事件任务----*/
 	//go job.PullEventsJob()
 	/*----主动拉取腾讯云回调事件任务----*/
