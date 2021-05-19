@@ -82,10 +82,6 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
   video := vmodel.GetVideoByFileId(*event.ProcedureStateChangeEvent.FileId)
   if video == nil {
     log.Log.Errorf("job_trace: video not found, fileId:%s", *event.ProcedureStateChangeEvent.FileId)
-    // 确认事件回调
-    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-      log.Log.Errorf("job_trace: confirm events err:%s", err)
-    }
     session.Rollback()
     // 确认事件回调
     //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
@@ -282,9 +278,9 @@ func uploadEvent(event *v20180717.EventContent) error {
   if err != nil || info == "" {
     log.Log.Errorf("job_trace: get publish info err:%s", err)
     // 确认事件回调
-    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-     log.Log.Errorf("job_trace: confirm events err:%s", err)
-    }
+    //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+    //  log.Log.Errorf("job_trace: confirm events err:%s", err)
+    //}
 
     session.Rollback()
     return errors.New("get publish info fail")
