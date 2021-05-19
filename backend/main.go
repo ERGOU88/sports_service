@@ -78,7 +78,6 @@ func init() {
 	if err := setupConfig(); err != nil {
 		panic(err)
 	}
-
 	// 日志
 	setupLogger()
 	// mysql
