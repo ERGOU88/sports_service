@@ -5,8 +5,8 @@ const (
 	VOD_API_DOMAIN      = "vod.tencentcloudapi.com"
 	// 文本内容检测
 	TMS_API_DOMAIN      = "tms.tencentcloudapi.com"
-	TX_CLOUD_SECRET_ID  = "AKIDSfbHjxhcmiV3ECAVqvzoNgme8NTIr9C0"
-	TX_CLOUD_SECRET_KEY = "g6FDvRkmZ5KJ1SijWpse9OM4XmmJZZke"
+	TX_CLOUD_SECRET_ID  = "AKIDFI5bssiLhodBSTDgtsZz8zbx2qOffOq1"
+	TX_CLOUD_SECRET_KEY = "vZw2rPgIejX5MM5WhaDZdQwA8qHRJuEH"
 
   TX_CLOUD_COS_SECRET_ID  = "AKIDjU25ybRyZ4EHVyzemjOoIcZGrIH6NEYk"
   TX_CLOUD_COS_SECRET_KEY = "6v96wZaOjnmKbbWS9qGZfeqofKzSfz9h"

@@ -88,7 +88,7 @@ func setupJob() {
 
 	// todo:先停止任务
 	/*----主动拉取腾讯云回调事件任务----*/
-	//go job.PullEventsJob()
+	go job.PullEventsJob()
 	/*----主动拉取腾讯云回调事件任务----*/
 
 	/*----检测管理后台定时推送 是否已发送----*/
