@@ -8,14 +8,14 @@ const (
 	TX_CLOUD_SECRET_ID  = "AKIDFI5bssiLhodBSTDgtsZz8zbx2qOffOq1"
 	TX_CLOUD_SECRET_KEY = "vZw2rPgIejX5MM5WhaDZdQwA8qHRJuEH"
 
-  TX_CLOUD_COS_SECRET_ID  = "AKIDjU25ybRyZ4EHVyzemjOoIcZGrIH6NEYk"
-  TX_CLOUD_COS_SECRET_KEY = "6v96wZaOjnmKbbWS9qGZfeqofKzSfz9h"
+	TX_CLOUD_COS_SECRET_ID  = "AKIDjU25ybRyZ4EHVyzemjOoIcZGrIH6NEYk"
+	TX_CLOUD_COS_SECRET_KEY = "6v96wZaOjnmKbbWS9qGZfeqofKzSfz9h"
 
-    TX_SMS_SECRET_ID    = "AKIDFI5bssiLhodBSTDgtsZz8zbx2qOffOq1"
-    TX_SMS_SECRET_KEY   = "vZw2rPgIejX5MM5WhaDZdQwA8qHRJuEH"
+	TX_SMS_SECRET_ID    = "AKIDFI5bssiLhodBSTDgtsZz8zbx2qOffOq1"
+	TX_SMS_SECRET_KEY   = "vZw2rPgIejX5MM5WhaDZdQwA8qHRJuEH"
 
 	// 任务流模版名称
-  VOD_PROCEDURE_NAME  = "fpv-demo"
+	VOD_PROCEDURE_NAME  = "fpv-demo"
 )
 
 // NewFileUpload：视频上传完成；
@@ -35,12 +35,14 @@ const (
 const (
 	// 视频上传事件
 	EVENT_TYPE_UPLOAD             = "NewFileUpload"
-  // 任务流状态变更 包含视频转码完成
-  EVENT_PROCEDURE_STATE_CHANGED = "ProcedureStateChanged"
+	// 任务流状态变更 包含视频转码完成
+	EVENT_PROCEDURE_STATE_CHANGED = "ProcedureStateChanged"
+    // 文件被删除
+	EVENT_FILE_DELETED = "FileDeleted"
 )
 
 // 0 视频上传事件 1 任务流状态变更（包含视频转码完成）
 const (
-  EVENT_UPLOAD_TYPE                   int = iota
-  EVENT_PROCEDURE_STATE_CHANGED_TYPE
+	EVENT_UPLOAD_TYPE                   int = iota
+	EVENT_PROCEDURE_STATE_CHANGED_TYPE
 )

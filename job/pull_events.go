@@ -21,51 +21,63 @@ import (
 
 // 主动拉取事件（腾讯云）
 func PullEventsJob() {
-	ticker := time.NewTicker(time.Second * 10)
-	defer ticker.Stop()
+  ticker := time.NewTicker(time.Second * 10)
+  defer ticker.Stop()
 
-	for {
-		select {
-		case <- ticker.C:
-			log.Log.Debugf("开始拉取事件[腾讯云]")
-			if err := pullEvents(); err != nil {
-				log.Log.Errorf("job_trace: pull events err:%s", err)
-			}
-			log.Log.Debugf("事件处理完毕")
-		}
-	}
+  for {
+    select {
+    case <- ticker.C:
+      log.Log.Debugf("开始拉取事件[腾讯云]")
+      if err := pullEvents(); err != nil {
+        log.Log.Errorf("job_trace: pull events err:%s", err)
+      }
+      log.Log.Debugf("事件处理完毕")
+    }
+  }
 
 }
 
 // 主动拉取事件回调
 func pullEvents() error {
-	vod := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
-	resp, err := vod.PullEvents()
-	if err != nil {
-		return err
-	}
+  vod := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
+  resp, err := vod.PullEvents()
+  if err != nil {
+    return err
+  }
 
-	for _, event := range resp.Response.EventSet {
+  for _, event := range resp.Response.EventSet {
     log.Log.Debugf("eventType:%v", *event.EventType)
-		switch *event.EventType {
-		// 上传事件
-		case consts.EVENT_TYPE_UPLOAD:
+    switch *event.EventType {
+    // 上传事件
+    case consts.EVENT_TYPE_UPLOAD:
       log.Log.Debugf("upload event:%+v", *event.FileUploadEvent)
-		  if err := uploadEvent(event); err != nil {
-		    log.Log.Errorf("job_trace: uploadEvent err:%s", err)
-		    continue
+      if err := uploadEvent(event); err != nil {
+        log.Log.Errorf("job_trace: uploadEvent err:%s", err)
+        continue
       }
-		// 任务流状态变更（包含视频转码完成）
+    // 任务流状态变更（包含视频转码完成）
     case consts.EVENT_PROCEDURE_STATE_CHANGED:
       log.Log.Debugf("transcode event:%+v", *event.ProcedureStateChangeEvent)
       transCodeCompleteEvent(event)
 
-		default:
+    // 文件被删除
+    case consts.EVENT_FILE_DELETED:
+      log.Log.Debugf("fileDeleted event:%+v", *event.FileDeleteEvent)
+      fileDeletedEvent(event)
+    default:
 
-		}
-	}
+    }
+  }
 
-	return nil
+  return nil
+}
+
+// 文件删除事件 todo: 修改数据状态？
+func fileDeletedEvent(event *v20180717.EventContent) {
+  client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
+  if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+    log.Log.Errorf("job_trace: confirm events err:%s", err)
+  }
 }
 
 // 视频转码事件
@@ -82,10 +94,6 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
   video := vmodel.GetVideoByFileId(*event.ProcedureStateChangeEvent.FileId)
   if video == nil {
     log.Log.Errorf("job_trace: video not found, fileId:%s", *event.ProcedureStateChangeEvent.FileId)
-    // 确认事件回调
-    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-      log.Log.Errorf("job_trace: confirm events err:%s", err)
-    }
     session.Rollback()
     // 确认事件回调
     //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
@@ -257,7 +265,7 @@ func uploadEvent(event *v20180717.EventContent) error {
     log.Log.Error("job_trace: user id not exists")
     // 确认事件回调
     if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-     log.Log.Errorf("job_trace: confirm events err:%s", err)
+      log.Log.Errorf("job_trace: confirm events err:%s", err)
     }
     session.Rollback()
     return errors.New("user id not exists")
@@ -282,9 +290,9 @@ func uploadEvent(event *v20180717.EventContent) error {
   if err != nil || info == "" {
     log.Log.Errorf("job_trace: get publish info err:%s", err)
     // 确认事件回调
-    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-     log.Log.Errorf("job_trace: confirm events err:%s", err)
-    }
+    //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+    //  log.Log.Errorf("job_trace: confirm events err:%s", err)
+    //}
 
     session.Rollback()
     return errors.New("get publish info fail")
