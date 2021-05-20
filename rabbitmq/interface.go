@@ -11,4 +11,6 @@ func InitRabbitmqConsumer() {
     log.Log.Errorf("amqp_trace: connect event consumer fail, err:%s", err)
     panic(err)
   }
+
+  log.Log.Debug("setup rabbitmq success")
 }
