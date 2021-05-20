@@ -1,16 +1,17 @@
 package mvideo
 
 import (
+	"fmt"
 	"github.com/go-xorm/xorm"
+	"sports_service/server/dao"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"fmt"
 	"sports_service/server/global/rdskey"
-  "sports_service/server/dao"
-  "sports_service/server/util"
-  "time"
+	"sports_service/server/models"
+	"sports_service/server/util"
 	"strings"
+	"time"
+	"net/url"
 )
 
 // todo: 视频id自增 帖子可以使用分布式唯一id
@@ -21,7 +22,7 @@ type VideoModel struct {
 	Labels       *models.VideoLabels
 	Statistic    *models.VideoStatistic
 	Events       *models.TencentCloudEvents
-  HotSearch    *models.HotSearch
+	HotSearch    *models.HotSearch
 	Report       *models.VideoReport
 	PlayRecord   *models.UserPlayDurationRecord
 }
@@ -60,7 +61,7 @@ type VideosInfoResp struct {
 	Nickname      string `json:"nick_name" example:"昵称"`             // 昵称
 	IsAttention   int    `json:"is_attention" example:"1"`            // 是否关注 1 关注 2 未关注
 	OpTime        int    `json:"op_time" example:"1600000000"`        // 用户收藏/点赞/浏览等的操作时间
-  TimeElapsed   int    `json:"time_elapsed" example:"1"`           // 已播放的时长 秒
+	TimeElapsed   int    `json:"time_elapsed" example:"1"`           // 已播放的时长 秒
 }
 
 // 视频信息
@@ -82,9 +83,9 @@ type VideosInfo struct {
 	ShareNum      int    `json:"share_num" example:"1"`               // 分享数
 	BrowseNum     int    `json:"browse_num" example:"1"`             // 浏览数（播放数）
 	BarrageNum    int    `json:"barrage_num" example:"1"`            // 弹幕数
-  TimeElapsed   int    `json:"time_elapsed" example:"1"`           // 已播放的时长 秒
-  StatusCn      string `json:"status_cn" example:"审核中"`          // 审核状态（中文展示）
-  UserId        string `json:"user_id"`                            // 发布者uid
+	TimeElapsed   int    `json:"time_elapsed" example:"1"`           // 已播放的时长 秒
+	StatusCn      string `json:"status_cn" example:"审核中"`          // 审核状态（中文展示）
+	UserId        string `json:"user_id"`                            // 发布者uid
 }
 
 // 首页推荐视频信息
@@ -102,7 +103,7 @@ type RecommendVideoInfo struct {
 	Status        int32                 `json:"status"  example:"1"`                   // 审核状态
 	CreateAt      int                   `json:"create_at" example:"1600000000"`        // 视频创建时间
 	FabulousNum   int                   `json:"fabulous_num" example:"10"`             // 点赞数
-  StatisticsTab string                `json:"statistics_tab"`                        // 统计标签 1个点赞  2分 1个收藏  5分 1个弹幕  10分  1个评论  10分  四项中，哪个分数最高，显示哪个
+	StatisticsTab string                `json:"statistics_tab"`                        // 统计标签 1个点赞  2分 1个收藏  5分 1个弹幕  10分  1个评论  10分  四项中，哪个分数最高，显示哪个
 	BrowseNum     int                   `json:"browse_num" example:"10"`              // 浏览数（播放数）
 	UserId        string                `json:"user_id" example:"发布视频的用户id"`      // 发布视频的用户id
 	Avatar        string                `json:"avatar" example:"头像"`                 // 头像
@@ -113,41 +114,41 @@ type RecommendVideoInfo struct {
 }
 
 type VideoDetailInfo struct {
-  VideoId       int64                 `json:"video_id"  example:"1000000000"`       // 视频id
-  Title         string                `json:"title"  example:"标题"`                 // 标题
-  Describe      string                `json:"describe"  example:"描述"`              // 描述
-  Cover         string                `json:"cover"  example:"封面"`                 // 封面
-  VideoAddr     string                `json:"video_addr"  example:"视频地址"`         // 视频地址
-  IsRecommend   int                   `json:"is_recommend" example:"0"`             // 是否推荐
-  IsTop         int                   `json:"is_top"  example:"0"`                 // 是否置顶
-  VideoDuration int                   `json:"video_duration" example:"100000"`       // 视频时长
-  VideoWidth    int64                 `json:"video_width"  example:"100"`            // 视频宽
-  VideoHeight   int64                 `json:"video_height"  example:"100"`           // 视频高
-  Status        int32                 `json:"status"  example:"1"`                   // 审核状态
-  CreateAt      int                   `json:"create_at" example:"1600000000"`        // 视频创建时间
-  FabulousNum   int                   `json:"fabulous_num" example:"10"`             // 点赞数
-  CommentNum    int                   `json:"comment_num" example:"10"`              // 评论数
-  BarrageNum    int                   `json:"barrage_num" example:"10"`              // 弹幕数
-  CollectNum    int                   `json:"collect_num" example:"10"`              // 收藏数
-  ShareNum      int                   `json:"share_num" example:"10"`               // 分享数
-  BrowseNum     int                   `json:"browse_num" example:"10"`              // 浏览数（播放数）
-  UserId        string                `json:"user_id" example:"发布视频的用户id"`      // 发布视频的用户id
-  Avatar        string                `json:"avatar" example:"头像"`                 // 头像
-  Nickname      string                `json:"nick_name"  example:"昵称"`             // 昵称
-  IsAttention   int                   `json:"is_attention" example:"1"`             // 是否关注 1 关注 0 未关注
-  IsCollect     int                   `json:"is_collect" example:"1"`               // 是否收藏
-  IsLike        int                   `json:"is_like" example:"1"`                  // 是否点赞
-  FansNum       int64                 `json:"fans_num" example:"100"`               // 粉丝数
-  Labels        []*models.VideoLabels `json:"labels"`                               // 视频标签
-  PlayInfo      []*PlayInfo           `json:"play_info"`                            // 视频转码后数据
-  StatisticsTab string                `json:"statistics_tab"`                       // 统计标签
+	VideoId       int64                 `json:"video_id"  example:"1000000000"`       // 视频id
+	Title         string                `json:"title"  example:"标题"`                 // 标题
+	Describe      string                `json:"describe"  example:"描述"`              // 描述
+	Cover         string                `json:"cover"  example:"封面"`                 // 封面
+	VideoAddr     string                `json:"video_addr"  example:"视频地址"`         // 视频地址
+	IsRecommend   int                   `json:"is_recommend" example:"0"`             // 是否推荐
+	IsTop         int                   `json:"is_top"  example:"0"`                 // 是否置顶
+	VideoDuration int                   `json:"video_duration" example:"100000"`       // 视频时长
+	VideoWidth    int64                 `json:"video_width"  example:"100"`            // 视频宽
+	VideoHeight   int64                 `json:"video_height"  example:"100"`           // 视频高
+	Status        int32                 `json:"status"  example:"1"`                   // 审核状态
+	CreateAt      int                   `json:"create_at" example:"1600000000"`        // 视频创建时间
+	FabulousNum   int                   `json:"fabulous_num" example:"10"`             // 点赞数
+	CommentNum    int                   `json:"comment_num" example:"10"`              // 评论数
+	BarrageNum    int                   `json:"barrage_num" example:"10"`              // 弹幕数
+	CollectNum    int                   `json:"collect_num" example:"10"`              // 收藏数
+	ShareNum      int                   `json:"share_num" example:"10"`               // 分享数
+	BrowseNum     int                   `json:"browse_num" example:"10"`              // 浏览数（播放数）
+	UserId        string                `json:"user_id" example:"发布视频的用户id"`      // 发布视频的用户id
+	Avatar        string                `json:"avatar" example:"头像"`                 // 头像
+	Nickname      string                `json:"nick_name"  example:"昵称"`             // 昵称
+	IsAttention   int                   `json:"is_attention" example:"1"`             // 是否关注 1 关注 0 未关注
+	IsCollect     int                   `json:"is_collect" example:"1"`               // 是否收藏
+	IsLike        int                   `json:"is_like" example:"1"`                  // 是否点赞
+	FansNum       int64                 `json:"fans_num" example:"100"`               // 粉丝数
+	Labels        []*models.VideoLabels `json:"labels"`                               // 视频标签
+	PlayInfo      []*PlayInfo           `json:"play_info"`                            // 视频转码后数据
+	StatisticsTab string                `json:"statistics_tab"`                       // 统计标签
 }
 
 // 记录视频播放时长 请求参数
 type PlayDurationParams struct {
-  VideoId         int64   `json:"video_id"`         // 视频id
-  Duration        int     `json:"duration"`         // 已播时长
-  UserId          string  `json:"user_id"`          // 用户id
+	VideoId         int64   `json:"video_id"`         // 视频id
+	Duration        int     `json:"duration"`         // 已播时长
+	UserId          string  `json:"user_id"`          // 用户id
 }
 
 // 删除历史记录请求参数
@@ -180,44 +181,44 @@ type EditRecommendStatusParam struct {
 
 // 自定义标签请求参数
 type CustomLabelParams struct {
-  CustomLabel   string    `json:"custom_label"`   // 自定义标签
+	CustomLabel   string    `json:"custom_label"`   // 自定义标签
 }
 
 // 添加热搜配置请求参数
 type AddHotSearchParams struct {
-  HotSearch       string     `json:"hot_search" binding:"required"`   // 热搜内容
-  Sortorder       int        `json:"sortorder"`                       // 权重
+	HotSearch       string     `json:"hot_search" binding:"required"`   // 热搜内容
+	Sortorder       int        `json:"sortorder"`                       // 权重
 }
 
 // 删除热搜配置请求参数
 type DelHotSearchParams struct {
-  Id              int       `json:"id" binding:"required"`     // 数据id
+	Id              int       `json:"id" binding:"required"`     // 数据id
 }
 
 // 热搜配置设置权重
 type SetSortParams struct {
-  Id          int       `json:"id" binding:"required"`          // 数据id
-  Sortorder   int       `json:"sortorder"`                      // 权重值
+	Id          int       `json:"id" binding:"required"`          // 数据id
+	Sortorder   int       `json:"sortorder"`                      // 权重值
 }
 
 // 热搜配置设置状态（展示/隐藏）
 type SetStatusParams struct {
-  Id          int        `json:"id" binding:"required"`         // 数据id
-  Status      int        `json:"status"`                        // 状态 0 展示 1 隐藏
+	Id          int        `json:"id" binding:"required"`         // 数据id
+	Status      int        `json:"status"`                        // 状态 0 展示 1 隐藏
 }
 
 // 视频举报
 type VideoReportParam struct {
-  VideoId    int64      `json:"video_id" binding:"required"`    // 视频id
-  UserId     string     `json:"user_id"`
+	VideoId    int64      `json:"video_id" binding:"required"`    // 视频id
+	UserId     string     `json:"user_id"`
 }
 
 // 视频转码信息
 type PlayInfo struct {
-  Type     string   `json:"type" example:"1 流畅（FLU） 2 标清（SD）3 高清（HD）4 全高清（FHD）5 2K 6 4K"`    // 1 流畅（FLU） 2 标清（SD）3 高清（HD）4 全高清（FHD）5 2K 6 4K
-  Url      string   `json:"url" example:"对应类型的视频地址"`
-  Size     int64    `json:"size" example:"1000000000"`
-  Duration int64    `json:"duration" example:"1000000000"`
+	Type     string   `json:"type" example:"1 流畅（FLU） 2 标清（SD）3 高清（HD）4 全高清（FHD）5 2K 6 4K"`    // 1 流畅（FLU） 2 标清（SD）3 高清（HD）4 全高清（FHD）5 2K 6 4K
+	Url      string   `json:"url" example:"对应类型的视频地址"`
+	Size     int64    `json:"size" example:"1000000000"`
+	Duration int64    `json:"duration" example:"1000000000"`
 }
 
 // 实栗
@@ -228,9 +229,9 @@ func NewVideoModel(engine *xorm.Session) *VideoModel {
 		Labels: new(models.VideoLabels),
 		Statistic: new(models.VideoStatistic),
 		Events: new(models.TencentCloudEvents),
-    HotSearch: new(models.HotSearch),
-    Report: new(models.VideoReport),
-    PlayRecord: new(models.UserPlayDurationRecord),
+		HotSearch: new(models.HotSearch),
+		Report: new(models.VideoReport),
+		PlayRecord: new(models.UserPlayDurationRecord),
 		Engine: engine,
 	}
 }
@@ -393,18 +394,18 @@ func (m *VideoModel) FindVideoListByIds(videoIds string) []*models.Videos {
 }
 
 const (
-  SEARCH_VIDEOS_BY_LABEL_ID = "SELECT v.* FROM videos AS v LEFT JOIN video_labels as vl ON v.video_id=vl.video_id " +
-    " WHERE v.status=1 AND vl.label_id=?  ORDER BY is_top DESC, is_recommend DESC, sortorder DESC, video_id LIMIT ?, ?"
+	SEARCH_VIDEOS_BY_LABEL_ID = "SELECT v.* FROM videos AS v LEFT JOIN video_labels as vl ON v.video_id=vl.video_id " +
+		" WHERE v.status=1 AND vl.label_id=?  ORDER BY is_top DESC, is_recommend DESC, sortorder DESC, video_id LIMIT ?, ?"
 )
 // 通过标签id搜索视频
 func (m *VideoModel) SearchVideosByLabelId(labelId string, offset, size int) []*models.Videos {
-  var list []*models.Videos
-  if err := m.Engine.SQL(SEARCH_VIDEOS_BY_LABEL_ID, labelId, offset, size).Find(&list); err != nil {
-    log.Log.Errorf("video_trace: search video list by labelId err:%s", err)
-    return nil
-  }
+	var list []*models.Videos
+	if err := m.Engine.SQL(SEARCH_VIDEOS_BY_LABEL_ID, labelId, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("video_trace: search video list by labelId err:%s", err)
+		return nil
+	}
 
-  return list
+	return list
 }
 
 type BrowseRecord struct {
@@ -427,47 +428,47 @@ func (m *VideoModel) GetBrowseRecord(userId string, composeType, offset, size in
 }
 
 const (
-  QUERY_USER_BROWSE_VIDEOS = "SELECT ubr.`update_at` as op_time, v.* FROM user_browse_record AS ubr " +
-    "LEFT JOIN videos AS v ON ubr.compose_id=v.video_id AND ubr.compose_type=0 " +
-    "WHERE ubr.user_id=? AND v.status=1 ORDER BY ubr.update_at DESC, ubr.id DESC LIMIT ?, ?"
+	QUERY_USER_BROWSE_VIDEOS = "SELECT ubr.`update_at` as op_time, v.* FROM user_browse_record AS ubr " +
+		"LEFT JOIN videos AS v ON ubr.compose_id=v.video_id AND ubr.compose_type=0 " +
+		"WHERE ubr.user_id=? AND v.status=1 ORDER BY ubr.update_at DESC, ubr.id DESC LIMIT ?, ?"
 )
 // 获取用户浏览过的视频
 func (m *VideoModel) GetUserBrowseVideos(userId string, offset, size int) []*VideosInfoResp {
-  var list []*VideosInfoResp
-  if err := m.Engine.SQL(QUERY_USER_BROWSE_VIDEOS, userId, offset, size).Find(&list); err != nil {
-    return nil
-  }
+	var list []*VideosInfoResp
+	if err := m.Engine.SQL(QUERY_USER_BROWSE_VIDEOS, userId, offset, size).Find(&list); err != nil {
+		return nil
+	}
 
-  return list
+	return list
 }
 
 // 获取用户浏览过的视频
 func (m *VideoModel) GetUserBrowseVideo(userId string, composeType int, composeId int64) *models.UserBrowseRecord {
-  m.Browse = new(models.UserBrowseRecord)
-  ok, err := m.Engine.Where("user_id=? AND compose_type=? AND compose_id=?", userId, composeType, composeId).Get(m.Browse)
-  if !ok || err != nil {
-    return nil
-  }
+	m.Browse = new(models.UserBrowseRecord)
+	ok, err := m.Engine.Where("user_id=? AND compose_type=? AND compose_id=?", userId, composeType, composeId).Get(m.Browse)
+	if !ok || err != nil {
+		return nil
+	}
 
-  return m.Browse
+	return m.Browse
 }
 
 // 记录用户浏览的视频记录
 func (m *VideoModel) RecordUserBrowseVideo() error {
-  if _, err := m.Engine.InsertOne(m.Browse); err != nil {
-    return err
-  }
+	if _, err := m.Engine.InsertOne(m.Browse); err != nil {
+		return err
+	}
 
-  return nil
+	return nil
 }
 
 // 之前有浏览记录 更新浏览时间
 func (m *VideoModel) UpdateUserBrowseVideo(userId string,  composeType int, composeId int64) error {
-  if _, err := m.Engine.Where("user_id=? AND compose_id=? AND compose_type=?", userId, composeId, composeType).Cols("create_at, update_at").Update(m.Browse); err != nil {
-    return err
-  }
+	if _, err := m.Engine.Where("user_id=? AND compose_id=? AND compose_type=?", userId, composeId, composeType).Cols("create_at, update_at").Update(m.Browse); err != nil {
+		return err
+	}
 
-  return nil
+	return nil
 }
 
 // 通过id列表删除浏览的历史记录
@@ -546,43 +547,43 @@ func (m *VideoModel) GetVideoList(offset, size int) []*VideoDetailInfo {
 }
 
 const (
-  //QUERY_RECOMMEND_VIDEO_LIST = "SELECT v.*, s.fabulous_num,s.browse_num FROM `videos` as v " +
-  // "LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status = 1 AND v.video_id < ? GROUP BY v.video_id " +
-  // "ORDER BY v.is_top DESC, v.is_recommend DESC, v.sortorder DESC, v.video_id DESC LIMIT ?, ?"
+	//QUERY_RECOMMEND_VIDEO_LIST = "SELECT v.*, s.fabulous_num,s.browse_num FROM `videos` as v " +
+	// "LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status = 1 AND v.video_id < ? GROUP BY v.video_id " +
+	// "ORDER BY v.is_top DESC, v.is_recommend DESC, v.sortorder DESC, v.video_id DESC LIMIT ?, ?"
 
-  QUERY_RECOMMEND_VIDEO_LIST = "SELECT v.*, s.fabulous_num,s.browse_num FROM `videos` as v " +
-   "LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status = 1 AND v.video_id < ? GROUP BY v.video_id " +
-   "ORDER BY v.video_id DESC LIMIT ?, ?"
+	QUERY_RECOMMEND_VIDEO_LIST = "SELECT v.*, s.fabulous_num,s.browse_num FROM `videos` as v " +
+		"LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status = 1 AND v.video_id < ? GROUP BY v.video_id " +
+		"ORDER BY v.video_id DESC LIMIT ?, ?"
 )
 // 获取推荐的视频列表
 func (m *VideoModel) GetRecommendVideoList(index string, offset, size int) []*RecommendVideoInfo {
-  var list []*RecommendVideoInfo
-  if err := m.Engine.SQL(QUERY_RECOMMEND_VIDEO_LIST, index, offset, size).Find(&list); err != nil {
-    log.Log.Errorf("video_trace: get recommend videos err:%s", err)
-    return nil
-  }
+	var list []*RecommendVideoInfo
+	if err := m.Engine.SQL(QUERY_RECOMMEND_VIDEO_LIST, index, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("video_trace: get recommend videos err:%s", err)
+		return nil
+	}
 
-  return list
+	return list
 }
 
 // 获取视频总数（已审核通过的）
 func (m *VideoModel) GetVideoTotalCount() int64 {
-  count, err := m.Engine.Where("status=1").Count(&models.Videos{})
-  if err != nil {
-    return 0
-  }
+	count, err := m.Engine.Where("status=1").Count(&models.Videos{})
+	if err != nil {
+		return 0
+	}
 
-  return count
+	return count
 }
 
 // 获取视频总数（未审核/未通过审核）
 func (m *VideoModel) GetVideoReviewTotalCount() int64 {
-  count, err := m.Engine.Where("status = 0 or status = 2").Count(&models.Videos{})
-  if err != nil {
-    return 0
-  }
+	count, err := m.Engine.Where("status = 0 or status = 2").Count(&models.Videos{})
+	if err != nil {
+		return 0
+	}
 
-  return count
+	return count
 }
 
 const (
@@ -604,18 +605,18 @@ func (m *VideoModel) GetAttentionVideos(userIds string, offset, size int) []*Vid
 
 // 获取未浏览的视频数（关注的用户发布的视频）
 func (m *VideoModel) GetUnBrowsedAttentionVideos(userIds, browseTm string) int64 {
-  type tmp struct {
-    Count    int64  `json:"count"`
-  }
+	type tmp struct {
+		Count    int64  `json:"count"`
+	}
 
-  unBrowsed := new(tmp)
-  sql := fmt.Sprintf("SELECT count(1) as count FROM `videos` WHERE user_id in(%s) AND status=1 AND create_at > %s", userIds, browseTm)
-  ok, err := m.Engine.SQL(sql).Get(unBrowsed)
-  if !ok || err != nil {
-    return 0
-  }
+	unBrowsed := new(tmp)
+	sql := fmt.Sprintf("SELECT count(1) as count FROM `videos` WHERE user_id in(%s) AND status=1 AND create_at > %s", userIds, browseTm)
+	ok, err := m.Engine.SQL(sql).Get(unBrowsed)
+	if !ok || err != nil {
+		return 0
+	}
 
-  return unBrowsed.Count
+	return unBrowsed.Count
 }
 
 // 搜索视频
@@ -652,60 +653,60 @@ func (m *VideoModel) SearchVideos(name, sortCondition string, minDuration, maxDu
 
 // 获取热门搜索配置列表
 func (m *VideoModel) GetHotSearch() []*models.HotSearch {
-  var list []*models.HotSearch
+	var list []*models.HotSearch
 	if err := m.Engine.Desc("sortorder", "id").Find(&list); err != nil {
-    log.Log.Errorf("video_trace: get hot search err:%s", err)
-    return []*models.HotSearch{}
-  }
+		log.Log.Errorf("video_trace: get hot search err:%s", err)
+		return []*models.HotSearch{}
+	}
 
 	return list
 }
 
 // 热搜词是否重复
 func (m *VideoModel) IsRepeatHotSearchName(name string) bool {
-  hot := new(models.HotSearch)
-  ok, err := m.Engine.Where("name=?", name).Get(hot)
-  if err == nil && ok {
-    return true
-  }
+	hot := new(models.HotSearch)
+	ok, err := m.Engine.Where("name=?", name).Get(hot)
+	if err == nil && ok {
+		return true
+	}
 
-  return false
+	return false
 }
 
 // 添加热搜配置
 func (m *VideoModel) AddHotSearch() error {
-  if _, err := m.Engine.InsertOne(m.HotSearch); err != nil {
-    return err
-  }
+	if _, err := m.Engine.InsertOne(m.HotSearch); err != nil {
+		return err
+	}
 
-  return nil
+	return nil
 }
 
 // 删除热搜配置
 func (m *VideoModel) DelHotSearch(id int) error {
-  if _, err := m.Engine.Where("id=?", id).Delete(&models.HotSearch{}); err != nil {
-    return err
-  }
+	if _, err := m.Engine.Where("id=?", id).Delete(&models.HotSearch{}); err != nil {
+		return err
+	}
 
-  return nil
+	return nil
 }
 
 // 修改热搜配置（权重、更新时间）
 func (m *VideoModel) UpdateSortByHotSearch(id int) error {
-  if _, err := m.Engine.Where("id=?", id).Cols("sortorder", "update_at").Update(m.HotSearch); err != nil {
-    return err
-  }
+	if _, err := m.Engine.Where("id=?", id).Cols("sortorder", "update_at").Update(m.HotSearch); err != nil {
+		return err
+	}
 
-  return nil
+	return nil
 }
 
 // 更新热搜配置（状态、更新时间）
 func (m *VideoModel) UpdateStatusByHotSearch(id int) error {
-  if _, err := m.Engine.Where("id=?", id).Cols("status", "update_at").Update(m.HotSearch); err != nil {
-    return err
-  }
+	if _, err := m.Engine.Where("id=?", id).Cols("status", "update_at").Update(m.HotSearch); err != nil {
+		return err
+	}
 
-  return nil
+	return nil
 }
 
 // 获取审核中/审核失败 的视频列表
@@ -736,154 +737,160 @@ func (m *VideoModel) RecordTencentEvent() (int64, error) {
 
 // 添加视频举报
 func (m *VideoModel) AddVideoReport() (int64, error) {
-  return m.Engine.InsertOne(m.Report)
+	return m.Engine.InsertOne(m.Report)
 }
 
 // 更新视频转码数据
 func (m *VideoModel) UpdateVideoPlayInfo(videoId string) error {
-  if _, err := m.Engine.Where("video_id=?", videoId).Cols("play_info").Update(m.Videos); err != nil {
-    return err
-  }
+	if _, err := m.Engine.Where("video_id=?", videoId).Cols("play_info").Update(m.Videos); err != nil {
+		return err
+	}
 
-  return nil
+	return nil
 }
 
 // 记录用户搜索历史
 func (m *VideoModel) RecordHistorySearch(userId, name string) error {
-  rds := dao.NewRedisDao()
-  _, err:= rds.ZINCRBY(rdskey.MakeKey(rdskey.SEARCH_HISTORY_CONTENT, userId), time.Now().Unix(), name)
-  return err
+	rds := dao.NewRedisDao()
+	_, err:= rds.ZINCRBY(rdskey.MakeKey(rdskey.SEARCH_HISTORY_CONTENT, userId), time.Now().Unix(), name)
+	return err
 }
 
 // 清空用户搜索历史
 func (m *VideoModel) CleanHistorySearch(userId string) error {
-  rds := dao.NewRedisDao()
-  _, err := rds.Del(rdskey.MakeKey(rdskey.SEARCH_HISTORY_CONTENT, userId))
-  return err
+	rds := dao.NewRedisDao()
+	_, err := rds.Del(rdskey.MakeKey(rdskey.SEARCH_HISTORY_CONTENT, userId))
+	return err
 }
 
 // 获取历史搜索记录
 func (m *VideoModel) GetHistorySearch(userId string) []string {
-  rds := dao.NewRedisDao()
-  list, err := rds.ZREVRANGEString(rdskey.MakeKey(rdskey.SEARCH_HISTORY_CONTENT, userId), 0, 9)
-  if err != nil {
-    return nil
-  }
+	rds := dao.NewRedisDao()
+	list, err := rds.ZREVRANGEString(rdskey.MakeKey(rdskey.SEARCH_HISTORY_CONTENT, userId), 0, 9)
+	if err != nil {
+		return nil
+	}
 
-  return list
+	return list
 }
 
 const (
-  QUERY_RECOMMEND_VIDEOS = "SELECT v.video_id, v.cover, v.title, v.`describe`, v.video_addr, v.user_id, v.size, " +
-    "v.play_info, v.video_duration, vs.`comment_num`, vs.`browse_num` FROM `videos` as v LEFT JOIN video_statistic as vs " +
-    "ON v.video_id=vs.video_id WHERE v.status=1 GROUP BY v.video_id ORDER BY v.is_top desc, v.is_recommend desc, v.create_at desc, " +
-    "v.video_id desc LIMIT ?, ?"
+	QUERY_RECOMMEND_VIDEOS = "SELECT v.video_id, v.cover, v.title, v.`describe`, v.video_addr, v.user_id, v.size, " +
+		"v.play_info, v.video_duration, vs.`comment_num`, vs.`browse_num` FROM `videos` as v LEFT JOIN video_statistic as vs " +
+		"ON v.video_id=vs.video_id WHERE v.status=1 GROUP BY v.video_id ORDER BY v.is_top desc, v.is_recommend desc, v.create_at desc, " +
+		"v.video_id desc LIMIT ?, ?"
 )
 // 获取相关视频列表（暂时随机2个）
 func (m *VideoModel) GetRecommendVideos(offset, limit int32) []*VideoDetailInfo {
-  var list []*VideoDetailInfo
-  if err := dao.Engine.Sql(QUERY_RECOMMEND_VIDEOS, offset, limit).Find(&list); err != nil {
-    return nil
-  }
+	var list []*VideoDetailInfo
+	if err := dao.Engine.Sql(QUERY_RECOMMEND_VIDEOS, offset, limit).Find(&list); err != nil {
+		return nil
+	}
 
-  return list
+	return list
 }
 
 
 const (
-  LINK_KEY  = "jdlk0ctZy3992xMv2CLW"
-  // todo: 测试改为 3分钟
-  EXPIRE_TM = 60 * 3
+	LINK_KEY  = "jdlk0ctZy3992xMv2CLW"
+	// todo: 测试改为 3分钟
+	EXPIRE_TM = 60 * 3
 )
 // 视频防盗链(有效时长3个小时)
 func (m *VideoModel) AntiStealingLink(videoUrl string) string {
-  if videoUrl == "" {
-    return ""
-  }
+	if videoUrl == "" {
+		return ""
+	}
 
-  str := strings.TrimPrefix(videoUrl, "http://")
-  dir := str[strings.Index(str, "/"): strings.LastIndex(str, "/") + 1]
-  rand := util.GenSecret(util.MIX_MODE, 10)
-  tm := fmt.Sprintf("%x", time.Now().Unix() + EXPIRE_TM)
-  signStr := fmt.Sprintf("%s%s%s%s", LINK_KEY, dir, tm, rand)
-  signStr = strings.Trim(signStr, " ")
-  signStr = strings.Replace(signStr, "\n", "", -1)
-  sign := util.Md5String(signStr)
-  return fmt.Sprintf("%s?t=%s&us=%s&sign=%s", videoUrl, tm, rand, sign)
+	urls, err := url.Parse(videoUrl)
+	if err != nil {
+		log.Log.Errorf("video_trace: url.Parse fail, err:%s", err)
+		return ""
+	}
+
+	path := urls.Path
+	path = path[:strings.LastIndex(path, "/") + 1]
+	rand := util.GenSecret(util.MIX_MODE, 10)
+	tm := fmt.Sprintf("%x", time.Now().Unix() + EXPIRE_TM)
+	signStr := fmt.Sprintf("%s%s%s%s", LINK_KEY, path, tm, rand)
+	signStr = strings.Trim(signStr, " ")
+	signStr = strings.Replace(signStr, "\n", "", -1)
+	sign := util.Md5String(signStr)
+	return fmt.Sprintf("%s?t=%s&us=%s&sign=%s", videoUrl, tm, rand, sign)
 }
 
 // 记录任务id -> 用户id
 func (m *VideoModel) RecordUploadTaskId(userId string, taskId int64) error {
-  rds := dao.NewRedisDao()
-  return rds.SETEX(rdskey.MakeKey(rdskey.VIDEO_UPLOAD_TASK, taskId), rdskey.KEY_EXPIRE_DAY * 3, userId)
+	rds := dao.NewRedisDao()
+	return rds.SETEX(rdskey.MakeKey(rdskey.VIDEO_UPLOAD_TASK, taskId), rdskey.KEY_EXPIRE_DAY * 3, userId)
 }
 
 // 通过任务id 获取 用户id
 func (m *VideoModel) GetUploadUserIdByTaskId(taskId int64) (string, error) {
-  rds := dao.NewRedisDao()
-  return rds.Get(rdskey.MakeKey(rdskey.VIDEO_UPLOAD_TASK, taskId))
+	rds := dao.NewRedisDao()
+	return rds.Get(rdskey.MakeKey(rdskey.VIDEO_UPLOAD_TASK, taskId))
 }
 
 // 记录用户发布的视频信息
 func (m *VideoModel) RecordPublishInfo(userId, pubInfo string, taskId int64) error {
-  key := rdskey.MakeKey(rdskey.VIDEO_UPLOAD_INFO, userId, taskId)
-  rds := dao.NewRedisDao()
-  return rds.SETEX(key, rdskey.KEY_EXPIRE_DAY * 3,  pubInfo)
+	key := rdskey.MakeKey(rdskey.VIDEO_UPLOAD_INFO, userId, taskId)
+	rds := dao.NewRedisDao()
+	return rds.SETEX(key, rdskey.KEY_EXPIRE_DAY * 3,  pubInfo)
 }
 
 // 获取用户发布的视频信息
 func (m *VideoModel) GetPublishInfo(userId string, taskId int64) (string, error) {
-  key := rdskey.MakeKey(rdskey.VIDEO_UPLOAD_INFO, userId, taskId)
-  log.Log.Debugf("publishInfo key:%s", key)
-  rds := dao.NewRedisDao()
-  return rds.Get(key)
+	key := rdskey.MakeKey(rdskey.VIDEO_UPLOAD_INFO, userId, taskId)
+	log.Log.Debugf("publishInfo key:%s", key)
+	rds := dao.NewRedisDao()
+	return rds.Get(key)
 }
 
 // 接收回调成功 删除 存储发布视频信息的key
 func (m *VideoModel) DelPublishInfo(userId string, taskId int64) (int, error) {
-  key := rdskey.MakeKey(rdskey.VIDEO_UPLOAD_INFO, userId, taskId)
-  rds := dao.NewRedisDao()
-  return rds.Del(key)
+	key := rdskey.MakeKey(rdskey.VIDEO_UPLOAD_INFO, userId, taskId)
+	rds := dao.NewRedisDao()
+	return rds.Del(key)
 }
 
 // 通过腾讯云返回的文件id查询视频
 func (m *VideoModel) GetVideoByFileId(fileId string) *models.Videos {
-  m.Videos = new(models.Videos)
-  ok, err := m.Engine.Where("file_id=?", fileId).Get(m.Videos)
-  if !ok || err != nil {
-    return nil
-  }
+	m.Videos = new(models.Videos)
+	ok, err := m.Engine.Where("file_id=?", fileId).Get(m.Videos)
+	if !ok || err != nil {
+		return nil
+	}
 
-  return m.Videos
+	return m.Videos
 }
 
 // 获取用户视频播放时长记录
 func (m *VideoModel) GetUserPlayDurationRecord(userId, videoId string) *models.UserPlayDurationRecord {
-  m.PlayRecord = new(models.UserPlayDurationRecord)
-  ok, err := m.Engine.Where("user_id=? AND video_id=?", userId, videoId).Get(m.PlayRecord)
-  if !ok || err != nil {
-    return nil
-  }
+	m.PlayRecord = new(models.UserPlayDurationRecord)
+	ok, err := m.Engine.Where("user_id=? AND video_id=?", userId, videoId).Get(m.PlayRecord)
+	if !ok || err != nil {
+		return nil
+	}
 
-  return m.PlayRecord
+	return m.PlayRecord
 }
 
 // 添加用户播放时长记录
 func (m *VideoModel) AddUserPlayDurationRecord() error {
-  if _, err := m.Engine.InsertOne(m.PlayRecord); err != nil {
-    return err
-  }
+	if _, err := m.Engine.InsertOne(m.PlayRecord); err != nil {
+		return err
+	}
 
-  return nil
+	return nil
 }
 
 // 更新用户已播视频时长记录
 func (m *VideoModel) UpdateUserPlayDurationRecord() error {
-  if _, err := m.Engine.ID(m.PlayRecord.Id).Cols("play_duration, update_at").Update(m.PlayRecord); err != nil {
-    return err
-  }
+	if _, err := m.Engine.ID(m.PlayRecord.Id).Cols("play_duration, update_at").Update(m.PlayRecord); err != nil {
+		return err
+	}
 
-  return nil
+	return nil
 }
 
 
