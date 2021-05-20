@@ -801,7 +801,7 @@ func (m *VideoModel) AntiStealingLink(videoUrl string) string {
     return ""
   }
 
-  str := strings.TrimPrefix(videoUrl, "://")
+  str := strings.TrimPrefix(videoUrl, "http://")
   dir := str[strings.Index(str, "/"): strings.LastIndex(str, "/") + 1]
   rand := util.GenSecret(util.MIX_MODE, 10)
   tm := fmt.Sprintf("%x", time.Now().Unix() + EXPIRE_TM)
