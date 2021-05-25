@@ -132,7 +132,7 @@ func main() {
       params.Title = TrimHtml(info.Title)
       fmt.Println("\ntitle:", params.Title)
       params.Describe = TrimHtml(info.Description)
-      params.Cover = info.Pic
+      //params.Cover = info.Pic
     }
 
     params.FileId = *resp.Response.FileId
