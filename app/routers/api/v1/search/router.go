@@ -1,16 +1,16 @@
 package search
 
 import (
-  "github.com/gin-gonic/gin"
-  "sports_service/server/middleware/sign"
-  "sports_service/server/middleware/token"
+	"github.com/gin-gonic/gin"
+	"sports_service/server/middleware/sign"
+	"sports_service/server/middleware/token"
 )
 
 // 搜索模块路由
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
 	search := api.Group("/search")
-  search.Use(sign.CheckSign())
+	search.Use(sign.CheckSign())
 	{
 		// 搜索视频
 		search.GET("/videos", VideoSearch)

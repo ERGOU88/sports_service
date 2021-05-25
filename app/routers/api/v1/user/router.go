@@ -1,9 +1,9 @@
 package user
 
 import (
-  "github.com/gin-gonic/gin"
-  "sports_service/server/middleware/sign"
-  "sports_service/server/middleware/token"
+	"github.com/gin-gonic/gin"
+	"sports_service/server/middleware/sign"
+	"sports_service/server/middleware/token"
 )
 
 // 用户账户模块路由
@@ -32,10 +32,10 @@ func Router(engine *gin.Engine) {
 		user.POST("/feedback", token.TokenAuth(), UserFeedback)
 		// 个人空间信息
 		user.GET("/zone/info", sign.CheckSign(), UserZoneInfo)
-    // 绑定设备token
-    user.POST("/bind/deviceToken", sign.CheckSign(), token.TokenAuth(), BindDeviceToken)
-    // 版本更新（数据库控制）
-    user.GET("/version/up", sign.CheckSign(), VersionUp)
+		// 绑定设备token
+		user.POST("/bind/deviceToken", sign.CheckSign(), token.TokenAuth(), BindDeviceToken)
+		// 版本更新（数据库控制）
+		user.GET("/version/up", sign.CheckSign(), VersionUp)
 	}
 
 }

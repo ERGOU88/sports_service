@@ -135,15 +135,15 @@ func CollectVideoList(c *gin.Context) {
 // @Router /api/v1/collect/other/list [get]
 // 查看其他用户收藏的视频列表
 func OtherUserCollectVideoList(c *gin.Context) {
-  reply := errdef.New(c)
-  userId := c.Query("user_id")
+	reply := errdef.New(c)
+	userId := c.Query("user_id")
 
-  page, size := util.PageInfo(c.Query("page"), c.Query("size"))
-  svc := collect.New(c)
-  // 获取用户收藏的视频列表
-  list := svc.GetUserCollectVideos(userId, page, size)
-  reply.Data["list"] = list
-  reply.Response(http.StatusOK, errdef.SUCCESS)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	svc := collect.New(c)
+	// 获取用户收藏的视频列表
+	list := svc.GetUserCollectVideos(userId, page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
 

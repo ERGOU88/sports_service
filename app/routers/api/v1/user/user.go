@@ -1,15 +1,15 @@
 package user
 
 import (
-  "github.com/gin-gonic/gin"
-  "net/http"
-  "sports_service/server/app/controller/cuser"
-  _ "sports_service/server/app/routers/api/v1/swag"
-  "sports_service/server/global/app/errdef"
-  "sports_service/server/global/app/log"
-  "sports_service/server/global/consts"
-  "sports_service/server/models/muser"
-  "sports_service/server/models/sms"
+	"github.com/gin-gonic/gin"
+	"net/http"
+	"sports_service/server/app/controller/cuser"
+	_ "sports_service/server/app/routers/api/v1/swag"
+	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
+	"sports_service/server/models/muser"
+	"sports_service/server/models/sms"
 )
 
 // @Summary 获取短信验证码 (ok)
@@ -381,11 +381,11 @@ func UserZoneInfo(c *gin.Context) {
 	userId := c.Query("user_id")
 
 	toUserId := c.Query("to_user_id")
-  if toUserId == "" {
-    log.Log.Errorf("user_trace: request toUserId is empty, toUserId:%s", userId)
-    reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
-    return
-  }
+	if toUserId == "" {
+		log.Log.Errorf("user_trace: request toUserId is empty, toUserId:%s", userId)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
 
 	svc := cuser.New(c)
 	// 获取用户个人空间信息
@@ -397,52 +397,52 @@ func UserZoneInfo(c *gin.Context) {
 
 // 绑定设备token
 func BindDeviceToken(c *gin.Context) {
-  reply := errdef.New(c)
-  userId, _ := c.Get(consts.USER_ID)
-  if userId == "" {
-    log.Log.Errorf("user_trace: user not found, uid:%s", userId)
-    reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
-    return
-  }
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+	if userId == "" {
+		log.Log.Errorf("user_trace: user not found, uid:%s", userId)
+		reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
+		return
+	}
 
-  param := new(muser.BindDeviceTokenParam)
-  if err := c.BindJSON(param); err != nil {
-    log.Log.Errorf("user_trace: invalid param, param:%+v", param)
-    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
-    return
-  }
+	param := new(muser.BindDeviceTokenParam)
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("user_trace: invalid param, param:%+v", param)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
 
-  svc := cuser.New(c)
-  syscode := svc.BindDeviceToken(userId.(string), param)
-  reply.Response(http.StatusOK, syscode)
+	svc := cuser.New(c)
+	syscode := svc.BindDeviceToken(userId.(string), param)
+	reply.Response(http.StatusOK, syscode)
 }
 
 
 // 版本更新(load数据库)
 func VersionUp(c *gin.Context) {
-  reply := errdef.New(c)
-  var versions []string
-  versions = c.Request.Header["Version"]
-  var version string
-  if len(versions) > 0 {
-    version = versions[0]
-  }
+	reply := errdef.New(c)
+	var versions []string
+	versions = c.Request.Header["Version"]
+	var version string
+	if len(versions) > 0 {
+		version = versions[0]
+	}
 
-  log.Log.Infof("configure_trace: cur client version:%s", version)
+	log.Log.Infof("configure_trace: cur client version:%s", version)
 
-  // debug模式不校验强更版本
-  //if conf.Global.Debug {
-  //	return
-  //}
+	// debug模式不校验强更版本
+	//if conf.Global.Debug {
+	//	return
+	//}
 
-  svc := cuser.New(c)
-  syscode, upgrade := svc.VersionUp(version)
-  if syscode != errdef.SUCCESS {
-    reply.Response(http.StatusOK, syscode)
-    return
-  }
+	svc := cuser.New(c)
+	syscode, upgrade := svc.VersionUp(version)
+	if syscode != errdef.SUCCESS {
+		reply.Response(http.StatusOK, syscode)
+		return
+	}
 
-  reply.Data["upgrade"] = upgrade
-  reply.Response(http.StatusOK, errdef.SUCCESS)
-  return
+	reply.Data["upgrade"] = upgrade
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+	return
 }

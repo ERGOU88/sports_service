@@ -107,7 +107,7 @@ func ReceiveAtNotify(c *gin.Context) {
 	svc := cnotify.New(c)
 	list, readIndex := svc.GetReceiveAtNotify(userId.(string), page, size)
 	reply.Data["list"] = list
-  reply.Data["read_index"] = readIndex
+	reply.Data["read_index"] = readIndex
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
@@ -179,13 +179,13 @@ func NotifySettingInfo(c *gin.Context) {
 // @Router /api/v1/notify/system [get]
 // 系统通知
 func SystemNotify(c *gin.Context) {
-  reply := errdef.New(c)
-  userId := c.Query("user_id")
-  page, size := util.PageInfo(c.Query("page"), c.Query("size"))
-  svc := cnotify.New(c)
-  list := svc.GetSystemNotify(userId, page, size)
-  reply.Data["list"] = list
-  reply.Response(http.StatusOK, errdef.SUCCESS)
+	reply := errdef.New(c)
+	userId := c.Query("user_id")
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	svc := cnotify.New(c)
+	list := svc.GetSystemNotify(userId, page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
 // @Summary 系统消息详情 (ok)
@@ -205,21 +205,21 @@ func SystemNotify(c *gin.Context) {
 // @Router /api/v1/notify/system/message/detail [get]
 // 系统消息详情
 func SystemMessageDetail(c *gin.Context) {
-  reply := errdef.New(c)
-  systemId := c.Query("system_id")
-  svc := cnotify.New(c)
-  msg := svc.GetSystemMsgById(systemId)
-  reply.Data["detail_info"] = msg
-  reply.Response(http.StatusOK, errdef.SUCCESS)
+	reply := errdef.New(c)
+	systemId := c.Query("system_id")
+	svc := cnotify.New(c)
+	msg := svc.GetSystemMsgById(systemId)
+	reply.Data["detail_info"] = msg
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
 // 首页通知
 // 获取未读消息总数 及 未浏览视频数[关注用户发布的视频]
 func HomePageNotify(c *gin.Context) {
-  reply := errdef.New(c)
-  userId := c.Query("user_id")
-  svc := cnotify.New(c)
-  resp := svc.GetUnreadTotalNum(userId)
-  reply.Data["info"] = resp
-  reply.Response(http.StatusOK, errdef.SUCCESS)
+	reply := errdef.New(c)
+	userId := c.Query("user_id")
+	svc := cnotify.New(c)
+	resp := svc.GetUnreadTotalNum(userId)
+	reply.Data["info"] = resp
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }

@@ -168,7 +168,7 @@ func LabelSearch(c *gin.Context) {
 func HotSearch(c *gin.Context) {
 	reply := errdef.New(c)
 	svc := csearch.New(c)
-  userId := c.Query("user_id")
+	userId := c.Query("user_id")
 	// 获取后台配置的热门搜索内容
 	hotSearch := svc.GetHotSearch()
 	reply.Data["list"] = hotSearch
@@ -252,11 +252,11 @@ func FansSearch(c *gin.Context) {
 // @Router /api/v1/search/clean/history [post]
 // 清空搜索历史
 func CleanHistorySearch(c *gin.Context) {
-  reply := errdef.New(c)
-  userId, _ := c.Get(consts.USER_ID)
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
 
-  svc := csearch.New(c)
-  list := svc.CleanSearchHistory(userId.(string))
-  reply.Data["list"] = list
-  reply.Response(http.StatusOK, errdef.SUCCESS)
+	svc := csearch.New(c)
+	list := svc.CleanSearchHistory(userId.(string))
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }

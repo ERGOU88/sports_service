@@ -118,9 +118,9 @@ func CommentList(c *gin.Context) {
 	svc := comment.New(c)
 	syscode, list := svc.GetVideoComments(userId, videoId, sortType, page, size)
 	if syscode != errdef.SUCCESS {
-    reply.Response(http.StatusOK, syscode)
-    return
-  }
+		reply.Response(http.StatusOK, syscode)
+		return
+	}
 
 	first := svc.GetFirstComment(userId, commentId)
 
@@ -180,15 +180,15 @@ func ReplyList(c *gin.Context) {
 // @Router /api/v1/comment/report [post]
 // 举报评论
 func CommentReport(c *gin.Context) {
-  reply := errdef.New(c)
-  params := new(mcomment.CommentReportParam)
-  if err := c.BindJSON(params); err != nil {
-    log.Log.Errorf("comment_trace: comment report params err:%s, params:%+v", err, params)
-    reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
-    return
-  }
+	reply := errdef.New(c)
+	params := new(mcomment.CommentReportParam)
+	if err := c.BindJSON(params); err != nil {
+		log.Log.Errorf("comment_trace: comment report params err:%s, params:%+v", err, params)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
 
-  svc := comment.New(c)
-  syscode := svc.AddCommentReport(params)
-  reply.Response(http.StatusOK, syscode)
+	svc := comment.New(c)
+	syscode := svc.AddCommentReport(params)
+	reply.Response(http.StatusOK, syscode)
 }

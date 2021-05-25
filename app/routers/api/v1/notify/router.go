@@ -1,16 +1,16 @@
 package notify
 
 import (
-  "github.com/gin-gonic/gin"
-  "sports_service/server/middleware/sign"
-  "sports_service/server/middleware/token"
+	"github.com/gin-gonic/gin"
+	"sports_service/server/middleware/sign"
+	"sports_service/server/middleware/token"
 )
 
 // 通知模块路由
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
 	notify := api.Group("/notify")
-  notify.Use(sign.CheckSign())
+	notify.Use(sign.CheckSign())
 	{
 		// 通知设置
 		notify.POST("/setting", token.TokenAuth(), NotifySetting)
@@ -24,8 +24,8 @@ func Router(engine *gin.Engine) {
 		notify.GET("/setting/info", token.TokenAuth(), NotifySettingInfo)
 		// 系统通知列表
 		notify.GET("/system", SystemNotify)
-    // 系统消息详情
-    notify.GET("/system/message/detail", SystemMessageDetail)
+		// 系统消息详情
+		notify.GET("/system/message/detail", SystemMessageDetail)
 		// 首页通知信息
 		notify.GET("/homepage/info", HomePageNotify)
 	}

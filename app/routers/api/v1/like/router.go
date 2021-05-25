@@ -1,16 +1,16 @@
 package like
 
 import (
-  "github.com/gin-gonic/gin"
-  "sports_service/server/middleware/sign"
-  "sports_service/server/middleware/token"
+	"github.com/gin-gonic/gin"
+	"sports_service/server/middleware/sign"
+	"sports_service/server/middleware/token"
 )
 
 // 点赞模块路由
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
 	like := api.Group("/like")
-  like.Use(sign.CheckSign())
+	like.Use(sign.CheckSign())
 	{
 		// 视频点赞
 		like.POST("/video", token.TokenAuth(), GiveLikeForVideo)

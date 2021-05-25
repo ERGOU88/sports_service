@@ -1,17 +1,17 @@
 package video
 
 import (
-  "fmt"
-  "github.com/gin-gonic/gin"
+	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"sports_service/server/app/controller/cvideo"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mvideo"
-  _ "sports_service/server/models/mlabel"
-  cloud "sports_service/server/tools/tencentCloud"
-  "sports_service/server/util"
+	_ "sports_service/server/models/mlabel"
+	cloud "sports_service/server/tools/tencentCloud"
+	"sports_service/server/util"
 	_ "sports_service/server/models"
 	"sports_service/server/tools/tencentCloud/vod"
 )
@@ -48,7 +48,7 @@ func VideoPublish(c *gin.Context) {
 		return
 	}
 
-  log.Log.Errorf("##### publish video params:%+v", params)
+	log.Log.Errorf("##### publish video params:%+v", params)
 
 	svc := cvideo.New(c)
 	// 用户发布视频
@@ -127,7 +127,7 @@ func VideoPublishList(c *gin.Context) {
 	//	reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
 	//	return
 	//}
-  uid := c.Query("user_id")
+	uid := c.Query("user_id")
 	status := c.DefaultQuery("status", "-1")
 	condition := c.DefaultQuery("condition", "-1")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
@@ -159,18 +159,18 @@ func VideoPublishList(c *gin.Context) {
 // @Router /api/v1/video/other/publish [get]
 // 获取其他用户发布的视频列表
 func OtherUserPublishList(c *gin.Context) {
-  reply := errdef.New(c)
-  userId := c.Query("user_id")
+	reply := errdef.New(c)
+	userId := c.Query("user_id")
 
-  status := c.DefaultQuery("status", "-1")
-  condition := c.DefaultQuery("condition", "-1")
-  page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	status := c.DefaultQuery("status", "-1")
+	condition := c.DefaultQuery("condition", "-1")
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 
-  svc := cvideo.New(c)
-  // 获取其他用户发布的内容列表
-  list := svc.GetUserPublishList(userId, status, condition, page, size)
-  reply.Data["list"] = list
-  reply.Response(http.StatusOK, errdef.SUCCESS)
+	svc := cvideo.New(c)
+	// 获取其他用户发布的内容列表
+	list := svc.GetUserPublishList(userId, status, condition, page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
 // @Summary 删除浏览的历史记录 (ok)
@@ -273,8 +273,8 @@ func RecommendVideos(c *gin.Context) {
 	// 视频id
 	index := c.Query("id")
 	if index == "-1" {
-	  index = fmt.Sprint(1e6)
-  }
+		index = fmt.Sprint(1e6)
+	}
 
 	userId := c.Query("user_id")
 	svc := cvideo.New(c)
@@ -361,9 +361,9 @@ func VideoDetail(c *gin.Context) {
 	svc := cvideo.New(c)
 	detail, syscode := svc.GetVideoDetail(userId, videoId)
 	if syscode != errdef.SUCCESS {
-	  reply.Response(http.StatusOK, syscode)
-	  return
-  }
+		reply.Response(http.StatusOK, syscode)
+		return
+	}
 
 	reply.Data["detail"] = detail
 	reply.Response(http.StatusOK, errdef.SUCCESS)
@@ -430,19 +430,19 @@ func EventCallback(c *gin.Context) {
 
 // 用户上传自定义标签
 func CheckCustomLabels(c *gin.Context) {
-  reply := errdef.New(c)
-  userId, _ := c.Get(consts.USER_ID)
-  params := new(mvideo.CustomLabelParams)
-  if err := c.BindJSON(params); err != nil {
-    log.Log.Errorf("video_trace: custom labels params err:%s, params:%+v", err, params)
-    reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
-    return
-  }
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+	params := new(mvideo.CustomLabelParams)
+	if err := c.BindJSON(params); err != nil {
+		log.Log.Errorf("video_trace: custom labels params err:%s, params:%+v", err, params)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
 
-  svc := cvideo.New(c)
-  // 检测自定义标签文本
-  syscode := svc.CheckCustomLabel(userId.(string), params)
-  reply.Response(http.StatusOK, syscode)
+	svc := cvideo.New(c)
+	// 检测自定义标签文本
+	syscode := svc.CheckCustomLabel(userId.(string), params)
+	reply.Response(http.StatusOK, syscode)
 }
 
 // @Summary 视频标签 (ok)
@@ -461,11 +461,11 @@ func CheckCustomLabels(c *gin.Context) {
 // @Router /api/v1/video/label/list [get]
 // 获取视频标签列表
 func VideoLabelList(c *gin.Context) {
-  reply := errdef.New(c)
-  svc := cvideo.New(c)
-  list := svc.GetVideoLabelList()
-  reply.Data["list"] = list
-  reply.Response(http.StatusOK, errdef.SUCCESS)
+	reply := errdef.New(c)
+	svc := cvideo.New(c)
+	list := svc.GetVideoLabelList()
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
 // @Summary 举报视频 (ok)
@@ -485,52 +485,52 @@ func VideoLabelList(c *gin.Context) {
 // @Router /api/v1/video/report [post]
 // 举报视频
 func VideoReport(c *gin.Context) {
-  reply := errdef.New(c)
-  param := new(mvideo.VideoReportParam)
-  if err := c.BindJSON(param); err != nil {
-    log.Log.Errorf("video_trace: video report params err:%s, params:%+v", err, param)
-    reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
-    return
-  }
+	reply := errdef.New(c)
+	param := new(mvideo.VideoReportParam)
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("video_trace: video report params err:%s, params:%+v", err, param)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
 
-  svc := cvideo.New(c)
-  syscode := svc.AddVideoReport(param)
-  reply.Response(http.StatusOK, syscode)
+	svc := cvideo.New(c)
+	syscode := svc.AddVideoReport(param)
+	reply.Response(http.StatusOK, syscode)
 }
 
 func TestUpload(c *gin.Context) {
-  reply := errdef.New(c)
-  svc := cvideo.New(c)
-  syscode, _, taskId := svc.GetUploadSign("202009101933004667")
-  if syscode != errdef.SUCCESS {
-   reply.Response(http.StatusOK, syscode)
-   return
-  }
+	reply := errdef.New(c)
+	svc := cvideo.New(c)
+	syscode, _, taskId := svc.GetUploadSign("202009101933004667")
+	if syscode != errdef.SUCCESS {
+		reply.Response(http.StatusOK, syscode)
+		return
+	}
 
-  client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
-  resp, err := client.Upload(taskId,"202009101933004667", "", "/Users/jelly/go/src/sports_service/server/tools/tencentCloud/test.mp4",
-    "ap-shanghai", consts.VOD_PROCEDURE_NAME)
-  if err != nil {
-    fmt.Printf("upload err:%s", err)
-    reply.Response(http.StatusOK, errdef.ERROR)
-    return
-  }
+	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
+	resp, err := client.Upload(taskId,"202009101933004667", "", "/Users/jelly/go/src/sports_service/server/tools/tencentCloud/test.mp4",
+		"ap-shanghai", consts.VOD_PROCEDURE_NAME)
+	if err != nil {
+		fmt.Printf("upload err:%s", err)
+		reply.Response(http.StatusOK, errdef.ERROR)
+		return
+	}
 
-  params := new(mvideo.VideoPublishParams)
-  params.Title = "test"
-  params.Describe = "test"
-  params.FileId = *resp.Response.FileId
-  params.VideoAddr = *resp.Response.MediaUrl
-  params.Cover = *resp.Response.CoverUrl
-  params.VideoLabels = "1,2"
-  params.TaskId = taskId
-  if syscode := svc.RecordPubVideoInfo("202009101933004667", params); syscode != errdef.SUCCESS {
-    reply.Response(http.StatusOK, errdef.VIDEO_PUBLISH_FAIL)
-    return
-  }
+	params := new(mvideo.VideoPublishParams)
+	params.Title = "test"
+	params.Describe = "test"
+	params.FileId = *resp.Response.FileId
+	params.VideoAddr = *resp.Response.MediaUrl
+	params.Cover = *resp.Response.CoverUrl
+	params.VideoLabels = "1,2"
+	params.TaskId = taskId
+	if syscode := svc.RecordPubVideoInfo("202009101933004667", params); syscode != errdef.SUCCESS {
+		reply.Response(http.StatusOK, errdef.VIDEO_PUBLISH_FAIL)
+		return
+	}
 
 
-  reply.Response(http.StatusOK, errdef.SUCCESS)
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
 // @Summary 记录用户视频播放时长 (ok)
@@ -550,15 +550,15 @@ func TestUpload(c *gin.Context) {
 // @Router /api/v1/video/record/play/duration [post]
 // 记录视频播放时长
 func RecordPlayDuration(c *gin.Context) {
-  reply := errdef.New(c)
-  param := new(mvideo.PlayDurationParams)
-  if err := c.BindJSON(param); err != nil {
-    log.Log.Errorf("video_trace: invalid param, param:%+v", param)
-    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
-    return
-  }
+	reply := errdef.New(c)
+	param := new(mvideo.PlayDurationParams)
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("video_trace: invalid param, param:%+v", param)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
 
-  svc := cvideo.New(c)
-  syscode := svc.RecordPlayDuration(param)
-  reply.Response(http.StatusOK, syscode)
+	svc := cvideo.New(c)
+	syscode := svc.RecordPlayDuration(param)
+	reply.Response(http.StatusOK, syscode)
 }

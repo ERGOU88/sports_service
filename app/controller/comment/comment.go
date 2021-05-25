@@ -1,24 +1,24 @@
 package comment
 
 import (
-  "fmt"
-  "github.com/gin-gonic/gin"
-  "github.com/go-xorm/xorm"
-  "sports_service/server/dao"
-  "sports_service/server/global/app/errdef"
-  "sports_service/server/global/app/log"
-  "sports_service/server/global/consts"
-  "sports_service/server/rabbitmq/event"
-  "sports_service/server/app/config"
-  "sports_service/server/models/mattention"
-  "sports_service/server/models/mcollect"
-  "sports_service/server/models/mcomment"
-  "sports_service/server/models/mlike"
-  "sports_service/server/models/muser"
-  "sports_service/server/models/mvideo"
-  "sports_service/server/tools/tencentCloud"
-  "sports_service/server/util"
-  "time"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
+	"sports_service/server/dao"
+	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
+	"sports_service/server/rabbitmq/event"
+	"sports_service/server/app/config"
+	"sports_service/server/models/mattention"
+	"sports_service/server/models/mcollect"
+	"sports_service/server/models/mcomment"
+	"sports_service/server/models/mlike"
+	"sports_service/server/models/muser"
+	"sports_service/server/models/mvideo"
+	"sports_service/server/tools/tencentCloud"
+	"sports_service/server/util"
+	"time"
 )
 
 type CommentModule struct {
@@ -33,7 +33,7 @@ type CommentModule struct {
 }
 
 func New(c *gin.Context) CommentModule {
-  socket := dao.Engine.NewSession()
+	socket := dao.Engine.NewSession()
 	defer socket.Close()
 	return CommentModule{
 		context: c,
@@ -48,27 +48,27 @@ func New(c *gin.Context) CommentModule {
 
 // 发布评论
 func (svc *CommentModule) PublishComment(userId string, params *mcomment.PublishCommentParams) (int, int64) {
-  // 开启事务
-  if err := svc.engine.Begin(); err != nil {
-    log.Log.Errorf("video_trace: session begin err:%s", err)
-    return errdef.ERROR, 0
-  }
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("video_trace: session begin err:%s", err)
+		return errdef.ERROR, 0
+	}
 
-  //contentLen := util.GetStrLen([]rune(params.Content))
-  // 最少1字符 最多1000字符
-  contentLen := len(params.Content)
-  if contentLen < consts.COMMENT_MIN_LEN || contentLen > consts.COMMENT_MAX_LEN {
-    log.Log.Errorf("comment_trace: invalid content length, len:%d", contentLen)
-    svc.engine.Rollback()
-    return errdef.COMMENT_INVALID_LEN, 0
-  }
+	//contentLen := util.GetStrLen([]rune(params.Content))
+	// 最少1字符 最多1000字符
+	contentLen := len(params.Content)
+	if contentLen < consts.COMMENT_MIN_LEN || contentLen > consts.COMMENT_MAX_LEN {
+		log.Log.Errorf("comment_trace: invalid content length, len:%d", contentLen)
+		svc.engine.Rollback()
+		return errdef.COMMENT_INVALID_LEN, 0
+	}
 
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测评论内容
 	isPass, err := client.TextModeration(params.Content)
 	if !isPass {
 		log.Log.Errorf("comment_trace: validate comment err: %s，pass: %v", err, isPass)
-    svc.engine.Rollback()
+		svc.engine.Rollback()
 		return errdef.COMMENT_INVALID_CONTENT, 0
 	}
 
@@ -90,10 +90,10 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 
 	// 视频状态 != 1 (视频审核成功)
 	if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
-    log.Log.Errorf("comment_trace: video status not audit success, videoId:%d", params.VideoId)
-    svc.engine.Rollback()
-    return errdef.VIDEO_NOT_EXISTS, 0
-  }
+		log.Log.Errorf("comment_trace: video status not audit success, videoId:%d", params.VideoId)
+		svc.engine.Rollback()
+		return errdef.VIDEO_NOT_EXISTS, 0
+	}
 
 	now := time.Now().Unix()
 	svc.comment.Comment.UserId = userId
@@ -135,8 +135,8 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 
 	svc.engine.Commit()
 
-  // 视频评论推送
-  event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, params.Content, consts.VIDEO_COMMENT_MSG)
+	// 视频评论推送
+	event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, params.Content, consts.VIDEO_COMMENT_MSG)
 
 	return errdef.SUCCESS, svc.comment.Comment.Id
 }
@@ -149,24 +149,24 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		return errdef.ERROR, 0
 	}
 
-  // 最少10字符 最多1000字符
-  contentLen := util.GetStrLen([]rune(params.Content))
-  if contentLen < consts.COMMENT_MIN_LEN || contentLen > consts.COMMENT_MAX_LEN {
-    log.Log.Errorf("comment_trace: invalid content length, len:%d", contentLen)
-    svc.engine.Rollback()
-    return errdef.COMMENT_INVALID_LEN, 0
-  }
+	// 最少10字符 最多1000字符
+	contentLen := util.GetStrLen([]rune(params.Content))
+	if contentLen < consts.COMMENT_MIN_LEN || contentLen > consts.COMMENT_MAX_LEN {
+		log.Log.Errorf("comment_trace: invalid content length, len:%d", contentLen)
+		svc.engine.Rollback()
+		return errdef.COMMENT_INVALID_LEN, 0
+	}
 
-  client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
-  // 检测评论内容
-  isPass, err := client.TextModeration(params.Content)
-  if !isPass {
-    log.Log.Errorf("comment_trace: validate reply content err: %s，pass: %v", err, isPass)
-    svc.engine.Rollback()
-    return errdef.COMMENT_INVALID_REPLY, 0
-  }
+	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	// 检测评论内容
+	isPass, err := client.TextModeration(params.Content)
+	if !isPass {
+		log.Log.Errorf("comment_trace: validate reply content err: %s，pass: %v", err, isPass)
+		svc.engine.Rollback()
+		return errdef.COMMENT_INVALID_REPLY, 0
+	}
 
-  // 查询用户是否存在
+	// 查询用户是否存在
 	user := svc.user.FindUserByUserid(userId)
 	if user == nil {
 		log.Log.Errorf("comment_trace: user not found, userId:%s", userId)
@@ -182,12 +182,12 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		return errdef.VIDEO_NOT_EXISTS, 0
 	}
 
-  // 视频状态 != 1 (视频审核成功)
-  if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
-    log.Log.Errorf("comment_trace: video status not audit success, videoId:%d", params.VideoId)
-    svc.engine.Rollback()
-    return errdef.VIDEO_NOT_EXISTS, 0
-  }
+	// 视频状态 != 1 (视频审核成功)
+	if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
+		log.Log.Errorf("comment_trace: video status not audit success, videoId:%d", params.VideoId)
+		svc.engine.Rollback()
+		return errdef.VIDEO_NOT_EXISTS, 0
+	}
 
 	// 查询被回复的评论是否存在
 	replyInfo := svc.comment.GetVideoCommentById(params.ReplyId)
@@ -248,27 +248,27 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	}
 
 	svc.engine.Commit()
-  // 视频回复推送
-  event.PushEventMsg(config.Global.AmqpDsn, replyInfo.UserId, user.NickName, video.Cover, replyInfo.Content, consts.VIDEO_REPLY_MSG)
+	// 视频回复推送
+	event.PushEventMsg(config.Global.AmqpDsn, replyInfo.UserId, user.NickName, video.Cover, replyInfo.Content, consts.VIDEO_REPLY_MSG)
 	return errdef.SUCCESS, svc.comment.Comment.Id
 }
 
 // 获取视频评论
 func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, page, size int) (int, []*mcomment.VideoComments) {
-  video := svc.video.FindVideoById(videoId)
-  // 视频不存在
-  if video == nil {
-    log.Log.Errorf("comment_trace: video not found or not pass, videoId:%s", videoId)
-    return errdef.VIDEO_NOT_EXISTS, []*mcomment.VideoComments{}
-  }
+	video := svc.video.FindVideoById(videoId)
+	// 视频不存在
+	if video == nil {
+		log.Log.Errorf("comment_trace: video not found or not pass, videoId:%s", videoId)
+		return errdef.VIDEO_NOT_EXISTS, []*mcomment.VideoComments{}
+	}
 
-  // 视频状态 != 1 (审核成功)
-  if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
-    log.Log.Errorf("comment_trace: video not audit success, videoId:%s", video.VideoId)
-    return errdef.VIDEO_NOT_EXISTS, []*mcomment.VideoComments{}
-  }
+	// 视频状态 != 1 (审核成功)
+	if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
+		log.Log.Errorf("comment_trace: video not audit success, videoId:%s", video.VideoId)
+		return errdef.VIDEO_NOT_EXISTS, []*mcomment.VideoComments{}
+	}
 
-  // 热门排序（按点赞数）
+	// 热门排序（按点赞数）
 	if sortType == consts.SORT_HOT {
 		log.Log.Debugf("comment_trace: get video comments by hot")
 		return errdef.SUCCESS, svc.GetVideoCommentsByLiked(userId, videoId, page, size)
@@ -302,8 +302,8 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 		comment.Content = item.Content
 		// 已被逻辑删除
 		if comment.Status == 0 {
-		  comment.Content = "原内容已删除"
-    }
+			comment.Content = "原内容已删除"
+		}
 
 		comment.CommentLevel = item.CommentLevel
 		// 总回复数
@@ -313,12 +313,12 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 
 		// 如果总回复数 > 3 条
 		if comment.ReplyNum > 3 {
-		  // 1 客户端展示查看更多
-		  comment.HasMore = 1
-    }
+			// 1 客户端展示查看更多
+			comment.HasMore = 1
+		}
 
-    //comment.Avatar = item.Avatar
-    //comment.UserName = item.UserName
+		//comment.Avatar = item.Avatar
+		//comment.UserName = item.UserName
 		//user := new(tmpUser)
 		//user.NickName = item.UserName
 		//user.Avatar = item.Avatar
@@ -326,9 +326,9 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 		// todo: 用户信息需使用最新数据
 		user := svc.user.FindUserByUserid(comment.UserId)
 		if user != nil {
-      comment.Avatar = user.Avatar
-      comment.UserName = user.NickName
-    }
+			comment.Avatar = user.Avatar
+			comment.UserName = user.NickName
+		}
 
 		contents[item.Id] = item.Content
 
@@ -353,17 +353,17 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 			// todo: 被回复的用户名、用户头像使用最新数据
 			user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
 			if user != nil {
-        reply.ReplyCommentAvatar = user.Avatar
-        reply.ReplyCommentUserName = user.NickName
-      }
+				reply.ReplyCommentAvatar = user.Avatar
+				reply.ReplyCommentUserName = user.NickName
+			}
 
-      // 如果回复的是1级评论 不展示@内容 否则展示   0 不是@消息 1是
-      if reply.ParentCommentId != reply.ReplyCommentId || reply.ReplyCommentId != item.Id {
-        reply.IsAt = 1
-      }
+			// 如果回复的是1级评论 不展示@内容 否则展示   0 不是@消息 1是
+			if reply.ParentCommentId != reply.ReplyCommentId || reply.ReplyCommentId != item.Id {
+				reply.IsAt = 1
+			}
 
 			// 默认回复的是1级评论
-      reply.ReplyContent = comment.Content
+			reply.ReplyContent = comment.Content
 			// 被回复的内容
 			content, ok := contents[reply.ReplyCommentId]
 			if ok {
@@ -371,8 +371,8 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 			}
 
 			if reply.Status == 0 {
-			  reply.ReplyContent = "原内容已删除"
-      }
+				reply.ReplyContent = "原内容已删除"
+			}
 
 			if userId != "" {
 				// 是否关注
@@ -388,15 +388,15 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 				comment.IsAttention = attention.Status
 			}
 
-      // 获取点赞的信息
-      if likeInfo := svc.like.GetLikeInfo(userId, comment.Id, consts.TYPE_COMMENT); likeInfo != nil {
-        comment.IsLike = likeInfo.Status
-      }
+			// 获取点赞的信息
+			if likeInfo := svc.like.GetLikeInfo(userId, comment.Id, consts.TYPE_COMMENT); likeInfo != nil {
+				comment.IsLike = likeInfo.Status
+			}
 		}
 
 		if len(comment.ReplyList) == 0 {
-		  comment.ReplyList = []*mcomment.ReplyComment{}
-    }
+			comment.ReplyList = []*mcomment.ReplyComment{}
+		}
 
 		list[index] = comment
 
@@ -430,9 +430,9 @@ func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, 
 	// userInfo 存储 用户id——>头像、昵称
 	//userInfo := make(map[string]*tmpUser, 0)
 	for _, item := range comments {
-	  if item.Status == 0 {
-	    item.Content = "原内容已删除"
-    }
+		if item.Status == 0 {
+			item.Content = "原内容已删除"
+		}
 		// 总回复数
 		item.ReplyNum = svc.comment.GetTotalReplyByComment(fmt.Sprint(item.Id))
 
@@ -441,11 +441,11 @@ func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, 
 		//user.Avatar = item.Avatar
 		//userInfo[item.UserId] = user
 		// todo: 评论用户的头像、昵称需使用最新的数据
-    user := svc.user.FindUserByUserid(item.UserId)
-    if user != nil {
-      item.Avatar = user.Avatar
-      item.UserName = user.NickName
-    }
+		user := svc.user.FindUserByUserid(item.UserId)
+		if user != nil {
+			item.Avatar = user.Avatar
+			item.UserName = user.NickName
+		}
 
 		contents[item.Id] = item.Content
 
@@ -456,10 +456,10 @@ func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, 
 			//user.NickName = reply.UserName
 			//user.Avatar = reply.Avatar
 			//userInfo[reply.UserId] = user
-		  // 已被逻辑删除
-		  if reply.Status == 0 {
-		    reply.Content = "原内容已删除"
-      }
+			// 已被逻辑删除
+			if reply.Status == 0 {
+				reply.Content = "原内容已删除"
+			}
 
 			contents[reply.Id] = reply.Content
 			// 评论点赞数
@@ -470,14 +470,14 @@ func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, 
 			//	reply.ReplyCommentAvatar = uinfo.Avatar
 			//	reply.ReplyCommentUserName = uinfo.NickName
 			//}
-      // todo: 被回复的用户名、用户头像使用最新数据
-      user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
-      if user != nil {
-        reply.ReplyCommentAvatar = user.Avatar
-        reply.ReplyCommentUserName = user.NickName
-      }
+			// todo: 被回复的用户名、用户头像使用最新数据
+			user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
+			if user != nil {
+				reply.ReplyCommentAvatar = user.Avatar
+				reply.ReplyCommentUserName = user.NickName
+			}
 
-      // 被回复的内容
+			// 被回复的内容
 			content, ok := contents[reply.ReplyCommentId]
 			if ok {
 				reply.ReplyContent = content
@@ -485,8 +485,8 @@ func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, 
 
 			// 已逻辑删除
 			if reply.Status == 0 {
-			  reply.ReplyContent = "原内容已删除"
-      }
+				reply.ReplyContent = "原内容已删除"
+			}
 
 			if userId != "" {
 				// 是否关注
@@ -503,9 +503,9 @@ func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, 
 			}
 		}
 
-    if len(item.ReplyList) == 0 {
-      item.ReplyList = []*mcomment.ReplyComment{}
-    }
+		if len(item.ReplyList) == 0 {
+			item.ReplyList = []*mcomment.ReplyComment{}
+		}
 
 	}
 
@@ -523,9 +523,9 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 
 	// 视频状态 != 1（视频审核成功）
 	if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
-	  log.Log.Errorf("comment_trace: video status not audit success, videoId:%s", videoId)
-	  return errdef.VIDEO_NOT_EXISTS, []*mcomment.ReplyComment{}
-  }
+		log.Log.Errorf("comment_trace: video status not audit success, videoId:%s", videoId)
+		return errdef.VIDEO_NOT_EXISTS, []*mcomment.ReplyComment{}
+	}
 
 	// 查询评论是否存在
 	comment := svc.comment.GetVideoCommentById(commentId)
@@ -554,15 +554,15 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 		//user.NickName = reply.UserName
 		//user.Avatar = reply.Avatar
 		//userInfo[reply.UserId] = user
-    user := svc.user.FindUserByUserid(reply.UserId)
-    if user != nil {
-      reply.UserName = user.NickName
-      reply.Avatar = user.Avatar
-    }
+		user := svc.user.FindUserByUserid(reply.UserId)
+		if user != nil {
+			reply.UserName = user.NickName
+			reply.Avatar = user.Avatar
+		}
 
-    if reply.Status == 0 {
-      reply.Content = "原内容已删除"
-    }
+		if reply.Status == 0 {
+			reply.Content = "原内容已删除"
+		}
 
 		contents[reply.Id] = reply.Content
 		// 评论点赞数
@@ -573,17 +573,17 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 		//	reply.ReplyCommentAvatar = uinfo.Avatar
 		//	reply.ReplyCommentUserName = uinfo.NickName
 		//}
-    // todo: 用户信息需使用最新数据
-    user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
-    if user != nil {
-      reply.ReplyCommentAvatar = user.Avatar
-      reply.ReplyCommentUserName = user.NickName
-    }
+		// todo: 用户信息需使用最新数据
+		user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
+		if user != nil {
+			reply.ReplyCommentAvatar = user.Avatar
+			reply.ReplyCommentUserName = user.NickName
+		}
 
 		// 如果回复的是1级评论 不展示@内容 否则展示   0 不是@消息 1是
 		if reply.ParentCommentId != reply.ReplyCommentId || fmt.Sprint(reply.ReplyCommentId) != commentId {
-		  reply.IsAt = 1
-    }
+			reply.IsAt = 1
+		}
 
 		// 默认回复的是1级评论
 		reply.ReplyContent = comment.Content
@@ -599,10 +599,10 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 				reply.IsAttention = attention.Status
 			}
 
-      // 获取点赞的信息
-      if likeInfo := svc.like.GetLikeInfo(userId, reply.Id, consts.TYPE_COMMENT); likeInfo != nil {
-        reply.IsLike = likeInfo.Status
-      }
+			// 获取点赞的信息
+			if likeInfo := svc.like.GetLikeInfo(userId, reply.Id, consts.TYPE_COMMENT); likeInfo != nil {
+				reply.IsLike = likeInfo.Status
+			}
 		}
 	}
 
@@ -611,96 +611,96 @@ func (svc *CommentModule) GetCommentReplyList(userId, videoId, commentId string,
 
 // 如果从消息页 点击某条@数据跳转到视频详情时 则 需要组装@消息的详情
 func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.VideoComments {
-  var first *mcomment.VideoComments
-  // 如果从消息页 点击某条@数据跳转到视频详情时 则 需要组装点击的@消息的详情
-  if commentId != "" {
-    comment := svc.comment.GetVideoCommentById(commentId)
-    if comment != nil {
-      // todo:
-      first = &mcomment.VideoComments{
-        Id: comment.Id,
-        LikeNum:  svc.like.GetLikeNumByType(comment.Id, consts.TYPE_COMMENT),
-        IsTop: comment.IsTop,
-        CommentLevel: comment.CommentLevel,
-        Content: comment.Content,
-        CreateAt: comment.CreateAt,
-        Status: comment.Status,
-        VideoId: comment.VideoId,
-        ReplyNum:  svc.comment.GetTotalReplyByComment(fmt.Sprint(comment.Id)),
-      }
+	var first *mcomment.VideoComments
+	// 如果从消息页 点击某条@数据跳转到视频详情时 则 需要组装点击的@消息的详情
+	if commentId != "" {
+		comment := svc.comment.GetVideoCommentById(commentId)
+		if comment != nil {
+			// todo:
+			first = &mcomment.VideoComments{
+				Id: comment.Id,
+				LikeNum:  svc.like.GetLikeNumByType(comment.Id, consts.TYPE_COMMENT),
+				IsTop: comment.IsTop,
+				CommentLevel: comment.CommentLevel,
+				Content: comment.Content,
+				CreateAt: comment.CreateAt,
+				Status: comment.Status,
+				VideoId: comment.VideoId,
+				ReplyNum:  svc.comment.GetTotalReplyByComment(fmt.Sprint(comment.Id)),
+			}
 
-      user := svc.user.FindUserByUserid(comment.UserId)
-      if user != nil {
-        first.Avatar = user.Avatar
-        first.UserName = user.NickName
-        first.UserId = user.UserId
-        // 获取点赞的信息
-        if likeInfo := svc.like.GetLikeInfo(userId, comment.Id, consts.TYPE_COMMENT); likeInfo != nil {
-          first.IsLike = likeInfo.Status
-        }
-      }
+			user := svc.user.FindUserByUserid(comment.UserId)
+			if user != nil {
+				first.Avatar = user.Avatar
+				first.UserName = user.NickName
+				first.UserId = user.UserId
+				// 获取点赞的信息
+				if likeInfo := svc.like.GetLikeInfo(userId, comment.Id, consts.TYPE_COMMENT); likeInfo != nil {
+					first.IsLike = likeInfo.Status
+				}
+			}
 
-      // contents 存储 评论id——>评论的内容
-      content := make(map[int64]string, 0)
-      content[comment.Id] = comment.Content
-      first.ReplyList = svc.comment.GetVideoReply(fmt.Sprint(comment.VideoId), fmt.Sprint(comment.Id), 0, 3)
-      for _, reply := range first.ReplyList {
-        // 已被逻辑删除
-        if reply.Status == 0 {
-          reply.Content = "原内容已删除"
-        }
+			// contents 存储 评论id——>评论的内容
+			content := make(map[int64]string, 0)
+			content[comment.Id] = comment.Content
+			first.ReplyList = svc.comment.GetVideoReply(fmt.Sprint(comment.VideoId), fmt.Sprint(comment.Id), 0, 3)
+			for _, reply := range first.ReplyList {
+				// 已被逻辑删除
+				if reply.Status == 0 {
+					reply.Content = "原内容已删除"
+				}
 
-        content[reply.Id] = reply.Content
-        // 评论点赞数
-        reply.LikeNum = svc.like.GetLikeNumByType(reply.Id, consts.TYPE_COMMENT)
-        // todo: 被回复的用户名、用户头像使用最新数据
-        user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
-        if user != nil {
-          reply.ReplyCommentAvatar = user.Avatar
-          reply.ReplyCommentUserName = user.NickName
-          reply.ReplyCommentUserId = user.UserId
-          if user.UserId != "" {
-            // 是否关注
-            if attention := svc.attention.GetAttentionInfo(userId, reply.UserId); attention != nil {
-              reply.IsAttention = attention.Status
-            }
+				content[reply.Id] = reply.Content
+				// 评论点赞数
+				reply.LikeNum = svc.like.GetLikeNumByType(reply.Id, consts.TYPE_COMMENT)
+				// todo: 被回复的用户名、用户头像使用最新数据
+				user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
+				if user != nil {
+					reply.ReplyCommentAvatar = user.Avatar
+					reply.ReplyCommentUserName = user.NickName
+					reply.ReplyCommentUserId = user.UserId
+					if user.UserId != "" {
+						// 是否关注
+						if attention := svc.attention.GetAttentionInfo(userId, reply.UserId); attention != nil {
+							reply.IsAttention = attention.Status
+						}
 
-            // 获取点赞的信息
-            if likeInfo := svc.like.GetLikeInfo(userId, reply.Id, consts.TYPE_COMMENT); likeInfo != nil {
-              reply.IsLike = likeInfo.Status
-            }
-          }
-        }
+						// 获取点赞的信息
+						if likeInfo := svc.like.GetLikeInfo(userId, reply.Id, consts.TYPE_COMMENT); likeInfo != nil {
+							reply.IsLike = likeInfo.Status
+						}
+					}
+				}
 
-        // 被回复的内容
-        content, ok := content[reply.ReplyCommentId]
-        if ok {
-          reply.ReplyContent = content
-        }
-      }
-    }
-  }
+				// 被回复的内容
+				content, ok := content[reply.ReplyCommentId]
+				if ok {
+					reply.ReplyContent = content
+				}
+			}
+		}
+	}
 
-  return first
+	return first
 }
 
 // 添加评论举报
 func (svc *CommentModule) AddCommentReport(params *mcomment.CommentReportParam) int {
-  // 查询评论是否存在
-  comment := svc.comment.GetVideoCommentById(fmt.Sprint(params.CommentId))
-  if comment == nil {
-    log.Log.Error("comment_trace: comment not found, commentId:%s", fmt.Sprint(params.CommentId))
-    return errdef.COMMENT_NOT_FOUND
-  }
+	// 查询评论是否存在
+	comment := svc.comment.GetVideoCommentById(fmt.Sprint(params.CommentId))
+	if comment == nil {
+		log.Log.Error("comment_trace: comment not found, commentId:%s", fmt.Sprint(params.CommentId))
+		return errdef.COMMENT_NOT_FOUND
+	}
 
-  svc.comment.Report.UserId = params.UserId
-  svc.comment.Report.CommentId = params.CommentId
-  svc.comment.Report.Reason = params.Reason
-  svc.comment.Report.CreateAt = int(time.Now().Unix())
-  if _, err := svc.comment.AddCommentReport(); err != nil {
-    log.Log.Errorf("comment_trace: add comment report err:%s", err)
-    return errdef.COMMENT_REPORT_FAIL
-  }
+	svc.comment.Report.UserId = params.UserId
+	svc.comment.Report.CommentId = params.CommentId
+	svc.comment.Report.Reason = params.Reason
+	svc.comment.Report.CreateAt = int(time.Now().Unix())
+	if _, err := svc.comment.AddCommentReport(); err != nil {
+		log.Log.Errorf("comment_trace: add comment report err:%s", err)
+		return errdef.COMMENT_REPORT_FAIL
+	}
 
-  return errdef.SUCCESS
+	return errdef.SUCCESS
 }

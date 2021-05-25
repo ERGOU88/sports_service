@@ -3,10 +3,10 @@ package client
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-  "sports_service/server/app/config"
+	"sports_service/server/app/config"
 	_ "sports_service/server/app/routers/api/v1/swag"
-  "sports_service/server/app/controller/cuser"
-  "sports_service/server/app/controller/cvideo"
+	"sports_service/server/app/controller/cuser"
+	"sports_service/server/app/controller/cvideo"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/util"
 	"fmt"
@@ -37,32 +37,32 @@ func InitInfo(c *gin.Context) {
 
 	svc2 := cvideo.New(c)
 	// 视频标签配置
-  labelList := svc2.GetVideoLabelList()
+	labelList := svc2.GetVideoLabelList()
 	reply.Data["secret"] = secret
 	reply.Data["avatar_list"] = avatarList
-  reply.Data["world_list"] = worldList
-  reply.Data["label_list"] = labelList
+	reply.Data["world_list"] = worldList
+	reply.Data["label_list"] = labelList
 
-  type H5Info struct {
-    PrivacyTreaty    string   `json:"privacy_treaty"`           // 隐私协议
-    UserTreaty       string   `json:"user_treaty"`              // 用户协议
-    CommentReport    string   `json:"comment_report"`           // 举报评论
-    CommonProblem    string   `json:"common_problem"`           // 常见问题
-    AboutFpv         string   `json:"about_fpv"`                // 关于fpv
-    Feedback         string   `json:"feedback"`                 // 问题反馈
-    NoticeDetail     string   `json:"notice_detail"`            // 消息详情
-  }
+	type H5Info struct {
+		PrivacyTreaty    string   `json:"privacy_treaty"`           // 隐私协议
+		UserTreaty       string   `json:"user_treaty"`              // 用户协议
+		CommentReport    string   `json:"comment_report"`           // 举报评论
+		CommonProblem    string   `json:"common_problem"`           // 常见问题
+		AboutFpv         string   `json:"about_fpv"`                // 关于fpv
+		Feedback         string   `json:"feedback"`                 // 问题反馈
+		NoticeDetail     string   `json:"notice_detail"`            // 消息详情
+	}
 
-  h5Info := &H5Info{
-    PrivacyTreaty: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/privacyagreement"),
-    UserTreaty: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/useragreement"),
-    CommentReport: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/commentreport"),
-    Feedback: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/problemfeedback"),
-    AboutFpv: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/about"),
-    CommonProblem: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/problemcommon"),
-    NoticeDetail: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/noticedetail"),
-  }
+	h5Info := &H5Info{
+		PrivacyTreaty: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/privacyagreement"),
+		UserTreaty: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/useragreement"),
+		CommentReport: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/commentreport"),
+		Feedback: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/problemfeedback"),
+		AboutFpv: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/about"),
+		CommonProblem: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/problemcommon"),
+		NoticeDetail: fmt.Sprintf("%s%s", config.Global.StaticDomain, "/noticedetail"),
+	}
 
-  reply.Data["h5_info"] = h5Info
-  reply.Response(http.StatusOK, errdef.SUCCESS)
+	reply.Data["h5_info"] = h5Info
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }

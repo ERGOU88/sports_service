@@ -115,7 +115,7 @@ func LikeVideoList(c *gin.Context) {
 	//	return
 	//}
 
-  uid := c.Query("user_id")
+	uid := c.Query("user_id")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	svc := clike.New(c)
 	// 获取用户点赞的视频列表
@@ -142,14 +142,14 @@ func LikeVideoList(c *gin.Context) {
 // @Router /api/v1/like/other/list [get]
 // 用户点赞的视频列表
 func OtherUserLikeVideoList(c *gin.Context) {
-  reply := errdef.New(c)
-  userId := c.Query("user_id")
-  page, size := util.PageInfo(c.Query("page"), c.Query("size"))
-  svc := clike.New(c)
-  // 获取用户点赞的视频列表
-  list := svc.GetUserLikeVideos(userId, page, size)
-  reply.Data["list"] = list
-  reply.Response(http.StatusOK, errdef.SUCCESS)
+	reply := errdef.New(c)
+	userId := c.Query("user_id")
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	svc := clike.New(c)
+	// 获取用户点赞的视频列表
+	list := svc.GetUserLikeVideos(userId, page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
 // @Summary 评论点赞 (ok)

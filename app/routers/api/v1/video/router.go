@@ -1,16 +1,16 @@
 package video
 
 import (
-  "github.com/gin-gonic/gin"
-  "sports_service/server/middleware/sign"
-  "sports_service/server/middleware/token"
+	"github.com/gin-gonic/gin"
+	"sports_service/server/middleware/sign"
+	"sports_service/server/middleware/token"
 )
 
 // 视频点播模块路由
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
 	video := api.Group("/video")
-  video.Use(sign.CheckSign())
+	video.Use(sign.CheckSign())
 	{
 		// 用户发布视频
 		video.POST("/publish", token.TokenAuth(), VideoPublish)
@@ -40,13 +40,13 @@ func Router(engine *gin.Engine) {
 		video.GET("/event/callback", EventCallback)
 		// 用户自定义视频标签检测
 		video.POST("/custom/labels", CheckCustomLabels)
-    // 获取视频标签列表
-    video.GET("/label/list", VideoLabelList)
+		// 获取视频标签列表
+		video.GET("/label/list", VideoLabelList)
 		// 举报视频
 		video.POST("/report", VideoReport)
 		// 上传测试
 		//video.GET("/test/upload", TestUpload)
-    // 记录用户视频播放的时长
+		// 记录用户视频播放的时长
 		video.POST("/record/play/duration", RecordPlayDuration)
 	}
 }

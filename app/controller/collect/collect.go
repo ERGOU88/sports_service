@@ -1,23 +1,23 @@
 package collect
 
 import (
-  "fmt"
-  "github.com/gin-gonic/gin"
-  "github.com/go-xorm/xorm"
-  "sports_service/server/dao"
-  "sports_service/server/global/app/errdef"
-  "sports_service/server/global/app/log"
-  "sports_service/server/global/consts"
-  "sports_service/server/models/mattention"
-  "sports_service/server/models/mcollect"
-  "sports_service/server/models/mlike"
-  "sports_service/server/models/muser"
-  "sports_service/server/models/mvideo"
-  "sports_service/server/rabbitmq/event"
-  "sports_service/server/util"
-  "strings"
-  "time"
-  "sports_service/server/app/config"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
+	"sports_service/server/dao"
+	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
+	"sports_service/server/models/mattention"
+	"sports_service/server/models/mcollect"
+	"sports_service/server/models/mlike"
+	"sports_service/server/models/muser"
+	"sports_service/server/models/mvideo"
+	"sports_service/server/rabbitmq/event"
+	"sports_service/server/util"
+	"strings"
+	"time"
+	"sports_service/server/app/config"
 )
 
 type CollectModule struct {
@@ -31,7 +31,7 @@ type CollectModule struct {
 }
 
 func New(c *gin.Context) CollectModule {
-  socket := dao.Engine.NewSession()
+	socket := dao.Engine.NewSession()
 	defer socket.Close()
 	return CollectModule{
 		context: c,
@@ -107,8 +107,8 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 
 	svc.engine.Commit()
 
-  // 发送收藏视频推送
-  event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG)
+	// 发送收藏视频推送
+	event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG)
 
 	return errdef.SUCCESS
 }
@@ -174,10 +174,10 @@ func (svc *CollectModule) CancelCollect(userId string, videoId int64) int {
 
 // 获取用户收藏的视频列表
 func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []*mvideo.VideosInfoResp {
-  if userId == "" {
-    log.Log.Errorf("collect_trace: userId not exists! userId:%s", userId)
-    return []*mvideo.VideosInfoResp{}
-  }
+	if userId == "" {
+		log.Log.Errorf("collect_trace: userId not exists! userId:%s", userId)
+		return []*mvideo.VideosInfoResp{}
+	}
 
 	offset := (page - 1) * size
 	infos := svc.collect.GetCollectList(userId, offset, size)
@@ -210,7 +210,7 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
 		resp.Title = util.TrimHtml(video.Title)
 		resp.Describe = util.TrimHtml(video.Describe)
 		resp.Cover = video.Cover
-    resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+		resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		resp.IsRecommend = video.IsRecommend
 		resp.IsTop = video.IsTop
 		resp.VideoDuration = video.VideoDuration
@@ -221,16 +221,16 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
 		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
 			resp.Avatar = user.Avatar
 			resp.Nickname = user.NickName
-      // 是否关注
-      attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)
-      if attentionInfo != nil {
-        resp.IsAttention = attentionInfo.Status
-      }
+			// 是否关注
+			attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)
+			if attentionInfo != nil {
+				resp.IsAttention = attentionInfo.Status
+			}
 
-      // 获取该视频的用户已播时长
-      if record := svc.video.GetUserPlayDurationRecord(userId, fmt.Sprint(video.VideoId)); record != nil {
-        resp.TimeElapsed = record.PlayDuration
-      }
+			// 获取该视频的用户已播时长
+			if record := svc.video.GetUserPlayDurationRecord(userId, fmt.Sprint(video.VideoId)); record != nil {
+				resp.TimeElapsed = record.PlayDuration
+			}
 		}
 
 		collectAt, ok := mp[video.VideoId]
