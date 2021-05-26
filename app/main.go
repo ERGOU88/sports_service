@@ -86,7 +86,6 @@ func setupJob() {
 	go job.CheckBanners()
 	/*----检测banner(是否上架/是否过期)任务----*/
 
-	// todo:先停止任务
 	/*----主动拉取腾讯云回调事件任务----*/
 	go job.PullEventsJob()
 	/*----主动拉取腾讯云回调事件任务----*/
@@ -150,8 +149,6 @@ func init() {
 	setupSnowId()
 	// 设置运行模式
 	setupRunMode()
-	// 任务
-	setupJob()
 	// 初始化nsq生产者
 	//setupNsqProduct()
 	// 初始化nsq消费者
@@ -160,6 +157,11 @@ func init() {
 	setupRabbitmqConsumer()
 	// register signals handler
 	setupSignal()
+	// 本地运行时 不执行定时任务
+	if config.Global.Mode != string(consts.ModeLocal) {
+		// 任务
+		setupJob()
+	}
 }
 
 // @title 电竞社区平台（应用服）
@@ -269,3 +271,4 @@ func main() {
 	}
 
 }
+

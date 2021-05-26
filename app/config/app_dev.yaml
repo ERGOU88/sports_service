@@ -1,25 +1,25 @@
 publicAddr: :11001
 pprofAddr: :12001
-mode: dev
+mode: local
 mysql:
   main:
-    master: root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4
+    master: root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4
     slave:
-      - root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4
-      - root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4
-      - root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4
+      - root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4
+      - root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4
+      - root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
 
 redis:
   main:
     master:
-      ip: 127.0.0.1
-      port: 6379
+      ip: 192.168.5.12
+      port: 6378
 
     slave:
-      - ip: 127.0.0.1
-        port: 6379
+      - ip: 192.168.5.12
+        port: 6378
 
     dboption:
       - dbid: 0
