@@ -118,7 +118,7 @@ type UserSearchResults struct {
 // 登陆请求所需的参数
 type LoginParams struct {
 	Platform  int      `json:"platform" example:"0"`                                // 平台 0 android 1 iOS 2 web
-	Token     string   `binding:"required" json:"token" example:"客户端token"`
+	//Token     string   `binding:"required" json:"token" example:"客户端token"`
 	OpToken   string   `binding:"required" json:"op_token" example:"客户端返回的运营商token"`
 	Operator  string   `binding:"required" json:"operator" example:"客户端返回的运营商，CMCC:中国移动通信, CUCC:中国联通通讯, CTCC:中国电信"`
 }

@@ -4,20 +4,28 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/muser"
-	"sports_service/server/tools/mobTech"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"time"
 )
 
 // 手机一键登陆/注册
 func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, *models.User) {
-	mob := mobTech.NewMobTech()
+	//mob := mobTech.NewMobTech()
 	// 校验客户端token 并从mob获取手机号码
-	mobileNum, err := mob.FreeLogin(param.Token, param.OpToken, param.Operator)
+	//mobileNum, err := mob.FreeLogin(param.Token, param.OpToken, param.Operator)
+	//if err != nil {
+	//	log.Log.Errorf("user_trace: mob free login err:%s", err)
+	//	return errdef.USER_FREE_LOGIN_FAIL, "", nil
+	//}
+    // 替换为腾讯一键登录
+	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, "")
+	mobileNum, err := client.FreeLogin(param.OpToken, param.Operator, "86")
 	if err != nil {
-		log.Log.Errorf("user_trace: mob free login err:%s", err)
+		log.Log.Errorf("user_trace: tencent free login err:%s", err)
 		return errdef.USER_FREE_LOGIN_FAIL, "", nil
 	}
 

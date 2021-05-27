@@ -1,7 +1,7 @@
 package tencentCloud
 
 import (
-	"crypto/md5"
+	//"crypto/md5"
 	"encoding/hex"
 	"github.com/parnurzeal/gorequest"
 	"io/ioutil"
@@ -10,11 +10,13 @@ import (
 	"fmt"
 	"sports_service/server/util"
 	"time"
+	"crypto/sha256"
 )
 
 const (
-	TENCENT_SDK_APP_ID  = 1400521069
+	TENCENT_SDK_APP_ID  = 1400525306
 	TENCENT_NVS_URL     = "https://yun.tim.qq.com/v5/rapidauth/validate?sdkappid=%d&random=%d"
+	TENCENT_SDK_APP_KEY = "6a441055757230580d697c7c0ffa14ee"
 )
 
 // 返回的结构
@@ -60,8 +62,8 @@ func (tc *TencentCloud) FreeLogin(token, carrier, nationcode string) (string, er
 
 // 生成签名
 func (tc *TencentCloud) generateSign(tm, random int64) string {
-	ret := fmt.Sprintf("appkey=%s&random=%d&time=%d", tc.secretKey, random, tm)
-	md5Ctx := md5.New()
+	ret := fmt.Sprintf("appkey=%s&random=%d&time=%d", TENCENT_SDK_APP_KEY, random, tm)
+	md5Ctx := sha256.New()
 	md5Ctx.Write([]byte(ret))
 	cipherStr := md5Ctx.Sum(nil)
 
