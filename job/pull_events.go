@@ -57,7 +57,7 @@ func pullEvents() error {
       }
     // 任务流状态变更（包含视频转码完成）
     case consts.EVENT_PROCEDURE_STATE_CHANGED:
-      log.Log.Debugf("transcode event:%+v", *event.ProcedureStateChangeEvent)
+      log.Log.Debugf("transcode event:%q", *event.ProcedureStateChangeEvent)
       transCodeCompleteEvent(event)
 
     // 文件被删除
