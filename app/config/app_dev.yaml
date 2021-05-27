@@ -1,6 +1,6 @@
 publicAddr: :11001
 pprofAddr: :12001
-mode: local
+mode: dev
 mysql:
   main:
     master: root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4

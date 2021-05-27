@@ -105,7 +105,7 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
 
   list := make([]*mvideo.PlayInfo, 0)
   for _, info := range event.ProcedureStateChangeEvent.MediaProcessResultSet {
-    log.Log.Debugf("info:%v", info)
+    log.Log.Debugf("info:%+v", *info)
     // todo:
     switch *info.Type {
     case "Transcode":
@@ -113,6 +113,8 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
         log.Log.Errorf("job_trace: media process errCode:%d", *info.TranscodeTask.ErrCode)
         continue
       }
+
+      log.Log.Infof("output:%+v", *info.TranscodeTask.Output)
 
       // 流畅（FLU） 100010	MP4  100210	HLS
       playInfo := new(mvideo.PlayInfo)
