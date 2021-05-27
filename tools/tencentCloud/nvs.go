@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	//
 	TENCENT_SDK_APP_ID  = 1400521069
 	TENCENT_NVS_URL     = "https://yun.tim.qq.com/v5/rapidauth/validate?sdkappid=%d&random=%d"
 )
