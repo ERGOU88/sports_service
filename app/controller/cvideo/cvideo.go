@@ -884,6 +884,7 @@ func (svc *VideoModule) GetUploadSign(userId string, biteRate int64) (int, strin
 	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
 	taskId := util.GetXID()
 	procedureName := svc.GetProcedureByBiteRate(biteRate)
+	log.Log.Infof("procedure_trace: biteRate:%d, procedureName:%s", biteRate, procedureName)
 	sign := client.GenerateSign(userId, procedureName, taskId)
 
 	if err := svc.video.RecordUploadTaskId(userId, taskId); err != nil {
