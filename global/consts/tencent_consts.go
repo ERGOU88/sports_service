@@ -15,7 +15,12 @@ const (
 	TX_SMS_SECRET_KEY   = "vZw2rPgIejX5MM5WhaDZdQwA8qHRJuEH"
 
 	// 任务流模版名称
+	// [自适应转码]
 	VOD_PROCEDURE_NAME  = "fpv-demo"
+	// [转 标清]
+	VOD_PROCEDURE_TRANSCODE_1 = "transcode_1"
+	// [转 标清 + 高清]
+	VOD_PROCEDURE_TRANSCODE_2 = "transcode_2"
 )
 
 // NewFileUpload：视频上传完成；

@@ -110,7 +110,7 @@ func main() {
 
     c, _ := gin.CreateTestContext(httptest.NewRecorder())
     svc := cvideo.New(c)
-    syscode, _, taskId := svc.GetUploadSign(*uid)
+    syscode, _, taskId := svc.GetUploadSign(*uid, 2500)
     if syscode != errdef.SUCCESS {
       fmt.Printf("\nsyscode:%d", syscode)
       continue

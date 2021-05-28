@@ -868,7 +868,7 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 }
 
 // 获取上传签名
-func (svc *VideoModule) GetUploadSign(userId string) (int, string, int64) {
+func (svc *VideoModule) GetUploadSign(userId string, biteRate int64) (int, string, int64) {
 	// 用户未登录
 	if userId == "" {
 		log.Log.Error("video_trace: no login")
@@ -883,7 +883,8 @@ func (svc *VideoModule) GetUploadSign(userId string) (int, string, int64) {
 
 	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
 	taskId := util.GetXID()
-	sign := client.GenerateSign(userId, consts.VOD_PROCEDURE_NAME, taskId)
+	procedureName := svc.GetProcedureByBiteRate(biteRate)
+	sign := client.GenerateSign(userId, procedureName, taskId)
 
 	if err := svc.video.RecordUploadTaskId(userId, taskId); err != nil {
 		log.Log.Errorf("video_trace: record upload taskid err:%s", err)
@@ -891,6 +892,20 @@ func (svc *VideoModule) GetUploadSign(userId string) (int, string, int64) {
 	}
 
 	return errdef.SUCCESS, sign, taskId
+}
+
+// 通过码率 获取相应的任务模版
+func (svc *VideoModule) GetProcedureByBiteRate(biteRate int64) string {
+	if biteRate >= 1800 {
+		return consts.VOD_PROCEDURE_TRANSCODE_2
+	}
+
+	if biteRate > 1000 && biteRate < 1800 {
+		return consts.VOD_PROCEDURE_TRANSCODE_1
+	}
+
+
+	return consts.VOD_PROCEDURE_NAME
 }
 
 // 事件回调(被动)

@@ -114,7 +114,7 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
         continue
       }
 
-      log.Log.Infof("output:%+v", *info.TranscodeTask.Output)
+      log.Log.Infof("output:%q", *info.TranscodeTask.Output)
 
       // 流畅（FLU） 100010	MP4  100210	HLS
       playInfo := new(mvideo.PlayInfo)
@@ -155,6 +155,30 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
       playInfo.Url = *info.TranscodeTask.Output.Url
       playInfo.Size = *info.TranscodeTask.Output.Size
       playInfo.Duration = int64(*info.TranscodeTask.Output.Duration * 1000)
+
+      list = append(list, playInfo)
+
+    case "AdaptiveDynamicStreaming":
+      if *info.AdaptiveDynamicStreamingTask.ErrCode != 0 {
+        log.Log.Errorf("job_trace: media process errCode:%d", *info.TranscodeTask.ErrCode)
+        continue
+      }
+
+      playInfo := new(mvideo.PlayInfo)
+      // 标清（SD）834710 HLS
+      if *info.TranscodeTask.Output.Definition == 834710 {
+        playInfo.Type = "2"
+      }
+
+      // 高清（HD）819081 HLS
+      if *info.AdaptiveDynamicStreamingTask.Output.Definition == 819081 {
+        playInfo.Type = "3"
+      }
+
+      playInfo.Url = *info.AdaptiveDynamicStreamingTask.Output.Url
+      playInfo.Duration = int64(*event.ProcedureStateChangeEvent.MetaData.Duration * 1000)
+      // todo: 此为转码前视频大小
+      playInfo.Size = *event.ProcedureStateChangeEvent.MetaData.Size
 
       list = append(list, playInfo)
     }

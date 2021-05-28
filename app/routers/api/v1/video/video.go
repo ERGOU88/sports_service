@@ -14,6 +14,7 @@ import (
 	"sports_service/server/util"
 	_ "sports_service/server/models"
 	"sports_service/server/tools/tencentCloud/vod"
+	"strconv"
 )
 
 // @Summary 视频发布 (ok)
@@ -401,13 +402,33 @@ func DetailRecommend(c *gin.Context) {
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
+// @Summary 获取上传签名（腾讯云） (ok)
+// @Tags 视频模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   bite_rate	  query  	string 	true  "视频码率"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/video/upload/sign [get]
 // 获取上传签名（腾讯云）
 func UploadSign(c *gin.Context) {
 	reply := errdef.New(c)
 	userId, _ := c.Get(consts.USER_ID)
+	biteRate, err := strconv.Atoi(c.Query("bite_rate"))
+	if err != nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
 
 	svc := cvideo.New(c)
-	syscode, sign, taskId := svc.GetUploadSign(userId.(string))
+	syscode, sign, taskId := svc.GetUploadSign(userId.(string), int64(biteRate))
 	reply.Data["sign"] = sign
 	reply.Data["task_id"] = taskId
 
@@ -501,7 +522,7 @@ func VideoReport(c *gin.Context) {
 func TestUpload(c *gin.Context) {
 	reply := errdef.New(c)
 	svc := cvideo.New(c)
-	syscode, _, taskId := svc.GetUploadSign("202009101933004667")
+	syscode, _, taskId := svc.GetUploadSign("202009101933004667", 2500)
 	if syscode != errdef.SUCCESS {
 		reply.Response(http.StatusOK, syscode)
 		return
