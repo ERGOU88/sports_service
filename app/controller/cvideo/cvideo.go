@@ -1,29 +1,29 @@
 package cvideo
 
 import (
-  "errors"
-  "fmt"
-  "github.com/gin-gonic/gin"
-  "github.com/go-xorm/xorm"
-  "sports_service/server/dao"
-  "sports_service/server/global/app/errdef"
-  "sports_service/server/global/app/log"
-  "sports_service/server/global/consts"
-  "sports_service/server/models"
-  "sports_service/server/models/mattention"
-  "sports_service/server/models/mbanner"
-  "sports_service/server/models/mcollect"
-  "sports_service/server/models/mlabel"
-  "sports_service/server/models/mlike"
-  "sports_service/server/models/mnotify"
-  "sports_service/server/models/muser"
-  "sports_service/server/models/mvideo"
-  cloud "sports_service/server/tools/tencentCloud"
-  "sports_service/server/tools/tencentCloud/vod"
-  "sports_service/server/util"
-  "strconv"
-  "strings"
-  "time"
+	"errors"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
+	"sports_service/server/dao"
+	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
+	"sports_service/server/models"
+	"sports_service/server/models/mattention"
+	"sports_service/server/models/mbanner"
+	"sports_service/server/models/mcollect"
+	"sports_service/server/models/mlabel"
+	"sports_service/server/models/mlike"
+	"sports_service/server/models/mnotify"
+	"sports_service/server/models/muser"
+	"sports_service/server/models/mvideo"
+	cloud "sports_service/server/tools/tencentCloud"
+	"sports_service/server/tools/tencentCloud/vod"
+	"sports_service/server/util"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type VideoModule struct {
@@ -40,7 +40,7 @@ type VideoModule struct {
 }
 
 func New(c *gin.Context) VideoModule {
-  socket := dao.Engine.NewSession()
+	socket := dao.Engine.NewSession()
 	defer socket.Close()
 	return VideoModule{
 		context: c,
@@ -89,12 +89,12 @@ func (svc *VideoModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPu
 
 	// 检测自定义标签
 	//if params.CustomLabels != "" {
-    //isPass, err = client.TextModeration(params.CustomLabels)
-    //if !isPass {
-    //  log.Log.Errorf("video_trace: validate title err: %s，pass: %v", err, isPass)
-    //  return errdef.VIDEO_INVALID_CUSTOM_LABEL
-    //}
-    //}
+	//isPass, err = client.TextModeration(params.CustomLabels)
+	//if !isPass {
+	//  log.Log.Errorf("video_trace: validate title err: %s，pass: %v", err, isPass)
+	//  return errdef.VIDEO_INVALID_CUSTOM_LABEL
+	//}
+	//}
 
 	info, _ := util.JsonFast.Marshal(params)
 	// 先记录到缓存
@@ -163,15 +163,15 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 		labelInfos = append(labelInfos, info)
 	}
 
-  if len(labelInfos) > 0 {
-    // 添加视频标签（多条）
-    affected, err = svc.video.AddVideoLabels(labelInfos)
-    if err != nil || int(affected) != len(labelInfos) {
-      svc.engine.Rollback()
-      log.Log.Errorf("video_trace: add video labels err:%s", err)
-      return errors.New("add video labels error")
-    }
-  }
+	if len(labelInfos) > 0 {
+		// 添加视频标签（多条）
+		affected, err = svc.video.AddVideoLabels(labelInfos)
+		if err != nil || int(affected) != len(labelInfos) {
+			svc.engine.Rollback()
+			log.Log.Errorf("video_trace: add video labels err:%s", err)
+			return errors.New("add video labels error")
+		}
+	}
 
 	svc.video.Statistic.VideoId = svc.video.Videos.VideoId
 	svc.video.Statistic.CreateAt = int(now)
@@ -218,32 +218,32 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 	//	return []*mvideo.VideosInfoResp{}
 	//}
 
-  // 获取浏览的视频列表信息
+	// 获取浏览的视频列表信息
 	videoList := svc.video.GetUserBrowseVideos(userId, offset, size)
-  if len(videoList) == 0 {
-  	log.Log.Errorf("video_trace: not found browse video list info, len:%d", len(videoList))
-  	return []*mvideo.VideosInfoResp{}
-  }
+	if len(videoList) == 0 {
+		log.Log.Errorf("video_trace: not found browse video list info, len:%d", len(videoList))
+		return []*mvideo.VideosInfoResp{}
+	}
 
 	// 重新组装数据
 	for _, video := range videoList {
 		video.Title = util.TrimHtml(video.Title)
-    video.Describe = util.TrimHtml(video.Describe)
-    video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
-    // 获取该视频的用户已播时长
-    if record := svc.video.GetUserPlayDurationRecord(userId, fmt.Sprint(video.VideoId)); record != nil {
-      video.TimeElapsed = record.PlayDuration
-    }
+		video.Describe = util.TrimHtml(video.Describe)
+		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+		// 获取该视频的用户已播时长
+		if record := svc.video.GetUserPlayDurationRecord(userId, fmt.Sprint(video.VideoId)); record != nil {
+			video.TimeElapsed = record.PlayDuration
+		}
 
 		// 获取用户信息
 		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
-      video.Avatar = user.Avatar
-      video.Nickname = user.NickName
-      // 是否关注
-      attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)
-      if attentionInfo != nil {
-        video.IsAttention = attentionInfo.Status
-      }
+			video.Avatar = user.Avatar
+			video.Nickname = user.NickName
+			// 是否关注
+			attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)
+			if attentionInfo != nil {
+				video.IsAttention = attentionInfo.Status
+			}
 
 		}
 
@@ -263,10 +263,10 @@ func (svc *VideoModule) DeleteHistoryByIds(userId string, param *mvideo.DeleteHi
 	ids := strings.Join(param.ComposeIds, ",")
 	var sql string
 	if ids == "-1" {
-    sql = fmt.Sprintf("DELETE FROM `user_browse_record` WHERE user_id=? AND compose_type=0")
-  } else {
-    sql = fmt.Sprintf("DELETE FROM `user_browse_record` WHERE user_id=? AND compose_id in(%s)", ids)
-  }
+		sql = fmt.Sprintf("DELETE FROM `user_browse_record` WHERE user_id=? AND compose_type=0")
+	} else {
+		sql = fmt.Sprintf("DELETE FROM `user_browse_record` WHERE user_id=? AND compose_id in(%s)", ids)
+	}
 
 	if err := svc.video.DeleteHistoryByIds(userId, sql); err != nil {
 		log.Log.Errorf("video_trace: delete history by ids err:%s", err)
@@ -287,67 +287,67 @@ func (svc *VideoModule) GetUserPublishList(userId, status, condition string, pag
 	offset := (page - 1) * size
 	field := svc.GetConditionFieldByPublish(condition)
 
-  // 获取用户发布的视频列表[通过审核状态和条件查询]
-  list := svc.video.GetUserPublishVideos(offset, size, userId, status, field)
-  if len(list) == 0 {
-    log.Log.Errorf("video_trace: not publish video, userId:%s", userId)
-    return []*mvideo.VideosInfo{}
-  }
+	// 获取用户发布的视频列表[通过审核状态和条件查询]
+	list := svc.video.GetUserPublishVideos(offset, size, userId, status, field)
+	if len(list) == 0 {
+		log.Log.Errorf("video_trace: not publish video, userId:%s", userId)
+		return []*mvideo.VideosInfo{}
+	}
 
 	for _, val := range list {
-	  val.StatusCn = svc.GetVideoStatusCn(fmt.Sprint(val.Status))
-	  val.VideoAddr = svc.video.AntiStealingLink(val.VideoAddr)
-	  val.Describe = util.TrimHtml(val.Describe)
-	  val.Title = util.TrimHtml(val.Title)
-    // 获取该视频的用户已播时长
-    if record := svc.video.GetUserPlayDurationRecord(userId, fmt.Sprint(val.VideoId)); record != nil {
-      val.TimeElapsed = record.PlayDuration
-    }
-  }
+		val.StatusCn = svc.GetVideoStatusCn(fmt.Sprint(val.Status))
+		val.VideoAddr = svc.video.AntiStealingLink(val.VideoAddr)
+		val.Describe = util.TrimHtml(val.Describe)
+		val.Title = util.TrimHtml(val.Title)
+		// 获取该视频的用户已播时长
+		if record := svc.video.GetUserPlayDurationRecord(userId, fmt.Sprint(val.VideoId)); record != nil {
+			val.TimeElapsed = record.PlayDuration
+		}
+	}
 
-  return list
+	return list
 }
 
 // 获取视频状态（中文展示）
 func (svc *VideoModule) GetVideoStatusCn(status string) string {
-  switch status {
-  case consts.VIDEO_UNDER_REVIEW:
-    return "审核中"
-  case consts.VIDEO_AUDIT_SUCCESS:
-    return "已发布"
-  case consts.VIDEO_AUDIT_FAILURE:
-    return "未通过"
-  }
+	switch status {
+	case consts.VIDEO_UNDER_REVIEW:
+		return "审核中"
+	case consts.VIDEO_AUDIT_SUCCESS:
+		return "已发布"
+	case consts.VIDEO_AUDIT_FAILURE:
+		return "未通过"
+	}
 
-  return "未知"
+	return "未知"
 }
 
 // -1 发布时间 0 播放数 1 弹幕数 2 评论数 3 点赞数 4 分享数
 func (svc *VideoModule) GetConditionCn(condition string) string {
-  switch condition {
-  // 发布时间
-  case consts.VIDEO_CONDITION_TIME:
-    return "发布时间"
-  // 播放数
-  case consts.VIDEO_CONDITION_PLAY:
-    return "播放数"
-  // 弹幕数
-  case consts.VIDEO_CONDITION_BARRAGE:
-    return "弹幕数"
-  // 评论数
-  case consts.VIDEO_CONDITION_COMMENT:
-    return "评论数"
-  // 点赞数
-  case consts.VIDEO_CONDITION_LIKE:
-    return "点赞数"
-  // 分享数
-  case consts.VIDEO_CONDITION_SHARE:
-    return "分享数"
-  default:
-    log.Log.Errorf("video_trace: unsupported condition, condition: %s", condition)
-  }
+	switch condition {
+	// 发布时间
+	case consts.VIDEO_CONDITION_TIME:
+		return "发布时间"
+	// 播放数
+	case consts.VIDEO_CONDITION_PLAY:
+		return "播放数"
+	// 弹幕数
+	case consts.VIDEO_CONDITION_BARRAGE:
+		return "弹幕数"
+	// 评论数
+	case consts.VIDEO_CONDITION_COMMENT:
+		return "评论数"
+	// 点赞数
+	case consts.VIDEO_CONDITION_LIKE:
+		return "点赞数"
+	// 分享数
+	case consts.VIDEO_CONDITION_SHARE:
+		return "分享数"
+	default:
+		log.Log.Errorf("video_trace: unsupported condition, condition: %s", condition)
+	}
 
-  return "发布时间"
+	return "发布时间"
 }
 
 // 条件查询发布的内容
@@ -455,24 +455,24 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 	var minId int64
 	// 重新组装数据
 	for _, video := range list {
-	  if video.VideoId < minId || minId == 0 {
-	    minId = video.VideoId
-    }
+		if video.VideoId < minId || minId == 0 {
+			minId = video.VideoId
+		}
 
-    video.Describe = util.TrimHtml(video.Describe)
-    video.Title = util.TrimHtml(video.Title)
-    video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
-    // 查询用户信息
-    userInfo := svc.user.FindUserByUserid(video.UserId)
-    if userInfo == nil {
-      log.Log.Errorf("video_trace: user not found, uid:%s", video.UserId)
-      continue
-    }
+		video.Describe = util.TrimHtml(video.Describe)
+		video.Title = util.TrimHtml(video.Title)
+		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+		// 查询用户信息
+		userInfo := svc.user.FindUserByUserid(video.UserId)
+		if userInfo == nil {
+			log.Log.Errorf("video_trace: user not found, uid:%s", video.UserId)
+			continue
+		}
 
 		video.Avatar = userInfo.Avatar
 		video.Nickname = userInfo.NickName
-    // 获取统计标签
-    video.StatisticsTab = svc.GetStatisticTab(video.VideoId)
+		// 获取统计标签
+		video.StatisticsTab = svc.GetStatisticTab(video.VideoId)
 		// 用户未登录
 		if userId == "" {
 			log.Log.Error("video_trace: no login")
@@ -495,77 +495,77 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 
 // 获取统计标签
 func (svc *VideoModule) GetStatisticTab(videoId int64) string {
-  var statisticsTab string
-  // 获取视频相关统计数据
-  // 1个点赞:2分 1个收藏:5分 1个弹幕:10分  1个评论:10分  四项中，哪个分数最高，显示哪个
-  info := svc.video.GetVideoStatistic(fmt.Sprint(videoId))
-  if info == nil {
-    return ""
-  }
-  mp := util.NewIntMap(4)
-  // key 统计相关分数  val 统计类型 0 点赞 1 收藏 2 弹幕 3 评论
-  mp.Insert(info.FabulousNum * 2, 0)
-  mp.Insert(info.CollectNum * 5, 1)
-  mp.Insert(info.BarrageNum * 10, 2)
-  mp.Insert(info.CommentNum * 10, 3)
-  key, val, b := mp.GetByOrderIndex(mp.Size() - 1)
-  if b {
-    // 0 点赞 1 收藏 2 弹幕 3 评论
-    switch val {
-    case 0:
-      // 总数 = 总分/2
-      num := key/2
-      chinese := util.TransferChinese(num)
-      if chinese == "0" {
-        statisticsTab = ""
-      } else {
-        statisticsTab = fmt.Sprintf("%s点赞", chinese)
-      }
+	var statisticsTab string
+	// 获取视频相关统计数据
+	// 1个点赞:2分 1个收藏:5分 1个弹幕:10分  1个评论:10分  四项中，哪个分数最高，显示哪个
+	info := svc.video.GetVideoStatistic(fmt.Sprint(videoId))
+	if info == nil {
+		return ""
+	}
+	mp := util.NewIntMap(4)
+	// key 统计相关分数  val 统计类型 0 点赞 1 收藏 2 弹幕 3 评论
+	mp.Insert(info.FabulousNum * 2, 0)
+	mp.Insert(info.CollectNum * 5, 1)
+	mp.Insert(info.BarrageNum * 10, 2)
+	mp.Insert(info.CommentNum * 10, 3)
+	key, val, b := mp.GetByOrderIndex(mp.Size() - 1)
+	if b {
+		// 0 点赞 1 收藏 2 弹幕 3 评论
+		switch val {
+		case 0:
+			// 总数 = 总分/2
+			num := key/2
+			chinese := util.TransferChinese(num)
+			if chinese == "0" {
+				statisticsTab = ""
+			} else {
+				statisticsTab = fmt.Sprintf("%s点赞", chinese)
+			}
 
-    case 1:
-      // 总数 = 总分/5
-      num := key/5
-      chinese := util.TransferChinese(num)
-      if chinese == "0" {
-        statisticsTab = ""
-      } else {
-        statisticsTab = fmt.Sprintf("%s收藏", chinese)
-      }
+		case 1:
+			// 总数 = 总分/5
+			num := key/5
+			chinese := util.TransferChinese(num)
+			if chinese == "0" {
+				statisticsTab = ""
+			} else {
+				statisticsTab = fmt.Sprintf("%s收藏", chinese)
+			}
 
-    case 2:
-      // 总数 = 总分/10
-      num := key/10
-      chinese := util.TransferChinese(num)
-      if chinese == "0" {
-        statisticsTab = ""
-      } else {
-        statisticsTab = fmt.Sprintf("%s弹幕", chinese)
-      }
+		case 2:
+			// 总数 = 总分/10
+			num := key/10
+			chinese := util.TransferChinese(num)
+			if chinese == "0" {
+				statisticsTab = ""
+			} else {
+				statisticsTab = fmt.Sprintf("%s弹幕", chinese)
+			}
 
-    case 3:
-      // 总数 = 总分/10
-      num := key/10
-      chinese := util.TransferChinese(num)
-      if chinese == "0" {
-        statisticsTab = ""
-      } else {
-        statisticsTab = fmt.Sprintf("%s评论", chinese)
-      }
-    }
+		case 3:
+			// 总数 = 总分/10
+			num := key/10
+			chinese := util.TransferChinese(num)
+			if chinese == "0" {
+				statisticsTab = ""
+			} else {
+				statisticsTab = fmt.Sprintf("%s评论", chinese)
+			}
+		}
 
-  }
+	}
 
-  return statisticsTab
+	return statisticsTab
 }
 
 // 获取app首页推荐的banner 默认取10条
 func (svc *VideoModule) GetRecommendBanners() []*models.Banner {
 	banners := svc.banner.GetRecommendBanners(int32(consts.HOMEPAGE_BANNERS), time.Now().Unix(), 0, 10)
 	if len(banners) == 0 {
-	  return []*models.Banner{}
-  }
+		return []*models.Banner{}
+	}
 
-  return banners
+	return banners
 }
 
 // 获取关注的用户发布的视频列表
@@ -592,10 +592,10 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 	// 重新组装数据
 	for _, video := range list {
 		// 获取视频标签信息
-    video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
-    if video.Labels == nil {
-      video.Labels = []*models.VideoLabels{}
-    }
+		video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+		if video.Labels == nil {
+			video.Labels = []*models.VideoLabels{}
+		}
 
 		// 查询用户信息
 		userInfo := svc.user.FindUserByUserid(video.UserId)
@@ -604,14 +604,14 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 			continue
 		}
 
-    video.Describe = util.TrimHtml(video.Describe)
-    video.Title = util.TrimHtml(video.Title)
+		video.Describe = util.TrimHtml(video.Describe)
+		video.Title = util.TrimHtml(video.Title)
 
 		video.Avatar = userInfo.Avatar
 		video.Nickname = userInfo.NickName
-    video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
-    // 获取统计标签
-    video.StatisticsTab = svc.GetStatisticTab(video.VideoId)
+		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+		// 获取统计标签
+		video.StatisticsTab = svc.GetStatisticTab(video.VideoId)
 
 		if userId == "" {
 			log.Log.Error("video_trace: user no login")
@@ -634,10 +634,10 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 
 	// 表示刷新列表 记录最新一次的刷新时间
 	if page == 1 {
-    if err := svc.notify.RecordReadAttentionPubVideo(userId); err != nil {
-      log.Log.Errorf("video_trace: record read attention pub video err:%s", err)
-    }
-  }
+		if err := svc.notify.RecordReadAttentionPubVideo(userId); err != nil {
+			log.Log.Errorf("video_trace: record read attention pub video err:%s", err)
+		}
+	}
 
 	return list
 }
@@ -656,16 +656,16 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDet
 	}
 
 	if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
-    log.Log.Error("video_trace: video not audit , videoId:%s", videoId)
-    return nil, errdef.VIDEO_NOT_EXISTS
-  }
+		log.Log.Error("video_trace: video not audit , videoId:%s", videoId)
+		return nil, errdef.VIDEO_NOT_EXISTS
+	}
 
 	resp := new(mvideo.VideoDetailInfo)
 	resp.VideoId = video.VideoId
 	resp.Title = util.TrimHtml(video.Title)
 	resp.Describe = util.TrimHtml(video.Describe)
 	resp.Cover = video.Cover
-  resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+	resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 	resp.IsRecommend = video.IsRecommend
 	resp.IsTop = video.IsTop
 	resp.VideoDuration = video.VideoDuration
@@ -674,22 +674,22 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDet
 	resp.CreateAt = video.CreateAt
 	resp.UserId = video.UserId
 	resp.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
-  if resp.Labels == nil {
-    resp.Labels = []*models.VideoLabels{}
-  }
+	if resp.Labels == nil {
+		resp.Labels = []*models.VideoLabels{}
+	}
 
-  // 获取转码后的视频数据
-  if err := util.JsonFast.UnmarshalFromString(video.PlayInfo, &resp.PlayInfo); err != nil {
-    log.Log.Errorf("video_trace: jsonFast unmarshal err:%s", err)
-    resp.PlayInfo = []*mvideo.PlayInfo{}
-  }
+	// 获取转码后的视频数据
+	if err := util.JsonFast.UnmarshalFromString(video.PlayInfo, &resp.PlayInfo); err != nil {
+		log.Log.Errorf("video_trace: jsonFast unmarshal err:%s", err)
+		resp.PlayInfo = []*mvideo.PlayInfo{}
+	}
 
-  if len(resp.PlayInfo) > 0 {
-    for _, v := range resp.PlayInfo {
-      // 添加防盗链
-      v.Url = svc.video.AntiStealingLink(v.Url)
-    }
-  }
+	if len(resp.PlayInfo) > 0 {
+		for _, v := range resp.PlayInfo {
+			// 添加防盗链
+			v.Url = svc.video.AntiStealingLink(v.Url)
+		}
+	}
 
 	// 获取视频相关统计数据
 	info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
@@ -701,46 +701,46 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDet
 	resp.CollectNum = info.CollectNum
 	// 粉丝数
 	resp.FansNum = svc.attention.GetTotalFans(fmt.Sprint(video.UserId))
-  now := int(time.Now().Unix())
-  // 增加视频浏览总数
-  if err := svc.video.UpdateVideoBrowseNum(video.VideoId, now, 1); err != nil {
-    log.Log.Errorf("video_trace: update video browse num err:%s", err)
-  }
+	now := int(time.Now().Unix())
+	// 增加视频浏览总数
+	if err := svc.video.UpdateVideoBrowseNum(video.VideoId, now, 1); err != nil {
+		log.Log.Errorf("video_trace: update video browse num err:%s", err)
+	}
 
-  if user := svc.user.FindUserByUserid(video.UserId); user != nil {
-    resp.Avatar = user.Avatar
-    resp.Nickname = user.NickName
-  }
+	if user := svc.user.FindUserByUserid(video.UserId); user != nil {
+		resp.Avatar = user.Avatar
+		resp.Nickname = user.NickName
+	}
 
 	if userId == "" {
 		log.Log.Error("video_trace: user no login")
 		return resp, errdef.SUCCESS
 	}
 
-  // 获取用户信息
-  if user := svc.user.FindUserByUserid(userId); user != nil {
+	// 获取用户信息
+	if user := svc.user.FindUserByUserid(userId); user != nil {
 
-    // 用户是否浏览过
-    browse := svc.video.GetUserBrowseVideo(userId, consts.TYPE_VIDEO, video.VideoId)
-    if browse != nil {
-      svc.video.Browse.CreateAt = now
-      svc.video.Browse.UpdateAt = now
-      // 已有浏览记录 更新用户浏览的时间
-      if err := svc.video.UpdateUserBrowseVideo(userId, consts.TYPE_VIDEO, video.VideoId); err != nil {
-        log.Log.Errorf("video_trace: update user browse video err:%s", err)
-      }
-    } else {
-      svc.video.Browse.CreateAt = now
-      svc.video.Browse.UpdateAt = now
-      svc.video.Browse.UserId = userId
-      svc.video.Browse.ComposeId = video.VideoId
-      svc.video.Browse.ComposeType = consts.TYPE_VIDEO
-      // 添加用户浏览的视频记录
-      if err := svc.video.RecordUserBrowseVideo(); err != nil {
-        log.Log.Errorf("video_trace: record user browse video err:%s", err)
-      }
-    }
-  }
+		// 用户是否浏览过
+		browse := svc.video.GetUserBrowseVideo(userId, consts.TYPE_VIDEO, video.VideoId)
+		if browse != nil {
+			svc.video.Browse.CreateAt = now
+			svc.video.Browse.UpdateAt = now
+			// 已有浏览记录 更新用户浏览的时间
+			if err := svc.video.UpdateUserBrowseVideo(userId, consts.TYPE_VIDEO, video.VideoId); err != nil {
+				log.Log.Errorf("video_trace: update user browse video err:%s", err)
+			}
+		} else {
+			svc.video.Browse.CreateAt = now
+			svc.video.Browse.UpdateAt = now
+			svc.video.Browse.UserId = userId
+			svc.video.Browse.ComposeId = video.VideoId
+			svc.video.Browse.ComposeType = consts.TYPE_VIDEO
+			// 添加用户浏览的视频记录
+			if err := svc.video.RecordUserBrowseVideo(); err != nil {
+				log.Log.Errorf("video_trace: record user browse video err:%s", err)
+			}
+		}
+	}
 
 	// 是否关注
 	if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
@@ -793,10 +793,10 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 
 	// 通过标签列表 随机获取同标签类型的视频们
 	videoIds := svc.video.RandomGetVideoIdByLabels(videoId, labelIds, size)
-  if len(videoIds) == 0 {
-    log.Log.Errorf("search_trace: not found videos by label ids, labelIds:%s", labelIds)
-    return []*mvideo.VideoDetailInfo{}
-  }
+	if len(videoIds) == 0 {
+		log.Log.Errorf("search_trace: not found videos by label ids, labelIds:%s", labelIds)
+		return []*mvideo.VideoDetailInfo{}
+	}
 
 	vids := strings.Join(videoIds, ",")
 	videos := svc.video.FindVideoListByIds(vids)
@@ -813,7 +813,7 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 		resp.Title = util.TrimHtml(video.Title)
 		resp.Describe = util.TrimHtml(video.Describe)
 		resp.Cover = video.Cover
-    resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+		resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		resp.IsRecommend = video.IsRecommend
 		resp.IsTop = video.IsTop
 		resp.VideoDuration = video.VideoDuration
@@ -822,9 +822,9 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 		resp.CreateAt = video.CreateAt
 		resp.UserId = video.UserId
 		resp.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
-    if resp.Labels == nil {
-      resp.Labels = []*models.VideoLabels{}
-    }
+		if resp.Labels == nil {
+			resp.Labels = []*models.VideoLabels{}
+		}
 
 		// 获取视频相关统计数据
 		info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
@@ -837,26 +837,26 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 		resp.FansNum = svc.attention.GetTotalFans(fmt.Sprint(video.UserId))
 
 		if userId != "" {
-      // 获取用户信息
-      if user := svc.user.FindUserByUserid(video.UserId); user != nil {
-        resp.Avatar = user.Avatar
-        resp.Nickname = user.NickName
-      }
+			// 获取用户信息
+			if user := svc.user.FindUserByUserid(video.UserId); user != nil {
+				resp.Avatar = user.Avatar
+				resp.Nickname = user.NickName
+			}
 
-      // 是否关注
-      if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
-        resp.IsAttention = attentionInfo.Status
-      }
+			// 是否关注
+			if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
+				resp.IsAttention = attentionInfo.Status
+			}
 
-      // 获取点赞的信息
-      if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEOS); likeInfo != nil {
-        resp.IsLike = likeInfo.Status
-      }
+			// 获取点赞的信息
+			if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEOS); likeInfo != nil {
+				resp.IsLike = likeInfo.Status
+			}
 
-      // 获取收藏的信息
-      if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
-        resp.IsCollect = collectInfo.Status
-      }
+			// 获取收藏的信息
+			if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
+				resp.IsCollect = collectInfo.Status
+			}
 		}
 
 		resp.PlayInfo = []*mvideo.PlayInfo{}
@@ -941,106 +941,106 @@ func (svc *VideoModule) EventCallback(params *vod.EventNotify) int {
 
 // 检测自定义标签
 func (svc *VideoModule) CheckCustomLabel(userId string, params *mvideo.CustomLabelParams) int {
-  // 用户未登录
-  if userId == "" {
-    log.Log.Error("video_trace: no login")
-    return errdef.USER_NO_LOGIN
-  }
+	// 用户未登录
+	if userId == "" {
+		log.Log.Error("video_trace: no login")
+		return errdef.USER_NO_LOGIN
+	}
 
-  // 查询用户是否存在
-  if user := svc.user.FindUserByUserid(userId); user == nil {
-    log.Log.Errorf("video_trace: user not found, userId:%s", userId)
-    return errdef.USER_NOT_EXISTS
-  }
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+		return errdef.USER_NOT_EXISTS
+	}
 
-  client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
-  // 检测视频描述
-  isPass, err := client.TextModeration(params.CustomLabel)
-  if !isPass {
-    log.Log.Errorf("video_trace: validate custom label err: %s，pass: %v", err, isPass)
-    return errdef.VIDEO_INVALID_CUSTOM_LABEL
-  }
+	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	// 检测视频描述
+	isPass, err := client.TextModeration(params.CustomLabel)
+	if !isPass {
+		log.Log.Errorf("video_trace: validate custom label err: %s，pass: %v", err, isPass)
+		return errdef.VIDEO_INVALID_CUSTOM_LABEL
+	}
 
-  return errdef.SUCCESS
+	return errdef.SUCCESS
 }
 
 // 获取视频标签列表
 func (svc *VideoModule) GetVideoLabelList() []*mlabel.VideoLabel {
-  list := svc.label.GetVideoLabelList()
-  if len(list) == 0 {
-    return []*mlabel.VideoLabel{}
-  }
+	list := svc.label.GetVideoLabelList()
+	if len(list) == 0 {
+		return []*mlabel.VideoLabel{}
+	}
 
-  return list
+	return list
 }
 
 // 添加视频举报
 func (svc *VideoModule) AddVideoReport(params *mvideo.VideoReportParam) int {
-  video := svc.video.FindVideoById(fmt.Sprint(params.VideoId))
-  if video == nil {
-    log.Log.Error("video_trace: video not found, videoId:%s", params.VideoId)
-    return errdef.VIDEO_NOT_EXISTS
-  }
+	video := svc.video.FindVideoById(fmt.Sprint(params.VideoId))
+	if video == nil {
+		log.Log.Error("video_trace: video not found, videoId:%s", params.VideoId)
+		return errdef.VIDEO_NOT_EXISTS
+	}
 
-  svc.video.Report.UserId = params.UserId
-  svc.video.Report.VideoId = params.VideoId
-  if _, err := svc.video.AddVideoReport(); err != nil {
-    log.Log.Errorf("video_trace: add video report err:%s", err)
-    return errdef.VIDEO_REPORT_FAIL
-  }
+	svc.video.Report.UserId = params.UserId
+	svc.video.Report.VideoId = params.VideoId
+	if _, err := svc.video.AddVideoReport(); err != nil {
+		log.Log.Errorf("video_trace: add video report err:%s", err)
+		return errdef.VIDEO_REPORT_FAIL
+	}
 
-  return errdef.SUCCESS
+	return errdef.SUCCESS
 }
 
 // 记录用户播放的视频时长
 func (svc *VideoModule) RecordPlayDuration(params *mvideo.PlayDurationParams) int {
-  if params.UserId == "" {
-    return errdef.SUCCESS
-  }
+	if params.UserId == "" {
+		return errdef.SUCCESS
+	}
 
-  user := svc.user.FindUserByUserid(params.UserId)
-  if user == nil {
-    log.Log.Errorf("video_trace: user not found, userId:%s", params.UserId)
-    return errdef.USER_NOT_EXISTS
-  }
+	user := svc.user.FindUserByUserid(params.UserId)
+	if user == nil {
+		log.Log.Errorf("video_trace: user not found, userId:%s", params.UserId)
+		return errdef.USER_NOT_EXISTS
+	}
 
-  video := svc.video.FindVideoById(fmt.Sprint(params.VideoId))
-  if video == nil {
-    log.Log.Errorf("video_trace: video not found, videoId:%s", params.VideoId)
-    return errdef.VIDEO_NOT_EXISTS
-  }
+	video := svc.video.FindVideoById(fmt.Sprint(params.VideoId))
+	if video == nil {
+		log.Log.Errorf("video_trace: video not found, videoId:%s", params.VideoId)
+		return errdef.VIDEO_NOT_EXISTS
+	}
 
-  totalDuration := video.VideoDuration/1000
-  if totalDuration < params.Duration {
-    log.Log.Errorf("video_trace: invalid play duration, videoId:%s, videoDuration:%d, palyDuration:%d", params.VideoId, totalDuration, params.Duration)
-    return errdef.VIDEO_INVALID_PLAY_DURATION
-  }
+	totalDuration := video.VideoDuration/1000
+	if totalDuration < params.Duration {
+		log.Log.Errorf("video_trace: invalid play duration, videoId:%s, videoDuration:%d, palyDuration:%d", params.VideoId, totalDuration, params.Duration)
+		return errdef.VIDEO_INVALID_PLAY_DURATION
+	}
 
-  now := time.Now().Unix()
-  // 获取用户播放该视频的时长记录
-  record := svc.video.GetUserPlayDurationRecord(params.UserId, fmt.Sprint(params.VideoId))
-  if record == nil {
-    // 不存在 则添加
-    svc.video.PlayRecord.VideoId = params.VideoId
-    svc.video.PlayRecord.UpdateAt = int(now)
-    svc.video.PlayRecord.PlayDuration = params.Duration
-    svc.video.PlayRecord.TotalDuration = totalDuration
-    svc.video.PlayRecord.UserId = params.UserId
-    svc.video.PlayRecord.CreateAt = int(now)
-    if err := svc.video.AddUserPlayDurationRecord(); err != nil {
-      log.Log.Errorf("video_trace: add user play duration record err:%s", err)
-      return errdef.VIDEO_RECORD_PLAY_DURATION
-    }
+	now := time.Now().Unix()
+	// 获取用户播放该视频的时长记录
+	record := svc.video.GetUserPlayDurationRecord(params.UserId, fmt.Sprint(params.VideoId))
+	if record == nil {
+		// 不存在 则添加
+		svc.video.PlayRecord.VideoId = params.VideoId
+		svc.video.PlayRecord.UpdateAt = int(now)
+		svc.video.PlayRecord.PlayDuration = params.Duration
+		svc.video.PlayRecord.TotalDuration = totalDuration
+		svc.video.PlayRecord.UserId = params.UserId
+		svc.video.PlayRecord.CreateAt = int(now)
+		if err := svc.video.AddUserPlayDurationRecord(); err != nil {
+			log.Log.Errorf("video_trace: add user play duration record err:%s", err)
+			return errdef.VIDEO_RECORD_PLAY_DURATION
+		}
 
-  } else {
-    // 存在 则 更新时长
-    record.PlayDuration = params.Duration
-    record.UpdateAt = int(now)
-    if err := svc.video.UpdateUserPlayDurationRecord(); err != nil {
-      log.Log.Errorf("video_trace: update user play duration record err:%s", err)
-      return errdef.VIDEO_RECORD_PLAY_DURATION
-    }
-  }
+	} else {
+		// 存在 则 更新时长
+		record.PlayDuration = params.Duration
+		record.UpdateAt = int(now)
+		if err := svc.video.UpdateUserPlayDurationRecord(); err != nil {
+			log.Log.Errorf("video_trace: update user play duration record err:%s", err)
+			return errdef.VIDEO_RECORD_PLAY_DURATION
+		}
+	}
 
-  return errdef.SUCCESS
+	return errdef.SUCCESS
 }
