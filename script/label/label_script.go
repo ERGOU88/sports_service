@@ -15,6 +15,10 @@ import (
 	"fmt"
 )
 
+func init() {
+	dao.Engine = dao.InitXorm("root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4", []string{"root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4"})
+}
+
 func main() {
 	AddVideoLabels()
 }
@@ -40,7 +44,7 @@ func AddVideoLabels() {
 
 	for _, video := range vlist {
 		lmodel := mlabel.NewLabelModel(session)
-		labelIds := strings.Split(fmt.Sprintf("%d,%d", util.GenerateRandnum(1, 17), util.GenerateRandnum(1, 17)), ",")
+		labelIds := strings.Split(fmt.Sprintf("%d,%d", util.GenerateRandnum(1, 10), util.GenerateRandnum(10, 17)), ",")
 		// 组装多条记录 写入视频标签表
 		labelInfos := make([]*models.VideoLabels, 0)
 		for _, labelId := range labelIds {
@@ -66,6 +70,8 @@ func AddVideoLabels() {
 				return
 			}
 		}
+
+		session.Commit()
 
 	}
 
