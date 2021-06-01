@@ -19,7 +19,7 @@ const (
 	LOGIN_REPEAT              = SUGAR + "login_repeat_type:%d_sid:%s"              // 拦截重复注册的问题{拼接设备类型 + 手机号码/unionid}
 	USER_AUTH                 = SUGAR + "key_user_auth_%s"                         // 保存用户token {拼接user_id}
 	USER_NICKNAME_INCR        = SUGAR + "user_nickname_incr"                       // 用户昵称自增
-  USER_ID_INCR              = SUGAR + "user_id_incr"                             // 用户id自增
+	USER_ID_INCR              = SUGAR + "user_id_incr"                             // 用户id自增
 	USER_READ_BELIKED_NOTIFY  = SUGAR + "user_read_beliked_notify_%s"              // 记录用户读取被点赞消息的最新时间{拼接user_id}
 	USER_READ_AT_NOTIFY       = SUGAR + "user_read_at_notify_%s"                   // 记录用户读取被@消息的最新时间{拼接user_id}
 	USER_READ_ATTENTION_VIDEO = SUGAR + "user_read_attention_pub_%s"               // 记录用户读取关注用户发布的视频的最新时间（刷新列表时才记录）{拼接user_id}
