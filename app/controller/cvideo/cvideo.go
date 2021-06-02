@@ -1027,6 +1027,7 @@ func (svc *VideoModule) RecordPlayDuration(params *mvideo.PlayDurationParams) in
 		svc.video.PlayRecord.TotalDuration = totalDuration
 		svc.video.PlayRecord.UserId = params.UserId
 		svc.video.PlayRecord.CreateAt = int(now)
+		svc.video.PlayRecord.CurProgress = fmt.Sprintf("%.2f", float64(params.Duration) / float64(totalDuration))
 		if err := svc.video.AddUserPlayDurationRecord(); err != nil {
 			log.Log.Errorf("video_trace: add user play duration record err:%s", err)
 			return errdef.VIDEO_RECORD_PLAY_DURATION
@@ -1036,6 +1037,7 @@ func (svc *VideoModule) RecordPlayDuration(params *mvideo.PlayDurationParams) in
 		// 存在 则 更新时长
 		record.PlayDuration = params.Duration
 		record.UpdateAt = int(now)
+		record.CurProgress = fmt.Sprintf("%.2f", float64(params.Duration) / float64(totalDuration))
 		if err := svc.video.UpdateUserPlayDurationRecord(); err != nil {
 			log.Log.Errorf("video_trace: update user play duration record err:%s", err)
 			return errdef.VIDEO_RECORD_PLAY_DURATION
