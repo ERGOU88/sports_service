@@ -96,9 +96,9 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
     log.Log.Errorf("job_trace: video not found, fileId:%s", *event.ProcedureStateChangeEvent.FileId)
     session.Rollback()
     // 确认事件回调
-    //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-    //  log.Log.Errorf("job_trace: confirm events err:%s", err)
-    //}
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+     log.Log.Errorf("job_trace: confirm events err:%s", err)
+    }
 
     return errors.New("video not found")
   }
@@ -264,6 +264,18 @@ func uploadEvent(event *v20180717.EventContent) error {
     return errors.New("invalid source info")
   }
 
+  // 当前时间 - 任务开始时间 >= 10分钟 结束任务
+  if time.Now().Unix() - source.Tm >= 10 * 60 {
+    log.Log.Errorf("job_trace: end job, source:%+v", source)
+    // 确认事件回调
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+      log.Log.Errorf("job_trace: confirm events err:%s", err)
+    }
+
+    session.Rollback()
+    return errors.New("end job")
+  }
+
   // 修改封面 没有视频时长
   if int(*event.FileUploadEvent.MetaData.VideoDuration) == 0 {
     log.Log.Errorf("job_trace: invalid video duration, duration:%v", *event.FileUploadEvent.MetaData.VideoDuration)
@@ -316,9 +328,9 @@ func uploadEvent(event *v20180717.EventContent) error {
   if err != nil || info == "" {
     log.Log.Errorf("job_trace: get publish info err:%s", err)
     // 确认事件回调
-    //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-    //  log.Log.Errorf("job_trace: confirm events err:%s", err)
-    //}
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+     log.Log.Errorf("job_trace: confirm events err:%s", err)
+    }
 
     session.Rollback()
     return errors.New("get publish info fail")
