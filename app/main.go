@@ -36,6 +36,7 @@ func setupConfig() error {
 	if config.Global.Debug {
 		fmt.Println(fmt.Sprintf("conf is %+v\n", config.Global))
 	}
+
 	return nil
 }
 
