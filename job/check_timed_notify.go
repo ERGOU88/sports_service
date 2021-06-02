@@ -1,7 +1,7 @@
 package job
 
 import (
-  "sports_service/server/global/backend/log"
+  "sports_service/server/global/app/log"
   "sports_service/server/models/mnotify"
   "sports_service/server/dao"
   "time"
