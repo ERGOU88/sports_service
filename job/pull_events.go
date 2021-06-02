@@ -166,7 +166,7 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
 
       playInfo := new(mvideo.PlayInfo)
       // 标清（SD）834710 HLS
-      if *info.TranscodeTask.Output.Definition == 834710 {
+      if *info.AdaptiveDynamicStreamingTask.Output.Definition == 834710 {
         playInfo.Type = "2"
       }
 
