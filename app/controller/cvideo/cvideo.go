@@ -984,6 +984,7 @@ func (svc *VideoModule) AddVideoReport(params *mvideo.VideoReportParam) int {
 
 	svc.video.Report.UserId = params.UserId
 	svc.video.Report.VideoId = params.VideoId
+	svc.video.Report.Reason = params.Reason
 	if _, err := svc.video.AddVideoReport(); err != nil {
 		log.Log.Errorf("video_trace: add video report err:%s", err)
 		return errdef.VIDEO_REPORT_FAIL

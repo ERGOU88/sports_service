@@ -211,6 +211,7 @@ type SetStatusParams struct {
 type VideoReportParam struct {
 	VideoId    int64      `json:"video_id" binding:"required"`    // 视频id
 	UserId     string     `json:"user_id"`
+	Reason     string     `json:"reason" binding:"required"`      // 举报理由
 }
 
 // 视频转码信息
