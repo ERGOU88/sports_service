@@ -58,6 +58,7 @@ func AddVideoLabels() {
 			info.LabelId = labelId
 			info.LabelName = lmodel.GetLabelNameByMem(labelId)
 			info.CreateAt = int(time.Now().Unix())
+			info.Status = 1
 			labelInfos = append(labelInfos, info)
 		}
 
