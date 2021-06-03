@@ -29,6 +29,8 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 		return errdef.USER_FREE_LOGIN_FAIL, "", nil
 	}
 
+	log.Log.Infof("user_trace: mobileNum:%s", mobileNum)
+
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("user_trace: session begin err:%s", err)
