@@ -37,7 +37,9 @@ func (svc *UserModule) VersionUp(version string) (int, *mconfigure.UpgradeInfo) 
   if strings.Compare(appId, string(consts.IOS_APP_ID)) == 0 {
     plt = int32(consts.IOS_PLATFORM)
     pkgInfo := svc.configure.GetPackageByVersion(version, plt)
-    code = pkgInfo.VersionCode
+    if pkgInfo != nil {
+      code = pkgInfo.VersionCode
+    }
   }
 
   if strings.Compare(appId, string(consts.AND_APP_ID)) == 0 {
