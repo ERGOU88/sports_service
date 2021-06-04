@@ -107,8 +107,10 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 
 	svc.engine.Commit()
 
-	// 发送收藏视频推送
-	event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG)
+	if userId != video.UserId {
+		// 发送收藏视频推送
+		event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG)
+	}
 
 	return errdef.SUCCESS
 }

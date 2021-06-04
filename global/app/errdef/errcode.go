@@ -29,10 +29,10 @@ const (
 	USER_ADD_NOTIFY_SET_FAIL= 1018
 	USER_NO_LOGIN           = 1019
 	USER_INVALID_FEEDBACK   = 1020
-  USER_BIND_DEVICE_TOKEN  = 1021
-  USER_PACKAGE_NOT_EXISTS = 1022
-  USER_LATEST_PACKAGE_FAIL= 1023
-  USER_FORBID_STATUS      = 1024
+	USER_BIND_DEVICE_TOKEN  = 1021
+	USER_PACKAGE_NOT_EXISTS = 1022
+	USER_LATEST_PACKAGE_FAIL= 1023
+	USER_FORBID_STATUS      = 1024
 
 	WX_USER_INFO_FAIL       = 1101
 	WX_ACCESS_TOKEN_FAIL    = 1102
@@ -152,10 +152,10 @@ var MsgFlags = map[int]string{
 	USER_ADD_NOTIFY_SET_FAIL:"系统设置初始化失败",
 	USER_NO_LOGIN:           "用户未登录",
 	USER_INVALID_FEEDBACK:   "反馈信息含有违规字段",
-  USER_BIND_DEVICE_TOKEN:  "绑定设备token失败",
-  USER_PACKAGE_NOT_EXISTS: "当前版本对应的下载包不存在",
-  USER_LATEST_PACKAGE_FAIL:"获取最新包失败",
-  USER_FORBID_STATUS:      "您的账号已被封禁",
+	USER_BIND_DEVICE_TOKEN:  "绑定设备token失败",
+	USER_PACKAGE_NOT_EXISTS: "当前版本对应的下载包不存在",
+	USER_LATEST_PACKAGE_FAIL:"获取最新包失败",
+	USER_FORBID_STATUS:      "您的账号已被封禁",
 
 	WX_USER_INFO_FAIL:    "获取微信用户信息失败",
 	WX_ACCESS_TOKEN_FAIL: "获取微信授权token失败",
@@ -196,12 +196,12 @@ var MsgFlags = map[int]string{
 	VIDEO_UPLOAD_GEN_SIGN_FAIL:  "上传签名生成失败",
 	VIDEO_INVALID_DESCRIBE:      "视频描述含有违规文字",
 	VIDEO_INVALID_TITLE:         "视频标题含有违规文字",
-  VIDEO_INVALID_CUSTOM_LABEL:  "自定义标签含有违规文字",
-  VIDEO_REPORT_FAIL:           "举报视频失败",
-  VIDEO_INVALID_PLAY_DURATION: "播放时长 > 视频时长！！wtf?",
-  VIDEO_RECORD_PLAY_DURATION:  "记录用户播放的视频时长失败",
+	VIDEO_INVALID_CUSTOM_LABEL:  "自定义标签含有违规文字",
+	VIDEO_REPORT_FAIL:           "举报视频失败",
+	VIDEO_INVALID_PLAY_DURATION: "播放时长 > 视频时长！！wtf?",
+	VIDEO_RECORD_PLAY_DURATION:  "记录用户播放的视频时长失败",
 
-  LIKE_VIDEO_NOT_EXISTS:       "点赞的视频不存在",
+	LIKE_VIDEO_NOT_EXISTS:       "点赞的视频不存在",
 	LIKE_ALREADY_EXISTS:         "已点过赞",
 	LIKE_VIDEO_FAIL:             "视频点赞失败",
 	LIKE_RECORD_NOT_EXISTS:      "未点赞该视频",
@@ -219,9 +219,9 @@ var MsgFlags = map[int]string{
 	COMMENT_INVALID_LEN:     "评论最少10字符，最多1000字符",
 	COMMENT_INVALID_CONTENT: "评论中含有违规文字",
 	COMMENT_INVALID_REPLY:   "回复中含有违规文字",
-  COMMENT_REPORT_FAIL:     "举报评论失败",
+	COMMENT_REPORT_FAIL:     "举报评论失败",
 
-  SMS_CODE_INTERVAL_ERROR:     "一天内该手机获取验证码次数超限(最多10次)",
+	SMS_CODE_INTERVAL_ERROR:     "一天内该手机获取验证码次数超限(最多10次)",
 	SMS_CODE_INTERVAL_SHORT:     "获取短信验证间隔时间过短(间隔60秒)",
 	SMS_CODE_INVALID_SEND_TYPE:  "无效的短信类型",
 	SMS_CODE_SEND_FAIL:          "短信验证码发送失败",
@@ -231,11 +231,11 @@ var MsgFlags = map[int]string{
 
 	BARRAGE_VIDEO_SEND_FAIL:     "发送视频弹幕失败",
 	BARRAGE_INVALID_CONTENT:     "弹幕内容含有违规文字",
-  BARRAGE_VIDEO_LIST_FAIL:     "视频弹幕获取失败",
+	BARRAGE_VIDEO_LIST_FAIL:     "视频弹幕获取失败",
 
-  SEARCH_CLEAN_HISTORY_FAIL:   "清空搜索记录失败",
+	SEARCH_CLEAN_HISTORY_FAIL:   "清空搜索记录失败",
 
-  CLOUD_COS_ACCESS_FAIL:       "通行证获取失败",
+	CLOUD_COS_ACCESS_FAIL:       "通行证获取失败",
 }
 
 func GetMsg(code int) string {
