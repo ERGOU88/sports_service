@@ -109,7 +109,7 @@ func (m *NotifyModel) GetUserNotifySetting(userId string) *models.SystemNoticeSe
 
 // 获取系统通知
 func (m *NotifyModel) GetSystemNotify(userId string, offset, size int) []*models.SystemMessage {
-  sql := "SELECT `system_id`, `cover`, `send_type`, `receive_id`, `system_topic`, `system_content`, `send_time`, `extra` FROM system_message "
+  sql := "SELECT `system_id`, `cover`, `send_type`, `receive_id`, `system_topic`, `system_content`, `send_time`, `extra`, `status` FROM system_message "
   if userId != "" {
     sql = fmt.Sprintf("%s WHERE receive_id=%s AND send_status=0 OR send_default=1 AND send_status=0", sql, userId)
   } else {
