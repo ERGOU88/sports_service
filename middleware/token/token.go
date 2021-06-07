@@ -19,16 +19,16 @@ func TokenAuth() gin.HandlerFunc {
 		c.Set(consts.USER_ID, userid)
 		val, err := c.Request.Cookie(consts.COOKIE_NAME)
 		if err != nil {
-		  auth = c.Request.Header.Get("auth")
-		  if auth == "" {
-        log.Log.Errorf("c.Request.Cookie() err is %s", err.Error())
-        reply.Response(http.StatusUnauthorized, errdef.INVALID_TOKEN)
-        c.Abort()
-        return
-      }
+			auth = c.Request.Header.Get("auth")
+			if auth == "" {
+				log.Log.Errorf("c.Request.Cookie() err is %s", err.Error())
+				reply.Response(http.StatusUnauthorized, errdef.INVALID_TOKEN)
+				c.Abort()
+				return
+			}
 		} else {
-		  auth = val.Value
-    }
+			auth = val.Value
+		}
 
 		log.Log.Debugf("auth:%v", auth)
 		//v := c.Request.Header.Get("auth")

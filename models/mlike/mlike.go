@@ -37,9 +37,9 @@ type BeLikedVideoInfo struct {
 	BrowseNum     int                   `json:"browse_num"`      // 浏览数（播放数）
 	//ToUserId      string                `json:"to_user_id"`      // 被点赞的用户id
 	//ToUserName    string                `json:"to_user_name"`    // 被点赞的用户昵称
-  NickNames    []string `json:"nick_names"`     // 点赞用户昵称（多个）
-  TotalLikeNum int      `json:"total_like_num"` // 总点赞数
-  Avatar       string   `json:"avatar"`         // 最近点赞的用户头像
+	NickNames    []string `json:"nick_names"`     // 点赞用户昵称（多个）
+	TotalLikeNum int      `json:"total_like_num"` // 总点赞数
+	Avatar       string   `json:"avatar"`         // 最近点赞的用户头像
 	OpTime       int      `json:"op_time"`        // 用户点赞操作时间
 	Type         int      `json:"type"`           // 类型 1 视频 2 帖子 3 评论
 }
@@ -47,46 +47,46 @@ type BeLikedVideoInfo struct {
 // todo: 后续使用
 // 点赞的用户信息
 type ZanUserInfo struct {
-  UserId        string                `json:"user_id"`         // 点赞的用户id
-  Avatar        string                `json:"avatar"`          // 点赞用户头像
-  Nickname      string                `json:"nick_name"`       // 点赞的用户昵称
+	UserId        string                `json:"user_id"`         // 点赞的用户id
+	Avatar        string                `json:"avatar"`          // 点赞用户头像
+	Nickname      string                `json:"nick_name"`       // 点赞的用户昵称
 }
 
 // 点赞用户信息
 type LikedUserInfo struct {
-  UserId      string   `json:"user_id"`
-  NickName    string   `json:"nick_name"`
-  Avatar      string   `json:"avatar"`
-  OpTm        int      `json:"op_tm"`       // 用户点赞时间
+	UserId      string   `json:"user_id"`
+	NickName    string   `json:"nick_name"`
+	Avatar      string   `json:"avatar"`
+	OpTm        int      `json:"op_tm"`       // 用户点赞时间
 }
 
 // 被点赞的信息
 type BeLikedInfo struct {
-  ComposeId     int64                 `json:"compose_id"`      // 作品id 视频id/评论id/帖子id
-  Title         string                `json:"title"`           // 标题
-  Describe      string                `json:"describe"`        // 描述
-  Cover         string                `json:"cover"`           // 封面
-  VideoAddr     string                `json:"video_addr"`      // 视频地址
-  VideoDuration int                   `json:"video_duration"`  // 视频时长
-  VideoWidth    int64                 `json:"video_width"`     // 视频宽
-  VideoHeight   int64                 `json:"video_height"`    // 视频高
-  CreateAt      int                   `json:"create_at"`       // 视频创建时间
-  BarrageNum    int                   `json:"barrage_num"`     // 弹幕数
-  BrowseNum     int                   `json:"browse_num"`      // 浏览数（播放数）
-  //UserId        string                `json:"user_id"`         // 点赞的用户id
-  //Avatars       []string              `json:"avatars"`          // 点赞用户头像
-  //Nicknames     []string              `json:"nick_name"`       // 点赞的用户昵称
-  TotalLikeNum  int                   `json:"total_like_num"`  // 总点赞数
-  UserList      []*LikedUserInfo      `json:"user_list"`       // 点赞的用户列表
-  //ToUserId      string                `json:"to_user_id"`      // 被点赞的用户id
-  //ToUserAvatar  string                `json:"avatar"`          // 被点赞用户头像
-  //ToUserName    string                `json:"to_user_name"`    // 被点赞的用户昵称
-  Content       string                `json:"content"`         // 被点赞的评论内容
-  OpTime        int                   `json:"op_time"`         // 用户点赞操作时间
-  Type          int                   `json:"type"`            // 类型 1 视频 2 帖子 3 评论
-  JumpVideoId   int64                 `json:"jump_video_id"`   // 跳转所需视频id
+	ComposeId     int64                 `json:"compose_id"`      // 作品id 视频id/评论id/帖子id
+	Title         string                `json:"title"`           // 标题
+	Describe      string                `json:"describe"`        // 描述
+	Cover         string                `json:"cover"`           // 封面
+	VideoAddr     string                `json:"video_addr"`      // 视频地址
+	VideoDuration int                   `json:"video_duration"`  // 视频时长
+	VideoWidth    int64                 `json:"video_width"`     // 视频宽
+	VideoHeight   int64                 `json:"video_height"`    // 视频高
+	CreateAt      int                   `json:"create_at"`       // 视频创建时间
+	BarrageNum    int                   `json:"barrage_num"`     // 弹幕数
+	BrowseNum     int                   `json:"browse_num"`      // 浏览数（播放数）
+	//UserId        string                `json:"user_id"`         // 点赞的用户id
+	//Avatars       []string              `json:"avatars"`          // 点赞用户头像
+	//Nicknames     []string              `json:"nick_name"`       // 点赞的用户昵称
+	TotalLikeNum  int                   `json:"total_like_num"`  // 总点赞数
+	UserList      []*LikedUserInfo      `json:"user_list"`       // 点赞的用户列表
+	//ToUserId      string                `json:"to_user_id"`      // 被点赞的用户id
+	//ToUserAvatar  string                `json:"avatar"`          // 被点赞用户头像
+	//ToUserName    string                `json:"to_user_name"`    // 被点赞的用户昵称
+	Content       string                `json:"content"`         // 被点赞的评论内容
+	OpTime        int                   `json:"op_time"`         // 用户点赞操作时间
+	Type          int                   `json:"type"`            // 类型 1 视频 2 帖子 3 评论
+	JumpVideoId   int64                 `json:"jump_video_id"`   // 跳转所需视频id
 
-  ParentCommentId  int64              `json:"parent_comment_id,omitempty"`  // 父级评论id
+	ParentCommentId  int64              `json:"parent_comment_id,omitempty"`  // 父级评论id
 }
 
 // 被点赞的评论信息
@@ -179,17 +179,17 @@ func (m *LikeModel) GetBeLikedList(toUserId string, offset, size int) []*models.
 }
 
 const (
-  QUERY_BE_LIKED_LIST = "SELECT GROUP_CONCAT(tu.user_id) AS user_id, tu.* FROM `thumbs_up` AS tu WHERE tu.`status` = 1 " +
-    "AND tu.to_user_id=? GROUP BY `type_id`, `zan_type` ORDER BY tu.`create_at` DESC, tu.`id` DESC LIMIT ?, ?"
+	QUERY_BE_LIKED_LIST = "SELECT GROUP_CONCAT(tu.user_id) AS user_id, tu.* FROM `thumbs_up` AS tu WHERE tu.`status` = 1 " +
+		"AND tu.to_user_id=? GROUP BY `type_id`, `zan_type` ORDER BY tu.`create_at` DESC, tu.`id` DESC LIMIT ?, ?"
 )
 // 获取用户被点赞的记录 包含 视频、评论等 所有数据 相同的视频/评论点赞 整合为一条数据
 func (m *LikeModel) GetNewBeLikedList(toUserId string, offset, size int) []*models.ThumbsUp {
-  var list []*models.ThumbsUp
-  if err := m.Engine.SQL(QUERY_BE_LIKED_LIST, toUserId, offset, size).Find(&list); err != nil {
-    return nil
-  }
+	var list []*models.ThumbsUp
+	if err := m.Engine.SQL(QUERY_BE_LIKED_LIST, toUserId, offset, size).Find(&list); err != nil {
+		return nil
+	}
 
-  return list
+	return list
 }
 
 // 更新点赞状态 点赞/取消点赞

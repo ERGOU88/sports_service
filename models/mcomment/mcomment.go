@@ -56,13 +56,13 @@ type ReplyComment struct {
 	VideoId              int64               `json:"video_id" example:"1000000000"`                      // 视频id
 	LikeNum              int64               `json:"like_num" example:"100"`                             // 点赞数
 	IsAttention          int                 `json:"is_attention" example:"0"`                           // 是否关注
-  IsLike               int                 `json:"is_like" example:"0"`                                // 是否点赞
-  IsAt                 int                 `json:"is_at" example:"0"`                                  // 是否为@消息 0不是@消息 1是
+	IsLike               int                 `json:"is_like" example:"0"`                                // 是否点赞
+	IsAt                 int                 `json:"is_at" example:"0"`                                  // 是否为@消息 0不是@消息 1是
 }
 
 // 视频评论数据（后台展示）
 type VideoCommentInfo struct {
-  Id            int64                 `json:"id"`              // 评论id
+	Id            int64                 `json:"id"`              // 评论id
 	VideoId       int64                 `json:"video_id"`        // 视频id
 	Title         string                `json:"title"`           // 标题
 	Describe      string                `json:"describe"`        // 描述
@@ -101,9 +101,9 @@ type DelCommentParam struct {
 
 // 评论举报
 type CommentReportParam struct {
-  CommentId    int64      `json:"comment_id" binding:"required"`
-  UserId       string     `json:"user_id"`
-  Reason       string     `json:"reason"`
+	CommentId    int64      `json:"comment_id" binding:"required"`
+	UserId       string     `json:"user_id"`
+	Reason       string     `json:"reason"`
 }
 
 // 实栗
@@ -179,8 +179,8 @@ func (m *CommentModel) GetVideoCommentById(commentId string) *models.VideoCommen
 
 	// 已逻辑删除
 	if comment.Status == 0 {
-	  comment.Content = "原内容已删除"
-  }
+		comment.Content = "原内容已删除"
+	}
 
 	return comment
 }
@@ -214,7 +214,7 @@ func (m *CommentModel) GetVideoCommentList(videoId string, offset, size int) []*
 		Asc("id").
 		Limit(size, offset).
 		Find(&list); err != nil {
-			log.Log.Errorf("comment_trace: get video comment err:%s", err)
+		log.Log.Errorf("comment_trace: get video comment err:%s", err)
 		return nil
 	}
 
@@ -244,7 +244,7 @@ func (m *CommentModel) GetVideoReply(videoId, commentId string, offset, size int
 		Asc("id").
 		Limit(size, offset).
 		Find(&list); err != nil {
-			log.Log.Errorf("comment_trace: get video reply err:%s", err)
+		log.Log.Errorf("comment_trace: get video reply err:%s", err)
 		return nil
 	}
 
@@ -271,12 +271,12 @@ func (m *CommentModel) GetVideoCommentsBySort(userId, videoId, sortType, conditi
 		"WHERE vc.status=1 "
 
 	if userId != "" {
-    sql += fmt.Sprintf("AND vc.user_id=%s ", userId)
-  }
+		sql += fmt.Sprintf("AND vc.user_id=%s ", userId)
+	}
 
-  if videoId != "" {
-    sql += fmt.Sprintf("AND vc.video_id=%s ", videoId)
-  }
+	if videoId != "" {
+		sql += fmt.Sprintf("AND vc.video_id=%s ", videoId)
+	}
 
 	sql += "GROUP BY vc.id "
 
@@ -293,58 +293,58 @@ func (m *CommentModel) GetVideoCommentsBySort(userId, videoId, sortType, conditi
 
 	// 1 正序 默认倒序
 	if sortType == "1" {
-	  sql += "ASC "
-  } else {
-    sql += "DESC "
-  }
+		sql += "ASC "
+	} else {
+		sql += "DESC "
+	}
 
 	sql += "LIMIT ?, ?"
 	var list []*VideoCommentInfo
 	if err := m.Engine.Table(&models.VideoComment{}).SQL(sql, offset, size).Find(&list); err != nil {
 		log.Log.Errorf("comment_trace: get comment list by sort, err:%s", err)
 		return []*VideoCommentInfo{}
-  }
+	}
 
 	return list
 }
 
 // 获取视频评论总数
 func (m *CommentModel) GetCommentTotal() int64 {
-  count, err := m.Engine.Where("status=1").Count(&models.VideoComment{})
-  if err != nil {
-    log.Log.Errorf("comment_trace: get total comments err:%s", err)
-    return 0
-  }
+	count, err := m.Engine.Where("status=1").Count(&models.VideoComment{})
+	if err != nil {
+		log.Log.Errorf("comment_trace: get total comments err:%s", err)
+		return 0
+	}
 
-  return count
+	return count
 }
 
 // 通过用户id 获取视频评论总数
 func (m *CommentModel) GetCommentTotalByUserId(userId string) int64 {
-  count, err := m.Engine.Where("status=1 AND user_id=?", userId).Count(&models.VideoComment{})
-  if err != nil {
-    return 0
-  }
+	count, err := m.Engine.Where("status=1 AND user_id=?", userId).Count(&models.VideoComment{})
+	if err != nil {
+		return 0
+	}
 
-  return count
+	return count
 }
 
 // 通过视频id 获取视频评论总数
 func (m *CommentModel) GetCommentTotalByVideoId(videoId string) int64 {
-  count, err := m.Engine.Where("status=1 AND video_id=?", videoId).Count(&models.VideoComment{})
-  if err != nil {
-    return 0
-  }
+	count, err := m.Engine.Where("status=1 AND video_id=?", videoId).Count(&models.VideoComment{})
+	if err != nil {
+		return 0
+	}
 
-  return count
+	return count
 }
 
 // 添加评论举报
 func (m *CommentModel) AddCommentReport() (int64, error) {
-  return m.Engine.InsertOne(m.Report)
+	return m.Engine.InsertOne(m.Report)
 }
 
 // 更新评论/回复 信息
 func (m *CommentModel) UpdateCommentInfo(condition, cols string) (int64, error) {
-  return m.Engine.Where(condition).Cols(cols).Update(m.Comment)
+	return m.Engine.Where(condition).Cols(cols).Update(m.Comment)
 }

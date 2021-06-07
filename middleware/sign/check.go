@@ -9,7 +9,7 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"strings"
-  "sports_service/server/app/config"
+	"sports_service/server/app/config"
 )
 
 var AppInfo = map[string]string{
@@ -21,11 +21,11 @@ var AppInfo = map[string]string{
 // 检查签名
 func CheckSign() gin.HandlerFunc {
 	return func(c *gin.Context) {
-    // debug模式下 不校验签名
-    if config.Global.Debug == true {
-      c.Next()
-      return
-    }
+		// debug模式下 不校验签名
+		if config.Global.Debug == true {
+			c.Next()
+			return
+		}
 
 		reply := errdef.New(c)
 		appId := c.GetHeader("AppId")
@@ -37,7 +37,7 @@ func CheckSign() gin.HandlerFunc {
 		str := fmt.Sprintf("%s&AppId=%s&Timestamp=%s&Version=%s", path, appId, timestamp, version)
 
 		if !strings.Contains(path, "/api/v1/client/init") && secret == "" {
-		  log.Log.Errorf("sign_trace: secret not exists, secret:%s", secret)
+			log.Log.Errorf("sign_trace: secret not exists, secret:%s", secret)
 			reply.Response(http.StatusUnauthorized, errdef.UNAUTHORIZED)
 			c.Abort()
 			return
@@ -45,12 +45,12 @@ func CheckSign() gin.HandlerFunc {
 
 		log.Log.Errorf("sign_trace: path:%s, match: %d", path, strings.Compare(path, "/api/v1/client/init"))
 		if !strings.Contains(path, "/api/v1/client/init")  {
-		  log.Log.Infof("sign_trace: add secret, secret:%s", secret)
+			log.Log.Infof("sign_trace: add secret, secret:%s", secret)
 			str = fmt.Sprintf("%s&Secret=%s", str, secret)
 		}
 
 		if appId == "" || sign == "" || timestamp == "" || version == "" {
-      log.Log.Errorf("sign_trace: param error,appId:%s, sign:%s, timestamp:%s, version:%s", appId, sign, timestamp, version)
+			log.Log.Errorf("sign_trace: param error,appId:%s, sign:%s, timestamp:%s, version:%s", appId, sign, timestamp, version)
 			reply.Response(http.StatusUnauthorized, errdef.UNAUTHORIZED)
 			c.Abort()
 			return
@@ -59,7 +59,7 @@ func CheckSign() gin.HandlerFunc {
 		if strings.Compare(appId, string(consts.IOS_APP_ID)) != 0 &&
 			strings.Compare(appId, string(consts.AND_APP_ID)) != 0 &&
 			strings.Compare(appId, string(consts.WEB_APP_ID)) != 0 {
-      log.Log.Errorf("sign_trace: appId not match, appId:%s", appId)
+			log.Log.Errorf("sign_trace: appId not match, appId:%s", appId)
 			reply.Response(http.StatusUnauthorized, errdef.UNAUTHORIZED)
 			c.Abort()
 			return
@@ -90,7 +90,7 @@ func verifySign(str, appId, sign string) bool {
 		return true
 	}
 
-  log.Log.Errorf("sign_trace: sign not match, client sign:%s, real sign:%s", sign, md5Str)
+	log.Log.Errorf("sign_trace: sign not match, client sign:%s, real sign:%s", sign, md5Str)
 	return false
 }
 

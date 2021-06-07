@@ -53,25 +53,25 @@ type ReceiveCommentAtInfo struct {
 	CommentType   int                   `json:"comment_type" example:"1"`              // 1 为评论 2 为回复
 	IsAt          int                   `json:"is_at"`                                 // 1为回复的回复 0 为1级评论/1级评论的回复
 	ParentComment string                `json:"parent_comment"`                        // 父级评论（1级评论）
-  IsLike        int                   `json:"is_like" example:"0"`                   // 是否点赞
-  CommentId     int64                 `json:"comment_id"`                            // 评论id（1级评论的id）
+	IsLike        int                   `json:"is_like" example:"0"`                   // 是否点赞
+	CommentId     int64                 `json:"comment_id"`                            // 评论id（1级评论的id）
 
-  ReplyCommentId int64                `json:"reply_comment_id"`                      // 回复评论所用id
-  TotalLikeNum   int64                `json:"total_like_num"`                        // 总点赞数
+	ReplyCommentId int64                `json:"reply_comment_id"`                      // 回复评论所用id
+	TotalLikeNum   int64                `json:"total_like_num"`                        // 总点赞数
 }
 
 // 首页通知
 type HomePageNotify struct {
-  UnBrowsedNum     int64       `json:"un_browsed_num"` // 未浏览的视频（关注模块 关注用户发布的视频） 客户端处理：当前用户有未浏览的 则展示红点）
-  UnreadNum        int64       `json:"unread_num"`     // 首页未读消息总数
+	UnBrowsedNum     int64       `json:"un_browsed_num"` // 未浏览的视频（关注模块 关注用户发布的视频） 客户端处理：当前用户有未浏览的 则展示红点）
+	UnreadNum        int64       `json:"unread_num"`     // 首页未读消息总数
 }
 
 // 实例
 func NewNotifyModel(engine *xorm.Session) *NotifyModel {
 	return &NotifyModel{
 		NofitySetting: new(models.SystemNoticeSettings),
-    SystemNotify: new(models.SystemMessage),
-    Engine: engine,
+		SystemNotify: new(models.SystemMessage),
+		Engine: engine,
 	}
 }
 
@@ -109,52 +109,52 @@ func (m *NotifyModel) GetUserNotifySetting(userId string) *models.SystemNoticeSe
 
 // 获取系统通知
 func (m *NotifyModel) GetSystemNotify(userId string, offset, size int) []*models.SystemMessage {
-  sql := "SELECT `system_id`, `cover`, `send_type`, `receive_id`, `system_topic`, `system_content`, `send_time`, `extra`, `status` FROM system_message "
-  if userId != "" {
-    sql = fmt.Sprintf("%s WHERE receive_id=%s AND send_status=0 OR send_default=1 AND send_status=0", sql, userId)
-  } else {
-    sql = fmt.Sprintf("%s WHERE receive_id='' AND send_default=1 AND send_status=0", sql)
-  }
+	sql := "SELECT `system_id`, `cover`, `send_type`, `receive_id`, `system_topic`, `system_content`, `send_time`, `extra`, `status` FROM system_message "
+	if userId != "" {
+		sql = fmt.Sprintf("%s WHERE receive_id=%s AND send_status=0 OR send_default=1 AND send_status=0", sql, userId)
+	} else {
+		sql = fmt.Sprintf("%s WHERE receive_id='' AND send_default=1 AND send_status=0", sql)
+	}
 
-  sql = fmt.Sprintf("%s ORDER BY system_id DESC LIMIT %d, %d", sql, offset, size)
+	sql = fmt.Sprintf("%s ORDER BY system_id DESC LIMIT %d, %d", sql, offset, size)
 
-  var list []*models.SystemMessage
-  if err := m.Engine.SQL(sql).Find(&list); err != nil {
-    return nil
-  }
+	var list []*models.SystemMessage
+	if err := m.Engine.SQL(sql).Find(&list); err != nil {
+		return nil
+	}
 
-  return list
+	return list
 }
 
 
 // 通过id获取通知详情
 func (m *NotifyModel) GetSystemNotifyById(systemId string) *models.SystemMessage {
-  msg := new(models.SystemMessage)
-  ok, err := m.Engine.Where("system_id=?", systemId).Get(msg)
-  if !ok || err != nil {
-    return nil
-  }
+	msg := new(models.SystemMessage)
+	ok, err := m.Engine.Where("system_id=?", systemId).Get(msg)
+	if !ok || err != nil {
+		return nil
+	}
 
-  return msg
+	return msg
 }
 
 func (m *NotifyModel) UpdateSystemNotifyStatus(id int64) error {
-  sql := fmt.Sprintf("UPDATE `system_message` SET `status`=1 WHERE system_id <= %d AND send_status=0", id)
-  if _, err := m.Engine.Exec(sql); err != nil {
-    return err
-  }
+	sql := fmt.Sprintf("UPDATE `system_message` SET `status`=1 WHERE system_id <= %d AND send_status=0", id)
+	if _, err := m.Engine.Exec(sql); err != nil {
+		return err
+	}
 
-  return nil
+	return nil
 }
 
 // 获取未读系统消息总数
 func (m *NotifyModel) GetUnreadSystemMsgNum(userId string) int64 {
-  count, err := m.Engine.Where("status=0 AND receive_id=? AND send_status=0", userId).Count(&models.SystemMessage{})
-  if err != nil {
-    return 0
-  }
+	count, err := m.Engine.Where("status=0 AND receive_id=? AND send_status=0", userId).Count(&models.SystemMessage{})
+	if err != nil {
+		return 0
+	}
 
-  return count
+	return count
 }
 
 // 记录用户读取被点赞通知消息的时间
@@ -171,14 +171,14 @@ func (m *NotifyModel) GetReadBeLikedTime(userId string) (string, error) {
 
 // 记录用户读取关注用户发布的视频的时间
 func (m *NotifyModel) RecordReadAttentionPubVideo(userId string) error {
-  rds := dao.NewRedisDao()
-  return rds.Set(rdskey.MakeKey(rdskey.USER_READ_ATTENTION_VIDEO, userId), time.Now().Unix())
+	rds := dao.NewRedisDao()
+	return rds.Set(rdskey.MakeKey(rdskey.USER_READ_ATTENTION_VIDEO, userId), time.Now().Unix())
 }
 
 // 获取用户读取关注用户发布的视频的时间
 func (m *NotifyModel) GetReadAttentionPubVideo(userId string) (string, error) {
-  rds := dao.NewRedisDao()
-  return rds.Get(rdskey.MakeKey(rdskey.USER_READ_ATTENTION_VIDEO, userId))
+	rds := dao.NewRedisDao()
+	return rds.Get(rdskey.MakeKey(rdskey.USER_READ_ATTENTION_VIDEO, userId))
 }
 
 // 记录用户读取@通知消息的时间
