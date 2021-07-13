@@ -207,9 +207,9 @@ func (m *CommentModel) DelVideoComments(commentIds string) error {
 }
 
 // 获取视频评论列表(1级评论)
-func (m *CommentModel) GetCommentList(composeId string, offset, size int) []*models.UserComments {
+func (m *CommentModel) GetCommentList(composeId string, commentType, offset, size int) []*models.UserComments {
 	var list []*models.UserComments
-	if err := m.Engine.Where("compose_id=? AND comment_type=? AND comment_level=1", composeId).
+	if err := m.Engine.Where("compose_id=? AND comment_type=? AND comment_level=1", composeId, commentType).
 		Desc("is_top").
 		Asc("id").
 		Limit(size, offset).

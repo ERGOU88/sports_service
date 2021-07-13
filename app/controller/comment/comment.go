@@ -276,7 +276,7 @@ func (svc *CommentModule) GetVideoComments(userId, videoId, sortType string, pag
 
 	offset := (page - 1) * size
 	// 获取评论
-	comments := svc.comment.GetCommentList(videoId, offset, size)
+	comments := svc.comment.GetCommentList(videoId, consts.COMMENT_TYPE_VIDEO, offset, size)
 	if len(comments) == 0 {
 		log.Log.Errorf("comment_trace: no comments, videoId:%s", videoId)
 		return errdef.SUCCESS, []*mcomment.VideoComments{}
