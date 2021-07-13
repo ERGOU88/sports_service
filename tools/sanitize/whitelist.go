@@ -3,7 +3,7 @@ package sanitize
 import (
 	"io"
 	"bytes"
-	"code.google.com/p/go.net/html"
+	"golang.org/x/net/html"
 	"errors"
 	"encoding/json"
 	"strings"
@@ -144,7 +144,7 @@ func (w *Whitelist) SanitizeRemove(reader io.Reader) (string, error) {
 	if err != nil {
 		return buffer.String(), err
 	}
-	
+
 	err = w.sanitizeRemove(doc)
 	if err != nil {
 		return buffer.String(), err
@@ -193,7 +193,7 @@ func (w *Whitelist) sanitizeUnwrap(n *html.Node) (error) {
 		for c := n.FirstChild; c != nil; {
 			nodeToUnwrap := c
 			c = c.NextSibling
-			
+
 			n.RemoveChild(nodeToUnwrap)
 			n.Parent.InsertBefore(nodeToUnwrap, insertBefore)
 		}
@@ -214,7 +214,7 @@ func (w *Whitelist) SanitizeUnwrap(reader io.Reader) (string, error) {
 	if err != nil {
 		return buffer.String(), err
 	}
-	
+
 	err = w.sanitizeUnwrap(doc)
 	if err != nil {
 		return buffer.String(), err

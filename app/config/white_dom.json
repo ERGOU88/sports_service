@@ -1,0 +1,8 @@
+{
+  "stripComments": true,
+  "stripWhitespace": true,
+  "elements": {
+    "div": ["id", "class"],
+    "href": []
+  }
+}

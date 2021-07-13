@@ -14,5 +14,5 @@ type Banner struct {
 	Status    int    `json:"status" xorm:"not null default 0 comment('0待上架 1上架 2 已过期') TINYINT(1)"`
 	CreateAt  int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt  int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
-	JumpType  int    `json:"jump_type" xorm:"not null default 0 comment('0站内跳转 1站外跳转 2 无跳转') TINYINT(1)"`
+	JumpType  int    `json:"jump_type" xorm:"not null comment('跳转类型 0 站内跳转 1 站外跳转') TINYINT(1)"`
 }

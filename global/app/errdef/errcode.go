@@ -123,6 +123,15 @@ const (
 
 	// 腾讯云相关错误码 11001 - 12000
 	CLOUD_COS_ACCESS_FAIL       = 11001
+
+	// 帖子相关错误码 12001 - 13000
+	POST_INVALID_TITLE          = 12001
+	POST_INVALID_CONTENT        = 12002
+	POST_SECTION_NOT_EXISTS     = 12003
+	POST_TOPIC_NOT_EXISTS       = 12004
+	POST_PUBLISH_FAIL           = 12005
+	POST_INVALID_CONTENT_LEN    = 12006
+	POST_DETAIL_FAIL            = 12007
 )
 
 var MsgFlags = map[int]string{
@@ -236,6 +245,14 @@ var MsgFlags = map[int]string{
 	SEARCH_CLEAN_HISTORY_FAIL:   "清空搜索记录失败",
 
 	CLOUD_COS_ACCESS_FAIL:       "通行证获取失败",
+
+	POST_INVALID_TITLE:          "帖子标题含有违规文字",
+	POST_INVALID_CONTENT:        "帖子内容含有违规文字",
+	POST_SECTION_NOT_EXISTS:     "板块不存在",
+	POST_TOPIC_NOT_EXISTS:       "话题不存在",
+	POST_PUBLISH_FAIL:           "发布帖子失败",
+	POST_INVALID_CONTENT_LEN:    "内容长度超过限制",
+	POST_DETAIL_FAIL:            "获取帖子详情失败",
 }
 
 func GetMsg(code int) string {

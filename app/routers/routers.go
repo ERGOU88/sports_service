@@ -8,9 +8,10 @@ import (
 	"sports_service/server/app/routers/api/v1/comment"
 	"sports_service/server/app/routers/api/v1/like"
 	"sports_service/server/app/routers/api/v1/notify"
+	"sports_service/server/app/routers/api/v1/posting"
 	"sports_service/server/app/routers/api/v1/search"
 	"sports_service/server/app/routers/api/v1/video"
-  "sports_service/server/app/routers/api/v1/tencentCloud"
+    "sports_service/server/app/routers/api/v1/tencentCloud"
 	"sports_service/server/middleware"
 	"sports_service/server/global/consts"
 	"sports_service/server/app/routers/api/v1/user"
@@ -55,4 +56,6 @@ func InitRouters(engine *gin.Engine) {
 	barrage.Router(engine)
 	// 腾讯云
 	tencentCloud.Router(engine)
+	// 帖子模块
+	posting.Router(engine)
 }

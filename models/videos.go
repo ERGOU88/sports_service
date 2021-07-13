@@ -21,5 +21,5 @@ type Videos struct {
 	UpdateAt      int    `json:"update_at" xorm:"not null default 0 comment('修改时间') INT(11)"`
 	FileId        int64  `json:"file_id" xorm:"not null default 0 comment('腾讯云文件id') BIGINT(20)"`
 	Size          int64  `json:"size" xorm:"not null default 0 comment('视频大小（字节数）') BIGINT(20)"`
-	PlayInfo      string `json:"play_info" xorm:"comment('视频转码信息') MEDIUMTEXT"`
+	PlayInfo      string `json:"play_info" xorm:"not null comment('视频转码数据') MEDIUMTEXT"`
 }
