@@ -39,7 +39,7 @@ func PostingDetail(c *gin.Context) {
 	svc := cposting.New(c)
 	detail, code := svc.GetPostingDetail(postId)
 	if code == errdef.SUCCESS {
-		reply.Data["detail"] = detail
+		reply.Data["detail"] = detail.Content
 	}
 
 	reply.Response(http.StatusOK, code)

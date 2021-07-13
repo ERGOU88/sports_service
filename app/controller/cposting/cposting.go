@@ -192,9 +192,20 @@ func (svc *PostingModule) GetPostingDetail(postId string) (*models.PostingInfo, 
 	return detail, errdef.SUCCESS
 }
 
+
 // 过滤富文本
 func (svc *PostingModule) SanitizeHtml(content string) (string, error) {
-	whitelist, err := sanitize.WhitelistFromFile("../../config/white_dom.json")
+	config := `
+	{
+		"stripWhitespace": true,
+		"elements": {
+			"i": [],
+            "p": []
+
+		}
+	}`
+
+	whitelist, err := sanitize.NewWhitelist([]byte(config))
 	if err != nil {
 		return "", err
 	}
