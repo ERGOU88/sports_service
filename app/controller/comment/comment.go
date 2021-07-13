@@ -471,7 +471,7 @@ func (svc *CommentModule) GetVideoCommentsByLiked(userId, videoId string, page, 
 			//	reply.ReplyCommentUserName = uinfo.NickName
 			//}
 			// todo: 被回复的用户名、用户头像使用最新数据
-			user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
+			user := svc.user.FindUserByUserid(reply.ReplyCommentUserId)
 			if user != nil {
 				reply.ReplyCommentAvatar = user.Avatar
 				reply.ReplyCommentUserName = user.NickName
