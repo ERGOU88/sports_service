@@ -24,3 +24,9 @@ const (
 	SORT_BY_LIKE  = "2"
 	SORT_BY_REPLY = "3"
 )
+
+// 评论类型 0 视频 1 帖子
+const (
+	COMMENT_TYPE_VIDEO  = iota
+	COMMENT_TYPE_POST
+)

@@ -1,6 +1,6 @@
 package models
 
-type UserComment struct {
+type UserComments struct {
 	Id                  int64  `json:"id" xorm:"pk autoincr comment('评论id') BIGINT(20)"`
 	UserId              string `json:"user_id" xorm:"not null comment('评论人userId') index VARCHAR(60)"`
 	ComposeId           int64  `json:"compose_id" xorm:"not null comment('作品id 视频id/帖子id') index(comment_index) BIGINT(20)"`

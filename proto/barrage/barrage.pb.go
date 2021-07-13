@@ -2384,7 +2384,7 @@ func (m *BarrageInfo) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VideoId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ComposeId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2690,7 +2690,7 @@ func (m *ReqWatchVideo) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VideoId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ComposeId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2840,7 +2840,7 @@ func (m *ReqExitVideo) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VideoId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ComposeId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {

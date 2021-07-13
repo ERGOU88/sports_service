@@ -6,15 +6,16 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mcommunity"
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
+	cloud "sports_service/server/tools/tencentCloud"
 	"strings"
 	"time"
-	"sports_service/server/tools/sanitize"
-	"fmt"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 type PostingModule struct {
@@ -41,26 +42,26 @@ func New(c *gin.Context) PostingModule {
 
 // 发布帖子
 func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPublishParam) int {
-	//client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测帖子标题
-	//isPass, err := client.TextModeration(params.Title)
-	//if !isPass || err != nil {
-	//	log.Log.Errorf("post_trace: validate title err: %s，pass: %v", err, isPass)
-	//	return errdef.POST_INVALID_TITLE
-	//}
+	isPass, err := client.TextModeration(params.Title)
+	if !isPass || err != nil {
+		log.Log.Errorf("post_trace: validate title err: %s，pass: %v", err, isPass)
+		return errdef.POST_INVALID_TITLE
+	}
 
 	// 检测帖子内容
-	//isPass, err = client.TextModeration(params.Content)
-	//if !isPass || err != nil {
-	//	log.Log.Errorf("post_trace: validate content err: %s，pass: %v", err, isPass)
-	//	return errdef.POST_INVALID_CONTENT
-	//}
+	isPass, err = client.TextModeration(params.Content)
+	if !isPass || err != nil {
+		log.Log.Errorf("post_trace: validate content err: %s，pass: %v", err, isPass)
+		return errdef.POST_INVALID_CONTENT
+	}
 
-	//postType := svc.GetPostingType(params)
-	//if b := svc.VerifyContentLen(postType, params.Content); !b {
-	//	log.Log.Error("post_trace: invalid content len")
-	//	return errdef.POST_INVALID_CONTENT_LEN
-	//}
+	postType := svc.GetPostingType(params)
+	if b := svc.VerifyContentLen(postType, params.Content); !b {
+		log.Log.Error("post_trace: invalid content len")
+		return errdef.POST_INVALID_CONTENT_LEN
+	}
 
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
@@ -68,27 +69,34 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		return errdef.ERROR
 	}
 	//
-	//if user := svc.user.FindUserByUserid(userId); user == nil {
-	//	log.Log.Errorf("post_trace: user not found, userId:%s", userId)
-	//	svc.engine.Rollback()
-	//	return errdef.USER_NOT_EXISTS
-	//}
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("post_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
+		return errdef.USER_NOT_EXISTS
+	}
 
 	// 获取板块信息
-	//section, err := svc.community.GetSectionInfo(params.SectionId)
-	//if section == nil || err != nil {
-	//	log.Log.Errorf("post_trace: section not found, sectionId:%d", params.SectionId)
-	//	svc.engine.Rollback()
-	//	return errdef.POST_SECTION_NOT_EXISTS
-	//}
+	section, err := svc.community.GetSectionInfo(params.SectionId)
+	if section == nil || err != nil {
+		log.Log.Errorf("post_trace: section not found, sectionId:%d", params.SectionId)
+		svc.engine.Rollback()
+		return errdef.POST_SECTION_NOT_EXISTS
+	}
 
 	// 获取话题信息（多个）
-	//topics, err := svc.community.GetTopicByIds(strings.Join(params.TopicIds, ","))
-	//if len(params.TopicIds) != len(topics) {
-	//	log.Log.Errorf("post_trace: topic not found, topic_ids:%v, topics:%+v", params.TopicIds, topics)
-	//	svc.engine.Rollback()
-	//	return errdef.POST_TOPIC_NOT_EXISTS
-	//}
+	topics, err := svc.community.GetTopicByIds(strings.Join(params.TopicIds, ","))
+	if len(params.TopicIds) != len(topics) {
+		log.Log.Errorf("post_trace: topic not found, topic_ids:%v, topics:%+v", params.TopicIds, topics)
+		svc.engine.Rollback()
+		return errdef.POST_TOPIC_NOT_EXISTS
+	}
+
+	// 默认为审核中的状态
+	status := 0
+	// 不带视频的帖子 只需通过图文检测
+	if postType != 2 {
+		status = 1
+	}
 
 	now := int(time.Now().Unix())
 	svc.posting.Posting.Title = params.Title
@@ -96,7 +104,8 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 	svc.posting.Posting.VideoAddr = params.VideoAddr
 	svc.posting.Posting.VideoDuration = params.VideoDuration
 	svc.posting.Posting.Cover = params.Cover
-	//svc.posting.Posting.PostingType = postType
+	svc.posting.Posting.PostingType = postType
+	svc.posting.Posting.Status = status
 	svc.posting.Posting.ContentType = params.ContentType
 	svc.posting.Posting.CreateAt = now
 	svc.posting.Posting.UpdateAt = now
@@ -113,26 +122,32 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		return errdef.POST_PUBLISH_FAIL
 	}
 
+	if _, err := svc.posting.AddPostSection(); err != nil {
+		log.Log.Errorf("post_trace: add post section fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.POST_PUBLISH_FAIL
+	}
+
 	// 组装多条记录 写入帖子话题表
-	//topicInfos := make([]*models.PostingTopic, len(topics))
-	//for _, val := range topics {
-	//	info := new(models.PostingTopic)
-	//	info.TopicId = val.TopicId
-	//	info.TopicName = val.TopicName
-	//	info.CreateAt = now
-	//	info.PostingId = svc.posting.Posting.Id
-	//	topicInfos = append(topicInfos, info)
-	//}
-	//
-	//if len(topicInfos) > 0 {
-	//	// 添加帖子所属话题（多条）
-	//	affected, err := svc.posting.AddPostingTopics(topicInfos)
-	//	if err != nil || int(affected) != len(topicInfos) {
-	//		svc.engine.Rollback()
-	//		log.Log.Errorf("post_trace: add post topics fail, err:%s", err)
-	//		return errdef.POST_PUBLISH_FAIL
-	//	}
-	//}
+	topicInfos := make([]*models.PostingTopic, len(topics))
+	for _, val := range topics {
+		info := new(models.PostingTopic)
+		info.TopicId = val.TopicId
+		info.TopicName = val.TopicName
+		info.CreateAt = now
+		info.PostingId = svc.posting.Posting.Id
+		topicInfos = append(topicInfos, info)
+	}
+
+	if len(topicInfos) > 0 {
+		// 添加帖子所属话题（多条）
+		affected, err := svc.posting.AddPostingTopics(topicInfos)
+		if err != nil || int(affected) != len(topicInfos) {
+			svc.engine.Rollback()
+			log.Log.Errorf("post_trace: add post topics fail, err:%s", err)
+			return errdef.POST_PUBLISH_FAIL
+		}
+	}
 
 
 	svc.engine.Commit()
@@ -192,33 +207,47 @@ func (svc *PostingModule) GetPostingDetail(postId string) (*models.PostingInfo, 
 	return detail, errdef.SUCCESS
 }
 
+// 过滤富文本 todo：和客户端确认最终的策略
+func (svc *PostingModule) SanitizeHtml(content string) string {
+	p := bluemonday.NewPolicy()
+	p.AllowStandardURLs()
 
-// 过滤富文本
-func (svc *PostingModule) SanitizeHtml(content string) (string, error) {
-	config := `
-	{
-		"stripWhitespace": true,
-		"elements": {
-			"i": [],
-            "p": []
+	// 只允许<body> <p> 和 <a href="">
+	p.AllowAttrs("href").OnElements("a")
+	p.AllowElements("p")
+	p.AllowElements("body")
 
-		}
-	}`
+	return p.Sanitize(content)
 
-	whitelist, err := sanitize.NewWhitelist([]byte(config))
-	if err != nil {
-		return "", err
-	}
-
-	fmt.Println(whitelist)
-
-	readStr := strings.NewReader(content)
-	fmt.Println(readStr)
-	sanitized, err := whitelist.SanitizeUnwrap(readStr)
-	if err != nil {
-		return "", err
-	}
-
-	log.Log.Debugf("sanitized html: %s", sanitized)
-	return sanitized, nil
 }
+
+
+//func (svc *PostingModule) SanitizeHtml(content string) (string, error) {
+//	config := `
+//	{
+//		"stripWhitespace": true,
+//		"elements": {
+//			"body": [],
+//			"i": [],
+//            "p": [],
+//            "a":[]
+//		}
+//	}`
+//
+//	whitelist, err := sanitize.NewWhitelist([]byte(config))
+//	if err != nil {
+//		return "", err
+//	}
+//
+//	fmt.Println(whitelist)
+//
+//	readStr := strings.NewReader(content)
+//	fmt.Println(readStr)
+//	sanitized, err := whitelist.SanitizeUnwrap(readStr)
+//	if err != nil {
+//		return "", err
+//	}
+//
+//	log.Log.Debugf("sanitized html: %s", sanitized)
+//	return sanitized, nil
+//}

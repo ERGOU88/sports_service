@@ -16,6 +16,6 @@ func init() {
 func TestSanitizeHtml(t *testing.T) {
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 	svc := New(c)
-	content, err := svc.SanitizeHtml("<body><p>这是一条测试记录</p><a href='www.baidu.com'>@百度</a><br/></body>")
-	t.Logf("\n content:%s, err:%s", content, err)
+	content := svc.SanitizeHtml(`<body><p>hello~ world</p><script language="JavaScript"> <!-- while (true) {window.open("URI");} --> </script> <p>这是一条测试记录</p><a href='www.baidu.com'>@百度</a><br/></body>`)
+	t.Logf("\n content:%s", content)
 }
