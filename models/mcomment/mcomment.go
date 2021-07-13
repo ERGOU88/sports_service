@@ -169,7 +169,7 @@ func (m *CommentModel) GetUnreadAtCount(userId, readTm string) int64 {
 }
 
 // 通过评论id获取评论信息
-func (m *CommentModel) GetVideoCommentById(commentId string) *models.UserComments {
+func (m *CommentModel) GetCommentById(commentId string) *models.UserComments {
 	comment := new(models.UserComments)
 	ok, err := m.Engine.Where("id=?", commentId).Get(comment)
 	if !ok || err != nil {
@@ -222,14 +222,14 @@ func (m *CommentModel) GetCommentList(composeId string, commentType, offset, siz
 }
 
 // 根据评论点赞数排序 获取视频评论列表（1级评论）
-func (m *CommentModel) GetVideoCommentListByLike(composeId string, offset, size int) []*VideoComments {
+func (m *CommentModel) GetCommentListByLike(composeId string, zanType, offset, size int) []*VideoComments {
 	sql := "SELECT vc.*, count(tu.Id) AS like_num FROM user_comments AS vc " +
-		"LEFT JOIN thumbs_up AS tu ON vc.id = tu.type_id AND tu.zan_type=3 AND tu.status=1 WHERE vc.compose_id=? " +
+		"LEFT JOIN thumbs_up AS tu ON vc.id = tu.type_id AND tu.zan_type=? AND tu.status=1 WHERE vc.compose_id=? " +
 		"AND vc.comment_level = 1 " +
 		"GROUP BY vc.Id ORDER BY like_num DESC, vc.id DESC LIMIT ?, ?"
 
 	var list []*VideoComments
-	if err := m.Engine.SQL(sql, composeId, offset, size).Find(&list); err != nil {
+	if err := m.Engine.SQL(sql, zanType, composeId, offset, size).Find(&list); err != nil {
 		log.Log.Errorf("comment_trace: get video comment list by like err:%s", err)
 		return nil
 	}

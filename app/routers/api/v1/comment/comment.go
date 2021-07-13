@@ -9,6 +9,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mcomment"
 	"sports_service/server/util"
+	"strconv"
 )
 
 // @Summary 发布评论 (ok)
@@ -114,9 +115,11 @@ func CommentList(c *gin.Context) {
 	sortType := c.DefaultQuery("sort_type", "0")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	commentId := c.Query("comment_id")
+	// 0 视频评论 1 帖子评论
+	commentType, _ := strconv.Atoi(c.DefaultQuery("comment_type", "0"))
 
 	svc := comment.New(c)
-	syscode, list := svc.GetVideoComments(userId, videoId, sortType, page, size)
+	syscode, list := svc.GetComments(userId, videoId, sortType, commentType, page, size)
 	if syscode != errdef.SUCCESS {
 		reply.Response(http.StatusOK, syscode)
 		return
@@ -155,10 +158,12 @@ func ReplyList(c *gin.Context) {
 	commentId := c.Query("comment_id")
 	videoId := c.Query("video_id")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	// 0 视频评论 1 帖子评论
+	commentType, _ := strconv.Atoi(c.DefaultQuery("comment_type", "0"))
 
 	svc := comment.New(c)
 	// 获取评论回复列表
-	syscode, list := svc.GetCommentReplyList(userId, videoId, commentId, page, size)
+	syscode, list := svc.GetCommentReplyList(userId, videoId, commentId, commentType, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)
 }

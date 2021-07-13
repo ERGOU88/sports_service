@@ -103,12 +103,12 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 			// 被点赞的帖子
 		case consts.TYPE_POSTS:
 		// 被点赞的评论
-		case consts.TYPE_COMMENT:
+		case consts.TYPE_VIDEO_COMMENT:
 			info.OpTime = liked.CreateAt
-			info.Type = consts.TYPE_COMMENT
+			info.Type = consts.TYPE_VIDEO_COMMENT
 
 			// 获取评论信息
-			comment := svc.comment.GetVideoCommentById(fmt.Sprint(liked.TypeId))
+			comment := svc.comment.GetCommentById(fmt.Sprint(liked.TypeId))
 			if comment != nil {
 				// 被点赞的信息
 				info.Content = comment.Content
@@ -250,9 +250,9 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 		// 被点赞的帖子
 		case consts.TYPE_POSTS:
 		// 被点赞的评论
-		case consts.TYPE_COMMENT:
+		case consts.TYPE_VIDEO_COMMENT:
 			// 获取评论信息
-			comment := svc.comment.GetVideoCommentById(fmt.Sprint(liked.TypeId))
+			comment := svc.comment.GetCommentById(fmt.Sprint(liked.TypeId))
 			if comment != nil {
 				commentMp[comment.Id] = comment
 				// 点赞用户
@@ -332,10 +332,10 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 			// 被点赞的帖子
 		case consts.TYPE_POSTS:
 		// 被点赞的评论
-		case consts.TYPE_COMMENT:
+		case consts.TYPE_VIDEO_COMMENT:
 			info := new(mlike.BeLikedInfo)
 			info.OpTime = liked.CreateAt
-			info.Type = consts.TYPE_COMMENT
+			info.Type = consts.TYPE_VIDEO_COMMENT
 
 			// 获取评论信息
 			comment, ok := commentMp[liked.TypeId]
@@ -447,12 +447,12 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 		switch receiveAt.TopicType {
 		case consts.TYPE_POSTS:
 
-		case consts.TYPE_COMMENT:
+		case consts.TYPE_VIDEO_COMMENT:
 			info := new(mnotify.ReceiveCommentAtInfo)
 			info.AtTime = receiveAt.CreateAt
-			info.Type = consts.TYPE_COMMENT
+			info.Type = consts.TYPE_VIDEO_COMMENT
 			// 获取评论信息
-			comment := svc.comment.GetVideoCommentById(fmt.Sprint(receiveAt.CommentId))
+			comment := svc.comment.GetCommentById(fmt.Sprint(receiveAt.CommentId))
 			if comment != nil {
 				// 执行@的用户信息
 				if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
@@ -497,11 +497,11 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				info.ReplyCommentId = receiveAt.CommentId
 				info.Content = comment.Content
 				// 获取当前评论 / 回复的被点赞数
-				info.TotalLikeNum = svc.like.GetLikeNumByType(receiveAt.CommentId, consts.TYPE_COMMENT)
+				info.TotalLikeNum = svc.like.GetLikeNumByType(receiveAt.CommentId, consts.TYPE_VIDEO_COMMENT)
 				// 如果父评论id为0 则表示 是1级评论 不为0 则表示是回复
 				if comment.ParentCommentId != 0 {
 					// 获取被回复的内容
-					beReply := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ReplyCommentId))
+					beReply := svc.comment.GetCommentById(fmt.Sprint(comment.ReplyCommentId))
 					if beReply != nil {
 						info.CommentType = 2
 						info.Content = beReply.Content
@@ -517,7 +517,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 					}
 
 					// 获取最上级的评论内容
-					parent := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ParentCommentId))
+					parent := svc.comment.GetCommentById(fmt.Sprint(comment.ParentCommentId))
 					if parent != nil {
 						info.ParentComment = parent.Content
 						// 1级评论id
@@ -528,7 +528,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 
 				if userId != "" {
 					// 获取点赞的信息
-					if likeInfo := svc.like.GetLikeInfo(userId, comment.Id, consts.TYPE_COMMENT); likeInfo != nil {
+					if likeInfo := svc.like.GetLikeInfo(userId, comment.Id, consts.TYPE_VIDEO_COMMENT); likeInfo != nil {
 						info.IsLike = likeInfo.Status
 					}
 				}

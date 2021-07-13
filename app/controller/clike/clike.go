@@ -262,7 +262,7 @@ func (svc *LikeModule) GiveLikeForComment(userId string, commentId int64) int {
 	}
 
 	// 查找评论是否存在
-	comment := svc.comment.GetVideoCommentById(fmt.Sprint(commentId))
+	comment := svc.comment.GetCommentById(fmt.Sprint(commentId))
 	if comment == nil {
 		log.Log.Errorf("like_trace: like comment not found, commentId:%d", commentId)
 		svc.engine.Rollback()
@@ -270,7 +270,7 @@ func (svc *LikeModule) GiveLikeForComment(userId string, commentId int64) int {
 	}
 
 	// 获取点赞的评论信息
-	info := svc.like.GetLikeInfo(userId, commentId, consts.TYPE_COMMENT)
+	info := svc.like.GetLikeInfo(userId, commentId, consts.TYPE_VIDEO_COMMENT)
 	// 是否已点赞
 	// 已点赞
 	if info != nil && info.Status == consts.ALREADY_GIVE_LIKE {
@@ -293,7 +293,7 @@ func (svc *LikeModule) GiveLikeForComment(userId string, commentId int64) int {
 
 	} else {
 		// 添加点赞记录
-		if err := svc.like.AddGiveLikeByType(userId, comment.UserId, commentId, consts.ALREADY_GIVE_LIKE, consts.TYPE_COMMENT); err != nil {
+		if err := svc.like.AddGiveLikeByType(userId, comment.UserId, commentId, consts.ALREADY_GIVE_LIKE, consts.TYPE_VIDEO_COMMENT); err != nil {
 			log.Log.Errorf("like_trace: add like comment record err:%s", err)
 			svc.engine.Rollback()
 			return errdef.LIKE_COMMENT_FAIL
@@ -324,14 +324,14 @@ func (svc *LikeModule) CancelLikeForComment(userId string, commentId int64) int 
 	}
 
 	// 查找评论是否存在
-	if comment := svc.comment.GetVideoCommentById(fmt.Sprint(commentId)); comment == nil {
+	if comment := svc.comment.GetCommentById(fmt.Sprint(commentId)); comment == nil {
 		log.Log.Errorf("like_trace: cancel like comment not found, commentId:%d", commentId)
 		svc.engine.Rollback()
 		return errdef.LIKE_COMMENT_NOT_EXISTS
 	}
 
 	// 获取点赞的信息 判断是否已点赞 记录不存在 则 未点过赞
-	info := svc.like.GetLikeInfo(userId, commentId, consts.TYPE_COMMENT)
+	info := svc.like.GetLikeInfo(userId, commentId, consts.TYPE_VIDEO_COMMENT)
 	if info == nil {
 		log.Log.Errorf("like_trace: record not found, not give like, userId:%s, commentId:%d", userId, commentId)
 		svc.engine.Rollback()
