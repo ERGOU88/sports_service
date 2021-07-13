@@ -39,9 +39,9 @@ type VideoComments struct {
 type ReplyComment struct {
 	Id                   int64               `json:"id" example:"1600000000"`                          // 评论id
 	IsTop                int                 `json:"is_top" example:"1"`                               // 置顶状态 1 置顶 0 不置顶
-	Avatar               string              `json:"avatar" example:"头像"`                             // 用户头像
+	Avatar               string              `json:"avatar" xorm:"-" example:"头像"`                             // 用户头像
 	UserId               string              `json:"user_id" example:"用户id"`                          // 用户id
-	UserName             string              `json:"user_name" example:"用户昵称"`                       // 用户名称
+	UserName             string              `json:"user_name" xorm:"-" example:"用户昵称"`                       // 用户名称
 	CommentLevel         int                 `json:"comment_level" example:"1"`                         // 评论等级[1 一级评论 默认 ，2 二级评论]
 	Content              string              `json:"content" example:"评论内容"`                          // 评论内容
 	CreateAt             int                 `json:"create_at" example:"1600000000"`                    // 创建时间
