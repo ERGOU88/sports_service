@@ -1,7 +1,7 @@
 package models
 
 type ForwardRecord struct {
-	Id          int64  `json:"id" xorm:"pk comment('帖子id') BIGINT(20)"`
+	Id          int64  `json:"id" xorm:"pk autoincr comment('帖子id') BIGINT(20)"`
 	UserId      string `json:"user_id" xorm:"not null comment('转发者用户id') index VARCHAR(60)"`
 	ToUserId    string `json:"to_user_id" xorm:"not null comment('被转发者用户id') VARCHAR(60)"`
 	ForwardType int    `json:"forward_type" xorm:"not null default 0 comment('转发类型 0 视频 1 贴子') TINYINT(1)"`

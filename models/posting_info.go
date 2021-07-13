@@ -1,7 +1,7 @@
 package models
 
 type PostingInfo struct {
-	Id            int64  `json:"id" xorm:"pk comment('帖子id') BIGINT(20)"`
+	Id            int64  `json:"id" xorm:"pk autoincr comment('帖子id') BIGINT(20)"`
 	CommunityId   int    `json:"community_id" xorm:"not null comment('帖子所属社区id') index INT(11)"`
 	Title         string `json:"title" xorm:"comment('帖子标题') MEDIUMTEXT"`
 	Describe      string `json:"describe" xorm:"comment('帖子描述') MEDIUMTEXT"`
