@@ -8,7 +8,6 @@ import (
 // 社区模块
 type CommunityModel struct {
 	Engine              *xorm.Session
-	Community           *models.CommunityInfo
 	CommunitySection    *models.CommunitySection
 	CommunityTopic      *models.CommunityTopic
 }
@@ -17,21 +16,9 @@ type CommunityModel struct {
 func NewCommunityModel(engine *xorm.Session) *CommunityModel {
 	return &CommunityModel{
 		Engine: engine,
-		Community: new(models.CommunityInfo),
 		CommunitySection: new(models.CommunitySection),
 		CommunityTopic: new(models.CommunityTopic),
 	}
-}
-
-// 通过社区id获取社区信息
-func (m *CommunityModel) GetCommunityInfo(id int) (*models.CommunityInfo, error) {
-	m.Community = new(models.CommunityInfo)
-	ok, err := m.Engine.Where("id=? AND status=1", id).Get(m.Community)
-	if !ok || err != nil {
-		return nil, err
-	}
-
-	return m.Community, nil
 }
 
 // 通过社区id获取板块信息

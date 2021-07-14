@@ -95,7 +95,7 @@ func (svc *CommentModule) GetVideoComments(queryId, sortType, condition string, 
 
 // 获取视频评论总数
 func (svc *CommentModule) GetCommentTotal(commentType int) int64 {
-	return svc.comment.GetCommentTotal(commentType)
+	return svc.comment.GetVideoCommentTotal()
 }
 
 // 通过用户id获取评论总数
@@ -105,7 +105,7 @@ func (svc *CommentModule) GetCommentTotalByUserId(queryId string) int64 {
 
 // 通过视频id获取评论总数
 func (svc *CommentModule) GetCommentTotalByVideoId(videoId string) int64 {
-	return svc.comment.GetCommentTotalByComposeId(videoId, consts.COMMENT_TYPE_VIDEO)
+	return svc.comment.GetCommentTotalByVideoId(videoId)
 }
 
 // 删除视频评论（物理删除）

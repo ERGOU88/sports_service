@@ -154,6 +154,7 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	svc.video.Videos.UserType = consts.PUBLISH_VIDEO_BY_USER
 	svc.video.Videos.VideoWidth = params.VideoWidth
 	svc.video.Videos.VideoHeight = params.VideoHeight
+	svc.video.Videos.Size = params.Size
 	fileId, _ := strconv.Atoi(params.FileId)
 	svc.video.Videos.FileId = int64(fileId)
 	// 默认为首页发布
@@ -226,8 +227,8 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 	// 当前页所有视频id
 	//videoIds := make([]string, len(records))
 	//for index, info := range records {
-	//	mp[info.ComposeId] = info.UpdateAt
-	//	videoIds[index] = fmt.Sprint(info.ComposeId)
+	//	mp[info.VideoId] = info.UpdateAt
+	//	videoIds[index] = fmt.Sprint(info.VideoId)
 	//}
 
 	//vids := strings.Join(videoIds, ",")

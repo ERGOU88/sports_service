@@ -33,11 +33,13 @@ func PublishPosting(c *gin.Context) {
 }
 
 // 帖子详情
-func PostingDetail(c *gin.Context) {
+func PostDetail(c *gin.Context) {
 	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+
 	postId := c.Query("post_id")
 	svc := cposting.New(c)
-	detail, code := svc.GetPostingDetail(postId)
+	detail, code := svc.GetPostDetail(userId.(string), postId)
 	if code == errdef.SUCCESS {
 		reply.Data["detail"] = detail
 	}

@@ -13,9 +13,11 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	cloud "sports_service/server/tools/tencentCloud"
+	"sports_service/server/util"
 	"strings"
 	"time"
 	"github.com/microcosm-cc/bluemonday"
+	"fmt"
 )
 
 type PostingModule struct {
@@ -100,22 +102,17 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 
 	now := int(time.Now().Unix())
 	svc.posting.Posting.Title = params.Title
-	svc.posting.Posting.Content = params.Content
-	svc.posting.Posting.VideoAddr = params.VideoAddr
-	svc.posting.Posting.VideoDuration = params.VideoDuration
-	svc.posting.Posting.Cover = params.Cover
+	svc.posting.Posting.Describe = params.Describe
 	svc.posting.Posting.PostingType = postType
 	svc.posting.Posting.Status = status
 	svc.posting.Posting.ContentType = params.ContentType
 	svc.posting.Posting.CreateAt = now
 	svc.posting.Posting.UpdateAt = now
-	// todo: 常量 暂时只有官方社区 考虑到扩展性 已设计社区表
-	svc.posting.Posting.CommunityId = 1
-	if svc.posting.Posting.ImagesAddr != "" {
-		svc.posting.Posting.ImagesAddr = strings.Join(params.ImagesAddr, ",")
+	if params.Content != "" {
+		bts, _ := util.JsonFast.Marshal(params.Content)
+		svc.posting.Posting.Content = string(bts)
 	}
 
-	// todo: 如上传了视频的贴子 需等vod事件流审核完成 修改贴子状态为审核完成
 	if _, err := svc.posting.AddPost(); err != nil {
 		log.Log.Errorf("post_trace: publish post fail, err:%s", err)
 		svc.engine.Rollback()
@@ -157,7 +154,7 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 
 // 获取帖子类型 todo: 常量
 func (svc *PostingModule) GetPostingType(params *mposting.PostPublishParam) (postType int) {
-	if params.Content != "" && params.VideoAddr != "" && params.VideoDuration > 0 {
+	if params.Content != "" && params.VideoId != "" {
 		// 视频 + 文字
 		postType = 2
 		return
@@ -205,6 +202,81 @@ func (svc *PostingModule) GetPostingDetail(postId string) (*models.PostingInfo, 
 	}
 
 	return detail, errdef.SUCCESS
+}
+
+// 获取帖子详情页数据
+func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDetailInfo, int) {
+	if postId == "" {
+		log.Log.Error("post_trace: postId can't empty")
+		return nil, errdef.POST_NOT_EXISTS
+	}
+
+	post, err := svc.posting.GetPostById(postId)
+	if err != nil {
+		return nil, errdef.POST_NOT_EXISTS
+	}
+
+	if fmt.Sprint(post.Status) != consts.POST_AUDIT_SUCCESS {
+		log.Log.Error("post_trace: post not audit, postId:%s", postId)
+		return nil, errdef.POST_NOT_EXISTS
+	}
+
+	// todo: 完善返回数据
+	resp := new(mposting.PostDetailInfo)
+	resp.PostId = post.Id
+	resp.Title = post.Title
+	resp.Describe = post.Describe
+	resp.IsRecommend = post.IsRecommend
+	resp.IsTop = post.IsTop
+	resp.CreateAt = post.CreateAt
+	resp.UserId = post.UserId
+	resp.Topics, err = svc.posting.GetPostTopic(postId)
+	if resp.Topics == nil || err != nil  {
+		resp.Topics = []*models.PostingTopic{}
+	}
+
+	now := int(time.Now().Unix())
+	// 增加视频浏览总数
+	if err := svc.posting.UpdatePostBrowseNum(post.Id, now, 1); err != nil {
+		log.Log.Errorf("post_trace: update post browse num err:%s", err)
+	}
+
+	if user := svc.user.FindUserByUserid(post.UserId); user != nil {
+		resp.Avatar = user.Avatar
+		resp.Nickname = user.NickName
+	}
+
+	if userId == "" {
+		log.Log.Error("post_trace: user no login")
+		return resp, errdef.SUCCESS
+	}
+
+	// 获取用户信息
+	if user := svc.user.FindUserByUserid(userId); user != nil {
+		// 用户是否浏览过
+		browse := svc.posting.GetUserBrowsePost(userId, consts.TYPE_POST, post.Id)
+		if browse != nil {
+			svc.video.Browse.CreateAt = now
+			svc.video.Browse.UpdateAt = now
+			// 已有浏览记录 更新用户浏览的时间
+			if err := svc.posting.UpdateUserBrowsePost(userId, consts.TYPE_POST, post.Id); err != nil {
+				log.Log.Errorf("post_trace: update user browse post err:%s", err)
+			}
+		} else {
+			svc.video.Browse.CreateAt = now
+			svc.video.Browse.UpdateAt = now
+			svc.video.Browse.UserId = userId
+			svc.video.Browse.ComposeId = post.Id
+			svc.video.Browse.ComposeType = consts.TYPE_POST
+			// 添加用户浏览的视频记录
+			if err := svc.posting.RecordUserBrowsePost(); err != nil {
+				log.Log.Errorf("post_trace: record user browse post err:%s", err)
+			}
+		}
+	}
+
+
+	return resp, errdef.SUCCESS
 }
 
 // 过滤富文本 todo：和客户端确认最终的策略

@@ -132,6 +132,7 @@ const (
 	POST_PUBLISH_FAIL           = 12005
 	POST_INVALID_CONTENT_LEN    = 12006
 	POST_DETAIL_FAIL            = 12007
+	POST_NOT_EXISTS             = 12008
 )
 
 var MsgFlags = map[int]string{
@@ -253,6 +254,7 @@ var MsgFlags = map[int]string{
 	POST_PUBLISH_FAIL:           "发布帖子失败",
 	POST_INVALID_CONTENT_LEN:    "内容长度超过限制",
 	POST_DETAIL_FAIL:            "获取帖子详情失败",
+	POST_NOT_EXISTS:             "帖子不存在",
 }
 
 func GetMsg(code int) string {

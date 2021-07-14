@@ -121,7 +121,7 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 				}
 
 				// 获取评论对应的视频信息
-				video := svc.video.FindVideoById(fmt.Sprint(comment.ComposeId))
+				video := svc.video.FindVideoById(fmt.Sprint(comment.VideoId))
 				if video != nil {
 					info.Title = util.TrimHtml(video.Title)
 					info.Describe = util.TrimHtml(video.Describe)
@@ -221,7 +221,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 	}
 
 	videoMp := make(map[int64]*models.Videos)
-	commentMp := make(map[int64]*models.UserComments)
+	commentMp := make(map[int64]*models.VideoComment)
 
 	// 视频点赞的用户列表
 	vlikeMap := make(map[int64][]*mlike.LikedUserInfo, 0)
@@ -340,7 +340,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 			// 获取评论信息
 			comment, ok := commentMp[liked.TypeId]
 			if ok && comment != nil {
-				info.JumpVideoId = comment.ComposeId
+				info.JumpVideoId = comment.VideoId
 				// 评论/视频点赞 多条记录整合为一条
 				commentMp[liked.TypeId] = nil
 				// 被点赞的信息
@@ -354,8 +354,8 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 				}
 
 				// 获取评论对应的视频信息
-				video, ok := videoMp[comment.ComposeId]
-				log.Log.Debugf("notify_trace: get video by comment id, videoId:%d", comment.ComposeId)
+				video, ok := videoMp[comment.VideoId]
+				log.Log.Debugf("notify_trace: get video by comment id, videoId:%d", comment.VideoId)
 				if ok && video != nil {
 					info.Title = util.TrimHtml(video.Title)
 					info.Describe = util.TrimHtml(video.Describe)
@@ -463,7 +463,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				}
 
 				// 获取评论对应的视频信息
-				if video := svc.video.FindVideoById(fmt.Sprint(comment.ComposeId)); video != nil {
+				if video := svc.video.FindVideoById(fmt.Sprint(comment.VideoId)); video != nil {
 					info.ComposeId = video.VideoId
 					info.Title = util.TrimHtml(video.Title)
 					info.Describe = util.TrimHtml(video.Describe)
@@ -477,7 +477,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				}
 
 				// 视频统计数据
-				if statistic := svc.video.GetVideoStatistic(fmt.Sprint(comment.ComposeId)); statistic != nil {
+				if statistic := svc.video.GetVideoStatistic(fmt.Sprint(comment.VideoId)); statistic != nil {
 					info.BarrageNum = statistic.BarrageNum
 					info.BrowseNum = statistic.BrowseNum
 				}

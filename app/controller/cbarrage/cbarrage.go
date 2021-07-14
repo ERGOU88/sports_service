@@ -97,7 +97,7 @@ func (svc *BarrageModule) SendVideoBarrage(userId string, params *mbarrage.SendB
 	//	Barrage: &pbBarrage.BarrageInfo{
 	//		Uid: userId,
 	//		Content: params.Content,
-	//		ComposeId: fmt.Sprint(params.ComposeId),
+	//		VideoId: fmt.Sprint(params.VideoId),
 	//		CurDuration: int64(params.VideoCurDuration),
 	//		SendTime: now,
 	//	},
