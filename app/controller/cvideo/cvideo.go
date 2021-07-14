@@ -156,7 +156,9 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	svc.video.Videos.VideoHeight = params.VideoHeight
 	fileId, _ := strconv.Atoi(params.FileId)
 	svc.video.Videos.FileId = int64(fileId)
-	if params.PubType > 0 {
+	// 默认为首页发布
+	svc.video.Videos.PubType = 1
+	if params.PubType > 1 {
 		svc.video.Videos.PubType = params.PubType
 	}
 
