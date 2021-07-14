@@ -46,6 +46,121 @@ func New(c *gin.Context) CommentModule {
 	}
 }
 
+// 新版评论
+func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2PubCommentParams) (int, int64) {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("video_trace: session begin err:%s", err)
+		return errdef.ERROR, 0
+	}
+
+	//contentLen := util.GetStrLen([]rune(params.Content))
+	// 最少1字符 最多1000字符
+	contentLen := len(params.Content)
+	if contentLen < consts.COMMENT_MIN_LEN || contentLen > consts.COMMENT_MAX_LEN {
+		log.Log.Errorf("comment_trace: invalid content length, len:%d", contentLen)
+		svc.engine.Rollback()
+		return errdef.COMMENT_INVALID_LEN, 0
+	}
+
+	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	// 检测评论内容
+	isPass, err := client.TextModeration(params.Content)
+	if !isPass {
+		log.Log.Errorf("comment_trace: validate comment err: %s，pass: %v", err, isPass)
+		svc.engine.Rollback()
+		return errdef.COMMENT_INVALID_CONTENT, 0
+	}
+
+	// 查询用户是否存在
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
+		log.Log.Errorf("comment_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
+		return errdef.USER_NOT_EXISTS, 0
+	}
+
+	now := time.Now().Unix()
+	svc.comment.Comment.UserId = userId
+	svc.comment.Comment.Content = params.Content
+	svc.comment.Comment.CommentLevel = consts.COMMENT_PUBLISH
+	//svc.comment.Comment.Avatar = user.Avatar
+	//svc.comment.Comment.UserName = user.NickName
+	svc.comment.Comment.CreateAt = int(now)
+	svc.comment.Comment.ParentCommentId = 0
+	svc.comment.Comment.ComposeId = params.ComposeId
+	svc.comment.Comment.Status = 1
+	// 添加评论
+	if err := svc.comment.AddComment(); err != nil {
+		log.Log.Errorf("comment_trace: add comment err:%s", err)
+		svc.engine.Rollback()
+		return errdef.COMMENT_PUBLISH_FAIL, 0
+	}
+
+	var (
+		cover string
+		msgType int32
+		toUserId string
+	)
+	switch params.CommentType {
+	// 视频评论
+	case consts.COMMENT_TYPE_VIDEO:
+		// 查找视频是否存在
+		video := svc.video.FindVideoById(fmt.Sprint(params.ComposeId))
+		if video == nil  {
+			log.Log.Errorf("comment_trace: video not found, videoId:%d", params.ComposeId)
+			svc.engine.Rollback()
+			return errdef.VIDEO_NOT_EXISTS, 0
+		}
+
+		// 视频状态 != 1 (1为视频审核成功)
+		if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
+			log.Log.Errorf("comment_trace: video status not audit success, videoId:%d", params.ComposeId)
+			svc.engine.Rollback()
+			return errdef.VIDEO_NOT_EXISTS, 0
+		}
+
+		// 更新视频总计（视频评论总数）
+		if err := svc.video.UpdateVideoCommentNum(params.ComposeId, int(now), 1); err != nil {
+			log.Log.Errorf("comment_trace: update video comment num err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COMMENT_PUBLISH_FAIL, 0
+		}
+
+		svc.comment.ReceiveAt.TopicType = consts.TYPE_VIDEO_COMMENT
+		cover = video.Cover
+		msgType = consts.VIDEO_COMMENT_MSG
+		toUserId = video.UserId
+
+	// 帖子评论
+	case consts.COMMENT_TYPE_POST:
+		// todo: 查询帖子是否存在 封面待确认？？
+		svc.comment.ReceiveAt.TopicType = consts.TYPE_POST_COMMENT
+		msgType = consts.POST_COMMENT_MSG
+	}
+
+	svc.comment.ReceiveAt.UserId = userId
+	// 被@的用户 1级评论 则@的是视频up主 / 帖子发布者
+	svc.comment.ReceiveAt.ToUserId = toUserId
+	svc.comment.ReceiveAt.CommentId = svc.comment.Comment.Id
+	svc.comment.ReceiveAt.TopicType = consts.TYPE_VIDEO_COMMENT
+	svc.comment.ReceiveAt.CreateAt = int(now)
+	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_PUBLISH
+	// 评论也是@
+	if err := svc.comment.AddReceiveAt(); err != nil {
+		log.Log.Errorf("comment_trace: add receive at err:%s", err)
+		svc.engine.Rollback()
+		return errdef.COMMENT_PUBLISH_FAIL, 0
+	}
+
+	svc.engine.Commit()
+
+	// 视频/帖子 评论推送
+	event.PushEventMsg(config.Global.AmqpDsn, toUserId, user.NickName, cover, params.Content, msgType)
+
+	return errdef.SUCCESS, svc.comment.Comment.Id
+}
+
 // 发布评论
 func (svc *CommentModule) PublishComment(userId string, params *mcomment.PublishCommentParams) (int, int64) {
 	// 开启事务
@@ -105,9 +220,9 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	svc.comment.Comment.ParentCommentId = 0
 	svc.comment.Comment.ComposeId = params.VideoId
 	svc.comment.Comment.Status = 1
-	// 添加视频评论
+	// 添加评论
 	if err := svc.comment.AddComment(); err != nil {
-		log.Log.Errorf("comment_trace: add video comment err:%s", err)
+		log.Log.Errorf("comment_trace: add comment err:%s", err)
 		svc.engine.Rollback()
 		return errdef.COMMENT_PUBLISH_FAIL, 0
 	}
@@ -174,21 +289,6 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		return errdef.USER_NOT_EXISTS, 0
 	}
 
-	// 查找视频是否存在
-	video := svc.video.FindVideoById(fmt.Sprint(params.VideoId))
-	if video == nil  {
-		log.Log.Errorf("comment_trace: video not found, videoId:%d", params.VideoId)
-		svc.engine.Rollback()
-		return errdef.VIDEO_NOT_EXISTS, 0
-	}
-
-	// 视频状态 != 1 (视频审核成功)
-	if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
-		log.Log.Errorf("comment_trace: video status not audit success, videoId:%d", params.VideoId)
-		svc.engine.Rollback()
-		return errdef.VIDEO_NOT_EXISTS, 0
-	}
-
 	// 查询被回复的评论是否存在
 	replyInfo := svc.comment.GetCommentById(params.ReplyId)
 	if replyInfo == nil {
@@ -206,9 +306,10 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	//svc.comment.Comment.Avatar = user.Avatar
 	//svc.comment.Comment.UserName = user.NickName
 	svc.comment.Comment.CreateAt = int(now)
-	svc.comment.Comment.ComposeId = params.VideoId
+	svc.comment.Comment.ComposeId = replyInfo.ComposeId
 	svc.comment.Comment.CommentLevel = consts.COMMENT_REPLY
 	svc.comment.Comment.Status = 1
+	svc.comment.Comment.CommentType = replyInfo.CommentType
 
 	svc.comment.Comment.ReplyCommentUserId = replyInfo.UserId
 	svc.comment.Comment.ReplyCommentId = replyInfo.Id
@@ -226,11 +327,50 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		return errdef.COMMENT_REPLY_FAIL, 0
 	}
 
+	var (
+		cover string
+		msgType int32
+	)
+	switch replyInfo.CommentType {
+	// 视频评论
+	case consts.COMMENT_TYPE_VIDEO:
+		// 查找视频是否存在
+		video := svc.video.FindVideoById(fmt.Sprint(replyInfo.ComposeId))
+		if video == nil  {
+			log.Log.Errorf("comment_trace: video not found, videoId:%d", replyInfo.ComposeId)
+			svc.engine.Rollback()
+			return errdef.VIDEO_NOT_EXISTS, 0
+		}
+
+		// 视频状态 != 1 (1为视频审核成功)
+		if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
+			log.Log.Errorf("comment_trace: video status not audit success, postId:%d", replyInfo.ComposeId)
+			svc.engine.Rollback()
+			return errdef.VIDEO_NOT_EXISTS, 0
+		}
+
+		// 更新视频总计（视频评论总数）
+		if err := svc.video.UpdateVideoCommentNum(replyInfo.ComposeId, int(now), 1); err != nil {
+			log.Log.Errorf("comment_trace: update video comment num err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COMMENT_PUBLISH_FAIL, 0
+		}
+
+		svc.comment.ReceiveAt.TopicType = consts.TYPE_VIDEO_COMMENT
+		cover = video.Cover
+		msgType = consts.VIDEO_REPLY_MSG
+
+	// 帖子评论
+	case consts.COMMENT_TYPE_POST:
+		// todo: 查询帖子是否存在 封面待确认？？
+		svc.comment.ReceiveAt.TopicType = consts.TYPE_POST_COMMENT
+		msgType = consts.POST_REPLY_MSG
+	}
+
 	svc.comment.ReceiveAt.UserId = userId
 	// 被@的用户
 	svc.comment.ReceiveAt.ToUserId = replyInfo.UserId
 	svc.comment.ReceiveAt.CommentId = svc.comment.Comment.Id
-	svc.comment.ReceiveAt.TopicType = consts.TYPE_VIDEO_COMMENT
 	svc.comment.ReceiveAt.CreateAt = int(now)
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_REPLY
 	// 回复 记录到 @
@@ -240,16 +380,10 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		return errdef.COMMENT_REPLY_FAIL, 0
 	}
 
-	// 更新视频总计（视频评论总数）
-	if err := svc.video.UpdateVideoCommentNum(video.VideoId, int(now), 1); err != nil {
-		log.Log.Errorf("comment_trace: update video comment num err:%s", err)
-		svc.engine.Rollback()
-		return errdef.COMMENT_PUBLISH_FAIL, 0
-	}
 
 	svc.engine.Commit()
-	// 视频回复推送
-	event.PushEventMsg(config.Global.AmqpDsn, replyInfo.UserId, user.NickName, video.Cover, replyInfo.Content, consts.VIDEO_REPLY_MSG)
+	// 视频/帖子 回复推送
+	event.PushEventMsg(config.Global.AmqpDsn, replyInfo.UserId, user.NickName, cover, replyInfo.Content, msgType)
 	return errdef.SUCCESS, svc.comment.Comment.Id
 }
 

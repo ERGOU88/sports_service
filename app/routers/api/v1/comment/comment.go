@@ -197,3 +197,41 @@ func CommentReport(c *gin.Context) {
 	syscode := svc.AddCommentReport(params)
 	reply.Response(http.StatusOK, syscode)
 }
+
+// @Summary 发布评论 (ok)
+// @Tags 评论模块
+// @Version 1.0
+// @Description
+// @Accept json
+// @Produce  json
+// @Param   AppId         header    string 	true  "AppId"
+// @Param   Secret        header    string 	true  "调用/api/v1/client/init接口 服务端下发的secret"
+// @Param   Timestamp     header    string 	true  "请求时间戳 单位：秒"
+// @Param   Sign          header    string 	true  "签名 md5签名32位值"
+// @Param   Version 	  header    string 	true  "版本" default(1.0.0)
+// @Param   PublishCommentParams  body mcomment.V2PubCommentParams true "发布评论请求参数"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"success","tm":"1588888888"}"
+// @Failure 500 {string} json "{"code":500,"data":{},"msg":"fail","tm":"1588888888"}"
+// @Router /api/v1/comment/publish [post]
+// 新版发布评论
+func V2PublishComment(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, ok := c.Get(consts.USER_ID)
+	if !ok || userId == "" {
+		log.Log.Error("comment_trace: need login")
+		reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
+		return
+	}
+
+	params := new(mcomment.V2PubCommentParams)
+	if err := c.BindJSON(params); err != nil {
+		log.Log.Errorf("comment_trace: publish comment params err:%s, params:%+v", err, params)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := comment.New(c)
+	syscode, commentId := svc.V2PublishComment(userId.(string), params)
+	reply.Data["comment_id"] = commentId
+	reply.Response(http.StatusOK, syscode)
+}
