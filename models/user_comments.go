@@ -13,5 +13,5 @@ type UserComments struct {
 	Status              int    `json:"status" xorm:"not null default 1 comment('状态 (1 有效，0 逻辑删除)') index TINYINT(2)"`
 	IsTop               int    `json:"is_top" xorm:"not null default 0 comment('置顶状态[ 1 置顶，0 不置顶 默认 ]') TINYINT(2)"`
 	CreateAt            int    `json:"create_at" xorm:"not null default 0 comment('创建时间') index INT(11)"`
-	CommentType         int    `json:"comment_type" xorm:"not null default 0 comment('评论类型 0 视频评论 1 帖子评论') index(comment_index) TINYINT(2)"`
+	CommentType         int    `json:"comment_type" xorm:"not null default 1 comment('评论类型 1 视频评论 2 帖子评论') index(comment_index) TINYINT(2)"`
 }

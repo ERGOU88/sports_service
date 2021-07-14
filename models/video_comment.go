@@ -3,9 +3,7 @@ package models
 type VideoComment struct {
 	Id                  int64  `json:"id" xorm:"pk autoincr comment('评论id') BIGINT(20)"`
 	UserId              string `json:"user_id" xorm:"not null comment('评论人userId') index VARCHAR(60)"`
-	UserName            string `json:"user_name" xorm:"not null default '' comment('评论人名称') VARCHAR(45)"`
-	Avatar              string `json:"avatar" xorm:"not null default '' comment('头像') VARCHAR(256)"`
-	VideoId             int64  `json:"video_id" xorm:"not null comment('视频id') index BIGINT(20)"`
+	ComposeId           int64  `json:"compose_id" xorm:"not null comment('视频id') index BIGINT(20)"`
 	ParentCommentId     int64  `json:"parent_comment_id" xorm:"not null default 0 comment('父评论id') index BIGINT(20)"`
 	ParentCommentUserId string `json:"parent_comment_user_id" xorm:"not null default '' comment('父评论的用户id') VARCHAR(60)"`
 	ReplyCommentId      int64  `json:"reply_comment_id" xorm:"not null default 0 comment('被回复的评论id') BIGINT(20)"`
@@ -15,4 +13,5 @@ type VideoComment struct {
 	Status              int    `json:"status" xorm:"not null default 1 comment('状态 (1 有效，0 逻辑删除)') TINYINT(2)"`
 	IsTop               int    `json:"is_top" xorm:"not null default 0 comment('置顶状态[ 1 置顶，0 不置顶 默认 ]') TINYINT(2)"`
 	CreateAt            int    `json:"create_at" xorm:"not null default 0 comment('创建时间') index INT(11)"`
+	CommentType         int    `json:"comment_type" xorm:"not null default 0 comment('创建时间') TINYINT(2)"`
 }

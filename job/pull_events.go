@@ -51,7 +51,7 @@ func pullEvents() error {
     // 上传事件
     case consts.EVENT_TYPE_UPLOAD:
       log.Log.Debugf("upload event:%+v", *event.FileUploadEvent)
-      if err := uploadEvent(event); err != nil {
+      if err := newUploadEvent(event); err != nil {
         log.Log.Errorf("job_trace: uploadEvent err:%s", err)
         continue
       }
@@ -420,6 +420,242 @@ func uploadEvent(event *v20180717.EventContent) error {
     session.Rollback()
     return errors.New("add video statistic fail")
   }
+
+  // 记录事件回调信息
+  vmodel.Events.FileId = int64(fileId)
+  vmodel.Events.CreateAt = int(now)
+  vmodel.Events.EventType = consts.EVENT_UPLOAD_TYPE
+  bts, _ = util.JsonFast.Marshal(event)
+  vmodel.Events.Event = string(bts)
+  affected, err = vmodel.RecordTencentEvent()
+  if err != nil || affected != 1 {
+    log.Log.Errorf("job_trace: record tencent event err:%s, affected:%d", err, affected)
+    session.Rollback()
+    return errors.New("record tencent event fail")
+  }
+
+  // 确认事件回调
+  if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+    log.Log.Errorf("job_trace: confirm events err:%s", err)
+    session.Rollback()
+    return errors.New("confirm event fail")
+  }
+
+  session.Commit()
+
+  // 删除存储发布信息的key
+  if _, err := vmodel.DelPublishInfo(userId, source.TaskId); err != nil {
+    log.Log.Errorf("job_trace: del publish info key err:%s", err)
+  }
+
+  return nil
+}
+
+// 新版上传事件处理 todo: 处理帖子关联逻辑
+func newUploadEvent(event *v20180717.EventContent) error {
+  session := dao.Engine.NewSession()
+  defer session.Close()
+  if err := session.Begin(); err != nil {
+    log.Log.Errorf("job_trace: session begin err:%s", err)
+    return err
+  }
+
+  bts, _ := util.JsonFast.Marshal(event.FileUploadEvent)
+  mp, err := util.JsonStringToMap(string(bts))
+  if err != nil {
+    log.Log.Errorf("job_trace: jsonStringToMap err:%s", err)
+    session.Rollback()
+    return err
+  }
+
+  if b := util.MapExist(mp, "MediaBasicInfo"); !b {
+    log.Log.Error("job_trace: MediaBasicInfo Not Exists")
+    session.Rollback()
+    return errors.New("MediaBasicInfo Not Exists")
+  }
+
+  client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
+  if event.FileUploadEvent.MediaBasicInfo.SourceInfo == nil {
+    log.Log.Error("job_trace: get source info fail")
+    session.Rollback()
+    return errors.New("get source info fail")
+  }
+
+  source := new(cloud.SourceContext)
+  if err := util.JsonFast.Unmarshal([]byte(*event.FileUploadEvent.MediaBasicInfo.SourceInfo.SourceContext), source); err != nil {
+    log.Log.Errorf("job_trace: jsonfast unmarshal event sourceContext err:%s", err)
+    session.Rollback()
+    return errors.New("jsonfast unmarshal event sourceContext err")
+  }
+
+  if source.UserId == "" || source.TaskId == 0 {
+    log.Log.Errorf("job_trace: invalid source info, source:%+v", source)
+    session.Rollback()
+    return errors.New("invalid source info")
+  }
+
+  // 当前时间 - 任务开始时间 >= 10分钟 结束任务
+  if time.Now().Unix() - source.Tm >= 10 * 60 {
+    log.Log.Errorf("job_trace: end job, source:%+v", source)
+    // 确认事件回调
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+      log.Log.Errorf("job_trace: confirm events err:%s", err)
+    }
+
+    session.Rollback()
+    return errors.New("end job")
+  }
+
+  // 修改封面 没有视频时长
+  if int(*event.FileUploadEvent.MetaData.VideoDuration) == 0 {
+    log.Log.Errorf("job_trace: invalid video duration, duration:%v", *event.FileUploadEvent.MetaData.VideoDuration)
+    // 确认事件回调
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+      log.Log.Errorf("job_trace: confirm events err:%s", err)
+    }
+
+    session.Rollback()
+    return errors.New("invalid video duration")
+  }
+
+  vmodel := mvideo.NewVideoModel(session)
+
+  // 通过任务id 获取 用户id
+  userId, err := vmodel.GetUploadUserIdByTaskId(source.TaskId)
+  if err != nil && err != redis.ErrNil {
+    log.Log.Errorf("job_trace: invalid taskId, taskId:%d", source.TaskId)
+    session.Rollback()
+    return errors.New("invalid taskId")
+  }
+
+  // userId 为空 表示该上传任务已过期（三天过期）
+  if userId == "" {
+    log.Log.Error("job_trace: user id not exists")
+    // 确认事件回调
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+      log.Log.Errorf("job_trace: confirm events err:%s", err)
+    }
+    session.Rollback()
+    return errors.New("user id not exists")
+  }
+
+  umodel := muser.NewUserModel(session)
+  // 查询用户是否存在
+  if user := umodel.FindUserByUserid(userId); user == nil {
+    log.Log.Errorf("job_trace: user not found, userId:%s", userId)
+    session.Rollback()
+    return errors.New("user not found")
+  }
+
+  // 是否为同一个用户
+  if strings.Compare(userId, source.UserId) != 0 {
+    log.Log.Errorf("job_trace: userId not match, eventUserId:%s, redis userId:%s", source.UserId, userId)
+    session.Rollback()
+    return errors.New("userId not match")
+  }
+
+  str, err := vmodel.GetPublishInfo(source.UserId, source.TaskId)
+  if err != nil || str == "" {
+    log.Log.Errorf("job_trace: get publish info err:%s", err)
+    // 确认事件回调
+    //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+    // log.Log.Errorf("job_trace: confirm events err:%s", err)
+    //}
+
+    session.Rollback()
+    return errors.New("get publish info fail")
+  }
+
+  infos := strings.Split(str, "_")
+  if len(infos) != 3 {
+    log.Log.Errorf("job_trace: get publish info err:%s", err)
+    session.Rollback()
+    return errors.New("get publish info fail")
+  }
+
+  videoId := infos[0]
+  vmodel.Videos = vmodel.FindVideoById(videoId)
+  if vmodel.Videos == nil {
+    log.Log.Errorf("job_trace: video not found, videoId:%s", videoId)
+    session.Rollback()
+    return errors.New("video not found")
+  }
+
+  // 获取用户发布的视频信息
+  pubInfo := new(mvideo.VideoPublishParams)
+  if err := util.JsonFast.Unmarshal([]byte(infos[1]), pubInfo); err != nil {
+    log.Log.Errorf("job_trace: jsonFast unmarshal err: %s", err)
+    session.Rollback()
+    return errors.New("jsonFast unmarshal err")
+  }
+
+  if pubInfo.TaskId != source.TaskId {
+    log.Log.Errorf("job_trace: task id not match, pub taskId:%d, source taskId:%d", pubInfo.TaskId, source.TaskId)
+    session.Rollback()
+    return errors.New("taskId not match")
+  }
+
+  // 数据更新 标签记录到 视频标签表（多条记录 同一个videoId对应N个labelId 生成N条记录）
+  now := time.Now().Unix()
+  vmodel.Videos.UserId = userId
+  vmodel.Videos.Cover = *event.FileUploadEvent.MediaBasicInfo.CoverUrl
+  if pubInfo.Cover != "" {
+    vmodel.Videos.Cover = pubInfo.Cover
+  }
+
+  vmodel.Videos.Title = pubInfo.Title
+  vmodel.Videos.Describe = pubInfo.Describe
+  vmodel.Videos.VideoAddr = pubInfo.VideoAddr
+  // 转为毫秒
+  vmodel.Videos.VideoDuration = int(*event.FileUploadEvent.MetaData.VideoDuration * 1000)
+  //vmodel.Videos.CreateAt = int(now)
+  vmodel.Videos.UpdateAt = int(now)
+  vmodel.Videos.UserType = consts.PUBLISH_VIDEO_BY_USER
+  vmodel.Videos.VideoWidth = *event.FileUploadEvent.MetaData.Width
+  vmodel.Videos.VideoHeight = *event.FileUploadEvent.MetaData.Height
+  // 单位：字节
+  vmodel.Videos.Size = *event.FileUploadEvent.MetaData.Size
+  fileId, _ := strconv.Atoi(*event.FileUploadEvent.FileId)
+  vmodel.Videos.FileId = int64(fileId)
+  //vmodel.Videos.Size = pubInfo.Size
+  // todo: 如果有 记录用户自定义标签
+
+  // 更新视频信息
+  affected, err := vmodel.UpdateVideoInfo()
+  if err != nil || affected != 1 {
+    log.Log.Errorf("job_trace: publish video err:%s, affected:%d", err, affected)
+    session.Rollback()
+    return errors.New("publish video fail")
+  }
+
+  lmodel := mlabel.NewLabelModel(session)
+  labelIds := strings.Split(pubInfo.VideoLabels, ",")
+  // 组装多条记录 写入视频标签表
+  labelInfos := make([]*models.VideoLabels, 0)
+  for _, labelId := range labelIds {
+    if lmodel.GetLabelInfoByMem(labelId) == nil {
+      log.Log.Errorf("job_trace: label not found, labelId:%s", labelId)
+      continue
+    }
+
+    info := new(models.VideoLabels)
+    info.VideoId = vmodel.Videos.VideoId
+    info.LabelId = labelId
+    info.LabelName = lmodel.GetLabelNameByMem(labelId)
+    info.CreateAt = int(now)
+    labelInfos = append(labelInfos, info)
+  }
+
+  if len(labelInfos) > 0 {
+    // 添加视频标签（多条）
+    affected, err = vmodel.AddVideoLabels(labelInfos)
+    if err != nil || int(affected) != len(labelInfos) {
+      log.Log.Errorf("job_trace: add video labels err:%s", err)
+      session.Rollback()
+      return errors.New("add video labels fail")
+    }
+  }
+
 
   // 记录事件回调信息
   vmodel.Events.FileId = int64(fileId)

@@ -13,7 +13,7 @@ func Router(engine *gin.Engine) {
 	{
 		// 发布评论
 		comment.POST("/publish", sign.CheckSign(), token.TokenAuth(), PublishComment)
-
+        // 发布评论v2
 		comment.POST("/publish/v2", sign.CheckSign(), token.TokenAuth(), V2PublishComment)
 		// 回复评论
 		comment.POST("/reply", sign.CheckSign(), token.TokenAuth(), PublishReply)

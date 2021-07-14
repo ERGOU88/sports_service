@@ -52,13 +52,6 @@ func VideoPublish(c *gin.Context) {
 	log.Log.Errorf("##### publish video params:%+v", params)
 
 	svc := cvideo.New(c)
-	// 用户发布视频
-	//if err := svc.UserPublishVideo(userId.(string), params); err != nil {
-	//	log.Log.Errorf("video_trace: video publish failed, err:%s", err)
-	//	reply.Response(http.StatusOK, errdef.VIDEO_PUBLISH_FAIL)
-	//	return
-	//}
-
 	// 修改逻辑 用户发布视频 先记录到缓存
 	syscode := svc.RecordPubVideoInfo(userId.(string), params)
 	log.Log.Errorf("##### publish video syscode:%d", syscode)

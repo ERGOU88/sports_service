@@ -41,6 +41,7 @@ type VideoPublishParams struct {
 	VideoLabels    string  `binding:"required" json:"video_labels"`   // 视频标签id（多个用逗号分隔）
 	Size           int64   `json:"size"`                              // 视频字节数
 	CustomLabels   string  `json:"custom_labels"`                     // 字符串（多个用逗号分隔）
+	PubType        int     `json:"pub_type"`                          // 发布类型 1 首页发布 2 社区发布
 }
 
 // 视频信息
@@ -894,5 +895,8 @@ func (m *VideoModel) UpdateUserPlayDurationRecord() error {
 	return nil
 }
 
-
+// 更新视频信息
+func (m *VideoModel) UpdateVideoInfo() (int64, error) {
+	return m.Engine.ID(m.Videos.VideoId).Update(m.Videos)
+}
 

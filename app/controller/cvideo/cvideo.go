@@ -58,16 +58,24 @@ func New(c *gin.Context) VideoModule {
 
 // 记录用户发布的视频信息(先放入缓存 接收到腾讯云回调事件 再写库）
 func (svc *VideoModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPublishParams) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("video_trace: session begin err:%s", err)
+		return errdef.VIDEO_PUBLISH_FAIL
+	}
+
 	// 通过任务id获取用户id 是否为同一个用户
 	uid, err := svc.video.GetUploadUserIdByTaskId(params.TaskId)
 	if err != nil || strings.Compare(uid, userId) != 0 {
 		log.Log.Errorf("video_trace: user not match, cur userId:%s, uid:%s", userId, uid)
+		svc.engine.Rollback()
 		return errdef.VIDEO_PUBLISH_FAIL
 	}
 
 	// 查询用户是否存在
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
 		return errdef.USER_NOT_EXISTS
 	}
 
@@ -96,32 +104,43 @@ func (svc *VideoModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPu
 	//}
 	//}
 
-	info, _ := util.JsonFast.Marshal(params)
-	// 先记录到缓存
-	if err := svc.video.RecordPublishInfo(userId, string(info), params.TaskId); err != nil {
-		log.Log.Errorf("video_trace: record publish info by redis err:%s", err)
+	// 用户发布视频
+	if err := svc.UserPublishVideo(userId, params); err != nil {
+		log.Log.Errorf("video_trace: video publish failed, err:%s", err)
+		svc.engine.Rollback()
 		return errdef.VIDEO_PUBLISH_FAIL
 	}
+
+	info, _ := util.JsonFast.Marshal(params)
+
+	// 记录到缓存 数据规则为 {videoId_info}
+	if err := svc.video.RecordPublishInfo(userId, svc.genVideoTag(svc.video.Videos.VideoId, string(info), svc.video.Videos.PubType), params.TaskId); err != nil {
+		log.Log.Errorf("video_trace: record publish info by redis err:%s", err)
+		svc.engine.Rollback()
+		return errdef.VIDEO_PUBLISH_FAIL
+	}
+
+	svc.engine.Commit()
 
 	return errdef.SUCCESS
 }
 
+// 生成视频信息标签
+func (svc *VideoModule) genVideoTag(videoId int64, info string, pubType int) string {
+	return fmt.Sprintf("%d_%s_%d",videoId, info, pubType)
+}
+
 // 用户发布视频
 // 事务处理
-// 数据记录到视频审核表 同时 标签记录到 视频标签表（多条记录 同一个videoId对应N个labelId 生成N条记录）
+// 标签记录到 视频标签表（多条记录 同一个videoId对应N个labelId 生成N条记录）
 func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPublishParams) error {
-	// 开启事务
-	if err := svc.engine.Begin(); err != nil {
-		log.Log.Errorf("video_trace: session begin err:%s", err)
-		return err
-	}
 
 	// 查询用户是否存在
-	if user := svc.user.FindUserByUserid(userId); user == nil {
-		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
-		svc.engine.Rollback()
-		return errors.New("user not found")
-	}
+	//if user := svc.user.FindUserByUserid(userId); user == nil {
+	//	log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+	//	svc.engine.Rollback()
+	//	return errors.New("user not found")
+	//}
 
 	now := time.Now().Unix()
 	svc.video.Videos.UserId = userId
@@ -137,12 +156,14 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	svc.video.Videos.VideoHeight = params.VideoHeight
 	fileId, _ := strconv.Atoi(params.FileId)
 	svc.video.Videos.FileId = int64(fileId)
+	if params.PubType > 0 {
+		svc.video.Videos.PubType = params.PubType
+	}
 
 	// 视频发布
 	affected, err := svc.video.VideoPublish()
 	if err != nil || affected != 1 {
 		log.Log.Errorf("video_trace: publish video err:%s, affected:%d", err, affected)
-		svc.engine.Rollback()
 		return err
 	}
 
@@ -167,7 +188,6 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 		// 添加视频标签（多条）
 		affected, err = svc.video.AddVideoLabels(labelInfos)
 		if err != nil || int(affected) != len(labelInfos) {
-			svc.engine.Rollback()
 			log.Log.Errorf("video_trace: add video labels err:%s", err)
 			return errors.New("add video labels error")
 		}
@@ -179,11 +199,9 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	// 初始化视频统计数据
 	if err := svc.video.AddVideoStatistic(); err != nil {
 		log.Log.Errorf("video_trace: add video statistic err:%s", err)
-		svc.engine.Rollback()
 		return err
 	}
 
-	svc.engine.Commit()
 	return nil
 }
 
