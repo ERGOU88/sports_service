@@ -9,10 +9,11 @@ import (
 )
 
 type CommentModel struct {
-	Engine      *xorm.Session
-	Comment     *models.VideoComment
-	ReceiveAt   *models.ReceivedAt
-	Report      *models.CommentReport
+	Engine       *xorm.Session
+	VideoComment *models.VideoComment
+	ReceiveAt    *models.ReceivedAt
+	Report       *models.CommentReport
+	PostComment  *models.PostingComment
 }
 
 // 视频评论列表
@@ -117,16 +118,25 @@ type CommentReportParam struct {
 // 实栗
 func NewCommentModel(engine *xorm.Session) *CommentModel {
 	return &CommentModel{
-		Engine:  engine,
-		Comment: new(models.VideoComment),
-		ReceiveAt: new(models.ReceivedAt),
-		Report: new(models.CommentReport),
+		Engine:       engine,
+		VideoComment: new(models.VideoComment),
+		ReceiveAt:    new(models.ReceivedAt),
+		Report:       new(models.CommentReport),
 	}
 }
 
 // 添加视频评论(包含回复评论)
 func (m *CommentModel) AddComment() error {
-	if _, err := m.Engine.InsertOne(m.Comment); err != nil {
+	if _, err := m.Engine.InsertOne(m.VideoComment); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 添加帖子评论
+func (m *CommentModel) AddPostComment() error {
+	if _, err := m.Engine.InsertOne(m.PostComment); err != nil {
 		return err
 	}
 
@@ -354,5 +364,5 @@ func (m *CommentModel) AddCommentReport() (int64, error) {
 
 // 更新评论/回复 信息
 func (m *CommentModel) UpdateCommentInfo(condition, cols string) (int64, error) {
-	return m.Engine.Where(condition).Cols(cols).Update(m.Comment)
+	return m.Engine.Where(condition).Cols(cols).Update(m.VideoComment)
 }

@@ -8,6 +8,7 @@ import (
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
+	"sports_service/server/models/mposting"
 	"sports_service/server/rabbitmq/event"
 	"sports_service/server/app/config"
 	"sports_service/server/models/mattention"
@@ -30,6 +31,7 @@ type CommentModule struct {
 	video       *mvideo.VideoModel
 	like        *mlike.LikeModel
 	attention   *mattention.AttentionModel
+	post        *mposting.PostingModel
 }
 
 func New(c *gin.Context) CommentModule {
@@ -42,6 +44,7 @@ func New(c *gin.Context) CommentModule {
 		video: mvideo.NewVideoModel(socket),
 		like: mlike.NewLikeModel(socket),
 		attention: mattention.NewAttentionModel(socket),
+		post: mposting.NewPostingModel(socket),
 		engine: socket,
 	}
 }
@@ -81,30 +84,30 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	}
 
 	now := time.Now().Unix()
-	svc.comment.Comment.UserId = userId
-	svc.comment.Comment.Content = params.Content
-	svc.comment.Comment.CommentLevel = consts.COMMENT_PUBLISH
-	//svc.comment.Comment.Avatar = user.Avatar
-	//svc.comment.Comment.UserName = user.NickName
-	svc.comment.Comment.CreateAt = int(now)
-	svc.comment.Comment.ParentCommentId = 0
-	svc.comment.Comment.VideoId = params.ComposeId
-	svc.comment.Comment.Status = 1
-	// 添加评论
-	if err := svc.comment.AddComment(); err != nil {
-		log.Log.Errorf("comment_trace: add comment err:%s", err)
-		svc.engine.Rollback()
-		return errdef.COMMENT_PUBLISH_FAIL, 0
-	}
-
 	var (
-		cover string
+		cover, toUserId string
 		msgType int32
-		toUserId string
+		commentId int64
 	)
 	switch params.CommentType {
 	// 视频评论
 	case consts.COMMENT_TYPE_VIDEO:
+		svc.comment.VideoComment.UserId = userId
+		svc.comment.VideoComment.Content = params.Content
+		svc.comment.VideoComment.CommentLevel = consts.COMMENT_PUBLISH
+		//svc.comment.VideoComment.Avatar = user.Avatar
+		//svc.comment.VideoComment.UserName = user.NickName
+		svc.comment.VideoComment.CreateAt = int(now)
+		svc.comment.VideoComment.ParentCommentId = 0
+		svc.comment.VideoComment.VideoId = params.ComposeId
+		svc.comment.VideoComment.Status = 1
+		// 添加评论
+		if err := svc.comment.AddComment(); err != nil {
+			log.Log.Errorf("comment_trace: add comment err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COMMENT_PUBLISH_FAIL, 0
+		}
+
 		// 查找视频是否存在
 		video := svc.video.FindVideoById(fmt.Sprint(params.ComposeId))
 		if video == nil  {
@@ -131,18 +134,57 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		cover = video.Cover
 		msgType = consts.VIDEO_COMMENT_MSG
 		toUserId = video.UserId
+		commentId = svc.comment.VideoComment.Id
 
 	// 帖子评论
 	case consts.COMMENT_TYPE_POST:
-		// todo: 查询帖子是否存在 封面待确认？？
+		svc.comment.PostComment.UserId = userId
+		svc.comment.PostComment.Content = params.Content
+		svc.comment.PostComment.CommentLevel = consts.COMMENT_PUBLISH
+		svc.comment.PostComment.CreateAt = int(now)
+		svc.comment.PostComment.ParentCommentId = 0
+		svc.comment.PostComment.PostId = params.ComposeId
+		svc.comment.PostComment.Status = 1
+		// 添加评论
+		if err := svc.comment.AddPostComment(); err != nil {
+			log.Log.Errorf("comment_trace: add comment err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COMMENT_PUBLISH_FAIL, 0
+		}
+
+		// 查找帖子是否存在
+		post, err := svc.post.GetPostById(fmt.Sprint(params.ComposeId))
+		if post == nil || err != nil {
+			log.Log.Errorf("comment_trace: post not found, postId:%d", params.ComposeId)
+			svc.engine.Rollback()
+			return errdef.POST_NOT_EXISTS, 0
+		}
+
+
+		// 状态 != 1 (1为帖子审核成功)
+		if fmt.Sprint(post.Status) != consts.POST_AUDIT_SUCCESS {
+			log.Log.Errorf("comment_trace: post status not audit success, postId:%d", params.ComposeId)
+			svc.engine.Rollback()
+			return errdef.VIDEO_NOT_EXISTS, 0
+		}
+
+		// 更新帖子总计（帖子评论总数）
+		if err := svc.post.UpdatePostCommentNum(params.ComposeId, int(now), 1); err != nil {
+			log.Log.Errorf("comment_trace: update post comment num err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COMMENT_PUBLISH_FAIL, 0
+		}
+
 		svc.comment.ReceiveAt.TopicType = consts.TYPE_POST_COMMENT
 		msgType = consts.POST_COMMENT_MSG
+		toUserId = post.UserId
+		commentId = svc.comment.PostComment.Id
 	}
 
 	svc.comment.ReceiveAt.UserId = userId
 	// 被@的用户 1级评论 则@的是视频up主 / 帖子发布者
 	svc.comment.ReceiveAt.ToUserId = toUserId
-	svc.comment.ReceiveAt.CommentId = svc.comment.Comment.Id
+	svc.comment.ReceiveAt.CommentId = commentId
 	svc.comment.ReceiveAt.TopicType = consts.TYPE_VIDEO_COMMENT
 	svc.comment.ReceiveAt.CreateAt = int(now)
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_PUBLISH
@@ -158,7 +200,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	// 视频/帖子 评论推送
 	event.PushEventMsg(config.Global.AmqpDsn, toUserId, user.NickName, cover, params.Content, msgType)
 
-	return errdef.SUCCESS, svc.comment.Comment.Id
+	return errdef.SUCCESS, svc.comment.VideoComment.Id
 }
 
 // 发布评论
@@ -211,15 +253,15 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	}
 
 	now := time.Now().Unix()
-	svc.comment.Comment.UserId = userId
-	svc.comment.Comment.Content = params.Content
-	svc.comment.Comment.CommentLevel = consts.COMMENT_PUBLISH
-	//svc.comment.Comment.Avatar = user.Avatar
-	//svc.comment.Comment.UserName = user.NickName
-	svc.comment.Comment.CreateAt = int(now)
-	svc.comment.Comment.ParentCommentId = 0
-	svc.comment.Comment.VideoId = params.VideoId
-	svc.comment.Comment.Status = 1
+	svc.comment.VideoComment.UserId = userId
+	svc.comment.VideoComment.Content = params.Content
+	svc.comment.VideoComment.CommentLevel = consts.COMMENT_PUBLISH
+	//svc.comment.VideoComment.Avatar = user.Avatar
+	//svc.comment.VideoComment.UserName = user.NickName
+	svc.comment.VideoComment.CreateAt = int(now)
+	svc.comment.VideoComment.ParentCommentId = 0
+	svc.comment.VideoComment.VideoId = params.VideoId
+	svc.comment.VideoComment.Status = 1
 	// 添加评论
 	if err := svc.comment.AddComment(); err != nil {
 		log.Log.Errorf("comment_trace: add comment err:%s", err)
@@ -230,7 +272,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	svc.comment.ReceiveAt.UserId = userId
 	// 被@的用户 1级评论 则@的是视频up主
 	svc.comment.ReceiveAt.ToUserId = video.UserId
-	svc.comment.ReceiveAt.CommentId = svc.comment.Comment.Id
+	svc.comment.ReceiveAt.CommentId = svc.comment.VideoComment.Id
 	svc.comment.ReceiveAt.TopicType = consts.TYPE_VIDEO_COMMENT
 	svc.comment.ReceiveAt.CreateAt = int(now)
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_PUBLISH
@@ -253,7 +295,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	// 视频评论推送
 	event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, params.Content, consts.VIDEO_COMMENT_MSG)
 
-	return errdef.SUCCESS, svc.comment.Comment.Id
+	return errdef.SUCCESS, svc.comment.VideoComment.Id
 }
 
 // 回复评论
@@ -329,24 +371,24 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			return errdef.VIDEO_NOT_EXISTS, 0
 		}
 
-		svc.comment.Comment.UserId = userId
-		svc.comment.Comment.Content = params.Content
-		//svc.comment.Comment.Avatar = user.Avatar
-		//svc.comment.Comment.UserName = user.NickName
-		svc.comment.Comment.CreateAt = int(now)
-		svc.comment.Comment.VideoId = replyInfo.VideoId
-		svc.comment.Comment.CommentLevel = consts.COMMENT_REPLY
-		svc.comment.Comment.Status = 1
-		//svc.comment.Comment.CommentType = replyInfo.CommentType
+		svc.comment.VideoComment.UserId = userId
+		svc.comment.VideoComment.Content = params.Content
+		//svc.comment.VideoComment.Avatar = user.Avatar
+		//svc.comment.VideoComment.UserName = user.NickName
+		svc.comment.VideoComment.CreateAt = int(now)
+		svc.comment.VideoComment.VideoId = replyInfo.VideoId
+		svc.comment.VideoComment.CommentLevel = consts.COMMENT_REPLY
+		svc.comment.VideoComment.Status = 1
+		//svc.comment.VideoComment.CommentType = replyInfo.CommentType
 
-		svc.comment.Comment.ReplyCommentUserId = replyInfo.UserId
-		svc.comment.Comment.ReplyCommentId = replyInfo.Id
-		svc.comment.Comment.ParentCommentUserId = replyInfo.ParentCommentUserId
-		svc.comment.Comment.ParentCommentId = replyInfo.ParentCommentId
+		svc.comment.VideoComment.ReplyCommentUserId = replyInfo.UserId
+		svc.comment.VideoComment.ReplyCommentId = replyInfo.Id
+		svc.comment.VideoComment.ParentCommentUserId = replyInfo.ParentCommentUserId
+		svc.comment.VideoComment.ParentCommentId = replyInfo.ParentCommentId
 		// 1级评论 parentid为0 如果被回复的评论 parentid 为0，说明当前回复的是1级评论 否则 回复的为2级评论
 		if replyInfo.ParentCommentId == 0 {
-			svc.comment.Comment.ParentCommentId = replyInfo.Id
-			svc.comment.Comment.ParentCommentUserId = replyInfo.UserId
+			svc.comment.VideoComment.ParentCommentId = replyInfo.Id
+			svc.comment.VideoComment.ParentCommentUserId = replyInfo.UserId
 		}
 
 		if err := svc.comment.AddComment(); err != nil {
@@ -376,7 +418,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	svc.comment.ReceiveAt.UserId = userId
 	// 被@的用户
 	svc.comment.ReceiveAt.ToUserId = replyInfo.UserId
-	svc.comment.ReceiveAt.CommentId = svc.comment.Comment.Id
+	svc.comment.ReceiveAt.CommentId = svc.comment.VideoComment.Id
 	svc.comment.ReceiveAt.CreateAt = now
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_REPLY
 	// 回复 记录到 @
@@ -390,7 +432,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	svc.engine.Commit()
 	// 视频/帖子 回复推送
 	event.PushEventMsg(config.Global.AmqpDsn, replyInfo.UserId, user.NickName, cover, replyInfo.Content, msgType)
-	return errdef.SUCCESS, svc.comment.Comment.Id
+	return errdef.SUCCESS, svc.comment.VideoComment.Id
 }
 
 func (svc *CommentModule) CheckComposeInfo(composeId string, commentType int) (int, int) {
