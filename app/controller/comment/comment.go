@@ -331,13 +331,6 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		return errdef.USER_NOT_EXISTS, 0
 	}
 
-	// 查询被回复的评论是否存在
-	replyInfo := svc.comment.GetCommentById(params.ReplyId)
-	if replyInfo == nil {
-		log.Log.Error("comment_trace: reply comment not found, commentId:%s", params.ReplyId)
-		svc.engine.Rollback()
-		return errdef.COMMENT_NOT_FOUND, 0
-	}
 	// todo: 用户是否能回复自己？
 	//if strings.Compare(userId, replyInfo.UserId) != -1 {
 	//
@@ -349,13 +342,21 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	}
 
 	var (
-		cover string
+		cover, toUserId, content string
 		msgType int32
 	)
 	now := int(time.Now().Unix())
 	switch params.CommentType {
 	// 视频评论
 	case consts.COMMENT_TYPE_VIDEO:
+		// 查询被回复的评论是否存在
+		replyInfo := svc.comment.GetCommentById(params.ReplyId)
+		if replyInfo == nil {
+			log.Log.Error("comment_trace: reply comment not found, commentId:%s", params.ReplyId)
+			svc.engine.Rollback()
+			return errdef.COMMENT_NOT_FOUND, 0
+		}
+
 		// 查找视频是否存在
 		video := svc.video.FindVideoById(fmt.Sprint(replyInfo.VideoId))
 		if video == nil  {
@@ -407,17 +408,36 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		svc.comment.ReceiveAt.TopicType = consts.TYPE_VIDEO_COMMENT
 		cover = video.Cover
 		msgType = consts.VIDEO_REPLY_MSG
+		toUserId = replyInfo.UserId
+		content = replyInfo.Content
 
 	// 帖子评论
 	case consts.COMMENT_TYPE_POST:
+		// 查询被回复的评论是否存在
+		replyInfo := svc.comment.GetPostCommentById(params.ReplyId)
+		if replyInfo == nil {
+			log.Log.Error("comment_trace: reply comment not found, commentId:%s", params.ReplyId)
+			svc.engine.Rollback()
+			return errdef.COMMENT_NOT_FOUND, 0
+		}
+
 		// todo: 查询帖子是否存在 封面待确认？？
+		post, err := svc.post.GetPostById(fmt.Sprint(replyInfo.PostId))
+		if post == nil || err != nil {
+			log.Log.Errorf("comment_trace: post not found, postId:%d", replyInfo.PostId)
+			svc.engine.Rollback()
+			return errdef.POST_NOT_EXISTS, 0
+		}
+
 		svc.comment.ReceiveAt.TopicType = consts.TYPE_POST_COMMENT
 		msgType = consts.POST_REPLY_MSG
+		toUserId = replyInfo.UserId
+		content = replyInfo.Content
 	}
 
 	svc.comment.ReceiveAt.UserId = userId
 	// 被@的用户
-	svc.comment.ReceiveAt.ToUserId = replyInfo.UserId
+	svc.comment.ReceiveAt.ToUserId = toUserId
 	svc.comment.ReceiveAt.CommentId = svc.comment.VideoComment.Id
 	svc.comment.ReceiveAt.CreateAt = now
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_REPLY
@@ -431,7 +451,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 
 	svc.engine.Commit()
 	// 视频/帖子 回复推送
-	event.PushEventMsg(config.Global.AmqpDsn, replyInfo.UserId, user.NickName, cover, replyInfo.Content, msgType)
+	event.PushEventMsg(config.Global.AmqpDsn, toUserId, user.NickName, cover, content, msgType)
 	return errdef.SUCCESS, svc.comment.VideoComment.Id
 }
 

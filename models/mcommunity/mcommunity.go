@@ -44,8 +44,8 @@ func (m *CommunityModel) GetTopicInfo(id int) (*models.CommunityTopic, error) {
 }
 
 // 获取多个社区话题信息
-func (m *CommunityModel) GetTopicByIds(ids string) ([]*models.PostingTopic, error) {
-	var list []*models.PostingTopic
+func (m *CommunityModel) GetTopicByIds(ids []string) ([]*models.CommunityTopic, error) {
+	var list []*models.CommunityTopic
 	if err := m.Engine.In("id", ids).Find(&list); err != nil {
 		return nil, err
 	}

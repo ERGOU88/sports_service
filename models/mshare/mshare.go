@@ -46,7 +46,7 @@ type SharePostInfo struct {
 	PostId        int64                       `json:"post_id"`                // 转发的帖子id
 	PostingType   int                         `json:"posting_type"`           // 帖子类型  0 纯文本 1 图文 2 视频 + 文
 	ContentType   int                         `json:"content_type"`           // 0 社区发布 1 转发视频 2 转发帖子
-	Topics        []*models.PostingTopic      `json:"topic_names"`            // 话题
+	Topics        []*models.CommunityTopic    `json:"topic_names"`            // 话题
 	Title         string                      `json:"title"`                  // 标题
 	Describe      string                      `json:"describe"`               // 描述
 	Content       string                      `json:"content"`                // 暂时使用不到

@@ -14,8 +14,8 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	"fmt"
+	cloud "sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
-	"strings"
 	"time"
 )
 
@@ -58,6 +58,21 @@ func (svc *ShareModule) ShareData(userId string, params *mshare.ShareParams) int
 
 	// 分享到社区 则需发布一条新帖子
 	case consts.SHARE_PLATFORM_COMMUNITY:
+		client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+		// 检测帖子标题
+		isPass, err := client.TextModeration(params.Title)
+		if !isPass || err != nil {
+			log.Log.Errorf("share_trace: validate title err: %s，pass: %v", err, isPass)
+			return errdef.POST_INVALID_TITLE
+		}
+
+		// 检测帖子内容
+		isPass, err = client.TextModeration(params.Describe)
+		if !isPass || err != nil {
+			log.Log.Errorf("share_trace: validate content err: %s，pass: %v", err, isPass)
+			return errdef.POST_INVALID_CONTENT
+		}
+
 		user := svc.user.FindUserByUserid(userId)
 		if user == nil {
 			log.Log.Errorf("share_trace: user not found, userId:%s", userId)
@@ -74,7 +89,7 @@ func (svc *ShareModule) ShareData(userId string, params *mshare.ShareParams) int
 
 
 		// 获取话题信息（多个）
-		topics, err := svc.community.GetTopicByIds(strings.Join(params.TopicIds, ","))
+		topics, err := svc.community.GetTopicByIds(params.TopicIds)
 		if len(params.TopicIds) != len(topics) {
 			log.Log.Errorf("share_trace: topic not found, topic_ids:%v, topics:%+v", params.TopicIds, topics)
 			svc.engine.Rollback()
@@ -160,6 +175,8 @@ func (svc *ShareModule) ShareData(userId string, params *mshare.ShareParams) int
 			svc.posting.Posting.PostingType = consts.POST_TYPE_TEXT
 		}
 
+
+		svc.posting.Posting.Id = 0
 		svc.posting.Posting.SectionId = section.Id
 		svc.posting.Posting.UserId = userId
 		svc.posting.Posting.CreateAt = now
@@ -167,16 +184,23 @@ func (svc *ShareModule) ShareData(userId string, params *mshare.ShareParams) int
 		svc.posting.Posting.Title = params.Title
 		svc.posting.Posting.CreateAt = now
 		svc.posting.Posting.UpdateAt = now
+		svc.posting.Posting.Status = 1
+		if _, err := svc.posting.AddPost(); err != nil {
+			svc.engine.Rollback()
+			log.Log.Errorf("share_trace: add post fail, err:%s", err)
+			return errdef.SHARE_DATA_FAIL
+		}
+
 		// 组装多条记录 写入帖子话题表
 		topicInfos := make([]*models.PostingTopic, len(topics))
-		for _, val := range topics {
+		for key, val := range topics {
 			info := new(models.PostingTopic)
-			info.TopicId = val.TopicId
+			info.TopicId = val.Id
 			info.TopicName = val.TopicName
 			info.CreateAt = now
 			info.PostingId = svc.posting.Posting.Id
 			info.Status = 1
-			topicInfos = append(topicInfos, info)
+			topicInfos[key] = info
 		}
 
 		if len(topicInfos) > 0 {
@@ -189,9 +213,12 @@ func (svc *ShareModule) ShareData(userId string, params *mshare.ShareParams) int
 			}
 		}
 
-		if _, err := svc.posting.AddPost(); err != nil {
-			svc.engine.Rollback()
-			log.Log.Errorf("share_trace: add post fail, err:%s", err)
+		svc.posting.Statistic.PostingId = svc.posting.Posting.Id
+		svc.posting.Statistic.CreateAt = now
+		svc.posting.Statistic.UpdateAt = now
+		// 初始化帖子统计数据
+		if err := svc.posting.AddPostStatistic(); err != nil {
+			log.Log.Errorf("share_trace: add post statistic err:%s", err)
 			return errdef.SHARE_DATA_FAIL
 		}
 

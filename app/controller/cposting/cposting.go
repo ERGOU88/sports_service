@@ -14,7 +14,6 @@ import (
 	"sports_service/server/models/mvideo"
 	cloud "sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
-	"strings"
 	"time"
 	"github.com/microcosm-cc/bluemonday"
 	"fmt"
@@ -87,7 +86,7 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 	}
 
 	// 获取话题信息（多个）
-	topics, err := svc.community.GetTopicByIds(strings.Join(params.TopicIds, ","))
+	topics, err := svc.community.GetTopicByIds(params.TopicIds)
 	if len(params.TopicIds) != len(topics) {
 		log.Log.Errorf("post_trace: topic not found, topic_ids:%v, topics:%+v", params.TopicIds, topics)
 		svc.engine.Rollback()
@@ -111,6 +110,7 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 	svc.posting.Posting.CreateAt = now
 	svc.posting.Posting.UpdateAt = now
 	svc.posting.Posting.SectionId = section.Id
+	svc.posting.Posting.UserId = userId
 	if len(params.ImagesAddr) > 0 {
 		bts, _ := util.JsonFast.Marshal(params.ImagesAddr)
 		svc.posting.Posting.Content = string(bts)
@@ -124,14 +124,14 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 
 	// 组装多条记录 写入帖子话题表
 	topicInfos := make([]*models.PostingTopic, len(topics))
-	for _, val := range topics {
+	for key, val := range topics {
 		info := new(models.PostingTopic)
-		info.TopicId = val.TopicId
+		info.TopicId = val.Id
 		info.TopicName = val.TopicName
 		info.CreateAt = now
 		info.PostingId = svc.posting.Posting.Id
 		info.Status = 1
-		topicInfos = append(topicInfos, info)
+		topicInfos[key] = info
 	}
 
 	if len(topicInfos) > 0 {
@@ -144,6 +144,15 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		}
 	}
 
+	svc.posting.Statistic.PostingId = svc.posting.Posting.Id
+	svc.posting.Statistic.CreateAt = now
+	svc.posting.Statistic.UpdateAt = now
+	// 初始化帖子统计数据
+	if err := svc.posting.AddPostStatistic(); err != nil {
+		log.Log.Errorf("post_trace: add post statistic err:%s", err)
+		return errdef.POST_PUBLISH_FAIL
+	}
+
 
 	svc.engine.Commit()
 
@@ -152,11 +161,11 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 
 // 获取帖子类型 todo: 常量
 func (svc *PostingModule) GetPostingType(params *mposting.PostPublishParam) (postType int) {
-	if params.Describe != "" && params.VideoId != "" {
-		// 视频 + 文字
-		postType = consts.POST_TYPE_VIDEO
-		return
-	}
+	//if params.Describe != "" && params.VideoId != "" {
+	//	// 视频 + 文字
+	//	postType = consts.POST_TYPE_VIDEO
+	//	return
+	//}
 
 	if params.Describe != "" && len(params.ImagesAddr) > 0 {
 		// 图文
@@ -232,6 +241,8 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 	resp.IsTop = post.IsTop
 	resp.CreateAt = post.CreateAt
 	resp.UserId = post.UserId
+	resp.ContentType = post.ContentType
+	resp.PostingType = post.PostingType
 	resp.Topics, err = svc.posting.GetPostTopic(postId)
 	if resp.Topics == nil || err != nil  {
 		resp.Topics = []*models.PostingTopic{}
@@ -249,19 +260,22 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 	}
 
 	// 如果是转发的视频数据
-	if resp.PostingType == consts.POST_TYPE_VIDEO && resp.ContentType == consts.COMMUNITY_FORWARD_VIDEO {
-		if err = util.JsonFast.UnmarshalFromString(post.Content, resp.ForwardVideo); err != nil {
+	if resp.ContentType == consts.COMMUNITY_FORWARD_VIDEO {
+		if err = util.JsonFast.UnmarshalFromString(post.Content, &resp.ForwardVideo); err != nil {
 			log.Log.Errorf("post_trace: get forward video info err:%s", err)
 			return nil, errdef.POST_DETAIL_FAIL
 		}
+
 	}
 
 	// 如果是转发的帖子
 	if resp.PostingType == consts.POST_TYPE_TEXT && resp.ContentType == consts.COMMUNITY_FORWARD_POST {
-		if err = util.JsonFast.UnmarshalFromString(post.Content, resp.ForwardPost); err != nil {
+		if err = util.JsonFast.UnmarshalFromString(post.Content, &resp.ForwardPost); err != nil {
 			log.Log.Errorf("post_trace: get forward post info err:%s", err)
 			return nil, errdef.POST_DETAIL_FAIL
 		}
+
+
 	}
 
 	if userId == "" {

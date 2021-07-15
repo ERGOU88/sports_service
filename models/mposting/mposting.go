@@ -20,7 +20,7 @@ type PostPublishParam struct {
 	Title             string              `json:"title"`                              // 标题
 	Describe          string              `binding:"required" json:"describe"`                           // 富文本内容
 	//ForwardVideo      *ForwardVideoInfo   `json:"forward_video"`                      // 转发的视频内容 todo: 结构体
-	VideoId           string              `json:"video_id"`                           // 关联的视频id
+	//VideoId           string              `json:"video_id"`                           // 关联的视频id
 	//PostingType    int        `json:"posting_type" binding:"required"`  // 帖子类型  0 纯文本 1 图文 2 视频 + 文
 	ImagesAddr        []string            `json:"images_addr"`                        // 图片地址
 	SectionId         int                 `json:"section_id"`                         // 主模块id
@@ -82,7 +82,6 @@ type PostDetailInfo struct {
 	Nickname      string                 `json:"nick_name"  example:"昵称"`             // 昵称
 	IsAttention   int                    `json:"is_attention" example:"1"`             // 是否关注 1 关注 0 未关注
 	IsLike        int                    `json:"is_like" example:"1"`                  // 是否点赞
-	FansNum       int64                  `json:"fans_num" example:"100"`               // 粉丝数
 	Topics        []*models.PostingTopic `json:"topics"`                               // 所属话题
 	ForwardVideo  *mshare.ShareVideoInfo `json:"forward_video,omitempty"`              // 转发的视频内容 todo: 结构体
 	ForwardPost   *mshare.SharePostInfo  `json:"forward_post,omitempty"`               // 转发的帖子内容
@@ -115,7 +114,7 @@ func (m *PostingModel) GetPostById(id string) (*models.PostingInfo, error) {
 // 获取帖子所属话题 [1对多]
 func (m *PostingModel) GetPostTopic(postId string) ([]*models.PostingTopic, error) {
 	var list []*models.PostingTopic
-	if err := m.Engine.Where("posting_id=?", postId).Asc("id").Find(&list); err != nil {
+	if err := m.Engine.Where("posting_id=?", postId).Asc("create_at").Find(&list); err != nil {
 		return nil, err
 	}
 
@@ -202,6 +201,15 @@ func (m *PostingModel) RecordUserBrowsePost() error {
 // 之前有浏览记录 更新浏览时间
 func (m *PostingModel) UpdateUserBrowsePost(userId string,  composeType int, composeId int64) error {
 	if _, err := m.Engine.Where("user_id=? AND compose_id=? AND compose_type=?", userId, composeId, composeType).Cols("create_at, update_at").Update(m.Browse); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 添加帖子统计数据
+func (m *PostingModel) AddPostStatistic() error {
+	if _, err := m.Engine.InsertOne(m.Statistic); err != nil {
 		return err
 	}
 

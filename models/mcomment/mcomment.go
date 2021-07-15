@@ -213,6 +213,23 @@ func (m *CommentModel) GetVideoReplyIdsById(commentId string) []string {
 	return replyIds
 }
 
+// 通过评论id获取帖子评论信息
+func (m *CommentModel) GetPostCommentById(commentId string) *models.PostComment {
+	comment := new(models.PostComment)
+	ok, err := m.Engine.Where("id=?", commentId).Get(comment)
+	if !ok || err != nil {
+		log.Log.Errorf("comment_trace: post comment not found, commentId:%s", commentId)
+		return nil
+	}
+
+	// 已逻辑删除
+	if comment.Status == 0 {
+		comment.Content = "原内容已删除"
+	}
+
+	return comment
+}
+
 // 删除视频评论
 func (m *CommentModel) DelVideoComments(commentIds string) error {
 	sql := fmt.Sprintf("DELETE FROM `video_comment` WHERE `id` IN (%s)", commentIds)
