@@ -12,7 +12,6 @@ func init() {
 	dao.InitRedis("192.168.5.12:6378", "")
 }
 
-// 保存用户通知设置
 func TestSanitizeHtml(t *testing.T) {
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 	svc := New(c)

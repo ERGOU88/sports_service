@@ -102,7 +102,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		svc.comment.VideoComment.VideoId = params.ComposeId
 		svc.comment.VideoComment.Status = 1
 		// 添加评论
-		if err := svc.comment.AddComment(); err != nil {
+		if err := svc.comment.AddVideoComment(); err != nil {
 			log.Log.Errorf("comment_trace: add comment err:%s", err)
 			svc.engine.Rollback()
 			return errdef.COMMENT_PUBLISH_FAIL, 0
@@ -263,7 +263,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	svc.comment.VideoComment.VideoId = params.VideoId
 	svc.comment.VideoComment.Status = 1
 	// 添加评论
-	if err := svc.comment.AddComment(); err != nil {
+	if err := svc.comment.AddVideoComment(); err != nil {
 		log.Log.Errorf("comment_trace: add comment err:%s", err)
 		svc.engine.Rollback()
 		return errdef.COMMENT_PUBLISH_FAIL, 0
@@ -391,7 +391,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			svc.comment.VideoComment.ParentCommentUserId = replyInfo.UserId
 		}
 
-		if err := svc.comment.AddComment(); err != nil {
+		if err := svc.comment.AddVideoComment(); err != nil {
 			log.Log.Errorf("comment_trace: add video reply err:%s", err)
 			svc.engine.Rollback()
 			return errdef.COMMENT_REPLY_FAIL, 0

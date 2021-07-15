@@ -126,7 +126,7 @@ func NewCommentModel(engine *xorm.Session) *CommentModel {
 }
 
 // 添加视频评论(包含回复评论)
-func (m *CommentModel) AddComment() error {
+func (m *CommentModel) AddVideoComment() error {
 	if _, err := m.Engine.InsertOne(m.VideoComment); err != nil {
 		return err
 	}

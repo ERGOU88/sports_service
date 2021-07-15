@@ -9,35 +9,66 @@ import (
 type PostingModel struct {
 	Engine            *xorm.Session
 	Posting           *models.PostingInfo
-	PostingSection    *models.PostingSection
 	PostingTopic      *models.PostingTopic
 	Browse            *models.UserBrowseRecord
 }
 
 // 发布帖子请求参数
 type PostPublishParam struct {
-	Title          string     `json:"title"`                              // 标题
-	Describe       string     `json:"describe"`                           // 富文本内容
-	Content        string     `json:"content" binding:"required"`         // 图片列表 或 转发的视频内容 todo: 结构体
-	VideoId        string     `json:"video_id"`         // 转发的视频id
-	//PostingType    int        `json:"posting_type" binding:"required"`    // 帖子类型  0 纯文本 1 图文 2 视频 + 文
-	ImagesAddr     []string   `json:"images_addr"`                        // 图片地址
-	SectionId      int        `json:"section_id"`                         // 主模块id
-	TopicIds       []string   `json:"topic_ids"`                          // 话题id （多个）
-	ContentType    int        `json:"content_type"`                       // 0 发布 1 转发
+	Title             string              `json:"title"`                              // 标题
+	Describe          string              `json:"describe"`                           // 富文本内容
+	//ForwardVideo      *ForwardVideoInfo   `json:"forward_video"`                      // 转发的视频内容 todo: 结构体
+	VideoId           string              `json:"video_id"`                           // 关联的视频id
+	//PostingType    int        `json:"posting_type" binding:"required"`  // 帖子类型  0 纯文本 1 图文 2 视频 + 文
+	ImagesAddr        []string            `json:"images_addr"`                        // 图片地址
+	SectionId         int                 `json:"section_id"`                         // 主模块id
+	TopicIds          []string            `json:"topic_ids"`                          // 话题id （多个）
+	//ContentType       int                 `json:"content_type"`                       // 0 发布 1 转发视频 2 转发帖子
+	//ForwardPost       *ForwardPostInfo    `json:"forward_post"`                       // 转发的帖子内容
 }
+
+// 转发的视频信息
+type ForwardVideoInfo struct {
+	VideoId       string                `json:"video_id"`
+	Title         string                `json:"title"  example:"标题"`                 // 标题
+	Describe      string                `json:"describe"  example:"描述"`              // 描述
+	Cover         string                `json:"cover"  example:"封面"`                 // 封面
+	VideoAddr     string                `json:"video_addr"  example:"视频地址"`         // 视频地址
+	VideoDuration int                   `json:"video_duration" example:"100000"`       // 视频时长
+	CreateAt      int                   `json:"create_at" example:"1600000000"`        // 视频创建时间
+	BrowseNum     int                   `json:"browse_num" example:"10"`               // 浏览数（播放数）
+	UserId        string                `json:"user_id" example:"发布视频的用户id"`      // 发布视频的用户id
+	Avatar        string                `json:"avatar" example:"头像"`                 // 头像
+	Nickname      string                `json:"nick_name"  example:"昵称"`             // 昵称
+	Size          int                   `json:"size"`                                 // 视频总字节数
+	BarrageNum    int                   `json:"barrage_num" example:"1"`              // 弹幕数
+	LabelNames    string                `json:"label_names"`                          // 标签名称 多个用逗号分隔
+}
+
+// 转发的帖子信息 todo: 产品当前逻辑 转发的帖子皆为文本
+type ForwardPostInfo struct {
+	PostId        string                `json:"post_id"`                // 转发的帖子id
+	PostingType   int                   `json:"posting_type"`           // 帖子类型  0 纯文本 1 图文 2 视频 + 文
+	//ContentType   int                   `json:"content_type"`           // 0 社区发布 1 转发视频 2 转发帖子
+	TopicNames    string                `json:"topic_names"`            // 话题名词 多个用逗号分隔
+	Title         string                `json:"title"`                  // 标题
+	Describe      string                `json:"describe"`               // 描述
+	Content       string                `json:"content"`                // 暂时使用不到
+}
+
+// 转发的帖子信息
+
 
 // 帖子详情数据
 type PostDetailInfo struct {
 	PostId        int64                  `json:"post_id"  example:"1000000000"`        // 帖子id
-	Cover         string                 `json:"cover"  example:"封面"`                 // 封面
-	VideoAddr     string                 `json:"video_addr"  example:"视频地址"`         // 视频地址
-	VideoDuration int                    `json:"video_duration" example:"100000"`       // 视频时长
-	Size          int                    `json:"size"`                                 // 视频大小
+	//Cover         string                 `json:"cover"  example:"封面"`                 // 封面
+	//VideoAddr     string                 `json:"video_addr"  example:"视频地址"`         // 视频地址
+	//VideoDuration int                    `json:"video_duration" example:"100000"`       // 视频时长
+	//Size          int                    `json:"size"`                                 // 视频大小
 	Title         string                 `json:"title"  example:"标题"`                 // 标题
 	Describe      string                 `json:"describe"  example:"描述"`              // 描述
 	Images        []string               `json:"images,omitempty"`                     // 图片列表
-	ForwardVideo  string                 `json:"forward_video,omitempty"`              // 分享的视频信息 todo: 结构体
 	IsRecommend   int                    `json:"is_recommend" example:"0"`             // 是否推荐
 	IsTop         int                    `json:"is_top"  example:"0"`                   // 是否置顶
 	Status        int32                  `json:"status"  example:"1"`                   // 审核状态
@@ -53,6 +84,11 @@ type PostDetailInfo struct {
 	IsLike        int                    `json:"is_like" example:"1"`                  // 是否点赞
 	FansNum       int64                  `json:"fans_num" example:"100"`               // 粉丝数
 	Topics        []*models.PostingTopic `json:"topics"`                               // 所属话题
+	ForwardVideo  *ForwardVideoInfo      `json:"forward_video,omitempty"`              // 转发的视频内容 todo: 结构体
+	ForwardPost   *ForwardPostInfo       `json:"forward_post,omitempty"`               // 转发的帖子内容
+	ImagesAddr    []string               `json:"images_addr,omitempty"`                // 图片地址
+	ContentType   int                    `json:"content_type"`                         // 0 社区发布 1 转发视频 2 转发帖子
+	PostingType   int                    `json:"posting_type"`                         // 帖子类型  0 纯文本 1 图文 2 视频 + 文字
 }
 
 // 实栗
@@ -60,7 +96,6 @@ func NewPostingModel(engine *xorm.Session) *PostingModel {
 	return &PostingModel{
 		Engine: engine,
 		Posting: new(models.PostingInfo),
-		PostingSection: new(models.PostingSection),
 		PostingTopic: new(models.PostingTopic),
 	}
 }
@@ -74,21 +109,6 @@ func (m *PostingModel) GetPostById(id string) (*models.PostingInfo, error) {
 	}
 
 	return m.Posting, nil
-}
-
-// 获取帖子所属板块 [1对1]
-func (m *PostingModel) GetPostSection(postId int64) (*models.PostingSection, error) {
-	m.PostingSection = new(models.PostingSection)
-	if err := m.Engine.Where("posting_id=?", postId).Asc( "id").Find(m.PostingSection); err != nil {
-		return nil, err
-	}
-
-	return m.PostingSection, nil
-}
-
-// 添加帖子所属板块
-func (m *PostingModel) AddPostSection() (int64, error) {
-	return m.Engine.InsertOne(m.PostingSection)
 }
 
 // 获取帖子所属话题 [1对多]

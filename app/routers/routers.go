@@ -10,6 +10,7 @@ import (
 	"sports_service/server/app/routers/api/v1/notify"
 	"sports_service/server/app/routers/api/v1/posting"
 	"sports_service/server/app/routers/api/v1/search"
+	"sports_service/server/app/routers/api/v1/share"
 	"sports_service/server/app/routers/api/v1/video"
     "sports_service/server/app/routers/api/v1/tencentCloud"
 	"sports_service/server/middleware"
@@ -58,4 +59,6 @@ func InitRouters(engine *gin.Engine) {
 	tencentCloud.Router(engine)
 	// 帖子模块
 	posting.Router(engine)
+	// 分享模块
+	share.Router(engine)
 }

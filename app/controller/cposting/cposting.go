@@ -53,14 +53,15 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 	}
 
 	// 检测帖子内容
-	isPass, err = client.TextModeration(params.Content)
+	isPass, err = client.TextModeration(params.Describe)
 	if !isPass || err != nil {
 		log.Log.Errorf("post_trace: validate content err: %s，pass: %v", err, isPass)
 		return errdef.POST_INVALID_CONTENT
 	}
 
+
 	postType := svc.GetPostingType(params)
-	if b := svc.VerifyContentLen(postType, params.Content); !b {
+	if b := svc.VerifyContentLen(postType, params.Describe, params.Title); !b {
 		log.Log.Error("post_trace: invalid content len")
 		return errdef.POST_INVALID_CONTENT_LEN
 	}
@@ -96,7 +97,7 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 	// 默认为审核中的状态
 	status := 0
 	// 不带视频的帖子 只需通过图文检测
-	if postType != 2 {
+	if postType != consts.POST_TYPE_VIDEO {
 		status = 1
 	}
 
@@ -105,22 +106,18 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 	svc.posting.Posting.Describe = params.Describe
 	svc.posting.Posting.PostingType = postType
 	svc.posting.Posting.Status = status
-	svc.posting.Posting.ContentType = params.ContentType
+	// 社区发布
+	svc.posting.Posting.ContentType = consts.COMMUNITY_PUB_POST
 	svc.posting.Posting.CreateAt = now
 	svc.posting.Posting.UpdateAt = now
-	if params.Content != "" {
-		bts, _ := util.JsonFast.Marshal(params.Content)
+	svc.posting.Posting.SectionId = section.Id
+	if len(params.ImagesAddr) > 0 {
+		bts, _ := util.JsonFast.Marshal(params.ImagesAddr)
 		svc.posting.Posting.Content = string(bts)
 	}
 
 	if _, err := svc.posting.AddPost(); err != nil {
 		log.Log.Errorf("post_trace: publish post fail, err:%s", err)
-		svc.engine.Rollback()
-		return errdef.POST_PUBLISH_FAIL
-	}
-
-	if _, err := svc.posting.AddPostSection(); err != nil {
-		log.Log.Errorf("post_trace: add post section fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.POST_PUBLISH_FAIL
 	}
@@ -154,28 +151,32 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 
 // 获取帖子类型 todo: 常量
 func (svc *PostingModule) GetPostingType(params *mposting.PostPublishParam) (postType int) {
-	if params.Content != "" && params.VideoId != "" {
+	if params.Describe != "" && params.VideoId != "" {
 		// 视频 + 文字
-		postType = 2
+		postType = consts.POST_TYPE_VIDEO
 		return
 	}
 
-	if params.Content != "" && len(params.ImagesAddr) > 0 {
+	if params.Describe != "" && len(params.ImagesAddr) > 0 {
 		// 图文
-		postType = 1
+		postType = consts.POST_TYPE_IMAGE
 		return
 	}
 
-	if params.Content != "" {
+	if params.Describe != "" {
 		// 纯文本
-		postType = 0
+		postType = consts.POST_TYPE_TEXT
 	}
 
 	return
 }
 
 // 验证正文长度
-func (svc *PostingModule) VerifyContentLen(postType int, content string) bool {
+func (svc *PostingModule) VerifyContentLen(postType int, content, title string) bool {
+	if len(title) > 250 {
+		return false
+	}
+
 	size := len(content)
 	switch postType {
 	// 纯文本、图文
@@ -236,7 +237,7 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 	}
 
 	now := int(time.Now().Unix())
-	// 增加视频浏览总数
+	// 增加帖子浏览总数
 	if err := svc.posting.UpdatePostBrowseNum(post.Id, now, 1); err != nil {
 		log.Log.Errorf("post_trace: update post browse num err:%s", err)
 	}

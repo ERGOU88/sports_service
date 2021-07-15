@@ -8,3 +8,21 @@ const (
 	POST_AUDIT_FAILURE = "2"
 	POST_DELETE_STATUS = "3"
 )
+
+// 社区帖子来源类型
+// 0 社区发布 1 转发视频  2 转发帖子
+const (
+	COMMUNITY_PUB_POST      = iota
+	COMMUNITY_FORWARD_VIDEO
+	COMMUNITY_FORWARD_POST
+)
+
+// 社区帖子内容类型
+// 0 纯文本 1 图文 2 视频+文本
+const (
+	POST_TYPE_TEXT  = iota
+	POST_TYPE_IMAGE
+	POST_TYPE_VIDEO
+)
+
+
