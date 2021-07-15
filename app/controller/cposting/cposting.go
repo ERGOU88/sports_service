@@ -130,6 +130,7 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		info.TopicName = val.TopicName
 		info.CreateAt = now
 		info.PostingId = svc.posting.Posting.Id
+		info.Status = 1
 		topicInfos = append(topicInfos, info)
 	}
 
@@ -247,6 +248,22 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 		resp.Nickname = user.NickName
 	}
 
+	// 如果是转发的视频数据
+	if resp.PostingType == consts.POST_TYPE_VIDEO && resp.ContentType == consts.COMMUNITY_FORWARD_VIDEO {
+		if err = util.JsonFast.UnmarshalFromString(post.Content, resp.ForwardVideo); err != nil {
+			log.Log.Errorf("post_trace: get forward video info err:%s", err)
+			return nil, errdef.POST_DETAIL_FAIL
+		}
+	}
+
+	// 如果是转发的帖子
+	if resp.PostingType == consts.POST_TYPE_TEXT && resp.ContentType == consts.COMMUNITY_FORWARD_POST {
+		if err = util.JsonFast.UnmarshalFromString(post.Content, resp.ForwardPost); err != nil {
+			log.Log.Errorf("post_trace: get forward post info err:%s", err)
+			return nil, errdef.POST_DETAIL_FAIL
+		}
+	}
+
 	if userId == "" {
 		log.Log.Error("post_trace: user no login")
 		return resp, errdef.SUCCESS
@@ -269,12 +286,18 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 			svc.video.Browse.UserId = userId
 			svc.video.Browse.ComposeId = post.Id
 			svc.video.Browse.ComposeType = consts.TYPE_POST
-			// 添加用户浏览的视频记录
+			// 添加用户浏览的帖子记录
 			if err := svc.posting.RecordUserBrowsePost(); err != nil {
 				log.Log.Errorf("post_trace: record user browse post err:%s", err)
 			}
 		}
 	}
+	// 获取视频相关统计数据
+	info := svc.video.GetVideoStatistic(fmt.Sprint(post.Id))
+	resp.BrowseNum = info.BrowseNum
+	resp.CommentNum = info.CommentNum
+	resp.FabulousNum = info.FabulousNum
+	resp.ShareNum = info.ShareNum
 
 
 	return resp, errdef.SUCCESS

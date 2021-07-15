@@ -133,6 +133,14 @@ const (
 	POST_INVALID_CONTENT_LEN    = 12006
 	POST_DETAIL_FAIL            = 12007
 	POST_NOT_EXISTS             = 12008
+
+	// 分享/转发相关错误码 13001-14000
+	SHARE_DATA_FAIL             = 13001
+
+
+	// 社区相关错误码 14001-15000
+	COMMUNITY_SECTION_NOT_EXISTS = 14001
+
 )
 
 var MsgFlags = map[int]string{
@@ -255,6 +263,10 @@ var MsgFlags = map[int]string{
 	POST_INVALID_CONTENT_LEN:    "内容长度超过限制",
 	POST_DETAIL_FAIL:            "获取帖子详情失败",
 	POST_NOT_EXISTS:             "帖子不存在",
+
+	SHARE_DATA_FAIL:             "分享失败",
+
+	COMMUNITY_SECTION_NOT_EXISTS:"社区板块不存在",
 }
 
 func GetMsg(code int) string {

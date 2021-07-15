@@ -12,8 +12,10 @@ func Router(engine *gin.Engine) {
 	share := api.Group("/share")
 	share.Use(sign.CheckSign())
 	{
-		// 分享/转发数据 [帖子、视频]
-		share.POST("/data", token.TokenAuth(), ShareData)
+		// 分享/转发到社交平台
+		share.POST("/social", ShareWithSocialPlatform)
+        // 分享/转发到app社区
+		share.POST("/community", token.TokenAuth(), ShareWithCommunity)
 
 	}
 }

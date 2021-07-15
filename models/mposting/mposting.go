@@ -3,6 +3,7 @@ package mposting
 import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/models"
+	"sports_service/server/models/mshare"
 )
 
 // 帖子模块
@@ -11,12 +12,13 @@ type PostingModel struct {
 	Posting           *models.PostingInfo
 	PostingTopic      *models.PostingTopic
 	Browse            *models.UserBrowseRecord
+	Statistic         *models.PostingStatistic
 }
 
 // 发布帖子请求参数
 type PostPublishParam struct {
 	Title             string              `json:"title"`                              // 标题
-	Describe          string              `json:"describe"`                           // 富文本内容
+	Describe          string              `binding:"required" json:"describe"`                           // 富文本内容
 	//ForwardVideo      *ForwardVideoInfo   `json:"forward_video"`                      // 转发的视频内容 todo: 结构体
 	VideoId           string              `json:"video_id"`                           // 关联的视频id
 	//PostingType    int        `json:"posting_type" binding:"required"`  // 帖子类型  0 纯文本 1 图文 2 视频 + 文
@@ -56,8 +58,6 @@ type ForwardPostInfo struct {
 	Content       string                `json:"content"`                // 暂时使用不到
 }
 
-// 转发的帖子信息
-
 
 // 帖子详情数据
 type PostDetailInfo struct {
@@ -84,8 +84,8 @@ type PostDetailInfo struct {
 	IsLike        int                    `json:"is_like" example:"1"`                  // 是否点赞
 	FansNum       int64                  `json:"fans_num" example:"100"`               // 粉丝数
 	Topics        []*models.PostingTopic `json:"topics"`                               // 所属话题
-	ForwardVideo  *ForwardVideoInfo      `json:"forward_video,omitempty"`              // 转发的视频内容 todo: 结构体
-	ForwardPost   *ForwardPostInfo       `json:"forward_post,omitempty"`               // 转发的帖子内容
+	ForwardVideo  *mshare.ShareVideoInfo `json:"forward_video,omitempty"`              // 转发的视频内容 todo: 结构体
+	ForwardPost   *mshare.SharePostInfo  `json:"forward_post,omitempty"`               // 转发的帖子内容
 	ImagesAddr    []string               `json:"images_addr,omitempty"`                // 图片地址
 	ContentType   int                    `json:"content_type"`                         // 0 社区发布 1 转发视频 2 转发帖子
 	PostingType   int                    `json:"posting_type"`                         // 帖子类型  0 纯文本 1 图文 2 视频 + 文字
@@ -97,6 +97,7 @@ func NewPostingModel(engine *xorm.Session) *PostingModel {
 		Engine: engine,
 		Posting: new(models.PostingInfo),
 		PostingTopic: new(models.PostingTopic),
+		Statistic: new(models.PostingStatistic),
 	}
 }
 
@@ -205,4 +206,15 @@ func (m *PostingModel) UpdateUserBrowsePost(userId string,  composeType int, com
 	}
 
 	return nil
+}
+
+// 获取帖子统计数据
+func (m *PostingModel) GetPostStatistic(postId string) (*models.PostingStatistic, error) {
+	m.Statistic = new(models.PostingStatistic)
+	ok, err := m.Engine.Where("posting_id=?", postId).Get(m.Statistic)
+	if !ok || err != nil {
+		return nil, err
+	}
+
+	return m.Statistic, nil
 }
