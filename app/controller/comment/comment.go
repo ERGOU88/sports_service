@@ -472,12 +472,12 @@ func (svc *CommentModule) GetComments(userId, composeId, sortType string, commen
 	// 热门排序（按点赞数）
 	if sortType == consts.SORT_HOT {
 		log.Log.Debugf("comment_trace: get comments by hot")
-		return errdef.SUCCESS, svc.GetCommentsByLiked(userId, composeId, commentType, zanType, page, size)
+		return errdef.SUCCESS, svc.GetCommentsByLiked(userId, composeId, zanType, page, size)
 	}
 
 	offset := (page - 1) * size
 	// 获取评论
-	comments := svc.comment.GetCommentList(composeId, commentType, offset, size)
+	comments := svc.comment.GetCommentList(composeId, offset, size)
 	if len(comments) == 0 {
 		log.Log.Errorf("comment_trace: no comments, composeId:%s", composeId)
 		return errdef.SUCCESS, []*mcomment.VideoComments{}
@@ -534,7 +534,7 @@ func (svc *CommentModule) GetComments(userId, composeId, sortType string, commen
 		contents[item.Id] = item.Content
 
 		// 获取每个评论下的回复列表 (默认取三条)
-		comment.ReplyList = svc.comment.GetReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
+		comment.ReplyList = svc.comment.GetVideoReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
 		for _, reply := range comment.ReplyList {
 			//user := new(tmpUser)
 			//user.NickName = reply.UserName
@@ -613,7 +613,7 @@ func (svc *CommentModule) GetComments(userId, composeId, sortType string, commen
 }
 
 // 根据评论点赞数排序 获取评论列表
-func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, commentType, zanType, page, size int) []*mcomment.VideoComments {
+func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, page, size int) []*mcomment.VideoComments {
 	offset := (page - 1) * size
 	// 获取评论(按点赞数排序)
 	comments := svc.comment.GetCommentListByLike(composeId, zanType, offset, size)
@@ -651,7 +651,7 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, commentTy
 		contents[item.Id] = item.Content
 
 		// 获取每个评论下的回复列表 (默认取三条)
-		item.ReplyList = svc.comment.GetReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
+		item.ReplyList = svc.comment.GetVideoReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
 		for _, reply := range item.ReplyList {
 			//user := new(tmpUser)
 			//user.NickName = reply.UserName
@@ -728,7 +728,7 @@ func (svc *CommentModule) GetCommentReplyList(userId, composeId, commentId strin
 	}
 
 	offset := (page - 1) * size
-	replyList := svc.comment.GetReplyList(composeId, commentId, offset, size)
+	replyList := svc.comment.GetVideoReplyList(composeId, commentId, offset, size)
 	if len(replyList) == 0 {
 		log.Log.Errorf("comment_trace: not found comment reply, commentId:%s", commentId)
 		return errdef.SUCCESS, []*mcomment.ReplyComment{}
@@ -836,7 +836,7 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Vi
 			// contents 存储 评论id——>评论的内容
 			content := make(map[int64]string, 0)
 			content[comment.Id] = comment.Content
-			first.ReplyList = svc.comment.GetReplyList(fmt.Sprint(comment.VideoId), fmt.Sprint(comment.Id), 0, 3)
+			first.ReplyList = svc.comment.GetVideoReplyList(fmt.Sprint(comment.VideoId), fmt.Sprint(comment.Id), 0, 3)
 			for _, reply := range first.ReplyList {
 				// 已被逻辑删除
 				if reply.Status == 0 {

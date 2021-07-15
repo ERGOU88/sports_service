@@ -225,9 +225,9 @@ func (m *CommentModel) DelVideoComments(commentIds string) error {
 }
 
 // 获取视频评论列表(1级评论)
-func (m *CommentModel) GetCommentList(composeId string, commentType, offset, size int) []*models.VideoComment {
+func (m *CommentModel) GetCommentList(composeId string, offset, size int) []*models.VideoComment {
 	var list []*models.VideoComment
-	if err := m.Engine.Where("video_id=? AND comment_level=1", composeId, commentType).
+	if err := m.Engine.Where("video_id=? AND comment_level=1", composeId).
 		Desc("is_top").
 		Asc("id").
 		Limit(size, offset).
@@ -255,10 +255,24 @@ func (m *CommentModel) GetCommentListByLike(composeId string, zanType, offset, s
 	return list
 }
 
-// 获取评论下的回复列表
-func (m *CommentModel) GetReplyList(videoId, commentId string, offset, size int) []*ReplyComment {
+// 获取视频评论下的回复列表
+func (m *CommentModel) GetVideoReplyList(videoId, commentId string, offset, size int) []*ReplyComment {
 	var list []*ReplyComment
 	if err := m.Engine.Table(&models.VideoComment{}).Where("video_id=? AND comment_level=2 AND parent_comment_id=?", videoId, commentId).
+		Asc("id").
+		Limit(size, offset).
+		Find(&list); err != nil {
+		log.Log.Errorf("comment_trace: get reply list err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
+// 获取帖子评论下的回复列表
+func (m *CommentModel) GetPostReplyList(videoId, commentId string, offset, size int) []*ReplyComment {
+	var list []*ReplyComment
+	if err := m.Engine.Table(&models.PostComment{}).Where("video_id=? AND comment_level=2 AND parent_comment_id=?", videoId, commentId).
 		Asc("id").
 		Limit(size, offset).
 		Find(&list); err != nil {
