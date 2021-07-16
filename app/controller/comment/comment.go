@@ -399,7 +399,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		}
 
 		// 更新视频总计（视频评论总数）
-		if err := svc.video.UpdateVideoCommentNum(replyInfo.VideoId, int(now), 1); err != nil {
+		if err := svc.video.UpdateVideoCommentNum(replyInfo.VideoId, now, 1); err != nil {
 			log.Log.Errorf("comment_trace: update video comment num err:%s", err)
 			svc.engine.Rollback()
 			return errdef.COMMENT_PUBLISH_FAIL, 0
@@ -429,6 +429,43 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			return errdef.POST_NOT_EXISTS, 0
 		}
 
+		// 帖子状态 != 1 (1审核成功)
+		if fmt.Sprint(post.Status) != consts.POST_AUDIT_SUCCESS {
+			log.Log.Errorf("comment_trace: post status not audit success, postId:%d", replyInfo.PostId)
+			svc.engine.Rollback()
+			return errdef.VIDEO_NOT_EXISTS, 0
+		}
+
+		svc.comment.PostComment.UserId = userId
+		svc.comment.PostComment.Content = params.Content
+		svc.comment.PostComment.CreateAt = int(now)
+		svc.comment.PostComment.PostId = replyInfo.PostId
+		svc.comment.PostComment.CommentLevel = consts.COMMENT_REPLY
+		svc.comment.PostComment.Status = 1
+
+		svc.comment.PostComment.ReplyCommentUserId = replyInfo.UserId
+		svc.comment.PostComment.ReplyCommentId = replyInfo.Id
+		svc.comment.PostComment.ParentCommentUserId = replyInfo.ParentCommentUserId
+		svc.comment.PostComment.ParentCommentId = replyInfo.ParentCommentId
+		// 1级评论 parentid为0 如果被回复的评论 parentid 为0，说明当前回复的是1级评论 否则 回复的为2级评论
+		if replyInfo.ParentCommentId == 0 {
+			svc.comment.PostComment.ParentCommentId = replyInfo.Id
+			svc.comment.PostComment.ParentCommentUserId = replyInfo.UserId
+		}
+
+		if err := svc.comment.AddPostComment(); err != nil {
+			log.Log.Errorf("comment_trace: add post reply err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COMMENT_REPLY_FAIL, 0
+		}
+
+		// 更新视频总计（视频评论总数）
+		if err := svc.post.UpdatePostCommentNum(replyInfo.PostId, now, 1); err != nil {
+			log.Log.Errorf("comment_trace: update post comment num err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COMMENT_PUBLISH_FAIL, 0
+		}
+
 		svc.comment.ReceiveAt.TopicType = consts.TYPE_POST_COMMENT
 		msgType = consts.POST_REPLY_MSG
 		toUserId = replyInfo.UserId
@@ -455,6 +492,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	return errdef.SUCCESS, svc.comment.VideoComment.Id
 }
 
+// 检查视频/帖子
 func (svc *CommentModule) CheckComposeInfo(composeId string, commentType int) (int, int) {
 	zanType := -1
 	switch commentType {
@@ -475,7 +513,18 @@ func (svc *CommentModule) CheckComposeInfo(composeId string, commentType int) (i
 		zanType = consts.TYPE_VIDEO_COMMENT
 
 	case consts.COMMENT_TYPE_POST:
-		// todo: 判断帖子是否存在
+		post, err := svc.post.GetPostById(composeId)
+		if post == nil || err != nil {
+			log.Log.Errorf("comment_trace: post not found, composeId:%s", composeId)
+			return errdef.POST_NOT_EXISTS, zanType
+		}
+
+		// 帖子状态 != 1 (审核成功)
+		if fmt.Sprint(post.Status) != consts.POST_AUDIT_SUCCESS {
+			log.Log.Errorf("comment_trace: post not audit success, postId:%s", post.Id)
+			return errdef.POST_NOT_EXISTS, zanType
+		}
+
 		zanType = consts.TYPE_POST_COMMENT
 	}
 
@@ -483,10 +532,10 @@ func (svc *CommentModule) CheckComposeInfo(composeId string, commentType int) (i
 }
 
 // 获取评论
-func (svc *CommentModule) GetComments(userId, composeId, sortType string, commentType, page, size int) (int, []*mcomment.VideoComments) {
+func (svc *CommentModule) GetComments(userId, composeId, sortType string, commentType, page, size int) (int, []*mcomment.CommentList) {
 	code, zanType := svc.CheckComposeInfo(composeId, commentType)
 	if code != errdef.SUCCESS {
-		return code, []*mcomment.VideoComments{}
+		return code, []*mcomment.CommentList{}
 	}
 
 	// 热门排序（按点赞数）
@@ -495,15 +544,156 @@ func (svc *CommentModule) GetComments(userId, composeId, sortType string, commen
 		return errdef.SUCCESS, svc.GetCommentsByLiked(userId, composeId, zanType, page, size)
 	}
 
+	var list []*mcomment.CommentList
 	offset := (page - 1) * size
-	// 获取评论
-	comments := svc.comment.GetCommentList(composeId, offset, size)
-	if len(comments) == 0 {
-		log.Log.Errorf("comment_trace: no comments, composeId:%s", composeId)
-		return errdef.SUCCESS, []*mcomment.VideoComments{}
+
+	if commentType == consts.COMMENT_TYPE_POST {
+		list = svc.GetPostCommentList(userId, composeId, offset, size, zanType)
+	} else {
+		list = svc.GetVideoCommentList(userId, composeId, offset, size, zanType)
 	}
 
-	list := make([]*mcomment.VideoComments, len(comments))
+
+	return errdef.SUCCESS, list
+}
+
+// 获取帖子评论列表
+func (svc *CommentModule) GetPostCommentList(userId, composeId string, offset, size, zanType int) []*mcomment.CommentList {
+	// 获取评论
+	comments := svc.comment.GetPostCommentList(composeId, offset, size)
+	if len(comments) == 0 {
+		log.Log.Errorf("comment_trace: no comments, composeId:%s", composeId)
+		return []*mcomment.CommentList{}
+	}
+
+	list := make([]*mcomment.CommentList, len(comments))
+	// contents 存储 评论id——>评论的内容
+	contents := make(map[int64]string, 0)
+	// userInfo 存储 用户id——>头像、昵称
+	//userInfo := make(map[string]*tmpUser, 0)
+	for index, item := range comments {
+		comment := new(mcomment.CommentList)
+		comment.Id = item.Id
+		comment.Status = item.Status
+		comment.PostId = item.PostId
+		comment.UserId = item.UserId
+		comment.CreateAt = item.CreateAt
+		comment.IsTop = item.IsTop
+		comment.Content = item.Content
+		// 已被逻辑删除
+		if comment.Status == 0 {
+			comment.Content = "原内容已删除"
+		}
+
+		comment.CommentLevel = item.CommentLevel
+		// 总回复数
+		comment.ReplyNum = svc.comment.GetTotalReplyByPostComment(fmt.Sprint(comment.Id))
+		// 评论点赞数
+		comment.LikeNum = svc.like.GetLikeNumByType(item.Id, consts.TYPE_POST_COMMENT)
+
+		// 如果总回复数 > 3 条
+		if comment.ReplyNum > 3 {
+			// 1 客户端展示查看更多
+			comment.HasMore = 1
+		}
+
+		//comment.Avatar = item.Avatar
+		//comment.UserName = item.UserName
+		//user := new(tmpUser)
+		//user.NickName = item.UserName
+		//user.Avatar = item.Avatar
+		//userInfo[item.UserId] = user
+		// todo: 用户信息需使用最新数据
+		user := svc.user.FindUserByUserid(comment.UserId)
+		if user != nil {
+			comment.Avatar = user.Avatar
+			comment.UserName = user.NickName
+		}
+
+		contents[item.Id] = item.Content
+
+		// 获取每个评论下的回复列表 (默认取三条)
+		comment.ReplyList = svc.comment.GetVideoReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
+		for _, reply := range comment.ReplyList {
+			//user := new(tmpUser)
+			//user.NickName = reply.UserName
+			//user.Avatar = reply.Avatar
+			//userInfo[reply.UserId] = user
+			user = svc.user.FindUserByUserid(reply.UserId)
+			if user != nil {
+				reply.Avatar = user.Avatar
+				reply.UserName = user.NickName
+			}
+
+			contents[reply.Id] = reply.Content
+			// 评论点赞数
+			reply.LikeNum = svc.like.GetLikeNumByType(reply.Id, zanType)
+
+			// todo: 被回复的用户名、用户头像使用最新数据
+			user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
+			if user != nil {
+				reply.ReplyCommentAvatar = user.Avatar
+				reply.ReplyCommentUserName = user.NickName
+			}
+
+			// 如果回复的是1级评论 不展示@内容 否则展示   0 不是@消息 1是
+			if reply.ParentCommentId != reply.ReplyCommentId || reply.ReplyCommentId != item.Id {
+				reply.IsAt = 1
+			}
+
+			// 默认回复的是1级评论
+			reply.ReplyContent = comment.Content
+			// 被回复的内容
+			content, ok := contents[reply.ReplyCommentId]
+			if ok {
+				reply.ReplyContent = content
+			}
+
+			if reply.Status == 0 {
+				reply.ReplyContent = "原内容已删除"
+			}
+
+			if userId != "" {
+				// 是否关注
+				if attention := svc.attention.GetAttentionInfo(userId, reply.UserId); attention != nil {
+					reply.IsAttention = attention.Status
+				}
+			}
+		}
+
+		if userId != "" {
+			// 是否关注
+			if attention := svc.attention.GetAttentionInfo(userId, item.UserId); attention != nil {
+				comment.IsAttention = attention.Status
+			}
+
+			// 获取点赞的信息
+			if likeInfo := svc.like.GetLikeInfo(userId, comment.Id, zanType); likeInfo != nil {
+				comment.IsLike = likeInfo.Status
+			}
+		}
+
+		if len(comment.ReplyList) == 0 {
+			comment.ReplyList = []*mcomment.ReplyComment{}
+		}
+
+		list[index] = comment
+
+	}
+
+	return list
+}
+
+// 获取视频评论列表
+func (svc *CommentModule) GetVideoCommentList(userId, composeId string, offset, size, zanType int) []*mcomment.CommentList {
+	// 获取评论
+	comments := svc.comment.GetVideoCommentList(composeId, offset, size)
+	if len(comments) == 0 {
+		log.Log.Errorf("comment_trace: no comments, composeId:%s", composeId)
+		return []*mcomment.CommentList{}
+	}
+
+	list := make([]*mcomment.CommentList, len(comments))
 	//type tmpUser struct {
 	//	NickName   string
 	//	Avatar     string
@@ -513,7 +703,7 @@ func (svc *CommentModule) GetComments(userId, composeId, sortType string, commen
 	// userInfo 存储 用户id——>头像、昵称
 	//userInfo := make(map[string]*tmpUser, 0)
 	for index, item := range comments {
-		comment := new(mcomment.VideoComments)
+		comment := new(mcomment.CommentList)
 		comment.Id = item.Id
 		comment.Status = item.Status
 		comment.VideoId = item.VideoId
@@ -528,7 +718,7 @@ func (svc *CommentModule) GetComments(userId, composeId, sortType string, commen
 
 		comment.CommentLevel = item.CommentLevel
 		// 总回复数
-		comment.ReplyNum = svc.comment.GetTotalReplyByComment(fmt.Sprint(comment.Id))
+		comment.ReplyNum = svc.comment.GetTotalReplyByVideoComment(fmt.Sprint(comment.Id))
 		// 评论点赞数
 		comment.LikeNum = svc.like.GetLikeNumByType(item.Id, consts.TYPE_VIDEO_COMMENT)
 
@@ -628,18 +818,25 @@ func (svc *CommentModule) GetComments(userId, composeId, sortType string, commen
 
 	}
 
-
-	return errdef.SUCCESS, list
+	return list
 }
 
 // 根据评论点赞数排序 获取评论列表
-func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, page, size int) []*mcomment.VideoComments {
+func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, page, size int) []*mcomment.CommentList {
 	offset := (page - 1) * size
-	// 获取评论(按点赞数排序)
-	comments := svc.comment.GetCommentListByLike(composeId, zanType, offset, size)
+	var comments []*mcomment.CommentList
+	switch zanType {
+	case consts.TYPE_VIDEO_COMMENT:
+		// 获取视频评论(按点赞数排序)
+		comments = svc.comment.GetVideoCommentListByLike(composeId, zanType, offset, size)
+	case consts.TYPE_POST_COMMENT:
+		// 获取帖子评论(按点赞数排序)
+		comments = svc.comment.GetPostCommentListByLike(composeId, zanType, offset, size)
+	}
+
 	if len(comments) == 0 {
 		log.Log.Errorf("comment_trace: get comment fail, composeId:%s", composeId)
-		return []*mcomment.VideoComments{}
+		return []*mcomment.CommentList{}
 	}
 
 	//type tmpUser struct {
@@ -654,8 +851,20 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 		if item.Status == 0 {
 			item.Content = "原内容已删除"
 		}
-		// 总回复数
-		item.ReplyNum = svc.comment.GetTotalReplyByComment(fmt.Sprint(item.Id))
+
+		if item.VideoId > 0 {
+			// 视频评论总回复数
+			item.ReplyNum = svc.comment.GetTotalReplyByVideoComment(fmt.Sprint(item.Id))
+			// 获取每个评论下的回复列表 (默认取三条)
+			item.ReplyList = svc.comment.GetVideoReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
+		}
+
+		if item.PostId > 0 {
+			// 帖子评论总回复数
+			item.ReplyNum = svc.comment.GetTotalReplyByPostComment(fmt.Sprint(item.Id))
+			// 获取每个评论下的回复列表 (默认取三条)
+			item.ReplyList = svc.comment.GetPostReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
+		}
 
 		//user := new(tmpUser)
 		//user.NickName = item.UserName
@@ -670,8 +879,6 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 
 		contents[item.Id] = item.Content
 
-		// 获取每个评论下的回复列表 (默认取三条)
-		item.ReplyList = svc.comment.GetVideoReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
 		for _, reply := range item.ReplyList {
 			//user := new(tmpUser)
 			//user.NickName = reply.UserName
@@ -747,8 +954,16 @@ func (svc *CommentModule) GetCommentReplyList(userId, composeId, commentId strin
 		return code, []*mcomment.ReplyComment{}
 	}
 
+	var replyList []*mcomment.ReplyComment
 	offset := (page - 1) * size
-	replyList := svc.comment.GetVideoReplyList(composeId, commentId, offset, size)
+
+	switch commentType {
+	case consts.COMMENT_TYPE_VIDEO:
+		replyList = svc.comment.GetVideoReplyList(composeId, commentId, offset, size)
+	case consts.COMMENT_TYPE_POST:
+		replyList = svc.comment.GetPostReplyList(composeId, commentId, offset, size)
+	}
+
 	if len(replyList) == 0 {
 		log.Log.Errorf("comment_trace: not found comment reply, commentId:%s", commentId)
 		return errdef.SUCCESS, []*mcomment.ReplyComment{}
@@ -823,14 +1038,14 @@ func (svc *CommentModule) GetCommentReplyList(userId, composeId, commentId strin
 }
 
 // 如果从消息页 点击某条@数据跳转到视频详情时 则 需要组装@消息的详情
-func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.VideoComments {
-	var first *mcomment.VideoComments
+func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.CommentList {
+	var first *mcomment.CommentList
 	// 如果从消息页 点击某条@数据跳转到视频详情时 则 需要组装点击的@消息的详情
 	if commentId != "" {
 		comment := svc.comment.GetCommentById(commentId)
 		if comment != nil {
 			// todo:
-			first = &mcomment.VideoComments{
+			first = &mcomment.CommentList{
 				Id: comment.Id,
 				LikeNum:  svc.like.GetLikeNumByType(comment.Id, consts.TYPE_VIDEO_COMMENT),
 				IsTop: comment.IsTop,
@@ -839,7 +1054,7 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Vi
 				CreateAt: comment.CreateAt,
 				Status: comment.Status,
 				VideoId: comment.VideoId,
-				ReplyNum:  svc.comment.GetTotalReplyByComment(fmt.Sprint(comment.Id)),
+				ReplyNum:  svc.comment.GetTotalReplyByVideoComment(fmt.Sprint(comment.Id)),
 			}
 
 			user := svc.user.FindUserByUserid(comment.UserId)
@@ -910,6 +1125,7 @@ func (svc *CommentModule) AddCommentReport(params *mcomment.CommentReportParam) 
 	svc.comment.Report.CommentId = params.CommentId
 	svc.comment.Report.Reason = params.Reason
 	svc.comment.Report.CreateAt = int(time.Now().Unix())
+	svc.comment.Report.CommentType = params.CommentType
 	if _, err := svc.comment.AddCommentReport(); err != nil {
 		log.Log.Errorf("comment_trace: add comment report err:%s", err)
 		return errdef.COMMENT_REPORT_FAIL

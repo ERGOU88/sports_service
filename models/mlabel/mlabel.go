@@ -12,7 +12,6 @@ import (
 type LabelModel struct {
 	Engine         *xorm.Session
 	VideoLabels    *models.VideoLabelConfig
-	PostLabels     *models.PostLabelConfig
 }
 
 // 标签列表信息
@@ -56,7 +55,6 @@ func NewLabelModel(engine *xorm.Session) *LabelModel {
 	return &LabelModel{
 		Engine: engine,
 		VideoLabels: new(models.VideoLabelConfig),
-		PostLabels: new(models.PostLabelConfig),
 	}
 }
 

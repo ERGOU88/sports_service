@@ -16,8 +16,8 @@ type CommentModel struct {
 	PostComment  *models.PostingComment
 }
 
-// 视频评论列表
-type VideoComments struct {
+// 评论列表 [视频/帖子]
+type CommentList struct {
 	Id                  int64               `json:"id" example:"1000000000"`                      // 评论id
 	IsTop               int                 `json:"is_top"  example:"1"`                          // 置顶状态 1 置顶 0 不置顶
 	Avatar              string              `json:"avatar"  example:"用户头像"`                    // 用户头像
@@ -27,7 +27,8 @@ type VideoComments struct {
 	Content             string              `json:"content"  example:"评论的内容"`                 // 评论内容
 	CreateAt            int                 `json:"create_at" example:"1600000000"`              // 创建时间
 	Status              int                 `json:"status" example:"0"`                          // 状态 1 有效 0 逻辑删除
-	VideoId             int64               `json:"video_id" example:"1000000000"`               // 视频id
+	VideoId             int64               `json:"video_id,omitempty" example:"1000000000"`     // 视频id
+	PostId              int64               `json:"post_id,omitempty"`                           // 帖子ID
 	ReplyList           []*ReplyComment     `json:"reply_list"`                                  // 回复列表
 	LikeNum             int64               `json:"like_num" example:"100"`                      // 点赞数
 	IsAttention         int                 `json:"is_attention" example:"0"`                    // 是否关注
@@ -54,7 +55,8 @@ type ReplyComment struct {
 	ReplyCommentAvatar   string              `json:"reply_comment_avatar" example:"被回复评论的用户头像"`   // 被回复评论的用户头像
 	ReplyContent         string              `json:"reply_content"  example:"被回复的内容"`                // 被回复的内容
 	Status               int                 `json:"status" example:"1"`                                 // 状态 1 有效 0 逻辑删除
-	VideoId              int64               `json:"video_id" example:"1000000000"`                      // 视频id
+	VideoId              int64               `json:"video_id,omitempty" example:"1000000000"`            // 视频id
+	PostId               int64               `json:"post_id,omitempty" example:"1000000000"`             // 帖子id
 	LikeNum              int64               `json:"like_num" example:"100"`                             // 点赞数
 	IsAttention          int                 `json:"is_attention" example:"0"`                           // 是否关注
 	IsLike               int                 `json:"is_like" example:"0"`                                // 是否点赞
@@ -113,6 +115,7 @@ type CommentReportParam struct {
 	CommentId    int64      `json:"comment_id" binding:"required"`
 	UserId       string     `json:"user_id"`
 	Reason       string     `json:"reason"`
+	CommentType  int        `json:"comment_type"`                    // 1 视频评论 2 帖子评论
 }
 
 // 实栗
@@ -214,8 +217,8 @@ func (m *CommentModel) GetVideoReplyIdsById(commentId string) []string {
 }
 
 // 通过评论id获取帖子评论信息
-func (m *CommentModel) GetPostCommentById(commentId string) *models.PostComment {
-	comment := new(models.PostComment)
+func (m *CommentModel) GetPostCommentById(commentId string) *models.PostingComment {
+	comment := new(models.PostingComment)
 	ok, err := m.Engine.Where("id=?", commentId).Get(comment)
 	if !ok || err != nil {
 		log.Log.Errorf("comment_trace: post comment not found, commentId:%s", commentId)
@@ -242,7 +245,7 @@ func (m *CommentModel) DelVideoComments(commentIds string) error {
 }
 
 // 获取视频评论列表(1级评论)
-func (m *CommentModel) GetCommentList(composeId string, offset, size int) []*models.VideoComment {
+func (m *CommentModel) GetVideoCommentList(composeId string, offset, size int) []*models.VideoComment {
 	var list []*models.VideoComment
 	if err := m.Engine.Where("video_id=? AND comment_level=1", composeId).
 		Desc("is_top").
@@ -256,16 +259,47 @@ func (m *CommentModel) GetCommentList(composeId string, offset, size int) []*mod
 	return list
 }
 
+// 获取帖子评论列表(1级评论)
+func (m *CommentModel) GetPostCommentList(composeId string, offset, size int) []*models.PostingComment {
+	var list []*models.PostingComment
+	if err := m.Engine.Where("post_id=? AND comment_level=1", composeId).
+		Desc("is_top").
+		Asc("id").
+		Limit(size, offset).
+		Find(&list); err != nil {
+		log.Log.Errorf("comment_trace: get  comment list err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
 // 根据评论点赞数排序 获取视频评论列表（1级评论）
-func (m *CommentModel) GetCommentListByLike(composeId string, zanType, offset, size int) []*VideoComments {
+func (m *CommentModel) GetVideoCommentListByLike(composeId string, zanType, offset, size int) []*CommentList {
 	sql := "SELECT vc.*, count(tu.Id) AS like_num FROM video_comment AS vc " +
 		"LEFT JOIN thumbs_up AS tu ON vc.id = tu.type_id AND tu.zan_type=? AND tu.status=1 WHERE vc.video_id=? " +
 		"AND vc.comment_level = 1 " +
 		"GROUP BY vc.Id ORDER BY like_num DESC, vc.id DESC LIMIT ?, ?"
 
-	var list []*VideoComments
+	var list []*CommentList
 	if err := m.Engine.SQL(sql, zanType, composeId, offset, size).Find(&list); err != nil {
 		log.Log.Errorf("comment_trace: get video comment list by like err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
+// 根据评论点赞数排序 获取帖子评论列表（1级评论）
+func (m *CommentModel) GetPostCommentListByLike(composeId string, zanType, offset, size int) []*CommentList {
+	sql := "SELECT pc.*, count(tu.Id) AS like_num FROM post_comment AS pc " +
+		"LEFT JOIN thumbs_up AS tu ON pc.id = tu.type_id AND tu.zan_type=? AND tu.status=1 WHERE pc.post_id=? " +
+		"AND pc.comment_level = 1 " +
+		"GROUP BY pc.Id ORDER BY like_num DESC, pc.id DESC LIMIT ?, ?"
+
+	var list []*CommentList
+	if err := m.Engine.SQL(sql, zanType, composeId, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("comment_trace: get post comment list by like err:%s", err)
 		return nil
 	}
 
@@ -289,7 +323,7 @@ func (m *CommentModel) GetVideoReplyList(videoId, commentId string, offset, size
 // 获取帖子评论下的回复列表
 func (m *CommentModel) GetPostReplyList(videoId, commentId string, offset, size int) []*ReplyComment {
 	var list []*ReplyComment
-	if err := m.Engine.Table(&models.PostComment{}).Where("video_id=? AND comment_level=2 AND parent_comment_id=?", videoId, commentId).
+	if err := m.Engine.Table(&models.PostingComment{}).Where("post_id=? AND comment_level=2 AND parent_comment_id=?", videoId, commentId).
 		Asc("id").
 		Limit(size, offset).
 		Find(&list); err != nil {
@@ -300,8 +334,8 @@ func (m *CommentModel) GetPostReplyList(videoId, commentId string, offset, size 
 	return list
 }
 
-// 获取评论总回复数
-func (m *CommentModel) GetTotalReplyByComment(commentId string) int64 {
+// 获取视频评论总回复数
+func (m *CommentModel) GetTotalReplyByVideoComment(commentId string) int64 {
 	total, err := m.Engine.Where("parent_comment_id=?", commentId).Count(&models.VideoComment{})
 	if err != nil {
 		log.Log.Errorf("comment_trace get total reply by comment err:%s", err)
@@ -311,6 +345,19 @@ func (m *CommentModel) GetTotalReplyByComment(commentId string) int64 {
 	return total
 
 }
+
+// 获取帖子评论总回复数
+func (m *CommentModel) GetTotalReplyByPostComment(commentId string) int64 {
+	total, err := m.Engine.Where("parent_comment_id=?", commentId).Count(&models.PostingComment{})
+	if err != nil {
+		log.Log.Errorf("comment_trace get total reply by post comment err:%s", err)
+		return 0
+	}
+
+	return total
+
+}
+
 
 // 后台获取视频评论列表（查询所有 或 用户id或视频id进行查询 可通过 1 时间、 2 点赞数、 3 回复数排序 默认时间倒序）
 func (m *CommentModel) GetVideoCommentsBySort(userId, videoId, sortType, condition string, offset, size int) []*VideoCommentInfo {

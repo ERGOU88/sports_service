@@ -8,4 +8,6 @@ type CommunityTopic struct {
 	IsHot     int    `json:"is_hot" xorm:"not null default 0 comment('是否热门话题 1 热门') TINYINT(1)"`
 	CreateAt  int    `json:"create_at" xorm:"not null comment('创建时间') INT(11)"`
 	UpdateAt  int    `json:"update_at" xorm:"not null comment('更新时间') INT(11)"`
+	Cover     string `json:"cover" xorm:"not null default '' comment('话题封面') VARCHAR(256)"`
+	Describe  string `json:"describe" xorm:"not null default '' comment('话题描述') VARCHAR(1000)"`
 }

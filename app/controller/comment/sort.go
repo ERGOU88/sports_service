@@ -4,7 +4,7 @@ import (
 	"sports_service/server/models/mcomment"
 )
 
-type SortComment []*mcomment.VideoComments
+type SortComment []*mcomment.CommentList
 
 func (cm SortComment) Len() int {
 	return len(cm)

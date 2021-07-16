@@ -157,9 +157,11 @@ func ReplyList(c *gin.Context) {
 	userId := c.Query("user_id")
 	commentId := c.Query("comment_id")
 	videoId := c.Query("video_id")
+	// todo: 替换videoId
+	//composeId := c.Query("compose_id")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
-	// 0 视频评论 1 帖子评论
-	commentType, _ := strconv.Atoi(c.DefaultQuery("comment_type", "0"))
+	// 1 视频回复 2 帖子回复
+	commentType, _ := strconv.Atoi(c.DefaultQuery("comment_type", "1"))
 
 	svc := comment.New(c)
 	// 获取评论回复列表

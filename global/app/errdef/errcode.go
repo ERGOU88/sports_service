@@ -140,6 +140,9 @@ const (
 
 	// 社区相关错误码 14001-15000
 	COMMUNITY_SECTION_NOT_EXISTS = 14001
+	COMMUNITY_TOPICS_FAIL        = 14002
+	COMMUNITY_SECTIONS_FAIL      = 14003
+	COMMUNITY_TOPIC_FAIL         = 14004
 
 )
 
@@ -267,6 +270,9 @@ var MsgFlags = map[int]string{
 	SHARE_DATA_FAIL:             "分享失败",
 
 	COMMUNITY_SECTION_NOT_EXISTS:"社区板块不存在",
+	COMMUNITY_TOPICS_FAIL:       "获取社区话题列表失败",
+	COMMUNITY_SECTIONS_FAIL:     "获取社区板块列表失败",
+	COMMUNITY_TOPIC_FAIL:        "获取社区话题失败",
 }
 
 func GetMsg(code int) string {

@@ -21,6 +21,7 @@ import (
 	"sports_service/server/app/routers/api/v1/client"
 	"sports_service/server/app/config"
 	"sports_service/server/global/app/log"
+	"sports_service/server/app/routers/api/v1/community"
 )
 
 // 路由初始化
@@ -61,4 +62,6 @@ func InitRouters(engine *gin.Engine) {
 	posting.Router(engine)
 	// 分享模块
 	share.Router(engine)
+	// 社区模块
+	community.Router(engine)
 }

@@ -226,3 +226,13 @@ func (m *PostingModel) GetPostStatistic(postId string) (*models.PostingStatistic
 
 	return m.Statistic, nil
 }
+
+// 获取某板块下的帖子总数
+func (m *PostingModel) GetPostNumBySection(sectionId string) (int64, error) {
+	return m.Engine.Where("section_id=?", sectionId).Count(&models.PostingInfo{})
+}
+
+// 获取某话题下的帖子总数
+func (m *PostingModel) GetPostNumByTopic(topicId string) (int64, error) {
+	return m.Engine.Where("status=1 AND topic_id=?", topicId).Count(&models.PostingTopic{})
+}
