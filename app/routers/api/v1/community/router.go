@@ -17,6 +17,10 @@ func Router(engine *gin.Engine) {
 		community.GET("/topic/list", CommunityTopics)
 		// 通过id获取社区话题信息
 		community.GET("/topic", CommunityTopicById)
+		// 社区板块下的帖子列表
+		community.GET("/section/post", SectionPostList)
+		// 社区话题下的帖子列表
+		community.GET("/topic/post", TopicPostList)
 
 	}
 }

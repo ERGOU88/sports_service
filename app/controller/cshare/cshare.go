@@ -80,7 +80,7 @@ func (svc *ShareModule) ShareData(userId string, params *mshare.ShareParams) int
 			return errdef.USER_NOT_EXISTS
 		}
 
-		section, err := svc.community.GetSectionInfo(params.SectionId)
+		section, err := svc.community.GetSectionInfo(fmt.Sprint(params.SectionId))
 		if section == nil || err != nil {
 			log.Log.Errorf("share_trace: section not found, id:%d", params.SectionId)
 			svc.engine.Rollback()

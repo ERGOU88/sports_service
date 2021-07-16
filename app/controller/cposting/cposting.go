@@ -8,7 +8,9 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
+	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcommunity"
+	"sports_service/server/models/mlike"
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
@@ -26,6 +28,8 @@ type PostingModule struct {
 	posting     *mposting.PostingModel
 	video       *mvideo.VideoModel
 	community   *mcommunity.CommunityModel
+	attention   *mattention.AttentionModel
+	like        *mlike.LikeModel
 }
 
 func New(c *gin.Context) PostingModule {
@@ -37,6 +41,8 @@ func New(c *gin.Context) PostingModule {
 		posting: mposting.NewPostingModel(socket),
 		video: mvideo.NewVideoModel(socket),
 		community: mcommunity.NewCommunityModel(socket),
+		attention: mattention.NewAttentionModel(socket),
+		like: mlike.NewLikeModel(socket),
 		engine: socket,
 	}
 }
@@ -78,7 +84,7 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 	}
 
 	// 获取板块信息
-	section, err := svc.community.GetSectionInfo(params.SectionId)
+	section, err := svc.community.GetSectionInfo(fmt.Sprint(params.SectionId))
 	if section == nil || err != nil {
 		log.Log.Errorf("post_trace: section not found, sectionId:%d", params.SectionId)
 		svc.engine.Rollback()
@@ -234,7 +240,7 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 
 	// todo: 完善返回数据
 	resp := new(mposting.PostDetailInfo)
-	resp.PostId = post.Id
+	resp.Id = post.Id
 	resp.Title = post.Title
 	resp.Describe = post.Describe
 	resp.IsRecommend = post.IsRecommend
@@ -274,8 +280,6 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 			log.Log.Errorf("post_trace: get forward post info err:%s", err)
 			return nil, errdef.POST_DETAIL_FAIL
 		}
-
-
 	}
 
 	if userId == "" {
@@ -288,22 +292,32 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 		// 用户是否浏览过
 		browse := svc.posting.GetUserBrowsePost(userId, consts.TYPE_POST, post.Id)
 		if browse != nil {
-			svc.video.Browse.CreateAt = now
-			svc.video.Browse.UpdateAt = now
+			svc.posting.Browse.CreateAt = now
+			svc.posting.Browse.UpdateAt = now
 			// 已有浏览记录 更新用户浏览的时间
 			if err := svc.posting.UpdateUserBrowsePost(userId, consts.TYPE_POST, post.Id); err != nil {
 				log.Log.Errorf("post_trace: update user browse post err:%s", err)
 			}
 		} else {
-			svc.video.Browse.CreateAt = now
-			svc.video.Browse.UpdateAt = now
-			svc.video.Browse.UserId = userId
-			svc.video.Browse.ComposeId = post.Id
-			svc.video.Browse.ComposeType = consts.TYPE_POST
+			svc.posting.Browse.CreateAt = now
+			svc.posting.Browse.UpdateAt = now
+			svc.posting.Browse.UserId = userId
+			svc.posting.Browse.ComposeId = post.Id
+			svc.posting.Browse.ComposeType = consts.TYPE_POST
 			// 添加用户浏览的帖子记录
 			if err := svc.posting.RecordUserBrowsePost(); err != nil {
 				log.Log.Errorf("post_trace: record user browse post err:%s", err)
 			}
+		}
+
+		// 是否关注
+		if attentionInfo := svc.attention.GetAttentionInfo(userId, post.UserId); attentionInfo != nil {
+			resp.IsAttention = attentionInfo.Status
+		}
+
+		// 是否点赞
+		if likeInfo := svc.like.GetLikeInfo(userId, post.Id, consts.TYPE_POSTS); likeInfo != nil {
+			resp.IsLike = likeInfo.Status
 		}
 	}
 	// 获取视频相关统计数据

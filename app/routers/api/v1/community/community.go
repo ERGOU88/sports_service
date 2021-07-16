@@ -50,3 +50,37 @@ func CommunityTopicById(c *gin.Context) {
 
 	reply.Response(http.StatusOK, code)
 }
+
+// /api/v1/community/section/post
+func SectionPostList(c *gin.Context) {
+	reply := errdef.New(c)
+	// 板块id 默认综合
+	sectionId := c.DefaultQuery("section_id", "1")
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	userId := c.Query("user_id")
+
+	svc := community.New(c)
+	code, list := svc.GetPostListBySection(page, size, userId, sectionId)
+	if code == errdef.SUCCESS {
+		reply.Data["list"] = list
+	}
+
+	reply.Response(http.StatusOK, code)
+}
+
+// /api/v1/community/topic/post
+func TopicPostList(c *gin.Context) {
+	reply := errdef.New(c)
+	topicId := c.Query("topic_id")
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	userId := c.Query("user_id")
+	sortHot := c.Query("sort_hot")
+
+	svc := community.New(c)
+	code, list := svc.GetPostListByTopic(page, size, userId, topicId, sortHot)
+	if code == errdef.SUCCESS {
+		reply.Data["list"] = list
+	}
+
+	reply.Response(http.StatusOK, code)
+}

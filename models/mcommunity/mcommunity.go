@@ -39,7 +39,7 @@ func NewCommunityModel(engine *xorm.Session) *CommunityModel {
 }
 
 // 通过id获取板块信息
-func (m *CommunityModel) GetSectionInfo(id int) (*models.CommunitySection, error) {
+func (m *CommunityModel) GetSectionInfo(id string) (*models.CommunitySection, error) {
 	m.CommunitySection = new(models.CommunitySection)
 	ok, err := m.Engine.Where("id=? AND status=1", id).Get(m.CommunitySection)
 	if !ok || err != nil {

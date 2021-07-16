@@ -26,3 +26,9 @@ const (
 )
 
 
+// 排序方式 0 时间 1 热度 （点赞 + 浏览 + 评论）
+const (
+	POST_SORT_TIME   = "0"
+	POST_SORT_HOT    = "1"
+)
+

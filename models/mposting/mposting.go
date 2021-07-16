@@ -2,6 +2,7 @@ package mposting
 
 import (
 	"github.com/go-xorm/xorm"
+	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mshare"
 )
@@ -61,14 +62,14 @@ type ForwardPostInfo struct {
 
 // 帖子详情数据
 type PostDetailInfo struct {
-	PostId        int64                  `json:"post_id"  example:"1000000000"`        // 帖子id
+	Id            int64                  `json:"post_id"  example:"1000000000"`          // 帖子id
 	//Cover         string                 `json:"cover"  example:"封面"`                 // 封面
 	//VideoAddr     string                 `json:"video_addr"  example:"视频地址"`         // 视频地址
 	//VideoDuration int                    `json:"video_duration" example:"100000"`       // 视频时长
 	//Size          int                    `json:"size"`                                 // 视频大小
 	Title         string                 `json:"title"  example:"标题"`                 // 标题
 	Describe      string                 `json:"describe"  example:"描述"`              // 描述
-	Images        []string               `json:"images,omitempty"`                     // 图片列表
+	Content       string                 `json:"content,omitempty"`                    // 帖子内容 图片列表/json 例如转发的视频
 	IsRecommend   int                    `json:"is_recommend" example:"0"`             // 是否推荐
 	IsTop         int                    `json:"is_top"  example:"0"`                   // 是否置顶
 	Status        int32                  `json:"status"  example:"1"`                   // 审核状态
@@ -88,6 +89,7 @@ type PostDetailInfo struct {
 	ImagesAddr    []string               `json:"images_addr,omitempty"`                // 图片地址
 	ContentType   int                    `json:"content_type"`                         // 0 社区发布 1 转发视频 2 转发帖子
 	PostingType   int                    `json:"posting_type"`                         // 帖子类型  0 纯文本 1 图文 2 视频 + 文字
+	HeatNum       int                    `json:"heat_num"`                             // 热度
 }
 
 // 实栗
@@ -114,7 +116,7 @@ func (m *PostingModel) GetPostById(id string) (*models.PostingInfo, error) {
 // 获取帖子所属话题 [1对多]
 func (m *PostingModel) GetPostTopic(postId string) ([]*models.PostingTopic, error) {
 	var list []*models.PostingTopic
-	if err := m.Engine.Where("posting_id=?", postId).Asc("create_at").Find(&list); err != nil {
+	if err := m.Engine.Where("posting_id=?", postId).Asc("id").Find(&list); err != nil {
 		return nil, err
 	}
 
@@ -141,12 +143,12 @@ func (m *PostingModel) AddPostingTopics(topics []*models.PostingTopic) (int64, e
 }
 
 const (
-	UPDATE_POST_BROWSE_NUM  = "UPDATE `posting_statistic` SET `browse_num` = `browse_num` + ?, `update_at`=? WHERE " +
-		"`posting_id`=? AND `browse_num` + ? >= 0 LIMIT 1"
+	UPDATE_POST_BROWSE_NUM  = "UPDATE `posting_statistic` SET `browse_num` = `browse_num` + ?, " +
+		"`heat_num` = `heat_num` = ?, `update_at`=? WHERE `posting_id`=? AND `browse_num` + ? >= 0 LIMIT 1"
 )
-// 更新帖子浏览数
+// 更新帖子浏览数 及 帖子热度
 func (m *PostingModel) UpdatePostBrowseNum(postId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_POST_BROWSE_NUM, num, now, postId, num); err != nil {
+	if _, err := m.Engine.Exec(UPDATE_POST_BROWSE_NUM, num, num, now, postId, num); err != nil {
 		return err
 	}
 
@@ -154,11 +156,12 @@ func (m *PostingModel) UpdatePostBrowseNum(postId int64, now, num int) error {
 }
 
 const (
-	UPDATE_POST_LIKE_NUM  = "UPDATE `posting_statistic` SET `fabulous_num` = `fabulous_num` + ?, `update_at`=? WHERE `posting_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
+	UPDATE_POST_LIKE_NUM  = "UPDATE `posting_statistic` SET `fabulous_num` = `fabulous_num` + ?, " +
+		"`heat_num` = `heat_num` = ?, `update_at`=? WHERE `posting_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
 )
-// 更新帖子点赞数
+// 更新帖子点赞数 及 帖子热度
 func (m *PostingModel) UpdatePostLikeNum(videoId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_POST_LIKE_NUM, num, now, videoId, num); err != nil {
+	if _, err := m.Engine.Exec(UPDATE_POST_LIKE_NUM, num, num, now, videoId, num); err != nil {
 		return err
 	}
 
@@ -166,11 +169,12 @@ func (m *PostingModel) UpdatePostLikeNum(videoId int64, now, num int) error {
 }
 
 const (
-	UPDATE_POST_COMMENT_NUM = "UPDATE `posting_statistic` SET `comment_num` = `comment_num` + ?, `update_at`=? WHERE `posting_id`=? AND `comment_num` + ? >= 0 LIMIT 1"
+	UPDATE_POST_COMMENT_NUM = "UPDATE `posting_statistic` SET `comment_num` = `comment_num` + ?, " +
+		"`heat_num` = `heat_num` = ?, `update_at`=? WHERE `posting_id`=? AND `comment_num` + ? >= 0 LIMIT 1"
 )
-// 更新帖子评论数
+// 更新帖子评论数 及 帖子热度
 func (m *PostingModel) UpdatePostCommentNum(postId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_POST_COMMENT_NUM, num, now, postId, num); err != nil {
+	if _, err := m.Engine.Exec(UPDATE_POST_COMMENT_NUM, num, num, now, postId, num); err != nil {
 		return err
 	}
 
@@ -236,3 +240,39 @@ func (m *PostingModel) GetPostNumBySection(sectionId string) (int64, error) {
 func (m *PostingModel) GetPostNumByTopic(topicId string) (int64, error) {
 	return m.Engine.Where("status=1 AND topic_id=?", topicId).Count(&models.PostingTopic{})
 }
+
+const (
+	GET_POST_LIST_BY_SECTION = "SELECT p.*, ps.fabulous_num, ps.browse_num, ps.share_num, ps.comment_num, ps.heat_num FROM " +
+		"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 AND p.section_id=? " +
+		"ORDER BY ps.`heat_num` DESC, sortorder DESC, id DESC LIMIT ?, ?"
+)
+// 通过板块id 获取帖子列表
+func (m *PostingModel) GetPostListBySectionId(sectionId string, offset, size int) ([]*PostDetailInfo, error) {
+	var list []*PostDetailInfo
+	if err := m.Engine.SQL(GET_POST_LIST_BY_SECTION, sectionId, offset, size).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 通过话题id 获取同话题的帖子列表 [sortHot为1 按热度排序 默认按发布时间排序]
+func (m *PostingModel) GetPostListByTopicId(topicId, sortHot string, offset, size int) ([]*PostDetailInfo, error) {
+	var list []*PostDetailInfo
+	sql := "SELECT p.*,ps.* FROM `posting_info` AS p LEFT JOIN `posting_topic` as pt ON p.id=pt.posting_id " +
+		"LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 AND pt.topic_id=? ORDER BY "
+
+	if sortHot == consts.POST_SORT_HOT {
+		sql += "ps.`heat_num` DESC, "
+	}
+
+	sql += "sortorder DESC, id DESC LIMIT ?, ?"
+
+	if err := m.Engine.SQL(sql, topicId, offset, size).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+
