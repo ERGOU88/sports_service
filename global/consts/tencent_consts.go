@@ -51,3 +51,10 @@ const (
 	EVENT_UPLOAD_TYPE                   int = iota
 	EVENT_PROCEDURE_STATE_CHANGED_TYPE
 )
+
+// 视频AI审核结果
+const (
+	VIDEO_AUDIT_PASS = "pass"             // 通过
+	VIDEO_AUDIT_REVIEW = "review"         // 建议复审
+	VIDEO_AUDIT_BLOCK  = "block"          // 屏蔽
+)

@@ -2,7 +2,6 @@ package job
 
 import (
   "errors"
-  "fmt"
   "github.com/garyburd/redigo/redis"
   "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod/v20180717"
   "sports_service/server/dao"
@@ -17,6 +16,7 @@ import (
   "strconv"
   "strings"
   "time"
+  "fmt"
 )
 
 // 主动拉取事件（腾讯云）
@@ -46,7 +46,7 @@ func pullEvents() error {
   }
 
   for _, event := range resp.Response.EventSet {
-    log.Log.Debugf("eventType:%v", *event.EventType)
+    log.Log.Debugf("event:%v, eventType:%v", *event, *event.EventType)
     switch *event.EventType {
     // 上传事件
     case consts.EVENT_TYPE_UPLOAD:
@@ -55,11 +55,10 @@ func pullEvents() error {
         log.Log.Errorf("job_trace: uploadEvent err:%s", err)
         continue
       }
-    // 任务流状态变更（包含视频转码完成）
-    case consts.EVENT_PROCEDURE_STATE_CHANGED:
-      log.Log.Debugf("transcode event:%+v", *event.ProcedureStateChangeEvent)
-      transCodeCompleteEvent(event)
 
+    // 任务流状态变更（包含视频转码完成、视频AI审核等）
+    case consts.EVENT_PROCEDURE_STATE_CHANGED:
+      procedureStateChangedEvent(event)
     // 文件被删除
     case consts.EVENT_FILE_DELETED:
       log.Log.Debugf("fileDeleted event:%+v", *event.FileDeleteEvent)
@@ -72,16 +71,15 @@ func pullEvents() error {
   return nil
 }
 
-// 文件删除事件 todo: 修改数据状态？
-func fileDeletedEvent(event *v20180717.EventContent) {
-  client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
-  if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-    log.Log.Errorf("job_trace: confirm events err:%s", err)
+// 任务流状态变更（包含视频转码完成、视频AI审核等）
+func procedureStateChangedEvent(event *v20180717.EventContent) error {
+  bts, _ := util.JsonFast.Marshal(event.ProcedureStateChangeEvent)
+  mp, err := util.JsonStringToMap(string(bts))
+  if err != nil {
+    log.Log.Errorf("job_trace: jsonStringToMap err:%s", err)
+    return err
   }
-}
 
-// 视频转码事件
-func transCodeCompleteEvent(event *v20180717.EventContent) error {
   session := dao.Engine.NewSession()
   defer session.Close()
   if err := session.Begin(); err != nil {
@@ -93,14 +91,273 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
   vmodel := mvideo.NewVideoModel(session)
   video := vmodel.GetVideoByFileId(*event.ProcedureStateChangeEvent.FileId)
   if video == nil {
-    log.Log.Errorf("job_trace: video not found, fileId:%s", *event.ProcedureStateChangeEvent.FileId)
-    session.Rollback()
-    // 确认事件回调
-    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-    log.Log.Errorf("job_trace: confirm events err:%s", err)
-    }
+   log.Log.Errorf("job_trace: video not found, fileId:%s", *event.ProcedureStateChangeEvent.FileId)
+   session.Rollback()
+   // 确认事件回调
+   if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+     log.Log.Errorf("job_trace: confirm events err:%s", err)
+   }
 
-    return errors.New("video not found")
+   return errors.New("video not found")
+  }
+
+  if b := util.MapExist(mp, "MediaProcessResultSet"); b {
+    log.Log.Debugf("transcode event:%+v", *event.ProcedureStateChangeEvent)
+    if err := transCodeCompleteEvent(event, video); err != nil {
+      session.Rollback()
+      log.Log.Errorf("job_trace: transCode fail, err:%s", err)
+      return err
+    }
+  }
+
+  if b := util.MapExist(mp, "AiContentReviewResultSet"); b {
+    log.Log.Debugf("ai review event:%+v", *event.ProcedureStateChangeEvent)
+    if err := aiContentReviewEvent(event, video); err != nil {
+      log.Log.Errorf("job_trace: ai review fail, err:%s", err)
+      session.Rollback()
+      return err
+    }
+  }
+
+  if err := vmodel.UpdateVideoPlayInfo(fmt.Sprint(video.VideoId)); err != nil {
+    session.Rollback()
+    return errors.New("job_trace: update video play info fail")
+  }
+
+  now := time.Now().Unix()
+  // 记录事件回调信息
+  fileId, _ := strconv.Atoi(*event.ProcedureStateChangeEvent.FileId)
+  vmodel.Events.FileId = int64(fileId)
+  vmodel.Events.CreateAt = int(now)
+  vmodel.Events.EventType = consts.EVENT_PROCEDURE_STATE_CHANGED_TYPE
+  bts, _ = util.JsonFast.Marshal(event)
+  vmodel.Events.Event = string(bts)
+  affected, err := vmodel.RecordTencentEvent()
+  if err != nil || affected != 1 {
+   log.Log.Errorf("job_trace: record tencent transcode complete event err:%s, affected:%d", err, affected)
+   session.Rollback()
+   return errors.New("record tencent complete event fail")
+  }
+
+  // 确认事件回调
+  if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+   log.Log.Errorf("job_trace: confirm events err:%s", err)
+   session.Rollback()
+   return errors.New("confirm event fail")
+  }
+
+  session.Commit()
+  return nil
+}
+
+// todo：是否需要人工复审 确定规则 记录相关审核事件处理结果 [当前版本无相关需求]
+// 视频AI 内容审核
+// Type为Porn、Terrorism和Political三种类型的审核结果，分别代表视频画面令人反感的信息、视频画面令人不安全的信息和视频画面令人不适宜的信息
+// suggestion pass：嫌疑度不高，建议直接通过 review：嫌疑度较高，建议人工复核 block：嫌疑度很高，建议直接屏蔽
+// segments 有嫌疑的视频片段，帮助定位视频中具体哪一段涉嫌违规
+// confidence 审核评分（0 - 100），评分越高，嫌疑越大
+func aiContentReviewEvent(event *v20180717.EventContent, video *models.Videos) error {
+  //session := dao.Engine.NewSession()
+  //defer session.Close()
+  //if err := session.Begin(); err != nil {
+  //  log.Log.Errorf("job_trace: session begin err:%s", err)
+  //  return err
+  //}
+  //
+  //client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
+  //vmodel := mvideo.NewVideoModel(session)
+  //video := vmodel.GetVideoByFileId(*event.ProcedureStateChangeEvent.FileId)
+  //if video == nil {
+  //  log.Log.Errorf("job_trace: video not found, fileId:%s", *event.ProcedureStateChangeEvent.FileId)
+  //  session.Rollback()
+  //  // 确认事件回调
+  //  //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+  //  //  log.Log.Errorf("job_trace: confirm events err:%s", err)
+  //  //}
+  //
+  //  return errors.New("video not found")
+  //}
+
+  if len(event.ProcedureStateChangeEvent.AiContentReviewResultSet) <= 0 {
+    return errors.New("AiContentReviewResultSet Not Found")
+  }
+
+  // 默认为通过
+  auditState := true
+  for _, item := range event.ProcedureStateChangeEvent.AiContentReviewResultSet {
+    log.Log.Debugf("AIEvent:%v", *item)
+    switch *item.Type {
+    case "Porn":
+      if *item.PornTask.Status != "SUCCESS" {
+        continue
+      }
+
+      // todo: 产品当前版本规则为 除block 均为通过
+      if *item.PornTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+        auditState = false
+      }
+
+    case "Terrorism":
+      if *item.TerrorismTask.Status != "SUCCESS" {
+        continue
+      }
+
+      if *item.TerrorismTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+        auditState = false
+      }
+
+    case "Political":
+      if *item.PoliticalTask.Status != "SUCCESS" {
+        continue
+      }
+
+      if *item.PoliticalTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+        auditState = false
+      }
+
+    case "Porn.Asr":
+      if *item.PornAsrTask.Status != "SUCCESS" {
+        continue
+      }
+
+      if *item.PornAsrTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+        auditState = false
+      }
+
+    case "Porn.Ocr":
+      if *item.PornOcrTask.Status != "SUCCESS" {
+        continue
+      }
+
+      if *item.PornOcrTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+        auditState = false
+      }
+
+    case "Terrorism.Ocr":
+      if *item.TerrorismOcrTask.Status != "SUCCESS" {
+        continue
+      }
+
+      if *item.TerrorismOcrTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+        auditState = false
+      }
+
+    case "Political.Asr":
+      if *item.PoliticalAsrTask.Status != "SUCCESS" {
+        continue
+      }
+
+
+      if *item.PoliticalAsrTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+        auditState = false
+      }
+
+    case "Political.Ocr":
+      if *item.PoliticalOcrTask.Status != "SUCCESS" {
+        continue
+      }
+
+      if *item.PoliticalOcrTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+        auditState = false
+      }
+
+    case "Prohibited.Asr":
+      if *item.ProhibitedAsrTask.Status != "SUCCESS" {
+        continue
+      }
+
+      if *item.ProhibitedAsrTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+        auditState = false
+      }
+
+    case "Prohibited.Ocr":
+      if *item.ProhibitedOcrTask.Status != "SUCCESS" {
+        continue
+      }
+
+      if *item.ProhibitedOcrTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+        auditState = false
+      }
+
+    }
+  }
+
+  // 默认为审核通过
+  video.Status = 1
+  // 2 为不通过
+  if auditState == false {
+    video.Status = 2
+  }
+
+  //// 更新视频审核状态
+  //if err := vmodel.UpdateVideoStatus(video.UserId, fmt.Sprint(video.VideoId)); err != nil {
+  //  log.Log.Errorf("job_trace: update video status fail, err:%s", err)
+  //  session.Rollback()
+  //  return err
+  //}
+
+  //now := time.Now().Unix()
+  //// 记录事件回调信息
+  //fileId, _ := strconv.Atoi(*event.ProcedureStateChangeEvent.FileId)
+  //vmodel.Events.FileId = int64(fileId)
+  //vmodel.Events.CreateAt = int(now)
+  //vmodel.Events.EventType = consts.EVENT_PROCEDURE_STATE_CHANGED_TYPE
+  //bts, _ := util.JsonFast.Marshal(event)
+  //vmodel.Events.Event = string(bts)
+  //affected, err := vmodel.RecordTencentEvent()
+  //if err != nil || affected != 1 {
+  //  log.Log.Errorf("job_trace: record tencent aiContentReview event err:%s, affected:%d", err, affected)
+  //  session.Rollback()
+  //  return errors.New("record tencent complete event fail")
+  //}
+  //
+  //// 确认事件回调
+  //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+  //  log.Log.Errorf("job_trace: confirm events err:%s", err)
+  //  session.Rollback()
+  //  return errors.New("confirm event fail")
+  //}
+  //
+  //session.Commit()
+
+  return nil
+}
+
+// 文件删除事件 todo: 修改数据状态？
+func fileDeletedEvent(event *v20180717.EventContent) {
+  client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
+  if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+    log.Log.Errorf("job_trace: confirm events err:%s", err)
+  }
+}
+
+
+// 视频转码事件
+func transCodeCompleteEvent(event *v20180717.EventContent, video *models.Videos) error {
+  //session := dao.Engine.NewSession()
+  //defer session.Close()
+  //if err := session.Begin(); err != nil {
+  //  log.Log.Errorf("job_trace: session begin err:%s", err)
+  //  return err
+  //}
+
+  //client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
+  //vmodel := mvideo.NewVideoModel(session)
+  //video := vmodel.GetVideoByFileId(*event.ProcedureStateChangeEvent.FileId)
+  //if video == nil {
+  //  log.Log.Errorf("job_trace: video not found, fileId:%s", *event.ProcedureStateChangeEvent.FileId)
+  //  session.Rollback()
+  //  // 确认事件回调
+  //  if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+  //  log.Log.Errorf("job_trace: confirm events err:%s", err)
+  //  }
+  //
+  //  return errors.New("video not found")
+  //}
+
+
+  if len(event.ProcedureStateChangeEvent.MediaProcessResultSet) <= 0 {
+    return errors.New("MediaProcessResultSet Not Exists")
   }
 
   list := make([]*mvideo.PlayInfo, 0)
@@ -187,37 +444,38 @@ func transCodeCompleteEvent(event *v20180717.EventContent) error {
   playBts, err := util.JsonFast.Marshal(list)
   if err != nil {
     log.Log.Errorf("job_trace: jsonFast err:%s", err)
+    return err
   }
 
   video.PlayInfo = string(playBts)
-  if err := vmodel.UpdateVideoPlayInfo(fmt.Sprint(video.VideoId)); err != nil {
-    session.Rollback()
-    return errors.New("job_trace: update video play info fail")
-  }
+  //if err := vmodel.UpdateVideoPlayInfo(fmt.Sprint(video.VideoId)); err != nil {
+  //
+  //  return errors.New("job_trace: update video play info fail")
+  //}
 
-  now := time.Now().Unix()
-  // 记录事件回调信息
-  fileId, _ := strconv.Atoi(*event.ProcedureStateChangeEvent.FileId)
-  vmodel.Events.FileId = int64(fileId)
-  vmodel.Events.CreateAt = int(now)
-  vmodel.Events.EventType = consts.EVENT_PROCEDURE_STATE_CHANGED_TYPE
-  bts, _ := util.JsonFast.Marshal(event)
-  vmodel.Events.Event = string(bts)
-  affected, err := vmodel.RecordTencentEvent()
-  if err != nil || affected != 1 {
-    log.Log.Errorf("job_trace: record tencent transcode complete event err:%s, affected:%d", err, affected)
-    session.Rollback()
-    return errors.New("record tencent complete event fail")
-  }
+  //now := time.Now().Unix()
+  //// 记录事件回调信息
+  //fileId, _ := strconv.Atoi(*event.ProcedureStateChangeEvent.FileId)
+  //vmodel.Events.FileId = int64(fileId)
+  //vmodel.Events.CreateAt = int(now)
+  //vmodel.Events.EventType = consts.EVENT_PROCEDURE_STATE_CHANGED_TYPE
+  //bts, _ := util.JsonFast.Marshal(event)
+  //vmodel.Events.Event = string(bts)
+  //affected, err := vmodel.RecordTencentEvent()
+  //if err != nil || affected != 1 {
+  //  log.Log.Errorf("job_trace: record tencent transcode complete event err:%s, affected:%d", err, affected)
+  //  session.Rollback()
+  //  return errors.New("record tencent complete event fail")
+  //}
+  //
+  //// 确认事件回调
+  //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+  //  log.Log.Errorf("job_trace: confirm events err:%s", err)
+  //  session.Rollback()
+  //  return errors.New("confirm event fail")
+  //}
 
-  // 确认事件回调
-  if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-    log.Log.Errorf("job_trace: confirm events err:%s", err)
-    session.Rollback()
-    return errors.New("confirm event fail")
-  }
-
-  session.Commit()
+  //session.Commit()
   return nil
 }
 

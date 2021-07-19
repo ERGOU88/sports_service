@@ -742,7 +742,7 @@ func (m *VideoModel) AddVideoReport() (int64, error) {
 	return m.Engine.InsertOne(m.Report)
 }
 
-// 更新视频转码数据
+// 更新视频转码数据 & AI审核状态
 func (m *VideoModel) UpdateVideoPlayInfo(videoId string) error {
 	if _, err := m.Engine.Where("video_id=?", videoId).Cols("play_info").Update(m.Videos); err != nil {
 		return err
