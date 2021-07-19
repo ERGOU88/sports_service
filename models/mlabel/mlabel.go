@@ -1,12 +1,13 @@
 package mlabel
 
 import (
+	"fmt"
 	"github.com/go-xorm/xorm"
 	"reflect"
+	"sports_service/server/dao"
 	"sports_service/server/global/app/log"
 	"sports_service/server/models"
 	"sync"
-	"fmt"
 )
 
 type LabelModel struct {
@@ -48,6 +49,13 @@ var mutex sync.Mutex
 
 func init() {
 	labelMp = make(map[string]*VideoLabel)
+}
+
+func InitLabelList() {
+	socket := dao.Engine.NewSession()
+	defer socket.Close()
+	labelModel := NewLabelModel(socket)
+	labelModel.GetVideoLabelList()
 }
 
 // 实栗
@@ -165,7 +173,6 @@ func (m *LabelModel) GetVideoLabelList() []*VideoLabel {
 		}
 	}
 
-  log.Log.Debugf("load mem")
 	return videoLabels
 }
 

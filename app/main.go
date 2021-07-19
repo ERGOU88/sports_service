@@ -13,6 +13,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/job"
 	"sports_service/server/log/zap"
+	"sports_service/server/models/mlabel"
 	"sports_service/server/models/pprof"
 	"sports_service/server/nsqlx"
 	"sports_service/server/rabbitmq"
@@ -162,6 +163,8 @@ func init() {
 		// 任务
 		setupJob()
 	}
+
+	mlabel.InitLabelList()
 }
 
 // @title 电竞社区平台（应用服）
