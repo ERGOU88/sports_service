@@ -123,8 +123,9 @@ func procedureStateChangedEvent(event *v20180717.EventContent) error {
   }
 
   if err := vmodel.UpdateVideoPlayInfo(fmt.Sprint(video.VideoId)); err != nil {
+    log.Log.Errorf("job_trace: update video info fail, err:%s", err)
     session.Rollback()
-    return errors.New("job_trace: update video play info fail")
+    return errors.New("job_trace: update video info fail")
   }
 
   now := time.Now().Unix()
