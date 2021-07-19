@@ -212,14 +212,14 @@ func (svc *PostingModule) VerifyContentLen(postType int, content, title string) 
 }
 
 // 获取帖子详情
-func (svc *PostingModule) GetPostingDetail(postId string) (*models.PostingInfo, int) {
-	detail, err := svc.posting.GetPostById(postId)
-	if err != nil {
-		return nil, errdef.POST_DETAIL_FAIL
-	}
-
-	return detail, errdef.SUCCESS
-}
+//func (svc *PostingModule) GetPostingDetail(postId string) (*models.PostingInfo, int) {
+//	detail, err := svc.posting.GetPostById(postId)
+//	if err != nil {
+//		return nil, errdef.POST_DETAIL_FAIL
+//	}
+//
+//	return detail, errdef.SUCCESS
+//}
 
 // 获取帖子详情页数据
 func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDetailInfo, int) {
@@ -321,14 +321,129 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 		}
 	}
 	// 获取视频相关统计数据
-	info := svc.video.GetVideoStatistic(fmt.Sprint(post.Id))
-	resp.BrowseNum = info.BrowseNum
-	resp.CommentNum = info.CommentNum
-	resp.FabulousNum = info.FabulousNum
-	resp.ShareNum = info.ShareNum
+	info, err := svc.posting.GetPostStatistic(fmt.Sprint(post.Id))
+	if err == nil && info != nil {
+		resp.BrowseNum = info.BrowseNum
+		resp.CommentNum = info.CommentNum
+		resp.FabulousNum = info.FabulousNum
+		resp.ShareNum = info.ShareNum
+	}
 
 
 	return resp, errdef.SUCCESS
+}
+
+// 获取用户发布的帖子列表
+func (svc *PostingModule) GetPostPublishListByUser(userId string, page, size int) []*mposting.PostDetailInfo {
+	// 查询用户是否存在
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
+		log.Log.Errorf("post_trace: user not found, userId:%s", userId)
+		return []*mposting.PostDetailInfo{}
+	}
+
+	offset := (page - 1) * size
+	// 获取用户发布的帖子列表
+	list, err := svc.posting.GetPublishPostByUser(userId, offset, size)
+	if err != nil {
+		log.Log.Errorf("post_trace: get publish post by user fail, userId:%s", userId)
+		return []*mposting.PostDetailInfo{}
+	}
+
+	if len(list) == 0 {
+		return []*mposting.PostDetailInfo{}
+	}
+
+	for _, item := range list {
+		//item.Topics, err = svc.posting.GetPostTopic(fmt.Sprint(item.Id))
+		//if item.Topics == nil || err != nil  {
+		//	log.Log.Errorf("post_trace: get post topic fail, err:%s, item.Topics:%v", err, item.Topics)
+		//	item.Topics = []*models.PostingTopic{}
+		//}
+
+
+		item.Avatar = user.Avatar
+		item.Nickname = user.NickName
+
+
+		// 如果是转发的视频数据
+		if item.ContentType == consts.COMMUNITY_FORWARD_VIDEO {
+			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardVideo); err != nil {
+				log.Log.Errorf("post_trace: get forward video info err:%s", err)
+				return []*mposting.PostDetailInfo{}
+			}
+
+		}
+
+		// 如果是转发的帖子
+		if item.PostingType == consts.POST_TYPE_TEXT && item.ContentType == consts.COMMUNITY_FORWARD_POST {
+			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardPost); err != nil {
+				log.Log.Errorf("post_trace: get forward post info err:%s", err)
+				return []*mposting.PostDetailInfo{}
+			}
+		}
+
+		// 图文帖
+		if item.PostingType == consts.POST_TYPE_IMAGE {
+			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ImagesAddr); err != nil {
+				log.Log.Errorf("community_trace: get image info err:%s", err)
+				return []*mposting.PostDetailInfo{}
+			}
+		}
+
+		item.Content = ""
+	}
+
+	return list
+}
+
+// 用户删除发布的帖子
+func (svc *PostingModule) DeletePublishPost(userId, postId string) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("post_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
+
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("post_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
+		return errdef.USER_NOT_EXISTS
+	}
+
+	// 查询帖子信息
+	post, err := svc.posting.GetPostById(postId)
+	if post == nil || err != nil {
+		log.Log.Errorf("post_trace: post not found, postId:%d, err:%s", postId, err)
+		svc.engine.Rollback()
+		return errdef.POST_NOT_EXISTS
+	}
+
+
+	// 物理删除发布的帖子、帖子所属话题、帖子统计数据
+	if err := svc.posting.DelPublishPostById(postId); err != nil {
+		log.Log.Errorf("post_trace: delete publish post by id err:%s", err)
+		svc.engine.Rollback()
+		return errdef.POST_DELETE_PUBLISH_FAIL
+	}
+
+	// 删除帖子所属话题
+	if err := svc.posting.DelPostTopics(postId); err != nil {
+		log.Log.Errorf("post_trace: delete post topics err:%s", err)
+		svc.engine.Rollback()
+		return errdef.POST_DELETE_TOPIC_FAIL
+	}
+
+	// 删除帖子统计数据
+	if err := svc.posting.DelPostStatistic(postId); err != nil {
+		log.Log.Errorf("post_trace: delete post statistic err:%s", err)
+		svc.engine.Rollback()
+		return errdef.POST_DELETE_STATISTIC_FAIL
+	}
+
+	svc.engine.Commit()
+	return errdef.SUCCESS
 }
 
 // 过滤富文本 todo：和客户端确认最终的策略

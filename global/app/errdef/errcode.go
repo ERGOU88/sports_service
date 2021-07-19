@@ -133,6 +133,9 @@ const (
 	POST_INVALID_CONTENT_LEN    = 12006
 	POST_DETAIL_FAIL            = 12007
 	POST_NOT_EXISTS             = 12008
+	POST_DELETE_PUBLISH_FAIL    = 12009
+	POST_DELETE_TOPIC_FAIL      = 12010
+	POST_DELETE_STATISTIC_FAIL  = 12011
 
 	// 分享/转发相关错误码 13001-14000
 	SHARE_DATA_FAIL             = 13001
@@ -269,6 +272,9 @@ var MsgFlags = map[int]string{
 	POST_INVALID_CONTENT_LEN:    "内容长度超过限制",
 	POST_DETAIL_FAIL:            "获取帖子详情失败",
 	POST_NOT_EXISTS:             "帖子不存在",
+	POST_DELETE_PUBLISH_FAIL:    "删除发布的帖子失败",
+	POST_DELETE_TOPIC_FAIL:      "删除帖子标签失败",
+	POST_DELETE_STATISTIC_FAIL:  "删除帖子统计数据失败",
 
 	SHARE_DATA_FAIL:             "分享失败",
 

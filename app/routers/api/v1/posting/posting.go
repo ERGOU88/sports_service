@@ -16,5 +16,9 @@ func Router(engine *gin.Engine) {
 		posting.POST("/publish", token.TokenAuth(), PublishPosting)
 		// 帖子详情
 		posting.GET("/detail", PostDetail)
+		// 用户发布的帖子列表
+		posting.GET("/publish/list", token.TokenAuth(), PostPublishList)
+		// 用户删除发布的帖子
+		posting.POST("/delete/publish", token.TokenAuth(), DeletePublishPost)
 	}
 }

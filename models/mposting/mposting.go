@@ -17,6 +17,11 @@ type PostingModel struct {
 	Statistic         *models.PostingStatistic
 }
 
+// 删除发布的帖子记录请求参数(不支持批量删除)
+type DeletePostParam struct {
+	PostId        int64       `binding:"required" json:"post_id"` // 帖子id
+}
+
 // 发布帖子请求参数
 type PostPublishParam struct {
 	Title             string              `json:"title"`                              // 标题
@@ -305,4 +310,49 @@ func (m *PostingModel) SearchPostOrderByHeat(name string, offset, size int) ([]*
 	}
 
 	return list, nil
+}
+
+const (
+	GET_PUBLISH_POST_BY_USER = "SELECT p.*, ps.* FROM `posting_info` AS p LEFT JOIN `posting_statistic` as ps " +
+		"ON p.id=ps.posting_id WHERE p.user_id=? ORDER BY p.id DESC LIMIT ?, ?"
+)
+// 获取用户发布的帖子列表
+func (m *PostingModel) GetPublishPostByUser(userId string, offset, size int) ([]*PostDetailInfo, error) {
+	var list []*PostDetailInfo
+	if err := m.Engine.SQL(GET_PUBLISH_POST_BY_USER, userId, offset, size).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+const (
+	DELETE_PUBLISH_POST = "DELETE FROM `posting_info` WHERE `id`=?"
+)
+// 删除发布的帖子记录
+func (m *PostingModel) DelPublishPostById(postId string) error {
+	if _, err := m.Engine.Exec(DELETE_PUBLISH_POST, postId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+
+// 删除帖子所属话题
+func (m *PostingModel) DelPostTopics(postId string) error {
+	if _, err := m.Engine.Where("post_id=?", postId).Delete(m.PostingTopic); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 删除帖子统计数据
+func (m *PostingModel) DelPostStatistic(postId string) error {
+	if _, err := m.Engine.Where("post_id=?", postId).Delete(&models.PostingStatistic{}); err != nil {
+		return err
+	}
+
+	return nil
 }
