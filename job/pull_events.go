@@ -58,7 +58,10 @@ func pullEvents() error {
 
     // 任务流状态变更（包含视频转码完成、视频AI审核等）
     case consts.EVENT_PROCEDURE_STATE_CHANGED:
-      procedureStateChangedEvent(event)
+      if err := procedureStateChangedEvent(event); err != nil {
+        log.Log.Errorf("job_trace: procedureStateChangedEvent err:%s", err)
+      }
+
     // 文件被删除
     case consts.EVENT_FILE_DELETED:
       log.Log.Debugf("fileDeleted event:%+v", *event.FileDeleteEvent)
@@ -919,7 +922,7 @@ func newUploadEvent(event *v20180717.EventContent) error {
   vmodel.Events.FileId = int64(fileId)
   vmodel.Events.CreateAt = int(now)
   vmodel.Events.EventType = consts.EVENT_UPLOAD_TYPE
-  bts, _ = util.JsonFast.Marshal(event)
+  bts, _ = util.JsonFast.Marshal(event.FileUploadEvent)
   vmodel.Events.Event = string(bts)
   affected, err = vmodel.RecordTencentEvent()
   if err != nil || affected != 1 {
@@ -938,9 +941,9 @@ func newUploadEvent(event *v20180717.EventContent) error {
   session.Commit()
 
   // 删除存储发布信息的key
-  if _, err := vmodel.DelPublishInfo(userId, source.TaskId); err != nil {
-    log.Log.Errorf("job_trace: del publish info key err:%s", err)
-  }
+  //if _, err := vmodel.DelPublishInfo(userId, source.TaskId); err != nil {
+  //  log.Log.Errorf("job_trace: del publish info key err:%s", err)
+  //}
 
   return nil
 }
