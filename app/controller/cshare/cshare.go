@@ -44,7 +44,7 @@ func New(c *gin.Context) ShareModule {
 }
 
 // 分享/转发数据
-func (svc *ShareModule) ShareData(userId string, params *mshare.ShareParams) int {
+func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 	now := int(time.Now().Unix())
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
@@ -73,9 +73,9 @@ func (svc *ShareModule) ShareData(userId string, params *mshare.ShareParams) int
 			return errdef.POST_INVALID_CONTENT
 		}
 
-		user := svc.user.FindUserByUserid(userId)
+		user := svc.user.FindUserByUserid(params.UserId)
 		if user == nil {
-			log.Log.Errorf("share_trace: user not found, userId:%s", userId)
+			log.Log.Errorf("share_trace: user not found, userId:%s", params.UserId)
 			svc.engine.Rollback()
 			return errdef.USER_NOT_EXISTS
 		}
@@ -178,7 +178,7 @@ func (svc *ShareModule) ShareData(userId string, params *mshare.ShareParams) int
 
 		svc.posting.Posting.Id = 0
 		svc.posting.Posting.SectionId = section.Id
-		svc.posting.Posting.UserId = userId
+		svc.posting.Posting.UserId = params.UserId
 		svc.posting.Posting.CreateAt = now
 		svc.posting.Posting.Describe = params.Describe
 		svc.posting.Posting.Title = params.Title
@@ -226,7 +226,7 @@ func (svc *ShareModule) ShareData(userId string, params *mshare.ShareParams) int
 
 	info, _ := util.JsonFast.Marshal(params)
 	svc.share.Share.Content = string(info)
-	svc.share.Share.UserId = userId
+	svc.share.Share.UserId = params.UserId
 	svc.share.Share.ComposeId = int64(params.ComposeId)
 	svc.share.Share.ShareType = params.ShareType
 	svc.share.Share.SharePlatform = params.SharePlatform

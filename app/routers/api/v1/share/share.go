@@ -6,6 +6,7 @@ import (
 	"sports_service/server/app/controller/cshare"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
 	"sports_service/server/models/mshare"
 )
 
@@ -27,7 +28,6 @@ import (
 // 分享/转发 到社交平台
 func ShareWithSocialPlatform(c *gin.Context) {
 	reply := errdef.New(c)
-	userId := c.Query("user_id")
 	params := new(mshare.ShareParams)
 	if err := c.BindJSON(params); err != nil {
 		log.Log.Errorf("share_trace: share params err:%s, params:%+v", err, params)
@@ -36,15 +36,14 @@ func ShareWithSocialPlatform(c *gin.Context) {
 	}
 
 	svc := cshare.New(c)
-	code := svc.ShareData(userId, params)
+	code := svc.ShareData(params)
 	reply.Response(http.StatusOK, code)
 }
 
 // 分享/转发 到社区
 func ShareWithCommunity(c *gin.Context) {
 	reply := errdef.New(c)
-	//userId, _ := c.Get(consts.USER_ID)
-	userId := "13918242"
+	userId, _ := c.Get(consts.USER_ID)
 	params := new(mshare.ShareParams)
 	if err := c.BindJSON(params); err != nil {
 		log.Log.Errorf("share_trace: share params err:%s, params:%+v", err, params)
@@ -53,6 +52,7 @@ func ShareWithCommunity(c *gin.Context) {
 	}
 
 	svc := cshare.New(c)
-	code := svc.ShareData(userId, params)
+	params.UserId = userId.(string)
+	code := svc.ShareData(params)
 	reply.Response(http.StatusOK, code)
 }

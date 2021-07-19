@@ -147,6 +147,7 @@ func (svc *CommunityModule) GetPostListBySection(page, size int, userId, section
 	for _, item := range list {
 		item.Topics, err = svc.post.GetPostTopic(fmt.Sprint(item.Id))
 		if item.Topics == nil || err != nil  {
+			log.Log.Errorf("community_race: get post topic fail, err:%s, item.Topics:%v", err, item.Topics)
 			item.Topics = []*models.PostingTopic{}
 		}
 
@@ -160,7 +161,7 @@ func (svc *CommunityModule) GetPostListBySection(page, size int, userId, section
 		if item.ContentType == consts.COMMUNITY_FORWARD_VIDEO {
 			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardVideo); err != nil {
 				log.Log.Errorf("community_trace: get forward video info err:%s", err)
-				return errdef.COMMUNITY_POSTS_BY_TOPIC, []*mposting.PostDetailInfo{}
+				return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
 			}
 
 		}
@@ -169,7 +170,15 @@ func (svc *CommunityModule) GetPostListBySection(page, size int, userId, section
 		if item.PostingType == consts.POST_TYPE_TEXT && item.ContentType == consts.COMMUNITY_FORWARD_POST {
 			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardPost); err != nil {
 				log.Log.Errorf("community_trace: get forward post info err:%s", err)
-				return errdef.COMMUNITY_POSTS_BY_TOPIC, []*mposting.PostDetailInfo{}
+				return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
+			}
+		}
+
+		// 图文帖
+		if item.PostingType == consts.POST_TYPE_IMAGE {
+			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ImagesAddr); err != nil {
+				log.Log.Errorf("community_trace: get image info err:%s", err)
+				return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
 			}
 		}
 
@@ -239,6 +248,14 @@ func (svc *CommunityModule) GetPostListByTopic(page, size int, userId, topicId, 
 		if item.PostingType == consts.POST_TYPE_TEXT && item.ContentType == consts.COMMUNITY_FORWARD_POST {
 			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardPost); err != nil {
 				log.Log.Errorf("community_trace: get forward post info err:%s", err)
+				return errdef.COMMUNITY_POSTS_BY_TOPIC, []*mposting.PostDetailInfo{}
+			}
+		}
+
+		// 图文帖
+		if item.PostingType == consts.POST_TYPE_IMAGE {
+			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ImagesAddr); err != nil {
+				log.Log.Errorf("community_trace: get image info err:%s", err)
 				return errdef.COMMUNITY_POSTS_BY_TOPIC, []*mposting.PostDetailInfo{}
 			}
 		}

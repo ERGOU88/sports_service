@@ -3,6 +3,7 @@ package posting
 import (
 	"github.com/gin-gonic/gin"
 	"sports_service/server/middleware/sign"
+	"sports_service/server/middleware/token"
 )
 
 // 贴子模块路由
@@ -12,7 +13,7 @@ func Router(engine *gin.Engine) {
 	posting.Use(sign.CheckSign())
 	{
 		// 发布贴子
-		posting.POST("/publish", PublishPosting)
+		posting.POST("/publish", token.TokenAuth(), PublishPosting)
 		// 帖子详情
 		posting.GET("/detail", PostDetail)
 	}

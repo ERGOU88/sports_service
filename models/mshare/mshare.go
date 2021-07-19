@@ -19,8 +19,9 @@ type ShareParams struct {
 	TopicIds          []string            `json:"topic_ids"`                                // 话题id （多个）
 	Title             string              `json:"title"`                                    // 标题
 	Describe          string              `json:"describe"`                                 // 描述
-	ForwardVideo      *ShareVideoInfo     `json:"forward_video"`                            // 转发的视频内容
-	ForwardPost       *SharePostInfo      `json:"forward_post"`                             // 转发的帖子内容
+	//ForwardVideo      *ShareVideoInfo     `json:"forward_video"`                            // 转发的视频内容
+	//ForwardPost       *SharePostInfo      `json:"forward_post"`                             // 转发的帖子内容
+	UserId            string              `json:"user_id"`                                  // 用户id
 }
 
 // 分享的视频信息

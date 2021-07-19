@@ -5,6 +5,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mshare"
+	"fmt"
 )
 
 // 帖子模块
@@ -72,7 +73,7 @@ type PostDetailInfo struct {
 	Content       string                 `json:"content,omitempty"`                    // 帖子内容 图片列表/json 例如转发的视频
 	IsRecommend   int                    `json:"is_recommend" example:"0"`             // 是否推荐
 	IsTop         int                    `json:"is_top"  example:"0"`                   // 是否置顶
-	Status        int32                  `json:"status"  example:"1"`                   // 审核状态
+	Status        int32                  `json:"status"  example:"1"`                   // 审核状态 （0：审核中，1：审核通过 2：审核不通过 3：逻辑删除）
 	CreateAt      int                    `json:"create_at" example:"1600000000"`        // 创建时间
 	FabulousNum   int                    `json:"fabulous_num" example:"10"`             // 点赞数
 	CommentNum    int                    `json:"comment_num" example:"10"`              // 评论数
@@ -83,7 +84,7 @@ type PostDetailInfo struct {
 	Nickname      string                 `json:"nick_name"  example:"昵称"`             // 昵称
 	IsAttention   int                    `json:"is_attention" example:"1"`             // 是否关注 1 关注 0 未关注
 	IsLike        int                    `json:"is_like" example:"1"`                  // 是否点赞
-	Topics        []*models.PostingTopic `json:"topics"`                               // 所属话题
+	Topics        []*models.PostingTopic `json:"topics,omitempty"`                     // 所属话题
 	ForwardVideo  *mshare.ShareVideoInfo `json:"forward_video,omitempty"`              // 转发的视频内容 todo: 结构体
 	ForwardPost   *mshare.SharePostInfo  `json:"forward_post,omitempty"`               // 转发的帖子内容
 	ImagesAddr    []string               `json:"images_addr,omitempty"`                // 图片地址
@@ -116,7 +117,7 @@ func (m *PostingModel) GetPostById(id string) (*models.PostingInfo, error) {
 // 获取帖子所属话题 [1对多]
 func (m *PostingModel) GetPostTopic(postId string) ([]*models.PostingTopic, error) {
 	var list []*models.PostingTopic
-	if err := m.Engine.Where("posting_id=?", postId).Asc("id").Find(&list); err != nil {
+	if err := m.Engine.Where("posting_id=?", postId).Asc("posting_id").Find(&list); err != nil {
 		return nil, err
 	}
 
@@ -275,4 +276,33 @@ func (m *PostingModel) GetPostListByTopicId(topicId, sortHot string, offset, siz
 	return list, nil
 }
 
+// 搜索帖子 标题 / 内容
+func (m *PostingModel) SearchPost(name string, offset, size int) ([]*PostDetailInfo, error) {
+	sql := "SELECT * FROM posting_info WHERE status=1 AND title like '%" + name + "%' OR status=1 AND content LIKE '%" + name + "%' ORDER BY `id` DESC LIMIT ?, ?"
+	var list []*PostDetailInfo
+	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
+		return nil, err
+	}
 
+	return list, nil
+}
+
+// 搜索帖子 标题 / 内容 按热度排序
+func (m *PostingModel) SearchPostOrderByHeat(name string, offset, size int) ([]*PostDetailInfo, error) {
+	sql := "SELECT p.*, ps.fabulous_num, ps.browse_num, ps.share_num, ps.comment_num, ps.heat_num FROM " +
+	"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 "
+
+	if name != "" {
+		sql += "AND p.title LIKE '%" + name + "%' OR p.status=1 AND p.content LIKE '%" + name + "%' "
+	}
+
+
+	sql += fmt.Sprintf("ORDER BY ps.`heat_num` DESC, sortorder DESC, id DESC LIMIT ?, ?")
+
+	var list []*PostDetailInfo
+	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}

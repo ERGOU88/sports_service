@@ -6,19 +6,20 @@ import (
 	"sports_service/server/app/controller/cposting"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
 	"sports_service/server/models/mposting"
 )
 
 // 发布帖子
 func PublishPosting(c *gin.Context) {
 	reply := errdef.New(c)
-	//userId, ok := c.Get(consts.USER_ID)
-	//if !ok {
-	//	log.Log.Errorf("post_trace: user not found, uid:%s", userId.(string))
-	//	reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
-	//	return
-	//}
-	userId := "13918242"
+	userId, ok := c.Get(consts.USER_ID)
+	if !ok {
+		log.Log.Errorf("post_trace: user not found, uid:%s", userId.(string))
+		reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
+		return
+	}
+	//userId := "13918242"
 
 	params := new(mposting.PostPublishParam)
 	if err := c.BindJSON(params); err != nil {
@@ -28,7 +29,7 @@ func PublishPosting(c *gin.Context) {
 	}
 
 	svc := cposting.New(c)
-	code := svc.PublishPosting(userId, params)
+	code := svc.PublishPosting(userId.(string), params)
 	reply.Response(http.StatusOK, code)
 }
 

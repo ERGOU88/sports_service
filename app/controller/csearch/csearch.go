@@ -11,6 +11,7 @@ import (
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
 	"sports_service/server/models/mlike"
+	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	"sports_service/server/util"
@@ -26,6 +27,7 @@ type SearchModule struct {
 	video       *mvideo.VideoModel
 	attention   *mattention.AttentionModel
 	like        *mlike.LikeModel
+	post        *mposting.PostingModel
 }
 
 func New(c *gin.Context) SearchModule {
@@ -38,11 +40,12 @@ func New(c *gin.Context) SearchModule {
 		video: mvideo.NewVideoModel(socket),
 		attention: mattention.NewAttentionModel(socket),
 		like: mlike.NewLikeModel(socket),
+		post: mposting.NewPostingModel(socket),
 		engine: socket,
 	}
 }
 
-// 综合搜索（视频+用户 默认视频取10条 用户取20条 视频默认播放量排序） 如果视频和用户都未搜索到 则推荐两个视频
+// 综合搜索（视频+用户 默认视频取10条 用户取20条 帖子取3条 视频默认播放量排序） 如果视频和用户都未搜索到 则推荐两个视频
 func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDetailInfo, []*muser.UserSearchResults, []*mvideo.VideoDetailInfo) {
 	if name == "" {
 		log.Log.Errorf("search_trace: search name can't empty, name:%s", name)
@@ -67,8 +70,11 @@ func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDe
 	// 搜索到的用户
 	users := svc.UserSearch(userId, name, consts.DEFAULT_SEARCH_USER_PAGE, consts.DEFAULT_SEARCH_USER_SIZE)
 
+	// 搜索到的帖子
+	posts := svc.PostSearch(userId, name, consts.DEFAULT_SEARCH_POST_PAGE, consts.DEFAULT_SEARCH_POST_SIZE)
+
 	var recommend []*mvideo.VideoDetailInfo
-	if len(videos) == 0 && len(users) == 0 {
+	if len(videos) == 0 && len(users) == 0 && len(posts) == 0 {
 		recommend = svc.RecommendVideo()
 	}
 
@@ -437,3 +443,72 @@ func (svc *SearchModule) GetSortField(condition string) string {
 	return consts.CONDITION_FIELD_PLAY
 }
 
+// 搜索帖子
+func (svc *SearchModule) PostSearch(userId, name string, page, size int) []*mposting.PostDetailInfo {
+	if name == "" {
+		log.Log.Errorf("search_trace: search name can't empty, name:%s", name)
+		return []*mposting.PostDetailInfo{}
+	}
+
+	length := util.GetStrLen([]rune(name))
+	if length > 20 {
+		log.Log.Errorf("search_trace: invalid search name len, len:%s", length)
+		return []*mposting.PostDetailInfo{}
+	}
+
+	offset := (page - 1) * size
+	list, err := svc.post.SearchPostOrderByHeat(name, offset, size)
+	if err != nil {
+		log.Log.Errorf("search_trace: search post fail, err:%s", err)
+		return []*mposting.PostDetailInfo{}
+	}
+
+	if len(list) == 0  {
+		return []*mposting.PostDetailInfo{}
+	}
+
+	for _, item := range list {
+		// 如果是转发的视频数据
+		if item.ContentType == consts.COMMUNITY_FORWARD_VIDEO {
+			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardVideo); err != nil {
+				log.Log.Errorf("search_trace: get forward video info err:%s", err)
+				return []*mposting.PostDetailInfo{}
+			}
+		}
+
+		// 如果是转发的帖子
+		if item.PostingType == consts.POST_TYPE_TEXT && item.ContentType == consts.COMMUNITY_FORWARD_POST {
+			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardPost); err != nil {
+				log.Log.Errorf("search_trace: get forward post info err:%s", err)
+				return []*mposting.PostDetailInfo{}
+			}
+		}
+
+		// 图文帖
+		if item.PostingType == consts.POST_TYPE_IMAGE {
+			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ImagesAddr); err != nil {
+				log.Log.Errorf("search_trace: get image info err:%s", err)
+				return []*mposting.PostDetailInfo{}
+			}
+		}
+
+		item.Content = ""
+
+		if userId == "" {
+			log.Log.Error("search_trace: user no login")
+			continue
+		}
+
+		// 是否关注
+		if attentionInfo := svc.attention.GetAttentionInfo(userId, item.UserId); attentionInfo != nil {
+			item.IsAttention = attentionInfo.Status
+		}
+
+		// 是否点赞
+		if likeInfo := svc.like.GetLikeInfo(userId, item.Id, consts.TYPE_POSTS); likeInfo != nil {
+			item.IsLike = likeInfo.Status
+		}
+	}
+
+	return list
+}

@@ -280,8 +280,13 @@ func CleanHistorySearch(c *gin.Context) {
 // @Router /api/v1/search/posting [get]
 // 帖子搜索
 func PostingSearch(c *gin.Context) {
-	//page, size := util.PageInfo(c.Query("page"), c.Query("size"))
-	//name := c.Query("name")
 	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	userId := c.Query("user_id")
+	name := c.Query("name")
+
+	svc := csearch.New(c)
+	list := svc.PostSearch(userId, name, page, size)
+	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
