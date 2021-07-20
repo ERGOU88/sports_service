@@ -139,7 +139,7 @@ func setupRedisMqConsumer() {
 }
 
 func setupLabelList() {
-	mlabel.InitLabelList()
+	go mlabel.InitLabelList()
 }
 
 func init() {
