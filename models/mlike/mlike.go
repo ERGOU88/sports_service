@@ -141,7 +141,7 @@ func (m *LikeModel) GetUserLikeVideos(userId string, offset, size int) []*LikeVi
 	return list
 }
 
-// 添加点赞记录 1 视频点赞 2 帖子点赞 3 评论点赞
+// 添加点赞记录 1 视频点赞 2 帖子点赞 3 视频评论点赞 4 帖子评论点赞
 func (m *LikeModel) AddGiveLikeByType(userId, toUserId string, composeId int64, status, zanType int) error {
 	m.Like.UserId = userId
 	m.Like.ToUserId = toUserId

@@ -63,14 +63,14 @@ func BenchmarkCancelLikeForVideo(b *testing.B) {
 func TestGiveLikeForComment(t *testing.T) {
   c, _ := gin.CreateTestContext(httptest.NewRecorder())
   svc := New(c)
-  syscode := svc.GiveLikeForComment("202009101933004667", 43)
+  syscode := svc.GiveLikeForVideoComment("202009101933004667", 43)
   t.Logf("\n syscode:%v", syscode)
 }
 
 func BenchmarkGiveLikeForComment(b *testing.B) {
   c, _ := gin.CreateTestContext(httptest.NewRecorder())
   svc := New(c)
-  syscode := svc.GiveLikeForComment("202009101933004667", 43)
+  syscode := svc.GiveLikeForVideoComment("202009101933004667", 43)
   b.Logf("\n syscode:%d", syscode)
 }
 
@@ -78,13 +78,13 @@ func BenchmarkGiveLikeForComment(b *testing.B) {
 func TestCancelLikeForComment(t *testing.T) {
  c, _ := gin.CreateTestContext(httptest.NewRecorder())
  svc := New(c)
- svc.CancelLikeForComment("202009101933004667", 43)
+ svc.CancelLikeForVideoComment("202009101933004667", 43)
 }
 
 func BenchmarkCancelLikeForComment(b *testing.B) {
  c, _ := gin.CreateTestContext(httptest.NewRecorder())
  svc := New(c)
- svc.CancelLikeForComment("202009101933004667", 43)
+ svc.CancelLikeForVideoComment("202009101933004667", 43)
 }
 
 

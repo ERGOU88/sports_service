@@ -90,6 +90,8 @@ const (
 	LIKE_CANCEL_FAIL            = 5006
 	LIKE_COMMENT_NOT_EXISTS     = 5007
 	LIKE_COMMENT_FAIL           = 5008
+	LIKE_POST_NOT_EXISTS        = 5009
+	LIKE_POST_FAIL              = 5010
 
 	// 通知相关错误码 6001-7000
 	NOTIFY_SETTING_FAIL         = 6001
@@ -236,6 +238,8 @@ var MsgFlags = map[int]string{
 	LIKE_CANCEL_FAIL:            "取消点赞失败",
 	LIKE_COMMENT_NOT_EXISTS:     "点赞的评论不存在",
 	LIKE_COMMENT_FAIL:           "评论点赞失败",
+	LIKE_POST_NOT_EXISTS:        "点赞的帖子不存在",
+	LIKE_POST_FAIL:              "帖子点赞失败",
 
 	NOTIFY_SETTING_FAIL:         "系统通知设置失败",
 
