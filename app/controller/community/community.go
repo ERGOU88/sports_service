@@ -41,6 +41,18 @@ func New(c *gin.Context) CommunityModule {
 	}
 }
 
+// 获取板块下的置顶帖
+func (svc *CommunityModule) GetTopPostBySectionId(page, size int, sectionId string) (int, []*mposting.TopPost) {
+	offset := (page - 1) * size
+	list, err := svc.post.GetTopPostBySectionId(offset, size, sectionId)
+	if err != nil {
+		log.Log.Errorf("community_trace: get top post by section fail, err:%s", err)
+		return errdef.ERROR, []*mposting.TopPost{}
+	}
+
+	return errdef.SUCCESS, list
+}
+
 // 获取社区话题列表
 func (svc *CommunityModule) GetCommunityTopics(isHot string, page, size int) (int, []*mcommunity.CommunityTopicInfo) {
 	offset := (page - 1) * size
@@ -72,6 +84,11 @@ func (svc *CommunityModule) GetCommunityTopics(isHot string, page, size int) (in
 	return errdef.SUCCESS, res
 }
 
+// 获取置顶的帖子 默认取两个
+func (svc *CommunityModule) GetTopListByPost(sectionId string) {
+
+}
+
 // 获取社区板块
 func (svc *CommunityModule) GetCommunitySections() (int, []*mcommunity.CommunitySectionInfo) {
 	list, err := svc.community.GetAllSection()
@@ -86,10 +103,7 @@ func (svc *CommunityModule) GetCommunitySections() (int, []*mcommunity.Community
 			SectionName: item.SectionName,
 		}
 
-		num, err :=  svc.post.GetPostNumBySection(fmt.Sprint(item.Id))
-		if err != nil {
-			log.Log.Errorf("community_trace: get post num by section fail, err:%s", err)
-		}
+		num := svc.GetPostNumBySection(fmt.Sprint(item.Id))
 
 		info.PostNum = num
 
@@ -97,6 +111,17 @@ func (svc *CommunityModule) GetCommunitySections() (int, []*mcommunity.Community
 	}
 
 	return errdef.SUCCESS, res
+}
+
+// 获取板块下的帖子数
+func (svc *CommunityModule) GetPostNumBySection(sectionId string) int64 {
+	num, err :=  svc.post.GetPostNumBySection(sectionId)
+	if err != nil {
+		log.Log.Errorf("community_trace: get post num by section fail, err:%s", err)
+		return 0
+	}
+
+	return num
 }
 
 // 通过id获取社区话题

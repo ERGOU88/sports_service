@@ -22,6 +22,7 @@ import (
 	"sports_service/server/app/config"
 	"sports_service/server/global/app/log"
 	"sports_service/server/app/routers/api/v1/community"
+	"github.com/gin-contrib/gzip"
 )
 
 // 路由初始化
@@ -35,6 +36,8 @@ func InitRouters(engine *gin.Engine) {
 		// 错误码文档
 		doc.Router(engine)
 	}
+
+	engine.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	// 初始化接口
 	client.Router(engine)

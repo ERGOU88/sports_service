@@ -247,7 +247,25 @@ func (m *PostingModel) GetPostStatistic(postId string) (*models.PostingStatistic
 
 // 获取某板块下的帖子总数
 func (m *PostingModel) GetPostNumBySection(sectionId string) (int64, error) {
-	return m.Engine.Where("section_id=?", sectionId).Count(&models.PostingInfo{})
+	return m.Engine.Where("status=1 AND section_id=?", sectionId).Count(&models.PostingInfo{})
+}
+
+type TopPost struct {
+	Id       int64    `json:"id"`             // 帖子id
+	Title    string   `json:"title"`          // 标题
+	Describe string   `json:"describe"`       // 描述
+	IsTop    int      `json:"is_top"`         // 是否置顶 1 置顶
+	CreateAt int64    `json:"create_at"`      // 发布时间
+}
+
+// 获取板块下的置顶的帖子
+func (m *PostingModel) GetTopPostBySectionId(offset, size int, sectionId string) ([]*TopPost, error) {
+	var list []*TopPost
+	if err := m.Engine.Table(&models.PostingInfo{}).Where("section_id=? AND is_top=1 AND status=1", sectionId).Limit(size, offset).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
 }
 
 // 获取某话题下的帖子总数

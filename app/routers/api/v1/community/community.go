@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sports_service/server/app/controller/community"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/consts"
 	"sports_service/server/util"
 )
 
@@ -64,6 +65,15 @@ func SectionPostList(c *gin.Context) {
 	if code == errdef.SUCCESS {
 		reply.Data["list"] = list
 	}
+
+	_, topicList := svc.GetCommunityTopics(consts.POST_SORT_HOT, 1, 4)
+	reply.Data["topic_list"] = topicList
+	// 默认取两个置顶帖
+	_, topList := svc.GetTopPostBySectionId(1, 2, sectionId)
+	reply.Data["top_list"] = topList
+
+	// 该板块下的帖子数
+	reply.Data["post_num"] = svc.GetPostNumBySection(sectionId)
 
 	reply.Response(http.StatusOK, code)
 }
