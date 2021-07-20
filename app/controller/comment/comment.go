@@ -8,15 +8,14 @@ import (
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
-	"sports_service/server/models/mposting"
-	"sports_service/server/rabbitmq/event"
-	"sports_service/server/app/config"
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
 	"sports_service/server/models/mcomment"
 	"sports_service/server/models/mlike"
+	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
+	redismq "sports_service/server/redismq/event"
 	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"time"
@@ -198,7 +197,8 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	svc.engine.Commit()
 
 	// 视频/帖子 评论推送
-	event.PushEventMsg(config.Global.AmqpDsn, toUserId, user.NickName, cover, params.Content, msgType)
+	//event.PushEventMsg(config.Global.AmqpDsn, toUserId, user.NickName, cover, params.Content, msgType)
+	redismq.PushEventMsg(redismq.NewEvent(toUserId, user.NickName, cover, params.Content, msgType))
 
 	return errdef.SUCCESS, svc.comment.VideoComment.Id
 }
@@ -293,7 +293,8 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	svc.engine.Commit()
 
 	// 视频评论推送
-	event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, params.Content, consts.VIDEO_COMMENT_MSG)
+	//event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, params.Content, consts.VIDEO_COMMENT_MSG)
+	redismq.PushEventMsg(redismq.NewEvent(video.UserId, user.NickName, video.Cover, params.Content, consts.VIDEO_COMMENT_MSG))
 
 	return errdef.SUCCESS, svc.comment.VideoComment.Id
 }
@@ -488,7 +489,8 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 
 	svc.engine.Commit()
 	// 视频/帖子 回复推送
-	event.PushEventMsg(config.Global.AmqpDsn, toUserId, user.NickName, cover, content, msgType)
+	//event.PushEventMsg(config.Global.AmqpDsn, toUserId, user.NickName, cover, content, msgType)
+	redismq.PushEventMsg(redismq.NewEvent(toUserId, user.NickName, cover, content, msgType))
 	return errdef.SUCCESS, svc.comment.VideoComment.Id
 }
 

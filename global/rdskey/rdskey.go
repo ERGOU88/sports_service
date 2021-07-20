@@ -34,6 +34,8 @@ const (
 	VIDEO_UPLOAD_INFO         = SUGAR + "video_upload_info_%s_%d"                  // 记录用户上传的视频信息{拼接 userId + taskId}
 
 	SEARCH_HISTORY_CONTENT    = SUGAR + "search_history_content_%s"                // 记录历史搜索内容{拼接 userId}
+
+	MSG_EVENT_KEY             = SUGAR + "msg_event_key"                            // 消息（App推送等）
 )
 
 // make redis key

@@ -1,24 +1,23 @@
 package clike
 
 import (
-  "fmt"
-  "github.com/gin-gonic/gin"
-  "github.com/go-xorm/xorm"
-  "sports_service/server/dao"
-  "sports_service/server/global/app/errdef"
-  "sports_service/server/global/app/log"
-  "sports_service/server/global/consts"
-  "sports_service/server/models/mattention"
-  "sports_service/server/models/mcollect"
-  "sports_service/server/models/mcomment"
-  "sports_service/server/models/mlike"
-  "sports_service/server/models/muser"
-  "sports_service/server/models/mvideo"
-  "sports_service/server/rabbitmq/event"
-  "sports_service/server/util"
-  "strings"
-  "time"
-  "sports_service/server/app/config"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
+	"sports_service/server/dao"
+	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
+	"sports_service/server/models/mattention"
+	"sports_service/server/models/mcollect"
+	"sports_service/server/models/mcomment"
+	"sports_service/server/models/mlike"
+	"sports_service/server/models/muser"
+	"sports_service/server/models/mvideo"
+	redismq "sports_service/server/redismq/event"
+	"sports_service/server/util"
+	"strings"
+	"time"
 )
 
 type LikeModule struct {
@@ -111,8 +110,9 @@ func (svc *LikeModule) GiveLikeForVideo(userId string, videoId int64) int {
 
 	svc.engine.Commit()
 
-  // 发送视频点赞推送
-  event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, "", consts.VIDEO_LIKE_MSG)
+	// 发送视频点赞推送
+	//event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, "", consts.VIDEO_LIKE_MSG)
+	redismq.PushEventMsg(redismq.NewEvent(video.UserId, user.NickName, video.Cover, "", consts.VIDEO_LIKE_MSG))
 
 	return errdef.SUCCESS
 }
@@ -302,8 +302,9 @@ func (svc *LikeModule) GiveLikeForComment(userId string, commentId int64) int {
 
 	svc.engine.Commit()
 
-  // 发送评论点赞推送
-  event.PushEventMsg(config.Global.AmqpDsn, comment.UserId, user.NickName, "", comment.Content, consts.COMMENT_LIKE_MSG)
+	// 发送评论点赞推送
+	//event.PushEventMsg(config.Global.AmqpDsn, comment.UserId, user.NickName, "", comment.Content, consts.COMMENT_LIKE_MSG)
+	redismq.PushEventMsg(redismq.NewEvent(comment.UserId, user.NickName, "", comment.Content, consts.COMMENT_LIKE_MSG))
 
 	return errdef.SUCCESS
 }

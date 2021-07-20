@@ -9,7 +9,7 @@ import (
 func InitRabbitmqConsumer() {
   if err := event.ConnectEventConsumer(); err != nil {
     log.Log.Errorf("amqp_trace: connect event consumer fail, err:%s", err)
-    //panic(err)
+    panic(err)
   }
 
   log.Log.Debug("setup rabbitmq success")
