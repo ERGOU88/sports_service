@@ -24,8 +24,8 @@ type NotifySettingParams struct {
 	SlotPushSet      int    `json:"slot_push_set" example:"0"`             // 投币推送 0 接收 1 不接收
 }
 
-// 收到的@信息（评论/回复）
-type ReceiveCommentAtInfo struct {
+// 收到的@信息（1.视频/2.帖子/3.视频评论、回复/4.帖子评论、回复）
+type ReceiveAtInfo struct {
 	ComposeId     int64                 `json:"compose_id" example:"1000000000"`      // 视频作品id
 	Title         string                `json:"title" example:"视频标题"`               // 标题
 	Describe      string                `json:"describe" example:"视频描述"`            // 描述

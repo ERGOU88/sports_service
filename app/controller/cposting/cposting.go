@@ -156,7 +156,37 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 	// 初始化帖子统计数据
 	if err := svc.posting.AddPostStatistic(); err != nil {
 		log.Log.Errorf("post_trace: add post statistic err:%s", err)
+		svc.engine.Rollback()
 		return errdef.POST_PUBLISH_FAIL
+	}
+
+	// 添加@
+	if len(params.AtInfo) > 0 {
+		var atList []*models.ReceivedAt
+		for _, val := range params.AtInfo {
+			user := svc.user.FindUserByUserid(val)
+			if user == nil {
+				log.Log.Errorf("post_trace: at user not found, userId:%s", val)
+				continue
+			}
+
+			at := &models.ReceivedAt{
+				ToUserId: val,
+				UserId: userId,
+				ComposeId: svc.posting.Posting.Id,
+				TopicType: consts.TYPE_POST_COMMENT,
+				CreateAt: now,
+			}
+
+			atList = append(atList, at)
+		}
+
+		affected, err := svc.posting.AddReceiveAtList(atList)
+		if err != nil || int(affected) != len(atList) {
+			log.Log.Errorf("post_trace: add receive at list fail, err:%s", err)
+			svc.engine.Rollback()
+			return errdef.POST_PUBLISH_FAIL
+		}
 	}
 
 
@@ -278,6 +308,14 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 	if resp.PostingType == consts.POST_TYPE_TEXT && resp.ContentType == consts.COMMUNITY_FORWARD_POST {
 		if err = util.JsonFast.UnmarshalFromString(post.Content, &resp.ForwardPost); err != nil {
 			log.Log.Errorf("post_trace: get forward post info err:%s", err)
+			return nil, errdef.POST_DETAIL_FAIL
+		}
+	}
+
+	// 图文帖
+	if resp.PostingType == consts.POST_TYPE_IMAGE {
+		if err = util.JsonFast.UnmarshalFromString(post.Content, &resp.ImagesAddr); err != nil {
+			log.Log.Errorf("post_trace: get image info err:%s", err)
 			return nil, errdef.POST_DETAIL_FAIL
 		}
 	}

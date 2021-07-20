@@ -8,6 +8,7 @@ import (
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
+	"sports_service/server/models"
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
 	"sports_service/server/models/mcomment"
@@ -82,7 +83,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		return errdef.USER_NOT_EXISTS, 0
 	}
 
-	now := time.Now().Unix()
+	now := int(time.Now().Unix())
 	var (
 		cover, toUserId string
 		msgType int32
@@ -96,7 +97,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		svc.comment.VideoComment.CommentLevel = consts.COMMENT_PUBLISH
 		//svc.comment.VideoComment.Avatar = user.Avatar
 		//svc.comment.VideoComment.UserName = user.NickName
-		svc.comment.VideoComment.CreateAt = int(now)
+		svc.comment.VideoComment.CreateAt = now
 		svc.comment.VideoComment.ParentCommentId = 0
 		svc.comment.VideoComment.VideoId = params.ComposeId
 		svc.comment.VideoComment.Status = 1
@@ -183,9 +184,9 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	svc.comment.ReceiveAt.UserId = userId
 	// 被@的用户 1级评论 则@的是视频up主 / 帖子发布者
 	svc.comment.ReceiveAt.ToUserId = toUserId
-	svc.comment.ReceiveAt.CommentId = commentId
+	svc.comment.ReceiveAt.ComposeId = commentId
 	svc.comment.ReceiveAt.TopicType = consts.TYPE_VIDEO_COMMENT
-	svc.comment.ReceiveAt.CreateAt = int(now)
+	svc.comment.ReceiveAt.CreateAt = now
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_PUBLISH
 	// 评论也是@
 	if err := svc.comment.AddReceiveAt(); err != nil {
@@ -194,13 +195,42 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		return errdef.COMMENT_PUBLISH_FAIL, 0
 	}
 
+	// 添加@
+	if len(params.AtInfo) > 0 {
+		var atList []*models.ReceivedAt
+		for _, val := range params.AtInfo {
+			user := svc.user.FindUserByUserid(val)
+			if user == nil {
+				log.Log.Errorf("post_trace: at user not found, userId:%s", val)
+				continue
+			}
+
+			at := &models.ReceivedAt{
+				ToUserId: val,
+				UserId: userId,
+				ComposeId: params.ComposeId,
+				TopicType: params.CommentType,
+				CreateAt: now,
+			}
+
+			atList = append(atList, at)
+		}
+
+		affected, err := svc.post.AddReceiveAtList(atList)
+		if err != nil || int(affected) != len(atList) {
+			log.Log.Errorf("post_trace: add receive at list fail, err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COMMENT_PUBLISH_FAIL, 0
+		}
+	}
+
 	svc.engine.Commit()
 
 	// 视频/帖子 评论推送
 	//event.PushEventMsg(config.Global.AmqpDsn, toUserId, user.NickName, cover, params.Content, msgType)
 	redismq.PushEventMsg(redismq.NewEvent(toUserId, user.NickName, cover, params.Content, msgType))
 
-	return errdef.SUCCESS, svc.comment.VideoComment.Id
+	return errdef.SUCCESS, commentId
 }
 
 // 发布评论
@@ -272,7 +302,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	svc.comment.ReceiveAt.UserId = userId
 	// 被@的用户 1级评论 则@的是视频up主
 	svc.comment.ReceiveAt.ToUserId = video.UserId
-	svc.comment.ReceiveAt.CommentId = svc.comment.VideoComment.Id
+	svc.comment.ReceiveAt.ComposeId = svc.comment.VideoComment.Id
 	svc.comment.ReceiveAt.TopicType = consts.TYPE_VIDEO_COMMENT
 	svc.comment.ReceiveAt.CreateAt = int(now)
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_PUBLISH
@@ -345,13 +375,14 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	var (
 		cover, toUserId, content string
 		msgType int32
+		commentId int64
 	)
 	now := int(time.Now().Unix())
 	switch params.CommentType {
 	// 视频评论
 	case consts.COMMENT_TYPE_VIDEO:
 		// 查询被回复的评论是否存在
-		replyInfo := svc.comment.GetCommentById(params.ReplyId)
+		replyInfo := svc.comment.GetVideoCommentById(params.ReplyId)
 		if replyInfo == nil {
 			log.Log.Error("comment_trace: reply comment not found, commentId:%s", params.ReplyId)
 			svc.engine.Rollback()
@@ -411,6 +442,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		msgType = consts.VIDEO_REPLY_MSG
 		toUserId = replyInfo.UserId
 		content = replyInfo.Content
+		commentId = svc.comment.VideoComment.Id
 
 	// 帖子评论
 	case consts.COMMENT_TYPE_POST:
@@ -460,7 +492,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			return errdef.COMMENT_REPLY_FAIL, 0
 		}
 
-		// 更新视频总计（视频评论总数）
+		// 更新视频总计（帖子评论总数）
 		if err := svc.post.UpdatePostCommentNum(replyInfo.PostId, now, 1); err != nil {
 			log.Log.Errorf("comment_trace: update post comment num err:%s", err)
 			svc.engine.Rollback()
@@ -471,12 +503,13 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		msgType = consts.POST_REPLY_MSG
 		toUserId = replyInfo.UserId
 		content = replyInfo.Content
+		commentId = svc.comment.PostComment.Id
 	}
 
 	svc.comment.ReceiveAt.UserId = userId
 	// 被@的用户
 	svc.comment.ReceiveAt.ToUserId = toUserId
-	svc.comment.ReceiveAt.CommentId = svc.comment.VideoComment.Id
+	svc.comment.ReceiveAt.ComposeId = svc.comment.VideoComment.Id
 	svc.comment.ReceiveAt.CreateAt = now
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_REPLY
 	// 回复 记录到 @
@@ -486,12 +519,41 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		return errdef.COMMENT_REPLY_FAIL, 0
 	}
 
+	// 添加@
+	if len(params.AtInfo) > 0 {
+		var atList []*models.ReceivedAt
+		for _, val := range params.AtInfo {
+			user := svc.user.FindUserByUserid(val)
+			if user == nil {
+				log.Log.Errorf("post_trace: at user not found, userId:%s", val)
+				continue
+			}
+
+			at := &models.ReceivedAt{
+				ToUserId: val,
+				UserId: userId,
+				ComposeId: params.VideoId,
+				TopicType: params.CommentType,
+				CreateAt: now,
+			}
+
+			atList = append(atList, at)
+		}
+
+		affected, err := svc.post.AddReceiveAtList(atList)
+		if err != nil || int(affected) != len(atList) {
+			log.Log.Errorf("post_trace: add receive at list fail, err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COMMENT_REPLY_FAIL, 0
+		}
+	}
+
 
 	svc.engine.Commit()
 	// 视频/帖子 回复推送
 	//event.PushEventMsg(config.Global.AmqpDsn, toUserId, user.NickName, cover, content, msgType)
 	redismq.PushEventMsg(redismq.NewEvent(toUserId, user.NickName, cover, content, msgType))
-	return errdef.SUCCESS, svc.comment.VideoComment.Id
+	return errdef.SUCCESS, commentId
 }
 
 // 检查视频/帖子
@@ -945,7 +1007,7 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 // 获取评论回复列表
 func (svc *CommentModule) GetCommentReplyList(userId, composeId, commentId string, commentType, page, size int) (int, []*mcomment.ReplyComment) {
 	// 查询评论是否存在
-	comment := svc.comment.GetCommentById(commentId)
+	comment := svc.comment.GetVideoCommentById(commentId)
 	if comment == nil {
 		log.Log.Error("comment_trace: comment not found, commentId:%s", commentId)
 		return errdef.COMMENT_NOT_FOUND, []*mcomment.ReplyComment{}
@@ -1044,7 +1106,7 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Co
 	var first *mcomment.CommentList
 	// 如果从消息页 点击某条@数据跳转到视频详情时 则 需要组装点击的@消息的详情
 	if commentId != "" {
-		comment := svc.comment.GetCommentById(commentId)
+		comment := svc.comment.GetVideoCommentById(commentId)
 		if comment != nil {
 			// todo:
 			first = &mcomment.CommentList{
@@ -1117,7 +1179,7 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Co
 // 添加评论举报
 func (svc *CommentModule) AddCommentReport(params *mcomment.CommentReportParam) int {
 	// 查询评论是否存在
-	comment := svc.comment.GetCommentById(fmt.Sprint(params.CommentId))
+	comment := svc.comment.GetVideoCommentById(fmt.Sprint(params.CommentId))
 	if comment == nil {
 		log.Log.Error("comment_trace: comment not found, commentId:%s", fmt.Sprint(params.CommentId))
 		return errdef.COMMENT_NOT_FOUND

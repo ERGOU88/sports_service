@@ -15,6 +15,7 @@ type PostingModel struct {
 	PostingTopic      *models.PostingTopic
 	Browse            *models.UserBrowseRecord
 	Statistic         *models.PostingStatistic
+	ReceiveAt         *models.ReceivedAt
 }
 
 // 删除发布的帖子记录请求参数(不支持批量删除)
@@ -26,12 +27,13 @@ type DeletePostParam struct {
 type PostPublishParam struct {
 	Title             string              `json:"title"`                              // 标题
 	Describe          string              `binding:"required" json:"describe"`                           // 富文本内容
-	//ForwardVideo      *ForwardVideoInfo   `json:"forward_video"`                      // 转发的视频内容 todo: 结构体
-	//VideoId           string              `json:"video_id"`                           // 关联的视频id
-	//PostingType    int        `json:"posting_type" binding:"required"`  // 帖子类型  0 纯文本 1 图文 2 视频 + 文
-	ImagesAddr        []string            `json:"images_addr"`                        // 图片地址
-	SectionId         int                 `json:"section_id"`                         // 主模块id
-	TopicIds          []string            `json:"topic_ids"`                          // 话题id （多个）
+	//ForwardVideo      *ForwardVideoInfo   `json:"forward_video"`                     // 转发的视频内容 todo: 结构体
+	//VideoId           string              `json:"video_id"`                          // 关联的视频id
+	//PostingType    int        `json:"posting_type" binding:"required"`               // 帖子类型  0 纯文本 1 图文 2 视频 + 文
+	ImagesAddr        []string            `json:"images_addr"`                         // 图片地址
+	SectionId         int                 `json:"section_id"`                          // 主模块id
+	TopicIds          []string            `binding:"required" json:"topic_ids"`        // 话题id （多个）
+	AtInfo            []string            `json:"at_info"`                             // @信息 [需@的用户uid]
 	//ContentType       int                 `json:"content_type"`                       // 0 发布 1 转发视频 2 转发帖子
 	//ForwardPost       *ForwardPostInfo    `json:"forward_post"`                       // 转发的帖子内容
 }
@@ -105,7 +107,13 @@ func NewPostingModel(engine *xorm.Session) *PostingModel {
 		Posting: new(models.PostingInfo),
 		PostingTopic: new(models.PostingTopic),
 		Statistic: new(models.PostingStatistic),
+		ReceiveAt: new(models.ReceivedAt),
 	}
+}
+
+// 添加多个@ (一次插入多条)
+func (m *PostingModel) AddReceiveAtList(at []*models.ReceivedAt) (int64, error) {
+	return m.Engine.InsertMulti(at)
 }
 
 // 通过id获取帖子

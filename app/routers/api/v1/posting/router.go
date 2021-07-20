@@ -31,6 +31,11 @@ func PublishPosting(c *gin.Context) {
 		return
 	}
 
+	if params.SectionId <= 0 {
+		// 默认为综合
+		params.SectionId = 1
+	}
+
 	svc := cposting.New(c)
 	code := svc.PublishPosting(userId.(string), params)
 	reply.Response(http.StatusOK, code)

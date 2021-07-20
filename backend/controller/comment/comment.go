@@ -110,7 +110,7 @@ func (svc *CommentModule) GetCommentTotalByVideoId(videoId string) int64 {
 
 // 删除视频评论（物理删除）
 func (svc *CommentModule) DelVideoComments(param *mcomment.DelCommentParam) int {
-	comment := svc.comment.GetCommentById(param.CommentId)
+	comment := svc.comment.GetVideoCommentById(param.CommentId)
 	if comment == nil {
 		return errdef.COMMENT_NOT_EXISTS
 	}
@@ -125,13 +125,13 @@ func (svc *CommentModule) DelVideoComments(param *mcomment.DelCommentParam) int 
 	}
 
 
-	//commentIds := svc.comment.GetVideoReplyIdsById(param.CommentId)
+	//commentIds := svc.comment.GetVideoReplyIdsById(param.ComposeId)
 	//ids := make([]string, 0)
 	//// 递归查询
 	//svc.recursionComments(&ids, &commentIds)
 	//
 	//// 当前评论 及 回复 一并删除
-	//ids = append(ids, param.CommentId)
+	//ids = append(ids, param.ComposeId)
 	//
 	//log.Log.Errorf("++++++++commentIds:%v", strings.Join(ids, ","))
 	//

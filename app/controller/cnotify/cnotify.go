@@ -15,6 +15,7 @@ import (
 	"sports_service/server/models/mcomment"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/mnotify"
+	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	"sports_service/server/util"
@@ -33,6 +34,7 @@ type NotifyModule struct {
 	user       *muser.UserModel
 	comment    *mcomment.CommentModel
 	attention  *mattention.AttentionModel
+	post       *mposting.PostingModel
 }
 
 func New(c *gin.Context) NotifyModule {
@@ -47,6 +49,7 @@ func New(c *gin.Context) NotifyModule {
 		user: muser.NewUserModel(socket),
 		comment: mcomment.NewCommentModel(socket),
 		attention: mattention.NewAttentionModel(socket),
+		post: mposting.NewPostingModel(socket),
 		engine: socket,
 	}
 }
@@ -75,10 +78,10 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 	log.Log.Debugf("notify_trace: length:%d", len(res))
 	for index, liked := range list {
 		info := new(mlike.BeLikedInfo)
+		info.OpTime = liked.CreateAt
 		switch liked.ZanType {
 		// 被点赞的视频
 		case consts.TYPE_VIDEOS:
-			info.OpTime = liked.CreateAt
 			info.Type = consts.TYPE_VIDEOS
 			info.JumpVideoId = liked.TypeId
 			video := svc.video.FindVideoById(fmt.Sprint(liked.TypeId))
@@ -100,15 +103,39 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 			}
 
 
-			// 被点赞的帖子
+		// 被点赞的帖子
 		case consts.TYPE_POSTS:
-		// 被点赞的评论
+			info.Type = consts.TYPE_POSTS
+			info.JumpPostId = liked.TypeId
+
+			post, err := svc.post.GetPostById(fmt.Sprint(liked.TypeId))
+			if post != nil && err == nil {
+				info.ComposeId = post.Id
+				info.Title = post.Title
+				info.Describe = post.Describe
+				info.CreateAt = post.CreateAt
+				// 图文帖
+				if post.PostingType == consts.POST_TYPE_IMAGE {
+					var images []string
+					if err = util.JsonFast.UnmarshalFromString(post.Content, &images); err != nil {
+						log.Log.Errorf("post_trace: get image info err:%s", err)
+					}
+
+					// 使用第一张图片展示
+					if len(images) > 0 {
+						info.Cover = images[0]
+					}
+				}
+			}
+
+
+		// 被点赞的视频评论
 		case consts.TYPE_VIDEO_COMMENT:
-			info.OpTime = liked.CreateAt
 			info.Type = consts.TYPE_VIDEO_COMMENT
+			info.JumpVideoId = liked.TypeId
 
 			// 获取评论信息
-			comment := svc.comment.GetCommentById(fmt.Sprint(liked.TypeId))
+			comment := svc.comment.GetVideoCommentById(fmt.Sprint(liked.TypeId))
 			if comment != nil {
 				// 被点赞的信息
 				info.Content = comment.Content
@@ -140,6 +167,45 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 
 
 			}
+
+			case consts.TYPE_POST_COMMENT:
+				info.Type = consts.TYPE_POST_COMMENT
+				info.JumpPostId = liked.TypeId
+
+				// 获取视频评论信息
+				comment := svc.comment.GetPostCommentById(fmt.Sprint(liked.TypeId))
+				if comment != nil {
+					// 被点赞的信息
+					info.Content = comment.Content
+					info.ComposeId = comment.Id
+					// 顶级评论id
+					info.ParentCommentId = comment.ParentCommentId
+					if info.ParentCommentId == 0 {
+						// 当前评论即顶级评论
+						info.ParentCommentId = comment.Id
+					}
+
+					post, err := svc.post.GetPostById(fmt.Sprint(liked.TypeId))
+					if post != nil && err == nil {
+						info.ComposeId = post.Id
+						info.Title = post.Title
+						info.Describe = post.Describe
+						info.CreateAt = post.CreateAt
+						// 图文帖
+						if post.PostingType == consts.POST_TYPE_IMAGE {
+							var images []string
+							if err = util.JsonFast.UnmarshalFromString(post.Content, &images); err != nil {
+								log.Log.Errorf("post_trace: get image info err:%s", err)
+							}
+
+							// 使用第一张图片展示
+							if len(images) > 0 {
+								info.Cover = images[0]
+							}
+						}
+					}
+
+				}
 		}
 
 
@@ -252,7 +318,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 		// 被点赞的评论
 		case consts.TYPE_VIDEO_COMMENT:
 			// 获取评论信息
-			comment := svc.comment.GetCommentById(fmt.Sprint(liked.TypeId))
+			comment := svc.comment.GetVideoCommentById(fmt.Sprint(liked.TypeId))
 			if comment != nil {
 				commentMp[comment.Id] = comment
 				// 点赞用户
@@ -445,14 +511,60 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 	res := make([]interface{}, len(list))
 	for index, receiveAt := range list {
 		switch receiveAt.TopicType {
+		// 视频评论里@ 则展示视频内容
+		case consts.TYPE_VIDEOS:
+			info := new(mnotify.ReceiveAtInfo)
+			info.AtTime = receiveAt.CreateAt
+			info.Type = consts.TYPE_VIDEOS
+			video := svc.video.FindVideoById(fmt.Sprint(receiveAt.ComposeId))
+			if video != nil {
+				info.ComposeId = video.VideoId
+				info.Title = util.TrimHtml(video.Title)
+				info.Describe = util.TrimHtml(video.Describe)
+				info.Cover = video.Cover
+				info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+				info.VideoDuration = video.VideoDuration
+				info.VideoWidth = video.VideoWidth
+				info.VideoHeight = video.VideoHeight
+				info.CreateAt = video.CreateAt
+				// 视频统计数据
+				if statistic := svc.video.GetVideoStatistic(fmt.Sprint(receiveAt.ComposeId)); statistic != nil {
+					info.BarrageNum = statistic.BarrageNum
+					info.BrowseNum = statistic.BrowseNum
+				}
+			}
+		// 帖子评论里@ 则展示帖子内容 todo: 展示待确认
 		case consts.TYPE_POSTS:
+			info := new(mnotify.ReceiveAtInfo)
+			info.AtTime = receiveAt.CreateAt
+			info.Type = consts.TYPE_POSTS
+			post, err := svc.post.GetPostById(fmt.Sprint(receiveAt.ComposeId))
+			if post != nil && err == nil {
+				info.ComposeId = post.Id
+				info.Title = post.Title
+				info.Describe = post.Describe
+				info.CreateAt = post.CreateAt
+				// 图文帖
+				if post.PostingType == consts.POST_TYPE_IMAGE {
+					var images []string
+					if err = util.JsonFast.UnmarshalFromString(post.Content, &images); err != nil {
+						log.Log.Errorf("post_trace: get image info err:%s", err)
+					}
 
+					// 使用第一张图片展示
+					if len(images) > 0 {
+						info.Cover = images[0]
+					}
+				}
+			}
+
+		// 视频直接评论/回复
 		case consts.TYPE_VIDEO_COMMENT:
-			info := new(mnotify.ReceiveCommentAtInfo)
+			info := new(mnotify.ReceiveAtInfo)
 			info.AtTime = receiveAt.CreateAt
 			info.Type = consts.TYPE_VIDEO_COMMENT
 			// 获取评论信息
-			comment := svc.comment.GetCommentById(fmt.Sprint(receiveAt.CommentId))
+			comment := svc.comment.GetVideoCommentById(fmt.Sprint(receiveAt.ComposeId))
 			if comment != nil {
 				// 执行@的用户信息
 				if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
@@ -492,16 +604,16 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				// 默认1级评论
 				info.CommentType = 1
 				// 评论id（1级评论id）
-				info.CommentId = receiveAt.CommentId
+				info.CommentId = receiveAt.ComposeId
 				// 进行回复使用的id
-				info.ReplyCommentId = receiveAt.CommentId
+				info.ReplyCommentId = receiveAt.ComposeId
 				info.Content = comment.Content
 				// 获取当前评论 / 回复的被点赞数
-				info.TotalLikeNum = svc.like.GetLikeNumByType(receiveAt.CommentId, consts.TYPE_VIDEO_COMMENT)
+				info.TotalLikeNum = svc.like.GetLikeNumByType(receiveAt.ComposeId, consts.TYPE_VIDEO_COMMENT)
 				// 如果父评论id为0 则表示 是1级评论 不为0 则表示是回复
 				if comment.ParentCommentId != 0 {
 					// 获取被回复的内容
-					beReply := svc.comment.GetCommentById(fmt.Sprint(comment.ReplyCommentId))
+					beReply := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ReplyCommentId))
 					if beReply != nil {
 						info.CommentType = 2
 						info.Content = beReply.Content
@@ -517,7 +629,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 					}
 
 					// 获取最上级的评论内容
-					parent := svc.comment.GetCommentById(fmt.Sprint(comment.ParentCommentId))
+					parent := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ParentCommentId))
 					if parent != nil {
 						info.ParentComment = parent.Content
 						// 1级评论id
@@ -536,6 +648,100 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				res[index] = info
 
 			}
+
+		// 帖子直接评论/回复
+		case consts.TYPE_POST_COMMENT:
+			info := new(mnotify.ReceiveAtInfo)
+			info.AtTime = receiveAt.CreateAt
+			info.Type = consts.TYPE_VIDEO_COMMENT
+			// 获取评论信息
+			comment := svc.comment.GetPostCommentById(fmt.Sprint(receiveAt.ComposeId))
+			if comment != nil {
+				// 执行@的用户信息
+				if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
+					// 执行@的用户信息
+					info.UserId = user.UserId
+					info.Avatar = user.Avatar
+					info.Nickname = user.NickName
+				}
+
+				// 获取评论对应的帖子信息
+				post, err := svc.post.GetPostById(fmt.Sprint(receiveAt.ComposeId))
+				if post != nil && err == nil {
+					info.ComposeId = post.Id
+					info.Title = post.Title
+					info.Describe = post.Describe
+					info.CreateAt = post.CreateAt
+					// 图文帖
+					if post.PostingType == consts.POST_TYPE_IMAGE {
+						var images []string
+						if err = util.JsonFast.UnmarshalFromString(post.Content, &images); err != nil {
+							log.Log.Errorf("post_trace: get image info err:%s", err)
+						}
+
+						// 使用第一张图片展示
+						if len(images) > 0 {
+							info.Cover = images[0]
+						}
+					}
+				}
+
+				// 被@的用户信息
+				if user := svc.user.FindUserByUserid(receiveAt.ToUserId); user != nil {
+					info.ToUserId = user.UserId
+					info.ToUserAvatar = user.Avatar
+					info.ToUserName = user.NickName
+				}
+
+				// 默认1级评论
+				info.CommentType = 1
+				// 评论id（1级评论id）
+				info.CommentId = receiveAt.ComposeId
+				// 进行回复使用的id
+				info.ReplyCommentId = receiveAt.ComposeId
+				info.Content = comment.Content
+				// 获取当前评论 / 回复的被点赞数
+				info.TotalLikeNum = svc.like.GetLikeNumByType(receiveAt.ComposeId, consts.TYPE_POST_COMMENT)
+				// 如果父评论id为0 则表示 是1级评论 不为0 则表示是回复
+				if comment.ParentCommentId != 0 {
+					// 获取被回复的内容
+					beReply := svc.comment.GetPostCommentById(fmt.Sprint(comment.ReplyCommentId))
+					if beReply != nil {
+						info.CommentType = 2
+						info.Content = beReply.Content
+						info.Reply = comment.Content
+
+						// 被回复的不是1级评论 则@消息 为1
+						if beReply.CommentLevel != 1 {
+							info.IsAt = 1
+						} else {
+							// 1级评论id
+							info.CommentId = beReply.Id
+						}
+					}
+
+					// 获取最上级的评论内容
+					parent := svc.comment.GetPostCommentById(fmt.Sprint(comment.ParentCommentId))
+					if parent != nil {
+						info.ParentComment = parent.Content
+						// 1级评论id
+						info.CommentId = parent.Id
+					}
+
+				}
+
+				if userId != "" {
+					// 获取点赞的信息
+					if likeInfo := svc.like.GetLikeInfo(userId, comment.Id, consts.TYPE_POST_COMMENT); likeInfo != nil {
+						info.IsLike = likeInfo.Status
+					}
+				}
+
+				res[index] = info
+
+			}
+
+
 		}
 
 		log.Log.Debugf("receiveId: %d", receiveAt.Id)

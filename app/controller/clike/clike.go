@@ -271,7 +271,7 @@ func (svc *LikeModule) GiveLikeForVideoComment(userId string, commentId int64) i
 	}
 
 	// 查找评论是否存在
-	comment := svc.comment.GetCommentById(fmt.Sprint(commentId))
+	comment := svc.comment.GetVideoCommentById(fmt.Sprint(commentId))
 	if comment == nil {
 		log.Log.Errorf("like_trace: like comment not found, commentId:%d", commentId)
 		svc.engine.Rollback()
@@ -334,7 +334,7 @@ func (svc *LikeModule) CancelLikeForVideoComment(userId string, commentId int64)
 	}
 
 	// 查找评论是否存在
-	if comment := svc.comment.GetCommentById(fmt.Sprint(commentId)); comment == nil {
+	if comment := svc.comment.GetVideoCommentById(fmt.Sprint(commentId)); comment == nil {
 		log.Log.Errorf("like_trace: cancel like comment not found, commentId:%d", commentId)
 		svc.engine.Rollback()
 		return errdef.LIKE_COMMENT_NOT_EXISTS
