@@ -25,6 +25,7 @@ type VideoModel struct {
 	HotSearch    *models.HotSearch
 	Report       *models.VideoReport
 	PlayRecord   *models.UserPlayDurationRecord
+	Subarea      *models.VideoSubarea
 }
 
 // 视频发布请求参数
@@ -234,6 +235,7 @@ func NewVideoModel(engine *xorm.Session) *VideoModel {
 		HotSearch: new(models.HotSearch),
 		Report: new(models.VideoReport),
 		PlayRecord: new(models.UserPlayDurationRecord),
+		Subarea: new(models.VideoSubarea),
 		Engine: engine,
 	}
 }

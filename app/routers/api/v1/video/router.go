@@ -48,5 +48,7 @@ func Router(engine *gin.Engine) {
 		//video.GET("/test/upload", TestUpload)
 		// 记录用户视频播放的时长
 		video.POST("/record/play/duration", RecordPlayDuration)
+		// 获取视频分区配置
+		video.GET("/subarea", VideoSubarea)
 	}
 }

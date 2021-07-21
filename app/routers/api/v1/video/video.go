@@ -576,3 +576,14 @@ func RecordPlayDuration(c *gin.Context) {
 	syscode := svc.RecordPlayDuration(param)
 	reply.Response(http.StatusOK, syscode)
 }
+
+// /api/v1/video/subarea
+// 视频分区
+func VideoSubarea(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cvideo.New(c)
+
+	code, list := svc.GetVideoSubarea()
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}

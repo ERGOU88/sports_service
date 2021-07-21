@@ -56,7 +56,11 @@ func CommunityTopicById(c *gin.Context) {
 func SectionPostList(c *gin.Context) {
 	reply := errdef.New(c)
 	// 板块id 默认综合
-	sectionId := c.DefaultQuery("section_id", "1")
+	sectionId := c.Query("section_id")
+	if sectionId == "" {
+		sectionId = "1"
+	}
+
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	userId := c.Query("user_id")
 
