@@ -16,6 +16,7 @@ import (
 	"sports_service/server/models/mlabel"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/mnotify"
+	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	cloud "sports_service/server/tools/tencentCloud"
@@ -37,6 +38,7 @@ type VideoModule struct {
 	collect      *mcollect.CollectModel
 	label        *mlabel.LabelModel
 	notify       *mnotify.NotifyModel
+	post         *mposting.PostingModel
 }
 
 func New(c *gin.Context) VideoModule {
@@ -52,22 +54,31 @@ func New(c *gin.Context) VideoModule {
 		collect: mcollect.NewCollectModel(socket),
 		label: mlabel.NewLabelModel(socket),
 		notify: mnotify.NewNotifyModel(socket),
+		post: mposting.NewPostingModel(socket),
 		engine: socket,
 	}
 }
 
 // 记录用户发布的视频信息(先放入缓存 接收到腾讯云回调事件 再写库）
 func (svc *VideoModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPublishParams) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("video_trace: session begin err:%s", err)
+		return errdef.VIDEO_PUBLISH_FAIL
+	}
+
 	// 通过任务id获取用户id 是否为同一个用户
 	uid, err := svc.video.GetUploadUserIdByTaskId(params.TaskId)
 	if err != nil || strings.Compare(uid, userId) != 0 {
 		log.Log.Errorf("video_trace: user not match, cur userId:%s, uid:%s", userId, uid)
+		svc.engine.Rollback()
 		return errdef.VIDEO_PUBLISH_FAIL
 	}
 
 	// 查询用户是否存在
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
 		return errdef.USER_NOT_EXISTS
 	}
 
@@ -96,53 +107,93 @@ func (svc *VideoModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPu
 	//}
 	//}
 
-	info, _ := util.JsonFast.Marshal(params)
-	// 先记录到缓存
-	if err := svc.video.RecordPublishInfo(userId, string(info), params.TaskId); err != nil {
-		log.Log.Errorf("video_trace: record publish info by redis err:%s", err)
+	// 用户发布视频
+	if err := svc.UserPublishVideo(userId, params); err != nil {
+		log.Log.Errorf("video_trace: video publish failed, err:%s", err)
+		svc.engine.Rollback()
 		return errdef.VIDEO_PUBLISH_FAIL
 	}
+
+	info, _ := util.JsonFast.Marshal(params)
+
+	// 记录到缓存 数据规则为 {videoId_info}
+	if err := svc.video.RecordPublishInfo(userId, svc.genVideoTag(svc.video.Videos.VideoId, string(info), svc.video.Videos.PubType), params.TaskId); err != nil {
+		log.Log.Errorf("video_trace: record publish info by redis err:%s", err)
+		svc.engine.Rollback()
+		return errdef.VIDEO_PUBLISH_FAIL
+	}
+
+	svc.engine.Commit()
 
 	return errdef.SUCCESS
 }
 
+// 生成视频信息标签
+func (svc *VideoModule) genVideoTag(videoId int64, info string, pubType int) string {
+	return fmt.Sprintf("%d_%s_%d",videoId, info, pubType)
+}
+
 // 用户发布视频
 // 事务处理
-// 数据记录到视频审核表 同时 标签记录到 视频标签表（多条记录 同一个videoId对应N个labelId 生成N条记录）
+// 标签记录到 视频标签表（多条记录 同一个videoId对应N个labelId 生成N条记录）
 func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPublishParams) error {
-	// 开启事务
-	if err := svc.engine.Begin(); err != nil {
-		log.Log.Errorf("video_trace: session begin err:%s", err)
-		return err
-	}
 
 	// 查询用户是否存在
-	if user := svc.user.FindUserByUserid(userId); user == nil {
-		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
-		svc.engine.Rollback()
-		return errors.New("user not found")
+	//if user := svc.user.FindUserByUserid(userId); user == nil {
+	//	log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+	//	svc.engine.Rollback()
+	//	return errors.New("user not found")
+	//}
+	var (
+		subarea *models.VideoSubarea
+		err error
+	)
+
+	// 视频所属分区
+	if params.SubareaId != "" {
+		subarea, err = svc.video.GetSubAreaById(params.SubareaId)
+		if err != nil || subarea == nil {
+			log.Log.Errorf("video_trace: get subarea by id fail, err:%s", err)
+		} else {
+			svc.video.Videos.Subarea = subarea.Id
+		}
 	}
 
-	now := time.Now().Unix()
+	now := int(time.Now().Unix())
+	// 视频所属专辑
+	if params.AlbumId != "" {
+		album, err := svc.video.GetVideoAlbumById(params.AlbumId)
+		if err != nil || subarea == nil {
+			log.Log.Errorf("video_trace: get video album by id fail, err:%s", err)
+		} else {
+			svc.video.Videos.Album = album.Id
+		}
+	}
+
 	svc.video.Videos.UserId = userId
 	svc.video.Videos.Cover = params.Cover
 	svc.video.Videos.Title = util.TrimHtml(params.Title)
 	svc.video.Videos.Describe = util.TrimHtml(params.Describe)
 	svc.video.Videos.VideoAddr = params.VideoAddr
 	svc.video.Videos.VideoDuration = params.VideoDuration
-	svc.video.Videos.CreateAt = int(now)
-	svc.video.Videos.UpdateAt = int(now)
+	svc.video.Videos.CreateAt = now
+	svc.video.Videos.UpdateAt = now
 	svc.video.Videos.UserType = consts.PUBLISH_VIDEO_BY_USER
 	svc.video.Videos.VideoWidth = params.VideoWidth
 	svc.video.Videos.VideoHeight = params.VideoHeight
+	svc.video.Videos.Size = params.Size
 	fileId, _ := strconv.Atoi(params.FileId)
 	svc.video.Videos.FileId = int64(fileId)
+	// 默认为首页发布
+	svc.video.Videos.PubType = 1
+	if params.PubType > 1 {
+		svc.video.Videos.PubType = params.PubType
+	}
 
 	// 视频发布
 	affected, err := svc.video.VideoPublish()
 	if err != nil || affected != 1 {
 		log.Log.Errorf("video_trace: publish video err:%s, affected:%d", err, affected)
-		svc.engine.Rollback()
 		return err
 	}
 
@@ -159,7 +210,7 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 		info.VideoId = svc.video.Videos.VideoId
 		info.LabelId = labelId
 		info.LabelName = svc.label.GetLabelNameByMem(labelId)
-		info.CreateAt = int(now)
+		info.CreateAt = now
 		labelInfos = append(labelInfos, info)
 	}
 
@@ -167,23 +218,38 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 		// 添加视频标签（多条）
 		affected, err = svc.video.AddVideoLabels(labelInfos)
 		if err != nil || int(affected) != len(labelInfos) {
-			svc.engine.Rollback()
 			log.Log.Errorf("video_trace: add video labels err:%s", err)
 			return errors.New("add video labels error")
 		}
 	}
 
+	// 同步到社区
+	svc.post.Posting.UserId = userId
+	svc.post.Posting.VideoId = svc.video.Videos.VideoId
+	// 默认发布到综合
+	svc.post.Posting.SectionId = 1
+	// 视频+文
+	svc.post.Posting.PostingType = consts.POST_TYPE_VIDEO
+	// 社区发布
+	svc.post.Posting.ContentType = consts.COMMUNITY_PUB_POST
+
+	svc.post.Posting.CreateAt = now
+	svc.post.Posting.UpdateAt = now
+	// 添加帖子
+	if _, err := svc.post.AddPost() ; err != nil {
+		log.Log.Errorf("video_trace: add post fail, err:%s", err)
+		return errors.New("add post fail")
+	}
+
 	svc.video.Statistic.VideoId = svc.video.Videos.VideoId
-	svc.video.Statistic.CreateAt = int(now)
-	svc.video.Statistic.UpdateAt = int(now)
+	svc.video.Statistic.CreateAt = now
+	svc.video.Statistic.UpdateAt = now
 	// 初始化视频统计数据
 	if err := svc.video.AddVideoStatistic(); err != nil {
 		log.Log.Errorf("video_trace: add video statistic err:%s", err)
-		svc.engine.Rollback()
 		return err
 	}
 
-	svc.engine.Commit()
 	return nil
 }
 
@@ -206,8 +272,8 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 	// 当前页所有视频id
 	//videoIds := make([]string, len(records))
 	//for index, info := range records {
-	//	mp[info.ComposeId] = info.UpdateAt
-	//	videoIds[index] = fmt.Sprint(info.ComposeId)
+	//	mp[info.VideoId] = info.UpdateAt
+	//	videoIds[index] = fmt.Sprint(info.VideoId)
 	//}
 
 	//vids := strings.Join(videoIds, ",")
@@ -414,6 +480,14 @@ func (svc *VideoModule) DeletePublishVideo(userId, videoId string) int {
 			return errdef.VIDEO_DELETE_PUBLISH_FAIL
 		}
 
+		// 如果是社区发布的视频 需把关联的帖子置为不可见 [逻辑删除]
+		if video.PubType == 2 {
+			if err := svc.UpdatePostStatusByVideoId(video.UserId, fmt.Sprint(video.VideoId)); err != nil {
+				svc.engine.Rollback()
+				return errdef.VIDEO_DELETE_PUBLISH_FAIL
+			}
+		}
+
 		svc.engine.Commit()
 		return errdef.SUCCESS
 	}
@@ -439,8 +513,27 @@ func (svc *VideoModule) DeletePublishVideo(userId, videoId string) int {
 		return errdef.VIDEO_DELETE_STATISTIC_FAIL
 	}
 
+	// 如果是社区发布的视频 需把关联的帖子置为不可见 [逻辑删除]
+	if video.PubType == 2 {
+		if err := svc.UpdatePostStatusByVideoId(video.UserId, fmt.Sprint(video.VideoId)); err != nil {
+			svc.engine.Rollback()
+			return errdef.VIDEO_DELETE_PUBLISH_FAIL
+		}
+	}
+
 	svc.engine.Commit()
 	return errdef.SUCCESS
+}
+
+// 更新和视频关联的帖子状态
+func (svc *VideoModule) UpdatePostStatusByVideoId(userId, videoId string) error {
+	svc.post.Posting.Status = 3
+	if err := svc.post.UpdatePostStatus(userId, videoId); err != nil {
+		log.Log.Errorf("video_trace: update post status fail, err:%s", err)
+		return err
+	}
+
+	return nil
 }
 
 // 获取推荐的视频列表
@@ -693,12 +786,14 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDet
 
 	// 获取视频相关统计数据
 	info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
-	resp.BrowseNum = info.BrowseNum
-	resp.CommentNum = info.CommentNum
-	resp.FabulousNum = info.FabulousNum
-	resp.ShareNum = info.ShareNum
-	resp.BarrageNum = info.BarrageNum
-	resp.CollectNum = info.CollectNum
+	if info != nil {
+		resp.BrowseNum = info.BrowseNum
+		resp.CommentNum = info.CommentNum
+		resp.FabulousNum = info.FabulousNum
+		resp.ShareNum = info.ShareNum
+		resp.BarrageNum = info.BarrageNum
+		resp.CollectNum = info.CollectNum
+	}
 	// 粉丝数
 	resp.FansNum = svc.attention.GetTotalFans(fmt.Sprint(video.UserId))
 	now := int(time.Now().Unix())
@@ -1046,4 +1141,91 @@ func (svc *VideoModule) RecordPlayDuration(params *mvideo.PlayDurationParams) in
 	}
 
 	return errdef.SUCCESS
+}
+
+// 获取视频分区配置
+func (svc *VideoModule) GetVideoSubarea() (int, []*models.VideoSubarea) {
+	list, err := svc.video.GetSubAreaList()
+	if err != nil {
+		log.Log.Errorf("video_trace: get video subarea fail, err:%s", err)
+		return errdef.VIDEO_SUBAREA_FAIL, []*models.VideoSubarea{}
+	}
+
+	if list == nil {
+		return errdef.SUCCESS, []*models.VideoSubarea{}
+	}
+
+	return errdef.SUCCESS, list
+}
+
+// 创建视频专辑
+func (svc *VideoModule) CreateVideoAlbum(userId string, param *mvideo.CreateAlbumParam) (int, string) {
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("user_trace: user not found, userId:%s", userId)
+		return errdef.USER_NOT_EXISTS, ""
+	}
+
+	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	// 检测视频专辑名称
+	isPass, err := client.TextModeration(param.AlbumName)
+	if !isPass || err != nil {
+		log.Log.Errorf("video_trace: validate album name err: %s，pass: %v", err, isPass)
+		return errdef.VIDEO_INVALID_CUSTOM_LABEL, ""
+	}
+
+	svc.video.Album.UserId = userId
+	svc.video.Album.CreateAt = int(time.Now().Unix())
+	svc.video.Album.AlbumName = param.AlbumName
+	if _, err := svc.video.CreateVideoAlbum(); err != nil {
+		log.Log.Errorf("video_trace: create video album fail, err:%s", err)
+		return errdef.VIDEO_CREATE_ALBUM_FAIL, ""
+	}
+
+	return errdef.SUCCESS, fmt.Sprint(svc.video.Album.Id)
+}
+
+// 将视频添加到专辑内
+func (svc *VideoModule) AddVideoToAlbum(userId string, param *mvideo.AddVideoToAlbumParam) int {
+	video := svc.video.FindVideoById(param.VideoId)
+	if video == nil {
+		log.Log.Errorf("video_trace: video not found, videoId:%s", param.VideoId)
+		return errdef.VIDEO_NOT_EXISTS
+	}
+
+	// 只有up主才可以操作
+	if userId != video.UserId {
+		log.Log.Errorf("video_trace: video add to album fail, user not match, userId:%s, up:%s", userId, video.UserId)
+		return errdef.VIDEO_ADD_TO_ALBUM_FAIL
+	}
+
+	// 专辑是否存在
+	album, err := svc.video.GetVideoAlbumById(param.AlbumId)
+	if album == nil || err != nil {
+		log.Log.Errorf("video_trace: album not found, albumId:%s", param.AlbumId)
+		return errdef.VIDEO_ALBUM_NOT_EXISTS
+	}
+
+	video.Album = album.Id
+	if _, err := svc.video.UpdateVideoInfo(); err != nil {
+		log.Log.Errorf("video_trace: add to album fail, err:%s, videoId:%d, albumId:%s", err, video.VideoId, param.AlbumId)
+		return errdef.VIDEO_ADD_TO_ALBUM_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
+// 获取分区下的视频列表
+func (svc *VideoModule) GetVideoListBySubarea(subareaId string, page, size int) (int, []*mvideo.VideoInfoBySubarea) {
+	offset := (page - 1) * size
+	list, err := svc.video.GetVideoListBySubarea(subareaId, offset, size)
+	if err != nil {
+		log.Log.Errorf("video_trace: get video list by subarea fail, err:%s", err)
+		return errdef.VIDEO_LIST_BY_SUBAREA_FAIL, []*mvideo.VideoInfoBySubarea{}
+	}
+
+	if list == nil {
+		return errdef.SUCCESS, []*mvideo.VideoInfoBySubarea{}
+	}
+
+	return errdef.SUCCESS, list
 }

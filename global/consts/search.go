@@ -34,3 +34,9 @@ const (
   DEFAULT_SEARCH_USER_SIZE = 20
 )
 
+// 综合搜索帖子默认展示3条
+const (
+	DEFAULT_SEARCH_POST_PAGE = 1
+	DEFAULT_SEARCH_POST_SIZE = 3
+)
+

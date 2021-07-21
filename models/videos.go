@@ -21,5 +21,8 @@ type Videos struct {
 	UpdateAt      int    `json:"update_at" xorm:"not null default 0 comment('修改时间') INT(11)"`
 	FileId        int64  `json:"file_id" xorm:"not null default 0 comment('腾讯云文件id') BIGINT(20)"`
 	Size          int64  `json:"size" xorm:"not null default 0 comment('视频大小（字节数）') BIGINT(20)"`
-	PlayInfo      string `json:"play_info" xorm:"comment('视频转码信息') MEDIUMTEXT"`
+	PlayInfo      string `json:"play_info" xorm:"not null comment('视频转码数据') MEDIUMTEXT"`
+	PubType       int    `json:"pub_type" xorm:"not null default 1 comment('1 首页发布视频 2 社区发布视频') TINYINT(1)"`
+	Subarea       int    `json:"subarea" xorm:"not null default 0 comment('视频所属分区') INT(11)"`
+	Album         int64  `json:"album" xorm:"not null default 0 comment('视频所属专辑') BIGINT(20)"`
 }

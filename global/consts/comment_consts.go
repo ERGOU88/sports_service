@@ -24,3 +24,9 @@ const (
 	SORT_BY_LIKE  = "2"
 	SORT_BY_REPLY = "3"
 )
+
+// 评论类型 1 视频 2 帖子
+const (
+	COMMENT_TYPE_VIDEO  = 1
+	COMMENT_TYPE_POST   = 2
+)

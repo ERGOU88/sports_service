@@ -25,6 +25,8 @@ type VideoModel struct {
 	HotSearch    *models.HotSearch
 	Report       *models.VideoReport
 	PlayRecord   *models.UserPlayDurationRecord
+	Subarea      *models.VideoSubarea
+	Album        *models.VideoAlbum
 }
 
 // 视频发布请求参数
@@ -41,6 +43,9 @@ type VideoPublishParams struct {
 	VideoLabels    string  `binding:"required" json:"video_labels"`   // 视频标签id（多个用逗号分隔）
 	Size           int64   `json:"size"`                              // 视频字节数
 	CustomLabels   string  `json:"custom_labels"`                     // 字符串（多个用逗号分隔）
+	PubType        int     `json:"pub_type"`                          // 发布类型 1 首页发布 2 社区发布
+	SubareaId      string  `json:"subarea_id"`                        // 分区id
+	AlbumId        string  `json:"album_id"`                          // 专辑id
 }
 
 // 视频信息
@@ -222,6 +227,25 @@ type PlayInfo struct {
 	Duration int64    `json:"duration" example:"1000000000"`
 }
 
+// 分区下的视频信息
+type VideoInfoBySubarea struct {
+	VideoId       int64                 `json:"video_id"  example:"1000000000"`       // 视频id
+	Title         string                `json:"title"  example:"标题"`                 // 标题
+	Describe      string                `json:"describe"  example:"描述"`              // 描述
+	Cover         string                `json:"cover"  example:"封面"`                 // 封面
+	VideoAddr     string                `json:"video_addr"  example:"视频地址"`         // 视频地址
+	VideoDuration int                   `json:"video_duration" example:"100000"`       // 视频时长
+	VideoWidth    int64                 `json:"video_width"  example:"100"`            // 视频宽
+	VideoHeight   int64                 `json:"video_height"  example:"100"`           // 视频高
+	CreateAt      int                   `json:"create_at" example:"1600000000"`        // 视频创建时间
+
+	BarrageNum    int                   `json:"barrage_num" example:"10"`              // 弹幕数
+	BrowseNum     int                   `json:"browse_num" example:"10"`               // 浏览数（播放数）
+	UserId        string                `json:"user_id" example:"发布视频的用户id"`       // 发布视频的用户id
+	Avatar        string                `json:"avatar" example:"头像"`                  // 头像
+	Nickname      string                `json:"nick_name"  example:"昵称"`              // 昵称
+}
+
 // 实栗
 func NewVideoModel(engine *xorm.Session) *VideoModel {
 	return &VideoModel{
@@ -233,6 +257,8 @@ func NewVideoModel(engine *xorm.Session) *VideoModel {
 		HotSearch: new(models.HotSearch),
 		Report: new(models.VideoReport),
 		PlayRecord: new(models.UserPlayDurationRecord),
+		Subarea: new(models.VideoSubarea),
+		Album: new(models.VideoAlbum),
 		Engine: engine,
 	}
 }
@@ -741,9 +767,9 @@ func (m *VideoModel) AddVideoReport() (int64, error) {
 	return m.Engine.InsertOne(m.Report)
 }
 
-// 更新视频转码数据
+// 更新视频转码数据 & AI审核状态
 func (m *VideoModel) UpdateVideoPlayInfo(videoId string) error {
-	if _, err := m.Engine.Where("video_id=?", videoId).Cols("play_info").Update(m.Videos); err != nil {
+	if _, err := m.Engine.Where("video_id=?", videoId).Cols("play_info, status").Update(m.Videos); err != nil {
 		return err
 	}
 
@@ -894,5 +920,22 @@ func (m *VideoModel) UpdateUserPlayDurationRecord() error {
 	return nil
 }
 
+// 更新视频信息
+func (m *VideoModel) UpdateVideoInfo() (int64, error) {
+	return m.Engine.ID(m.Videos.VideoId).Update(m.Videos)
+}
 
+const (
+	QUERY_VIDEO_LIST_BY_SUBAREA = "SELECT v.*, s.barrage_num,s.browse_num FROM `videos` as v LEFT JOIN video_statistic " +
+		"as s ON v.video_id=s.video_id WHERE v.status = 1 AND v.subarea=? ORDER BY v.video_id DESC LIMIT ?, ?"
+)
+// 获取分区下的视频列表
+func (m *VideoModel) GetVideoListBySubarea(subarea string, offset, size int) ([]*VideoInfoBySubarea, error){
+	var list []*VideoInfoBySubarea
+	if err := m.Engine.SQL(QUERY_VIDEO_LIST_BY_SUBAREA, subarea, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("video_trace: get video by subarea err:%s", err)
+		return nil, err
+	}
 
+	return list, nil
+}

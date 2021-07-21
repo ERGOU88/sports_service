@@ -1,7 +1,9 @@
 package cvideo
 
 import (
+  "fmt"
   "github.com/gin-gonic/gin"
+  "github.com/go-xorm/xorm"
   "sports_service/server/dao"
   "sports_service/server/global/backend/errdef"
   "sports_service/server/global/consts"
@@ -10,13 +12,10 @@ import (
   "sports_service/server/models/mlabel"
   "sports_service/server/models/muser"
   "sports_service/server/models/mvideo"
-  "github.com/go-xorm/xorm"
-  "fmt"
+  redismq "sports_service/server/redismq/event"
   "sports_service/server/tools/tencentCloud"
   "sports_service/server/util"
-  "sports_service/server/rabbitmq/event"
   "time"
-  "sports_service/server/backend/config"
 )
 
 type VideoModule struct {
@@ -109,7 +108,8 @@ func (svc *VideoModule) EditVideoStatus(param *mvideo.EditVideoStatusParam) int 
         userIds := svc.attention.GetFansList(user.UserId)
         for _, userId := range userIds {
           // 给发布者的粉丝 发送 发布新视频推送
-          event.PushEventMsg(config.Global.AmqpDsn, userId, user.NickName, video.Cover, "", consts.FOCUS_USER_PUBLISH_MSG)
+          //event.PushEventMsg(config.Global.AmqpDsn, userId, user.NickName, video.Cover, "", consts.FOCUS_USER_PUBLISH_MSG)
+          redismq.PushEventMsg(redismq.NewEvent(userId, user.NickName, video.Cover, "", consts.FOCUS_USER_PUBLISH_MSG))
         }
       }
     }

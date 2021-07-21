@@ -7,16 +7,16 @@ import (
 	"sports_service/server/global/backend/log"
 	"sports_service/server/global/backend/errdef"
 	"sports_service/server/global/consts"
-  "sports_service/server/models"
-  "sports_service/server/models/mattention"
-  "sports_service/server/models/mbarrage"
-  "sports_service/server/models/mcollect"
+	"sports_service/server/models"
+	"sports_service/server/models/mattention"
+	"sports_service/server/models/mbarrage"
+	"sports_service/server/models/mcollect"
 	"sports_service/server/models/mcomment"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
-  "strconv"
-  "time"
+	"strconv"
+	"time"
 	"fmt"
 )
 
@@ -33,7 +33,7 @@ type UserModule struct {
 }
 
 func New(c *gin.Context) UserModule {
-  socket := dao.Engine.NewSession()
+	socket := dao.Engine.NewSession()
 	defer socket.Close()
 	return UserModule{
 		context: c,
@@ -50,45 +50,45 @@ func New(c *gin.Context) UserModule {
 
 // 后台获取用户列表 todo:增加排序
 func (svc *UserModule) GetUserListBySort(queryId, sortType, condition string, page, size int) ([]*muser.UserInfo, int64) {
-  var (
-    total int64
-    userId, mobileNum string
-  )
-  if queryId != "" {
-    if _, err := strconv.Atoi(queryId); err != nil {
-      return []*muser.UserInfo{}, total
-    }
+	var (
+		total int64
+		userId, mobileNum string
+	)
+	if queryId != "" {
+		if _, err := strconv.Atoi(queryId); err != nil {
+			return []*muser.UserInfo{}, total
+		}
 
-    // 通过uid查询用户是否存在
-    user := svc.user.FindUserByUserid(queryId)
-    if user != nil {
-      userId = user.UserId
-      total = 1
-    }
+		// 通过uid查询用户是否存在
+		user := svc.user.FindUserByUserid(queryId)
+		if user != nil {
+			userId = user.UserId
+			total = 1
+		}
 
-    // 通过手机号查询用户是否存在
-    user = svc.user.FindUserByPhone(queryId)
-    if user != nil {
-      mobileNum = fmt.Sprint(user.MobileNum)
-      total =1
-    }
+		// 通过手机号查询用户是否存在
+		user = svc.user.FindUserByPhone(queryId)
+		if user != nil {
+			mobileNum = fmt.Sprint(user.MobileNum)
+			total =1
+		}
 
-    // 都不存在
-    if userId == "" && mobileNum == ""  {
-      return []*muser.UserInfo{}, total
-    }
+		// 都不存在
+		if userId == "" && mobileNum == ""  {
+			return []*muser.UserInfo{}, total
+		}
 
-  } else {
-    total = svc.GetUserTotalCount()
-  }
+	} else {
+		total = svc.GetUserTotalCount()
+	}
 
-  offset := (page - 1) * size
-  list := svc.user.GetUserListBySort(userId, mobileNum, sortType, condition, offset, size)
-  if len(list) == 0 {
-    return []*muser.UserInfo{}, total
-  }
+	offset := (page - 1) * size
+	list := svc.user.GetUserListBySort(userId, mobileNum, sortType, condition, offset, size)
+	if len(list) == 0 {
+		return []*muser.UserInfo{}, total
+	}
 
-  return list, total
+	return list, total
 }
 
 // 后台获取用户列表
@@ -139,9 +139,9 @@ func (svc *UserModule) GetUserList(page, size int) []*muser.UserInfo {
 			TotalBrowse: svc.video.GetUserTotalBrowse(info.UserId),
 		}
 
-    if country := svc.GetWorldInfoById(int32(info.Country)); country != nil {
-      resp.CountryCn = country.Name
-    }
+		if country := svc.GetWorldInfoById(int32(info.Country)); country != nil {
+			resp.CountryCn = country.Name
+		}
 
 		res[index] = resp
 	}
@@ -151,7 +151,7 @@ func (svc *UserModule) GetUserList(page, size int) []*muser.UserInfo {
 
 // 获取用户总数
 func (svc *UserModule) GetUserTotalCount() int64 {
-  return svc.user.GetUserTotalCount()
+	return svc.user.GetUserTotalCount()
 }
 
 // 封禁用户
@@ -168,7 +168,7 @@ func (svc *UserModule) ForbidUser(id string) int {
 
 // 通过id获取世界信息（暂时只有国家）
 func (svc *UserModule) GetWorldInfoById(id int32) *models.WorldMap {
-  return svc.user.GetWorldInfoById(id)
+	return svc.user.GetWorldInfoById(id)
 }
 
 // 解封用户

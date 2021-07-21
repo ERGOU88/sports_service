@@ -1,21 +1,22 @@
 package csearch
 
 import (
-  "github.com/gin-gonic/gin"
-  "github.com/go-xorm/xorm"
-  "sports_service/server/dao"
-  "sports_service/server/global/app/errdef"
-  "sports_service/server/global/app/log"
-  "sports_service/server/global/consts"
-  "sports_service/server/models"
-  "sports_service/server/models/mattention"
-  "sports_service/server/models/mcollect"
-  "sports_service/server/models/mlike"
-  "sports_service/server/models/muser"
-  "sports_service/server/models/mvideo"
-  "sports_service/server/util"
-  "time"
-  "fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
+	"sports_service/server/dao"
+	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
+	"sports_service/server/models"
+	"sports_service/server/models/mattention"
+	"sports_service/server/models/mcollect"
+	"sports_service/server/models/mlike"
+	"sports_service/server/models/mposting"
+	"sports_service/server/models/muser"
+	"sports_service/server/models/mvideo"
+	"sports_service/server/util"
+	"time"
+	"fmt"
 )
 
 type SearchModule struct {
@@ -26,10 +27,11 @@ type SearchModule struct {
 	video       *mvideo.VideoModel
 	attention   *mattention.AttentionModel
 	like        *mlike.LikeModel
+	post        *mposting.PostingModel
 }
 
 func New(c *gin.Context) SearchModule {
-  socket := dao.Engine.NewSession()
+	socket := dao.Engine.NewSession()
 	defer socket.Close()
 	return SearchModule{
 		context: c,
@@ -38,27 +40,28 @@ func New(c *gin.Context) SearchModule {
 		video: mvideo.NewVideoModel(socket),
 		attention: mattention.NewAttentionModel(socket),
 		like: mlike.NewLikeModel(socket),
+		post: mposting.NewPostingModel(socket),
 		engine: socket,
 	}
 }
 
-// 综合搜索（视频+用户 默认视频取10条 用户取20条 视频默认播放量排序） 如果视频和用户都未搜索到 则推荐两个视频
+// 综合搜索（视频+用户 默认视频取10条 用户取20条 帖子取3条 视频默认播放量排序） 如果视频和用户都未搜索到 则推荐两个视频
 func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDetailInfo, []*muser.UserSearchResults, []*mvideo.VideoDetailInfo) {
-  if name == "" {
+	if name == "" {
 		log.Log.Errorf("search_trace: search name can't empty, name:%s", name)
 		return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, []*mvideo.VideoDetailInfo{}
 	}
 
-  length := util.GetStrLen([]rune(name))
-  if length > 20 {
-    log.Log.Errorf("search_trace: invalid search name len, len:%s", length)
-    return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, []*mvideo.VideoDetailInfo{}
-  }
+	length := util.GetStrLen([]rune(name))
+	if length > 20 {
+		log.Log.Errorf("search_trace: invalid search name len, len:%s", length)
+		return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, []*mvideo.VideoDetailInfo{}
+	}
 
 	if userId != "" {
-	  if err := svc.video.RecordHistorySearch(userId, name); err != nil {
-	    log.Log.Errorf("search_trace: record history search err:%s", err)
-    }
+		if err := svc.video.RecordHistorySearch(userId, name); err != nil {
+			log.Log.Errorf("search_trace: record history search err:%s", err)
+		}
 	}
 
 	// 搜索到的视频
@@ -67,38 +70,41 @@ func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDe
 	// 搜索到的用户
 	users := svc.UserSearch(userId, name, consts.DEFAULT_SEARCH_USER_PAGE, consts.DEFAULT_SEARCH_USER_SIZE)
 
-	var recommend []*mvideo.VideoDetailInfo
-	if len(videos) == 0 && len(users) == 0 {
-    recommend = svc.RecommendVideo()
-  }
+	// 搜索到的帖子
+	posts := svc.PostSearch(userId, name, consts.DEFAULT_SEARCH_POST_PAGE, consts.DEFAULT_SEARCH_POST_SIZE)
 
-  if len(recommend) == 0 {
-    recommend = []*mvideo.VideoDetailInfo{}
-  }
+	var recommend []*mvideo.VideoDetailInfo
+	if len(videos) == 0 && len(users) == 0 && len(posts) == 0 {
+		recommend = svc.RecommendVideo()
+	}
+
+	if len(recommend) == 0 {
+		recommend = []*mvideo.VideoDetailInfo{}
+	}
 
 	return videos, users, recommend
 }
 
 // 推荐视频 默认取两条
 func (svc *SearchModule) RecommendVideo() []*mvideo.VideoDetailInfo {
-  offset := util.GenerateRandnum(0, int(svc.video.GetVideoTotalCount())-10)
-  videos := svc.video.GetRecommendVideos(int32(offset), 2)
-  if videos == nil {
-    log.Log.Error("search_trace: get recommend video fail")
-    return []*mvideo.VideoDetailInfo{}
-  }
+	offset := util.GenerateRandnum(0, int(svc.video.GetVideoTotalCount())-10)
+	videos := svc.video.GetRecommendVideos(int32(offset), 2)
+	if videos == nil {
+		log.Log.Error("search_trace: get recommend video fail")
+		return []*mvideo.VideoDetailInfo{}
+	}
 
-  for _, val := range videos {
-    val.Title = util.TrimHtml(val.Title)
-    val.Describe = util.TrimHtml(val.Describe)
-     user := svc.user.FindUserByUserid(val.UserId)
-     if user != nil {
-       val.Nickname = user.NickName
-       val.Avatar = user.Avatar
-     }
-  }
+	for _, val := range videos {
+		val.Title = util.TrimHtml(val.Title)
+		val.Describe = util.TrimHtml(val.Describe)
+		user := svc.user.FindUserByUserid(val.UserId)
+		if user != nil {
+			val.Nickname = user.NickName
+			val.Avatar = user.Avatar
+		}
+	}
 
-  return videos
+	return videos
 }
 
 
@@ -111,9 +117,9 @@ func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime s
 
 	length := util.GetStrLen([]rune(name))
 	if length > 20 {
-	  log.Log.Errorf("search_trace: invalid search name len, len:%s", length)
-    return []*mvideo.VideoDetailInfo{}
-  }
+		log.Log.Errorf("search_trace: invalid search name len, len:%s", length)
+		return []*mvideo.VideoDetailInfo{}
+	}
 
 	sortField := svc.GetSortField(sort)
 	min, max := svc.GetDurationCondition(duration)
@@ -133,26 +139,26 @@ func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime s
 			continue
 		}
 
-    video.Title = util.TrimHtml(video.Title)
-    video.Describe = util.TrimHtml(video.Describe)
+		video.Title = util.TrimHtml(video.Title)
+		video.Describe = util.TrimHtml(video.Describe)
 
 		video.Avatar = userInfo.Avatar
 		video.Nickname = userInfo.NickName
 		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 
 		if len(video.PlayInfo) == 0 {
-		  video.PlayInfo = []*mvideo.PlayInfo{}
-    }
+			video.PlayInfo = []*mvideo.PlayInfo{}
+		}
 
-    if len(video.Labels) == 0 {
-      video.Labels = []*models.VideoLabels{}
-    }
+		if len(video.Labels) == 0 {
+			video.Labels = []*models.VideoLabels{}
+		}
 
-    // 获取视频统计数据
-    info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
-    if info != nil {
-      video.BarrageNum = info.BarrageNum
-    }
+		// 获取视频统计数据
+		info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
+		if info != nil {
+			video.BarrageNum = info.BarrageNum
+		}
 
 		// 用户未登录
 		if userId == "" {
@@ -187,11 +193,11 @@ func (svc *SearchModule) UserSearch(userId, name string, page, size int) []*muse
 		return []*muser.UserSearchResults{}
 	}
 
-  length := util.GetStrLen([]rune(name))
-  if length > 20 {
-    log.Log.Errorf("search_trace: invalid search name len, len:%s", length)
-    return []*muser.UserSearchResults{}
-  }
+	length := util.GetStrLen([]rune(name))
+	if length > 20 {
+		log.Log.Errorf("search_trace: invalid search name len, len:%s", length)
+		return []*muser.UserSearchResults{}
+	}
 
 	offset := (page - 1) * size
 	list := svc.user.SearchUser(name, offset, size)
@@ -228,9 +234,9 @@ func (svc *SearchModule) LabelSearch(userId string, labelId string, page, size i
 	//	log.Log.Errorf("search_trace: not found videos by label id, labelId:%s", labelId)
 	//	return []*mvideo.VideoDetailInfo{}
 	//}
-  //
+	//
 	//vids := strings.Join(videoIds, ",")
-  //log.Log.Debugf("videoIds:%v, vids:%s", videoIds, vids)
+	//log.Log.Debugf("videoIds:%v, vids:%s", videoIds, vids)
 	//videos := svc.video.FindVideoListByIds(vids)
 	//if len(videos) == 0 {
 	//	log.Log.Errorf("search_trace: not found videos, vids:%s", vids)
@@ -239,10 +245,10 @@ func (svc *SearchModule) LabelSearch(userId string, labelId string, page, size i
 
 	// 通过标签id 获取同标签视频列表
 	videos := svc.video.SearchVideosByLabelId(labelId, offset, size)
-  if len(videos) == 0 {
-  	log.Log.Errorf("search_trace: not found videos, labelId:%s", labelId)
-  	return []*mvideo.VideoDetailInfo{}
-  }
+	if len(videos) == 0 {
+		log.Log.Errorf("search_trace: not found videos, labelId:%s", labelId)
+		return []*mvideo.VideoDetailInfo{}
+	}
 
 	// 重新组装数据
 	list := make([]*mvideo.VideoDetailInfo, len(videos))
@@ -266,29 +272,29 @@ func (svc *SearchModule) LabelSearch(userId string, labelId string, page, size i
 			resp.Nickname = user.NickName
 		}
 
-    // 获取视频统计数据
-    info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
-    if info != nil {
-       resp.BarrageNum = info.BarrageNum
-       resp.BrowseNum = info.BrowseNum
-    }
+		// 获取视频统计数据
+		info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
+		if info != nil {
+			resp.BarrageNum = info.BarrageNum
+			resp.BrowseNum = info.BrowseNum
+		}
 
 		// 用户未登录
 		if userId != "" {
-      // 是否关注
-      if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
-        resp.IsAttention = attentionInfo.Status
-      }
+			// 是否关注
+			if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
+				resp.IsAttention = attentionInfo.Status
+			}
 
-      // 获取点赞的信息
-      if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEOS); likeInfo != nil {
-        resp.IsLike = likeInfo.Status
-      }
+			// 获取点赞的信息
+			if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEOS); likeInfo != nil {
+				resp.IsLike = likeInfo.Status
+			}
 
-      // 获取收藏的信息
-      if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
-        resp.IsCollect = collectInfo.Status
-      }
+			// 获取收藏的信息
+			if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
+				resp.IsCollect = collectInfo.Status
+			}
 		}
 
 		resp.Labels = []*models.VideoLabels{}
@@ -307,12 +313,12 @@ func (svc *SearchModule) GetHotSearch() []*models.HotSearch {
 
 // 历史搜索记录
 func (svc *SearchModule) GetHistorySearch(userId string) []string {
-  history := svc.video.GetHistorySearch(userId)
-  if history == nil {
-    history = []string{}
-  }
+	history := svc.video.GetHistorySearch(userId)
+	if history == nil {
+		history = []string{}
+	}
 
-  return history
+	return history
 }
 
 // 搜索关注的用户
@@ -330,10 +336,10 @@ func (svc *SearchModule) SearchAttentionUser(userId, name string, page, size int
 	offset := (page - 1) * size
 	list := svc.attention.SearchAttentionUser(userId, name, offset, size)
 	if len(list) == 0 {
-	  return []*mattention.SearchContactRes{}
-  }
+		return []*mattention.SearchContactRes{}
+	}
 
-  return list
+	return list
 }
 
 // 搜索粉丝列表
@@ -350,9 +356,9 @@ func (svc *SearchModule) SearchFans(userId, name string, page, size int) []*matt
 
 	offset := (page - 1) * size
 	list := svc.attention.SearchFans(userId, name, offset, size)
-  if len(list) == 0 {
-    return []*mattention.SearchContactRes{}
-  }
+	if len(list) == 0 {
+		return []*mattention.SearchContactRes{}
+	}
 
 	for _, info := range list {
 		// 是否回关
@@ -366,12 +372,12 @@ func (svc *SearchModule) SearchFans(userId, name string, page, size int) []*matt
 
 // 清空搜索历史
 func (svc *SearchModule) CleanSearchHistory(userId string) int {
-  if err := svc.video.CleanHistorySearch(userId); err != nil {
-    log.Log.Errorf("search_trace: clean history search err:%s", err)
-    return errdef.SEARCH_CLEAN_HISTORY_FAIL
-  }
+	if err := svc.video.CleanHistorySearch(userId); err != nil {
+		log.Log.Errorf("search_trace: clean history search err:%s", err)
+		return errdef.SEARCH_CLEAN_HISTORY_FAIL
+	}
 
-  return errdef.SUCCESS
+	return errdef.SUCCESS
 }
 
 // 获取时长条件（数据库存储的视频时长是毫秒）
@@ -437,3 +443,72 @@ func (svc *SearchModule) GetSortField(condition string) string {
 	return consts.CONDITION_FIELD_PLAY
 }
 
+// 搜索帖子
+func (svc *SearchModule) PostSearch(userId, name string, page, size int) []*mposting.PostDetailInfo {
+	if name == "" {
+		log.Log.Errorf("search_trace: search name can't empty, name:%s", name)
+		return []*mposting.PostDetailInfo{}
+	}
+
+	length := util.GetStrLen([]rune(name))
+	if length > 20 {
+		log.Log.Errorf("search_trace: invalid search name len, len:%s", length)
+		return []*mposting.PostDetailInfo{}
+	}
+
+	offset := (page - 1) * size
+	list, err := svc.post.SearchPostOrderByHeat(name, offset, size)
+	if err != nil {
+		log.Log.Errorf("search_trace: search post fail, err:%s", err)
+		return []*mposting.PostDetailInfo{}
+	}
+
+	if len(list) == 0  {
+		return []*mposting.PostDetailInfo{}
+	}
+
+	for _, item := range list {
+		// 如果是转发的视频数据
+		if item.ContentType == consts.COMMUNITY_FORWARD_VIDEO {
+			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardVideo); err != nil {
+				log.Log.Errorf("search_trace: get forward video info err:%s", err)
+				return []*mposting.PostDetailInfo{}
+			}
+		}
+
+		// 如果是转发的帖子
+		if item.PostingType == consts.POST_TYPE_TEXT && item.ContentType == consts.COMMUNITY_FORWARD_POST {
+			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardPost); err != nil {
+				log.Log.Errorf("search_trace: get forward post info err:%s", err)
+				return []*mposting.PostDetailInfo{}
+			}
+		}
+
+		// 图文帖
+		if item.PostingType == consts.POST_TYPE_IMAGE {
+			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ImagesAddr); err != nil {
+				log.Log.Errorf("search_trace: get image info err:%s", err)
+				return []*mposting.PostDetailInfo{}
+			}
+		}
+
+		item.Content = ""
+
+		if userId == "" {
+			log.Log.Error("search_trace: user no login")
+			continue
+		}
+
+		// 是否关注
+		if attentionInfo := svc.attention.GetAttentionInfo(userId, item.UserId); attentionInfo != nil {
+			item.IsAttention = attentionInfo.Status
+		}
+
+		// 是否点赞
+		if likeInfo := svc.like.GetLikeInfo(userId, item.Id, consts.TYPE_POSTS); likeInfo != nil {
+			item.IsLike = likeInfo.Status
+		}
+	}
+
+	return list
+}

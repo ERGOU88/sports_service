@@ -143,7 +143,7 @@ func handleEvent(event *protocol.Event) error {
     msgType = int32(consts.MSG_TYPE_VIDEO_LIKE_NOTIFY)
     pushSet = setting.ThumbUpPushSet
   // 评论/回复 点赞
-  case consts.COMMENT_LIKE_MSG:
+  case consts.VIDEO_COMMENT_LIKE_MSG:
     content = fmt.Sprintf("%s 赞了你的评论 @%s", info.NickName, info.Content)
     msgType = int32(consts.MSG_TYPE_COMMENT_LIKE_NOTIFY)
     pushSet = setting.ThumbUpPushSet

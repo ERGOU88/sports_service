@@ -80,7 +80,7 @@ type VideoBarrageInfo struct {
 func (m *BarrageModel) GetVideoBarrageList(offset, size int) []*VideoBarrageInfo {
   sql := "SELECT vb.*, v.title, v.video_addr FROM video_barrage AS vb LEFT JOIN videos AS v ON vb.video_id=v.video_id GROUP BY vb.id LIMIT ?, ?"
   var list []*VideoBarrageInfo
-  if err := m.Engine.Table(&models.VideoComment{}).SQL(sql, offset, size).Find(&list); err != nil {
+  if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
       log.Log.Errorf("barrage_trace: get video barrage list by sort, err:%s", err)
       return []*VideoBarrageInfo{}
   }

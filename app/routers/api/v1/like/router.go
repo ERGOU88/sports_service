@@ -20,9 +20,17 @@ func Router(engine *gin.Engine) {
 		like.GET("/video/list", LikeVideoList)
 		// 查看其他用户点赞的视频列表
 		like.GET("/other/list", OtherUserLikeVideoList)
-		// 评论点赞
-		like.POST("/comment", token.TokenAuth(), GiveLikeForComment)
-		// 评论取消点赞
-		like.POST("/comment/cancel", token.TokenAuth(), CancelLikeForComment)
+		// 视频评论点赞
+		like.POST("/comment", token.TokenAuth(), GiveLikeForVideoComment)
+		// 视频评论取消点赞
+		like.POST("/comment/cancel", token.TokenAuth(), CancelLikeForVideoComment)
+        // 帖子点赞
+		like.POST("/post", token.TokenAuth(), GiveLikeForPost)
+		// 帖子取消点赞
+		like.POST("/post/cancel", token.TokenAuth(), CancelLikeForPost)
+		// 帖子评论点赞
+		like.POST("/comment/post", token.TokenAuth(), GiveLikeForPostComment)
+		// 帖子评论取消点赞
+		like.POST("/comment/post/cancel", token.TokenAuth(), CancelLikeForPostComment)
 	}
 }

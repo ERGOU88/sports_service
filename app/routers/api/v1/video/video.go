@@ -52,13 +52,6 @@ func VideoPublish(c *gin.Context) {
 	log.Log.Errorf("##### publish video params:%+v", params)
 
 	svc := cvideo.New(c)
-	// 用户发布视频
-	//if err := svc.UserPublishVideo(userId.(string), params); err != nil {
-	//	log.Log.Errorf("video_trace: video publish failed, err:%s", err)
-	//	reply.Response(http.StatusOK, errdef.VIDEO_PUBLISH_FAIL)
-	//	return
-	//}
-
 	// 修改逻辑 用户发布视频 先记录到缓存
 	syscode := svc.RecordPubVideoInfo(userId.(string), params)
 	log.Log.Errorf("##### publish video syscode:%d", syscode)
@@ -581,5 +574,64 @@ func RecordPlayDuration(c *gin.Context) {
 
 	svc := cvideo.New(c)
 	syscode := svc.RecordPlayDuration(param)
+	reply.Response(http.StatusOK, syscode)
+}
+
+// /api/v1/video/subarea
+// 视频分区
+func VideoSubarea(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cvideo.New(c)
+
+	code, list := svc.GetVideoSubarea()
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
+
+// /api/v1/video/create/album
+// 添加视频专辑
+func CreateVideoAlbum(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+	param := new(mvideo.CreateAlbumParam)
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("video_trace: create album param fail, err:%s, param:%+v", err, param)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cvideo.New(c)
+	syscode, albumId := svc.CreateVideoAlbum(userId.(string), param)
+	reply.Data["album_id"] = albumId
+	reply.Response(http.StatusOK, syscode)
+}
+
+// /api/v1/video/add/album
+// 将视频添加到专辑内
+func AddVideoToAlbum(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cvideo.New(c)
+	param := new(mvideo.AddVideoToAlbumParam)
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("video_trace: add video to album param fail, err:%s, param:%+v", err, param)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	userId, _ := c.Get(consts.USER_ID)
+	syscode := svc.AddVideoToAlbum(userId.(string), param)
+	reply.Response(http.StatusOK, syscode)
+}
+
+// 获取分区下的视频列表
+func VideoListBySubarea(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	subareaId := c.Query("subarea_id")
+
+	svc := cvideo.New(c)
+	syscode, list := svc.GetVideoListBySubarea(subareaId, page, size)
+	reply.Data["list"] = list
+
 	reply.Response(http.StatusOK, syscode)
 }

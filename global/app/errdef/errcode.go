@@ -80,6 +80,12 @@ const (
 	VIDEO_REPORT_FAIL           = 4011
 	VIDEO_INVALID_PLAY_DURATION = 4012
 	VIDEO_RECORD_PLAY_DURATION  = 4013
+	VIDEO_SUBAREA_FAIL          = 4014
+	VIDEO_CREATE_ALBUM_FAIL     = 4015
+	VIDEO_INVALID_ALBUM_NAME    = 4016
+	VIDEO_ALBUM_NOT_EXISTS      = 4017
+	VIDEO_ADD_TO_ALBUM_FAIL     = 4018
+	VIDEO_LIST_BY_SUBAREA_FAIL  = 4019
 
 	// 点赞相关错误码 5001-6000
 	LIKE_VIDEO_NOT_EXISTS       = 5001
@@ -90,6 +96,8 @@ const (
 	LIKE_CANCEL_FAIL            = 5006
 	LIKE_COMMENT_NOT_EXISTS     = 5007
 	LIKE_COMMENT_FAIL           = 5008
+	LIKE_POST_NOT_EXISTS        = 5009
+	LIKE_POST_FAIL              = 5010
 
 	// 通知相关错误码 6001-7000
 	NOTIFY_SETTING_FAIL         = 6001
@@ -123,6 +131,33 @@ const (
 
 	// 腾讯云相关错误码 11001 - 12000
 	CLOUD_COS_ACCESS_FAIL       = 11001
+
+	// 帖子相关错误码 12001 - 13000
+	POST_INVALID_TITLE          = 12001
+	POST_INVALID_CONTENT        = 12002
+	POST_SECTION_NOT_EXISTS     = 12003
+	POST_TOPIC_NOT_EXISTS       = 12004
+	POST_PUBLISH_FAIL           = 12005
+	POST_INVALID_CONTENT_LEN    = 12006
+	POST_DETAIL_FAIL            = 12007
+	POST_NOT_EXISTS             = 12008
+	POST_DELETE_PUBLISH_FAIL    = 12009
+	POST_DELETE_TOPIC_FAIL      = 12010
+	POST_DELETE_STATISTIC_FAIL  = 12011
+
+	// 分享/转发相关错误码 13001-14000
+	SHARE_DATA_FAIL             = 13001
+
+
+	// 社区相关错误码 14001-15000
+	COMMUNITY_SECTION_NOT_EXISTS = 14001
+	COMMUNITY_TOPIC_NOT_EXISTS   = 14002
+	COMMUNITY_TOPICS_FAIL        = 14003
+	COMMUNITY_SECTIONS_FAIL      = 14004
+	COMMUNITY_TOPIC_FAIL         = 14005
+	COMMUNITY_POSTS_BY_SECTION   = 14006
+	COMMUNITY_POSTS_BY_TOPIC     = 14007
+
 )
 
 var MsgFlags = map[int]string{
@@ -200,6 +235,12 @@ var MsgFlags = map[int]string{
 	VIDEO_REPORT_FAIL:           "举报视频失败",
 	VIDEO_INVALID_PLAY_DURATION: "播放时长 > 视频时长！！wtf?",
 	VIDEO_RECORD_PLAY_DURATION:  "记录用户播放的视频时长失败",
+	VIDEO_SUBAREA_FAIL:          "获取视频分区失败",
+	VIDEO_CREATE_ALBUM_FAIL:     "创建视频专辑失败",
+	VIDEO_INVALID_ALBUM_NAME:    "专辑名称含有违规文字",
+	VIDEO_ALBUM_NOT_EXISTS:      "视频专辑不存在",
+	VIDEO_ADD_TO_ALBUM_FAIL:     "视频添加到专辑失败",
+	VIDEO_LIST_BY_SUBAREA_FAIL:  "分区视频列表获取失败",
 
 	LIKE_VIDEO_NOT_EXISTS:       "点赞的视频不存在",
 	LIKE_ALREADY_EXISTS:         "已点过赞",
@@ -209,6 +250,8 @@ var MsgFlags = map[int]string{
 	LIKE_CANCEL_FAIL:            "取消点赞失败",
 	LIKE_COMMENT_NOT_EXISTS:     "点赞的评论不存在",
 	LIKE_COMMENT_FAIL:           "评论点赞失败",
+	LIKE_POST_NOT_EXISTS:        "点赞的帖子不存在",
+	LIKE_POST_FAIL:              "帖子点赞失败",
 
 	NOTIFY_SETTING_FAIL:         "系统通知设置失败",
 
@@ -236,6 +279,28 @@ var MsgFlags = map[int]string{
 	SEARCH_CLEAN_HISTORY_FAIL:   "清空搜索记录失败",
 
 	CLOUD_COS_ACCESS_FAIL:       "通行证获取失败",
+
+	POST_INVALID_TITLE:          "帖子标题含有违规文字",
+	POST_INVALID_CONTENT:        "帖子内容含有违规文字",
+	POST_SECTION_NOT_EXISTS:     "板块不存在",
+	POST_TOPIC_NOT_EXISTS:       "话题不存在",
+	POST_PUBLISH_FAIL:           "发布帖子失败",
+	POST_INVALID_CONTENT_LEN:    "内容长度超过限制",
+	POST_DETAIL_FAIL:            "获取帖子详情失败",
+	POST_NOT_EXISTS:             "帖子不存在",
+	POST_DELETE_PUBLISH_FAIL:    "删除发布的帖子失败",
+	POST_DELETE_TOPIC_FAIL:      "删除帖子标签失败",
+	POST_DELETE_STATISTIC_FAIL:  "删除帖子统计数据失败",
+
+	SHARE_DATA_FAIL:             "分享失败",
+
+	COMMUNITY_SECTION_NOT_EXISTS:"社区板块不存在",
+	COMMUNITY_TOPIC_NOT_EXISTS:  "社区话题不存在",
+	COMMUNITY_TOPICS_FAIL:       "获取社区话题列表失败",
+	COMMUNITY_SECTIONS_FAIL:     "获取社区板块列表失败",
+	COMMUNITY_TOPIC_FAIL:        "获取社区话题失败",
+	COMMUNITY_POSTS_BY_SECTION:  "获取当前板块下的帖子失败",
+	COMMUNITY_POSTS_BY_TOPIC:    "获取当前话题下的帖子失败",
 }
 
 func GetMsg(code int) string {

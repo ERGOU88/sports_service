@@ -13,9 +13,11 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/job"
 	"sports_service/server/log/zap"
+	"sports_service/server/models/mlabel"
 	"sports_service/server/models/pprof"
 	"sports_service/server/nsqlx"
 	"sports_service/server/rabbitmq"
+	"sports_service/server/redismq"
 	"sports_service/server/tools/nsq"
 	"sports_service/server/util"
 	"syscall"
@@ -131,6 +133,15 @@ func setupRabbitmqConsumer() {
 	go rabbitmq.InitRabbitmqConsumer()
 }
 
+// 初始化redis消息队列 [消费者]
+func setupRedisMqConsumer() {
+	go redismq.InitRedisMq()
+}
+
+func setupLabelList() {
+	go mlabel.InitLabelList()
+}
+
 func init() {
 	// 配置
 	if err := setupConfig(); err != nil {
@@ -154,7 +165,11 @@ func init() {
 	// 初始化nsq消费者
 	//setupNsqConsumer()
 	// 初始化rabbitmq消费者
-	setupRabbitmqConsumer()
+	//setupRabbitmqConsumer()
+	// 初始化redis消息队列 [消费者]
+	setupRedisMqConsumer()
+	// 初始化视频标签配置列表 [load到内存]
+	setupLabelList()
 	// register signals handler
 	setupSignal()
 	// 本地运行时 不执行定时任务
@@ -162,6 +177,7 @@ func init() {
 		// 任务
 		setupJob()
 	}
+
 }
 
 // @title 电竞社区平台（应用服）

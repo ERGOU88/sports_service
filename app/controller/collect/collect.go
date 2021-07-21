@@ -13,11 +13,10 @@ import (
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
-	"sports_service/server/rabbitmq/event"
+	redismq "sports_service/server/redismq/event"
 	"sports_service/server/util"
 	"strings"
 	"time"
-	"sports_service/server/app/config"
 )
 
 type CollectModule struct {
@@ -109,7 +108,8 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 
 	if userId != video.UserId {
 		// 发送收藏视频推送
-		event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG)
+		//event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG)
+		redismq.PushEventMsg(redismq.NewEvent(video.UserId, user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG))
 	}
 
 	return errdef.SUCCESS
