@@ -1185,11 +1185,17 @@ func (svc *VideoModule) CreateVideoAlbum(userId string, param *mvideo.CreateAlbu
 }
 
 // 将视频添加到专辑内
-func (svc *VideoModule) AddVideoToAlbum(param *mvideo.AddVideoToAlbumParam) int {
+func (svc *VideoModule) AddVideoToAlbum(userId string, param *mvideo.AddVideoToAlbumParam) int {
 	video := svc.video.FindVideoById(param.VideoId)
 	if video == nil {
 		log.Log.Errorf("video_trace: video not found, videoId:%s", param.VideoId)
 		return errdef.VIDEO_NOT_EXISTS
+	}
+
+	// 只有up主才可以操作
+	if userId != video.UserId {
+		log.Log.Errorf("video_trace: video add to album fail, user not match, userId:%s, up:%s", userId, video.UserId)
+		return errdef.VIDEO_ADD_TO_ALBUM_FAIL
 	}
 
 	// 专辑是否存在
@@ -1206,4 +1212,20 @@ func (svc *VideoModule) AddVideoToAlbum(param *mvideo.AddVideoToAlbumParam) int 
 	}
 
 	return errdef.SUCCESS
+}
+
+// 获取分区下的视频列表
+func (svc *VideoModule) GetVideoListBySubarea(subareaId string, page, size int) (int, []*mvideo.VideoInfoBySubarea) {
+	offset := (page - 1) * size
+	list, err := svc.video.GetVideoListBySubarea(subareaId, offset, size)
+	if err != nil {
+		log.Log.Errorf("video_trace: get video list by subarea fail, err:%s", err)
+		return errdef.VIDEO_LIST_BY_SUBAREA_FAIL, []*mvideo.VideoInfoBySubarea{}
+	}
+
+	if list == nil {
+		return errdef.SUCCESS, []*mvideo.VideoInfoBySubarea{}
+	}
+
+	return errdef.SUCCESS, list
 }

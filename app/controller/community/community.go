@@ -244,12 +244,11 @@ func (svc *CommunityModule) GetPostListBySection(page, size int, userId, section
 					item.RelatedVideo.Avatar = user.Avatar
 				}
 
-				subarea, err := svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))
-				if err != nil || subarea == nil {
+				item.RelatedVideo.Subarea, err = svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))
+				if err != nil || item.RelatedVideo.Subarea == nil {
 					log.Log.Errorf("community_trace: get subarea by id fail, err:%s", err)
-				} else {
-					item.RelatedVideo.Subarea = subarea
 				}
+
 
 			}
 		}

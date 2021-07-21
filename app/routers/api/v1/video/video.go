@@ -618,6 +618,20 @@ func AddVideoToAlbum(c *gin.Context) {
 		return
 	}
 
-	syscode := svc.AddVideoToAlbum(param)
+	userId, _ := c.Get(consts.USER_ID)
+	syscode := svc.AddVideoToAlbum(userId.(string), param)
+	reply.Response(http.StatusOK, syscode)
+}
+
+// 获取分区下的视频列表
+func VideoListBySubarea(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	subareaId := c.Query("subarea_id")
+
+	svc := cvideo.New(c)
+	syscode, list := svc.GetVideoListBySubarea(subareaId, page, size)
+	reply.Data["list"] = list
+
 	reply.Response(http.StatusOK, syscode)
 }

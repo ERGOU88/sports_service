@@ -54,5 +54,7 @@ func Router(engine *gin.Engine) {
 		video.POST("/create/album", token.TokenAuth(), CreateVideoAlbum)
 		// 将视频添加到专辑中
 		video.POST("/add/album", token.TokenAuth(), AddVideoToAlbum)
+		// 视频分区列表
+		video.GET("/subarea/list", VideoListBySubarea)
 	}
 }
