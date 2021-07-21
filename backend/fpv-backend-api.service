@@ -1,0 +1,10 @@
+[Unit]
+Description=fpv-backend-api
+After=network.target
+
+[Service]
+User=nobody
+ExecStart=/data/src/fpv/backend/fpv_backend -c /data/src/fpv/backend/backend_dev.yaml
+
+[Install]
+WantedBy=multi-user.target

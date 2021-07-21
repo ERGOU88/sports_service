@@ -1,0 +1,10 @@
+[Unit]
+Description=fpv-app-api
+After=network.target
+
+[Service]
+User=nobody
+ExecStart=/data/src/fpv/app/fpv -c /data/src/fpv/app/app_dev.yaml
+
+[Install]
+WantedBy=multi-user.target
