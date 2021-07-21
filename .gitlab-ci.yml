@@ -1,21 +1,31 @@
 stages:
   - build
   - test
-build-job-1:
+variables:
+  server_ips: 192.168.5.12
+  build_shell: 'GOOS=linux GOARCH=amd64 go build -o ${project_dir}${project_name} ${project_dir}/main.go'
+  rsync_shell: 'server_ips=${server_ips}; ips=($${server_ips//,/ }); for ip in $$ips; do rsync -avzP  --exclude="*.go" ${project_dir}${project_name} ${project_dir}config gitlab-pusher@$$ip::${project_name};done'
+build-job-fpv:
+  variables:
+    project_name: fpv-app-api
+    project_dir: ./app/
   tags:
     - gitlab_build_theseus
   stage: build
   only:
     - develop
   script:
-    - GOOS=linux GOARCH=amd64 go build -o fpv ./app/main.go
-    - rsync -avz fpv 192.168.5.12::fpv
-build-job-3:
+    - 'eval $build_shell'
+    - 'eval $rsync_shell'
+build-job-backend:
+  variables:
+    project_name: fpv-backend-api
+    project_dir: ./backend/
   tags:
     - gitlab_build_theseus
   stage: build
   only:
     - develop
   script:
-    - GOOS=linux GOARCH=amd64 go build -o fpv_backend ./backend/main.go
-    - rsync -avz fpv_backend 192.168.5.12::fpv_backend
+    - 'eval $build_shell'
+    - 'eval $rsync_shell'
