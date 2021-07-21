@@ -117,7 +117,7 @@ type RelatedVideo struct {
 
 	FabulousNum   int                   `json:"fabulous_num" example:"10"`             // 点赞数
 	ShareNum      int                   `json:"share_num" example:"10"`                // 分享/转发数
-	CommentNum    int                   `json:"barrage_num" example:"10"`              // 弹幕数数
+	CommentNum    int                   `json:"comment_num" example:"10"`              // 弹幕数数
 
 	Subarea       *models.VideoSubarea  `json:"subarea"`                               // 视频分区
 }

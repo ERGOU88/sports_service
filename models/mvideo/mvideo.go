@@ -227,6 +227,25 @@ type PlayInfo struct {
 	Duration int64    `json:"duration" example:"1000000000"`
 }
 
+// 分区下的视频信息
+type VideoInfoBySubarea struct {
+	VideoId       int64                 `json:"video_id"  example:"1000000000"`       // 视频id
+	Title         string                `json:"title"  example:"标题"`                 // 标题
+	Describe      string                `json:"describe"  example:"描述"`              // 描述
+	Cover         string                `json:"cover"  example:"封面"`                 // 封面
+	VideoAddr     string                `json:"video_addr"  example:"视频地址"`         // 视频地址
+	VideoDuration int                   `json:"video_duration" example:"100000"`       // 视频时长
+	VideoWidth    int64                 `json:"video_width"  example:"100"`            // 视频宽
+	VideoHeight   int64                 `json:"video_height"  example:"100"`           // 视频高
+	CreateAt      int                   `json:"create_at" example:"1600000000"`        // 视频创建时间
+
+	BarrageNum    int                   `json:"barrage_num" example:"10"`              // 弹幕数
+	BrowseNum     int                   `json:"browse_num" example:"10"`               // 浏览数（播放数）
+	UserId        string                `json:"user_id" example:"发布视频的用户id"`       // 发布视频的用户id
+	Avatar        string                `json:"avatar" example:"头像"`                  // 头像
+	Nickname      string                `json:"nick_name"  example:"昵称"`              // 昵称
+}
+
 // 实栗
 func NewVideoModel(engine *xorm.Session) *VideoModel {
 	return &VideoModel{
@@ -906,3 +925,17 @@ func (m *VideoModel) UpdateVideoInfo() (int64, error) {
 	return m.Engine.ID(m.Videos.VideoId).Update(m.Videos)
 }
 
+const (
+	QUERY_VIDEO_LIST_BY_SUBAREA = "SELECT v.*, s.barrage_num,s.browse_num FROM `videos` as v LEFT JOIN video_statistic " +
+		"as s ON v.video_id=s.video_id WHERE v.status = 1 AND v.subarea=? ORDER BY v.video_id DESC LIMIT ?, ?"
+)
+// 获取分区下的视频列表
+func (m *VideoModel) GetVideoListBySubarea(subarea string, offset, size int) ([]*VideoInfoBySubarea, error){
+	var list []*VideoInfoBySubarea
+	if err := m.Engine.SQL(QUERY_VIDEO_LIST_BY_SUBAREA, subarea, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("video_trace: get video by subarea err:%s", err)
+		return nil, err
+	}
+
+	return list, nil
+}
