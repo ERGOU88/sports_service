@@ -168,12 +168,10 @@ func (svc *CommunityModule) GetPostListBySection(page, size int, userId, section
 
 
 	for _, item := range list {
-		topics, err := svc.post.GetPostTopic(fmt.Sprint(item.Id))
-		if topics == nil || err != nil  {
-			log.Log.Errorf("community_trace: get post topic fail, err:%s, item.Topics:%v", err, item.Topics)
+		item.Topics, err = svc.post.GetPostTopic(fmt.Sprint(item.Id))
+		if item.Topics == nil || err != nil  {
+			log.Log.Errorf("community_trace: get post topic fail, err:%s", err)
 			item.Topics = []*models.PostingTopic{}
-		} else {
-			item.Topics = topics
 		}
 
 
@@ -223,6 +221,7 @@ func (svc *CommunityModule) GetPostListBySection(page, size int, userId, section
 			if video == nil {
 				log.Log.Errorf("community_trace: get video info err:%s, videoId:%s", err, item.VideoId)
 			} else {
+				item.RelatedVideo = new(mposting.RelatedVideo)
 				item.RelatedVideo.VideoId = video.VideoId
 				item.RelatedVideo.UserId = video.UserId
 				item.RelatedVideo.CreateAt = video.CreateAt
