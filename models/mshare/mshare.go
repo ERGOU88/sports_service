@@ -50,9 +50,13 @@ type SharePostInfo struct {
 	Topics        []*models.CommunityTopic    `json:"topic_names"`            // 话题
 	Title         string                      `json:"title"`                  // 标题
 	Describe      string                      `json:"describe"`               // 描述
-	Content       string                      `json:"content"`                // 暂时使用不到
+	Content       string                      `json:"content,omitempty"`       // 暂时使用不到
 	BrowseNum     int                         `json:"browse_num" example:"10"` // 浏览数（播放数）
 	CommentNum    int                         `json:"comment_num"`             // 评论数
+	UserId        string                      `json:"user_id"`                 // up主id
+	Nickname      string                      `json:"nick_name"`               // up主昵称
+	Avatar        string                      `json:"avatar"`                  // up主头像
+	ImagesAddr    []string                    `json:"images_addr,omitempty"`   // 图片地址
 }
 
 func NewShareModel(engine *xorm.Session) *ShareModel {

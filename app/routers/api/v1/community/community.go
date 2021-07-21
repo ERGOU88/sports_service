@@ -62,9 +62,8 @@ func SectionPostList(c *gin.Context) {
 
 	svc := community.New(c)
 	code, list := svc.GetPostListBySection(page, size, userId, sectionId)
-	if code == errdef.SUCCESS {
-		reply.Data["list"] = list
-	}
+	reply.Data["list"] = list
+
 
 	_, topicList := svc.GetCommunityTopics(consts.POST_SORT_HOT, 1, 4)
 	reply.Data["topic_list"] = topicList

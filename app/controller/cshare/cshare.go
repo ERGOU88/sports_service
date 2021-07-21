@@ -157,6 +157,13 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 				Title: post.Title,
 				Describe: post.Describe,
 				Content: post.Content,
+				UserId: post.UserId,
+			}
+
+			user = svc.user.FindUserByUserid(post.UserId)
+			if user != nil {
+				shareInfo.Nickname = user.NickName
+				shareInfo.Avatar = user.Avatar
 			}
 
 			statistic, err := svc.posting.GetPostStatistic(fmt.Sprint(post.Id))

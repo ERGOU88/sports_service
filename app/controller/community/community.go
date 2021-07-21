@@ -186,7 +186,7 @@ func (svc *CommunityModule) GetPostListBySection(page, size int, userId, section
 		if item.ContentType == consts.COMMUNITY_FORWARD_VIDEO {
 			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardVideo); err != nil {
 				log.Log.Errorf("community_trace: get forward video info err:%s", err)
-				return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
+				//return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
 			}
 
 		}
@@ -195,7 +195,14 @@ func (svc *CommunityModule) GetPostListBySection(page, size int, userId, section
 		if item.PostingType == consts.POST_TYPE_TEXT && item.ContentType == consts.COMMUNITY_FORWARD_POST {
 			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardPost); err != nil {
 				log.Log.Errorf("community_trace: get forward post info err:%s", err)
-				return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
+				//return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
+			}
+
+			// 如果转发的是图文类型 需要展示图文
+			if item.ForwardPost.PostingType == consts.POST_TYPE_IMAGE {
+				if err := util.JsonFast.UnmarshalFromString(item.ForwardPost.Content, &item.ForwardPost.ImagesAddr); err != nil {
+					log.Log.Errorf("community_trace: get images by forward post fail, err:%s", err)
+				}
 			}
 		}
 
