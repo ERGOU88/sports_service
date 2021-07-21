@@ -168,10 +168,12 @@ func (svc *CommunityModule) GetPostListBySection(page, size int, userId, section
 
 
 	for _, item := range list {
-		item.Topics, err = svc.post.GetPostTopic(fmt.Sprint(item.Id))
-		if item.Topics == nil || err != nil  {
+		topics, err := svc.post.GetPostTopic(fmt.Sprint(item.Id))
+		if topics == nil || err != nil  {
 			log.Log.Errorf("community_trace: get post topic fail, err:%s, item.Topics:%v", err, item.Topics)
 			item.Topics = []*models.PostingTopic{}
+		} else {
+			item.Topics = topics
 		}
 
 
