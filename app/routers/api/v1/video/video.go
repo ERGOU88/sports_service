@@ -609,8 +609,15 @@ func CreateVideoAlbum(c *gin.Context) {
 // /api/v1/video/add/album
 // 将视频添加到专辑内
 func AddVideoToAlbum(c *gin.Context) {
-	//reply := errdef.New(c)
-	//svc := cvideo.New(c)
+	reply := errdef.New(c)
+	svc := cvideo.New(c)
+	param := new(mvideo.AddVideoToAlbumParam)
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("video_trace: add video to album param fail, err:%s, param:%+v", err, param)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
 
-
+	syscode := svc.AddVideoToAlbum(param)
+	reply.Response(http.StatusOK, syscode)
 }

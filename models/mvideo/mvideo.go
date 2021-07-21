@@ -27,7 +27,6 @@ type VideoModel struct {
 	PlayRecord   *models.UserPlayDurationRecord
 	Subarea      *models.VideoSubarea
 	Album        *models.VideoAlbum
-	AlbumDetail  *models.VideoAlbumDetail
 }
 
 // 视频发布请求参数
@@ -241,7 +240,6 @@ func NewVideoModel(engine *xorm.Session) *VideoModel {
 		PlayRecord: new(models.UserPlayDurationRecord),
 		Subarea: new(models.VideoSubarea),
 		Album: new(models.VideoAlbum),
-		AlbumDetail: new(models.VideoAlbumDetail),
 		Engine: engine,
 	}
 }

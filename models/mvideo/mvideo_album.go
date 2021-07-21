@@ -12,8 +12,7 @@ type CreateAlbumParam struct {
 // 视频添加到专辑中
 type AddVideoToAlbumParam struct {
 	VideoId       string    `binding:"required" json:"video_id"`     // 视频id
-	AlbumId       string    `binding:"required" json:"album_id"`
-
+	AlbumId       string    `binding:"required" json:"album_id"`     // 专辑id
 }
 
 // 创建视频专辑
@@ -42,15 +41,10 @@ func (m *VideoModel) GetVideoAlbumByUser(userId string) ([]*models.VideoAlbum, e
 	return list, nil
 }
 
-// 将视频添加到某个专辑
-func (m *VideoModel) AddVideoToAlbum() (int64, error) {
-	return m.Engine.InsertOne(m.AlbumDetail)
-}
-
 // 通过专辑id 获取专辑下的视频列表 [按添加先后排序]
-func (m *VideoModel) GetVideoListByAlbumId(albumId string) ([]*models.VideoAlbumDetail, error) {
-	var list []*models.VideoAlbumDetail
-	if err := m.Engine.Where("album_id=? AND status=0", albumId).Asc("id").Find(&list); err != nil {
+func (m *VideoModel) GetVideoListByAlbumId(albumId string) ([]*models.Videos, error) {
+	var list []*models.Videos
+	if err := m.Engine.Where("album_id=? AND status=1", albumId).Asc("id").Find(&list); err != nil {
 		return nil, err
 	}
 

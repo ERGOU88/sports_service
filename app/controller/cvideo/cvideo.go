@@ -1185,6 +1185,25 @@ func (svc *VideoModule) CreateVideoAlbum(userId string, param *mvideo.CreateAlbu
 }
 
 // 将视频添加到专辑内
-func (svc *VideoModule) AddVideoToAlbum() {
+func (svc *VideoModule) AddVideoToAlbum(param *mvideo.AddVideoToAlbumParam) int {
+	video := svc.video.FindVideoById(param.VideoId)
+	if video == nil {
+		log.Log.Errorf("video_trace: video not found, videoId:%s", param.VideoId)
+		return errdef.VIDEO_NOT_EXISTS
+	}
 
+	// 专辑是否存在
+	album, err := svc.video.GetVideoAlbumById(param.AlbumId)
+	if album == nil || err != nil {
+		log.Log.Errorf("video_trace: album not found, albumId:%s", param.AlbumId)
+		return errdef.VIDEO_ALBUM_NOT_EXISTS
+	}
+
+	video.Album = album.Id
+	if _, err := svc.video.UpdateVideoInfo(); err != nil {
+		log.Log.Errorf("video_trace: add to album fail, err:%s, videoId:%d, albumId:%s", err, video.VideoId, param.AlbumId)
+		return errdef.VIDEO_ADD_TO_ALBUM_FAIL
+	}
+
+	return errdef.SUCCESS
 }

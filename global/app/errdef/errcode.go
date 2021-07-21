@@ -83,6 +83,8 @@ const (
 	VIDEO_SUBAREA_FAIL          = 4014
 	VIDEO_CREATE_ALBUM_FAIL     = 4015
 	VIDEO_INVALID_ALBUM_NAME    = 4016
+	VIDEO_ALBUM_NOT_EXISTS      = 4017
+	VIDEO_ADD_TO_ALBUM_FAIL     = 4018
 
 	// 点赞相关错误码 5001-6000
 	LIKE_VIDEO_NOT_EXISTS       = 5001
@@ -235,6 +237,8 @@ var MsgFlags = map[int]string{
 	VIDEO_SUBAREA_FAIL:          "获取视频分区失败",
 	VIDEO_CREATE_ALBUM_FAIL:     "创建视频专辑失败",
 	VIDEO_INVALID_ALBUM_NAME:    "专辑名称含有违规文字",
+	VIDEO_ALBUM_NOT_EXISTS:      "视频专辑不存在",
+	VIDEO_ADD_TO_ALBUM_FAIL:     "视频添加到专辑失败",
 
 	LIKE_VIDEO_NOT_EXISTS:       "点赞的视频不存在",
 	LIKE_ALREADY_EXISTS:         "已点过赞",
