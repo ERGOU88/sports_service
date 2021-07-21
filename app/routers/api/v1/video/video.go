@@ -587,3 +587,30 @@ func VideoSubarea(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
+
+// /api/v1/video/create/album
+// 添加视频专辑
+func CreateVideoAlbum(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+	param := new(mvideo.CreateAlbumParam)
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("video_trace: create album param fail, err:%s, param:%+v", err, param)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cvideo.New(c)
+	syscode, albumId := svc.CreateVideoAlbum(userId.(string), param)
+	reply.Data["album_id"] = albumId
+	reply.Response(http.StatusOK, syscode)
+}
+
+// /api/v1/video/add/album
+// 将视频添加到专辑内
+func AddVideoToAlbum(c *gin.Context) {
+	//reply := errdef.New(c)
+	//svc := cvideo.New(c)
+
+
+}

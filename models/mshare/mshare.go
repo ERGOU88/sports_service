@@ -40,6 +40,7 @@ type ShareVideoInfo struct {
 	Size          int64                 `json:"size"`                                 // 视频总字节数
 	BarrageNum    int                   `json:"barrage_num" example:"1"`              // 弹幕数
 	Labels        []*models.VideoLabels `json:"label_names,omitempty"`                // 标签名称 多个用逗号分隔
+	Subarea       *models.VideoSubarea  `json:"subarea,omitempty"`                    // 视频分区信息
 }
 
 // 分享的帖子信息 todo: 产品当前逻辑 转发的帖子皆为文本

@@ -50,5 +50,9 @@ func Router(engine *gin.Engine) {
 		video.POST("/record/play/duration", RecordPlayDuration)
 		// 获取视频分区配置
 		video.GET("/subarea", VideoSubarea)
+        // 创建视频专辑
+		video.POST("/create/album", token.TokenAuth(), CreateVideoAlbum)
+		// 将视频添加到专辑中
+		video.POST("/add/album", token.TokenAuth(), AddVideoToAlbum)
 	}
 }

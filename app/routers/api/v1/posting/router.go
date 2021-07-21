@@ -58,7 +58,7 @@ func PostDetail(c *gin.Context) {
 }
 
 // /api/v1/post/publish/list
-// 用户发布的视频列表
+// 用户发布的帖子列表
 func PostPublishList(c *gin.Context) {
 	reply := errdef.New(c)
 	userId, ok := c.Get(consts.USER_ID)

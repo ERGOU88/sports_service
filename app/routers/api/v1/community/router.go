@@ -21,6 +21,5 @@ func Router(engine *gin.Engine) {
 		community.GET("/section/post", SectionPostList)
 		// 社区话题下的帖子列表
 		community.GET("/topic/post", TopicPostList)
-
 	}
 }

@@ -16,6 +16,7 @@ import (
 	"sports_service/server/models/mlabel"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/mnotify"
+	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	cloud "sports_service/server/tools/tencentCloud"
@@ -37,6 +38,7 @@ type VideoModule struct {
 	collect      *mcollect.CollectModel
 	label        *mlabel.LabelModel
 	notify       *mnotify.NotifyModel
+	post         *mposting.PostingModel
 }
 
 func New(c *gin.Context) VideoModule {
@@ -52,6 +54,7 @@ func New(c *gin.Context) VideoModule {
 		collect: mcollect.NewCollectModel(socket),
 		label: mlabel.NewLabelModel(socket),
 		notify: mnotify.NewNotifyModel(socket),
+		post: mposting.NewPostingModel(socket),
 		engine: socket,
 	}
 }
@@ -141,16 +144,40 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	//	svc.engine.Rollback()
 	//	return errors.New("user not found")
 	//}
+	var (
+		subarea *models.VideoSubarea
+		err error
+	)
 
-	now := time.Now().Unix()
+	// 视频所属分区
+	if params.SubareaId != "" {
+		subarea, err = svc.video.GetSubAreaById(params.SubareaId)
+		if err != nil || subarea == nil {
+			log.Log.Errorf("video_trace: get subarea by id fail, err:%s", err)
+		} else {
+			svc.video.Videos.Subarea = subarea.Id
+		}
+	}
+
+	now := int(time.Now().Unix())
+	// 视频所属专辑
+	if params.AlbumId != "" {
+		album, err := svc.video.GetVideoAlbumById(params.AlbumId)
+		if err != nil || subarea == nil {
+			log.Log.Errorf("video_trace: get video album by id fail, err:%s", err)
+		} else {
+			svc.video.Videos.Album = album.Id
+		}
+	}
+
 	svc.video.Videos.UserId = userId
 	svc.video.Videos.Cover = params.Cover
 	svc.video.Videos.Title = util.TrimHtml(params.Title)
 	svc.video.Videos.Describe = util.TrimHtml(params.Describe)
 	svc.video.Videos.VideoAddr = params.VideoAddr
 	svc.video.Videos.VideoDuration = params.VideoDuration
-	svc.video.Videos.CreateAt = int(now)
-	svc.video.Videos.UpdateAt = int(now)
+	svc.video.Videos.CreateAt = now
+	svc.video.Videos.UpdateAt = now
 	svc.video.Videos.UserType = consts.PUBLISH_VIDEO_BY_USER
 	svc.video.Videos.VideoWidth = params.VideoWidth
 	svc.video.Videos.VideoHeight = params.VideoHeight
@@ -183,7 +210,7 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 		info.VideoId = svc.video.Videos.VideoId
 		info.LabelId = labelId
 		info.LabelName = svc.label.GetLabelNameByMem(labelId)
-		info.CreateAt = int(now)
+		info.CreateAt = now
 		labelInfos = append(labelInfos, info)
 	}
 
@@ -196,9 +223,27 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 		}
 	}
 
+	// 同步到社区
+	svc.post.Posting.UserId = userId
+	svc.post.Posting.VideoId = svc.video.Videos.VideoId
+	// 默认发布到综合
+	svc.post.Posting.SectionId = 1
+	// 视频+文
+	svc.post.Posting.PostingType = consts.POST_TYPE_VIDEO
+	// 社区发布
+	svc.post.Posting.ContentType = consts.COMMUNITY_PUB_POST
+
+	svc.post.Posting.CreateAt = now
+	svc.post.Posting.UpdateAt = now
+	// 添加帖子
+	if _, err := svc.post.AddPost() ; err != nil {
+		log.Log.Errorf("video_trace: add post fail, err:%s", err)
+		return errors.New("add post fail")
+	}
+
 	svc.video.Statistic.VideoId = svc.video.Videos.VideoId
-	svc.video.Statistic.CreateAt = int(now)
-	svc.video.Statistic.UpdateAt = int(now)
+	svc.video.Statistic.CreateAt = now
+	svc.video.Statistic.UpdateAt = now
 	// 初始化视频统计数据
 	if err := svc.video.AddVideoStatistic(); err != nil {
 		log.Log.Errorf("video_trace: add video statistic err:%s", err)
@@ -435,6 +480,14 @@ func (svc *VideoModule) DeletePublishVideo(userId, videoId string) int {
 			return errdef.VIDEO_DELETE_PUBLISH_FAIL
 		}
 
+		// 如果是社区发布的视频 需把关联的帖子置为不可见 [逻辑删除]
+		if video.PubType == 2 {
+			if err := svc.UpdatePostStatusByVideoId(video.UserId, fmt.Sprint(video.VideoId)); err != nil {
+				svc.engine.Rollback()
+				return errdef.VIDEO_DELETE_PUBLISH_FAIL
+			}
+		}
+
 		svc.engine.Commit()
 		return errdef.SUCCESS
 	}
@@ -460,8 +513,27 @@ func (svc *VideoModule) DeletePublishVideo(userId, videoId string) int {
 		return errdef.VIDEO_DELETE_STATISTIC_FAIL
 	}
 
+	// 如果是社区发布的视频 需把关联的帖子置为不可见 [逻辑删除]
+	if video.PubType == 2 {
+		if err := svc.UpdatePostStatusByVideoId(video.UserId, fmt.Sprint(video.VideoId)); err != nil {
+			svc.engine.Rollback()
+			return errdef.VIDEO_DELETE_PUBLISH_FAIL
+		}
+	}
+
 	svc.engine.Commit()
 	return errdef.SUCCESS
+}
+
+// 更新和视频关联的帖子状态
+func (svc *VideoModule) UpdatePostStatusByVideoId(userId, videoId string) error {
+	svc.post.Posting.Status = 3
+	if err := svc.post.UpdatePostStatus(userId, videoId); err != nil {
+		log.Log.Errorf("video_trace: update post status fail, err:%s", err)
+		return err
+	}
+
+	return nil
 }
 
 // 获取推荐的视频列表
@@ -1084,4 +1156,35 @@ func (svc *VideoModule) GetVideoSubarea() (int, []*models.VideoSubarea) {
 	}
 
 	return errdef.SUCCESS, list
+}
+
+// 创建视频专辑
+func (svc *VideoModule) CreateVideoAlbum(userId string, param *mvideo.CreateAlbumParam) (int, string) {
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("user_trace: user not found, userId:%s", userId)
+		return errdef.USER_NOT_EXISTS, ""
+	}
+
+	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	// 检测视频专辑名称
+	isPass, err := client.TextModeration(param.AlbumName)
+	if !isPass || err != nil {
+		log.Log.Errorf("video_trace: validate album name err: %s，pass: %v", err, isPass)
+		return errdef.VIDEO_INVALID_CUSTOM_LABEL, ""
+	}
+
+	svc.video.Album.UserId = userId
+	svc.video.Album.CreateAt = int(time.Now().Unix())
+	svc.video.Album.AlbumName = param.AlbumName
+	if _, err := svc.video.CreateVideoAlbum(); err != nil {
+		log.Log.Errorf("video_trace: create video album fail, err:%s", err)
+		return errdef.VIDEO_CREATE_ALBUM_FAIL, ""
+	}
+
+	return errdef.SUCCESS, fmt.Sprint(svc.video.Album.Id)
+}
+
+// 将视频添加到专辑内
+func (svc *VideoModule) AddVideoToAlbum() {
+
 }

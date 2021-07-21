@@ -81,6 +81,8 @@ const (
 	VIDEO_INVALID_PLAY_DURATION = 4012
 	VIDEO_RECORD_PLAY_DURATION  = 4013
 	VIDEO_SUBAREA_FAIL          = 4014
+	VIDEO_CREATE_ALBUM_FAIL     = 4015
+	VIDEO_INVALID_ALBUM_NAME    = 4016
 
 	// 点赞相关错误码 5001-6000
 	LIKE_VIDEO_NOT_EXISTS       = 5001
@@ -231,6 +233,8 @@ var MsgFlags = map[int]string{
 	VIDEO_INVALID_PLAY_DURATION: "播放时长 > 视频时长！！wtf?",
 	VIDEO_RECORD_PLAY_DURATION:  "记录用户播放的视频时长失败",
 	VIDEO_SUBAREA_FAIL:          "获取视频分区失败",
+	VIDEO_CREATE_ALBUM_FAIL:     "创建视频专辑失败",
+	VIDEO_INVALID_ALBUM_NAME:    "专辑名称含有违规文字",
 
 	LIKE_VIDEO_NOT_EXISTS:       "点赞的视频不存在",
 	LIKE_ALREADY_EXISTS:         "已点过赞",

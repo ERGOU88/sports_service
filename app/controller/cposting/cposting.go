@@ -407,8 +407,10 @@ func (svc *PostingModule) GetPostPublishListByUser(userId string, page, size int
 		// 如果是转发的视频数据
 		if item.ContentType == consts.COMMUNITY_FORWARD_VIDEO {
 			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardVideo); err != nil {
-				log.Log.Errorf("post_trace: get forward video info err:%s", err)
-				return []*mposting.PostDetailInfo{}
+				log.Log.Errorf("community_trace: get forward video info err:%s", err)
+				//return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
+			} else {
+				item.ForwardVideo.VideoAddr = svc.video.AntiStealingLink(item.ForwardVideo.VideoAddr)
 			}
 
 		}
@@ -416,8 +418,15 @@ func (svc *PostingModule) GetPostPublishListByUser(userId string, page, size int
 		// 如果是转发的帖子
 		if item.PostingType == consts.POST_TYPE_TEXT && item.ContentType == consts.COMMUNITY_FORWARD_POST {
 			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardPost); err != nil {
-				log.Log.Errorf("post_trace: get forward post info err:%s", err)
-				return []*mposting.PostDetailInfo{}
+				log.Log.Errorf("community_trace: get forward post info err:%s", err)
+				//return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
+			}
+
+			// 如果转发的是图文类型 需要展示图文
+			if item.ForwardPost.PostingType == consts.POST_TYPE_IMAGE {
+				if err := util.JsonFast.UnmarshalFromString(item.ForwardPost.Content, &item.ForwardPost.ImagesAddr); err != nil {
+					log.Log.Errorf("community_trace: get images by forward post fail, err:%s", err)
+				}
 			}
 		}
 
@@ -425,7 +434,44 @@ func (svc *PostingModule) GetPostPublishListByUser(userId string, page, size int
 		if item.PostingType == consts.POST_TYPE_IMAGE {
 			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ImagesAddr); err != nil {
 				log.Log.Errorf("community_trace: get image info err:%s", err)
-				return []*mposting.PostDetailInfo{}
+				//return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
+			}
+		}
+
+		// 如果视频+文 的帖子 且 为社区发布 查询关联的视频信息
+		if item.PostingType == consts.POST_TYPE_VIDEO && item.ContentType == consts.COMMUNITY_PUB_POST {
+			video := svc.video.FindVideoById(fmt.Sprint(item.VideoId))
+			if video == nil {
+				log.Log.Errorf("community_trace: get video info err:%s, videoId:%s", err, item.VideoId)
+			} else {
+				item.RelatedVideo.VideoId = video.VideoId
+				item.RelatedVideo.UserId = video.UserId
+				item.RelatedVideo.CreateAt = video.CreateAt
+				item.RelatedVideo.Describe = video.Describe
+				item.RelatedVideo.Cover = video.Cover
+				item.RelatedVideo.Title = video.Title
+				item.RelatedVideo.VideoDuration = video.VideoDuration
+				item.RelatedVideo.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+				item.RelatedVideo.Size = video.Size
+
+				statistic := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
+				if statistic != nil {
+					item.RelatedVideo.FabulousNum = statistic.FabulousNum
+					item.RelatedVideo.CommentNum = statistic.CommentNum
+					item.RelatedVideo.ShareNum = statistic.ShareNum
+				}
+
+
+				item.RelatedVideo.Nickname = user.NickName
+				item.RelatedVideo.Avatar = user.Avatar
+
+				subarea, err := svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))
+				if err != nil || subarea == nil {
+					log.Log.Errorf("community_trace: get subarea by id fail, err:%s", err)
+				} else {
+					item.RelatedVideo.Subarea = subarea
+				}
+
 			}
 		}
 

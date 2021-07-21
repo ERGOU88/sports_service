@@ -117,7 +117,12 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 				CreateAt: video.CreateAt,
 				UserId: video.UserId,
 				Size: video.Size,
-				Labels:	svc.video.GetVideoLabels(fmt.Sprint(video.VideoId)),
+				//Labels:	svc.video.GetVideoLabels(fmt.Sprint(video.VideoId)),
+			}
+
+			shareInfo.Subarea, err = svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))
+			if err != nil {
+				log.Log.Errorf("share_trace: get subarea by id fail, err:%s", err)
 			}
 
 			user = svc.user.FindUserByUserid(video.UserId)

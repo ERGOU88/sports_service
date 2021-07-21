@@ -9,6 +9,7 @@ import (
   "sports_service/server/global/consts"
   "sports_service/server/models"
   "sports_service/server/models/mlabel"
+  "sports_service/server/models/mposting"
   "sports_service/server/models/muser"
   "sports_service/server/models/mvideo"
   cloud "sports_service/server/tools/tencentCloud"
@@ -126,6 +127,17 @@ func procedureStateChangedEvent(event *v20180717.EventContent) error {
     log.Log.Errorf("job_trace: update video info fail, err:%s", err)
     session.Rollback()
     return errors.New("job_trace: update video info fail")
+  }
+
+  // 如果是社区发布的视频 需要修改关联的帖子状态
+  if video.PubType == 2 {
+    pmodel := mposting.NewPostingModel(session)
+    pmodel.Posting.Status = video.Status
+    if err := pmodel.UpdatePostStatus(video.UserId, fmt.Sprint(video.VideoId)); err != nil {
+      log.Log.Errorf("job_trace: update post status fail, err:%s", err)
+      session.Rollback()
+      return err
+    }
   }
 
   now := time.Now().Unix()

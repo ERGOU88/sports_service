@@ -24,4 +24,5 @@ type Videos struct {
 	PlayInfo      string `json:"play_info" xorm:"not null comment('视频转码数据') MEDIUMTEXT"`
 	PubType       int    `json:"pub_type" xorm:"not null default 1 comment('1 首页发布视频 2 社区发布视频') TINYINT(1)"`
 	Subarea       int    `json:"subarea" xorm:"not null default 0 comment('视频所属分区') INT(11)"`
+	Album         int64  `json:"album" xorm:"not null default 0 comment('视频所属专辑') BIGINT(20)"`
 }

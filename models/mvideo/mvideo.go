@@ -26,6 +26,8 @@ type VideoModel struct {
 	Report       *models.VideoReport
 	PlayRecord   *models.UserPlayDurationRecord
 	Subarea      *models.VideoSubarea
+	Album        *models.VideoAlbum
+	AlbumDetail  *models.VideoAlbumDetail
 }
 
 // 视频发布请求参数
@@ -43,6 +45,8 @@ type VideoPublishParams struct {
 	Size           int64   `json:"size"`                              // 视频字节数
 	CustomLabels   string  `json:"custom_labels"`                     // 字符串（多个用逗号分隔）
 	PubType        int     `json:"pub_type"`                          // 发布类型 1 首页发布 2 社区发布
+	SubareaId      string  `json:"subarea_id"`                        // 分区id
+	AlbumId        string  `json:"album_id"`                          // 专辑id
 }
 
 // 视频信息
@@ -236,6 +240,8 @@ func NewVideoModel(engine *xorm.Session) *VideoModel {
 		Report: new(models.VideoReport),
 		PlayRecord: new(models.UserPlayDurationRecord),
 		Subarea: new(models.VideoSubarea),
+		Album: new(models.VideoAlbum),
+		AlbumDetail: new(models.VideoAlbumDetail),
 		Engine: engine,
 	}
 }

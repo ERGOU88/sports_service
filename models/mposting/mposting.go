@@ -98,6 +98,28 @@ type PostDetailInfo struct {
 	ContentType   int                    `json:"content_type"`                         // 0 社区发布 1 转发视频 2 转发帖子
 	PostingType   int                    `json:"posting_type"`                         // 帖子类型  0 纯文本 1 图文 2 视频 + 文字
 	HeatNum       int                    `json:"heat_num"`                             // 热度
+	VideoId       int64                  `json:"video_id"`                             // 关联的视频id
+	RelatedVideo  *RelatedVideo          `json:"related_video,omitempty"`              // 帖子关联的视频信息
+}
+
+type RelatedVideo struct {
+	VideoId       int64                 `json:"video_id"`
+	Title         string                `json:"title"  example:"标题"`                 // 标题
+	Describe      string                `json:"describe"  example:"描述"`              // 描述
+	Cover         string                `json:"cover"  example:"封面"`                 // 封面
+	VideoAddr     string                `json:"video_addr"  example:"视频地址"`         // 视频地址
+	VideoDuration int                   `json:"video_duration" example:"100000"`       // 视频时长
+	CreateAt      int                   `json:"create_at" example:"1600000000"`        // 视频创建时间
+	UserId        string                `json:"user_id" example:"发布视频的用户id"`      // 发布视频的用户id
+	Avatar        string                `json:"avatar" example:"头像"`                 // 头像
+	Nickname      string                `json:"nick_name"  example:"昵称"`             // 昵称
+	Size          int64                 `json:"size"`                                 // 视频总字节数
+
+	FabulousNum   int                   `json:"fabulous_num" example:"10"`             // 点赞数
+	ShareNum      int                   `json:"share_num" example:"10"`                // 分享/转发数
+	CommentNum    int                   `json:"barrage_num" example:"10"`              // 弹幕数数
+
+	Subarea       *models.VideoSubarea  `json:"subarea"`                               // 视频分区
 }
 
 // 实栗
@@ -377,6 +399,16 @@ func (m *PostingModel) DelPostTopics(postId string) error {
 // 删除帖子统计数据
 func (m *PostingModel) DelPostStatistic(postId string) error {
 	if _, err := m.Engine.Where("post_id=?", postId).Delete(&models.PostingStatistic{}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 更新帖子状态
+func (m *PostingModel) UpdatePostStatus(userId, videoId string) error {
+	if _, err := m.Engine.Where("user_id=? AND video_id=? AND posting_type=2 AND content_type=0", userId, videoId).
+		Cols("status").Update(m.Posting); err != nil {
 		return err
 	}
 

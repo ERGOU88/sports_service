@@ -34,7 +34,7 @@ type LikeModule struct {
 }
 
 func New(c *gin.Context) LikeModule {
-  socket := dao.Engine.NewSession()
+    socket := dao.Engine.NewSession()
 	defer socket.Close()
 	return LikeModule{
 		context: c,
