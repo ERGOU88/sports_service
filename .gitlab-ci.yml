@@ -13,7 +13,7 @@ build-job-fpv:
     - gitlab_build_theseus
   stage: build
   only:
-    - feature/2.0
+    - develop
   script:
     - 'eval $build_shell'
     - 'eval $rsync_shell'
