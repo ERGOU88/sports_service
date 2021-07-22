@@ -1,24 +1,24 @@
-publicAddr: :11001
+publicAddr: :9001
 pprofAddr: :12001
 mode: prod
 mysql:
   main:
-    master: saisai:igT0vXhruwTYHzzEYilh@tcp(10.21.33.246:15139)/sports_service?charset=utf8mb4
+    master: fpv-app-api:QbjScl1ms2fKqWIx@tcp(192.168.0.127:3306)/fpv-app-api?charset=utf8mb4
     slave:
-      - sports_service:igT0vXhruwTYHzzEYilh@tcp(10.21.33.246:15139)/sports_service?charset=utf8mb4
-      - sports_service:igT0vXhruwTYHzzEYilh@tcp(10.21.33.246:15139)/sports_service?charset=utf8mb4
-      - sports_service:igT0vXhruwTYHzzEYilh@tcp(10.21.33.246:15139)/sports_service?charset=utf8mb4
+      - fpv-app-api:QbjScl1ms2fKqWIx@tcp(192.168.0.127:3306)/fpv-app-api?charset=utf8mb4
+      - fpv-app-api:QbjScl1ms2fKqWIx@tcp(192.168.0.127:3306)/fpv-app-api?charset=utf8mb4
+      - fpv-app-api:QbjScl1ms2fKqWIx@tcp(192.168.0.127:3306)/fpv-app-api?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
 
 redis:
   main:
     master:
-      ip: 10.34.16.102
+      ip: 192.168.0.218
       port: 6379
 
     slave:
-      - ip: 10.34.16.102
+      - ip: 192.168.0.218
         port: 6379
 
     dboption:
@@ -26,12 +26,12 @@ redis:
         name:
         maxIdle: 128
         maxActive: 128
-redisPassword: Furyqdz7JMkAGjRM
+redisPassword: o6DPVfuCAUwOgrNM
 amqpDsn: amqp://admin:admin@127.0.0.1:5672
 staticDomain: http://fpv-web.youzu.com
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
-  path: ./log/app_server_%s.log
+  path: /data/logs/fpv-app-api/app_server_%s.log
   level: 3
   showColor: false
 
