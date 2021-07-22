@@ -15,7 +15,9 @@ build-job-fpv:
   only:
     - tags
   script:
+    - echo $build_shell
     - 'eval $build_shell'
+    - echo $rsync_shell
     - 'eval $rsync_shell'
 build-job-backend:
   variables:
@@ -27,5 +29,7 @@ build-job-backend:
   only:
     - tags
   script:
+    - echo $build_shell
     - 'eval $build_shell'
+    - echo $rsync_shell
     - 'eval $rsync_shell'
