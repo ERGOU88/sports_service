@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 User=nobody
-ExecStart=/data/service/fpv-app-api/fpv-app-api -c /data/service/fpv-app-api/config/app_dev.yaml
+ExecStart=/data/service/fpv-app-api/fpv-app-api -c /data/service/fpv-app-api/config/app_prod.yaml
 
 [Install]
 WantedBy=multi-user.target
