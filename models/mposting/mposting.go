@@ -78,8 +78,9 @@ type PostDetailInfo struct {
 	Title         string                 `json:"title"  example:"标题"`                 // 标题
 	Describe      string                 `json:"describe"  example:"描述"`              // 描述
 	Content       string                 `json:"content,omitempty"`                    // 帖子内容 图片列表/json 例如转发的视频
-	IsRecommend   int                    `json:"is_recommend" example:"0"`             // 是否推荐
-	IsTop         int                    `json:"is_top"  example:"0"`                   // 是否置顶
+	IsRecommend   int                    `json:"is_recommend" example:"0"`             // 是否推荐 1是
+	IsTop         int                    `json:"is_top"  example:"0"`                   // 是否置顶 1是
+	IsCream       int                    `json:"is_cream"`                              // 是否精华 1是
 	Status        int32                  `json:"status"  example:"1"`                   // 审核状态 （0：审核中，1：审核通过 2：审核不通过 3：逻辑删除）
 	CreateAt      int                    `json:"create_at" example:"1600000000"`        // 创建时间
 	FabulousNum   int                    `json:"fabulous_num" example:"10"`             // 点赞数
@@ -413,4 +414,21 @@ func (m *PostingModel) UpdatePostStatus(userId, videoId string) error {
 	}
 
 	return nil
+}
+
+
+const (
+	QUERY_ATTENTION_POSTS = "SELECT p.*, ps.* FROM `posting_info` as p " +
+		"LEFT JOIN posting_statistic as ps ON p.id=ps.posting_id WHERE p.status = 1 AND p.user_id in(%s)  " +
+		"ORDER BY p.id DESC, p.is_top DESC, p.is_cream DESC LIMIT ?, ?"
+)
+// 获取关注的用户发布的帖子
+func (m *PostingModel) GetPostListByAttention(userIds string, offset, size int) ([]*PostDetailInfo, error) {
+	sql := fmt.Sprintf(QUERY_ATTENTION_POSTS, userIds)
+	var list []*PostDetailInfo
+	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
 }

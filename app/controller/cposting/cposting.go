@@ -444,6 +444,7 @@ func (svc *PostingModule) GetPostPublishListByUser(userId string, page, size int
 			if video == nil {
 				log.Log.Errorf("community_trace: get video info err:%s, videoId:%s", err, item.VideoId)
 			} else {
+				item.RelatedVideo = new(mposting.RelatedVideo)
 				item.RelatedVideo.VideoId = video.VideoId
 				item.RelatedVideo.UserId = video.UserId
 				item.RelatedVideo.CreateAt = video.CreateAt

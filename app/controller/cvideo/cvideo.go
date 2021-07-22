@@ -1227,5 +1227,13 @@ func (svc *VideoModule) GetVideoListBySubarea(subareaId string, page, size int) 
 		return errdef.SUCCESS, []*mvideo.VideoInfoBySubarea{}
 	}
 
+	for _, item := range list {
+		user := svc.user.FindUserByUserid(item.UserId)
+		if user != nil {
+			item.Avatar = user.Avatar
+			item.Nickname = user.NickName
+		}
+	}
+
 	return errdef.SUCCESS, list
 }

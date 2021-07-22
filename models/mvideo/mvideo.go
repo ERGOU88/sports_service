@@ -927,7 +927,8 @@ func (m *VideoModel) UpdateVideoInfo() (int64, error) {
 
 const (
 	QUERY_VIDEO_LIST_BY_SUBAREA = "SELECT v.*, s.barrage_num,s.browse_num FROM `videos` as v LEFT JOIN video_statistic " +
-		"as s ON v.video_id=s.video_id WHERE v.status = 1 AND v.subarea=? ORDER BY v.video_id DESC LIMIT ?, ?"
+		"as s ON v.video_id=s.video_id WHERE v.status = 1 AND v.subarea=? ORDER BY v.video_id DESC, v.is_top DESC, " +
+		"v.is_recommend DESC LIMIT ?, ?"
 )
 // 获取分区下的视频列表
 func (m *VideoModel) GetVideoListBySubarea(subarea string, offset, size int) ([]*VideoInfoBySubarea, error){
