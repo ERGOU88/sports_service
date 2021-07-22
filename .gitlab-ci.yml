@@ -2,10 +2,9 @@ stages:
   - build
   - test
 variables:
-  dev_server_ips: 192.168.5.12
-  tags_server_ips: 124.70.161.142,123.60.68.139
+  server_ips: 124.70.161.142,123.60.68.139
   build_shell: 'GOOS=linux GOARCH=amd64 go build -o ${project_dir}${project_name} ${project_dir}/main.go'
-  rsync_shell: 'if [ "${CI_COMMIT_REF_NAME}" -eq "develop"]; then server_ips=${dev_server_ips}; else server_ips=${tags_server_ips}; fi; ips=($${server_ips//,/ }); for ip in $${ips[@]}; do rsync -avzP --exclude="*.go" ${project_dir}${project_name} ${project_dir}${project_name}.service ${project_dir}config gitlab-pusher@$$ip::${project_name};done'
+  rsync_shell: 'server_ips=${server_ips}; ips=($${server_ips//,/ }); for ip in $${ips[@]}; do rsync -avzP --exclude="*.go" -port=52873  --password-file=/data/rsync/conf/client.pass ${project_dir}${project_name} ${project_dir}${project_name}.service ${project_dir}config gitlab-pusher@$$ip::${project_name};done'
 build-job-fpv:
   variables:
     project_name: fpv-app-api
@@ -15,11 +14,8 @@ build-job-fpv:
   stage: build
   only:
     - tags
-    - develop
   script:
     - echo $build_shell
-    - echo ${CI_COMMIT_REF_NAME}
-    - echo ${CI_BUILD_REF_SLUG}
     - 'eval $build_shell'
     - echo $rsync_shell
     - 'eval $rsync_shell'
@@ -32,7 +28,6 @@ build-job-backend:
   stage: build
   only:
     - tags
-    - develop
   script:
     - echo $build_shell
     - 'eval $build_shell'
