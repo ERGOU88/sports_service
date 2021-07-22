@@ -71,8 +71,8 @@ func SectionPostList(c *gin.Context) {
 
 	_, topicList := svc.GetCommunityTopics(consts.POST_SORT_HOT, 1, 4)
 	reply.Data["topic_list"] = topicList
-	// 默认取两个置顶帖
-	_, topList := svc.GetTopPostBySectionId(1, 2, sectionId)
+	// 置顶帖 20个足矣
+	_, topList := svc.GetTopPostBySectionId(1, 20, sectionId)
 	reply.Data["top_list"] = topList
 
 	// 该板块下的帖子数

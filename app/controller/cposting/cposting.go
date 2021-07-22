@@ -372,7 +372,7 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 }
 
 // 获取用户发布的帖子列表
-func (svc *PostingModule) GetPostPublishListByUser(userId string, page, size int) []*mposting.PostDetailInfo {
+func (svc *PostingModule) GetPostPublishListByUser(userId, status string, page, size int) []*mposting.PostDetailInfo {
 	// 查询用户是否存在
 	user := svc.user.FindUserByUserid(userId)
 	if user == nil {
@@ -382,7 +382,7 @@ func (svc *PostingModule) GetPostPublishListByUser(userId string, page, size int
 
 	offset := (page - 1) * size
 	// 获取用户发布的帖子列表
-	list, err := svc.posting.GetPublishPostByUser(userId, offset, size)
+	list, err := svc.posting.GetPublishPostByUser(userId, status, offset, size)
 	if err != nil {
 		log.Log.Errorf("post_trace: get publish post by user fail, userId:%s", userId)
 		return []*mposting.PostDetailInfo{}

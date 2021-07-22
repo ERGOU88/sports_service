@@ -23,3 +23,28 @@ func CosTempAccess(c *gin.Context) {
   reply.Data["access_info"] = info
   reply.Response(http.StatusOK, errdef.SUCCESS)
 }
+
+type ValidateParam struct {
+  Text     string     `json:"text"`
+}
+// 校验文本
+func ValidateText(c *gin.Context) {
+  reply := errdef.New(c)
+  param := new(ValidateParam)
+  if err := c.BindJSON(param); err != nil {
+    log.Log.Errorf("cloud_trace: invalid param, err:%s, param:%+v", err, param)
+    reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+    return
+  }
+
+  client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+  isPass, err := client.TextModeration(param.Text)
+  if !isPass {
+  	log.Log.Errorf("cloud_trace: invalid param err: %s，pass: %v", err, isPass)
+  	reply.Response(http.StatusOK, errdef.COMMENT_INVALID_CONTENT)
+  	return
+  }
+
+  reply.Response(http.StatusOK, errdef.ERROR)
+
+}
