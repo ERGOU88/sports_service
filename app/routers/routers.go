@@ -2,6 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"sports_service/server/app/routers/api/v1/attention"
 	"sports_service/server/app/routers/api/v1/barrage"
 	"sports_service/server/app/routers/api/v1/collect"
@@ -38,6 +39,10 @@ func InitRouters(engine *gin.Engine) {
 	}
 
 	engine.Use(gzip.Gzip(gzip.DefaultCompression))
+	engine.Any("", func(c *gin.Context) {
+		c.Status(http.StatusOK)
+		return
+	})
 
 	// 初始化接口
 	client.Router(engine)

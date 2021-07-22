@@ -438,44 +438,6 @@ func (svc *PostingModule) GetPostPublishListByUser(userId string, page, size int
 			}
 		}
 
-		// 如果视频+文 的帖子 且 为社区发布 查询关联的视频信息
-		if item.PostingType == consts.POST_TYPE_VIDEO && item.ContentType == consts.COMMUNITY_PUB_POST {
-			video := svc.video.FindVideoById(fmt.Sprint(item.VideoId))
-			if video == nil {
-				log.Log.Errorf("community_trace: get video info err:%s, videoId:%s", err, item.VideoId)
-			} else {
-				item.RelatedVideo = new(mposting.RelatedVideo)
-				item.RelatedVideo.VideoId = video.VideoId
-				item.RelatedVideo.UserId = video.UserId
-				item.RelatedVideo.CreateAt = video.CreateAt
-				item.RelatedVideo.Describe = video.Describe
-				item.RelatedVideo.Cover = video.Cover
-				item.RelatedVideo.Title = video.Title
-				item.RelatedVideo.VideoDuration = video.VideoDuration
-				item.RelatedVideo.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
-				item.RelatedVideo.Size = video.Size
-
-				statistic := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
-				if statistic != nil {
-					item.RelatedVideo.FabulousNum = statistic.FabulousNum
-					item.RelatedVideo.CommentNum = statistic.CommentNum
-					item.RelatedVideo.ShareNum = statistic.ShareNum
-				}
-
-
-				item.RelatedVideo.Nickname = user.NickName
-				item.RelatedVideo.Avatar = user.Avatar
-
-				subarea, err := svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))
-				if err != nil || subarea == nil {
-					log.Log.Errorf("community_trace: get subarea by id fail, err:%s", err)
-				} else {
-					item.RelatedVideo.Subarea = subarea
-				}
-
-			}
-		}
-
 		item.Content = ""
 	}
 
@@ -543,6 +505,52 @@ func (svc *PostingModule) SanitizeHtml(content string) string {
 
 	return p.Sanitize(content)
 
+}
+
+// 用户申请精华帖
+func (svc *PostingModule) ApplyPostCream(userId string, param *mposting.ApplyCreamParam) int {
+	if userId == "" {
+		return errdef.USER_NO_LOGIN
+	}
+
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
+		return errdef.USER_NOT_EXISTS
+	}
+
+	post, err := svc.posting.GetPostById(fmt.Sprint(param.PostId))
+	if err != nil || post == nil {
+		log.Log.Errorf("post_trace: post not found, postId:%d", param.PostId)
+		return errdef.POST_NOT_EXISTS
+	}
+
+	if post.UserId != userId {
+		log.Log.Errorf("post_trace: userId not match, post.UserId:%s, userId:%s", post.UserId, userId)
+		return errdef.POST_AUTHOR_NOT_MATCH
+	}
+
+	record, err := svc.posting.GetApplyCreamRecord(fmt.Sprint(param.PostId))
+	if err != nil {
+		log.Log.Errorf("post_trace: get apply cream record fail, err:%s, postId:%d", err, param.PostId)
+		return errdef.POST_APPLY_CREAM_FAIL
+	}
+
+	if record != nil {
+		log.Log.Errorf("post_trace: apply already exists, postId:%d", param.PostId)
+		return errdef.POST_APPLY_ALREADY_EXISTS
+	}
+
+	now := int(time.Now().Unix())
+	svc.posting.ApplyCream.PostId = param.PostId
+	svc.posting.ApplyCream.UserId = userId
+	svc.posting.ApplyCream.CreateAt = now
+	svc.posting.ApplyCream.UpdateAt = now
+	if _, err := svc.posting.AddApplyCreamRecord(); err != nil {
+		log.Log.Errorf("post_trace: add apply cream record fail, err:%s", err)
+		return errdef.POST_APPLY_CREAM_FAIL
+	}
+
+	return errdef.SUCCESS
 }
 
 

@@ -3,6 +3,7 @@ package community
 import (
 	"github.com/gin-gonic/gin"
 	"sports_service/server/middleware/sign"
+	"sports_service/server/middleware/token"
 )
 
 // 社区模块路由
@@ -21,7 +22,7 @@ func Router(engine *gin.Engine) {
 		community.GET("/section/post", SectionPostList)
 		// 社区话题下的帖子列表
 		community.GET("/topic/post", TopicPostList)
-		// 关注的用户发布的帖子列表
-		community.GET("/post/attention", PostListByAttention)
+		// 关注的人发布的帖子列表
+		community.GET("/post/attention", token.TokenAuth(), PostListByAttention)
 	}
 }
