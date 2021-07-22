@@ -4,7 +4,7 @@ stages:
 variables:
   server_ips: 124.70.161.142,123.60.68.139
   build_shell: 'GOOS=linux GOARCH=amd64 go build -o ${project_dir}${project_name} ${project_dir}/main.go'
-  rsync_shell: 'server_ips=${server_ips}; ips=($${server_ips//,/ }); for ip in $${ips[@]}; do rsync -avzP --exclude="*.go" -port=52873  --password-file=/data/rsync/conf/client.pass ${project_dir}${project_name} ${project_dir}${project_name}.service ${project_dir}config gitlab-pusher@$$ip::${project_name};done'
+  rsync_shell: 'server_ips=${server_ips}; ips=($${server_ips//,/ }); for ip in $${ips[@]}; do rsync -avzP --exclude="*.go" --port=52873  --password-file=/data/rsync/conf/client.pass ${project_dir}${project_name} ${project_dir}${project_name}.service ${project_dir}config gitlab-pusher@$$ip::${project_name};done'
 build-job-fpv:
   variables:
     project_name: fpv-app-api
