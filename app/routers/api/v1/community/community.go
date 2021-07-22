@@ -103,9 +103,9 @@ func TopicPostList(c *gin.Context) {
 func PostListByAttention(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
-	userId := c.Query("user_id")
+	userId, _ := c.Get(consts.USER_ID)
 	svc := community.New(c)
-	list := svc.GetPostListByAttention(userId, page, size)
+	list := svc.GetPostListByAttention(userId.(string), page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }

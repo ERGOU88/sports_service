@@ -100,3 +100,21 @@ func DeletePublishPost(c *gin.Context) {
 	syscode := svc.DeletePublishPost(userId.(string), fmt.Sprint(param.PostId))
 	reply.Response(http.StatusOK, syscode)
 }
+
+// /api/v1/post/apply/cream
+// 申请帖子精华
+func ApplyPostCream(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+
+	param := new(mposting.ApplyCreamParam)
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("post_trace: apply cream params err:%s, params:%+v", err, param)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cposting.New(c)
+	code := svc.ApplyPostCream(userId.(string), param)
+	reply.Response(http.StatusOK, code)
+}

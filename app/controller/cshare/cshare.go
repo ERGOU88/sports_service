@@ -142,8 +142,8 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 			svc.posting.Posting.ContentType = consts.COMMUNITY_FORWARD_VIDEO
 			// 分享视频 则类型为视频+文本
 			svc.posting.Posting.PostingType = consts.POST_TYPE_VIDEO
-			// 关联的视频id
-			svc.posting.Posting.VideoId = video.VideoId
+			// 关联的视频id todo: 只有发布视频才有关联id
+			//svc.posting.Posting.VideoId = video.VideoId
 
 		// 分享帖子
 		case consts.SHARE_POST:

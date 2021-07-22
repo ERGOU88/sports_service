@@ -16,11 +16,18 @@ type PostingModel struct {
 	Browse            *models.UserBrowseRecord
 	Statistic         *models.PostingStatistic
 	ReceiveAt         *models.ReceivedAt
+	ApplyCream        *models.PostingApplyCream
 }
 
 // 删除发布的帖子记录请求参数(不支持批量删除)
 type DeletePostParam struct {
 	PostId        int64       `binding:"required" json:"post_id"` // 帖子id
+}
+
+// 申请精华帖
+type ApplyCreamParam struct {
+	PostId        int64      `binding:"required" json:"post_id"`  // 帖子id
+	Reason        string     `json:"reason"`                      // 申请理由
 }
 
 // 发布帖子请求参数
@@ -131,6 +138,7 @@ func NewPostingModel(engine *xorm.Session) *PostingModel {
 		PostingTopic: new(models.PostingTopic),
 		Statistic: new(models.PostingStatistic),
 		ReceiveAt: new(models.ReceivedAt),
+		ApplyCream: new(models.PostingApplyCream),
 	}
 }
 
@@ -363,9 +371,9 @@ func (m *PostingModel) SearchPostOrderByHeat(name string, offset, size int) ([]*
 
 const (
 	GET_PUBLISH_POST_BY_USER = "SELECT p.*, ps.* FROM `posting_info` AS p LEFT JOIN `posting_statistic` as ps " +
-		"ON p.id=ps.posting_id WHERE p.user_id=? ORDER BY p.id DESC LIMIT ?, ?"
+		"ON p.id=ps.posting_id WHERE p.user_id=? AND p.video_id=0 ORDER BY p.id DESC LIMIT ?, ?"
 )
-// 获取用户发布的帖子列表
+// 获取用户发布的帖子列表 [不包含视频]
 func (m *PostingModel) GetPublishPostByUser(userId string, offset, size int) ([]*PostDetailInfo, error) {
 	var list []*PostDetailInfo
 	if err := m.Engine.SQL(GET_PUBLISH_POST_BY_USER, userId, offset, size).Find(&list); err != nil {

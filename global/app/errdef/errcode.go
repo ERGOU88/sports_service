@@ -144,6 +144,9 @@ const (
 	POST_DELETE_PUBLISH_FAIL    = 12009
 	POST_DELETE_TOPIC_FAIL      = 12010
 	POST_DELETE_STATISTIC_FAIL  = 12011
+	POST_AUTHOR_NOT_MATCH       = 12012
+	POST_APPLY_CREAM_FAIL       = 12013
+	POST_APPLY_ALREADY_EXISTS   = 12014
 
 	// 分享/转发相关错误码 13001-14000
 	SHARE_DATA_FAIL             = 13001
@@ -291,6 +294,9 @@ var MsgFlags = map[int]string{
 	POST_DELETE_PUBLISH_FAIL:    "删除发布的帖子失败",
 	POST_DELETE_TOPIC_FAIL:      "删除帖子标签失败",
 	POST_DELETE_STATISTIC_FAIL:  "删除帖子统计数据失败",
+	POST_AUTHOR_NOT_MATCH:       "帖子作者id与当前用户不匹对",
+	POST_APPLY_CREAM_FAIL:       "申精失败",
+	POST_APPLY_ALREADY_EXISTS:   "请勿重复申请",
 
 	SHARE_DATA_FAIL:             "分享失败",
 
