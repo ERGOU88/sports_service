@@ -19,6 +19,7 @@ build-job-fpv:
   script:
     - echo $build_shell
     - echo ${CI_COMMIT_REF_NAME}
+    - echo ${CI_BUILD_REF_NAME}
     - 'eval $build_shell'
     - echo $rsync_shell
     - 'eval $rsync_shell'
