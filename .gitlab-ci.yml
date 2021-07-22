@@ -5,7 +5,7 @@ variables:
   dev_server_ips: 192.168.5.12
   tags_server_ips: 124.70.161.142,123.60.68.139
   build_shell: 'GOOS=linux GOARCH=amd64 go build -o ${project_dir}${project_name} ${project_dir}/main.go'
-  rsync_shell: 'server_ips=$$((${CI_COMMIT_REF_NAME}=="develop"?${dev_server_ips}:${tags_server_ips}))${server_ips}; ips=($${server_ips//,/ }); for ip in $${ips[@]}; do rsync -avzP --exclude="*.go" ${project_dir}${project_name} ${project_dir}${project_name}.service ${project_dir}config gitlab-pusher@$$ip::${project_name};done'
+  rsync_shell: 'if [ ${CI_COMMIT_REF_NAME} eq "develop"]; then server_ips=${dev_server_ips}; else server_ips=${tags_server_ips}; fi; ips=($${server_ips//,/ }); for ip in $${ips[@]}; do rsync -avzP --exclude="*.go" ${project_dir}${project_name} ${project_dir}${project_name}.service ${project_dir}config gitlab-pusher@$$ip::${project_name};done'
 build-job-fpv:
   variables:
     project_name: fpv-app-api
