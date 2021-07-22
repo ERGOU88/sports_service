@@ -116,7 +116,7 @@ func CommentList(c *gin.Context) {
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	commentId := c.Query("comment_id")
 	// 1 视频评论 2 帖子评论
-	commentType, _ := strconv.Atoi(c.DefaultQuery("comment_type", "0"))
+	commentType, _ := strconv.Atoi(c.DefaultQuery("comment_type", "1"))
 
 	svc := comment.New(c)
 	syscode, list := svc.GetComments(userId, composeId, sortType, commentType, page, size)
@@ -125,9 +125,11 @@ func CommentList(c *gin.Context) {
 		return
 	}
 
-	first := svc.GetFirstComment(userId, commentId)
+	if commentType == consts.COMMENT_TYPE_VIDEO {
+		first := svc.GetFirstComment(userId, commentId)
+		reply.Data["first"] = first
+	}
 
-	reply.Data["first"] = first
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
