@@ -97,3 +97,15 @@ func TopicPostList(c *gin.Context) {
 
 	reply.Response(http.StatusOK, code)
 }
+
+// /api/v1/community/post/attention
+// 关注的人发布的帖子
+func PostListByAttention(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	userId := c.Query("user_id")
+	svc := community.New(c)
+	list := svc.GetPostListByAttention(userId, page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}

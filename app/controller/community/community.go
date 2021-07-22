@@ -16,6 +16,7 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	"sports_service/server/util"
+	"strings"
 )
 
 type CommunityModule struct {
@@ -166,110 +167,7 @@ func (svc *CommunityModule) GetPostListBySection(page, size int, userId, section
 		return errdef.SUCCESS, []*mposting.PostDetailInfo{}
 	}
 
-
-	for _, item := range list {
-		item.Topics, err = svc.post.GetPostTopic(fmt.Sprint(item.Id))
-		if item.Topics == nil || err != nil  {
-			log.Log.Errorf("community_trace: get post topic fail, err:%s", err)
-			item.Topics = []*models.PostingTopic{}
-		}
-
-
-		user := svc.user.FindUserByUserid(item.UserId)
-		if user != nil {
-			item.Avatar = user.Avatar
-			item.Nickname = user.NickName
-		}
-
-		// 如果是转发的视频数据
-		if item.ContentType == consts.COMMUNITY_FORWARD_VIDEO {
-			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardVideo); err != nil {
-				log.Log.Errorf("community_trace: get forward video info err:%s", err)
-				//return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
-			} else {
-				item.ForwardVideo.VideoAddr = svc.video.AntiStealingLink(item.ForwardVideo.VideoAddr)
-			}
-
-		}
-
-		// 如果是转发的帖子
-		if item.PostingType == consts.POST_TYPE_TEXT && item.ContentType == consts.COMMUNITY_FORWARD_POST {
-			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardPost); err != nil {
-				log.Log.Errorf("community_trace: get forward post info err:%s", err)
-				//return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
-			}
-
-			// 如果转发的是图文类型 需要展示图文
-			if item.ForwardPost.PostingType == consts.POST_TYPE_IMAGE {
-				if err := util.JsonFast.UnmarshalFromString(item.ForwardPost.Content, &item.ForwardPost.ImagesAddr); err != nil {
-					log.Log.Errorf("community_trace: get images by forward post fail, err:%s", err)
-				}
-			}
-		}
-
-		// 图文帖
-		if item.PostingType == consts.POST_TYPE_IMAGE {
-			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ImagesAddr); err != nil {
-				log.Log.Errorf("community_trace: get image info err:%s", err)
-				//return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
-			}
-		}
-
-		// 如果视频+文 的帖子 且 为社区发布 查询关联的视频信息
-		if item.PostingType == consts.POST_TYPE_VIDEO && item.ContentType == consts.COMMUNITY_PUB_POST {
-			video := svc.video.FindVideoById(fmt.Sprint(item.VideoId))
-			if video == nil {
-				log.Log.Errorf("community_trace: get video info err:%s, videoId:%s", err, item.VideoId)
-			} else {
-				item.RelatedVideo = new(mposting.RelatedVideo)
-				item.RelatedVideo.VideoId = video.VideoId
-				item.RelatedVideo.UserId = video.UserId
-				item.RelatedVideo.CreateAt = video.CreateAt
-				item.RelatedVideo.Describe = video.Describe
-				item.RelatedVideo.Cover = video.Cover
-				item.RelatedVideo.Title = video.Title
-				item.RelatedVideo.VideoDuration = video.VideoDuration
-				item.RelatedVideo.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
-				item.RelatedVideo.Size = video.Size
-
-				statistic := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
-				if statistic != nil {
-					item.RelatedVideo.FabulousNum = statistic.FabulousNum
-					item.RelatedVideo.CommentNum = statistic.CommentNum
-					item.RelatedVideo.ShareNum = statistic.ShareNum
-				}
-
-				if user != nil {
-					item.RelatedVideo.Nickname = user.NickName
-					item.RelatedVideo.Avatar = user.Avatar
-				}
-
-				item.RelatedVideo.Subarea, err = svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))
-				if err != nil || item.RelatedVideo.Subarea == nil {
-					log.Log.Errorf("community_trace: get subarea by id fail, err:%s", err)
-				}
-
-
-			}
-		}
-
-		item.Content = ""
-
-		if userId == "" {
-			continue
-		}
-
-		// 是否关注
-		if attentionInfo := svc.attention.GetAttentionInfo(userId, item.UserId); attentionInfo != nil {
-			item.IsAttention = attentionInfo.Status
-		}
-
-		// 是否点赞
-		if likeInfo := svc.like.GetLikeInfo(userId, item.Id, consts.TYPE_POSTS); likeInfo != nil {
-			item.IsLike = likeInfo.Status
-		}
-
-	}
+	svc.GetPostDetailByList(userId, list)
 
 	return errdef.SUCCESS, list
 
@@ -294,7 +192,19 @@ func (svc *CommunityModule) GetPostListByTopic(page, size int, userId, topicId, 
 		return errdef.SUCCESS, []*mposting.PostDetailInfo{}
 	}
 
+	svc.GetPostDetailByList(userId, list)
+
+	return errdef.SUCCESS, list
+}
+
+// 获取帖子列表 详情数据
+func (svc *CommunityModule) GetPostDetailByList(userId string, list []*mposting.PostDetailInfo) []*mposting.PostDetailInfo {
+	if len(list) == 0 {
+		return []*mposting.PostDetailInfo{}
+	}
+
 	for _, item := range list {
+		var err error
 		item.Topics, err = svc.post.GetPostTopic(fmt.Sprint(item.Id))
 		if item.Topics == nil || err != nil  {
 			item.Topics = []*models.PostingTopic{}
@@ -324,6 +234,7 @@ func (svc *CommunityModule) GetPostListByTopic(page, size int, userId, topicId, 
 				log.Log.Errorf("community_trace: get forward post info err:%s", err)
 				//return errdef.COMMUNITY_POSTS_BY_TOPIC, []*mposting.PostDetailInfo{}
 			}
+
 			// 如果转发的是图文类型 需要展示图文
 			if item.ForwardPost.PostingType == consts.POST_TYPE_IMAGE {
 				if err := util.JsonFast.UnmarshalFromString(item.ForwardPost.Content, &item.ForwardPost.ImagesAddr); err != nil {
@@ -347,6 +258,7 @@ func (svc *CommunityModule) GetPostListByTopic(page, size int, userId, topicId, 
 			if video == nil {
 				log.Log.Errorf("community_trace: get video info err:%s, videoId:%s", err, item.VideoId)
 			} else {
+				item.RelatedVideo = new(mposting.RelatedVideo)
 				item.RelatedVideo.VideoId = video.VideoId
 				item.RelatedVideo.UserId = video.UserId
 				item.RelatedVideo.CreateAt = video.CreateAt
@@ -397,6 +309,34 @@ func (svc *CommunityModule) GetPostListByTopic(page, size int, userId, topicId, 
 
 	}
 
+	return list
+}
 
-	return errdef.SUCCESS, list
+// 获取关注的人发布的帖子
+func (svc *CommunityModule) GetPostListByAttention(userId string, page, size int) []*mposting.PostDetailInfo {
+	// 用户未登录
+	if userId == "" {
+		log.Log.Error("post_trace: no login")
+		return []*mposting.PostDetailInfo{}
+	}
+
+	userIds := svc.attention.GetAttentionList(userId)
+	if len(userIds) == 0 {
+		log.Log.Errorf("post_trace: not following any users")
+		return []*mposting.PostDetailInfo{}
+	}
+
+	offset := (page - 1) * size
+	uids := strings.Join(userIds, ",")
+	list, err := svc.post.GetPostListByAttention(uids, offset, size)
+	if err != nil {
+		log.Log.Errorf("post_trace: get post by attention fail, err:%s", err)
+		return []*mposting.PostDetailInfo{}
+	}
+
+	if len(list) == 0 {
+		return []*mposting.PostDetailInfo{}
+	}
+
+	return svc.GetPostDetailByList(userId, list)
 }
