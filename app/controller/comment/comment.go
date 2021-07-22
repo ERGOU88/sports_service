@@ -677,7 +677,7 @@ func (svc *CommentModule) GetPostCommentList(userId, composeId string, offset, s
 		contents[item.Id] = item.Content
 
 		// 获取每个评论下的回复列表 (默认取三条)
-		comment.ReplyList = svc.comment.GetVideoReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
+		comment.ReplyList = svc.comment.GetPostReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
 		for _, reply := range comment.ReplyList {
 			//user := new(tmpUser)
 			//user.NickName = reply.UserName

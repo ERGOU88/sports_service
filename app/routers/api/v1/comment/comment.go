@@ -111,15 +111,15 @@ func PublishReply(c *gin.Context) {
 func CommentList(c *gin.Context) {
 	reply := errdef.New(c)
 	userId := c.Query("user_id")
-	videoId := c.Query("video_id")
+	composeId := c.Query("compose_id")
 	sortType := c.DefaultQuery("sort_type", "0")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	commentId := c.Query("comment_id")
-	// 0 视频评论 1 帖子评论
+	// 1 视频评论 2 帖子评论
 	commentType, _ := strconv.Atoi(c.DefaultQuery("comment_type", "0"))
 
 	svc := comment.New(c)
-	syscode, list := svc.GetComments(userId, videoId, sortType, commentType, page, size)
+	syscode, list := svc.GetComments(userId, composeId, sortType, commentType, page, size)
 	if syscode != errdef.SUCCESS {
 		reply.Response(http.StatusOK, syscode)
 		return

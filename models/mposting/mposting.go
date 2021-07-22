@@ -449,3 +449,4 @@ func (m *PostingModel) GetPostListByAttention(userIds string, offset, size int) 
 
 	return list, nil
 }
+

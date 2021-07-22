@@ -99,3 +99,18 @@ func (m *CommunityModel) GetCommunityTopics(isHot string, offset, size int) ([]*
 
 	return list, nil
 }
+
+const (
+	QUERY_TOPIC_LIST = "SELECT ct.*, post_num FROM community_topic AS ct LEFT JOIN (SELECT count(1) as post_num, " +
+		"topic_id FROM posting_topic as pt where pt.status=1 GROUP BY pt.`topic_id`) AS pt ON ct.id=pt.topic_id " +
+		"ORDER BY pt.post_num DESC LIMIT ?, ?"
+)
+// 获取话题列表 [按话题下的帖子数量排序]
+func (m *CommunityModel) GetTopicListOrderByPostNum(offset, size int) ([]*CommunityTopicInfo, error) {
+	var list []*CommunityTopicInfo
+	if err := m.Engine.SQL(QUERY_TOPIC_LIST, offset, size).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}

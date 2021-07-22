@@ -26,10 +26,10 @@ func CommunitySections(c *gin.Context) {
 // 社区话题
 func CommunityTopics(c *gin.Context) {
 	reply := errdef.New(c)
-	isHot := c.Query("is_hot")
+	//isHot := c.Query("is_hot")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	svc := community.New(c)
-	code, list := svc.GetCommunityTopics(isHot, page, size)
+	code, list := svc. GetTopicListOrderByPostNum(page, size)
 	if code == errdef.SUCCESS {
 		reply.Data["list"] = list
 	}
