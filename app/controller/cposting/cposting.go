@@ -47,23 +47,29 @@ func New(c *gin.Context) PostingModule {
 	}
 }
 
-// 发布帖子
+// 发布帖子 [只有审核中/审核通过 两种状态]
 func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPublishParam) int {
+	// 默认为 0 审核中的状态 1为审核成功
+	status := 0
 	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测帖子标题
 	isPass, err := client.TextModeration(params.Title)
 	if !isPass || err != nil {
 		log.Log.Errorf("post_trace: validate title err: %s，pass: %v", err, isPass)
-		return errdef.POST_INVALID_TITLE
+		//return errdef.POST_INVALID_TITLE
 	}
 
 	// 检测帖子内容
-	isPass, err = client.TextModeration(params.Describe)
-	if !isPass || err != nil {
+	isOk, err := client.TextModeration(params.Describe)
+	if !isOk || err != nil {
 		log.Log.Errorf("post_trace: validate content err: %s，pass: %v", err, isPass)
-		return errdef.POST_INVALID_CONTENT
+		//return errdef.POST_INVALID_CONTENT
 	}
 
+	// 标题和内容都通过 则帖子直接通过
+	if isPass && isOk {
+		status = 1
+	}
 
 	postType := svc.GetPostingType(params)
 	if b := svc.VerifyContentLen(postType, params.Describe, params.Title); !b {
@@ -99,8 +105,6 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		return errdef.POST_TOPIC_NOT_EXISTS
 	}
 
-	// 默认为审核中的状态【最终必须人工审】
-	status := 0
 
 	now := int(time.Now().Unix())
 	svc.posting.Posting.Title = params.Title
