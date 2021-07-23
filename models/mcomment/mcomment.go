@@ -127,6 +127,7 @@ func NewCommentModel(engine *xorm.Session) *CommentModel {
 		VideoComment: new(models.VideoComment),
 		ReceiveAt:    new(models.ReceivedAt),
 		Report:       new(models.CommentReport),
+		PostComment:  new(models.PostingComment),
 	}
 }
 

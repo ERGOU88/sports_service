@@ -416,8 +416,7 @@ func UploadSign(c *gin.Context) {
 	userId, _ := c.Get(consts.USER_ID)
 	biteRate, err := strconv.Atoi(c.Query("bite_rate"))
 	if err != nil {
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
-		return
+		biteRate = 0
 	}
 
 	svc := cvideo.New(c)
