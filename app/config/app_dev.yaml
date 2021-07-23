@@ -40,6 +40,6 @@ staticDomain: http://fpv-web-qa.youzu.com
 log:
   path: /data/service/fpv-app-api/app_server_%s.log
   level: 0
-  showColor: false
+  showColor: true
 
 debug: true
