@@ -109,7 +109,7 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 	if userId != video.UserId {
 		// 发送收藏视频推送
 		//event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG)
-		redismq.PushEventMsg(redismq.NewEvent(video.UserId, user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG))
+		redismq.PushEventMsg(redismq.NewEvent(video.UserId, fmt.Sprint(video.VideoId), user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG))
 	}
 
 	return errdef.SUCCESS

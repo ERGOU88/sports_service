@@ -129,8 +129,8 @@ func procedureStateChangedEvent(event *v20180717.EventContent) error {
     return errors.New("job_trace: update video info fail")
   }
 
-  // 如果是社区发布的视频 需要修改关联的帖子状态
-  if video.PubType == 2 {
+  // 如果是社区发布的视频 且 视频状态不是审核中 需要修改关联的帖子状态
+  if video.PubType == 2 && vmodel.Videos.Status != 0 {
     pmodel := mposting.NewPostingModel(session)
     pmodel.Posting.Status = video.Status
     if err := pmodel.UpdatePostStatus(video.UserId, fmt.Sprint(video.VideoId)); err != nil {

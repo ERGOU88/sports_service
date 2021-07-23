@@ -87,7 +87,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	var (
 		cover, toUserId string
 		msgType int32
-		commentId int64
+		commentId, composeId int64
 	)
 	switch params.CommentType {
 	// 视频评论
@@ -135,6 +135,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		msgType = consts.VIDEO_COMMENT_MSG
 		toUserId = video.UserId
 		commentId = svc.comment.VideoComment.Id
+		composeId = video.VideoId
 
 	// 帖子评论
 	case consts.COMMENT_TYPE_POST:
@@ -179,6 +180,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		msgType = consts.POST_COMMENT_MSG
 		toUserId = post.UserId
 		commentId = svc.comment.PostComment.Id
+		composeId = post.Id
 	}
 
 	svc.comment.ReceiveAt.UserId = userId
@@ -228,7 +230,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 
 	// 视频/帖子 评论推送
 	//event.PushEventMsg(config.Global.AmqpDsn, toUserId, user.NickName, cover, params.Content, msgType)
-	redismq.PushEventMsg(redismq.NewEvent(toUserId, user.NickName, cover, params.Content, msgType))
+	redismq.PushEventMsg(redismq.NewEvent(toUserId, fmt.Sprint(composeId), user.NickName, cover, params.Content, msgType))
 
 	return errdef.SUCCESS, commentId
 }
@@ -324,7 +326,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 
 	// 视频评论推送
 	//event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, params.Content, consts.VIDEO_COMMENT_MSG)
-	redismq.PushEventMsg(redismq.NewEvent(video.UserId, user.NickName, video.Cover, params.Content, consts.VIDEO_COMMENT_MSG))
+	redismq.PushEventMsg(redismq.NewEvent(video.UserId, fmt.Sprint(video.VideoId), user.NickName, video.Cover, params.Content, consts.VIDEO_COMMENT_MSG))
 
 	return errdef.SUCCESS, svc.comment.VideoComment.Id
 }
@@ -375,7 +377,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	var (
 		cover, toUserId, content string
 		msgType int32
-		commentId int64
+		commentId, composeId int64
 	)
 	now := int(time.Now().Unix())
 	switch params.CommentType {
@@ -443,6 +445,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		toUserId = replyInfo.UserId
 		content = replyInfo.Content
 		commentId = svc.comment.VideoComment.Id
+		composeId = replyInfo.VideoId
 
 	// 帖子评论
 	case consts.COMMENT_TYPE_POST:
@@ -504,6 +507,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		toUserId = replyInfo.UserId
 		content = replyInfo.Content
 		commentId = svc.comment.PostComment.Id
+		composeId = replyInfo.PostId
 	}
 
 	svc.comment.ReceiveAt.UserId = userId
@@ -552,7 +556,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	svc.engine.Commit()
 	// 视频/帖子 回复推送
 	//event.PushEventMsg(config.Global.AmqpDsn, toUserId, user.NickName, cover, content, msgType)
-	redismq.PushEventMsg(redismq.NewEvent(toUserId, user.NickName, cover, content, msgType))
+	redismq.PushEventMsg(redismq.NewEvent(toUserId, fmt.Sprint(composeId), user.NickName, cover, content, msgType))
 	return errdef.SUCCESS, commentId
 }
 

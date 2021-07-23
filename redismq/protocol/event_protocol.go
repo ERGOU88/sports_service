@@ -11,9 +11,11 @@ package protocol
 // 6  关注的用户发布新视频
 // 7  视频评论
 // 8  视频回复
-// 9  帖子评论
-// 10 帖子回复
-// 11 帖子点赞
+// 9  帖子点赞
+// 10 帖子评论点赞
+// 11 关注的人发布的新帖子
+// 12  帖子评论
+// 13 帖子回复
 type Event struct {
 	UserId    string `json:"user_id"`   // 用户id
 	EventType int32  `json:"eventType"`
@@ -23,6 +25,7 @@ type Event struct {
 
 // 事件数据
 type Data struct {
+	ComposeId   string    `json:"compose_id"` // 作品id
 	Cover       string    `json:"cover"`      // 封面
 	NickName    string    `json:"nick_name"`  // 昵称
 	Content     string    `json:"content"`    // 内容

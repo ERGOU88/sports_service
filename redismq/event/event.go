@@ -5,7 +5,7 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/rdskey"
-	"sports_service/server/nsqlx/protocol"
+	"sports_service/server/redismq/protocol"
 	"sports_service/server/util"
 	"time"
 )
@@ -22,7 +22,7 @@ func PushEventMsg(msg []byte) {
 	}
 }
 
-func NewEvent(userId, nickname, cover, content string, eventType int32) []byte {
+func NewEvent(userId, composeId, nickname, cover, content string, eventType int32) []byte {
 	event := new(protocol.Event)
 	event.UserId = userId
 	event.EventType = eventType
@@ -32,6 +32,7 @@ func NewEvent(userId, nickname, cover, content string, eventType int32) []byte {
 	data.NickName = nickname
 	data.Cover = cover
 	data.Content = content
+	data.ComposeId = composeId
 
 	msg , _ := util.JsonFast.Marshal(data)
 	event.Data = msg

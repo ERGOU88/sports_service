@@ -121,7 +121,7 @@ func (svc *LikeModule) GiveLikeForVideo(userId string, videoId int64) int {
 
 	// 发送视频点赞推送
 	//event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, "", consts.VIDEO_LIKE_MSG)
-	redismq.PushEventMsg(redismq.NewEvent(video.UserId, user.NickName, video.Cover, "", consts.VIDEO_LIKE_MSG))
+	redismq.PushEventMsg(redismq.NewEvent(video.UserId, fmt.Sprint(video.VideoId), user.NickName, video.Cover, "", consts.VIDEO_LIKE_MSG))
 
 	return errdef.SUCCESS
 }
@@ -313,7 +313,7 @@ func (svc *LikeModule) GiveLikeForVideoComment(userId string, commentId int64) i
 
 	// 发送评论点赞推送
 	//event.PushEventMsg(config.Global.AmqpDsn, comment.UserId, user.NickName, "", comment.Content, consts.VIDEO_COMMENT_LIKE_MSG)
-	redismq.PushEventMsg(redismq.NewEvent(comment.UserId, user.NickName, "", comment.Content, consts.VIDEO_COMMENT_LIKE_MSG))
+	redismq.PushEventMsg(redismq.NewEvent(comment.UserId, fmt.Sprint(comment.VideoId), user.NickName, "", comment.Content, consts.VIDEO_COMMENT_LIKE_MSG))
 
 	return errdef.SUCCESS
 }
@@ -441,7 +441,7 @@ func (svc *LikeModule) GiveLikeForPost(userId string, postId int64) int {
 
 	// todo: 帖子点赞 推送内容
 	// 发送帖子点赞推送
-	redismq.PushEventMsg(redismq.NewEvent(post.UserId, user.NickName, "", "", consts.POST_LIKE_MSG))
+	redismq.PushEventMsg(redismq.NewEvent(post.UserId, fmt.Sprint(post.Id), user.NickName, "", "", consts.POST_LIKE_MSG))
 
 	return errdef.SUCCESS
 }
@@ -564,7 +564,7 @@ func (svc *LikeModule) GiveLikeForPostComment(userId string, commentId int64) in
 	svc.engine.Commit()
 
 	// 发送帖子评论点赞推送
-	redismq.PushEventMsg(redismq.NewEvent(comment.UserId, user.NickName, "", comment.Content, consts.POST_COMMENT_LIKE_MSG))
+	redismq.PushEventMsg(redismq.NewEvent(comment.UserId, fmt.Sprint(comment.PostId), user.NickName, "", comment.Content, consts.POST_COMMENT_LIKE_MSG))
 
 	return errdef.SUCCESS
 }
