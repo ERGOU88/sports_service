@@ -1237,3 +1237,26 @@ func (svc *VideoModule) GetVideoListBySubarea(subareaId string, page, size int) 
 
 	return errdef.SUCCESS, list
 }
+
+// 获取用户发布的专辑列表
+func (svc *VideoModule) GetVideoAlbumByUserId(userId string, page, size int) (int, []*mvideo.VideoAlbumInfo) {
+	if userId == "" {
+		return errdef.USER_NO_LOGIN, []*mvideo.VideoAlbumInfo{}
+	}
+
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		return errdef.USER_NOT_EXISTS, []*mvideo.VideoAlbumInfo{}
+	}
+
+	list, err := svc.video.GetVideoAlbumListByUser(userId, page, size)
+	if err != nil {
+		log.Log.Errorf("video_trace: get video album list by user fail, err:%s, userId:%s", err, userId)
+		return errdef.SUCCESS, []*mvideo.VideoAlbumInfo{}
+	}
+
+	if list == nil {
+		return errdef.SUCCESS, []*mvideo.VideoAlbumInfo{}
+	}
+
+	return errdef.SUCCESS, list
+}

@@ -634,3 +634,18 @@ func VideoListBySubarea(c *gin.Context) {
 
 	reply.Response(http.StatusOK, syscode)
 }
+
+// 用户发布的视频专辑列表
+func VideoAlbumList(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	svc := cvideo.New(c)
+	code, list := svc.GetVideoAlbumByUserId(userId.(string), page, size)
+	if code == errdef.SUCCESS {
+		reply.Data["list"] = list
+	}
+
+	reply.Response(http.StatusOK, code)
+
+}

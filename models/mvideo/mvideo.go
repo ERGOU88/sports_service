@@ -940,3 +940,28 @@ func (m *VideoModel) GetVideoListBySubarea(subarea string, offset, size int) ([]
 
 	return list, nil
 }
+
+// 视频专辑信息
+type VideoAlbumInfo struct {
+	Id        int64  `json:"id"`          // 专辑id
+	UserId    string `json:"user_id"`     // 用户id
+	AlbumName string `json:"album_name"`  // 专辑名称
+	VideoNum  int    `json:"video_num"`   // 专辑下的视频总数
+}
+
+const (
+	QUERY_ALBUM_LIST_BY_USER = "SELECT va.id, va.user_id, va.album_name, video_num FROM video_album AS va " +
+		"LEFT JOIN (SELECT count(1) as video_num, album FROM videos as v " +
+		"WHERE v.status=1 AND v.user_id=? GROUP BY v.`album`) AS v ON va.id = v.album " +
+		"WHERE va.user_id=? AND va.status=0 ORDER BY va.create_at DESC LIMIT ?, ?"
+)
+// 获取用户发布的专辑列表 及 专辑下的视频数量
+func (m *VideoModel) GetVideoAlbumListByUser(userId string, offset, size int) ([]*VideoAlbumInfo, error) {
+	var list []*VideoAlbumInfo
+	if err := m.Engine.SQL(QUERY_ALBUM_LIST_BY_USER, userId, userId, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("video_trace: get video album list by user err:%s", err)
+		return nil, err
+	}
+
+	return list, nil
+}

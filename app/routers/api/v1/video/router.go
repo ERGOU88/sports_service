@@ -56,5 +56,7 @@ func Router(engine *gin.Engine) {
 		video.POST("/add/album", token.TokenAuth(), AddVideoToAlbum)
 		// 视频分区列表
 		video.GET("/subarea/list", VideoListBySubarea)
+		// 获取用户创建的视频专辑列表
+		video.GET("/album/list", token.TokenAuth(), VideoAlbumList)
 	}
 }
