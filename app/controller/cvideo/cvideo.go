@@ -767,6 +767,8 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDet
 	resp.CreateAt = video.CreateAt
 	resp.UserId = video.UserId
 	resp.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+	resp.Album = video.Album
+	resp.Subarea = video.Subarea
 	if resp.Labels == nil {
 		resp.Labels = []*models.VideoLabels{}
 	}
@@ -794,6 +796,20 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDet
 		resp.BarrageNum = info.BarrageNum
 		resp.CollectNum = info.CollectNum
 	}
+
+	if video.Album > 0 {
+		var err error
+		// 获取同专辑下的视频列表
+		resp.AlbumInfo, err = svc.video.GetVideoListByAlbum(video.UserId, video.Album)
+		if err != nil || resp.AlbumInfo == nil {
+			log.Log.Errorf("video_trace: get video list by album fail, err:%s", err)
+			resp.AlbumInfo = []*mvideo.InfoByVideoAlbum{}
+		}
+
+	} else {
+		resp.AlbumInfo = []*mvideo.InfoByVideoAlbum{}
+	}
+
 	// 粉丝数
 	resp.FansNum = svc.attention.GetTotalFans(fmt.Sprint(video.UserId))
 	now := int(time.Now().Unix())

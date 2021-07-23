@@ -34,7 +34,7 @@ type VideoPublishParams struct {
 	TaskId         int64   `binding:"required" json:"task_id"`        // 任务id
 	Cover          string  `json:"cover"`                             // 视频封面
 	Title          string  `binding:"required" json:"title"`          // 视频标题
-	Describe       string  `binding:"required" json:"describe"`       // 视频描述
+	Describe       string  `json:"describe"`                          // 视频描述
 	VideoAddr      string  `binding:"required" json:"video_addr"`     // 视频地址
 	VideoDuration  int     `json:"video_duration"`                    // 视频时长
 	FileId         string  `binding:"required" json:"file_id"`        // 腾讯云文件id
@@ -147,6 +147,16 @@ type VideoDetailInfo struct {
 	Labels        []*models.VideoLabels `json:"labels"`                               // 视频标签
 	PlayInfo      []*PlayInfo           `json:"play_info"`                            // 视频转码后数据
 	StatisticsTab string                `json:"statistics_tab"`                       // 统计标签
+	Album         int64                 `json:"album"`                                // 专辑
+	Subarea       int                   `json:"subarea"`                              // 分区
+	AlbumInfo     []*InfoByVideoAlbum   `json:"album_info"`                           // 专辑下的视频数据
+}
+
+// 专辑下的视频数据
+type InfoByVideoAlbum struct {
+	VideoId      int64        `json:"video_id"`
+	Title        string       `json:"title"`
+	CreateAt     int          `json:"create_at"`
 }
 
 // 记录视频播放时长 请求参数
@@ -960,6 +970,16 @@ func (m *VideoModel) GetVideoAlbumListByUser(userId string, offset, size int) ([
 	var list []*VideoAlbumInfo
 	if err := m.Engine.SQL(QUERY_ALBUM_LIST_BY_USER, userId, userId, offset, size).Find(&list); err != nil {
 		log.Log.Errorf("video_trace: get video album list by user err:%s", err)
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 获取某专辑下的视频列表
+func (m *VideoModel) GetVideoListByAlbum(userId string, album int64) ([]*InfoByVideoAlbum, error) {
+	var list []*InfoByVideoAlbum
+	if err := m.Engine.Table(&models.Videos{}).Where("status=1 AND user_id=? AND album=?", userId, album).Find(&list); err != nil {
 		return nil, err
 	}
 
