@@ -136,7 +136,7 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		info.TopicName = val.TopicName
 		info.CreateAt = now
 		info.PostingId = svc.posting.Posting.Id
-		info.Status = 1
+		info.Status = status
 		topicInfos[key] = info
 	}
 
@@ -174,8 +174,9 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 				ToUserId: val,
 				UserId: userId,
 				ComposeId: svc.posting.Posting.Id,
-				TopicType: consts.TYPE_POST_COMMENT,
+				TopicType: consts.TYPE_PUBLISH_POST,
 				CreateAt: now,
+				Status: status,
 			}
 
 			atList = append(atList, at)

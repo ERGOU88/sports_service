@@ -6,6 +6,7 @@ const (
 	TYPE_POSTS         = 2
 	TYPE_VIDEO_COMMENT = 3
 	TYPE_POST_COMMENT  = 4
+	TYPE_PUBLISH_POST  = 5
 )
 
 // 1 已点赞 0 未点赞

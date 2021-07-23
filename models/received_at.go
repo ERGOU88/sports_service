@@ -8,4 +8,5 @@ type ReceivedAt struct {
 	TopicType    int    `json:"topic_type" xorm:"not null comment('1.视频 2.帖子 3.视频评论 4.帖子评论') TINYINT(2)"`
 	CreateAt     int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	CommentLevel int    `json:"comment_level" xorm:"not null default 1 comment('评论等级[ 1 一级评论 默认 ，2 二级评论]') TINYINT(4)"`
+	Status       int    `json:"status" xorm:"not null default 1 comment('@状态 1 正常 0 作品待审核') TINYINT(1)"`
 }

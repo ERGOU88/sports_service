@@ -161,7 +161,7 @@ func (m *CommentModel) AddReceiveAt() error {
 // 查询用户收到的@们
 func (m *CommentModel) GetReceiveAtList(userId string, offset, size int) []*models.ReceivedAt {
 	var list []*models.ReceivedAt
-	if err := m.Engine.Where("to_user_id=?", userId).Desc("id").Limit(size, offset).Find(&list); err != nil {
+	if err := m.Engine.Where("to_user_id=? AND status=1", userId).Desc("id").Limit(size, offset).Find(&list); err != nil {
 		log.Log.Errorf("comment_trace: get receive at by userid err:%s, userId:%s", err, userId)
 		return nil
 	}
