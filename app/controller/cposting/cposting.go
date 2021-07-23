@@ -99,12 +99,8 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		return errdef.POST_TOPIC_NOT_EXISTS
 	}
 
-	// 默认为审核中的状态
+	// 默认为审核中的状态【最终必须人工审】
 	status := 0
-	// 不带视频的帖子 只需通过图文检测
-	if postType != consts.POST_TYPE_VIDEO {
-		status = 1
-	}
 
 	now := int(time.Now().Unix())
 	svc.posting.Posting.Title = params.Title

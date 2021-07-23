@@ -98,9 +98,9 @@ func procedureStateChangedEvent(event *v20180717.EventContent) error {
    log.Log.Errorf("job_trace: video not found, fileId:%s", *event.ProcedureStateChangeEvent.FileId)
    session.Rollback()
    // 确认事件回调
-   if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-     log.Log.Errorf("job_trace: confirm events err:%s", err)
-   }
+   //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+   //  log.Log.Errorf("job_trace: confirm events err:%s", err)
+   //}
 
    return errors.New("video not found")
   }
@@ -116,7 +116,7 @@ func procedureStateChangedEvent(event *v20180717.EventContent) error {
 
   if b := util.MapExist(mp, "AiContentReviewResultSet"); b {
     log.Log.Debugf("ai review event:%+v", *event.ProcedureStateChangeEvent)
-    if err := aiContentReviewEvent(event, video); err != nil {
+    if err := aiContentReviewEvent(event, vmodel); err != nil {
       log.Log.Errorf("job_trace: ai review fail, err:%s", err)
       session.Rollback()
       return err
@@ -172,7 +172,7 @@ func procedureStateChangedEvent(event *v20180717.EventContent) error {
 // suggestion pass：嫌疑度不高，建议直接通过 review：嫌疑度较高，建议人工复核 block：嫌疑度很高，建议直接屏蔽
 // segments 有嫌疑的视频片段，帮助定位视频中具体哪一段涉嫌违规
 // confidence 审核评分（0 - 100），评分越高，嫌疑越大
-func aiContentReviewEvent(event *v20180717.EventContent, video *models.Videos) error {
+func aiContentReviewEvent(event *v20180717.EventContent, vmodel *mvideo.VideoModel) error {
   //session := dao.Engine.NewSession()
   //defer session.Close()
   //if err := session.Begin(); err != nil {
@@ -198,8 +198,12 @@ func aiContentReviewEvent(event *v20180717.EventContent, video *models.Videos) e
     return errors.New("AiContentReviewResultSet Not Found")
   }
 
-  // 默认为通过
+  // 视频状态默认为通过
   auditState := true
+  // 记录ai审核状态 1 通过 2 不通过 3 建议复审 默认为通过
+  aiState := consts.AI_AUDIT_PASS
+  // 有一项不满足条件 则ai审核结果为不通过
+  OutLoop:
   for _, item := range event.ProcedureStateChangeEvent.AiContentReviewResultSet {
     log.Log.Debugf("AIEvent:%v", *item)
     switch *item.Type {
@@ -208,9 +212,16 @@ func aiContentReviewEvent(event *v20180717.EventContent, video *models.Videos) e
         continue
       }
 
-      // todo: 产品当前版本规则为 除block 均为通过
-      if *item.PornTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+      // 建议复审
+      if *item.PornTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_REVIEW {
+        aiState = consts.AI_AUDIT_REVIEW
+      }
+
+      // 建议屏蔽
+      if *item.PornTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_BLOCK {
         auditState = false
+        aiState = consts.AI_AUDIT_BLOCK
+        break OutLoop
       }
 
     case "Terrorism":
@@ -218,8 +229,15 @@ func aiContentReviewEvent(event *v20180717.EventContent, video *models.Videos) e
         continue
       }
 
-      if *item.TerrorismTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+      // ai建议复审
+      if *item.TerrorismOcrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_REVIEW {
+        aiState = consts.AI_AUDIT_REVIEW
+      }
+
+      if *item.TerrorismTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_BLOCK {
         auditState = false
+        aiState = consts.AI_AUDIT_BLOCK
+        break OutLoop
       }
 
     case "Political":
@@ -227,8 +245,15 @@ func aiContentReviewEvent(event *v20180717.EventContent, video *models.Videos) e
         continue
       }
 
-      if *item.PoliticalTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+      // ai建议复审
+      if *item.PoliticalTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_REVIEW {
+        aiState = consts.AI_AUDIT_REVIEW
+      }
+
+      if *item.PoliticalTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_BLOCK {
         auditState = false
+        aiState = consts.AI_AUDIT_BLOCK
+        break OutLoop
       }
 
     case "Porn.Asr":
@@ -236,8 +261,15 @@ func aiContentReviewEvent(event *v20180717.EventContent, video *models.Videos) e
         continue
       }
 
-      if *item.PornAsrTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+      // ai建议复审
+      if *item.PornAsrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_REVIEW {
+        aiState = consts.AI_AUDIT_REVIEW
+      }
+
+      if *item.PornAsrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_BLOCK {
         auditState = false
+        aiState = consts.AI_AUDIT_BLOCK
+        break OutLoop
       }
 
     case "Porn.Ocr":
@@ -245,8 +277,15 @@ func aiContentReviewEvent(event *v20180717.EventContent, video *models.Videos) e
         continue
       }
 
-      if *item.PornOcrTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+      // ai建议复审
+      if *item.PornOcrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_REVIEW {
+        aiState = consts.AI_AUDIT_REVIEW
+      }
+
+      if *item.PornOcrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_BLOCK {
         auditState = false
+        aiState = consts.AI_AUDIT_BLOCK
+        break OutLoop
       }
 
     case "Terrorism.Ocr":
@@ -254,8 +293,15 @@ func aiContentReviewEvent(event *v20180717.EventContent, video *models.Videos) e
         continue
       }
 
-      if *item.TerrorismOcrTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+      // ai建议复审
+      if *item.TerrorismOcrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_REVIEW {
+        aiState = consts.AI_AUDIT_REVIEW
+      }
+
+      if *item.TerrorismOcrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_BLOCK {
         auditState = false
+        aiState = consts.AI_AUDIT_BLOCK
+        break OutLoop
       }
 
     case "Political.Asr":
@@ -263,9 +309,15 @@ func aiContentReviewEvent(event *v20180717.EventContent, video *models.Videos) e
         continue
       }
 
+      // ai建议复审
+      if *item.PoliticalAsrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_REVIEW {
+        aiState = consts.AI_AUDIT_REVIEW
+      }
 
-      if *item.PoliticalAsrTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+      if *item.PoliticalAsrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_BLOCK {
         auditState = false
+        aiState = consts.AI_AUDIT_BLOCK
+        break OutLoop
       }
 
     case "Political.Ocr":
@@ -273,8 +325,15 @@ func aiContentReviewEvent(event *v20180717.EventContent, video *models.Videos) e
         continue
       }
 
-      if *item.PoliticalOcrTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+      // ai建议复审
+      if *item.PoliticalOcrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_REVIEW {
+        aiState = consts.AI_AUDIT_REVIEW
+      }
+
+      if *item.PoliticalOcrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_BLOCK {
         auditState = false
+        aiState = consts.AI_AUDIT_BLOCK
+        break OutLoop
       }
 
     case "Prohibited.Asr":
@@ -282,8 +341,15 @@ func aiContentReviewEvent(event *v20180717.EventContent, video *models.Videos) e
         continue
       }
 
-      if *item.ProhibitedAsrTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+      // ai建议复审
+      if *item.ProhibitedAsrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_REVIEW {
+        aiState = consts.AI_AUDIT_REVIEW
+      }
+
+      if *item.ProhibitedAsrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_BLOCK {
         auditState = false
+        aiState = consts.AI_AUDIT_BLOCK
+        break OutLoop
       }
 
     case "Prohibited.Ocr":
@@ -291,19 +357,37 @@ func aiContentReviewEvent(event *v20180717.EventContent, video *models.Videos) e
         continue
       }
 
-      if *item.ProhibitedOcrTask.Output.Suggestion == consts.VIDEO_AUDIT_BLOCK {
+      // ai建议复审
+      if *item.ProhibitedOcrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_REVIEW {
+        aiState = consts.AI_AUDIT_REVIEW
+      }
+
+      if *item.ProhibitedOcrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_BLOCK {
         auditState = false
+        aiState = consts.AI_AUDIT_BLOCK
+        break OutLoop
       }
 
     }
   }
 
-  // 默认为审核通过
-  video.Status = 1
-  // 2 为不通过
-  if auditState == false {
-    video.Status = 2
+
+  // 默认为审核中
+  vmodel.Videos.Status = 0
+
+  // 获取设置的审核模式
+  mode := vmodel.GetAuditMode()
+  // 视频审核状态 true 为 审核通过 false 为不通过
+  // ai审核为false 则直接设置为不通过
+  // ai审核为通过/复审 需人工进行审核
+  // ai审核为false 且当前审核模式为 ai+人工 则直接设置为不通过
+  if auditState == false && mode == consts.AUDIT_MODE_AI_AND_MANUAL {
+    vmodel.Videos.Status = 2
   }
+
+  // 1为AI审核通过 2为AI审核不通过 3为AI建议复审
+  vmodel.Videos.AiStatus = aiState
+
 
   //// 更新视频审核状态
   //if err := vmodel.UpdateVideoStatus(video.UserId, fmt.Sprint(video.VideoId)); err != nil {

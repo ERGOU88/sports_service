@@ -54,7 +54,17 @@ const (
 
 // 视频AI审核结果
 const (
-	VIDEO_AUDIT_PASS = "pass"             // 通过
-	VIDEO_AUDIT_REVIEW = "review"         // 建议复审
-	VIDEO_AUDIT_BLOCK  = "block"          // 屏蔽
+	VIDEO_AI_AUDIT_PASS   = "pass"   // 通过
+	VIDEO_AI_AUDIT_REVIEW = "review" // 建议复审
+	VIDEO_AI_AUDIT_BLOCK  = "block"  // 屏蔽
+)
+
+// AI审核状态
+// 1 通过
+// 2 不通过
+// 3 复审
+const (
+	AI_AUDIT_PASS   = 1
+	AI_AUDIT_BLOCK  = 2
+	AI_AUDIT_REVIEW = 3
 )
