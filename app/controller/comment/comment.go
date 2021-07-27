@@ -1018,25 +1018,37 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 
 // 获取评论回复列表
 func (svc *CommentModule) GetCommentReplyList(userId, composeId, commentId string, commentType, page, size int) (int, []*mcomment.ReplyComment) {
-	// 查询评论是否存在
-	comment := svc.comment.GetVideoCommentById(commentId)
-	if comment == nil {
-		log.Log.Error("comment_trace: comment not found, commentId:%s", commentId)
-		return errdef.COMMENT_NOT_FOUND, []*mcomment.ReplyComment{}
-	}
-
 	code, zanType := svc.CheckComposeInfo(composeId, commentType)
 	if code != errdef.SUCCESS {
 		return code, []*mcomment.ReplyComment{}
 	}
 
-	var replyList []*mcomment.ReplyComment
-	offset := (page - 1) * size
+	var (
+		replyList []*mcomment.ReplyComment
+		content string
+	)
 
+	offset := (page - 1) * size
 	switch commentType {
 	case consts.COMMENT_TYPE_VIDEO:
+		// 查询视频评论是否存在
+		comment := svc.comment.GetVideoCommentById(commentId)
+		if comment == nil {
+			log.Log.Error("comment_trace: comment not found, commentId:%s", commentId)
+			return errdef.COMMENT_NOT_FOUND, []*mcomment.ReplyComment{}
+		}
+		content = comment.Content
+
 		replyList = svc.comment.GetVideoReplyList(composeId, commentId, offset, size)
 	case consts.COMMENT_TYPE_POST:
+		// 查询帖子评论是否存在
+		comment := svc.comment.GetPostCommentById(commentId)
+		if comment == nil {
+			log.Log.Error("comment_trace: comment not found, commentId:%s", commentId)
+			return errdef.COMMENT_NOT_FOUND, []*mcomment.ReplyComment{}
+		}
+		content = comment.Content
+
 		replyList = svc.comment.GetPostReplyList(composeId, commentId, offset, size)
 	}
 
@@ -1090,7 +1102,7 @@ func (svc *CommentModule) GetCommentReplyList(userId, composeId, commentId strin
 		}
 
 		// 默认回复的是1级评论
-		reply.ReplyContent = comment.Content
+		reply.ReplyContent = content
 		// 被回复的内容
 		content, ok := contents[reply.ReplyCommentId]
 		if ok {
