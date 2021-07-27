@@ -594,6 +594,8 @@ func (svc *CommentModule) CheckComposeInfo(composeId string, commentType int) (i
 		}
 
 		zanType = consts.TYPE_POST_COMMENT
+	default:
+		return errdef.INVALID_PARAMS, zanType
 	}
 
 	return errdef.SUCCESS, zanType
