@@ -139,8 +139,9 @@ func (svc *VideoModule) EditVideoStatus(param *mvideo.EditVideoStatusParam) int 
       return errdef.VIDEO_DELETE_PUBLISH_FAIL
     }
 
-    svc.engine.Commit()
   }
+
+  svc.engine.Commit()
 
   return errdef.SUCCESS
 }

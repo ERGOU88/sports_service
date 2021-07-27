@@ -210,6 +210,7 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 		info.VideoId = svc.video.Videos.VideoId
 		info.LabelId = labelId
 		info.LabelName = svc.label.GetLabelNameByMem(labelId)
+		//info.Status = 1
 		info.CreateAt = now
 		labelInfos = append(labelInfos, info)
 	}

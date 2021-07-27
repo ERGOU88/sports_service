@@ -423,7 +423,7 @@ func (m *PostingModel) DelPostStatistic(postId string) error {
 	return nil
 }
 
-// 更新帖子状态
+// 更新帖子状态[关联的视频]
 func (m *PostingModel) UpdatePostStatus(userId, videoId string) error {
 	if _, err := m.Engine.Where("user_id=? AND video_id=? AND posting_type=2 AND content_type=0", userId, videoId).
 		Cols("status").Update(m.Posting); err != nil {
