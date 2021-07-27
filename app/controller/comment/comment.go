@@ -181,6 +181,9 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		toUserId = post.UserId
 		commentId = svc.comment.PostComment.Id
 		composeId = post.Id
+	default:
+		log.Log.Errorf("comment_trace: invalid commentType:%d", params.CommentType)
+		return errdef.INVALID_PARAMS, 0
 	}
 
 	svc.comment.ReceiveAt.UserId = userId
@@ -508,6 +511,9 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		content = replyInfo.Content
 		commentId = svc.comment.PostComment.Id
 		composeId = replyInfo.PostId
+	default:
+		log.Log.Errorf("comment_trace: invalid commentType:%d", params.CommentType)
+		return errdef.INVALID_PARAMS, 0
 	}
 
 	svc.comment.ReceiveAt.UserId = userId
