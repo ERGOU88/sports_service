@@ -1,4 +1,4 @@
-publicAddr: :13002
+publicAddr: :13000
 pprofAddr: :12002
 mode: dev
 mysql:
