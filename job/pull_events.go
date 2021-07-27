@@ -30,7 +30,7 @@ func PullEventsJob() {
     case <- ticker.C:
       log.Log.Debugf("开始拉取事件[腾讯云]")
       if err := pullEvents(); err != nil {
-        log.Log.Errorf("job_trace: pull events err:%s", err)
+        log.Log.Infof("job_trace: pull events err:%s", err)
       }
       log.Log.Debugf("事件处理完毕")
     }
