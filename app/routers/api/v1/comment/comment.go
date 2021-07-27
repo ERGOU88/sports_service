@@ -158,7 +158,7 @@ func ReplyList(c *gin.Context) {
 	reply := errdef.New(c)
 	userId := c.Query("user_id")
 	commentId := c.Query("comment_id")
-	videoId := c.Query("video_id")
+	composeId := c.Query("compose_id")
 	// todo: 替换videoId
 	//composeId := c.Query("compose_id")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
@@ -167,7 +167,7 @@ func ReplyList(c *gin.Context) {
 
 	svc := comment.New(c)
 	// 获取评论回复列表
-	syscode, list := svc.GetCommentReplyList(userId, videoId, commentId, commentType, page, size)
+	syscode, list := svc.GetCommentReplyList(userId, composeId, commentId, commentType, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)
 }
