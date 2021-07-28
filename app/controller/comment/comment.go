@@ -542,7 +542,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			at := &models.ReceivedAt{
 				ToUserId: val,
 				UserId: userId,
-				ComposeId: params.VideoId,
+				ComposeId: params.ComposeId,
 				TopicType: params.CommentType,
 				CreateAt: now,
 			}
