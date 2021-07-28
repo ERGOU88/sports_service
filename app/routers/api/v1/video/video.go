@@ -600,8 +600,11 @@ func CreateVideoAlbum(c *gin.Context) {
 	}
 
 	svc := cvideo.New(c)
-	syscode, albumId := svc.CreateVideoAlbum(userId.(string), param)
-	reply.Data["album_id"] = albumId
+	syscode, album := svc.CreateVideoAlbum(userId.(string), param)
+	if syscode == errdef.SUCCESS {
+		reply.Data["album"] = album
+	}
+
 	reply.Response(http.StatusOK, syscode)
 }
 

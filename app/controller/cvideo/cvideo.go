@@ -1176,10 +1176,10 @@ func (svc *VideoModule) GetVideoSubarea() (int, []*models.VideoSubarea) {
 }
 
 // 创建视频专辑
-func (svc *VideoModule) CreateVideoAlbum(userId string, param *mvideo.CreateAlbumParam) (int, string) {
+func (svc *VideoModule) CreateVideoAlbum(userId string, param *mvideo.CreateAlbumParam) (int, *models.VideoAlbum) {
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("user_trace: user not found, userId:%s", userId)
-		return errdef.USER_NOT_EXISTS, ""
+		return errdef.USER_NOT_EXISTS, nil
 	}
 
 	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
@@ -1187,7 +1187,7 @@ func (svc *VideoModule) CreateVideoAlbum(userId string, param *mvideo.CreateAlbu
 	isPass, err := client.TextModeration(param.AlbumName)
 	if !isPass || err != nil {
 		log.Log.Errorf("video_trace: validate album name err: %s，pass: %v", err, isPass)
-		return errdef.VIDEO_INVALID_CUSTOM_LABEL, ""
+		return errdef.VIDEO_INVALID_CUSTOM_LABEL, nil
 	}
 
 	svc.video.Album.UserId = userId
@@ -1195,10 +1195,10 @@ func (svc *VideoModule) CreateVideoAlbum(userId string, param *mvideo.CreateAlbu
 	svc.video.Album.AlbumName = param.AlbumName
 	if _, err := svc.video.CreateVideoAlbum(); err != nil {
 		log.Log.Errorf("video_trace: create video album fail, err:%s", err)
-		return errdef.VIDEO_CREATE_ALBUM_FAIL, ""
+		return errdef.VIDEO_CREATE_ALBUM_FAIL, nil
 	}
 
-	return errdef.SUCCESS, fmt.Sprint(svc.video.Album.Id)
+	return errdef.SUCCESS, svc.video.Album
 }
 
 // 将视频添加到专辑内
