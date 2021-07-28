@@ -100,7 +100,7 @@ type V2PubCommentParams struct {
 
 // 回复评论请求参数
 type ReplyCommentParams struct {
-	VideoId          int64       `binding:"required" json:"video_id"`      // 视频id todo: 改为视频/帖子id
+	ComposeId        int64       `binding:"required" json:"compose_id"`    // 视频/帖子id
 	Content          string      `binding:"required" json:"content"`       // 评论的内容
 	ReplyId          string      `binding:"required" json:"reply_id"`      // 被回复的评论id
 	CommentType      int         `json:"comment_type"`                     // 评论的类型 1视频 2帖子

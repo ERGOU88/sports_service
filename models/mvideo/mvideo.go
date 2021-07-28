@@ -154,9 +154,15 @@ type VideoDetailInfo struct {
 
 // 专辑下的视频数据
 type InfoByVideoAlbum struct {
-	VideoId      int64        `json:"video_id"`
-	Title        string       `json:"title"`
-	CreateAt     int          `json:"create_at"`
+	VideoId       int64        `json:"video_id"`
+	Title         string       `json:"title"`
+	Describe      string       `json:"describe"`
+	Cover         string       `json:"cover"`
+	VideoAddr     string       `json:"video_addr"`
+	VideoDuration int64        `json:"video_duration"`
+	VideoWidth    int          `json:"video_width"`
+	VideoHeight   int          `json:"video_height"`
+	CreateAt      int64        `json:"create_at"`
 }
 
 // 记录视频播放时长 请求参数

@@ -87,8 +87,8 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 			video := svc.video.FindVideoById(fmt.Sprint(liked.TypeId))
 			if video != nil {
 				info.ComposeId = video.VideoId
-				info.Title = util.TrimHtml(video.Title)
-				info.Describe = util.TrimHtml(video.Describe)
+				//info.Title = util.TrimHtml(video.Title)
+				//info.Describe = util.TrimHtml(video.Describe)
 				info.Cover = video.Cover
 				info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 				info.VideoDuration = video.VideoDuration

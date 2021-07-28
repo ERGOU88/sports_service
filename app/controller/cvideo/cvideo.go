@@ -807,6 +807,12 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDet
 			resp.AlbumInfo = []*mvideo.InfoByVideoAlbum{}
 		}
 
+		if len(resp.AlbumInfo) > 0 {
+			for _, info := range resp.AlbumInfo {
+				info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+			}
+		}
+
 	} else {
 		resp.AlbumInfo = []*mvideo.InfoByVideoAlbum{}
 	}
