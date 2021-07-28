@@ -533,8 +533,8 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 					info.BrowseNum = statistic.BrowseNum
 				}
 			}
-		// 帖子评论里@ 则展示帖子内容 todo: 展示待确认
-		case consts.TYPE_POSTS:
+		// 帖子评论里@ 或 发布帖子时 内容@用户 则展示帖子内容 todo: 展示待确认
+		case consts.TYPE_POSTS, consts.TYPE_PUBLISH_POST:
 			info := new(mnotify.ReceiveAtInfo)
 			info.AtTime = receiveAt.CreateAt
 			info.Type = consts.TYPE_POSTS
@@ -556,6 +556,8 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 						info.Cover = images[0]
 					}
 				}
+
+				res[index] = info
 			}
 
 		// 视频直接评论/回复
@@ -740,6 +742,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				res[index] = info
 
 			}
+
 
 
 		}

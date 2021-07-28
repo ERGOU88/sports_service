@@ -26,35 +26,35 @@ type NotifySettingParams struct {
 
 // 收到的@信息（1.视频/2.帖子/3.视频评论、回复/4.帖子评论、回复）
 type ReceiveAtInfo struct {
-	ComposeId     int64                 `json:"compose_id" example:"1000000000"`      // 视频作品id
-	Title         string                `json:"title" example:"视频标题"`               // 标题
-	Describe      string                `json:"describe" example:"视频描述"`            // 描述
-	Cover         string                `json:"cover" example:"视频封面地址"`           // 封面
-	VideoAddr     string                `json:"video_addr" example:"视频地址"`         // 视频地址
-	IsRecommend   int                   `json:"is_recommend" example:"0"`             // 是否推荐
-	IsTop         int                   `json:"is_top" example:"0"`                   // 是否置顶
-	VideoDuration int                   `json:"video_duration" example:"1000"`        // 视频时长
-	VideoWidth    int64                 `json:"video_width" example:"1000"`           // 视频宽
-	VideoHeight   int64                 `json:"video_height" example:"1000"`          // 视频高
-	Status        int32                 `json:"status" example:"1"`                   // 审核状态
-	CreateAt      int                   `json:"create_at" example:"1600000000"`       // 视频创建时间
-	BarrageNum    int                   `json:"barrage_num" example:"1000"`           // 弹幕数
-	BrowseNum     int                   `json:"browse_num" example:"1000"`            // 浏览数（播放数）
-	UserId        string                `json:"user_id" example:"执行@的用户id"`        // 执行@的用户id
-	Avatar        string                `json:"avatar" example:"执行@的用户头像"`        // 执行@的用户头像
-	Nickname      string                `json:"nick_name" example:"执行@的用户昵称"`     // 执行@的用户昵称
-	ToUserId      string                `json:"to_user_id" example:"被@的用户id"`       // 被@的用户id
-	ToUserAvatar  string                `json:"to_user_avatar" example:"被@的用户头像"`  // 被@用户头像
-	ToUserName    string                `json:"to_user_name" example:"被@的用户昵称"`    // 被@的用户昵称
-	Content       string                `json:"content" example:"内容"`                 // 评论内容
-	Reply         string                `json:"reply"  example:"回复的内容"`             // 回复的内容
+	ComposeId     int64                 `json:"compose_id,omitempty" example:"1000000000"`      // 作品id
+	Title         string                `json:"title,omitempty" example:"视频标题"`               // 标题
+	Describe      string                `json:"describe,omitempty" example:"视频描述"`            // 描述
+	Cover         string                `json:"cover,omitempty" example:"视频封面地址"`           // 封面
+	VideoAddr     string                `json:"video_addr,omitempty" example:"视频地址"`         // 视频地址
+	IsRecommend   int                   `json:"is_recommend,omitempty" example:"0"`             // 是否推荐
+	IsTop         int                   `json:"is_top,omitempty" example:"0"`                   // 是否置顶
+	VideoDuration int                   `json:"video_duration,omitempty" example:"1000"`        // 视频时长
+	VideoWidth    int64                 `json:"video_width,omitempty" example:"1000"`           // 视频宽
+	VideoHeight   int64                 `json:"video_height,omitempty" example:"1000"`          // 视频高
+	Status        int32                 `json:"status,omitempty" example:"1"`                   // 审核状态
+	CreateAt      int                   `json:"create_at,omitempty" example:"1600000000"`       // 视频创建时间
+	BarrageNum    int                   `json:"barrage_num,omitempty" example:"1000"`           // 弹幕数
+	BrowseNum     int                   `json:"browse_num,omitempty" example:"1000"`            // 浏览数（播放数）
+	UserId        string                `json:"user_id,omitempty" example:"执行@的用户id"`        // 执行@的用户id
+	Avatar        string                `json:"avatar,omitempty" example:"执行@的用户头像"`        // 执行@的用户头像
+	Nickname      string                `json:"nick_name,omitempty" example:"执行@的用户昵称"`     // 执行@的用户昵称
+	ToUserId      string                `json:"to_user_id,omitempty" example:"被@的用户id"`       // 被@的用户id
+	ToUserAvatar  string                `json:"to_user_avatar,omitempty" example:"被@的用户头像"`  // 被@用户头像
+	ToUserName    string                `json:"to_user_name,omitempty" example:"被@的用户昵称"`    // 被@的用户昵称
+	Content       string                `json:"content,omitempty" example:"内容"`                 // 评论内容
+	Reply         string                `json:"reply,omitempty"  example:"回复的内容"`             // 回复的内容
 	AtTime        int                   `json:"at_time" example:"1600000000"`          // 用户@的时间
 	Type          int                   `json:"type" example:"1"`                      // 类型 1 视频 2 帖子 3 评论
 	CommentType   int                   `json:"comment_type" example:"1"`              // 1 为评论 2 为回复
 	IsAt          int                   `json:"is_at"`                                 // 1为回复的回复 0 为1级评论/1级评论的回复
-	ParentComment string                `json:"parent_comment"`                        // 父级评论（1级评论）
+	ParentComment string                `json:"parent_comment,omitempty"`              // 父级评论（1级评论）
 	IsLike        int                   `json:"is_like" example:"0"`                   // 是否点赞
-	CommentId     int64                 `json:"comment_id"`                            // 评论id（1级评论的id）
+	CommentId     int64                 `json:"comment_id,omitempty"`                  // 评论id（1级评论的id）
 
 	ReplyCommentId int64                `json:"reply_comment_id"`                      // 回复评论所用id
 	TotalLikeNum   int64                `json:"total_like_num"`                        // 总点赞数
