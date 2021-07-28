@@ -87,8 +87,8 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 			video := svc.video.FindVideoById(fmt.Sprint(liked.TypeId))
 			if video != nil {
 				info.ComposeId = video.VideoId
-				//info.Title = util.TrimHtml(video.Title)
-				//info.Describe = util.TrimHtml(video.Describe)
+				info.Title = video.Title
+				info.Describe = video.Describe
 				info.Cover = video.Cover
 				info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 				info.VideoDuration = video.VideoDuration
@@ -150,8 +150,8 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 				// 获取评论对应的视频信息
 				video := svc.video.FindVideoById(fmt.Sprint(comment.VideoId))
 				if video != nil {
-					info.Title = util.TrimHtml(video.Title)
-					info.Describe = util.TrimHtml(video.Describe)
+					info.Title = video.Title
+					info.Describe = video.Describe
 					info.Cover = video.Cover
 					info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 					info.VideoDuration = video.VideoDuration
@@ -364,8 +364,8 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 			if ok && video != nil {
 				videoMp[liked.TypeId] = nil
 				info.ComposeId = video.VideoId
-				info.Title = util.TrimHtml(video.Title)
-				info.Describe = util.TrimHtml(video.Describe)
+				info.Title = video.Title
+				info.Describe = video.Describe
 				info.Cover = video.Cover
 				info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 				info.VideoDuration = video.VideoDuration
@@ -423,8 +423,8 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 				video, ok := videoMp[comment.VideoId]
 				log.Log.Debugf("notify_trace: get video by comment id, videoId:%d", comment.VideoId)
 				if ok && video != nil {
-					info.Title = util.TrimHtml(video.Title)
-					info.Describe = util.TrimHtml(video.Describe)
+					info.Title = video.Title
+					info.Describe = video.Describe
 					info.Cover = video.Cover
 					info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 					info.VideoDuration = video.VideoDuration
@@ -522,8 +522,8 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				video := svc.video.FindVideoById(fmt.Sprint(comment.VideoId))
 				if video != nil {
 					info.ComposeId = video.VideoId
-					info.Title = util.TrimHtml(video.Title)
-					info.Describe = util.TrimHtml(video.Describe)
+					info.Title = video.Title
+					info.Describe = video.Describe
 					info.Cover = video.Cover
 					info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 					info.VideoDuration = video.VideoDuration
@@ -595,8 +595,8 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				// 获取评论对应的视频信息
 				if video := svc.video.FindVideoById(fmt.Sprint(comment.VideoId)); video != nil {
 					info.ComposeId = video.VideoId
-					info.Title = util.TrimHtml(video.Title)
-					info.Describe = util.TrimHtml(video.Describe)
+					info.Title = video.Title
+					info.Describe = video.Describe
 					info.Cover = video.Cover
 					info.VideoAddr = video.VideoAddr
 					info.VideoDuration = video.VideoDuration
