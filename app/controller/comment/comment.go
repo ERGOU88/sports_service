@@ -50,11 +50,11 @@ func New(c *gin.Context) CommentModule {
 }
 
 // 新版评论
-func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2PubCommentParams) (int, int64) {
+func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2PubCommentParams) (int, *mcomment.CommentList) {
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("video_trace: session begin err:%s", err)
-		return errdef.ERROR, 0
+		return errdef.ERROR, nil
 	}
 
 	//contentLen := util.GetStrLen([]rune(params.Content))
@@ -63,7 +63,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	if contentLen < consts.COMMENT_MIN_LEN || contentLen > consts.COMMENT_MAX_LEN {
 		log.Log.Errorf("comment_trace: invalid content length, len:%d", contentLen)
 		svc.engine.Rollback()
-		return errdef.COMMENT_INVALID_LEN, 0
+		return errdef.COMMENT_INVALID_LEN, nil
 	}
 
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
@@ -72,7 +72,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	if !isPass {
 		log.Log.Errorf("comment_trace: validate comment err: %s，pass: %v", err, isPass)
 		svc.engine.Rollback()
-		return errdef.COMMENT_INVALID_CONTENT, 0
+		return errdef.COMMENT_INVALID_CONTENT, nil
 	}
 
 	// 查询用户是否存在
@@ -80,7 +80,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	if user == nil {
 		log.Log.Errorf("comment_trace: user not found, userId:%s", userId)
 		svc.engine.Rollback()
-		return errdef.USER_NOT_EXISTS, 0
+		return errdef.USER_NOT_EXISTS, nil
 	}
 
 	now := int(time.Now().Unix())
@@ -89,6 +89,8 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		msgType int32
 		commentId, composeId int64
 	)
+
+	resp := &mcomment.CommentList{}
 	switch params.CommentType {
 	// 视频评论
 	case consts.COMMENT_TYPE_VIDEO:
@@ -105,7 +107,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		if err := svc.comment.AddVideoComment(); err != nil {
 			log.Log.Errorf("comment_trace: add comment err:%s", err)
 			svc.engine.Rollback()
-			return errdef.COMMENT_PUBLISH_FAIL, 0
+			return errdef.COMMENT_PUBLISH_FAIL, nil
 		}
 
 		// 查找视频是否存在
@@ -113,21 +115,21 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		if video == nil  {
 			log.Log.Errorf("comment_trace: video not found, videoId:%d", params.ComposeId)
 			svc.engine.Rollback()
-			return errdef.VIDEO_NOT_EXISTS, 0
+			return errdef.VIDEO_NOT_EXISTS, nil
 		}
 
 		// 视频状态 != 1 (1为视频审核成功)
 		if fmt.Sprint(video.Status) != consts.VIDEO_AUDIT_SUCCESS {
 			log.Log.Errorf("comment_trace: video status not audit success, videoId:%d", params.ComposeId)
 			svc.engine.Rollback()
-			return errdef.VIDEO_NOT_EXISTS, 0
+			return errdef.VIDEO_NOT_EXISTS, nil
 		}
 
 		// 更新视频总计（视频评论总数）
 		if err := svc.video.UpdateVideoCommentNum(params.ComposeId, int(now), 1); err != nil {
 			log.Log.Errorf("comment_trace: update video comment num err:%s", err)
 			svc.engine.Rollback()
-			return errdef.COMMENT_PUBLISH_FAIL, 0
+			return errdef.COMMENT_PUBLISH_FAIL, nil
 		}
 
 		svc.comment.ReceiveAt.TopicType = consts.TYPE_VIDEO_COMMENT
@@ -137,12 +139,22 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		commentId = svc.comment.VideoComment.Id
 		composeId = video.VideoId
 
+		resp.Id = svc.comment.VideoComment.Id
+		resp.Avatar = user.Avatar
+		resp.UserName = user.NickName
+		resp.VideoId = params.ComposeId
+		resp.CommentLevel = svc.comment.VideoComment.CommentLevel
+		resp.UserId = user.UserId
+		resp.Content = svc.comment.VideoComment.Content
+		resp.CreateAt = svc.comment.VideoComment.CreateAt
+		resp.Status = svc.comment.VideoComment.Status
+
 	// 帖子评论
 	case consts.COMMENT_TYPE_POST:
 		svc.comment.PostComment.UserId = userId
 		svc.comment.PostComment.Content = params.Content
 		svc.comment.PostComment.CommentLevel = consts.COMMENT_PUBLISH
-		svc.comment.PostComment.CreateAt = int(now)
+		svc.comment.PostComment.CreateAt = now
 		svc.comment.PostComment.ParentCommentId = 0
 		svc.comment.PostComment.PostId = params.ComposeId
 		svc.comment.PostComment.Status = 1
@@ -150,7 +162,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		if err := svc.comment.AddPostComment(); err != nil {
 			log.Log.Errorf("comment_trace: add comment err:%s", err)
 			svc.engine.Rollback()
-			return errdef.COMMENT_PUBLISH_FAIL, 0
+			return errdef.COMMENT_PUBLISH_FAIL, nil
 		}
 
 		// 查找帖子是否存在
@@ -158,7 +170,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		if post == nil || err != nil {
 			log.Log.Errorf("comment_trace: post not found, postId:%d", params.ComposeId)
 			svc.engine.Rollback()
-			return errdef.POST_NOT_EXISTS, 0
+			return errdef.POST_NOT_EXISTS, nil
 		}
 
 
@@ -166,14 +178,14 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		if fmt.Sprint(post.Status) != consts.POST_AUDIT_SUCCESS {
 			log.Log.Errorf("comment_trace: post status not audit success, postId:%d", params.ComposeId)
 			svc.engine.Rollback()
-			return errdef.VIDEO_NOT_EXISTS, 0
+			return errdef.VIDEO_NOT_EXISTS, nil
 		}
 
 		// 更新帖子总计（帖子评论总数）
 		if err := svc.post.UpdatePostCommentNum(params.ComposeId, int(now), 1); err != nil {
 			log.Log.Errorf("comment_trace: update post comment num err:%s", err)
 			svc.engine.Rollback()
-			return errdef.COMMENT_PUBLISH_FAIL, 0
+			return errdef.COMMENT_PUBLISH_FAIL, nil
 		}
 
 		svc.comment.ReceiveAt.TopicType = consts.TYPE_POST_COMMENT
@@ -181,9 +193,19 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		toUserId = post.UserId
 		commentId = svc.comment.PostComment.Id
 		composeId = post.Id
+
+		resp.Id = svc.comment.PostComment.Id
+		resp.Avatar = user.Avatar
+		resp.UserName = user.NickName
+		resp.PostId = params.ComposeId
+		resp.CommentLevel = svc.comment.PostComment.CommentLevel
+		resp.UserId = user.UserId
+		resp.Content = params.Content
+		resp.CreateAt = svc.comment.PostComment.CreateAt
+		resp.Status = svc.comment.PostComment.Status
 	default:
 		log.Log.Errorf("comment_trace: invalid commentType:%d", params.CommentType)
-		return errdef.INVALID_PARAMS, 0
+		return errdef.INVALID_PARAMS, nil
 	}
 
 	svc.comment.ReceiveAt.UserId = userId
@@ -226,7 +248,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		if err != nil || int(affected) != len(atList) {
 			log.Log.Errorf("post_trace: add receive at list fail, err:%s", err)
 			svc.engine.Rollback()
-			return errdef.COMMENT_PUBLISH_FAIL, 0
+			return errdef.COMMENT_PUBLISH_FAIL, nil
 		}
 	}
 
@@ -236,7 +258,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	//event.PushEventMsg(config.Global.AmqpDsn, toUserId, user.NickName, cover, params.Content, msgType)
 	redismq.PushEventMsg(redismq.NewEvent(toUserId, fmt.Sprint(composeId), user.NickName, cover, params.Content, msgType))
 
-	return errdef.SUCCESS, commentId
+	return errdef.SUCCESS, resp
 }
 
 // 发布评论

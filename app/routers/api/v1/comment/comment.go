@@ -235,7 +235,10 @@ func V2PublishComment(c *gin.Context) {
 	}
 
 	svc := comment.New(c)
-	syscode, commentId := svc.V2PublishComment(userId.(string), params)
-	reply.Data["comment_id"] = commentId
+	syscode, comment := svc.V2PublishComment(userId.(string), params)
+	if syscode == errdef.SUCCESS && comment != nil {
+		reply.Data["comment"] = comment
+	}
+
 	reply.Response(http.StatusOK, syscode)
 }
