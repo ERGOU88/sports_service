@@ -979,8 +979,8 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 			// todo: 被回复的用户名、用户头像使用最新数据
 			user := svc.user.FindUserByUserid(reply.ReplyCommentUserId)
 			if user != nil {
-				reply.ReplyCommentAvatar = user.Avatar
-				reply.ReplyCommentUserName = user.NickName
+				reply.UserName = user.NickName
+				reply.Avatar = user.Avatar
 			}
 
 			// 被回复的内容
