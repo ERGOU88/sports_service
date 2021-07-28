@@ -193,15 +193,16 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	svc.comment.ReceiveAt.CreateAt = now
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_PUBLISH
 	// 评论也是@
-	if err := svc.comment.AddReceiveAt(); err != nil {
-		log.Log.Errorf("comment_trace: add receive at err:%s", err)
-		svc.engine.Rollback()
-		return errdef.COMMENT_PUBLISH_FAIL, 0
-	}
+	//if err := svc.comment.AddReceiveAt(); err != nil {
+	//	log.Log.Errorf("comment_trace: add receive at err:%s", err)
+	//	svc.engine.Rollback()
+	//	return errdef.COMMENT_PUBLISH_FAIL, 0
+	//}
 
 	// 添加@
 	if len(params.AtInfo) > 0 {
-		var atList []*models.ReceivedAt
+		atList := make([]*models.ReceivedAt, 0)
+		atList[0] = svc.comment.ReceiveAt
 		for _, val := range params.AtInfo {
 			user := svc.user.FindUserByUserid(val)
 			if user == nil {
@@ -212,9 +213,10 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 			at := &models.ReceivedAt{
 				ToUserId: val,
 				UserId: userId,
-				ComposeId: params.ComposeId,
+				ComposeId: commentId,
 				TopicType: params.CommentType,
 				CreateAt: now,
+				CommentLevel: consts.COMMENT_PUBLISH,
 			}
 
 			atList = append(atList, at)
@@ -541,9 +543,10 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			at := &models.ReceivedAt{
 				ToUserId: val,
 				UserId: userId,
-				ComposeId: params.ComposeId,
+				ComposeId: commentId,
 				TopicType: params.CommentType,
 				CreateAt: now,
+				CommentLevel: consts.COMMENT_REPLY,
 			}
 
 			atList = append(atList, at)

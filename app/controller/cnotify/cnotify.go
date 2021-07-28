@@ -516,56 +516,64 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			info := new(mnotify.ReceiveAtInfo)
 			info.AtTime = receiveAt.CreateAt
 			info.Type = consts.TYPE_VIDEOS
-			video := svc.video.FindVideoById(fmt.Sprint(receiveAt.ComposeId))
-			if video != nil {
-				info.ComposeId = video.VideoId
-				info.Title = util.TrimHtml(video.Title)
-				info.Describe = util.TrimHtml(video.Describe)
-				info.Cover = video.Cover
-				info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
-				info.VideoDuration = video.VideoDuration
-				info.VideoWidth = video.VideoWidth
-				info.VideoHeight = video.VideoHeight
-				info.CreateAt = video.CreateAt
-				// 视频统计数据
-				if statistic := svc.video.GetVideoStatistic(fmt.Sprint(receiveAt.ComposeId)); statistic != nil {
-					info.BarrageNum = statistic.BarrageNum
-					info.BrowseNum = statistic.BrowseNum
+			// 获取评论信息
+			comment := svc.comment.GetVideoCommentById(fmt.Sprint(receiveAt.ComposeId))
+			if comment != nil {
+				video := svc.video.FindVideoById(fmt.Sprint(comment.VideoId))
+				if video != nil {
+					info.ComposeId = video.VideoId
+					info.Title = util.TrimHtml(video.Title)
+					info.Describe = util.TrimHtml(video.Describe)
+					info.Cover = video.Cover
+					info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+					info.VideoDuration = video.VideoDuration
+					info.VideoWidth = video.VideoWidth
+					info.VideoHeight = video.VideoHeight
+					info.CreateAt = video.CreateAt
+					// 视频统计数据
+					if statistic := svc.video.GetVideoStatistic(fmt.Sprint(receiveAt.ComposeId)); statistic != nil {
+						info.BarrageNum = statistic.BarrageNum
+						info.BrowseNum = statistic.BrowseNum
+					}
 				}
 			}
 		// 帖子评论里@ 或 发布帖子时 内容@用户 则展示帖子内容 todo: 展示待确认
 		case consts.TYPE_POSTS, consts.TYPE_PUBLISH_POST:
 			info := new(mnotify.ReceiveAtInfo)
 			info.AtTime = receiveAt.CreateAt
-			info.Type = consts.TYPE_POSTS
-			post, err := svc.post.GetPostById(fmt.Sprint(receiveAt.ComposeId))
-			if post != nil && err == nil {
-				info.ComposeId = post.Id
-				info.Title = post.Title
-				info.Describe = post.Describe
-				info.CreateAt = post.CreateAt
+			info.Type = receiveAt.TopicType
+			comment := svc.comment.GetPostCommentById(fmt.Sprint(receiveAt.ComposeId))
+			if comment != nil {
+				post, err := svc.post.GetPostById(fmt.Sprint(comment.PostId))
+				if post != nil && err == nil {
+					info.ComposeId = post.Id
+					info.Title = post.Title
+					info.Describe = post.Describe
+					info.CreateAt = post.CreateAt
 
-				// 图文帖
-				if post.PostingType == consts.POST_TYPE_IMAGE {
-					var images []string
-					if err = util.JsonFast.UnmarshalFromString(post.Content, &images); err != nil {
-						log.Log.Errorf("post_trace: get image info err:%s", err)
+					// 图文帖
+					if post.PostingType == consts.POST_TYPE_IMAGE {
+						var images []string
+						if err = util.JsonFast.UnmarshalFromString(post.Content, &images); err != nil {
+							log.Log.Errorf("post_trace: get image info err:%s", err)
+						}
+
+						// 使用第一张图片展示
+						if len(images) > 0 {
+							info.Cover = images[0]
+						}
 					}
 
-					// 使用第一张图片展示
-					if len(images) > 0 {
-						info.Cover = images[0]
-					}
+				}
+
+				// 执行@的用户信息
+				if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
+					info.UserId = user.UserId
+					info.Avatar = user.Avatar
+					info.Nickname = user.NickName
 				}
 
 				res[index] = info
-			}
-
-			// 执行@的用户信息
-			if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
-				info.ToUserId = user.UserId
-				info.ToUserAvatar = user.Avatar
-				info.ToUserName = user.NickName
 			}
 
 		// 视频直接评论/回复
@@ -748,11 +756,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				}
 
 				res[index] = info
-
 			}
-
-
-
 		}
 
 		log.Log.Debugf("receiveId: %d", receiveAt.Id)
@@ -760,9 +764,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			// 用户上次读取的数据下标
 			readIndex = index
 		}
-
 	}
-
 
 	// 记录读取@通知消息的时间
 	if err := svc.notify.RecordReadAtTime(userId); err != nil {
