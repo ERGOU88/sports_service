@@ -185,8 +185,8 @@ func GiveLikeForVideoComment(c *gin.Context) {
 	}
 
 	svc := clike.New(c)
-	// 视频评论点赞
-	syscode := svc.GiveLikeForVideoComment(userId.(string), param.ComposeId)
+	// 视频/帖子 评论点赞
+	syscode := svc.GiveLikeForComment(userId.(string), param.ComposeId, param.CommentType)
 	reply.Response(http.StatusOK, syscode)
 }
 
@@ -224,7 +224,7 @@ func CancelLikeForVideoComment(c *gin.Context) {
 
 	svc := clike.New(c)
 	// 取消点赞
-	syscode := svc.CancelLikeForVideoComment(userId.(string), param.ComposeId)
+	syscode := svc.CancelLikeForComment(userId.(string), param.ComposeId, param.CommentType)
 	reply.Response(http.StatusOK, syscode)
 }
 

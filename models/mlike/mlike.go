@@ -14,12 +14,14 @@ type LikeModel struct {
 
 // 添加点赞请求参数
 type GiveLikeParam struct {
-	ComposeId int64  `binding:"required" json:"compose_id" example:"10000000000"`      // 点赞的视频/评论/帖子 id
+	ComposeId   int64  `binding:"required" json:"compose_id" example:"10000000000"`      // 点赞的视频/评论/帖子 id
+	CommentType int64  `json:"comment_type"`                                             // 1视频评论 2帖子评论
 }
 
 // 取消点赞请求参数
 type CancelLikeParam struct {
-	ComposeId int64 `binding:"required" json:"compose_id" example:"10000000000"`       // 取消点赞的视频/评论/帖子 id
+	ComposeId   int64 `binding:"required" json:"compose_id" example:"10000000000"`       // 取消点赞的视频/评论/帖子 id
+	CommentType int64  `json:"comment_type"`                                             // 1视频评论 2帖子评论
 }
 
 // 被点赞的视频信息

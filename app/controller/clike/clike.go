@@ -253,6 +253,21 @@ func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*mvide
 	return list
 }
 
+// 评论点赞 包含视频评论、帖子评论
+func (svc *LikeModule) GiveLikeForComment(userId string, commentId, commentType int64) int {
+	switch commentType {
+	case consts.COMMENT_TYPE_VIDEO:
+		return svc.GiveLikeForVideoComment(userId, commentId)
+
+	case consts.COMMENT_TYPE_POST:
+		return svc.GiveLikeForPostComment(userId, commentId)
+
+	default:
+		log.Log.Errorf("comment_trace: invalid commentType:%d", commentType)
+		return errdef.INVALID_PARAMS
+	}
+}
+
 // 点赞视频评论
 func (svc *LikeModule) GiveLikeForVideoComment(userId string, commentId int64) int {
 	// 开启事务
@@ -315,6 +330,21 @@ func (svc *LikeModule) GiveLikeForVideoComment(userId string, commentId int64) i
 	redismq.PushEventMsg(redismq.NewEvent(comment.UserId, fmt.Sprint(comment.VideoId), user.NickName, "", comment.Content, consts.VIDEO_COMMENT_LIKE_MSG))
 
 	return errdef.SUCCESS
+}
+
+// 取消点赞（包含视频评论、帖子评论）
+func (svc *LikeModule) CancelLikeForComment(userId string, commentId, commentType int64) int {
+	switch commentType {
+	case consts.COMMENT_TYPE_VIDEO:
+		return svc.CancelLikeForVideoComment(userId, commentId)
+
+	case consts.COMMENT_TYPE_POST:
+		return svc.CancelLikeForPostComment(userId, commentId)
+
+	default:
+		log.Log.Errorf("comment_trace: invalid commentType:%d", commentType)
+		return errdef.INVALID_PARAMS
+	}
 }
 
 // 取消点赞（视频评论）
