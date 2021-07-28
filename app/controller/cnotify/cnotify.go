@@ -544,6 +544,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				info.Title = post.Title
 				info.Describe = post.Describe
 				info.CreateAt = post.CreateAt
+
 				// 图文帖
 				if post.PostingType == consts.POST_TYPE_IMAGE {
 					var images []string
@@ -558,6 +559,13 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				}
 
 				res[index] = info
+			}
+
+			// 执行@的用户信息
+			if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
+				info.ToUserId = user.UserId
+				info.ToUserAvatar = user.Avatar
+				info.ToUserName = user.NickName
 			}
 
 		// 视频直接评论/回复
