@@ -250,9 +250,9 @@ func (m *CommentModel) DelVideoComments(commentIds string) error {
 // 获取视频评论列表(1级评论)
 func (m *CommentModel) GetVideoCommentList(composeId string, offset, size int) []*models.VideoComment {
 	var list []*models.VideoComment
-	if err := m.Engine.Where("video_id=? AND comment_level=1", composeId).
+	if err := m.Engine.Where("video_id=? AND coment_level=1", composeId).
 		Desc("is_top").
-		Asc("id").
+		Desc("id").
 		Limit(size, offset).
 		Find(&list); err != nil {
 		log.Log.Errorf("comment_trace: get  comment list err:%s", err)
@@ -267,7 +267,7 @@ func (m *CommentModel) GetPostCommentList(composeId string, offset, size int) []
 	var list []*models.PostingComment
 	if err := m.Engine.Where("post_id=? AND comment_level=1", composeId).
 		Desc("is_top").
-		Asc("id").
+		Desc("id").
 		Limit(size, offset).
 		Find(&list); err != nil {
 		log.Log.Errorf("comment_trace: get  comment list err:%s", err)
@@ -295,7 +295,7 @@ func (m *CommentModel) GetVideoCommentListByLike(composeId string, zanType, offs
 
 // 根据评论点赞数排序 获取帖子评论列表（1级评论）
 func (m *CommentModel) GetPostCommentListByLike(composeId string, zanType, offset, size int) []*CommentList {
-	sql := "SELECT pc.*, count(tu.Id) AS like_num FROM post_comment AS pc " +
+	sql := "SELECT pc.*, count(tu.Id) AS like_num FROM posting_comment AS pc " +
 		"LEFT JOIN thumbs_up AS tu ON pc.id = tu.type_id AND tu.zan_type=? AND tu.status=1 WHERE pc.post_id=? " +
 		"AND pc.comment_level = 1 " +
 		"GROUP BY pc.Id ORDER BY like_num DESC, pc.id DESC LIMIT ?, ?"
