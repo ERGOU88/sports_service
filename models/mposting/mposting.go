@@ -436,7 +436,7 @@ func (m *PostingModel) UpdatePostStatus(userId, videoId string) error {
 
 const (
 	QUERY_ATTENTION_POSTS = "SELECT p.*, ps.* FROM `posting_info` as p " +
-		"LEFT JOIN posting_statistic as ps ON p.id=ps.posting_id WHERE p.status = 1 AND p.user_id in(%s) " +
+		"LEFT JOIN posting_statistic as ps ON p.id=ps.posting_id WHERE p.status = 1 AND p.video_id=0 AND p.user_id in(%s) " +
 		"ORDER BY p.id DESC, p.is_top DESC, p.is_cream DESC LIMIT ?, ?"
 )
 // 获取关注的用户发布的帖子
