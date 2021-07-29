@@ -1075,6 +1075,11 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 			if attention := svc.attention.GetAttentionInfo(userId, item.UserId); attention != nil {
 				item.IsAttention = attention.Status
 			}
+
+			// 获取点赞的信息
+			if likeInfo := svc.like.GetLikeInfo(userId, item.Id, zanType); likeInfo != nil {
+				item.IsLike = likeInfo.Status
+			}
 		}
 
 		if len(item.ReplyList) == 0 {
