@@ -352,10 +352,10 @@ func (m *PostingModel) SearchPost(name string, offset, size int) ([]*PostDetailI
 // 搜索帖子 标题 / 内容 按热度排序
 func (m *PostingModel) SearchPostOrderByHeat(name string, offset, size int) ([]*PostDetailInfo, error) {
 	sql := "SELECT p.*, ps.fabulous_num, ps.browse_num, ps.share_num, ps.comment_num, ps.heat_num FROM " +
-	"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 "
+	"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 AND p.video_id=0 "
 
 	if name != "" {
-		sql += "AND p.title LIKE '%" + name + "%' OR p.status=1 AND p.content LIKE '%" + name + "%' "
+		sql += "AND p.title LIKE '%" + name + "%' OR p.status=1 AND p.video_id=0 AND p.content LIKE '%" + name + "%' "
 	}
 
 
