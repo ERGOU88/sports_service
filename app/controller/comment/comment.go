@@ -1012,6 +1012,13 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 			item.ReplyList = svc.comment.GetPostReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
 		}
 
+		// 如果总回复数 > 3 条
+		if item.ReplyNum > 3 {
+			// 1 客户端展示查看更多
+			item.HasMore = 1
+		}
+
+
 		//user := new(tmpUser)
 		//user.NickName = item.UserName
 		//user.Avatar = item.Avatar
@@ -1051,6 +1058,20 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 				reply.Avatar = user.Avatar
 			}
 
+			// todo: 被回复的用户名、用户头像使用最新数据
+			user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
+			if user != nil {
+				reply.ReplyCommentAvatar = user.Avatar
+				reply.ReplyCommentUserName = user.NickName
+			}
+
+			// 如果回复的是1级评论 不展示@内容 否则展示   0 不是@消息 1是
+			if reply.ParentCommentId != reply.ReplyCommentId || reply.ReplyCommentId != item.Id {
+				reply.IsAt = 1
+			}
+
+			// 默认回复的是1级评论
+			reply.ReplyContent = item.Content
 			// 被回复的内容
 			content, ok := contents[reply.ReplyCommentId]
 			if ok {
