@@ -372,16 +372,18 @@ func aiContentReviewEvent(event *v20180717.EventContent, vmodel *mvideo.VideoMod
   }
 
 
-  // 默认为审核中
-  vmodel.Videos.Status = 0
 
-  // 获取设置的审核模式
-  mode := vmodel.GetAuditMode()
-  // 视频审核状态 true 为 审核通过 false 为不通过
-  // ai审核为通过/复审 需人工进行审核
-  // ai审核为true 且当前审核模式为 ai+人工 则直接设置为通过
-  if auditState == true && mode == consts.AUDIT_MODE_AI_AND_MANUAL {
-    vmodel.Videos.Status = 1
+  // 如果视频还在审核中的状态 则修改状态
+  // 人工已审核 则 不处理
+  if vmodel.Videos.Status == 0 {
+    // 获取设置的审核模式
+    mode := vmodel.GetAuditMode()
+    // 视频审核状态 true 为 审核通过 false 为不通过
+    // ai审核为通过/复审 需人工进行审核
+    // ai审核为true 且当前审核模式为 ai+人工 则直接设置为通过
+    if auditState == true && mode == consts.AUDIT_MODE_AI_AND_MANUAL {
+      vmodel.Videos.Status = 1
+    }
   }
 
   // 1为AI审核通过 2为AI审核不通过 3为AI建议复审
