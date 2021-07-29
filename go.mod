@@ -36,7 +36,7 @@ require (
 	github.com/swaggo/swag v1.5.1
 	github.com/tebeka/strftime v0.1.5 // indirect
 	github.com/tencentcloud/tencentcloud-sdk-go v1.0.30
-	github.com/tencentyun/cos-go-sdk-v5 v0.7.11 // indirect
+	github.com/tencentyun/cos-go-sdk-v5 v0.7.11
 	github.com/tencentyun/qcloud-cos-sts-sdk v0.0.0-20201001014220-f25178b7257d
 	github.com/tencentyun/vod-go-sdk v1.0.0
 	github.com/tidwall/gjson v1.6.1

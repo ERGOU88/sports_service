@@ -1,8 +1,12 @@
 package cposting
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/tencentyun/cos-go-sdk-v5"
+	"net/url"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
@@ -17,8 +21,6 @@ import (
 	cloud "sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"time"
-	"github.com/microcosm-cc/bluemonday"
-	"fmt"
 )
 
 type PostingModule struct {
@@ -66,8 +68,10 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		//return errdef.POST_INVALID_CONTENT
 	}
 
-	// 标题和内容都通过 则帖子直接通过
-	if isPass && isOk {
+	// 图片审核结果
+	verifyRes, info := svc.ReviewPostImages(params.ImagesAddr)
+	// 标题、内容以及图片都通过 则帖子直接通过
+	if isPass && isOk && verifyRes {
 		status = 1
 	}
 
@@ -105,7 +109,6 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		return errdef.POST_TOPIC_NOT_EXISTS
 	}
 
-
 	now := int(time.Now().Unix())
 	svc.posting.Posting.Title = params.Title
 	svc.posting.Posting.Describe = params.Describe
@@ -124,6 +127,19 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 
 	if _, err := svc.posting.AddPost(); err != nil {
 		log.Log.Errorf("post_trace: publish post fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.POST_PUBLISH_FAIL
+	}
+
+	// 记录事件回调信息
+	svc.video.Events.FileId = svc.posting.Posting.Id
+	svc.video.Events.CreateAt = int(time.Now().Unix())
+	svc.video.Events.EventType = consts.EVENT_VERIFY_IMAGE_TYPE
+	bts, _ := util.JsonFast.Marshal(info)
+	svc.video.Events.Event = string(bts)
+	affected, err := svc.video.RecordTencentEvent()
+	if err != nil || affected != 1 {
+		log.Log.Errorf("post_trace: record tencent verify image result err:%s, affected:%d", err, affected)
 		svc.engine.Rollback()
 		return errdef.POST_PUBLISH_FAIL
 	}
@@ -194,6 +210,48 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 	svc.engine.Commit()
 
 	return errdef.SUCCESS
+}
+
+// 审核帖子图片
+func (svc *PostingModule) ReviewPostImages(images []string) (bool, map[int]*cos.ImageRecognitionResult) {
+	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, "")
+	num := 0
+	mp := make(map[int]*cos.ImageRecognitionResult, 0)
+	for index, imgUrl := range images {
+		urls, err := url.Parse(imgUrl)
+		if err != nil {
+			log.Log.Errorf("post_trace: url.Parse fail, err:%s", err)
+			return false, nil
+		}
+
+		path := urls.Path
+		baseUrl := fmt.Sprintf("%s://%s", urls.Scheme, urls.Host)
+
+		// 检测帖子图片
+		res, err := client.RecognitionImage(baseUrl, path)
+		if err != nil {
+			log.Log.Errorf("post_trace: recognition image fail, err:%s", err)
+			continue
+		}
+
+		mp[index] = res
+		if res.PornInfo.Code != 0 || res.PoliticsInfo.Code != 0 || res.TerroristInfo.Code != 0 {
+			continue
+		}
+
+		// 涉黄、涉暴恐、涉政都未命中则返回通过
+		if res.PornInfo.HitFlag == 0 && res.PoliticsInfo.HitFlag == 0 && res.TerroristInfo.HitFlag == 0 {
+			num++
+		}
+
+	}
+
+	// 所有图片都通过审核 则 返回true
+	if num == len(images) {
+		return true, mp
+	}
+
+	return false, nil
 }
 
 // 获取帖子类型 todo: 常量
