@@ -51,6 +51,12 @@ func New(c *gin.Context) PostingModule {
 
 // 发布帖子 [只有审核中/审核通过 两种状态]
 func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPublishParam) int {
+	postType := svc.GetPostingType(params)
+	if b := svc.VerifyContentLen(postType, params.Describe, params.Title); !b {
+		log.Log.Error("post_trace: invalid content len")
+		return errdef.POST_INVALID_CONTENT_LEN
+	}
+
 	// 默认为 0 审核中的状态 1为审核成功
 	status := 0
 	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
@@ -73,12 +79,6 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 	// 标题、内容以及图片都通过 则帖子直接通过
 	if isPass && isOk && verifyRes {
 		status = 1
-	}
-
-	postType := svc.GetPostingType(params)
-	if b := svc.VerifyContentLen(postType, params.Describe, params.Title); !b {
-		log.Log.Error("post_trace: invalid content len")
-		return errdef.POST_INVALID_CONTENT_LEN
 	}
 
 	// 开启事务
