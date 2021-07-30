@@ -6,4 +6,5 @@ type TencentCloudEvents struct {
 	Event     string `json:"event" xorm:"comment('事件内容（json字符串）') MEDIUMTEXT"`
 	CreateAt  int    `json:"create_at" xorm:"not null INT(11)"`
 	EventType int    `json:"event_type" xorm:"not null default 0 comment('0 上传事件 1 视频转码事件') TINYINT(3)"`
+	ComposeId int64  `json:"compose_id" xorm:"not null default 0 comment('作品id 视频/帖子id') BIGINT(20)"`
 }

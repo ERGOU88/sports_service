@@ -147,6 +147,30 @@ func (m *PostingModel) AddReceiveAtList(at []*models.ReceivedAt) (int64, error) 
 	return m.Engine.InsertMulti(at)
 }
 
+const (
+	UPDATE_RECEIVE_AT_STATUS = "UPDATE `received_at` SET status=1 WHERE compose_id=? AND topic_type=?"
+)
+// 帖子通过时 需修改@数据的状态 使@生效
+func (m *PostingModel) UpdateReceiveAtStatus(composeId string, topicType int) error {
+	if _, err := m.Engine.Exec(UPDATE_RECEIVE_AT_STATUS, composeId, topicType); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+const (
+	UPDATE_POST_TOPIC_STATUS = "UPDATE `posting_topic` SET status=1 WHERE posting_id=?"
+)
+// 帖子通过时 修改帖子所属话题 数据状态
+func (m *PostingModel) UpdatePostTopicStatus(postId string) error {
+	if _, err := m.Engine.Exec(UPDATE_POST_TOPIC_STATUS, postId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // 通过id获取帖子
 func (m *PostingModel) GetPostById(id string) (*models.PostingInfo, error) {
 	m.Posting = new(models.PostingInfo)

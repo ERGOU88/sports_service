@@ -49,36 +49,12 @@ func New(c *gin.Context) PostingModule {
 	}
 }
 
-// 发布帖子 [只有审核中/审核通过 两种状态]
+// 发布帖子 [在发布帖子时 只有审核中/审核通过 两种状态 审核失败由后台人工确认后操作]
 func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPublishParam) int {
 	postType := svc.GetPostingType(params)
 	if b := svc.VerifyContentLen(postType, params.Describe, params.Title); !b {
 		log.Log.Error("post_trace: invalid content len")
 		return errdef.POST_INVALID_CONTENT_LEN
-	}
-
-	// 默认为 0 审核中的状态 1为审核成功
-	status := 0
-	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
-	// 检测帖子标题
-	isPass, err := client.TextModeration(params.Title)
-	if !isPass || err != nil {
-		log.Log.Errorf("post_trace: validate title err: %s，pass: %v", err, isPass)
-		//return errdef.POST_INVALID_TITLE
-	}
-
-	// 检测帖子内容
-	isOk, err := client.TextModeration(params.Describe)
-	if !isOk || err != nil {
-		log.Log.Errorf("post_trace: validate content err: %s，pass: %v", err, isPass)
-		//return errdef.POST_INVALID_CONTENT
-	}
-
-	// 图片审核结果
-	verifyRes, info := svc.ReviewPostImages(params.ImagesAddr)
-	// 标题、内容以及图片都通过 则帖子直接通过
-	if isPass && isOk && verifyRes {
-		status = 1
 	}
 
 	// 开启事务
@@ -113,7 +89,6 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 	svc.posting.Posting.Title = params.Title
 	svc.posting.Posting.Describe = params.Describe
 	svc.posting.Posting.PostingType = postType
-	svc.posting.Posting.Status = status
 	// 社区发布
 	svc.posting.Posting.ContentType = consts.COMMUNITY_PUB_POST
 	svc.posting.Posting.CreateAt = now
@@ -131,19 +106,6 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		return errdef.POST_PUBLISH_FAIL
 	}
 
-	// 记录事件回调信息
-	svc.video.Events.FileId = svc.posting.Posting.Id
-	svc.video.Events.CreateAt = int(time.Now().Unix())
-	svc.video.Events.EventType = consts.EVENT_VERIFY_IMAGE_TYPE
-	bts, _ := util.JsonFast.Marshal(info)
-	svc.video.Events.Event = string(bts)
-	affected, err := svc.video.RecordTencentEvent()
-	if err != nil || affected != 1 {
-		log.Log.Errorf("post_trace: record tencent verify image result err:%s, affected:%d", err, affected)
-		svc.engine.Rollback()
-		return errdef.POST_PUBLISH_FAIL
-	}
-
 	// 组装多条记录 写入帖子话题表
 	topicInfos := make([]*models.PostingTopic, len(topics))
 	for key, val := range topics {
@@ -152,7 +114,7 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		info.TopicName = val.TopicName
 		info.CreateAt = now
 		info.PostingId = svc.posting.Posting.Id
-		info.Status = status
+		info.Status = 0
 		topicInfos[key] = info
 	}
 
@@ -192,7 +154,7 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 				ComposeId: svc.posting.Posting.Id,
 				TopicType: consts.TYPE_PUBLISH_POST,
 				CreateAt: now,
-				Status: status,
+				Status: 0,
 			}
 
 			atList = append(atList, at)
@@ -209,19 +171,35 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 
 	svc.engine.Commit()
 
+	// 异步进行帖子内容审核 todo: 可优化为任务队列
+	go svc.ReviewPostInfo(params)
+
 	return errdef.SUCCESS
 }
 
 // 审核帖子图片
-func (svc *PostingModule) ReviewPostImages(images []string) (bool, map[int]*cos.ImageRecognitionResult) {
-	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, "")
+func (svc *PostingModule) ReviewPostInfo(params *mposting.PostPublishParam) {
+	time.Sleep(10 * time.Second)
+	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	// 检测帖子标题
+	isPass, err := client.TextModeration(params.Title)
+	if !isPass || err != nil {
+		log.Log.Errorf("post_trace: validate title err: %s，pass: %v", err, isPass)
+	}
+
+	// 检测帖子内容
+	isOk, err := client.TextModeration(params.Describe)
+	if !isOk || err != nil {
+		log.Log.Errorf("post_trace: validate content err: %s，pass: %v", err, isPass)
+	}
+
 	num := 0
 	mp := make(map[int]*cos.ImageRecognitionResult, 0)
-	for index, imgUrl := range images {
+	for index, imgUrl := range params.ImagesAddr {
 		urls, err := url.Parse(imgUrl)
 		if err != nil {
 			log.Log.Errorf("post_trace: url.Parse fail, err:%s", err)
-			return false, nil
+			continue
 		}
 
 		path := urls.Path
@@ -246,12 +224,36 @@ func (svc *PostingModule) ReviewPostImages(images []string) (bool, map[int]*cos.
 
 	}
 
-	// 所有图片都通过审核 则 返回true
-	if num == len(images) {
-		return true, mp
+	if len(mp) != 0 {
+		// 记录事件回调信息
+		svc.video.Events.ComposeId = svc.posting.Posting.Id
+		svc.video.Events.CreateAt = int(time.Now().Unix())
+		svc.video.Events.EventType = consts.EVENT_VERIFY_IMAGE_TYPE
+		bts, _ := util.JsonFast.Marshal(mp)
+		svc.video.Events.Event = string(bts)
+		affected, err := svc.video.RecordTencentEvent()
+		if err != nil || affected != 1 {
+			log.Log.Errorf("post_trace: record tencent verify image result err:%s, affected:%d", err, affected)
+		}
 	}
 
-	return false, nil
+	// 所有图片 及 标题、内容都通过审核 则 修改帖子状态为通过 相关数据也需修改状态
+	if num == len(params.ImagesAddr) && isPass && isOk {
+		svc.posting.Posting.Status = 1
+		if err := svc.posting.UpdateStatusByPost(); err != nil {
+			log.Log.Errorf("post_trace: update status by post fail, err:%s", err)
+		}
+
+		if err := svc.posting.UpdateReceiveAtStatus(fmt.Sprint(svc.posting.Posting.Id), consts.TYPE_PUBLISH_POST); err != nil {
+			log.Log.Errorf("post_trace: update receive at status fail, err:%s", err)
+		}
+
+		if err := svc.posting.UpdatePostTopicStatus(fmt.Sprint(svc.posting.Posting.Id)); err != nil {
+			log.Log.Errorf("post_trace: update post topic status fail, err:%s", err)
+		}
+	}
+
+	return
 }
 
 // 获取帖子类型 todo: 常量
