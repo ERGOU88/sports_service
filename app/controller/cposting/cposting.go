@@ -642,6 +642,24 @@ func (svc *PostingModule) ApplyPostCream(userId string, param *mposting.ApplyCre
 	return errdef.SUCCESS
 }
 
+// 添加帖子举报
+func (svc *PostingModule) AddPostReport(params *mposting.PostReportParam) int {
+	post, err := svc.posting.GetPostById(fmt.Sprint(params.PostId))
+	if post == nil || err != nil {
+		log.Log.Error("post_trace: post not found, postId:%s", params.PostId)
+		return errdef.POST_NOT_EXISTS
+	}
+
+	svc.posting.Report.UserId = params.UserId
+	svc.posting.Report.PostId = params.PostId
+	svc.posting.Report.Reason = params.Reason
+	if _, err := svc.posting.AddPostReport(); err != nil {
+		log.Log.Errorf("post_trace: add post report err:%s", err)
+		return errdef.POST_REPORT_FAIL
+	}
+
+	return errdef.SUCCESS
+}
 
 //func (svc *PostingModule) SanitizeHtml(content string) (string, error) {
 //	config := `

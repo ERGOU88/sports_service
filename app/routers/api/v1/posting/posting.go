@@ -24,5 +24,7 @@ func Router(engine *gin.Engine) {
 		posting.POST("/delete/publish", token.TokenAuth(), DeletePublishPost)
         // 帖子申请精华
 		posting.POST("/apply/cream", token.TokenAuth(), ApplyPostCream)
+		// 举报帖子
+		posting.POST("/report", PostReport)
 	}
 }
