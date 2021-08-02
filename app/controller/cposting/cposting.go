@@ -174,13 +174,13 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 	svc.engine.Commit()
 
 	// 异步进行帖子内容审核 todo: 可优化为任务队列
-	svc.ReviewPostInfo(params)
+	go svc.ReviewPostInfo(svc.posting.Posting.Id, userId, params)
 
 	return errdef.SUCCESS
 }
 
 // 审核帖子图片
-func (svc *PostingModule) ReviewPostInfo(params *mposting.PostPublishParam) {
+func (svc *PostingModule) ReviewPostInfo(postId int64, userId string, params *mposting.PostPublishParam) {
 	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测帖子标题
 	isPass, err := client.TextModeration(params.Title)
@@ -227,7 +227,7 @@ func (svc *PostingModule) ReviewPostInfo(params *mposting.PostPublishParam) {
 
 	if len(mp) != 0 {
 		// 记录事件回调信息
-		svc.video.Events.ComposeId = svc.posting.Posting.Id
+		svc.video.Events.ComposeId = postId
 		svc.video.Events.CreateAt = int(time.Now().Unix())
 		svc.video.Events.EventType = consts.EVENT_VERIFY_IMAGE_TYPE
 		bts, _ := util.JsonFast.Marshal(mp)
@@ -241,6 +241,7 @@ func (svc *PostingModule) ReviewPostInfo(params *mposting.PostPublishParam) {
 	// 所有图片 及 标题、内容都通过审核 则 修改帖子状态为通过 相关数据也需修改状态
 	if num == len(params.ImagesAddr) && isPass && isOk {
 		now := int(time.Now().Unix())
+		svc.posting.Posting.Id = postId
 		svc.posting.Posting.Status = 1
 		svc.posting.Posting.UpdateAt = now
 		if err := svc.posting.UpdateStatusByPost(); err != nil {
@@ -248,24 +249,24 @@ func (svc *PostingModule) ReviewPostInfo(params *mposting.PostPublishParam) {
 			return
 		}
 
-		if err := svc.posting.UpdateReceiveAtStatus(fmt.Sprint(svc.posting.Posting.Id), consts.TYPE_PUBLISH_POST, now); err != nil {
+		if err := svc.posting.UpdateReceiveAtStatus(fmt.Sprint(postId), consts.TYPE_PUBLISH_POST, now); err != nil {
 			log.Log.Errorf("post_trace: update receive at status fail, err:%s", err)
 			return
 		}
 
-		if err := svc.posting.UpdatePostTopicStatus(fmt.Sprint(svc.posting.Posting.Id), now); err != nil {
+		if err := svc.posting.UpdatePostTopicStatus(fmt.Sprint(postId), now); err != nil {
 			log.Log.Errorf("post_trace: update post topic status fail, err:%s", err)
 			return
 		}
 	}
 
 
-	if user := svc.user.FindUserByUserid(fmt.Sprint(svc.posting.Posting.UserId)); user != nil {
+	if user := svc.user.FindUserByUserid(userId); user != nil {
 		// 获取发布者的粉丝们
 		userIds := svc.attention.GetFansList(svc.posting.Posting.UserId)
 		for _, userId := range userIds {
 			// 给发布者的粉丝 发送 发布新帖子推送
-			redismq.PushEventMsg(redismq.NewEvent(userId, fmt.Sprint(svc.posting.Posting.Id), user.NickName,
+			redismq.PushEventMsg(redismq.NewEvent(userId, fmt.Sprint(postId), user.NickName,
 				"", svc.posting.Posting.Title, consts.FOCUS_USER_PUBLISH_POST_MSG))
 		}
 
@@ -273,8 +274,8 @@ func (svc *PostingModule) ReviewPostInfo(params *mposting.PostPublishParam) {
 		if len(params.AtInfo) > 0 {
 			for _, userId := range params.AtInfo {
 				// 给被@的人 发送 推送通知
-				redismq.PushEventMsg(redismq.NewEvent(userId, fmt.Sprint(svc.posting.Posting.Id), user.NickName,
-					"", svc.posting.Posting.Title, consts.POST_PUBLISH_AT_MSG))
+				redismq.PushEventMsg(redismq.NewEvent(userId, fmt.Sprint(postId), user.NickName,
+					"", "", consts.POST_PUBLISH_AT_MSG))
 			}
 		}
 	}
