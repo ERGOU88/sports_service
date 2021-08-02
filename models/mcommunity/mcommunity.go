@@ -81,9 +81,13 @@ func (m *CommunityModel) GetAllSection() ([]*models.CommunitySection, error) {
 }
 
 // 获取社区话题
-func (m *CommunityModel) GetCommunityTopics(isHot string, offset, size int) ([]*models.CommunityTopic, error) {
+func (m *CommunityModel) GetCommunityTopics(sectionId, isHot string, offset, size int) ([]*models.CommunityTopic, error) {
 	var list []*models.CommunityTopic
 	table := m.Engine.Where("status=1").Desc("sortorder")
+
+	if sectionId != "" {
+		table = table.Where("section_id=?", sectionId)
+	}
 
 	if isHot != "" {
 		table = table.Where("is_hot=?", isHot)

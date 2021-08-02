@@ -69,7 +69,7 @@ func SectionPostList(c *gin.Context) {
 	reply.Data["list"] = list
 
 
-	_, topicList := svc.GetCommunityTopics(consts.POST_SORT_HOT, 1, 4)
+	_, topicList := svc.GetCommunityTopics(sectionId, consts.POST_SORT_HOT, 1, 4)
 	reply.Data["topic_list"] = topicList
 	// 置顶帖 20个足矣
 	_, topList := svc.GetTopPostBySectionId(1, 20, sectionId)
