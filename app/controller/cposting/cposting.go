@@ -174,7 +174,7 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 	svc.engine.Commit()
 
 	// 异步进行帖子内容审核 todo: 可优化为任务队列
-	go svc.ReviewPostInfo(params)
+	svc.ReviewPostInfo(params)
 
 	return errdef.SUCCESS
 }
