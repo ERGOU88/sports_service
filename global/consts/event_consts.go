@@ -20,6 +20,24 @@ const (
   EXCHANGE_TOPIC  = "topic"
 )
 
+// EventType 事件类型
+// 0  系统类
+// 1  活动类
+// 2  视频点赞
+// 3  评论/回复点赞
+// 4  收藏视频
+// 5  关注用户
+// 6  关注的用户发布新视频
+// 7  视频评论
+// 8  视频回复
+// 9  在视频评论/回复中@
+// 10 帖子点赞
+// 11 帖子评论点赞
+// 12 关注的人发布的新帖子
+// 13 帖子评论
+// 14 帖子回复
+// 15 在帖子评论/回复中@
+// 16 在发布帖子时@
 const (
   SYSTEM_MSG                      = iota
   ACTIVITY_MSG
@@ -27,11 +45,15 @@ const (
   VIDEO_COMMENT_LIKE_MSG
   COLLECT_VIDEO_MSG
   FOCUS_USER_MSG
-  FOCUS_USER_PUBLISH_MSG
+  FOCUS_USER_PUBLISH_VIDEO_MSG
   VIDEO_COMMENT_MSG
   VIDEO_REPLY_MSG
+  VIDEO_COMMENT_AT_MSG
   POST_LIKE_MSG
   POST_COMMENT_LIKE_MSG
+  FOCUS_USER_PUBLISH_POST_MSG
   POST_COMMENT_MSG
   POST_REPLY_MSG
+  POST_COMMENT_AT_MSG
+  POST_PUBLISH_AT_MSG
 )

@@ -154,6 +154,12 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 				return errdef.POST_NOT_EXISTS
 			}
 
+			if post.Status != 1 {
+				log.Log.Errorf("share_trace: post not pass, postId:%s", params.ComposeId)
+				svc.engine.Rollback()
+				return errdef.POST_NOT_EXISTS
+			}
+
 			shareInfo := &mshare.SharePostInfo{
 				PostId: post.Id,
 				PostingType: post.PostingType,

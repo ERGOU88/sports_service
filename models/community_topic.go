@@ -10,4 +10,5 @@ type CommunityTopic struct {
 	UpdateAt  int    `json:"update_at" xorm:"not null comment('更新时间') INT(11)"`
 	Cover     string `json:"cover" xorm:"not null default '' comment('话题封面') VARCHAR(256)"`
 	Describe  string `json:"describe" xorm:"not null default '' comment('话题描述') VARCHAR(1000)"`
+	SectionId int    `json:"section_id" xorm:"not null default 0 comment('所属板块id') INT(11)"`
 }

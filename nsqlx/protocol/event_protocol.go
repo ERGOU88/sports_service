@@ -24,5 +24,6 @@ type Data struct {
   Cover       string    `json:"cover"`      // 封面
   NickName    string    `json:"nick_name"`  // 昵称
   Content     string    `json:"content"`    // 内容
+  ComposeId   string    `json:"compose_id"` // 作品id 视频/帖子
 }
 

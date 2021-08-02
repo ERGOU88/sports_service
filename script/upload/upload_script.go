@@ -141,8 +141,6 @@ func main() {
       params.Cover = *resp.Response.CoverUrl
     }
 
-
-
     params.VideoLabels = "1,2"
     params.TaskId = taskId
     fmt.Printf("\n taskId:%d\n", taskId)

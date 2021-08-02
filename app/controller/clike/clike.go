@@ -16,7 +16,6 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	redismq "sports_service/server/redismq/event"
-	"sports_service/server/util"
 	"strings"
 	"time"
 )
@@ -121,7 +120,7 @@ func (svc *LikeModule) GiveLikeForVideo(userId string, videoId int64) int {
 
 	// 发送视频点赞推送
 	//event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, "", consts.VIDEO_LIKE_MSG)
-	redismq.PushEventMsg(redismq.NewEvent(video.UserId, user.NickName, video.Cover, "", consts.VIDEO_LIKE_MSG))
+	redismq.PushEventMsg(redismq.NewEvent(video.UserId, fmt.Sprint(video.VideoId), user.NickName, video.Cover, "", consts.VIDEO_LIKE_MSG))
 
 	return errdef.SUCCESS
 }
@@ -220,8 +219,8 @@ func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*mvide
 	for index, video := range videoList {
 		resp := new(mvideo.VideosInfoResp)
 		resp.VideoId = video.VideoId
-		resp.Title = util.TrimHtml(video.Title)
-		resp.Describe = util.TrimHtml(video.Describe)
+		//resp.Title = util.TrimHtml(video.Title)
+		//resp.Describe = util.TrimHtml(video.Describe)
 		resp.Cover = video.Cover
 		resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		resp.IsRecommend = video.IsRecommend
@@ -252,6 +251,21 @@ func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*mvide
 	}
 
 	return list
+}
+
+// 评论点赞 包含视频评论、帖子评论
+func (svc *LikeModule) GiveLikeForComment(userId string, commentId, commentType int64) int {
+	switch commentType {
+	case consts.COMMENT_TYPE_VIDEO:
+		return svc.GiveLikeForVideoComment(userId, commentId)
+
+	case consts.COMMENT_TYPE_POST:
+		return svc.GiveLikeForPostComment(userId, commentId)
+
+	default:
+		log.Log.Errorf("comment_trace: invalid commentType:%d", commentType)
+		return errdef.INVALID_PARAMS
+	}
 }
 
 // 点赞视频评论
@@ -313,9 +327,24 @@ func (svc *LikeModule) GiveLikeForVideoComment(userId string, commentId int64) i
 
 	// 发送评论点赞推送
 	//event.PushEventMsg(config.Global.AmqpDsn, comment.UserId, user.NickName, "", comment.Content, consts.VIDEO_COMMENT_LIKE_MSG)
-	redismq.PushEventMsg(redismq.NewEvent(comment.UserId, user.NickName, "", comment.Content, consts.VIDEO_COMMENT_LIKE_MSG))
+	redismq.PushEventMsg(redismq.NewEvent(comment.UserId, fmt.Sprint(comment.VideoId), user.NickName, "", comment.Content, consts.VIDEO_COMMENT_LIKE_MSG))
 
 	return errdef.SUCCESS
+}
+
+// 取消点赞（包含视频评论、帖子评论）
+func (svc *LikeModule) CancelLikeForComment(userId string, commentId, commentType int64) int {
+	switch commentType {
+	case consts.COMMENT_TYPE_VIDEO:
+		return svc.CancelLikeForVideoComment(userId, commentId)
+
+	case consts.COMMENT_TYPE_POST:
+		return svc.CancelLikeForPostComment(userId, commentId)
+
+	default:
+		log.Log.Errorf("comment_trace: invalid commentType:%d", commentType)
+		return errdef.INVALID_PARAMS
+	}
 }
 
 // 取消点赞（视频评论）
@@ -441,7 +470,7 @@ func (svc *LikeModule) GiveLikeForPost(userId string, postId int64) int {
 
 	// todo: 帖子点赞 推送内容
 	// 发送帖子点赞推送
-	redismq.PushEventMsg(redismq.NewEvent(post.UserId, user.NickName, "", "", consts.POST_LIKE_MSG))
+	redismq.PushEventMsg(redismq.NewEvent(post.UserId, fmt.Sprint(post.Id), user.NickName, "", "", consts.POST_LIKE_MSG))
 
 	return errdef.SUCCESS
 }
@@ -564,7 +593,7 @@ func (svc *LikeModule) GiveLikeForPostComment(userId string, commentId int64) in
 	svc.engine.Commit()
 
 	// 发送帖子评论点赞推送
-	redismq.PushEventMsg(redismq.NewEvent(comment.UserId, user.NickName, "", comment.Content, consts.POST_COMMENT_LIKE_MSG))
+	redismq.PushEventMsg(redismq.NewEvent(comment.UserId, fmt.Sprint(comment.PostId), user.NickName, "", comment.Content, consts.POST_COMMENT_LIKE_MSG))
 
 	return errdef.SUCCESS
 }

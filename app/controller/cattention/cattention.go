@@ -71,7 +71,7 @@ func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 	    log.Log.Errorf("event_trace: userId:%s", userId)
 	    // 发送关注推送
 	    //event.PushEventMsg(config.Global.AmqpDsn, userId, attentionUser.NickName, "", "", consts.FOCUS_USER_MSG)
-		redismq.PushEventMsg(redismq.NewEvent(userId, attentionUser.NickName, "", "", consts.FOCUS_USER_MSG))
+		redismq.PushEventMsg(redismq.NewEvent(userId, "", attentionUser.NickName, "", "", consts.FOCUS_USER_MSG))
 
 		return errdef.SUCCESS
 	}
@@ -85,7 +85,7 @@ func (svc *AttentionModule) AddAttention(attentionUid, userId string) int {
 	log.Log.Errorf("event_trace: userId:%s", userId)
 	// 发送关注推送
 	//event.PushEventMsg(config.Global.AmqpDsn, userId, attentionUser.NickName, "", "", consts.FOCUS_USER_MSG)
-	redismq.PushEventMsg(redismq.NewEvent(userId, attentionUser.NickName, "", "", consts.FOCUS_USER_MSG))
+	redismq.PushEventMsg(redismq.NewEvent(userId, "", attentionUser.NickName, "", "", consts.FOCUS_USER_MSG))
 
 	return errdef.SUCCESS
 }

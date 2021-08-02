@@ -83,8 +83,8 @@ func PublishReply(c *gin.Context) {
 	}
 
 	svc := comment.New(c)
-	syscode, commentId := svc.PublishReply(userId.(string), params)
-	reply.Data["comment_id"] = commentId
+	syscode, replyInfo := svc.PublishReply(userId.(string), params)
+	reply.Data["reply_info"] = replyInfo
 	reply.Response(http.StatusOK, syscode)
 }
 
@@ -111,23 +111,25 @@ func PublishReply(c *gin.Context) {
 func CommentList(c *gin.Context) {
 	reply := errdef.New(c)
 	userId := c.Query("user_id")
-	videoId := c.Query("video_id")
+	composeId := c.Query("compose_id")
 	sortType := c.DefaultQuery("sort_type", "0")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	commentId := c.Query("comment_id")
-	// 0 视频评论 1 帖子评论
-	commentType, _ := strconv.Atoi(c.DefaultQuery("comment_type", "0"))
+	// 1 视频评论 2 帖子评论
+	commentType, _ := strconv.Atoi(c.DefaultQuery("comment_type", "1"))
 
 	svc := comment.New(c)
-	syscode, list := svc.GetComments(userId, videoId, sortType, commentType, page, size)
+	syscode, list := svc.GetComments(userId, composeId, sortType, commentType, page, size)
 	if syscode != errdef.SUCCESS {
 		reply.Response(http.StatusOK, syscode)
 		return
 	}
 
-	first := svc.GetFirstComment(userId, commentId)
+	if commentType == consts.COMMENT_TYPE_VIDEO {
+		first := svc.GetFirstComment(userId, commentId)
+		reply.Data["first"] = first
+	}
 
-	reply.Data["first"] = first
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
@@ -156,7 +158,7 @@ func ReplyList(c *gin.Context) {
 	reply := errdef.New(c)
 	userId := c.Query("user_id")
 	commentId := c.Query("comment_id")
-	videoId := c.Query("video_id")
+	composeId := c.Query("compose_id")
 	// todo: 替换videoId
 	//composeId := c.Query("compose_id")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
@@ -165,7 +167,7 @@ func ReplyList(c *gin.Context) {
 
 	svc := comment.New(c)
 	// 获取评论回复列表
-	syscode, list := svc.GetCommentReplyList(userId, videoId, commentId, commentType, page, size)
+	syscode, list := svc.GetCommentReplyList(userId, composeId, commentId, commentType, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)
 }
@@ -233,7 +235,10 @@ func V2PublishComment(c *gin.Context) {
 	}
 
 	svc := comment.New(c)
-	syscode, commentId := svc.V2PublishComment(userId.(string), params)
-	reply.Data["comment_id"] = commentId
+	syscode, comment := svc.V2PublishComment(userId.(string), params)
+	if syscode == errdef.SUCCESS && comment != nil {
+		reply.Data["comment"] = comment
+	}
+
 	reply.Response(http.StatusOK, syscode)
 }

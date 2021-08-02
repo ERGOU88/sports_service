@@ -18,6 +18,8 @@ func Router(engine *gin.Engine) {
 		posting.GET("/detail", PostDetail)
 		// 用户发布的帖子列表
 		posting.GET("/publish/list", token.TokenAuth(), PostPublishList)
+		// 查看其他用户发布的帖子
+		posting.GET("/other/publish/list", OtherPublishPost)
 		// 用户删除发布的帖子
 		posting.POST("/delete/publish", token.TokenAuth(), DeletePublishPost)
         // 帖子申请精华

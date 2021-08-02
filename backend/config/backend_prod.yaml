@@ -1,4 +1,4 @@
-publicAddr: :13002
+publicAddr: :13000
 pprofAddr: :12002
 mode: prod
 mysql:
@@ -32,7 +32,7 @@ fileAddr: http://192.168.50.148:13002/upload/
 amqpDsn: amqp://admin:admin@127.0.0.1:5672
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
-  path: ./log/backend_server_%s.log
+  path: /data/service/fpv-backend-api/log/backend_server_%s.log
   level: 0
   showColor: true
 

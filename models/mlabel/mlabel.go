@@ -222,7 +222,6 @@ func (m *LabelModel) tree(info []*VideoLabel) []*VideoLabel {
 		// 循环所有1级标签
 		for k, v := range info {
 			labelMp[fmt.Sprint(v.LabelId)] = v
-			log.Log.Debugf("labelMp:%+v", labelMp)
 			// 查询所有一级标签下的所有子标签
 			child, err := m.FindSubLabelsByPid(v)
 			if err != nil || len(child) == 0 {

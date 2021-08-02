@@ -68,6 +68,15 @@ const (
 	NOTIFY_CAN_NOT_DEL          = 15010
 	NOTIFY_DEL_FAIL             = 15011
 
+	// 16001 - 17000 帖子相关错误码
+	POST_NOT_FOUND              = 16001
+	POST_AUDIT_FAIL             = 16002
+	POST_ALREADY_DELETE         = 16003
+	POST_ALREADY_PASS           = 16004
+	POST_EDIT_STATUS_FAIL       = 16005
+	POST_DELETE_PUBLISH_FAIL    = 16006
+	POST_DELETE_TOPIC_FAIL      = 16007
+	POST_DELETE_STATISTIC_FAIL  = 16008
 )
 
 var MsgFlags = map[int]string{
@@ -131,6 +140,15 @@ var MsgFlags = map[int]string{
 	NOTIFY_INVALID_START_TM:        "最大可设置当前时间 + 7天",
 	NOTIFY_CAN_NOT_DEL:             "无法删除！请先撤回该通知",
 	NOTIFY_DEL_FAIL:                "删除失败",
+
+	POST_NOT_FOUND:                 "帖子不存在",
+	POST_AUDIT_FAIL:                "帖子审核失败",
+	POST_ALREADY_DELETE:            "帖子已被删除",
+	POST_ALREADY_PASS:              "帖子已过审，只能执行删除操作",
+	POST_EDIT_STATUS_FAIL:          "帖子修改状态失败",
+	POST_DELETE_PUBLISH_FAIL:       "删除发布的帖子失败",
+	POST_DELETE_TOPIC_FAIL:         "删除帖子标签失败",
+	POST_DELETE_STATISTIC_FAIL:     "删除帖子统计数据失败",
 }
 
 func GetMsg(code int) string {

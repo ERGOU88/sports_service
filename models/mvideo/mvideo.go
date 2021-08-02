@@ -34,7 +34,7 @@ type VideoPublishParams struct {
 	TaskId         int64   `binding:"required" json:"task_id"`        // 任务id
 	Cover          string  `json:"cover"`                             // 视频封面
 	Title          string  `binding:"required" json:"title"`          // 视频标题
-	Describe       string  `binding:"required" json:"describe"`       // 视频描述
+	Describe       string  `json:"describe"`                          // 视频描述
 	VideoAddr      string  `binding:"required" json:"video_addr"`     // 视频地址
 	VideoDuration  int     `json:"video_duration"`                    // 视频时长
 	FileId         string  `binding:"required" json:"file_id"`        // 腾讯云文件id
@@ -147,6 +147,22 @@ type VideoDetailInfo struct {
 	Labels        []*models.VideoLabels `json:"labels"`                               // 视频标签
 	PlayInfo      []*PlayInfo           `json:"play_info"`                            // 视频转码后数据
 	StatisticsTab string                `json:"statistics_tab"`                       // 统计标签
+	Album         int64                 `json:"album"`                                // 专辑
+	Subarea       int                   `json:"subarea"`                              // 分区
+	AlbumInfo     []*InfoByVideoAlbum   `json:"album_info"`                           // 专辑下的视频数据
+}
+
+// 专辑下的视频数据
+type InfoByVideoAlbum struct {
+	VideoId       int64        `json:"video_id"`
+	Title         string       `json:"title"`
+	Describe      string       `json:"describe"`
+	Cover         string       `json:"cover"`
+	VideoAddr     string       `json:"video_addr"`
+	VideoDuration int64        `json:"video_duration"`
+	VideoWidth    int          `json:"video_width"`
+	VideoHeight   int          `json:"video_height"`
+	CreateAt      int64        `json:"create_at"`
 }
 
 // 记录视频播放时长 请求参数
@@ -935,6 +951,41 @@ func (m *VideoModel) GetVideoListBySubarea(subarea string, offset, size int) ([]
 	var list []*VideoInfoBySubarea
 	if err := m.Engine.SQL(QUERY_VIDEO_LIST_BY_SUBAREA, subarea, offset, size).Find(&list); err != nil {
 		log.Log.Errorf("video_trace: get video by subarea err:%s", err)
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 视频专辑信息
+type VideoAlbumInfo struct {
+	Id        int64  `json:"id"`          // 专辑id
+	UserId    string `json:"user_id"`     // 用户id
+	AlbumName string `json:"album_name"`  // 专辑名称
+	VideoNum  int    `json:"video_num"`   // 专辑下的视频总数
+}
+
+const (
+	QUERY_ALBUM_LIST_BY_USER = "SELECT va.id, va.user_id, va.album_name, video_num FROM video_album AS va " +
+		"LEFT JOIN (SELECT count(1) as video_num, album FROM videos as v " +
+		"WHERE v.status=1 AND v.user_id=? GROUP BY v.`album`) AS v ON va.id = v.album " +
+		"WHERE va.user_id=? AND va.status=0 ORDER BY va.create_at DESC LIMIT ?, ?"
+)
+// 获取用户发布的专辑列表 及 专辑下的视频数量
+func (m *VideoModel) GetVideoAlbumListByUser(userId string, offset, size int) ([]*VideoAlbumInfo, error) {
+	var list []*VideoAlbumInfo
+	if err := m.Engine.SQL(QUERY_ALBUM_LIST_BY_USER, userId, userId, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("video_trace: get video album list by user err:%s", err)
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 获取某专辑下的视频列表
+func (m *VideoModel) GetVideoListByAlbum(userId string, album int64) ([]*InfoByVideoAlbum, error) {
+	var list []*InfoByVideoAlbum
+	if err := m.Engine.Table(&models.Videos{}).Where("status=1 AND user_id=? AND album=?", userId, album).Find(&list); err != nil {
 		return nil, err
 	}
 

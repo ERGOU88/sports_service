@@ -147,6 +147,35 @@ func (m *PostingModel) AddReceiveAtList(at []*models.ReceivedAt) (int64, error) 
 	return m.Engine.InsertMulti(at)
 }
 
+const (
+	UPDATE_RECEIVE_AT_STATUS = "UPDATE `received_at` SET status=1,update_at=? WHERE compose_id=? AND topic_type=?"
+)
+// 帖子通过时 需修改@数据的状态 使@生效
+func (m *PostingModel) UpdateReceiveAtStatus(composeId string, topicType, tm int) error {
+	if _, err := m.Engine.Exec(UPDATE_RECEIVE_AT_STATUS, tm, composeId, topicType); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 通过帖子id获取
+func (m *PostingModel) GetReceivedInfoByComposeId() {
+
+}
+
+const (
+	UPDATE_POST_TOPIC_STATUS = "UPDATE `posting_topic` SET status=1, update_at=? WHERE posting_id=?"
+)
+// 帖子通过时 修改帖子所属话题 数据状态
+func (m *PostingModel) UpdatePostTopicStatus(postId string, tm int) error {
+	if _, err := m.Engine.Exec(UPDATE_POST_TOPIC_STATUS, tm, postId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // 通过id获取帖子
 func (m *PostingModel) GetPostById(id string) (*models.PostingInfo, error) {
 	m.Posting = new(models.PostingInfo)
@@ -306,8 +335,8 @@ func (m *PostingModel) GetPostNumByTopic(topicId string) (int64, error) {
 
 const (
 	GET_POST_LIST_BY_SECTION = "SELECT p.*, ps.fabulous_num, ps.browse_num, ps.share_num, ps.comment_num, ps.heat_num FROM " +
-		"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 AND p.section_id=? " +
-		"ORDER BY ps.`heat_num` DESC, sortorder DESC, id DESC LIMIT ?, ?"
+		"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 AND p.section_id=? AND p.is_top=0 " +
+		" ORDER BY ps.`heat_num` DESC, p.is_cream DESC, p.id DESC LIMIT ?, ?"
 )
 // 通过板块id 获取帖子列表
 func (m *PostingModel) GetPostListBySectionId(sectionId string, offset, size int) ([]*PostDetailInfo, error) {
@@ -323,7 +352,7 @@ func (m *PostingModel) GetPostListBySectionId(sectionId string, offset, size int
 func (m *PostingModel) GetPostListByTopicId(topicId, sortHot string, offset, size int) ([]*PostDetailInfo, error) {
 	var list []*PostDetailInfo
 	sql := "SELECT p.*,ps.* FROM `posting_info` AS p LEFT JOIN `posting_topic` as pt ON p.id=pt.posting_id " +
-		"LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 AND pt.topic_id=? ORDER BY "
+		"LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 AND pt.topic_id=? AND p.is_top=0 ORDER BY "
 
 	if sortHot == consts.POST_SORT_HOT {
 		sql += "ps.`heat_num` DESC, "
@@ -340,7 +369,7 @@ func (m *PostingModel) GetPostListByTopicId(topicId, sortHot string, offset, siz
 
 // 搜索帖子 标题 / 内容
 func (m *PostingModel) SearchPost(name string, offset, size int) ([]*PostDetailInfo, error) {
-	sql := "SELECT * FROM posting_info WHERE status=1 AND title like '%" + name + "%' OR status=1 AND content LIKE '%" + name + "%' ORDER BY `id` DESC LIMIT ?, ?"
+	sql := "SELECT * FROM posting_info WHERE status=1 AND video_id=0 AND title like '%" + name + "%' OR status=1 AND video_id=0 AND content LIKE '%" + name + "%' ORDER BY `id` DESC LIMIT ?, ?"
 	var list []*PostDetailInfo
 	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
 		return nil, err
@@ -352,14 +381,14 @@ func (m *PostingModel) SearchPost(name string, offset, size int) ([]*PostDetailI
 // 搜索帖子 标题 / 内容 按热度排序
 func (m *PostingModel) SearchPostOrderByHeat(name string, offset, size int) ([]*PostDetailInfo, error) {
 	sql := "SELECT p.*, ps.fabulous_num, ps.browse_num, ps.share_num, ps.comment_num, ps.heat_num FROM " +
-	"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 "
+	"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 AND p.video_id=0 "
 
 	if name != "" {
-		sql += "AND p.title LIKE '%" + name + "%' OR p.status=1 AND p.content LIKE '%" + name + "%' "
+		sql += "AND p.title LIKE '%" + name + "%' OR p.status=1 AND p.video_id=0 AND p.content LIKE '%" + name + "%' "
 	}
 
 
-	sql += fmt.Sprintf("ORDER BY ps.`heat_num` DESC, sortorder DESC, id DESC LIMIT ?, ?")
+	sql += fmt.Sprintf("ORDER BY ps.`heat_num` DESC, p.is_top DESC, p.is_cream DESC, p.id DESC LIMIT ?, ?")
 
 	var list []*PostDetailInfo
 	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
@@ -374,7 +403,16 @@ const (
 		"ON p.id=ps.posting_id WHERE p.user_id=? AND p.video_id=0 ORDER BY p.id DESC LIMIT ?, ?"
 )
 // 获取用户发布的帖子列表 [不包含视频]
-func (m *PostingModel) GetPublishPostByUser(userId string, offset, size int) ([]*PostDetailInfo, error) {
+func (m *PostingModel) GetPublishPostByUser(userId, status string, offset, size int) ([]*PostDetailInfo, error) {
+	sql := "SELECT p.*, ps.* FROM `posting_info` AS p LEFT JOIN `posting_statistic` as ps " +
+	"ON p.id=ps.posting_id WHERE p.user_id=? AND p.video_id=0 "
+
+	if status == consts.POST_AUDIT_SUCCESS {
+		sql += "AND status=1 "
+	}
+
+	sql += "ORDER BY ps.`heat_num` DESC, p.is_top DESC, p.is_cream DESC, p.id DESC LIMIT ?, ?"
+
 	var list []*PostDetailInfo
 	if err := m.Engine.SQL(GET_PUBLISH_POST_BY_USER, userId, offset, size).Find(&list); err != nil {
 		return nil, err
@@ -414,7 +452,7 @@ func (m *PostingModel) DelPostStatistic(postId string) error {
 	return nil
 }
 
-// 更新帖子状态
+// 更新帖子状态[关联的视频]
 func (m *PostingModel) UpdatePostStatus(userId, videoId string) error {
 	if _, err := m.Engine.Where("user_id=? AND video_id=? AND posting_type=2 AND content_type=0", userId, videoId).
 		Cols("status").Update(m.Posting); err != nil {
@@ -427,7 +465,7 @@ func (m *PostingModel) UpdatePostStatus(userId, videoId string) error {
 
 const (
 	QUERY_ATTENTION_POSTS = "SELECT p.*, ps.* FROM `posting_info` as p " +
-		"LEFT JOIN posting_statistic as ps ON p.id=ps.posting_id WHERE p.status = 1 AND p.user_id in(%s)  " +
+		"LEFT JOIN posting_statistic as ps ON p.id=ps.posting_id WHERE p.status = 1 AND p.video_id=0 AND p.user_id in(%s) " +
 		"ORDER BY p.id DESC, p.is_top DESC, p.is_cream DESC LIMIT ?, ?"
 )
 // 获取关注的用户发布的帖子
@@ -440,3 +478,4 @@ func (m *PostingModel) GetPostListByAttention(userIds string, offset, size int) 
 
 	return list, nil
 }
+

@@ -14,7 +14,6 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	redismq "sports_service/server/redismq/event"
-	"sports_service/server/util"
 	"strings"
 	"time"
 )
@@ -109,7 +108,7 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 	if userId != video.UserId {
 		// 发送收藏视频推送
 		//event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG)
-		redismq.PushEventMsg(redismq.NewEvent(video.UserId, user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG))
+		redismq.PushEventMsg(redismq.NewEvent(video.UserId, fmt.Sprint(video.VideoId), user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG))
 	}
 
 	return errdef.SUCCESS
@@ -209,8 +208,8 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
 	for index, video := range videoList {
 		resp := new(mvideo.VideosInfoResp)
 		resp.VideoId = video.VideoId
-		resp.Title = util.TrimHtml(video.Title)
-		resp.Describe = util.TrimHtml(video.Describe)
+		resp.Title = video.Title
+		resp.Describe = video.Describe
 		resp.Cover = video.Cover
 		resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		resp.IsRecommend = video.IsRecommend

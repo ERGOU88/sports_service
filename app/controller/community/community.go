@@ -57,10 +57,26 @@ func (svc *CommunityModule) GetTopPostBySectionId(page, size int, sectionId stri
 	return errdef.SUCCESS, list
 }
 
-// 获取社区话题列表
-func (svc *CommunityModule) GetCommunityTopics(isHot string, page, size int) (int, []*mcommunity.CommunityTopicInfo) {
+// 获取社区话题列表 [按话题帖子数量排序]
+func (svc *CommunityModule) GetTopicListOrderByPostNum(page, size int) (int, []*mcommunity.CommunityTopicInfo) {
 	offset := (page - 1) * size
-	list, err := svc.community.GetCommunityTopics(isHot, offset, size)
+	list, err := svc.community.GetTopicListOrderByPostNum(offset, size)
+	if err != nil {
+		log.Log.Errorf("community_trace: get topics fail, err:%s", err)
+		return errdef.COMMUNITY_TOPICS_FAIL, []*mcommunity.CommunityTopicInfo{}
+	}
+
+	if list == nil {
+		return errdef.SUCCESS, []*mcommunity.CommunityTopicInfo{}
+	}
+
+	return errdef.SUCCESS, list
+}
+
+// 获取社区话题列表
+func (svc *CommunityModule) GetCommunityTopics(sectionId, isHot string, page, size int) (int, []*mcommunity.CommunityTopicInfo) {
+	offset := (page - 1) * size
+	list, err := svc.community.GetCommunityTopics(sectionId, isHot, offset, size)
 	if list == nil || err != nil {
 		log.Log.Errorf("community_trace: get topics fail, err:%s", err)
 		return errdef.COMMUNITY_TOPICS_FAIL, []*mcommunity.CommunityTopicInfo{}

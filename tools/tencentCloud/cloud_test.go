@@ -56,8 +56,14 @@ import (
 //	}
 //}
 
-func TestFreeLogin(t *testing.T) {
-	client := New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
-	mobileNum, err := client.FreeLogin("testtest", "mobile", "86")
-	t.Logf("mobileNum:%s, err:%s", mobileNum, err)
+//func TestFreeLogin(t *testing.T) {
+//	client := New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
+//	mobileNum, err := client.FreeLogin("testtest", "mobile", "86")
+//	t.Logf("mobileNum:%s, err:%s", mobileNum, err)
+//}
+
+func TestRecognitionImage(t *testing.T) {
+	client := New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, "")
+	res, err := client.RecognitionImage("https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/", "qweqweqwe.png")
+	t.Logf("res:%+v, err:%v", res, err)
 }

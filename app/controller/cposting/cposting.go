@@ -1,8 +1,12 @@
 package cposting
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/tencentyun/cos-go-sdk-v5"
+	"net/url"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
@@ -14,11 +18,10 @@ import (
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
+	redismq "sports_service/server/redismq/event"
 	cloud "sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"time"
-	"github.com/microcosm-cc/bluemonday"
-	"fmt"
 )
 
 type PostingModule struct {
@@ -47,24 +50,8 @@ func New(c *gin.Context) PostingModule {
 	}
 }
 
-// 发布帖子
+// 发布帖子 [在发布帖子时 只有审核中/审核通过 两种状态 审核失败由后台人工确认后操作]
 func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPublishParam) int {
-	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
-	// 检测帖子标题
-	isPass, err := client.TextModeration(params.Title)
-	if !isPass || err != nil {
-		log.Log.Errorf("post_trace: validate title err: %s，pass: %v", err, isPass)
-		return errdef.POST_INVALID_TITLE
-	}
-
-	// 检测帖子内容
-	isPass, err = client.TextModeration(params.Describe)
-	if !isPass || err != nil {
-		log.Log.Errorf("post_trace: validate content err: %s，pass: %v", err, isPass)
-		return errdef.POST_INVALID_CONTENT
-	}
-
-
 	postType := svc.GetPostingType(params)
 	if b := svc.VerifyContentLen(postType, params.Describe, params.Title); !b {
 		log.Log.Error("post_trace: invalid content len")
@@ -99,18 +86,10 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		return errdef.POST_TOPIC_NOT_EXISTS
 	}
 
-	// 默认为审核中的状态
-	status := 0
-	// 不带视频的帖子 只需通过图文检测
-	if postType != consts.POST_TYPE_VIDEO {
-		status = 1
-	}
-
 	now := int(time.Now().Unix())
 	svc.posting.Posting.Title = params.Title
 	svc.posting.Posting.Describe = params.Describe
 	svc.posting.Posting.PostingType = postType
-	svc.posting.Posting.Status = status
 	// 社区发布
 	svc.posting.Posting.ContentType = consts.COMMUNITY_PUB_POST
 	svc.posting.Posting.CreateAt = now
@@ -136,7 +115,7 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		info.TopicName = val.TopicName
 		info.CreateAt = now
 		info.PostingId = svc.posting.Posting.Id
-		info.Status = 1
+		info.Status = 0
 		topicInfos[key] = info
 	}
 
@@ -171,11 +150,13 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 			}
 
 			at := &models.ReceivedAt{
-				ToUserId: val,
-				UserId: userId,
+				ToUserId:  val,
+				UserId:    userId,
 				ComposeId: svc.posting.Posting.Id,
-				TopicType: consts.TYPE_POST_COMMENT,
-				CreateAt: now,
+				TopicType: consts.TYPE_PUBLISH_POST,
+				CreateAt:  now,
+				Status:    0,
+				UpdateAt:  now,
 			}
 
 			atList = append(atList, at)
@@ -192,7 +173,115 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 
 	svc.engine.Commit()
 
+	// 异步进行帖子内容审核 todo: 可优化为任务队列
+	go svc.ReviewPostInfo(svc.posting.Posting.Id, userId, params)
+
 	return errdef.SUCCESS
+}
+
+// 审核帖子图片
+func (svc *PostingModule) ReviewPostInfo(postId int64, userId string, params *mposting.PostPublishParam) {
+	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	// 检测帖子标题
+	isPass, err := client.TextModeration(params.Title)
+	if !isPass || err != nil {
+		log.Log.Errorf("post_trace: validate title err: %s，pass: %v", err, isPass)
+	}
+
+	// 检测帖子内容
+	isOk, err := client.TextModeration(params.Describe)
+	if !isOk || err != nil {
+		log.Log.Errorf("post_trace: validate content err: %s，pass: %v", err, isPass)
+	}
+
+	num := 0
+	mp := make(map[int]*cos.ImageRecognitionResult, 0)
+	for index, imgUrl := range params.ImagesAddr {
+		urls, err := url.Parse(imgUrl)
+		if err != nil {
+			log.Log.Errorf("post_trace: url.Parse fail, err:%s", err)
+			continue
+		}
+
+		path := urls.Path
+		baseUrl := fmt.Sprintf("%s://%s", urls.Scheme, urls.Host)
+
+		// 检测帖子图片
+		res, err := client.RecognitionImage(baseUrl, path)
+		if err != nil {
+			log.Log.Errorf("post_trace: recognition image fail, err:%s", err)
+			continue
+		}
+
+		mp[index] = res
+		if res.PornInfo.Code != 0 || res.PoliticsInfo.Code != 0 || res.TerroristInfo.Code != 0 {
+			continue
+		}
+
+		// 涉黄、涉暴恐、涉政都未命中则返回通过
+		if res.PornInfo.HitFlag == 0 && res.PoliticsInfo.HitFlag == 0 && res.TerroristInfo.HitFlag == 0 {
+			num++
+		}
+
+	}
+
+	if len(mp) != 0 {
+		// 记录事件回调信息
+		svc.video.Events.ComposeId = postId
+		svc.video.Events.CreateAt = int(time.Now().Unix())
+		svc.video.Events.EventType = consts.EVENT_VERIFY_IMAGE_TYPE
+		bts, _ := util.JsonFast.Marshal(mp)
+		svc.video.Events.Event = string(bts)
+		affected, err := svc.video.RecordTencentEvent()
+		if err != nil || affected != 1 {
+			log.Log.Errorf("post_trace: record tencent verify image result err:%s, affected:%d", err, affected)
+		}
+	}
+
+	// 所有图片 及 标题、内容都通过审核 则 修改帖子状态为通过 相关数据也需修改状态
+	if num == len(params.ImagesAddr) && isPass && isOk {
+		now := int(time.Now().Unix())
+		svc.posting.Posting.Id = postId
+		svc.posting.Posting.Status = 1
+		svc.posting.Posting.UpdateAt = now
+		if err := svc.posting.UpdateStatusByPost(); err != nil {
+			log.Log.Errorf("post_trace: update status by post fail, err:%s", err)
+			return
+		}
+
+		if err := svc.posting.UpdateReceiveAtStatus(fmt.Sprint(postId), consts.TYPE_PUBLISH_POST, now); err != nil {
+			log.Log.Errorf("post_trace: update receive at status fail, err:%s", err)
+			return
+		}
+
+		if err := svc.posting.UpdatePostTopicStatus(fmt.Sprint(postId), now); err != nil {
+			log.Log.Errorf("post_trace: update post topic status fail, err:%s", err)
+			return
+		}
+	}
+
+
+	if user := svc.user.FindUserByUserid(userId); user != nil {
+		// 获取发布者的粉丝们
+		userIds := svc.attention.GetFansList(svc.posting.Posting.UserId)
+		for _, userId := range userIds {
+			// 给发布者的粉丝 发送 发布新帖子推送
+			redismq.PushEventMsg(redismq.NewEvent(userId, fmt.Sprint(postId), user.NickName,
+				"", svc.posting.Posting.Title, consts.FOCUS_USER_PUBLISH_POST_MSG))
+		}
+
+		// 发布帖子时@的用户列表
+		if len(params.AtInfo) > 0 {
+			for _, userId := range params.AtInfo {
+				// 给被@的人 发送 推送通知
+				redismq.PushEventMsg(redismq.NewEvent(userId, fmt.Sprint(postId), user.NickName,
+					"", "", consts.POST_PUBLISH_AT_MSG))
+			}
+		}
+	}
+
+
+	return
 }
 
 // 获取帖子类型 todo: 常量
@@ -372,7 +461,7 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 }
 
 // 获取用户发布的帖子列表
-func (svc *PostingModule) GetPostPublishListByUser(userId string, page, size int) []*mposting.PostDetailInfo {
+func (svc *PostingModule) GetPostPublishListByUser(userId, status string, page, size int) []*mposting.PostDetailInfo {
 	// 查询用户是否存在
 	user := svc.user.FindUserByUserid(userId)
 	if user == nil {
@@ -382,7 +471,7 @@ func (svc *PostingModule) GetPostPublishListByUser(userId string, page, size int
 
 	offset := (page - 1) * size
 	// 获取用户发布的帖子列表
-	list, err := svc.posting.GetPublishPostByUser(userId, offset, size)
+	list, err := svc.posting.GetPublishPostByUser(userId, status, offset, size)
 	if err != nil {
 		log.Log.Errorf("post_trace: get publish post by user fail, userId:%s", userId)
 		return []*mposting.PostDetailInfo{}

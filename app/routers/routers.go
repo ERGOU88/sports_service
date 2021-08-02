@@ -39,7 +39,7 @@ func InitRouters(engine *gin.Engine) {
 	}
 
 	engine.Use(gzip.Gzip(gzip.DefaultCompression))
-	engine.Any("", func(c *gin.Context) {
+	engine.Any("/", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 		return
 	})

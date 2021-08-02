@@ -172,8 +172,8 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 
 	svc.video.Videos.UserId = userId
 	svc.video.Videos.Cover = params.Cover
-	svc.video.Videos.Title = util.TrimHtml(params.Title)
-	svc.video.Videos.Describe = util.TrimHtml(params.Describe)
+	svc.video.Videos.Title = params.Title
+	svc.video.Videos.Describe = params.Describe
 	svc.video.Videos.VideoAddr = params.VideoAddr
 	svc.video.Videos.VideoDuration = params.VideoDuration
 	svc.video.Videos.CreateAt = now
@@ -210,6 +210,7 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 		info.VideoId = svc.video.Videos.VideoId
 		info.LabelId = labelId
 		info.LabelName = svc.label.GetLabelNameByMem(labelId)
+		//info.Status = 1
 		info.CreateAt = now
 		labelInfos = append(labelInfos, info)
 	}
@@ -293,8 +294,8 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 
 	// 重新组装数据
 	for _, video := range videoList {
-		video.Title = util.TrimHtml(video.Title)
-		video.Describe = util.TrimHtml(video.Describe)
+		//video.Title = util.TrimHtml(video.Title)
+		//video.Describe = util.TrimHtml(video.Describe)
 		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		// 获取该视频的用户已播时长
 		if record := svc.video.GetUserPlayDurationRecord(userId, fmt.Sprint(video.VideoId)); record != nil {
@@ -363,8 +364,8 @@ func (svc *VideoModule) GetUserPublishList(userId, status, condition string, pag
 	for _, val := range list {
 		val.StatusCn = svc.GetVideoStatusCn(fmt.Sprint(val.Status))
 		val.VideoAddr = svc.video.AntiStealingLink(val.VideoAddr)
-		val.Describe = util.TrimHtml(val.Describe)
-		val.Title = util.TrimHtml(val.Title)
+		//val.Describe = util.TrimHtml(val.Describe)
+		//val.Title = util.TrimHtml(val.Title)
 		// 获取该视频的用户已播时长
 		if record := svc.video.GetUserPlayDurationRecord(userId, fmt.Sprint(val.VideoId)); record != nil {
 			val.TimeElapsed = record.PlayDuration
@@ -552,8 +553,8 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 			minId = video.VideoId
 		}
 
-		video.Describe = util.TrimHtml(video.Describe)
-		video.Title = util.TrimHtml(video.Title)
+		//video.Describe = util.TrimHtml(video.Describe)
+		//video.Title = util.TrimHtml(video.Title)
 		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		// 查询用户信息
 		userInfo := svc.user.FindUserByUserid(video.UserId)
@@ -697,8 +698,8 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 			continue
 		}
 
-		video.Describe = util.TrimHtml(video.Describe)
-		video.Title = util.TrimHtml(video.Title)
+		//video.Describe = util.TrimHtml(video.Describe)
+		//video.Title = util.TrimHtml(video.Title)
 
 		video.Avatar = userInfo.Avatar
 		video.Nickname = userInfo.NickName
@@ -755,8 +756,8 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDet
 
 	resp := new(mvideo.VideoDetailInfo)
 	resp.VideoId = video.VideoId
-	resp.Title = util.TrimHtml(video.Title)
-	resp.Describe = util.TrimHtml(video.Describe)
+	resp.Title = video.Title
+	resp.Describe = video.Describe
 	resp.Cover = video.Cover
 	resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 	resp.IsRecommend = video.IsRecommend
@@ -767,6 +768,8 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDet
 	resp.CreateAt = video.CreateAt
 	resp.UserId = video.UserId
 	resp.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+	resp.Album = video.Album
+	resp.Subarea = video.Subarea
 	if resp.Labels == nil {
 		resp.Labels = []*models.VideoLabels{}
 	}
@@ -794,6 +797,26 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDet
 		resp.BarrageNum = info.BarrageNum
 		resp.CollectNum = info.CollectNum
 	}
+
+	if video.Album > 0 {
+		var err error
+		// 获取同专辑下的视频列表
+		resp.AlbumInfo, err = svc.video.GetVideoListByAlbum(video.UserId, video.Album)
+		if err != nil || resp.AlbumInfo == nil {
+			log.Log.Errorf("video_trace: get video list by album fail, err:%s", err)
+			resp.AlbumInfo = []*mvideo.InfoByVideoAlbum{}
+		}
+
+		if len(resp.AlbumInfo) > 0 {
+			for _, info := range resp.AlbumInfo {
+				info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+			}
+		}
+
+	} else {
+		resp.AlbumInfo = []*mvideo.InfoByVideoAlbum{}
+	}
+
 	// 粉丝数
 	resp.FansNum = svc.attention.GetTotalFans(fmt.Sprint(video.UserId))
 	now := int(time.Now().Unix())
@@ -905,8 +928,8 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 	for index, video := range videos {
 		resp := new(mvideo.VideoDetailInfo)
 		resp.VideoId = video.VideoId
-		resp.Title = util.TrimHtml(video.Title)
-		resp.Describe = util.TrimHtml(video.Describe)
+		resp.Title = video.Title
+		resp.Describe = video.Describe
 		resp.Cover = video.Cover
 		resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		resp.IsRecommend = video.IsRecommend
@@ -1159,10 +1182,10 @@ func (svc *VideoModule) GetVideoSubarea() (int, []*models.VideoSubarea) {
 }
 
 // 创建视频专辑
-func (svc *VideoModule) CreateVideoAlbum(userId string, param *mvideo.CreateAlbumParam) (int, string) {
+func (svc *VideoModule) CreateVideoAlbum(userId string, param *mvideo.CreateAlbumParam) (int, *models.VideoAlbum) {
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		log.Log.Errorf("user_trace: user not found, userId:%s", userId)
-		return errdef.USER_NOT_EXISTS, ""
+		return errdef.USER_NOT_EXISTS, nil
 	}
 
 	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
@@ -1170,7 +1193,7 @@ func (svc *VideoModule) CreateVideoAlbum(userId string, param *mvideo.CreateAlbu
 	isPass, err := client.TextModeration(param.AlbumName)
 	if !isPass || err != nil {
 		log.Log.Errorf("video_trace: validate album name err: %s，pass: %v", err, isPass)
-		return errdef.VIDEO_INVALID_CUSTOM_LABEL, ""
+		return errdef.VIDEO_INVALID_CUSTOM_LABEL, nil
 	}
 
 	svc.video.Album.UserId = userId
@@ -1178,10 +1201,10 @@ func (svc *VideoModule) CreateVideoAlbum(userId string, param *mvideo.CreateAlbu
 	svc.video.Album.AlbumName = param.AlbumName
 	if _, err := svc.video.CreateVideoAlbum(); err != nil {
 		log.Log.Errorf("video_trace: create video album fail, err:%s", err)
-		return errdef.VIDEO_CREATE_ALBUM_FAIL, ""
+		return errdef.VIDEO_CREATE_ALBUM_FAIL, nil
 	}
 
-	return errdef.SUCCESS, fmt.Sprint(svc.video.Album.Id)
+	return errdef.SUCCESS, svc.video.Album
 }
 
 // 将视频添加到专辑内
@@ -1233,6 +1256,29 @@ func (svc *VideoModule) GetVideoListBySubarea(subareaId string, page, size int) 
 			item.Avatar = user.Avatar
 			item.Nickname = user.NickName
 		}
+	}
+
+	return errdef.SUCCESS, list
+}
+
+// 获取用户发布的专辑列表
+func (svc *VideoModule) GetVideoAlbumByUserId(userId string, page, size int) (int, []*mvideo.VideoAlbumInfo) {
+	if userId == "" {
+		return errdef.USER_NO_LOGIN, []*mvideo.VideoAlbumInfo{}
+	}
+
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		return errdef.USER_NOT_EXISTS, []*mvideo.VideoAlbumInfo{}
+	}
+
+	list, err := svc.video.GetVideoAlbumListByUser(userId, page, size)
+	if err != nil {
+		log.Log.Errorf("video_trace: get video album list by user fail, err:%s, userId:%s", err, userId)
+		return errdef.SUCCESS, []*mvideo.VideoAlbumInfo{}
+	}
+
+	if list == nil {
+		return errdef.SUCCESS, []*mvideo.VideoAlbumInfo{}
 	}
 
 	return errdef.SUCCESS, list

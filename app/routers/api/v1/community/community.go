@@ -26,10 +26,10 @@ func CommunitySections(c *gin.Context) {
 // 社区话题
 func CommunityTopics(c *gin.Context) {
 	reply := errdef.New(c)
-	isHot := c.Query("is_hot")
+	//isHot := c.Query("is_hot")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	svc := community.New(c)
-	code, list := svc.GetCommunityTopics(isHot, page, size)
+	code, list := svc. GetTopicListOrderByPostNum(page, size)
 	if code == errdef.SUCCESS {
 		reply.Data["list"] = list
 	}
@@ -69,10 +69,10 @@ func SectionPostList(c *gin.Context) {
 	reply.Data["list"] = list
 
 
-	_, topicList := svc.GetCommunityTopics(consts.POST_SORT_HOT, 1, 4)
+	_, topicList := svc.GetCommunityTopics(sectionId, consts.POST_SORT_HOT, 1, 4)
 	reply.Data["topic_list"] = topicList
-	// 默认取两个置顶帖
-	_, topList := svc.GetTopPostBySectionId(1, 2, sectionId)
+	// 置顶帖 20个足矣
+	_, topList := svc.GetTopPostBySectionId(1, 20, sectionId)
 	reply.Data["top_list"] = topList
 
 	// 该板块下的帖子数

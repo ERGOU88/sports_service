@@ -38,8 +38,8 @@ staticDomain: http://fpv-web-qa.youzu.com
 
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
-  path: ./log/app_server_%s.log
+  path: /data/service/fpv-app-api/log/app_server_%s.log
   level: 0
-  showColor: false
+  showColor: true
 
 debug: true

@@ -100,7 +100,7 @@ type V2PubCommentParams struct {
 
 // 回复评论请求参数
 type ReplyCommentParams struct {
-	VideoId          int64       `binding:"required" json:"video_id"`      // 视频id todo: 改为视频/帖子id
+	ComposeId        int64       `binding:"required" json:"compose_id"`    // 视频/帖子id
 	Content          string      `binding:"required" json:"content"`       // 评论的内容
 	ReplyId          string      `binding:"required" json:"reply_id"`      // 被回复的评论id
 	CommentType      int         `json:"comment_type"`                     // 评论的类型 1视频 2帖子
@@ -127,6 +127,7 @@ func NewCommentModel(engine *xorm.Session) *CommentModel {
 		VideoComment: new(models.VideoComment),
 		ReceiveAt:    new(models.ReceivedAt),
 		Report:       new(models.CommentReport),
+		PostComment:  new(models.PostingComment),
 	}
 }
 
@@ -160,7 +161,7 @@ func (m *CommentModel) AddReceiveAt() error {
 // 查询用户收到的@们
 func (m *CommentModel) GetReceiveAtList(userId string, offset, size int) []*models.ReceivedAt {
 	var list []*models.ReceivedAt
-	if err := m.Engine.Where("to_user_id=?", userId).Desc("id").Limit(size, offset).Find(&list); err != nil {
+	if err := m.Engine.Where("to_user_id=? AND status=1", userId).Desc("id").Limit(size, offset).Find(&list); err != nil {
 		log.Log.Errorf("comment_trace: get receive at by userid err:%s, userId:%s", err, userId)
 		return nil
 	}
@@ -182,7 +183,7 @@ func (m *CommentModel) GetUserTotalComments(userId string) int64 {
 
 // 获取未读的被@的数量
 func (m *CommentModel) GetUnreadAtCount(userId, readTm string) int64 {
-	count, err := m.Engine.Where("to_user_id=? AND create_at > ?", userId, readTm).Count(&models.ReceivedAt{})
+	count, err := m.Engine.Where("to_user_id=? AND update_at > ?", userId, readTm).Count(&models.ReceivedAt{})
 	if err != nil {
 		log.Log.Errorf("comment_trace: get unread at count err:%s", err)
 		return 0
@@ -249,9 +250,9 @@ func (m *CommentModel) DelVideoComments(commentIds string) error {
 // 获取视频评论列表(1级评论)
 func (m *CommentModel) GetVideoCommentList(composeId string, offset, size int) []*models.VideoComment {
 	var list []*models.VideoComment
-	if err := m.Engine.Where("video_id=? AND comment_level=1", composeId).
+	if err := m.Engine.Where("video_id=? AND coment_level=1", composeId).
 		Desc("is_top").
-		Asc("id").
+		Desc("id").
 		Limit(size, offset).
 		Find(&list); err != nil {
 		log.Log.Errorf("comment_trace: get  comment list err:%s", err)
@@ -266,7 +267,7 @@ func (m *CommentModel) GetPostCommentList(composeId string, offset, size int) []
 	var list []*models.PostingComment
 	if err := m.Engine.Where("post_id=? AND comment_level=1", composeId).
 		Desc("is_top").
-		Asc("id").
+		Desc("id").
 		Limit(size, offset).
 		Find(&list); err != nil {
 		log.Log.Errorf("comment_trace: get  comment list err:%s", err)
@@ -294,7 +295,7 @@ func (m *CommentModel) GetVideoCommentListByLike(composeId string, zanType, offs
 
 // 根据评论点赞数排序 获取帖子评论列表（1级评论）
 func (m *CommentModel) GetPostCommentListByLike(composeId string, zanType, offset, size int) []*CommentList {
-	sql := "SELECT pc.*, count(tu.Id) AS like_num FROM post_comment AS pc " +
+	sql := "SELECT pc.*, count(tu.Id) AS like_num FROM posting_comment AS pc " +
 		"LEFT JOIN thumbs_up AS tu ON pc.id = tu.type_id AND tu.zan_type=? AND tu.status=1 WHERE pc.post_id=? " +
 		"AND pc.comment_level = 1 " +
 		"GROUP BY pc.Id ORDER BY like_num DESC, pc.id DESC LIMIT ?, ?"

@@ -25,4 +25,5 @@ type Videos struct {
 	PubType       int    `json:"pub_type" xorm:"not null default 1 comment('1 首页发布视频 2 社区发布视频') TINYINT(1)"`
 	Subarea       int    `json:"subarea" xorm:"not null default 0 comment('视频所属分区') INT(11)"`
 	Album         int64  `json:"album" xorm:"not null default 0 comment('视频所属专辑') BIGINT(20)"`
+	AiStatus      int    `json:"ai_status" xorm:"not null default 0 comment('AI审核状态（0：未使用AI审核，1：AI审核通过 2：AI审核不通过 3：AI建议复审') TINYINT(1)"`
 }

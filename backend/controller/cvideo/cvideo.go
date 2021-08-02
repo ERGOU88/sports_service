@@ -108,8 +108,8 @@ func (svc *VideoModule) EditVideoStatus(param *mvideo.EditVideoStatusParam) int 
         userIds := svc.attention.GetFansList(user.UserId)
         for _, userId := range userIds {
           // 给发布者的粉丝 发送 发布新视频推送
-          //event.PushEventMsg(config.Global.AmqpDsn, userId, user.NickName, video.Cover, "", consts.FOCUS_USER_PUBLISH_MSG)
-          redismq.PushEventMsg(redismq.NewEvent(userId, user.NickName, video.Cover, "", consts.FOCUS_USER_PUBLISH_MSG))
+          //event.PushEventMsg(config.Global.AmqpDsn, userId, user.NickName, video.Cover, "", consts.FOCUS_USER_PUBLISH_VIDEO_MSG)
+          redismq.PushEventMsg(redismq.NewEvent(userId, fmt.Sprint(video.VideoId), user.NickName, video.Cover, "", consts.FOCUS_USER_PUBLISH_VIDEO_MSG))
         }
       }
     }
@@ -139,8 +139,9 @@ func (svc *VideoModule) EditVideoStatus(param *mvideo.EditVideoStatusParam) int 
       return errdef.VIDEO_DELETE_PUBLISH_FAIL
     }
 
-    svc.engine.Commit()
   }
+
+  svc.engine.Commit()
 
   return errdef.SUCCESS
 }

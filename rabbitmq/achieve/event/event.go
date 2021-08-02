@@ -145,7 +145,7 @@ func handleEvent(event *protocol.Event) error {
   // 评论/回复 点赞
   case consts.VIDEO_COMMENT_LIKE_MSG:
     content = fmt.Sprintf("%s 赞了你的评论 @%s", info.NickName, info.Content)
-    msgType = int32(consts.MSG_TYPE_COMMENT_LIKE_NOTIFY)
+    msgType = int32(consts.MSG_TYPE_VIDEO_COMMENT_LIKE_NOTIFY)
     pushSet = setting.ThumbUpPushSet
   // 收藏视频
   case consts.COLLECT_VIDEO_MSG:
@@ -157,9 +157,9 @@ func handleEvent(event *protocol.Event) error {
     msgType = int32(consts.MSG_TYPE_FOCUS_NOTIFY)
     pushSet = setting.AttentionPushSet
   // 关注的用户发布视频
-  case consts.FOCUS_USER_PUBLISH_MSG:
+  case consts.FOCUS_USER_PUBLISH_VIDEO_MSG:
     content = fmt.Sprintf("你关注的 %s 发布了新视频", info.NickName)
-    msgType = int32(consts.MSG_TYPE_FOCUS_USER_PUBLISH_NOTIFY)
+    msgType = int32(consts.MSG_TYPE_FOCUS_PUBLISH_VIDEO_NOTIFY)
     pushSet = setting.AttentionPushSet
   // 视频评论
   case consts.VIDEO_COMMENT_MSG:

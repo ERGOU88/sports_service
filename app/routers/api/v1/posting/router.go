@@ -72,7 +72,7 @@ func PostPublishList(c *gin.Context) {
 
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	svc := cposting.New(c)
-	list := svc.GetPostPublishListByUser(userId.(string), page, size)
+	list := svc.GetPostPublishListByUser(userId.(string), consts.POST_VIEW_ALL, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 
@@ -117,4 +117,17 @@ func ApplyPostCream(c *gin.Context) {
 	svc := cposting.New(c)
 	code := svc.ApplyPostCream(userId.(string), param)
 	reply.Response(http.StatusOK, code)
+}
+
+// 查看其他用户发布的帖子[已审核成功的]
+func OtherPublishPost(c *gin.Context) {
+	reply := errdef.New(c)
+	userId := c.Query("user_id")
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+
+	svc := cposting.New(c)
+	list := svc.GetPostPublishListByUser(userId, consts.POST_AUDIT_SUCCESS, page, size)
+
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }

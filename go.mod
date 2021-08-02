@@ -29,13 +29,14 @@ require (
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/parnurzeal/gorequest v0.2.16
 	github.com/rs/xid v1.2.1
+	github.com/smartystreets/goconvey v1.6.4
 	github.com/spf13/viper v1.7.1
 	github.com/streadway/amqp v1.0.0
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.5.1
 	github.com/tebeka/strftime v0.1.5 // indirect
 	github.com/tencentcloud/tencentcloud-sdk-go v1.0.30
-	github.com/tencentyun/cos-go-sdk-v5 v0.7.11 // indirect
+	github.com/tencentyun/cos-go-sdk-v5 v0.7.11
 	github.com/tencentyun/qcloud-cos-sts-sdk v0.0.0-20201001014220-f25178b7257d
 	github.com/tencentyun/vod-go-sdk v1.0.0
 	github.com/tidwall/gjson v1.6.1

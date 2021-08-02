@@ -4,6 +4,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	//"fmt"
+	//"github.com/arthurkiller/rollingwriter"
 )
 
 var (
@@ -50,6 +51,25 @@ func ConnectDbs(masterDsn string, slaveDsn []string) (*xorm.EngineGroup, error) 
 	if err != nil {
 		return nil, err
 	}
+
+	//config := rollingwriter.Config{
+	//	LogPath:       "./logs",                    // 日志路径
+	//	TimeTagFormat: "060102150405",              // 时间格式串
+	//	FileName:      "mysql_exec",                // 日志文件名
+	//	MaxRemain:     0,                           // 配置日志最大存留数
+	//	RollingPolicy: rollingwriter.VolumeRolling, // 配置滚动策略
+	//	RollingTimePattern: "* * * * * *", // 配置时间滚动策略
+	//	RollingVolumeSize:  "1M",          // 配置截断文件下限大小
+	//	WriterMode: "none",
+	//	BufferWriterThershould: 256,
+	//	Compress: true, // Compress will compress log file with gzip
+	//}
+	//
+	//writer, err := rollingwriter.NewWriterFromConfig(&config)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//engineGroup.SetLogger(xorm.NewSimpleLogger(writer))
 
 	engineGroup.ShowSQL(true)
 	engineGroup.SetMaxIdleConns(150)

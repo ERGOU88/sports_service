@@ -416,8 +416,7 @@ func UploadSign(c *gin.Context) {
 	userId, _ := c.Get(consts.USER_ID)
 	biteRate, err := strconv.Atoi(c.Query("bite_rate"))
 	if err != nil {
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
-		return
+		biteRate = 0
 	}
 
 	svc := cvideo.New(c)
@@ -601,8 +600,11 @@ func CreateVideoAlbum(c *gin.Context) {
 	}
 
 	svc := cvideo.New(c)
-	syscode, albumId := svc.CreateVideoAlbum(userId.(string), param)
-	reply.Data["album_id"] = albumId
+	syscode, album := svc.CreateVideoAlbum(userId.(string), param)
+	if syscode == errdef.SUCCESS {
+		reply.Data["album"] = album
+	}
+
 	reply.Response(http.StatusOK, syscode)
 }
 
@@ -634,4 +636,19 @@ func VideoListBySubarea(c *gin.Context) {
 	reply.Data["list"] = list
 
 	reply.Response(http.StatusOK, syscode)
+}
+
+// 用户发布的视频专辑列表
+func VideoAlbumList(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	svc := cvideo.New(c)
+	code, list := svc.GetVideoAlbumByUserId(userId.(string), page, size)
+	if code == errdef.SUCCESS {
+		reply.Data["list"] = list
+	}
+
+	reply.Response(http.StatusOK, code)
+
 }
