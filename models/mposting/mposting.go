@@ -17,6 +17,7 @@ type PostingModel struct {
 	Statistic         *models.PostingStatistic
 	ReceiveAt         *models.ReceivedAt
 	ApplyCream        *models.PostingApplyCream
+	Report            *models.PostingReport
 }
 
 // 删除发布的帖子记录请求参数(不支持批量删除)
@@ -28,6 +29,13 @@ type DeletePostParam struct {
 type ApplyCreamParam struct {
 	PostId        int64      `binding:"required" json:"post_id"`  // 帖子id
 	Reason        string     `json:"reason"`                      // 申请理由
+}
+
+// 帖子举报
+type PostReportParam struct {
+	PostId     int64      `json:"post_id" binding:"required"`     // 帖子id
+	UserId     string     `json:"user_id"`
+	Reason     string     `json:"reason" binding:"required"`      // 举报理由
 }
 
 // 发布帖子请求参数
@@ -139,6 +147,7 @@ func NewPostingModel(engine *xorm.Session) *PostingModel {
 		Statistic: new(models.PostingStatistic),
 		ReceiveAt: new(models.ReceivedAt),
 		ApplyCream: new(models.PostingApplyCream),
+		Report: new(models.PostingReport),
 	}
 }
 
@@ -479,3 +488,7 @@ func (m *PostingModel) GetPostListByAttention(userIds string, offset, size int) 
 	return list, nil
 }
 
+// 添加帖子举报
+func (m *PostingModel) AddPostReport() (int64, error) {
+	return m.Engine.InsertOne(m.Report)
+}

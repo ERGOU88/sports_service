@@ -1,6 +1,7 @@
 package posting
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sports_service/server/app/controller/cposting"
@@ -9,7 +10,6 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mposting"
 	"sports_service/server/util"
-	"fmt"
 )
 
 // /api/v1/post/publish
@@ -130,4 +130,19 @@ func OtherPublishPost(c *gin.Context) {
 
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// 举报帖子
+func PostReport(c *gin.Context) {
+	reply := errdef.New(c)
+	param := new(mposting.PostReportParam)
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("post_trace: post report params err:%s, params:%+v", err, param)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cposting.New(c)
+	syscode := svc.AddPostReport(param)
+	reply.Response(http.StatusOK, syscode)
 }
