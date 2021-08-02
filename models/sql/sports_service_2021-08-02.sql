@@ -23,7 +23,7 @@ SET NAMES utf8mb4;
 
 # Dump of table admin_user
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `admin_user`;
 CREATE TABLE `admin_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `phone` char(11) DEFAULT '' COMMENT '手机号',
@@ -40,7 +40,7 @@ CREATE TABLE `admin_user` (
 
 # Dump of table app_version_control
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `app_version_control`;
 CREATE TABLE `app_version_control` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `version_name` varchar(128) NOT NULL DEFAULT '' COMMENT '版本名称',
@@ -72,7 +72,7 @@ UNLOCK TABLES;
 
 # Dump of table banner
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `banner`;
 CREATE TABLE `banner` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `title` varchar(255) NOT NULL DEFAULT '' COMMENT '标题',
@@ -108,7 +108,7 @@ UNLOCK TABLES;
 
 # Dump of table circle_attention
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `circle_attention`;
 CREATE TABLE `circle_attention` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `user_id` varchar(60) NOT NULL COMMENT '关注圈子的用户id',
@@ -124,7 +124,7 @@ CREATE TABLE `circle_attention` (
 
 # Dump of table collect_record
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `collect_record`;
 CREATE TABLE `collect_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `user_id` varchar(60) NOT NULL COMMENT '用户id',
@@ -145,7 +145,7 @@ CREATE TABLE `collect_record` (
 
 # Dump of table comment_report
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `comment_report`;
 CREATE TABLE `comment_report` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `user_id` varchar(60) NOT NULL DEFAULT '' COMMENT '举报人用户id',
@@ -161,7 +161,7 @@ CREATE TABLE `comment_report` (
 
 # Dump of table community_section
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `community_section`;
 CREATE TABLE `community_section` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `section_name` varchar(100) NOT NULL COMMENT '板块名称',
@@ -187,7 +187,7 @@ UNLOCK TABLES;
 
 # Dump of table community_topic
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `community_topic`;
 CREATE TABLE `community_topic` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `topic_name` varchar(100) NOT NULL COMMENT '话题名称',
@@ -220,7 +220,7 @@ UNLOCK TABLES;
 
 # Dump of table complaint
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `complaint`;
 CREATE TABLE `complaint` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `user_id` varchar(60) NOT NULL COMMENT '举报人',
@@ -240,7 +240,7 @@ CREATE TABLE `complaint` (
 
 # Dump of table default_avatar
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `default_avatar`;
 CREATE TABLE `default_avatar` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `avatar` varchar(128) NOT NULL COMMENT '头像地址',
@@ -267,7 +267,7 @@ UNLOCK TABLES;
 
 # Dump of table feedback
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `feedback`;
 CREATE TABLE `feedback` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `user_id` varchar(60) NOT NULL COMMENT '用户id',
@@ -287,7 +287,7 @@ CREATE TABLE `feedback` (
 
 # Dump of table hot_circle
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `hot_circle`;
 CREATE TABLE `hot_circle` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `hot_circle_id` varchar(128) NOT NULL COMMENT '热门圈子id 多个用逗号分隔 例如：3,6,11,21',
@@ -300,7 +300,7 @@ CREATE TABLE `hot_circle` (
 
 # Dump of table hot_search
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `hot_search`;
 CREATE TABLE `hot_search` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `hot_search_content` varchar(128) NOT NULL COMMENT '热门搜索内容 如：FPV、电竞',
@@ -331,7 +331,7 @@ UNLOCK TABLES;
 
 # Dump of table posting_apply_cream
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `posting_apply_cream`;
 CREATE TABLE `posting_apply_cream` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `user_id` varchar(60) NOT NULL DEFAULT '' COMMENT '用户id',
@@ -348,7 +348,7 @@ CREATE TABLE `posting_apply_cream` (
 
 # Dump of table posting_comment
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `posting_comment`;
 CREATE TABLE `posting_comment` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '评论id',
   `user_id` varchar(60) NOT NULL COMMENT '评论人userId',
@@ -374,7 +374,7 @@ CREATE TABLE `posting_comment` (
 
 # Dump of table posting_info
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `posting_info`;
 CREATE TABLE `posting_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '帖子id',
   `section_id` int(11) NOT NULL COMMENT '版块id',
@@ -400,7 +400,7 @@ CREATE TABLE `posting_info` (
 
 # Dump of table posting_statistic
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `posting_statistic`;
 CREATE TABLE `posting_statistic` (
   `posting_id` bigint(20) NOT NULL COMMENT '帖子id',
   `fabulous_num` int(11) NOT NULL DEFAULT '0' COMMENT '点赞数',
@@ -419,7 +419,7 @@ CREATE TABLE `posting_statistic` (
 
 # Dump of table posting_topic
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `posting_topic`;
 CREATE TABLE `posting_topic` (
   `posting_id` bigint(20) NOT NULL COMMENT '帖子id',
   `topic_id` int(11) NOT NULL COMMENT '话题id',
@@ -434,7 +434,7 @@ CREATE TABLE `posting_topic` (
 
 # Dump of table received_at
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `received_at`;
 CREATE TABLE `received_at` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `to_user_id` varchar(60) NOT NULL COMMENT '被@的用户id',
@@ -454,7 +454,7 @@ CREATE TABLE `received_at` (
 
 # Dump of table search_history
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `search_history`;
 CREATE TABLE `search_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `user_id` varchar(60) NOT NULL COMMENT '用户id',
@@ -469,7 +469,7 @@ CREATE TABLE `search_history` (
 
 # Dump of table share_record
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `share_record`;
 CREATE TABLE `share_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `compose_id` bigint(20) NOT NULL COMMENT '作品id（视频/帖子id）',
@@ -489,7 +489,7 @@ CREATE TABLE `share_record` (
 
 # Dump of table social_account_login
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `social_account_login`;
 CREATE TABLE `social_account_login` (
   `user_id` varchar(60) NOT NULL COMMENT '用户id',
   `unionid` varchar(256) NOT NULL DEFAULT '' COMMENT '社交平台关联id',
@@ -503,7 +503,7 @@ CREATE TABLE `social_account_login` (
 
 # Dump of table system_log
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `system_log`;
 CREATE TABLE `system_log` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `sys_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '系统账号ID',
@@ -520,7 +520,7 @@ CREATE TABLE `system_log` (
 
 # Dump of table system_message
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `system_message`;
 CREATE TABLE `system_message` (
   `system_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '系统通知ID',
   `send_id` varchar(60) NOT NULL DEFAULT '' COMMENT '发送者ID（后台用户）',
@@ -549,7 +549,7 @@ CREATE TABLE `system_message` (
 
 # Dump of table system_notice_settings
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `system_notice_settings`;
 CREATE TABLE `system_notice_settings` (
   `user_id` varchar(60) NOT NULL COMMENT '用户id',
   `comment_push_set` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态（0：接收推送；1：拒绝推送 包含评论/回复推送）',
@@ -566,7 +566,7 @@ CREATE TABLE `system_notice_settings` (
 
 # Dump of table tencent_cloud_events
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `tencent_cloud_events`;
 CREATE TABLE `tencent_cloud_events` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `file_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '腾讯云文件id',
@@ -581,7 +581,7 @@ CREATE TABLE `tencent_cloud_events` (
 
 # Dump of table thumbs_up
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `thumbs_up`;
 CREATE TABLE `thumbs_up` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `type_id` bigint(20) NOT NULL COMMENT '作品id （视频id/帖子id/评论id）',
@@ -600,7 +600,7 @@ CREATE TABLE `thumbs_up` (
 
 # Dump of table user
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `nick_name` varchar(45) NOT NULL DEFAULT '' COMMENT '昵称',
@@ -634,7 +634,7 @@ CREATE TABLE `user` (
 
 # Dump of table user_alread_read_msg
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `user_alread_read_msg`;
 CREATE TABLE `user_alread_read_msg` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增id',
   `system_id` bigint(20) NOT NULL COMMENT '系统消息ID',
@@ -650,7 +650,7 @@ CREATE TABLE `user_alread_read_msg` (
 
 # Dump of table user_attention
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `user_attention`;
 CREATE TABLE `user_attention` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `user_id` varchar(60) NOT NULL COMMENT '被关注的用户id',
@@ -667,7 +667,7 @@ CREATE TABLE `user_attention` (
 
 # Dump of table user_browse_record
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `user_browse_record`;
 CREATE TABLE `user_browse_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `user_id` varchar(60) NOT NULL COMMENT '用户id',
@@ -683,7 +683,7 @@ CREATE TABLE `user_browse_record` (
 
 # Dump of table user_play_duration_record
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `user_play_duration_record`;
 CREATE TABLE `user_play_duration_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `video_id` bigint(20) NOT NULL COMMENT '视频id',
@@ -702,7 +702,7 @@ CREATE TABLE `user_play_duration_record` (
 
 # Dump of table user_ycoin
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `user_ycoin`;
 CREATE TABLE `user_ycoin` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `user_id` varchar(60) NOT NULL COMMENT '用户id',
@@ -717,7 +717,7 @@ CREATE TABLE `user_ycoin` (
 
 # Dump of table video_album
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `video_album`;
 CREATE TABLE `video_album` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '专辑id',
   `user_id` varchar(60) NOT NULL COMMENT '用户id',
@@ -732,7 +732,7 @@ CREATE TABLE `video_album` (
 
 # Dump of table video_album_detail
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `video_album_detail`;
 CREATE TABLE `video_album_detail` (
   `album_id` bigint(20) NOT NULL COMMENT '专辑id',
   `video_id` bigint(20) NOT NULL COMMENT '视频id',
@@ -746,7 +746,7 @@ CREATE TABLE `video_album_detail` (
 
 # Dump of table video_barrage
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `video_barrage`;
 CREATE TABLE `video_barrage` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `video_id` bigint(20) NOT NULL COMMENT '视频id',
@@ -767,7 +767,7 @@ CREATE TABLE `video_barrage` (
 
 # Dump of table video_comment
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `video_comment`;
 CREATE TABLE `video_comment` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '评论id',
   `user_id` varchar(60) NOT NULL COMMENT '评论人userId',
@@ -793,7 +793,7 @@ CREATE TABLE `video_comment` (
 
 # Dump of table video_label_config
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `video_label_config`;
 CREATE TABLE `video_label_config` (
   `label_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '标签id',
   `pid` int(11) NOT NULL COMMENT '父类id 0为1级分类',
@@ -835,7 +835,7 @@ UNLOCK TABLES;
 
 # Dump of table video_labels
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `video_labels`;
 CREATE TABLE `video_labels` (
   `video_id` bigint(20) NOT NULL COMMENT '视频id',
   `label_id` varchar(60) NOT NULL DEFAULT '' COMMENT '标签id',
@@ -849,7 +849,7 @@ CREATE TABLE `video_labels` (
 
 # Dump of table video_live
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `video_live`;
 CREATE TABLE `video_live` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `anchor_id` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '主播id',
@@ -880,7 +880,7 @@ CREATE TABLE `video_live` (
 
 # Dump of table video_report
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `video_report`;
 CREATE TABLE `video_report` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `user_id` varchar(60) NOT NULL DEFAULT '' COMMENT '用户id',
@@ -895,7 +895,7 @@ CREATE TABLE `video_report` (
 
 # Dump of table video_statistic
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `video_statistic`;
 CREATE TABLE `video_statistic` (
   `video_id` bigint(20) NOT NULL COMMENT '视频id',
   `fabulous_num` int(11) NOT NULL DEFAULT '0' COMMENT '点赞数',
@@ -914,7 +914,7 @@ CREATE TABLE `video_statistic` (
 
 # Dump of table video_subarea
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `video_subarea`;
 CREATE TABLE `video_subarea` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '分区id',
   `sortorder` int(11) NOT NULL DEFAULT '0' COMMENT '排序权重',
@@ -939,7 +939,7 @@ UNLOCK TABLES;
 
 # Dump of table videos
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `videos`;
 CREATE TABLE `videos` (
   `video_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '视频id',
   `title` mediumtext COMMENT '视频标题',
@@ -974,7 +974,7 @@ CREATE TABLE `videos` (
 
 # Dump of table videos_examine
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `videos_examine`;
 CREATE TABLE `videos_examine` (
   `video_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '视频id',
   `title` mediumtext COMMENT '视频标题',
@@ -1007,7 +1007,7 @@ CREATE TABLE `videos_examine` (
 
 # Dump of table world_map
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `world_map`;
 CREATE TABLE `world_map` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `name` varchar(50) NOT NULL COMMENT '国家(省份/城市)名称',
@@ -1279,7 +1279,7 @@ UNLOCK TABLES;
 
 # Dump of table ycoin_receive_record
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `ycoin_receive_record`;
 CREATE TABLE `ycoin_receive_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `name` varchar(128) NOT NULL COMMENT '任务名称',
@@ -1297,7 +1297,7 @@ CREATE TABLE `ycoin_receive_record` (
 
 # Dump of table ycoin_reward_record
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `ycoin_reward_record`;
 CREATE TABLE `ycoin_reward_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `giver_id` varchar(60) NOT NULL COMMENT '赠予人uid',
@@ -1316,7 +1316,7 @@ CREATE TABLE `ycoin_reward_record` (
 
 # Dump of table ycoin_task
 # ------------------------------------------------------------
-
+DROP TABLE IF EXISTS `ycoin_task`;
 CREATE TABLE `ycoin_task` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `name` varchar(128) NOT NULL COMMENT '任务名称',
