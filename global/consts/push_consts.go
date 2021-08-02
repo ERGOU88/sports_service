@@ -32,6 +32,13 @@ const (
   MSG_TYPE_POST_COMMENT_NOTIFY                MessageType = 50002
   // 帖子回复推送
   MSG_TYPE_POST_REPLY_NOTIFY                  MessageType = 50003
+  // 视频评论/回复中 @
+  MSG_TYPE_VIDEO_COMMENT_AT_NOTIFY            MessageType = 50004
+  // 帖子评论/回复中 @
+  MSG_TYPE_POST_COMMENT_AT_NOTIFY             MessageType = 50005
+  // 发布帖子内容中 @
+  MSG_TYPE_POST_PUBLISH_AT_NOTIFY             MessageType = 50006
+
 )
 
 var NotifyDoc = map[MessageType]string{
@@ -49,6 +56,9 @@ var NotifyDoc = map[MessageType]string{
   MSG_TYPE_VIDEO_REPLY_NOTIFY:         "视频回复推送",
   MSG_TYPE_POST_COMMENT_NOTIFY:        "帖子评论推送",
   MSG_TYPE_POST_REPLY_NOTIFY:          "帖子回复推送",
+  MSG_TYPE_VIDEO_COMMENT_AT_NOTIFY:    "视频评论/回复中@",
+  MSG_TYPE_POST_COMMENT_AT_NOTIFY:     "帖子评论/回复中@",
+  MSG_TYPE_POST_PUBLISH_AT_NOTIFY:     "帖子发布时 内容中@",
 }
 
 const (

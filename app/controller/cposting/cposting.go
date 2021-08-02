@@ -18,6 +18,7 @@ import (
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
+	redismq "sports_service/server/redismq/event"
 	cloud "sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"time"
@@ -149,12 +150,13 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 			}
 
 			at := &models.ReceivedAt{
-				ToUserId: val,
-				UserId: userId,
+				ToUserId:  val,
+				UserId:    userId,
 				ComposeId: svc.posting.Posting.Id,
 				TopicType: consts.TYPE_PUBLISH_POST,
-				CreateAt: now,
-				Status: 0,
+				CreateAt:  now,
+				Status:    0,
+				UpdateAt:  now,
 			}
 
 			atList = append(atList, at)
@@ -179,7 +181,6 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 
 // 审核帖子图片
 func (svc *PostingModule) ReviewPostInfo(params *mposting.PostPublishParam) {
-	time.Sleep(10 * time.Second)
 	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测帖子标题
 	isPass, err := client.TextModeration(params.Title)
@@ -239,19 +240,45 @@ func (svc *PostingModule) ReviewPostInfo(params *mposting.PostPublishParam) {
 
 	// 所有图片 及 标题、内容都通过审核 则 修改帖子状态为通过 相关数据也需修改状态
 	if num == len(params.ImagesAddr) && isPass && isOk {
+		now := int(time.Now().Unix())
 		svc.posting.Posting.Status = 1
+		svc.posting.Posting.UpdateAt = now
 		if err := svc.posting.UpdateStatusByPost(); err != nil {
 			log.Log.Errorf("post_trace: update status by post fail, err:%s", err)
+			return
 		}
 
-		if err := svc.posting.UpdateReceiveAtStatus(fmt.Sprint(svc.posting.Posting.Id), consts.TYPE_PUBLISH_POST); err != nil {
+		if err := svc.posting.UpdateReceiveAtStatus(fmt.Sprint(svc.posting.Posting.Id), consts.TYPE_PUBLISH_POST, now); err != nil {
 			log.Log.Errorf("post_trace: update receive at status fail, err:%s", err)
+			return
 		}
 
-		if err := svc.posting.UpdatePostTopicStatus(fmt.Sprint(svc.posting.Posting.Id)); err != nil {
+		if err := svc.posting.UpdatePostTopicStatus(fmt.Sprint(svc.posting.Posting.Id), now); err != nil {
 			log.Log.Errorf("post_trace: update post topic status fail, err:%s", err)
+			return
 		}
 	}
+
+
+	if user := svc.user.FindUserByUserid(fmt.Sprint(svc.posting.Posting.UserId)); user != nil {
+		// 获取发布者的粉丝们
+		userIds := svc.attention.GetFansList(svc.posting.Posting.UserId)
+		for _, userId := range userIds {
+			// 给发布者的粉丝 发送 发布新帖子推送
+			redismq.PushEventMsg(redismq.NewEvent(userId, fmt.Sprint(svc.posting.Posting.Id), user.NickName,
+				"", svc.posting.Posting.Title, consts.FOCUS_USER_PUBLISH_POST_MSG))
+		}
+
+		// 发布帖子时@的用户列表
+		if len(params.AtInfo) > 0 {
+			for _, userId := range params.AtInfo {
+				// 给被@的人 发送 推送通知
+				redismq.PushEventMsg(redismq.NewEvent(userId, fmt.Sprint(svc.posting.Posting.Id), user.NickName,
+					"", svc.posting.Posting.Title, consts.POST_PUBLISH_AT_MSG))
+			}
+		}
+	}
+
 
 	return
 }

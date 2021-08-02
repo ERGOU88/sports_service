@@ -401,7 +401,7 @@ func aiContentReviewEvent(event *v20180717.EventContent, vmodel *mvideo.VideoMod
   //// 记录事件回调信息
   //fileId, _ := strconv.Atoi(*event.ProcedureStateChangeEvent.FileId)
   //vmodel.Events.FileId = int64(fileId)
-  //vmodel.Events.CreateAt = int(now)
+  //vmodel.Events.UpdateAt = int(now)
   //vmodel.Events.EventType = consts.EVENT_PROCEDURE_STATE_CHANGED_TYPE
   //bts, _ := util.JsonFast.Marshal(event)
   //vmodel.Events.Event = string(bts)
@@ -577,7 +577,7 @@ func transCodeCompleteEvent(event *v20180717.EventContent, video *models.Videos)
   //// 记录事件回调信息
   //fileId, _ := strconv.Atoi(*event.ProcedureStateChangeEvent.FileId)
   //vmodel.Events.FileId = int64(fileId)
-  //vmodel.Events.CreateAt = int(now)
+  //vmodel.Events.UpdateAt = int(now)
   //vmodel.Events.EventType = consts.EVENT_PROCEDURE_STATE_CHANGED_TYPE
   //bts, _ := util.JsonFast.Marshal(event)
   //vmodel.Events.Event = string(bts)
@@ -986,7 +986,7 @@ func newUploadEvent(event *v20180717.EventContent) error {
   vmodel.Videos.VideoAddr = pubInfo.VideoAddr
   // 转为毫秒
   vmodel.Videos.VideoDuration = int(*event.FileUploadEvent.MetaData.VideoDuration * 1000)
-  //vmodel.Videos.CreateAt = int(now)
+  //vmodel.Videos.UpdateAt = int(now)
   vmodel.Videos.UpdateAt = int(now)
   vmodel.Videos.UserType = consts.PUBLISH_VIDEO_BY_USER
   vmodel.Videos.VideoWidth = *event.FileUploadEvent.MetaData.Width

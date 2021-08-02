@@ -459,7 +459,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 
 		// 未记录读取的下标
 		// 用户上次读取的数据下标
-		//if lastRead < liked.CreateAt {
+		//if lastRead < liked.UpdateAt {
 		//  readIndex = int32(index)
 		//}
 	}
@@ -514,7 +514,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 		// 视频评论里@ 则展示视频内容
 		case consts.TYPE_VIDEOS:
 			info := new(mnotify.ReceiveAtInfo)
-			info.AtTime = receiveAt.CreateAt
+			info.AtTime = receiveAt.UpdateAt
 			info.Type = consts.TYPE_VIDEOS
 			// 获取评论信息
 			comment := svc.comment.GetVideoCommentById(fmt.Sprint(receiveAt.ComposeId))
@@ -540,7 +540,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 		// 帖子评论里@ 或 发布帖子时 内容@用户 则展示帖子内容 todo: 展示待确认
 		case consts.TYPE_POSTS, consts.TYPE_PUBLISH_POST:
 			info := new(mnotify.ReceiveAtInfo)
-			info.AtTime = receiveAt.CreateAt
+			info.AtTime = receiveAt.UpdateAt
 			info.Type = receiveAt.TopicType
 			comment := svc.comment.GetPostCommentById(fmt.Sprint(receiveAt.ComposeId))
 			if comment != nil {
@@ -579,7 +579,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 		// 视频直接评论/回复
 		case consts.TYPE_VIDEO_COMMENT:
 			info := new(mnotify.ReceiveAtInfo)
-			info.AtTime = receiveAt.CreateAt
+			info.AtTime = receiveAt.UpdateAt
 			info.Type = consts.TYPE_VIDEO_COMMENT
 			// 获取评论信息
 			comment := svc.comment.GetVideoCommentById(fmt.Sprint(receiveAt.ComposeId))
@@ -670,7 +670,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 		// 帖子直接评论/回复
 		case consts.TYPE_POST_COMMENT:
 			info := new(mnotify.ReceiveAtInfo)
-			info.AtTime = receiveAt.CreateAt
+			info.AtTime = receiveAt.UpdateAt
 			info.Type = consts.TYPE_VIDEO_COMMENT
 			// 获取评论信息
 			comment := svc.comment.GetPostCommentById(fmt.Sprint(receiveAt.ComposeId))
@@ -760,7 +760,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 		}
 
 		log.Log.Debugf("receiveId: %d", receiveAt.Id)
-		if lastRead < receiveAt.CreateAt {
+		if lastRead < receiveAt.UpdateAt {
 			// 用户上次读取的数据下标
 			readIndex = index
 		}

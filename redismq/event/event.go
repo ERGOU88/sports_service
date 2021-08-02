@@ -22,9 +22,11 @@ func PushEventMsg(msg []byte) {
 	}
 }
 
-func NewEvent(userId, composeId, nickname, cover, content string, eventType int32) []byte {
+// toUserId 接收者id
+// nickname 发送者昵称
+func NewEvent(toUserId, composeId, nickname, cover, content string, eventType int32) []byte {
 	event := new(protocol.Event)
-	event.UserId = userId
+	event.UserId = toUserId
 	event.EventType = eventType
 	event.Ts = time.Now().Unix()
 

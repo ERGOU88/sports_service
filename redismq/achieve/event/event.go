@@ -13,7 +13,7 @@ import (
 	"sports_service/server/models/mnotify"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/umeng"
-	"sports_service/server/nsqlx/protocol"
+	"sports_service/server/redismq/protocol"
 	"sports_service/server/util"
 	"time"
 	producer "sports_service/server/redismq/event"
@@ -168,6 +168,11 @@ func handleEvent(event protocol.Event) error {
 		content = fmt.Sprintf("%s 回复了你的评论 @%s", info.NickName, info.Content)
 		msgType = int32(consts.MSG_TYPE_VIDEO_REPLY_NOTIFY)
 		pushSet = setting.CommentPushSet
+	// 在视频评论/回复中 @某人
+	case consts.VIDEO_COMMENT_AT_MSG:
+		content = fmt.Sprintf("%s 在某视频评论中@了你 戳我～👇👇", info.NickName)
+		msgType = int32(consts.MSG_TYPE_VIDEO_COMMENT_AT_NOTIFY)
+		pushSet = setting.CommentPushSet
     // 帖子点赞
 	case consts.POST_LIKE_MSG:
 		content = fmt.Sprintf("%s 赞了你的帖子", info.NickName)
@@ -194,10 +199,19 @@ func handleEvent(event protocol.Event) error {
 		content = fmt.Sprintf("%s 回复了你的评论 @%s", info.NickName, info.Content)
 		msgType = int32(consts.MSG_TYPE_POST_REPLY_NOTIFY)
 		pushSet = setting.CommentPushSet
+	// 帖子评论/回复中 @
+	case consts.POST_COMMENT_AT_MSG:
+		content = fmt.Sprintf("%s 在某帖子评论中@了你 戳我～👇👇", info.NickName)
+		msgType = int32(consts.MSG_TYPE_POST_COMMENT_AT_NOTIFY)
+		pushSet = setting.CommentPushSet
+	// 发布帖子内容中@
+	case consts.POST_PUBLISH_AT_MSG:
+		content = fmt.Sprintf("%s 在帖子中@了你 戳我～👇👇", info.NickName)
+		msgType = int32(consts.MSG_TYPE_POST_PUBLISH_AT_NOTIFY)
+		pushSet = setting.CommentPushSet
 	default:
 		log.Log.Errorf("redisMq_trace: unsupported eventType, eventType:%d", event.EventType)
 		return nil
-
 	}
 
 	// 0为接收推送 1为拒绝接收

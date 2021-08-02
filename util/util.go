@@ -8,8 +8,8 @@ import (
 	"github.com/zheng-ji/goSnowFlake"
 	"log"
 	"math/rand"
-  "regexp"
-  "strconv"
+	"regexp"
+	"strconv"
 	"time"
 	"strings"
 	"unicode"
@@ -116,91 +116,91 @@ func GetStrLen(r []rune) int {
 }
 
 func TrimHtml(src string) string {
-  // 将HTML标签全转换成小写
-  re, _ := regexp.Compile("\\<[\\S\\s]+?\\>")
-  src = re.ReplaceAllStringFunc(src, strings.ToLower)
+	// 将HTML标签全转换成小写
+	re, _ := regexp.Compile("\\<[\\S\\s]+?\\>")
+	src = re.ReplaceAllStringFunc(src, strings.ToLower)
 
-  // 去除STYLE
-  re, _ = regexp.Compile("\\<style[\\S\\s]+?\\</style\\>")
-  src = re.ReplaceAllString(src, "")
+	// 去除STYLE
+	re, _ = regexp.Compile("\\<style[\\S\\s]+?\\</style\\>")
+	src = re.ReplaceAllString(src, "")
 
-  // 去除SCRIPT
-  re, _ = regexp.Compile("\\<script[\\S\\s]+?\\</script\\>")
-  src = re.ReplaceAllString(src, "")
+	// 去除SCRIPT
+	re, _ = regexp.Compile("\\<script[\\S\\s]+?\\</script\\>")
+	src = re.ReplaceAllString(src, "")
 
-  // 去除所有尖括号内的HTML代码，并换成换行符
-  re, _ = regexp.Compile("\\<[\\S\\s]+?\\>")
-  src = re.ReplaceAllString(src, "\n")
+	// 去除所有尖括号内的HTML代码，并换成换行符
+	re, _ = regexp.Compile("\\<[\\S\\s]+?\\>")
+	src = re.ReplaceAllString(src, "\n")
 
-  // 去除连续的换行符
-  re, _ = regexp.Compile("\\s{2,}")
-  src = re.ReplaceAllString(src, "\n")
+	// 去除连续的换行符
+	re, _ = regexp.Compile("\\s{2,}")
+	src = re.ReplaceAllString(src, "\n")
 
-  src = strings.Replace(src, "\n", "", -1)
-  return strings.TrimSpace(src)
+	src = strings.Replace(src, "\n", "", -1)
+	return strings.TrimSpace(src)
 }
 
 // 转化为中文展示 小于100不展示
 func TransferChinese(num int) string{
-  count := num/100
-  if count <= 0 {
-    return "0"
-  }
+	count := num/100
+	if count <= 0 {
+		return "0"
+	}
 
-  chineseMap:= []string{"百", "千", "万", "十万", "百万", "千万", "亿", "十亿", "百亿", "千亿"}
-  chinese := fmt.Sprintf("%d%s", count/int(Pow(float64(10), len(fmt.Sprint(count))-1)), chineseMap[len(fmt.Sprint(count))-1])
+	chineseMap:= []string{"百", "千", "万", "十万", "百万", "千万", "亿", "十亿", "百亿", "千亿"}
+	chinese := fmt.Sprintf("%d%s", count/int(Pow(float64(10), len(fmt.Sprint(count))-1)), chineseMap[len(fmt.Sprint(count))-1])
 
-  return chinese
+	return chinese
 }
 
 func Pow(x float64, n int) float64 {
-  if x == 0 {
-    return 0
-  }
-  result := calPow(x, n)
-  if n < 0 {
-    result = 1 / result
-  }
-  return result
+	if x == 0 {
+		return 0
+	}
+	result := calPow(x, n)
+	if n < 0 {
+		result = 1 / result
+	}
+	return result
 }
 
 func calPow(x float64, n int) float64 {
-  if n == 0 {
-    return 1
-  }
-  if n == 1 {
-    return x
-  }
+	if n == 0 {
+		return 1
+	}
+	if n == 1 {
+		return x
+	}
 
-  // 向右移动一位
-  result := calPow(x, n>>1)
-  result *= result
+	// 向右移动一位
+	result := calPow(x, n>>1)
+	result *= result
 
-  // 如果n是奇数
-  if n&1 == 1 {
-    result *= x
-  }
+	// 如果n是奇数
+	if n&1 == 1 {
+		result *= x
+	}
 
-  return result
+	return result
 }
 
 // 检查map里面是否存在某个key，返回bool
 func MapExist(m map[string]interface{}, key string) bool {
-  if _, ok := m[key]; ok {
-    return true
-  }
+	if _, ok := m[key]; ok {
+		return true
+	}
 
-  return false
+	return false
 }
 
 // 解析json字符串成 map
 func JsonStringToMap(jsonStr string) (m map[string]interface{}, err error) {
-  mp := map[string]interface{}{}
-  if err := JsonFast.Unmarshal([]byte(jsonStr), &mp); err != nil {
-    return nil, err
-  }
+	mp := map[string]interface{}{}
+	if err := JsonFast.Unmarshal([]byte(jsonStr), &mp); err != nil {
+		return nil, err
+	}
 
-  return mp, nil
+	return mp, nil
 }
 
 

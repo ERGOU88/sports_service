@@ -212,7 +212,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	// 被@的用户 1级评论 则@的是视频up主 / 帖子发布者
 	svc.comment.ReceiveAt.ToUserId = toUserId
 	svc.comment.ReceiveAt.ComposeId = commentId
-	svc.comment.ReceiveAt.CreateAt = now
+	svc.comment.ReceiveAt.UpdateAt = now
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_PUBLISH
 	// 评论也是@
 	//if err := svc.comment.AddReceiveAt(); err != nil {
@@ -233,12 +233,13 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 			}
 
 			at := &models.ReceivedAt{
-				ToUserId: val,
-				UserId: userId,
-				ComposeId: commentId,
-				TopicType: params.CommentType,
-				CreateAt: now,
+				ToUserId:     val,
+				UserId:       userId,
+				ComposeId:    commentId,
+				TopicType:    params.CommentType,
+				UpdateAt:     now,
 				CommentLevel: consts.COMMENT_PUBLISH,
+				CreateAt:     now,
 			}
 
 			atList = append(atList, at)
@@ -332,7 +333,7 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	svc.comment.ReceiveAt.ToUserId = video.UserId
 	svc.comment.ReceiveAt.ComposeId = svc.comment.VideoComment.Id
 	svc.comment.ReceiveAt.TopicType = consts.TYPE_VIDEO_COMMENT
-	svc.comment.ReceiveAt.CreateAt = int(now)
+	svc.comment.ReceiveAt.UpdateAt = int(now)
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_PUBLISH
 	// 评论也是@
 	if err := svc.comment.AddReceiveAt(); err != nil {
@@ -404,6 +405,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		cover, toUserId, content string
 		msgType int32
 		commentId, composeId int64
+		atType int
 	)
 	now := int(time.Now().Unix())
 	resp := &mcomment.ReplyComment{}
@@ -496,6 +498,8 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			resp.ReplyCommentUserName = uinfo.NickName
 		}
 
+		atType = consts.TYPE_VIDEO_COMMENT
+
 	// 帖子评论
 	case consts.COMMENT_TYPE_POST:
 		// 查询被回复的评论是否存在
@@ -580,6 +584,8 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			resp.ReplyCommentUserName = uinfo.NickName
 		}
 
+		atType = consts.TYPE_POST_COMMENT
+
 	default:
 		log.Log.Errorf("comment_trace: invalid commentType:%d", params.CommentType)
 		return errdef.INVALID_PARAMS, nil
@@ -589,7 +595,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	// 被@的用户
 	svc.comment.ReceiveAt.ToUserId = toUserId
 	svc.comment.ReceiveAt.ComposeId = svc.comment.VideoComment.Id
-	svc.comment.ReceiveAt.CreateAt = now
+	svc.comment.ReceiveAt.UpdateAt = now
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_REPLY
 	// 回复 记录到 @
 	if err := svc.comment.AddReceiveAt(); err != nil {
@@ -609,12 +615,13 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			}
 
 			at := &models.ReceivedAt{
-				ToUserId: val,
-				UserId: userId,
-				ComposeId: commentId,
-				TopicType: params.CommentType,
-				CreateAt: now,
-				CommentLevel: consts.COMMENT_REPLY,
+				ToUserId:     val,
+				UserId:       userId,
+				ComposeId:    commentId,
+				TopicType:    atType,
+				CreateAt:     now,
+				CommentLevel: consts.COMMENT_PUBLISH,
+				UpdateAt:     now,
 			}
 
 			atList = append(atList, at)

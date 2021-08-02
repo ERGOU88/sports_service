@@ -183,7 +183,7 @@ func (m *CommentModel) GetUserTotalComments(userId string) int64 {
 
 // 获取未读的被@的数量
 func (m *CommentModel) GetUnreadAtCount(userId, readTm string) int64 {
-	count, err := m.Engine.Where("to_user_id=? AND create_at > ?", userId, readTm).Count(&models.ReceivedAt{})
+	count, err := m.Engine.Where("to_user_id=? AND update_at > ?", userId, readTm).Count(&models.ReceivedAt{})
 	if err != nil {
 		log.Log.Errorf("comment_trace: get unread at count err:%s", err)
 		return 0
