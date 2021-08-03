@@ -41,7 +41,7 @@ type PostReportParam struct {
 // 发布帖子请求参数
 type PostPublishParam struct {
 	Title             string              `json:"title"`                              // 标题
-	Describe          string              `binding:"required" json:"describe"`                           // 富文本内容
+	Describe          string              `json:"describe"`                           // 富文本内容
 	//ForwardVideo      *ForwardVideoInfo   `json:"forward_video"`                     // 转发的视频内容 todo: 结构体
 	//VideoId           string              `json:"video_id"`                          // 关联的视频id
 	//PostingType    int        `json:"posting_type" binding:"required"`               // 帖子类型  0 纯文本 1 图文 2 视频 + 文

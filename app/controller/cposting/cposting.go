@@ -58,6 +58,11 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		return errdef.POST_INVALID_CONTENT_LEN
 	}
 
+	if params.Describe == "" && len(params.ImagesAddr) == 0 {
+		log.Log.Error("post_trace: describe and images empty")
+		return errdef.POST_PARAMS_FAIL
+	}
+
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("post_trace: session begin err:%s", err)
