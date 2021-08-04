@@ -413,7 +413,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	// 视频评论
 	case consts.COMMENT_TYPE_VIDEO:
 		// 查询被回复的评论是否存在
-		replyInfo := svc.comment.GetVideoCommentById(params.ReplyId)
+		replyInfo := svc.comment.GetVideoCommentById(fmt.Sprint(params.ReplyId))
 		if replyInfo == nil {
 			log.Log.Error("comment_trace: reply comment not found, commentId:%s", params.ReplyId)
 			svc.engine.Rollback()
@@ -503,7 +503,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	// 帖子评论
 	case consts.COMMENT_TYPE_POST:
 		// 查询被回复的评论是否存在
-		replyInfo := svc.comment.GetPostCommentById(params.ReplyId)
+		replyInfo := svc.comment.GetPostCommentById(fmt.Sprint(params.ReplyId))
 		if replyInfo == nil {
 			log.Log.Error("comment_trace: reply comment not found, commentId:%s", params.ReplyId)
 			svc.engine.Rollback()

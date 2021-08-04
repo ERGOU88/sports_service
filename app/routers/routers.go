@@ -9,6 +9,7 @@ import (
 	"sports_service/server/app/routers/api/v1/comment"
 	"sports_service/server/app/routers/api/v1/like"
 	"sports_service/server/app/routers/api/v1/notify"
+	"sports_service/server/app/routers/api/v1/order"
 	"sports_service/server/app/routers/api/v1/posting"
 	"sports_service/server/app/routers/api/v1/search"
 	"sports_service/server/app/routers/api/v1/share"
@@ -72,4 +73,6 @@ func InitRouters(engine *gin.Engine) {
 	share.Router(engine)
 	// 社区模块
 	community.Router(engine)
+	// 订单模块
+	order.Router(engine)
 }
