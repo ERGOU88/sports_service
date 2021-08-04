@@ -527,7 +527,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 
 		svc.comment.PostComment.UserId = userId
 		svc.comment.PostComment.Content = params.Content
-		svc.comment.PostComment.CreateAt = int(now)
+		svc.comment.PostComment.CreateAt = now
 		svc.comment.PostComment.PostId = replyInfo.PostId
 		svc.comment.PostComment.CommentLevel = consts.COMMENT_REPLY
 		svc.comment.PostComment.Status = 1
