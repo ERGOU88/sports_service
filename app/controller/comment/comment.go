@@ -224,7 +224,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	// 添加@
 	if len(params.AtInfo) > 0 {
 		atList := make([]*models.ReceivedAt, 0)
-		atList[0] = svc.comment.ReceiveAt
+		atList = append(atList, svc.comment.ReceiveAt)
 		for _, val := range params.AtInfo {
 			user := svc.user.FindUserByUserid(val)
 			if user == nil {
