@@ -203,4 +203,127 @@ func JsonStringToMap(jsonStr string) (m map[string]interface{}, err error) {
 	return mp, nil
 }
 
+type DateInfo struct {
+	Date      string    `json:"date"`
+	Week      int       `json:"week"`
+	Id        int32     `json:"id"`
+	WeekCn    string    `json:"week_cn"`
+}
+
+// GetBetweenDates 根据开始日期和结束日期计算出时间段内所有日期
+// 参数为日期格式，如：2020-01-01
+func GetBetweenDates(start, end string) []*DateInfo {
+	var list []*DateInfo
+	timeFormatTpl := "2006-01-02 15:04:05"
+	if len(timeFormatTpl) != len(start) {
+		timeFormatTpl = timeFormatTpl[0:len(start)]
+	}
+
+	date, err := time.Parse(timeFormatTpl, start)
+	if err != nil {
+		// 时间解析，异常
+		return list
+	}
+
+	date2, err := time.Parse(timeFormatTpl, end)
+	if err != nil {
+		// 时间解析，异常
+		return list
+	}
+	if date2.Before(date) {
+		// 如果结束时间小于开始时间，异常
+		return list
+	}
+
+	var id int32 = 1
+	// 输出日期格式固定
+	timeFormatTpl = "2006-01-02"
+	date2Str := date2.Format(timeFormatTpl)
+	info := &DateInfo{}
+	info.Date = date.Format("01/02")
+	info.Week = int(date.Weekday())
+	info.WeekCn = GetWeekCn(info.Week)
+	info.Id = id
+	list = append(list, info)
+
+	for {
+		id++
+		info := &DateInfo{}
+		date = date.AddDate(0, 0, 1)
+		dateStr := date.Format(timeFormatTpl)
+		info.Date = date.Format("01/02")
+		info.Week = int(date.Weekday())
+		info.WeekCn = GetWeekCn(info.Week)
+		info.Id = id
+		list = append(list, info)
+		if dateStr == date2Str {
+			break
+		}
+	}
+
+	return list
+}
+
+// 获取周几（中文）
+func GetWeekCn(week int) string {
+	switch week {
+	case 0:
+		return "周日"
+	case 1:
+		return "周一"
+	case 2:
+		return "周二"
+	case 3:
+		return "周三"
+	case 4:
+		return "周四"
+	case 5:
+		return "周五"
+	case 6:
+		return "周六"
+	}
+
+	return ""
+}
+
+// 数字是否相邻（允许乱序）
+func IsContinuous(slice []int64, n int) (bool, int64, int64) {
+	if len(slice) == 0 || n == 0 {
+		return false, 0, 0
+	}
+
+	max := slice[0]
+	min := slice[0]
+
+	for i := 1; i < n; i ++ {
+		if slice[i] == 0 {
+			return false, 0, 0
+		}
+
+		if min > slice[i] {
+			min = slice[i]
+		}
+
+		if max < slice[i] {
+			max = slice[i]
+		}
+
+	}
+
+	if max - min > int64(n) - 1 {
+		return false, min, max
+	}
+
+	return true, min, max
+}
+
+// 隐藏手机号码（4位）
+func HideMobileNum(mobileNum string) string {
+	slice := strings.Split(mobileNum, "")
+	if len(slice) != 11 {
+		return mobileNum
+	}
+
+	return strings.Join(slice[0:3], "") + "****" + strings.Join(slice[7:], "")
+}
 

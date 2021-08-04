@@ -13,6 +13,7 @@ func init() {
 
 func TestAddAttention(t *testing.T) {
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
-	UserAppointment(NewVenue(c))
+	code, list := GetAppointmentDate(NewCoach(c))
+	t.Logf("code:%d, list:%+v", code, list)
 }
 

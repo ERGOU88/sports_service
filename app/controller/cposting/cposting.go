@@ -533,6 +533,16 @@ func (svc *PostingModule) GetPostPublishListByUser(userId, status string, page, 
 		}
 
 		item.Content = ""
+
+		// 是否点赞
+		if likeInfo := svc.like.GetLikeInfo(userId, item.Id, consts.TYPE_POSTS); likeInfo != nil {
+			item.IsLike = likeInfo.Status
+		}
+
+		// 是否关注
+		if attentionInfo := svc.attention.GetAttentionInfo(userId, item.UserId); attentionInfo != nil {
+			item.IsAttention = attentionInfo.Status
+		}
 	}
 
 	return list
