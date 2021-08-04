@@ -445,7 +445,7 @@ func (m *PostingModel) DelPublishPostById(postId string) error {
 
 // 删除帖子所属话题
 func (m *PostingModel) DelPostTopics(postId string) error {
-	if _, err := m.Engine.Where("post_id=?", postId).Delete(&models.PostingTopic{}); err != nil {
+	if _, err := m.Engine.Where("posting_id=?", postId).Delete(&models.PostingTopic{}); err != nil {
 		return err
 	}
 
@@ -454,7 +454,7 @@ func (m *PostingModel) DelPostTopics(postId string) error {
 
 // 删除帖子统计数据
 func (m *PostingModel) DelPostStatistic(postId string) error {
-	if _, err := m.Engine.Where("post_id=?", postId).Delete(&models.PostingStatistic{}); err != nil {
+	if _, err := m.Engine.Where("posting_id=?", postId).Delete(&models.PostingStatistic{}); err != nil {
 		return err
 	}
 
