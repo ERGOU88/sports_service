@@ -12,6 +12,14 @@ type AppointmentModel struct {
 	Engine           *xorm.Session
 }
 
+type WeekInfo struct {
+	Date      string    `json:"date"`
+	Week      int       `json:"week"`
+	Id        int32     `json:"id"`
+	WeekCn    string    `json:"week_cn"`
+	MinPrice  int       `json:"min_price"`
+}
+
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
 	return &AppointmentModel{
 		AppointmentInfo: new(models.VenueAppointmentInfo),
@@ -21,7 +29,7 @@ func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
 
 // 获取预约的日期信息（从当天开始推算）
 // days 天数
-func (m *AppointmentModel) GetAppointmentDate(days int) []*util.DateInfo {
+func (m *AppointmentModel) GetAppointmentDate(days int) []util.DateInfo {
 	curTime := time.Now()
 	// 今天
 	today := curTime.Format("2006-01-02")
@@ -32,8 +40,17 @@ func (m *AppointmentModel) GetAppointmentDate(days int) []*util.DateInfo {
 	return dateInfo
 }
 
+const (
+	QUERY_MIN_PRICE = "SELECT min(cur_amount) as cur_amount FROM venue_appointment_info WHERE week_num=? AND appointment_type=? AND status=0"
+)
 // 根据星期 及 预约类型 获取最低价格
-func (m *AppointmentModel) GetMinPriceByWeek() {
+func (m *AppointmentModel) GetMinPriceByWeek() error {
+	ok, err := m.Engine.SQL(QUERY_MIN_PRICE, m.AppointmentInfo.WeekNum, m.AppointmentInfo.AppointmentType).Get(m.AppointmentInfo)
+	if !ok || err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // 通过星期 及 预约类型 获取可预约选项

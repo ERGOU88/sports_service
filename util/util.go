@@ -212,8 +212,8 @@ type DateInfo struct {
 
 // GetBetweenDates 根据开始日期和结束日期计算出时间段内所有日期
 // 参数为日期格式，如：2020-01-01
-func GetBetweenDates(start, end string) []*DateInfo {
-	var list []*DateInfo
+func GetBetweenDates(start, end string) []DateInfo {
+	var list []DateInfo
 	timeFormatTpl := "2006-01-02 15:04:05"
 	if len(timeFormatTpl) != len(start) {
 		timeFormatTpl = timeFormatTpl[0:len(start)]
@@ -239,7 +239,7 @@ func GetBetweenDates(start, end string) []*DateInfo {
 	// 输出日期格式固定
 	timeFormatTpl = "2006-01-02"
 	date2Str := date2.Format(timeFormatTpl)
-	info := &DateInfo{}
+	info := DateInfo{}
 	info.Date = date.Format("01/02")
 	info.Week = int(date.Weekday())
 	info.WeekCn = GetWeekCn(info.Week)
@@ -248,7 +248,7 @@ func GetBetweenDates(start, end string) []*DateInfo {
 
 	for {
 		id++
-		info := &DateInfo{}
+		info := DateInfo{}
 		date = date.AddDate(0, 0, 1)
 		dateStr := date.Format(timeFormatTpl)
 		info.Date = date.Format("01/02")

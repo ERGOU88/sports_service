@@ -5,6 +5,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
 	"sports_service/server/models"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/muser"
@@ -55,9 +56,29 @@ func (svc *VenueAppointmentModule) AppointmentDetail() (int, interface{}) {
 	return 4000, nil
 }
 
-// 预约日期配置
+// 场馆预约日期配置
 func (svc *VenueAppointmentModule) AppointmentDate() (int, interface{}) {
-	// todo: 查看当天最低价
-	return errdef.SUCCESS, svc.appointment.GetAppointmentDate(6)
+	list := svc.appointment.GetAppointmentDate(6)
+	res := make([]mappointment.WeekInfo, len(list))
+	for index, v := range list {
+		info := mappointment.WeekInfo{
+			Id: v.Id,
+			Week: v.Week,
+			Date: v.Date,
+			WeekCn: v.WeekCn,
+		}
+
+		svc.appointment.AppointmentInfo.WeekNum = v.Week
+		svc.appointment.AppointmentInfo.AppointmentType = 0
+		svc.appointment.AppointmentInfo.CurAmount = 0
+		if err := svc.appointment.GetMinPriceByWeek(); err != nil {
+			log.Log.Errorf("venue_trace: get min price fail, err:%s", err)
+		}
+
+		info.MinPrice = svc.appointment.AppointmentInfo.CurAmount
+		res[index] = info
+	}
+
+	return errdef.SUCCESS, res
 }
 
