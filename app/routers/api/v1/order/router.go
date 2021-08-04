@@ -9,7 +9,7 @@ import (
 // 订单模块路由
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
-	order := api.Group("/notify")
+	order := api.Group("/order")
 	order.Use(sign.CheckSign(), token.TokenAuth())
 	{
 
