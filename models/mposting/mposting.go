@@ -227,7 +227,7 @@ func (m *PostingModel) AddPostingTopics(topics []*models.PostingTopic) (int64, e
 
 const (
 	UPDATE_POST_BROWSE_NUM  = "UPDATE `posting_statistic` SET `browse_num` = `browse_num` + ?, " +
-		"`heat_num` = `heat_num` = ?, `update_at`=? WHERE `posting_id`=? AND `browse_num` + ? >= 0 LIMIT 1"
+		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `posting_id`=? AND `browse_num` + ? >= 0 LIMIT 1"
 )
 // 更新帖子浏览数 及 帖子热度
 func (m *PostingModel) UpdatePostBrowseNum(postId int64, now, num int) error {
@@ -240,7 +240,7 @@ func (m *PostingModel) UpdatePostBrowseNum(postId int64, now, num int) error {
 
 const (
 	UPDATE_POST_LIKE_NUM  = "UPDATE `posting_statistic` SET `fabulous_num` = `fabulous_num` + ?, " +
-		"`heat_num` = `heat_num` = ?, `update_at`=? WHERE `posting_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
+		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `posting_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
 )
 // 更新帖子点赞数 及 帖子热度
 func (m *PostingModel) UpdatePostLikeNum(videoId int64, now, num int) error {
@@ -253,7 +253,7 @@ func (m *PostingModel) UpdatePostLikeNum(videoId int64, now, num int) error {
 
 const (
 	UPDATE_POST_COMMENT_NUM = "UPDATE `posting_statistic` SET `comment_num` = `comment_num` + ?, " +
-		"`heat_num` = `heat_num` = ?, `update_at`=? WHERE `posting_id`=? AND `comment_num` + ? >= 0 LIMIT 1"
+		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `posting_id`=? AND `comment_num` + ? >= 0 LIMIT 1"
 )
 // 更新帖子评论数 及 帖子热度
 func (m *PostingModel) UpdatePostCommentNum(postId int64, now, num int) error {
