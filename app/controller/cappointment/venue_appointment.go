@@ -12,9 +12,6 @@ type VenueAppointmentModule struct {
 	context         *gin.Context
 	engine          *xorm.Session
 	user            *muser.UserModel
-	WeekNum         int
-	AppointmentType int
-
 	*base
 }
 
@@ -41,7 +38,7 @@ func (svc *VenueAppointmentModule) AppointmentCancel() int {
 
 // 预约场馆选项
 func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
-	list, err := svc.GetAppointmentOptions(svc.WeekNum, svc.AppointmentType)
+	list, err := svc.GetAppointmentOptions()
 	if err != nil {
 		return errdef.ERROR, list
 	}
@@ -57,4 +54,3 @@ func (svc *VenueAppointmentModule) AppointmentDetail() (int, interface{}) {
 func (svc *VenueAppointmentModule) AppointmentDate() (int, interface{}) {
 	return errdef.SUCCESS, svc.AppointmentDateInfo(6)
 }
-

@@ -62,8 +62,8 @@ func (svc *base) GetAppointmentDate(days int) []util.DateInfo {
 }
 
 // 预约场馆选项
-func (svc *base) GetAppointmentOptions(weekNum, appointmentType int) ([]*models.VenueAppointmentInfo, error) {
-	list, err := svc.appointment.GetOptionsByWeek(weekNum, appointmentType)
+func (svc *base) GetAppointmentOptions() ([]*models.VenueAppointmentInfo, error) {
+	list, err := svc.appointment.GetOptionsByWeek()
 	if err != nil {
 		return nil, err
 	}
