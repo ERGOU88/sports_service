@@ -34,6 +34,7 @@ func (svc *VenueAppointmentModule) Appointment() (int, interface{}) {
 	return 0, nil
 }
 
+// 取消预约
 func (svc *VenueAppointmentModule) AppointmentCancel() int {
 	return 2000
 }
@@ -59,9 +60,9 @@ func (svc *VenueAppointmentModule) AppointmentDetail() (int, interface{}) {
 // 场馆预约日期配置
 func (svc *VenueAppointmentModule) AppointmentDate() (int, interface{}) {
 	list := svc.appointment.GetAppointmentDate(6)
-	res := make([]mappointment.WeekInfo, len(list))
+	res := make([]*mappointment.WeekInfo, len(list))
 	for index, v := range list {
-		info := mappointment.WeekInfo{
+		info := &mappointment.WeekInfo{
 			Id: v.Id,
 			Week: v.Week,
 			Date: v.Date,
