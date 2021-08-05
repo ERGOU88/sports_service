@@ -13,6 +13,13 @@ import (
 type base struct {
 	Engine  *xorm.Session
 	appointment *mappointment.AppointmentModel
+	ReqOptions
+}
+
+type ReqOptions struct {
+	WeekNum         int    `json:"week_num"`            // 星期 0为周末
+	RelatedId       int    `json:"related_id"`          // 关联id
+	AppointmentType int    `json:"appointment_type"`    // 0 场馆预约 1 私教预约
 }
 
 func New(socket *xorm.Session) *base {

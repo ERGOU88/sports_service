@@ -11,6 +11,9 @@ func Router(engine *gin.Engine) {
 	appointment := api.Group("/appointment")
 	appointment.Use(sign.CheckSign())
 	{
+		// 预约日期选项
 		appointment.GET("/date", AppointmentDate)
+		// 预约时间选项
+		appointment.GET("/options", AppointmentOptions)
 	}
 }
