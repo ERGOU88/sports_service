@@ -14,6 +14,7 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	redismq "sports_service/server/redismq/event"
+	"sports_service/server/util"
 	"strings"
 	"time"
 )
@@ -209,8 +210,8 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
 		resp := new(mvideo.VideosInfoResp)
 		resp.VideoId = video.VideoId
 		resp.Title = video.Title
-		resp.Describe = video.Describe
-		resp.Cover = video.Cover
+		resp.Describe = util.TrimHtml(video.Describe)
+		resp.Title = util.TrimHtml(video.Title)
 		resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		resp.IsRecommend = video.IsRecommend
 		resp.IsTop = video.IsTop
