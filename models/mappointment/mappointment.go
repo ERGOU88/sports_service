@@ -16,6 +16,7 @@ type WeekInfo struct {
 	Id        int32     `json:"id"`
 	WeekCn    string    `json:"week_cn"`
 	MinPrice  int       `json:"min_price"`
+	PriceCn   string    `json:"price_cn"`
 }
 
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {

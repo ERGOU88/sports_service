@@ -7,6 +7,7 @@ import (
 	"sports_service/server/util"
 	"time"
 	"sports_service/server/global/app/log"
+	"fmt"
 )
 
 type base struct {
@@ -42,6 +43,7 @@ func (svc *base) AppointmentDateInfo(days int) interface{} {
 		}
 
 		info.MinPrice = svc.appointment.AppointmentInfo.CurAmount
+		info.PriceCn = fmt.Sprintf("¥%.2f", float64(info.MinPrice)/100)
 		res[index] = info
 	}
 

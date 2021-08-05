@@ -240,7 +240,7 @@ func GetBetweenDates(start, end string) []DateInfo {
 	timeFormatTpl = "2006-01-02"
 	date2Str := date2.Format(timeFormatTpl)
 	info := DateInfo{}
-	info.Date = date.Format("01/02")
+	info.Date = date.Format("01-02")
 	info.Week = int(date.Weekday())
 	info.WeekCn = GetWeekCn(info.Week)
 	info.Id = id
@@ -251,7 +251,7 @@ func GetBetweenDates(start, end string) []DateInfo {
 		info := DateInfo{}
 		date = date.AddDate(0, 0, 1)
 		dateStr := date.Format(timeFormatTpl)
-		info.Date = date.Format("01/02")
+		info.Date = date.Format("01-02")
 		info.Week = int(date.Weekday())
 		info.WeekCn = GetWeekCn(info.Week)
 		info.Id = id
