@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sports_service/server/app/config"
+	"sports_service/server/app/routers/api/v1/appointment"
 	"sports_service/server/app/routers/api/v1/attention"
 	"sports_service/server/app/routers/api/v1/barrage"
 	"sports_service/server/app/routers/api/v1/client"
@@ -77,6 +78,8 @@ func InitRouters(engine *gin.Engine) {
 	community.Router(engine)
 	// 订单模块
 	order.Router(engine)
-	// 场馆路由
+	// 场馆模块
 	venue.Router(engine)
+	// 预约模块
+	appointment.Router(engine)
 }

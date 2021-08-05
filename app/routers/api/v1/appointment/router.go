@@ -12,6 +12,5 @@ func Router(engine *gin.Engine) {
 	appointment.Use(sign.CheckSign())
 	{
 		appointment.GET("/date", AppointmentDate)
-
 	}
 }
