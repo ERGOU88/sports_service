@@ -42,7 +42,7 @@ func (m *AppointmentModel) GetMinPriceByWeek() error {
 // 通过场馆id、课程id、星期 及 预约类型 获取可预约选项
 func (m *AppointmentModel) GetOptionsByWeek() ([]*models.VenueAppointmentInfo, error) {
 	var list []*models.VenueAppointmentInfo
-	if err := m.Engine.Where("related_id=？ AND week_num=? AND appointment_type=? AND status=0", m.AppointmentInfo.RelatedId,
+	if err := m.Engine.Where("related_id=? AND week_num=? AND appointment_type=? AND status=0", m.AppointmentInfo.RelatedId,
 		m.AppointmentInfo.WeekNum, m.AppointmentInfo.AppointmentType).Asc("id").Find(&list); err != nil {
 		return nil, err
 	}
