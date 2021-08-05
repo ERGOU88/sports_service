@@ -1,6 +1,7 @@
 package cshare
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
@@ -13,7 +14,7 @@ import (
 	"sports_service/server/models/mshare"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
-	"fmt"
+	redismq "sports_service/server/redismq/event"
 	cloud "sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"time"
@@ -52,6 +53,13 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 		return errdef.ERROR
 	}
 
+	user := svc.user.FindUserByUserid(params.UserId)
+	if user == nil {
+		log.Log.Errorf("share_trace: user not found, userId:%s", params.UserId)
+		svc.engine.Rollback()
+		return errdef.USER_NOT_EXISTS
+	}
+
 	switch params.SharePlatform {
 	// 分享/转发 到微信、微博、qq todo: 记录即可
 	case consts.SHARE_PLATFORM_WECHAT,consts.SHARE_PLATFORM_WEIBO,consts.SHARE_PLATFORM_QQ:
@@ -73,12 +81,6 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 			return errdef.POST_INVALID_CONTENT
 		}
 
-		user := svc.user.FindUserByUserid(params.UserId)
-		if user == nil {
-			log.Log.Errorf("share_trace: user not found, userId:%s", params.UserId)
-			svc.engine.Rollback()
-			return errdef.USER_NOT_EXISTS
-		}
 
 		section, err := svc.community.GetSectionInfo(fmt.Sprint(params.SectionId))
 		if section == nil || err != nil {
@@ -86,7 +88,6 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 			svc.engine.Rollback()
 			return errdef.COMMUNITY_SECTION_NOT_EXISTS
 		}
-
 
 		// 获取话题信息（多个）
 		topics, err := svc.community.GetTopicByIds(params.TopicIds)
@@ -125,11 +126,8 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 				log.Log.Errorf("share_trace: get subarea by id fail, err:%s", err)
 			}
 
-			user = svc.user.FindUserByUserid(video.UserId)
-			if user != nil {
-				shareInfo.Nickname = user.NickName
-				shareInfo.Avatar = user.Avatar
-			}
+			shareInfo.Nickname = user.NickName
+			shareInfo.Avatar = user.Avatar
 
 			statistic := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
 			shareInfo.BarrageNum = statistic.BarrageNum
@@ -171,11 +169,8 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 				UserId: post.UserId,
 			}
 
-			user = svc.user.FindUserByUserid(post.UserId)
-			if user != nil {
-				shareInfo.Nickname = user.NickName
-				shareInfo.Avatar = user.Avatar
-			}
+			shareInfo.Nickname = user.NickName
+			shareInfo.Avatar = user.Avatar
 
 			statistic, err := svc.posting.GetPostStatistic(fmt.Sprint(post.Id))
 			if err == nil && statistic != nil {
@@ -191,6 +186,37 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 			svc.posting.Posting.ContentType = consts.COMMUNITY_FORWARD_POST
 			// 产品需求： 分享的帖子 皆为文本
 			svc.posting.Posting.PostingType = consts.POST_TYPE_TEXT
+
+			// 添加@
+			if len(params.AtInfo) > 0 {
+				var atList []*models.ReceivedAt
+				for _, val := range params.AtInfo {
+					user := svc.user.FindUserByUserid(val)
+					if user == nil {
+						log.Log.Errorf("post_trace: at user not found, userId:%s", val)
+						continue
+					}
+
+					at := &models.ReceivedAt{
+						ToUserId:  val,
+						UserId:    params.UserId,
+						ComposeId: svc.posting.Posting.Id,
+						TopicType: consts.TYPE_PUBLISH_POST,
+						CreateAt:  now,
+						Status:    0,
+						UpdateAt:  now,
+					}
+
+					atList = append(atList, at)
+				}
+
+				affected, err := svc.posting.AddReceiveAtList(atList)
+				if err != nil || int(affected) != len(atList) {
+					log.Log.Errorf("post_trace: add receive at list fail, err:%s", err)
+					svc.engine.Rollback()
+					return errdef.POST_PUBLISH_FAIL
+				}
+			}
 		}
 
 
@@ -257,6 +283,15 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 	}
 
 	svc.engine.Commit()
+
+	// 发布帖子时@的用户列表
+	if len(params.AtInfo) > 0 {
+		for _, userId := range params.AtInfo {
+			// 给被@的人 发送 推送通知
+			redismq.PushEventMsg(redismq.NewEvent(userId, fmt.Sprint(svc.posting.Posting.Id), user.NickName,
+				"", "", consts.POST_PUBLISH_AT_MSG))
+		}
+	}
 
 	return errdef.SUCCESS
 }

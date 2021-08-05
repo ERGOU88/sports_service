@@ -5,7 +5,6 @@ import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
-	"sports_service/server/models/mappointment"
 	"sports_service/server/models/muser"
 )
 
@@ -13,7 +12,7 @@ type CoachAppointmentModule struct {
 	context     *gin.Context
 	engine      *xorm.Session
 	user        *muser.UserModel
-	appointment *mappointment.AppointmentModel
+	*base
 }
 
 func NewCoach(c *gin.Context) *CoachAppointmentModule {
@@ -22,15 +21,17 @@ func NewCoach(c *gin.Context) *CoachAppointmentModule {
 	return &CoachAppointmentModule{
 		context: c,
 		user: muser.NewUserModel(socket),
-		appointment: mappointment.NewAppointmentModel(socket),
 		engine:  socket,
+		base: New(socket),
 	}
 }
 
+// 预约私教
 func (svc *CoachAppointmentModule) Appointment() (int, interface{}) {
 	return 5000, nil
 }
 
+// 取消预约
 func (svc *CoachAppointmentModule) AppointmentCancel() int {
 	return 6000
 }
@@ -46,7 +47,7 @@ func (svc *CoachAppointmentModule) AppointmentDetail() (int, interface{}) {
 
 // 预约私教日期配置
 func (svc *CoachAppointmentModule) AppointmentDate() (int, interface{}) {
-	return errdef.SUCCESS, svc.appointment.GetAppointmentDate(6)
+	return errdef.SUCCESS, svc.AppointmentDateInfo(6)
 }
 
 

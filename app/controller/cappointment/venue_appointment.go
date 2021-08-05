@@ -5,17 +5,17 @@ import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/models"
-	"sports_service/server/models/mappointment"
 	"sports_service/server/models/muser"
 )
 
 type VenueAppointmentModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	user        *muser.UserModel
-	appointment *mappointment.AppointmentModel
+	context         *gin.Context
+	engine          *xorm.Session
+	user            *muser.UserModel
+	WeekNum         int
+	AppointmentType int
+
+	*base
 }
 
 func NewVenue(c *gin.Context) *VenueAppointmentModule {
@@ -24,8 +24,8 @@ func NewVenue(c *gin.Context) *VenueAppointmentModule {
 	return &VenueAppointmentModule{
 		context: c,
 		user: muser.NewUserModel(socket),
-		appointment: mappointment.NewAppointmentModel(socket),
 		engine:  socket,
+		base: New(socket),
 	}
 }
 
@@ -41,13 +41,9 @@ func (svc *VenueAppointmentModule) AppointmentCancel() int {
 
 // 预约场馆选项
 func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
-	list, err := svc.appointment.GetOptionsByWeek()
+	list, err := svc.GetAppointmentOptions(svc.WeekNum, svc.AppointmentType)
 	if err != nil {
-		return errdef.ERROR, nil
-	}
-
-	if list == nil {
-		return errdef.SUCCESS, []*models.VenueAppointmentInfo{}
+		return errdef.ERROR, list
 	}
 
 	return errdef.SUCCESS, list
@@ -59,27 +55,6 @@ func (svc *VenueAppointmentModule) AppointmentDetail() (int, interface{}) {
 
 // 场馆预约日期配置
 func (svc *VenueAppointmentModule) AppointmentDate() (int, interface{}) {
-	list := svc.appointment.GetAppointmentDate(6)
-	res := make([]*mappointment.WeekInfo, len(list))
-	for index, v := range list {
-		info := &mappointment.WeekInfo{
-			Id: v.Id,
-			Week: v.Week,
-			Date: v.Date,
-			WeekCn: v.WeekCn,
-		}
-
-		svc.appointment.AppointmentInfo.WeekNum = v.Week
-		svc.appointment.AppointmentInfo.AppointmentType = 0
-		svc.appointment.AppointmentInfo.CurAmount = 0
-		if err := svc.appointment.GetMinPriceByWeek(); err != nil {
-			log.Log.Errorf("venue_trace: get min price fail, err:%s", err)
-		}
-
-		info.MinPrice = svc.appointment.AppointmentInfo.CurAmount
-		res[index] = info
-	}
-
-	return errdef.SUCCESS, res
+	return errdef.SUCCESS, svc.AppointmentDateInfo(6)
 }
 
