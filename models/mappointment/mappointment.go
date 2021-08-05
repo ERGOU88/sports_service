@@ -42,7 +42,7 @@ func (m *AppointmentModel) GetMinPriceByWeek() error {
 func (m *AppointmentModel) GetOptionsByWeek() ([]*models.VenueAppointmentInfo, error) {
 	var list []*models.VenueAppointmentInfo
 	if err := m.Engine.Where("related_id=？ AND week_num=? AND appointment_type=? AND status=0", m.AppointmentInfo.RelatedId,
-		m.AppointmentInfo.WeekNum, m.AppointmentInfo.AppointmentType).Find(&list); err != nil {
+		m.AppointmentInfo.WeekNum, m.AppointmentInfo.AppointmentType).Asc("id").Find(&list); err != nil {
 		return nil, err
 	}
 
