@@ -116,6 +116,7 @@ type PostDetailInfo struct {
 	HeatNum       int                    `json:"heat_num"`                             // 热度
 	VideoId       int64                  `json:"video_id"`                             // 关联的视频id
 	RelatedVideo  *RelatedVideo          `json:"related_video,omitempty"`              // 帖子关联的视频信息
+	StatusCn      string                 `json:"status_cn"`                            // 中文状态
 }
 
 type RelatedVideo struct {
