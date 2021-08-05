@@ -17,6 +17,7 @@ type PostingModel struct {
 	Statistic         *models.PostingStatistic
 	ReceiveAt         *models.ReceivedAt
 	ApplyCream        *models.PostingApplyCream
+	Report            *models.PostingReport
 }
 
 // 删除发布的帖子记录请求参数(不支持批量删除)
@@ -30,10 +31,17 @@ type ApplyCreamParam struct {
 	Reason        string     `json:"reason"`                      // 申请理由
 }
 
+// 帖子举报
+type PostReportParam struct {
+	PostId     int64      `json:"post_id" binding:"required"`     // 帖子id
+	UserId     string     `json:"user_id"`
+	Reason     string     `json:"reason" binding:"required"`      // 举报理由
+}
+
 // 发布帖子请求参数
 type PostPublishParam struct {
 	Title             string              `json:"title"`                              // 标题
-	Describe          string              `binding:"required" json:"describe"`                           // 富文本内容
+	Describe          string              `json:"describe"`                           // 富文本内容
 	//ForwardVideo      *ForwardVideoInfo   `json:"forward_video"`                     // 转发的视频内容 todo: 结构体
 	//VideoId           string              `json:"video_id"`                          // 关联的视频id
 	//PostingType    int        `json:"posting_type" binding:"required"`               // 帖子类型  0 纯文本 1 图文 2 视频 + 文
@@ -108,6 +116,7 @@ type PostDetailInfo struct {
 	HeatNum       int                    `json:"heat_num"`                             // 热度
 	VideoId       int64                  `json:"video_id"`                             // 关联的视频id
 	RelatedVideo  *RelatedVideo          `json:"related_video,omitempty"`              // 帖子关联的视频信息
+	StatusCn      string                 `json:"status_cn"`                            // 中文状态
 }
 
 type RelatedVideo struct {
@@ -139,6 +148,7 @@ func NewPostingModel(engine *xorm.Session) *PostingModel {
 		Statistic: new(models.PostingStatistic),
 		ReceiveAt: new(models.ReceivedAt),
 		ApplyCream: new(models.PostingApplyCream),
+		Report: new(models.PostingReport),
 	}
 }
 
@@ -218,7 +228,7 @@ func (m *PostingModel) AddPostingTopics(topics []*models.PostingTopic) (int64, e
 
 const (
 	UPDATE_POST_BROWSE_NUM  = "UPDATE `posting_statistic` SET `browse_num` = `browse_num` + ?, " +
-		"`heat_num` = `heat_num` = ?, `update_at`=? WHERE `posting_id`=? AND `browse_num` + ? >= 0 LIMIT 1"
+		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `posting_id`=? AND `browse_num` + ? >= 0 LIMIT 1"
 )
 // 更新帖子浏览数 及 帖子热度
 func (m *PostingModel) UpdatePostBrowseNum(postId int64, now, num int) error {
@@ -231,7 +241,7 @@ func (m *PostingModel) UpdatePostBrowseNum(postId int64, now, num int) error {
 
 const (
 	UPDATE_POST_LIKE_NUM  = "UPDATE `posting_statistic` SET `fabulous_num` = `fabulous_num` + ?, " +
-		"`heat_num` = `heat_num` = ?, `update_at`=? WHERE `posting_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
+		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `posting_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
 )
 // 更新帖子点赞数 及 帖子热度
 func (m *PostingModel) UpdatePostLikeNum(videoId int64, now, num int) error {
@@ -244,7 +254,7 @@ func (m *PostingModel) UpdatePostLikeNum(videoId int64, now, num int) error {
 
 const (
 	UPDATE_POST_COMMENT_NUM = "UPDATE `posting_statistic` SET `comment_num` = `comment_num` + ?, " +
-		"`heat_num` = `heat_num` = ?, `update_at`=? WHERE `posting_id`=? AND `comment_num` + ? >= 0 LIMIT 1"
+		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `posting_id`=? AND `comment_num` + ? >= 0 LIMIT 1"
 )
 // 更新帖子评论数 及 帖子热度
 func (m *PostingModel) UpdatePostCommentNum(postId int64, now, num int) error {
@@ -436,7 +446,7 @@ func (m *PostingModel) DelPublishPostById(postId string) error {
 
 // 删除帖子所属话题
 func (m *PostingModel) DelPostTopics(postId string) error {
-	if _, err := m.Engine.Where("post_id=?", postId).Delete(m.PostingTopic); err != nil {
+	if _, err := m.Engine.Where("posting_id=?", postId).Delete(&models.PostingTopic{}); err != nil {
 		return err
 	}
 
@@ -445,7 +455,7 @@ func (m *PostingModel) DelPostTopics(postId string) error {
 
 // 删除帖子统计数据
 func (m *PostingModel) DelPostStatistic(postId string) error {
-	if _, err := m.Engine.Where("post_id=?", postId).Delete(&models.PostingStatistic{}); err != nil {
+	if _, err := m.Engine.Where("posting_id=?", postId).Delete(&models.PostingStatistic{}); err != nil {
 		return err
 	}
 
@@ -479,3 +489,7 @@ func (m *PostingModel) GetPostListByAttention(userIds string, offset, size int) 
 	return list, nil
 }
 
+// 添加帖子举报
+func (m *PostingModel) AddPostReport() (int64, error) {
+	return m.Engine.InsertOne(m.Report)
+}

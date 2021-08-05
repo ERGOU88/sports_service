@@ -147,6 +147,8 @@ const (
 	POST_AUTHOR_NOT_MATCH       = 12012
 	POST_APPLY_CREAM_FAIL       = 12013
 	POST_APPLY_ALREADY_EXISTS   = 12014
+	POST_REPORT_FAIL            = 12015
+	POST_PARAMS_FAIL            = 12016
 
 	// 分享/转发相关错误码 13001-14000
 	SHARE_DATA_FAIL             = 13001
@@ -297,6 +299,8 @@ var MsgFlags = map[int]string{
 	POST_AUTHOR_NOT_MATCH:       "帖子作者id与当前用户不匹对",
 	POST_APPLY_CREAM_FAIL:       "申精失败",
 	POST_APPLY_ALREADY_EXISTS:   "请勿重复申请",
+	POST_REPORT_FAIL:            "举报失败",
+	POST_PARAMS_FAIL:            "内容和图片都为空",
 
 	SHARE_DATA_FAIL:             "分享失败",
 

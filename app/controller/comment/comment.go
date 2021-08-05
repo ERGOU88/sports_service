@@ -224,7 +224,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	// 添加@
 	if len(params.AtInfo) > 0 {
 		atList := make([]*models.ReceivedAt, 0)
-		atList[0] = svc.comment.ReceiveAt
+		atList = append(atList, svc.comment.ReceiveAt)
 		for _, val := range params.AtInfo {
 			user := svc.user.FindUserByUserid(val)
 			if user == nil {
@@ -413,7 +413,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	// 视频评论
 	case consts.COMMENT_TYPE_VIDEO:
 		// 查询被回复的评论是否存在
-		replyInfo := svc.comment.GetVideoCommentById(params.ReplyId)
+		replyInfo := svc.comment.GetVideoCommentById(fmt.Sprint(params.ReplyId))
 		if replyInfo == nil {
 			log.Log.Error("comment_trace: reply comment not found, commentId:%s", params.ReplyId)
 			svc.engine.Rollback()
@@ -503,7 +503,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	// 帖子评论
 	case consts.COMMENT_TYPE_POST:
 		// 查询被回复的评论是否存在
-		replyInfo := svc.comment.GetPostCommentById(params.ReplyId)
+		replyInfo := svc.comment.GetPostCommentById(fmt.Sprint(params.ReplyId))
 		if replyInfo == nil {
 			log.Log.Error("comment_trace: reply comment not found, commentId:%s", params.ReplyId)
 			svc.engine.Rollback()
@@ -527,7 +527,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 
 		svc.comment.PostComment.UserId = userId
 		svc.comment.PostComment.Content = params.Content
-		svc.comment.PostComment.CreateAt = int(now)
+		svc.comment.PostComment.CreateAt = now
 		svc.comment.PostComment.PostId = replyInfo.PostId
 		svc.comment.PostComment.CommentLevel = consts.COMMENT_REPLY
 		svc.comment.PostComment.Status = 1
@@ -1059,14 +1059,14 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 			//	reply.ReplyCommentUserName = uinfo.NickName
 			//}
 			// todo: 被回复的用户名、用户头像使用最新数据
-			user := svc.user.FindUserByUserid(reply.ReplyCommentUserId)
+			user := svc.user.FindUserByUserid(reply.UserId)
 			if user != nil {
 				reply.UserName = user.NickName
 				reply.Avatar = user.Avatar
 			}
 
 			// todo: 被回复的用户名、用户头像使用最新数据
-			user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
+			user = svc.user.FindUserByUserid(reply.UserId)
 			if user != nil {
 				reply.ReplyCommentAvatar = user.Avatar
 				reply.ReplyCommentUserName = user.NickName

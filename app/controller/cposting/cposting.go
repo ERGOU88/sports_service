@@ -58,6 +58,11 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		return errdef.POST_INVALID_CONTENT_LEN
 	}
 
+	if params.Describe == "" && len(params.ImagesAddr) == 0 {
+		log.Log.Error("post_trace: describe and images empty")
+		return errdef.POST_PARAMS_FAIL
+	}
+
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("post_trace: session begin err:%s", err)
@@ -488,7 +493,7 @@ func (svc *PostingModule) GetPostPublishListByUser(userId, status string, page, 
 		//	item.Topics = []*models.PostingTopic{}
 		//}
 
-
+		item.StatusCn = svc.GetPostStatusCn(fmt.Sprint(item.Status))
 		item.Avatar = user.Avatar
 		item.Nickname = user.NickName
 
@@ -528,9 +533,33 @@ func (svc *PostingModule) GetPostPublishListByUser(userId, status string, page, 
 		}
 
 		item.Content = ""
+
+		// 是否点赞
+		if likeInfo := svc.like.GetLikeInfo(userId, item.Id, consts.TYPE_POSTS); likeInfo != nil {
+			item.IsLike = likeInfo.Status
+		}
+
+		// 是否关注
+		if attentionInfo := svc.attention.GetAttentionInfo(userId, item.UserId); attentionInfo != nil {
+			item.IsAttention = attentionInfo.Status
+		}
 	}
 
 	return list
+}
+
+// 获取帖子状态（中文展示）
+func (svc *PostingModule) GetPostStatusCn(status string) string {
+	switch status {
+	case consts.POST_UNDER_REVIEW:
+		return "审核中"
+	case consts.POST_AUDIT_SUCCESS:
+		return "已发布"
+	case consts.POST_AUDIT_FAILURE:
+		return "未通过"
+	}
+
+	return "未知"
 }
 
 // 用户删除发布的帖子
@@ -642,6 +671,24 @@ func (svc *PostingModule) ApplyPostCream(userId string, param *mposting.ApplyCre
 	return errdef.SUCCESS
 }
 
+// 添加帖子举报
+func (svc *PostingModule) AddPostReport(params *mposting.PostReportParam) int {
+	post, err := svc.posting.GetPostById(fmt.Sprint(params.PostId))
+	if post == nil || err != nil {
+		log.Log.Error("post_trace: post not found, postId:%s", params.PostId)
+		return errdef.POST_NOT_EXISTS
+	}
+
+	svc.posting.Report.UserId = params.UserId
+	svc.posting.Report.PostId = params.PostId
+	svc.posting.Report.Reason = params.Reason
+	if _, err := svc.posting.AddPostReport(); err != nil {
+		log.Log.Errorf("post_trace: add post report err:%s", err)
+		return errdef.POST_REPORT_FAIL
+	}
+
+	return errdef.SUCCESS
+}
 
 //func (svc *PostingModule) SanitizeHtml(content string) (string, error) {
 //	config := `

@@ -22,6 +22,7 @@ type ShareParams struct {
 	//ForwardVideo      *ShareVideoInfo     `json:"forward_video"`                            // 转发的视频内容
 	//ForwardPost       *SharePostInfo      `json:"forward_post"`                             // 转发的帖子内容
 	UserId            string              `json:"user_id"`                                  // 用户id
+	AtInfo            []string            `json:"at_info"`                                  // @的用户们
 }
 
 // 分享的视频信息

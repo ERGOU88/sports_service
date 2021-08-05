@@ -1,29 +1,30 @@
 package routers
 
 import (
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"sports_service/server/app/config"
 	"sports_service/server/app/routers/api/v1/attention"
 	"sports_service/server/app/routers/api/v1/barrage"
+	"sports_service/server/app/routers/api/v1/client"
 	"sports_service/server/app/routers/api/v1/collect"
 	"sports_service/server/app/routers/api/v1/comment"
+	"sports_service/server/app/routers/api/v1/community"
+	"sports_service/server/app/routers/api/v1/doc"
 	"sports_service/server/app/routers/api/v1/like"
 	"sports_service/server/app/routers/api/v1/notify"
+	"sports_service/server/app/routers/api/v1/order"
 	"sports_service/server/app/routers/api/v1/posting"
 	"sports_service/server/app/routers/api/v1/search"
 	"sports_service/server/app/routers/api/v1/share"
-	"sports_service/server/app/routers/api/v1/video"
-    "sports_service/server/app/routers/api/v1/tencentCloud"
-	"sports_service/server/middleware"
-	"sports_service/server/global/consts"
-	"sports_service/server/app/routers/api/v1/user"
 	"sports_service/server/app/routers/api/v1/swag"
-	"sports_service/server/app/routers/api/v1/doc"
-	"sports_service/server/app/routers/api/v1/client"
-	"sports_service/server/app/config"
+	"sports_service/server/app/routers/api/v1/tencentCloud"
+	"sports_service/server/app/routers/api/v1/user"
+	"sports_service/server/app/routers/api/v1/video"
 	"sports_service/server/global/app/log"
-	"sports_service/server/app/routers/api/v1/community"
-	"github.com/gin-contrib/gzip"
+	"sports_service/server/global/consts"
+	"sports_service/server/middleware"
 )
 
 // 路由初始化
@@ -38,6 +39,7 @@ func InitRouters(engine *gin.Engine) {
 		doc.Router(engine)
 	}
 
+	engine.Use(gin.Recovery())
 	engine.Use(gzip.Gzip(gzip.DefaultCompression))
 	engine.Any("/", func(c *gin.Context) {
 		c.Status(http.StatusOK)
@@ -72,4 +74,6 @@ func InitRouters(engine *gin.Engine) {
 	share.Router(engine)
 	// 社区模块
 	community.Router(engine)
+	// 订单模块
+	order.Router(engine)
 }
