@@ -12,7 +12,7 @@ type VenueModel struct {
 
 // 场馆商品
 type VenueProduct struct {
-	Id                int    `json:"id"`                   // 商品id
+	Id                int64  `json:"id"`                   // 商品id
 	ProductName       string `json:"product_name"`
 	ProductType       int    `json:"product_type"`
 	EffectiveDuration int    `json:"effective_duration"`   // 有效时长 例如体验卡 15/h
@@ -49,7 +49,7 @@ func (m *VenueModel) GetVenueInfoById() error {
 // 通过场馆id 获取场馆商品列表
 func (m *VenueModel) GetVenueProducts() ([]*models.VenueProductInfo, error) {
 	var list []*models.VenueProductInfo
-	if err := m.Engine.Where("id=?", m.Venue.Id).Find(&list); err != nil {
+	if err := m.Engine.Where("venue_id=?", m.Venue.Id).Find(&list); err != nil {
 		return nil, err
 	}
 

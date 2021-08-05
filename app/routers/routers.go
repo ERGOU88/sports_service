@@ -21,6 +21,7 @@ import (
 	"sports_service/server/app/routers/api/v1/swag"
 	"sports_service/server/app/routers/api/v1/tencentCloud"
 	"sports_service/server/app/routers/api/v1/user"
+	"sports_service/server/app/routers/api/v1/venue"
 	"sports_service/server/app/routers/api/v1/video"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
@@ -76,4 +77,6 @@ func InitRouters(engine *gin.Engine) {
 	community.Router(engine)
 	// 订单模块
 	order.Router(engine)
+	// 场馆路由
+	venue.Router(engine)
 }

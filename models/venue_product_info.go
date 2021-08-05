@@ -1,9 +1,9 @@
 package models
 
 type VenueProductInfo struct {
-	Id                int    `json:"id" xorm:"not null pk autoincr comment('主键') INT(11)"`
+	Id                int64  `json:"id" xorm:"pk autoincr comment('主键') BIGINT(20)"`
 	ProductName       string `json:"product_name" xorm:"not null comment('商品名称') VARCHAR(128)"`
-	ProductType       int    `json:"product_type" xorm:"not null comment('1 次卡 2 购买月卡 3 购买季卡 4 购买年卡 5 体验券 ') TINYINT(2)"`
+	ProductType       int    `json:"product_type" xorm:"not null comment('类型 2001 月卡 2002 季卡 2003 年卡 2004 体验券') INT(8)"`
 	EffectiveDuration int    `json:"effective_duration" xorm:"not null default 0 comment('有效时长（秒）') INT(11)"`
 	RealAmount        int    `json:"real_amount" xorm:"not null comment('真实价格（单位：分）') INT(11)"`
 	CurAmount         int    `json:"cur_amount" xorm:"not null comment('当前价格 (包含真实价格、 折扣价格（单位：分）') INT(11)"`
