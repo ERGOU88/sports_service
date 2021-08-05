@@ -230,7 +230,7 @@ func aiContentReviewEvent(event *v20180717.EventContent, vmodel *mvideo.VideoMod
       }
 
       // ai建议复审
-      if *item.TerrorismOcrTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_REVIEW {
+      if *item.TerrorismTask.Output.Suggestion == consts.VIDEO_AI_AUDIT_REVIEW {
         aiState = consts.AI_AUDIT_REVIEW
       }
 

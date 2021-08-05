@@ -5,16 +5,17 @@ import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
-	"sports_service/server/models"
-	"sports_service/server/models/mappointment"
 	"sports_service/server/models/muser"
 )
 
 type VenueAppointmentModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	user        *muser.UserModel
-	appointment *mappointment.AppointmentModel
+	context         *gin.Context
+	engine          *xorm.Session
+	user            *muser.UserModel
+	WeekNum         int
+	AppointmentType int
+
+	*base
 }
 
 func NewVenue(c *gin.Context) *VenueAppointmentModule {
@@ -23,8 +24,8 @@ func NewVenue(c *gin.Context) *VenueAppointmentModule {
 	return &VenueAppointmentModule{
 		context: c,
 		user: muser.NewUserModel(socket),
-		appointment: mappointment.NewAppointmentModel(socket),
 		engine:  socket,
+		base: New(socket),
 	}
 }
 
@@ -33,19 +34,16 @@ func (svc *VenueAppointmentModule) Appointment() (int, interface{}) {
 	return 0, nil
 }
 
+// 取消预约
 func (svc *VenueAppointmentModule) AppointmentCancel() int {
 	return 2000
 }
 
 // 预约场馆选项
 func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
-	list, err := svc.appointment.GetOptionsByWeek()
+	list, err := svc.GetAppointmentOptions(svc.WeekNum, svc.AppointmentType)
 	if err != nil {
-		return errdef.ERROR, nil
-	}
-
-	if list == nil {
-		return errdef.SUCCESS, []*models.VenueAppointmentInfo{}
+		return errdef.ERROR, list
 	}
 
 	return errdef.SUCCESS, list
@@ -55,9 +53,8 @@ func (svc *VenueAppointmentModule) AppointmentDetail() (int, interface{}) {
 	return 4000, nil
 }
 
-// 预约日期配置
+// 场馆预约日期配置
 func (svc *VenueAppointmentModule) AppointmentDate() (int, interface{}) {
-	// todo: 查看当天最低价
-	return errdef.SUCCESS, svc.appointment.GetAppointmentDate(6)
+	return errdef.SUCCESS, svc.AppointmentDateInfo(6)
 }
 
