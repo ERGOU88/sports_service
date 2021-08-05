@@ -493,7 +493,7 @@ func (svc *PostingModule) GetPostPublishListByUser(userId, status string, page, 
 		//	item.Topics = []*models.PostingTopic{}
 		//}
 
-
+		item.StatusCn = svc.GetPostStatusCn(fmt.Sprint(item.Status))
 		item.Avatar = user.Avatar
 		item.Nickname = user.NickName
 
@@ -546,6 +546,20 @@ func (svc *PostingModule) GetPostPublishListByUser(userId, status string, page, 
 	}
 
 	return list
+}
+
+// 获取帖子状态（中文展示）
+func (svc *PostingModule) GetPostStatusCn(status string) string {
+	switch status {
+	case consts.POST_UNDER_REVIEW:
+		return "审核中"
+	case consts.POST_AUDIT_SUCCESS:
+		return "已发布"
+	case consts.POST_AUDIT_FAILURE:
+		return "未通过"
+	}
+
+	return "未知"
 }
 
 // 用户删除发布的帖子
