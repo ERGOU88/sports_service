@@ -394,6 +394,8 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 		if err = util.JsonFast.UnmarshalFromString(post.Content, &resp.ForwardVideo); err != nil {
 			log.Log.Errorf("post_trace: get forward video info err:%s", err)
 			return nil, errdef.POST_DETAIL_FAIL
+		} else {
+			resp.ForwardVideo.VideoAddr = svc.video.AntiStealingLink(resp.ForwardVideo.VideoAddr)
 		}
 
 	}
@@ -403,6 +405,13 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 		if err = util.JsonFast.UnmarshalFromString(post.Content, &resp.ForwardPost); err != nil {
 			log.Log.Errorf("post_trace: get forward post info err:%s", err)
 			return nil, errdef.POST_DETAIL_FAIL
+		}
+
+		// 如果转发的是图文类型 需要展示图文
+		if resp.ForwardPost.PostingType == consts.POST_TYPE_IMAGE {
+			if err := util.JsonFast.UnmarshalFromString(resp.ForwardPost.Content, &resp.ForwardPost.ImagesAddr); err != nil {
+				log.Log.Errorf("community_trace: get images by forward post fail, err:%s", err)
+			}
 		}
 	}
 
