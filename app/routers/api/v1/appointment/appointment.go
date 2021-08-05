@@ -31,7 +31,6 @@ func AppointmentDate(c *gin.Context) {
 // 预约时间选项
 func AppointmentOptions(c *gin.Context) {
 	reply := errdef.New(c)
-	var i cappointment.IAppointment
 	queryType := c.DefaultQuery("query_type", "0")
 	week, err := strconv.Atoi(c.Query("week"))
 	if err != nil {
@@ -50,20 +49,21 @@ func AppointmentOptions(c *gin.Context) {
 		return
 	}
 
+	var i cappointment.IAppointment
 	switch queryType {
 	case "0":
 		svc := cappointment.NewVenue(c)
-		svc.RelatedId = relatedId
-		svc.WeekNum = week
-		svc.AppointmentType = 0
-		i = svc
-	case "1":
-		svc := cappointment.NewCoach(c)
-		svc.RelatedId = relatedId
-		svc.WeekNum = week
-		svc.AppointmentType = 1
+		svc.SetRelatedId(relatedId)
+		svc.SetWeek(week)
+		svc.SetAppointmentType(0)
 		i = svc
 
+	case "1":
+		svc := cappointment.NewCoach(c)
+		svc.SetRelatedId(relatedId)
+		svc.SetWeek(week)
+		svc.SetAppointmentType(1)
+		i = svc
 	default:
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
