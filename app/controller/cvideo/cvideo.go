@@ -553,8 +553,8 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 			minId = video.VideoId
 		}
 
-		//video.Describe = util.TrimHtml(video.Describe)
-		//video.Title = util.TrimHtml(video.Title)
+		video.Describe = util.TrimHtml(video.Describe)
+		video.Title = util.TrimHtml(video.Title)
 		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		// 查询用户信息
 		userInfo := svc.user.FindUserByUserid(video.UserId)
