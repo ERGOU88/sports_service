@@ -537,7 +537,7 @@ func transCodeCompleteEvent(event *v20180717.EventContent, video *models.Videos)
 
     case "AdaptiveDynamicStreaming":
       if *info.AdaptiveDynamicStreamingTask.ErrCode != 0 {
-        log.Log.Errorf("job_trace: media process errCode:%d", *info.TranscodeTask.ErrCode)
+        log.Log.Errorf("job_trace: media process errCode:%d", *info.AdaptiveDynamicStreamingTask.ErrCode)
         continue
       }
 
