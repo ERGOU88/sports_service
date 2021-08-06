@@ -58,7 +58,8 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		return errdef.POST_INVALID_CONTENT_LEN
 	}
 
-	if params.Describe == "" && len(params.ImagesAddr) == 0 {
+	b := util.IsSpace([]rune(params.Describe))
+	if (!b || params.Describe == "") && len(params.ImagesAddr) == 0 {
 		log.Log.Error("post_trace: describe and images empty")
 		return errdef.POST_PARAMS_FAIL
 	}

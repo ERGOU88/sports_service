@@ -68,8 +68,9 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测评论内容
+	b := util.IsSpace([]rune(params.Content))
 	isPass, err := client.TextModeration(params.Content)
-	if !isPass {
+	if !isPass || !b {
 		log.Log.Errorf("comment_trace: validate comment err: %s，pass: %v", err, isPass)
 		svc.engine.Rollback()
 		return errdef.COMMENT_INVALID_CONTENT, nil
@@ -283,8 +284,9 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测评论内容
+	b := util.IsSpace([]rune(params.Content))
 	isPass, err := client.TextModeration(params.Content)
-	if !isPass {
+	if !isPass || !b {
 		log.Log.Errorf("comment_trace: validate comment err: %s，pass: %v", err, isPass)
 		svc.engine.Rollback()
 		return errdef.COMMENT_INVALID_CONTENT, 0
