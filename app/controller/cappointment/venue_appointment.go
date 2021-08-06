@@ -43,6 +43,15 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 		return errdef.ERROR, list
 	}
 
+	if len(list) == 0 {
+		return errdef.SUCCESS, list
+	}
+
+	//for _, item := range list {
+	//	svc.appointment.AppointmentInfo.
+	//}
+
+
 	return errdef.SUCCESS, list
 }
 
