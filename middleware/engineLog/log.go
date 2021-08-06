@@ -25,6 +25,10 @@ var (
 func EngineLog(log log.ILogger, showColor bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		url := c.Request.RequestURI
+		if c.Request.RequestURI == "/" {
+			return
+		}
+
 		log.Debugf("url:%s,user_agent:%s,ip:%s\n", url, c.Request.UserAgent(), c.ClientIP())
 
 		start := time.Now()
