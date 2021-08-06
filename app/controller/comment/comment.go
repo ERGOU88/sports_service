@@ -214,6 +214,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	svc.comment.ReceiveAt.ComposeId = commentId
 	svc.comment.ReceiveAt.UpdateAt = now
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_PUBLISH
+	svc.comment.ReceiveAt.Status = 1
 	// 评论也是@
 	//if err := svc.comment.AddReceiveAt(); err != nil {
 	//	log.Log.Errorf("comment_trace: add receive at err:%s", err)
@@ -240,6 +241,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 				UpdateAt:     now,
 				CommentLevel: consts.COMMENT_PUBLISH,
 				CreateAt:     now,
+				Status:       1,
 			}
 
 			atList = append(atList, at)
