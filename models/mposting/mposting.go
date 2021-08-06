@@ -355,6 +355,7 @@ func (m *PostingModel) GetPostListBySectionId(sectionId string, offset, size int
 		return nil, err
 	}
 
+
 	return list, nil
 }
 
