@@ -179,7 +179,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		if fmt.Sprint(post.Status) != consts.POST_AUDIT_SUCCESS {
 			log.Log.Errorf("comment_trace: post status not audit success, postId:%d", params.ComposeId)
 			svc.engine.Rollback()
-			return errdef.VIDEO_NOT_EXISTS, nil
+			return errdef.POST_NOT_EXISTS, nil
 		}
 
 		// 更新帖子总计（帖子评论总数）
