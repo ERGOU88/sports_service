@@ -582,6 +582,15 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 		if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
 			video.IsCollect = collectInfo.Status
 		}
+
+		// 获取分区信息
+		if video.Subarea > 0 {
+			var err error
+			video.SubareaInfo, err = svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))
+			if err != nil {
+				log.Log.Errorf("video_trace: get subarea info fail, err:%s, videoId:%d", err, video.VideoId)
+			}
+		}
 	}
 
 	return minId, list
