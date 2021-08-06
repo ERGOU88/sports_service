@@ -598,7 +598,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	svc.comment.ReceiveAt.UserId = userId
 	// 被@的用户
 	svc.comment.ReceiveAt.ToUserId = toUserId
-	svc.comment.ReceiveAt.ComposeId = svc.comment.VideoComment.Id
+	svc.comment.ReceiveAt.ComposeId = commentId
 	svc.comment.ReceiveAt.UpdateAt = now
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_REPLY
 	// 回复 记录到 @
