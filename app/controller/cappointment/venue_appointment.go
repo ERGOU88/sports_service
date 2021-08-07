@@ -5,6 +5,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
 	"sports_service/server/models/muser"
 )
 
@@ -22,9 +23,9 @@ func NewVenue(c *gin.Context) *VenueAppointmentModule {
 	defer appSocket.Close()
 	return &VenueAppointmentModule{
 		context: c,
-		user: muser.NewUserModel(appSocket),
+		user:    muser.NewUserModel(appSocket),
 		engine:  venueSocket,
-		base: New(venueSocket),
+		base:    New(venueSocket),
 	}
 }
 
@@ -42,6 +43,7 @@ func (svc *VenueAppointmentModule) AppointmentCancel() int {
 func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 	list, err := svc.GetAppointmentOptions()
 	if err != nil {
+		log.Log.Errorf("venue_trace: get options fail, err:%s", err)
 		return errdef.ERROR, list
 	}
 

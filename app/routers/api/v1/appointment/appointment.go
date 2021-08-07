@@ -12,16 +12,14 @@ import (
 func AppointmentDate(c *gin.Context) {
 	reply := errdef.New(c)
 	var i cappointment.IAppointment
-	queryType := c.DefaultQuery("query_type", "0")
-
-	switch queryType {
-	case "0":
-		i = cappointment.NewVenue(c)
-	case "1":
-		i = cappointment.NewCoach(c)
-	default:
+	queryType, err := strconv.Atoi(c.DefaultQuery("query_type", "0"))
+	if err != nil {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
 	}
+
+	factory := &cappointment.AppointmentFactory{}
+	i = factory.Create(queryType, c)
 
 	syscode, list := cappointment.GetAppointmentDate(i)
 	reply.Data["list"] = list
@@ -31,7 +29,12 @@ func AppointmentDate(c *gin.Context) {
 // 预约时间选项
 func AppointmentOptions(c *gin.Context) {
 	reply := errdef.New(c)
-	queryType := c.DefaultQuery("query_type", "0")
+	queryType, err := strconv.Atoi(c.DefaultQuery("query_type", "0"))
+	if err != nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
 	week, err := strconv.Atoi(c.Query("week"))
 	if err != nil {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
@@ -50,25 +53,11 @@ func AppointmentOptions(c *gin.Context) {
 	}
 
 	var i cappointment.IAppointment
-	switch queryType {
-	case "0":
-		svc := cappointment.NewVenue(c)
-		svc.SetRelatedId(relatedId)
-		svc.SetWeek(week)
-		svc.SetAppointmentType(0)
-		i = svc
-
-	case "1":
-		svc := cappointment.NewCoach(c)
-		svc.SetRelatedId(relatedId)
-		svc.SetWeek(week)
-		svc.SetAppointmentType(1)
-		i = svc
-	default:
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
-		return
-	}
-
+	factory := &cappointment.AppointmentFactory{}
+	i = factory.Create(queryType, c)
+	i.SetWeek(week)
+	i.SetAppointmentType(queryType)
+	i.SetRelatedId(relatedId)
 	syscode, list := cappointment.GetAppointmentOptions(i)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)

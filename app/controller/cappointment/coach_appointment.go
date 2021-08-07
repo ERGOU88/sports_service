@@ -23,9 +23,9 @@ func NewCoach(c *gin.Context) *CoachAppointmentModule {
 
 	return &CoachAppointmentModule{
 		context: c,
-		user: muser.NewUserModel(appSocket),
+		user:    muser.NewUserModel(appSocket),
 		engine:  venueSocket,
-		base: New(venueSocket),
+		base:    New(venueSocket),
 	}
 }
 

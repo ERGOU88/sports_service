@@ -49,4 +49,4 @@ log:
   level: 0
   showColor: false
 
-debug: false
+debug: true
