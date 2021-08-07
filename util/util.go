@@ -327,3 +327,17 @@ func HideMobileNum(mobileNum string) string {
 	return strings.Join(slice[0:3], "") + "****" + strings.Join(slice[7:], "")
 }
 
+// 判断字符串是否都为空格
+func IsSpace(r []rune) bool {
+	if len(r) == 0 {
+		return false
+	}
+
+	for _, v := range r {
+		if b := unicode.IsSpace(v); !b {
+			return true
+		}
+	}
+
+	return false
+}

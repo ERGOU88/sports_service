@@ -58,7 +58,8 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		return errdef.POST_INVALID_CONTENT_LEN
 	}
 
-	if params.Describe == "" && len(params.ImagesAddr) == 0 {
+	b := util.IsSpace([]rune(params.Describe))
+	if (!b || params.Describe == "") && len(params.ImagesAddr) == 0 {
 		log.Log.Error("post_trace: describe and images empty")
 		return errdef.POST_PARAMS_FAIL
 	}
@@ -394,6 +395,8 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 		if err = util.JsonFast.UnmarshalFromString(post.Content, &resp.ForwardVideo); err != nil {
 			log.Log.Errorf("post_trace: get forward video info err:%s", err)
 			return nil, errdef.POST_DETAIL_FAIL
+		} else {
+			resp.ForwardVideo.VideoAddr = svc.video.AntiStealingLink(resp.ForwardVideo.VideoAddr)
 		}
 
 	}
@@ -403,6 +406,13 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 		if err = util.JsonFast.UnmarshalFromString(post.Content, &resp.ForwardPost); err != nil {
 			log.Log.Errorf("post_trace: get forward post info err:%s", err)
 			return nil, errdef.POST_DETAIL_FAIL
+		}
+
+		// 如果转发的是图文类型 需要展示图文
+		if resp.ForwardPost.PostingType == consts.POST_TYPE_IMAGE {
+			if err := util.JsonFast.UnmarshalFromString(resp.ForwardPost.Content, &resp.ForwardPost.ImagesAddr); err != nil {
+				log.Log.Errorf("community_trace: get images by forward post fail, err:%s", err)
+			}
 		}
 	}
 
@@ -493,7 +503,7 @@ func (svc *PostingModule) GetPostPublishListByUser(userId, status string, page, 
 		//	item.Topics = []*models.PostingTopic{}
 		//}
 
-
+		item.StatusCn = svc.GetPostStatusCn(fmt.Sprint(item.Status))
 		item.Avatar = user.Avatar
 		item.Nickname = user.NickName
 
@@ -546,6 +556,20 @@ func (svc *PostingModule) GetPostPublishListByUser(userId, status string, page, 
 	}
 
 	return list
+}
+
+// 获取帖子状态（中文展示）
+func (svc *PostingModule) GetPostStatusCn(status string) string {
+	switch status {
+	case consts.POST_UNDER_REVIEW:
+		return "审核中"
+	case consts.POST_AUDIT_SUCCESS:
+		return "已发布"
+	case consts.POST_AUDIT_FAILURE:
+		return "未通过"
+	}
+
+	return "未知"
 }
 
 // 用户删除发布的帖子

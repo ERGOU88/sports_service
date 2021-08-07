@@ -68,8 +68,9 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测评论内容
+	b := util.IsSpace([]rune(params.Content))
 	isPass, err := client.TextModeration(params.Content)
-	if !isPass {
+	if !isPass || !b {
 		log.Log.Errorf("comment_trace: validate comment err: %s，pass: %v", err, isPass)
 		svc.engine.Rollback()
 		return errdef.COMMENT_INVALID_CONTENT, nil
@@ -178,7 +179,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		if fmt.Sprint(post.Status) != consts.POST_AUDIT_SUCCESS {
 			log.Log.Errorf("comment_trace: post status not audit success, postId:%d", params.ComposeId)
 			svc.engine.Rollback()
-			return errdef.VIDEO_NOT_EXISTS, nil
+			return errdef.POST_NOT_EXISTS, nil
 		}
 
 		// 更新帖子总计（帖子评论总数）
@@ -214,6 +215,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	svc.comment.ReceiveAt.ComposeId = commentId
 	svc.comment.ReceiveAt.UpdateAt = now
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_PUBLISH
+	svc.comment.ReceiveAt.Status = 1
 	// 评论也是@
 	//if err := svc.comment.AddReceiveAt(); err != nil {
 	//	log.Log.Errorf("comment_trace: add receive at err:%s", err)
@@ -240,6 +242,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 				UpdateAt:     now,
 				CommentLevel: consts.COMMENT_PUBLISH,
 				CreateAt:     now,
+				Status:       1,
 			}
 
 			atList = append(atList, at)
@@ -281,8 +284,9 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测评论内容
+	b := util.IsSpace([]rune(params.Content))
 	isPass, err := client.TextModeration(params.Content)
-	if !isPass {
+	if !isPass || !b {
 		log.Log.Errorf("comment_trace: validate comment err: %s，pass: %v", err, isPass)
 		svc.engine.Rollback()
 		return errdef.COMMENT_INVALID_CONTENT, 0
@@ -594,7 +598,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	svc.comment.ReceiveAt.UserId = userId
 	// 被@的用户
 	svc.comment.ReceiveAt.ToUserId = toUserId
-	svc.comment.ReceiveAt.ComposeId = svc.comment.VideoComment.Id
+	svc.comment.ReceiveAt.ComposeId = commentId
 	svc.comment.ReceiveAt.UpdateAt = now
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_REPLY
 	// 回复 记录到 @

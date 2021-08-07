@@ -294,8 +294,8 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 
 	// 重新组装数据
 	for _, video := range videoList {
-		//video.Title = util.TrimHtml(video.Title)
-		//video.Describe = util.TrimHtml(video.Describe)
+		video.Title = util.TrimHtml(video.Title)
+		video.Describe = util.TrimHtml(video.Describe)
 		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		// 获取该视频的用户已播时长
 		if record := svc.video.GetUserPlayDurationRecord(userId, fmt.Sprint(video.VideoId)); record != nil {
@@ -364,8 +364,8 @@ func (svc *VideoModule) GetUserPublishList(userId, status, condition string, pag
 	for _, val := range list {
 		val.StatusCn = svc.GetVideoStatusCn(fmt.Sprint(val.Status))
 		val.VideoAddr = svc.video.AntiStealingLink(val.VideoAddr)
-		//val.Describe = util.TrimHtml(val.Describe)
-		//val.Title = util.TrimHtml(val.Title)
+		val.Describe = util.TrimHtml(val.Describe)
+		val.Title = util.TrimHtml(val.Title)
 		// 获取该视频的用户已播时长
 		if record := svc.video.GetUserPlayDurationRecord(userId, fmt.Sprint(val.VideoId)); record != nil {
 			val.TimeElapsed = record.PlayDuration
@@ -553,8 +553,8 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 			minId = video.VideoId
 		}
 
-		//video.Describe = util.TrimHtml(video.Describe)
-		//video.Title = util.TrimHtml(video.Title)
+		video.Describe = util.TrimHtml(video.Describe)
+		video.Title = util.TrimHtml(video.Title)
 		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		// 查询用户信息
 		userInfo := svc.user.FindUserByUserid(video.UserId)
@@ -581,6 +581,15 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 		// 获取收藏的信息
 		if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
 			video.IsCollect = collectInfo.Status
+		}
+
+		// 获取分区信息
+		if video.Subarea > 0 {
+			var err error
+			video.SubareaInfo, err = svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))
+			if err != nil {
+				log.Log.Errorf("video_trace: get subarea info fail, err:%s, videoId:%d", err, video.VideoId)
+			}
 		}
 	}
 
@@ -698,8 +707,8 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 			continue
 		}
 
-		//video.Describe = util.TrimHtml(video.Describe)
-		//video.Title = util.TrimHtml(video.Title)
+		video.Describe = util.TrimHtml(video.Describe)
+		video.Title = util.TrimHtml(video.Title)
 
 		video.Avatar = userInfo.Avatar
 		video.Nickname = userInfo.NickName
@@ -756,8 +765,8 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDet
 
 	resp := new(mvideo.VideoDetailInfo)
 	resp.VideoId = video.VideoId
-	resp.Title = video.Title
-	resp.Describe = video.Describe
+	resp.Describe = util.TrimHtml(video.Describe)
+	resp.Title = util.TrimHtml(video.Title)
 	resp.Cover = video.Cover
 	resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 	resp.IsRecommend = video.IsRecommend
@@ -928,8 +937,8 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 	for index, video := range videos {
 		resp := new(mvideo.VideoDetailInfo)
 		resp.VideoId = video.VideoId
-		resp.Title = video.Title
-		resp.Describe = video.Describe
+		resp.Describe = util.TrimHtml(video.Describe)
+		resp.Title = util.TrimHtml(video.Title)
 		resp.Cover = video.Cover
 		resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		resp.IsRecommend = video.IsRecommend

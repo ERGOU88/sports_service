@@ -116,6 +116,7 @@ type PostDetailInfo struct {
 	HeatNum       int                    `json:"heat_num"`                             // 热度
 	VideoId       int64                  `json:"video_id"`                             // 关联的视频id
 	RelatedVideo  *RelatedVideo          `json:"related_video,omitempty"`              // 帖子关联的视频信息
+	StatusCn      string                 `json:"status_cn"`                            // 中文状态
 }
 
 type RelatedVideo struct {
@@ -345,7 +346,7 @@ func (m *PostingModel) GetPostNumByTopic(topicId string) (int64, error) {
 const (
 	GET_POST_LIST_BY_SECTION = "SELECT p.*, ps.fabulous_num, ps.browse_num, ps.share_num, ps.comment_num, ps.heat_num FROM " +
 		"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 AND p.section_id=? AND p.is_top=0 " +
-		" ORDER BY ps.`heat_num` DESC, p.is_cream DESC, p.id DESC LIMIT ?, ?"
+		" ORDER BY p.is_cream DESC, p.id DESC LIMIT ?, ?"
 )
 // 通过板块id 获取帖子列表
 func (m *PostingModel) GetPostListBySectionId(sectionId string, offset, size int) ([]*PostDetailInfo, error) {
@@ -353,6 +354,7 @@ func (m *PostingModel) GetPostListBySectionId(sectionId string, offset, size int
 	if err := m.Engine.SQL(GET_POST_LIST_BY_SECTION, sectionId, offset, size).Find(&list); err != nil {
 		return nil, err
 	}
+
 
 	return list, nil
 }

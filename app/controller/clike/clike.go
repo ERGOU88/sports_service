@@ -16,6 +16,7 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	redismq "sports_service/server/redismq/event"
+	"sports_service/server/util"
 	"strings"
 	"time"
 )
@@ -219,8 +220,8 @@ func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*mvide
 	for index, video := range videoList {
 		resp := new(mvideo.VideosInfoResp)
 		resp.VideoId = video.VideoId
-		//resp.Title = util.TrimHtml(video.Title)
-		//resp.Describe = util.TrimHtml(video.Describe)
+		resp.Title = util.TrimHtml(video.Title)
+		resp.Describe = util.TrimHtml(video.Describe)
 		resp.Cover = video.Cover
 		resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		resp.IsRecommend = video.IsRecommend
@@ -415,17 +416,17 @@ func (svc *LikeModule) GiveLikeForPost(userId string, postId int64) int {
 		return errdef.USER_NOT_EXISTS
 	}
 
-	// 查找视频是否存在
+	// 查找帖子是否存在
 	post, err := svc.post.GetPostById(fmt.Sprint(postId))
 	if err != nil || post == nil {
 		svc.engine.Rollback()
-		return errdef.LIKE_VIDEO_NOT_EXISTS
+		return errdef.LIKE_POST_NOT_EXISTS
 	}
 
 	if fmt.Sprint(post.Status) != consts.POST_AUDIT_SUCCESS  {
 		log.Log.Errorf("like_trace: post not found, postId:%d", postId)
 		svc.engine.Rollback()
-		return errdef.LIKE_VIDEO_NOT_EXISTS
+		return errdef.LIKE_POST_FAIL
 	}
 
 	// 获取点赞的帖子信息
