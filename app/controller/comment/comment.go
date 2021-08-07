@@ -213,6 +213,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	// 被@的用户 1级评论 则@的是视频up主 / 帖子发布者
 	svc.comment.ReceiveAt.ToUserId = toUserId
 	svc.comment.ReceiveAt.ComposeId = commentId
+	svc.comment.ReceiveAt.CreateAt = now
 	svc.comment.ReceiveAt.UpdateAt = now
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_PUBLISH
 	svc.comment.ReceiveAt.Status = 1
