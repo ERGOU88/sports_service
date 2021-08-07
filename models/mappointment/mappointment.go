@@ -19,6 +19,27 @@ type WeekInfo struct {
 	PriceCn   string    `json:"price_cn"`
 }
 
+type OptionsInfo struct {
+	Id              int64  `json:"id"`
+	TimeNode        string `json:"time_node"`
+	Duration        int    `json:"duration"`
+	RealAmount      int    `json:"real_amount"`
+	CurAmount       int    `json:"cur_amount"`
+	DiscountRate    int    `json:"discount_rate"`
+	DiscountAmount  int    `json:"discount_amount"`
+	QuotaNum        int    `json:"quota_num"`
+	RelatedId       int64  `json:"related_id"`
+	RecommendType   int    `json:"recommend_type"`
+	AppointmentType int    `json:"appointment_type"`
+	WeekNum         int    `json:"week_num"`
+
+	HasDiscount     int    `json:"has_discount"`       // 是否有优惠 0无 1有
+	AmountCn        string `json:"amount_cn"`          // 中文价格
+	IsFull          int    `json:"is_full"`            // 是否满场
+	PurchasedNum    int    `json:"purchased_num"`      // 已购买人数 包含[成功购买及已下单]
+    Name            string `json:"name"`               // 场馆名称
+}
+
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
 	return &AppointmentModel{
 		AppointmentInfo: new(models.VenueAppointmentInfo),

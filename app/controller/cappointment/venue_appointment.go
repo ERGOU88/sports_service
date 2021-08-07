@@ -6,6 +6,7 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
+	"sports_service/server/models/mappointment"
 	"sports_service/server/models/muser"
 )
 
@@ -51,9 +52,23 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 		return errdef.SUCCESS, list
 	}
 
-	//for _, item := range list {
-	//	svc.appointment.AppointmentInfo.
-	//}
+	res := make([]*mappointment.OptionsInfo, len(list))
+	for _, item := range list {
+		info := &mappointment.OptionsInfo{
+			RelatedId: item.RelatedId,
+			CurAmount: item.CurAmount,
+			TimeNode: item.TimeNode,
+			Duration: item.Duration,
+			RealAmount: item.RealAmount,
+			DiscountRate: item.DiscountRate,
+			DiscountAmount: item.DiscountAmount,
+			QuotaNum: item.QuotaNum,
+			RecommendType: item.RecommendType,
+			AppointmentType: item.AppointmentType,
+			WeekNum: item.WeekNum,
+
+		}
+	}
 
 
 	return errdef.SUCCESS, list
