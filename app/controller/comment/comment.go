@@ -224,9 +224,10 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	//}
 
 	// 添加@
+	atList := make([]*models.ReceivedAt, 0)
+	atList = append(atList, svc.comment.ReceiveAt)
+
 	if len(params.AtInfo) > 0 {
-		atList := make([]*models.ReceivedAt, 0)
-		atList = append(atList, svc.comment.ReceiveAt)
 		for _, val := range params.AtInfo {
 			user := svc.user.FindUserByUserid(val)
 			if user == nil {
@@ -247,13 +248,13 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 
 			atList = append(atList, at)
 		}
+	}
 
-		affected, err := svc.post.AddReceiveAtList(atList)
-		if err != nil || int(affected) != len(atList) {
-			log.Log.Errorf("post_trace: add receive at list fail, err:%s", err)
-			svc.engine.Rollback()
-			return errdef.COMMENT_PUBLISH_FAIL, nil
-		}
+	affected, err := svc.post.AddReceiveAtList(atList)
+	if err != nil || int(affected) != len(atList) {
+		log.Log.Errorf("post_trace: add receive at list fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.COMMENT_PUBLISH_FAIL, nil
 	}
 
 	svc.engine.Commit()
