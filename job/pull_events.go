@@ -84,7 +84,7 @@ func procedureStateChangedEvent(event *v20180717.EventContent) error {
     return err
   }
 
-  session := dao.Engine.NewSession()
+  session := dao.AppEngine.NewSession()
   defer session.Close()
   if err := session.Begin(); err != nil {
     log.Log.Errorf("job_trace: session begin err:%s", err)
@@ -173,7 +173,7 @@ func procedureStateChangedEvent(event *v20180717.EventContent) error {
 // segments 有嫌疑的视频片段，帮助定位视频中具体哪一段涉嫌违规
 // confidence 审核评分（0 - 100），评分越高，嫌疑越大
 func aiContentReviewEvent(event *v20180717.EventContent, vmodel *mvideo.VideoModel) error {
-  //session := dao.Engine.NewSession()
+  //session := dao.AppEngine.NewSession()
   //defer session.Close()
   //if err := session.Begin(); err != nil {
   //  log.Log.Errorf("job_trace: session begin err:%s", err)
@@ -427,7 +427,7 @@ func aiContentReviewEvent(event *v20180717.EventContent, vmodel *mvideo.VideoMod
 // 文件删除事件 todo: 修改数据状态？
 func fileDeletedEvent(event *v20180717.EventContent) error {
   client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
-  session := dao.Engine.NewSession()
+  session := dao.AppEngine.NewSession()
   defer session.Close()
   vmodel := mvideo.NewVideoModel(session)
   now := time.Now().Unix()
@@ -454,7 +454,7 @@ func fileDeletedEvent(event *v20180717.EventContent) error {
 
 // 视频转码事件
 func transCodeCompleteEvent(event *v20180717.EventContent, video *models.Videos) error {
-  //session := dao.Engine.NewSession()
+  //session := dao.AppEngine.NewSession()
   //defer session.Close()
   //if err := session.Begin(); err != nil {
   //  log.Log.Errorf("job_trace: session begin err:%s", err)
@@ -601,7 +601,7 @@ func transCodeCompleteEvent(event *v20180717.EventContent, video *models.Videos)
 
 // 上传事件
 func uploadEvent(event *v20180717.EventContent) error {
-  session := dao.Engine.NewSession()
+  session := dao.AppEngine.NewSession()
   defer session.Close()
   if err := session.Begin(); err != nil {
     log.Log.Errorf("job_trace: session begin err:%s", err)
@@ -831,7 +831,7 @@ func uploadEvent(event *v20180717.EventContent) error {
 
 // 新版上传事件处理 todo: 处理帖子关联逻辑
 func newUploadEvent(event *v20180717.EventContent) error {
-  session := dao.Engine.NewSession()
+  session := dao.AppEngine.NewSession()
   defer session.Close()
   if err := session.Begin(); err != nil {
     log.Log.Errorf("job_trace: session begin err:%s", err)

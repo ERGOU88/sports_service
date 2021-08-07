@@ -10,9 +10,9 @@ type VenuePayOrders struct {
 	PayType     int    `json:"pay_type" xorm:"not null comment('1 支付宝 2 微信 3 钱包 4 苹果内购') TINYINT(1)"`
 	ErrorCode   string `json:"error_code" xorm:"not null default '' comment('错误码') VARCHAR(20)"`
 	PayOrderId  string `json:"pay_order_id" xorm:"not null comment('订单号') index VARCHAR(150)"`
-	IsOnline    int    `json:"is_online" xorm:"not null default 0 comment('0线上购买 1线下购买') TINYINT(1)"`
-	OrderType   int    `json:"order_type" xorm:"not null comment('1001 场馆预约 2001 购买月卡 2002 购买季卡 2003 购买年卡 2004 体验券 3001 私教（教练）订单 3002 课程订单 4001 充值订单') index(user_id) INT(8)"`
+	OrderType   int    `json:"order_type" xorm:"not null comment('下单方式：1001 APP下单，1002 前台购买，1003第三方推广渠道购买') index(user_id) INT(8)"`
 	PayTime     int    `json:"pay_time" xorm:"not null default 0 comment('用户支付时间') INT(11)"`
+	ChannelId   int    `json:"channel_id" xorm:"comment('购买渠道，1001 android ; 1002 ios') INT(10)"`
 	IsCallback  int    `json:"is_callback" xorm:"not null default 0 comment('是否接收到第三方回调 0 未接收到回调 1 已接收回调') TINYINT(1)"`
 	CreateAt    int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt    int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`

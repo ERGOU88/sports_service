@@ -33,7 +33,7 @@ type UserModule struct {
 }
 
 func New(c *gin.Context) UserModule {
-	socket := dao.Engine.NewSession()
+	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return UserModule{
 		context: c,

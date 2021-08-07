@@ -82,7 +82,7 @@ func (svc *base) SetWeek(week int) {
 }
 
 func (svc *base) SetRelatedId(relatedId int) {
-	svc.appointment.AppointmentInfo.RelatedId = relatedId
+	svc.appointment.AppointmentInfo.RelatedId = int64(relatedId)
 }
 
 func (svc *base) SetAppointmentType(appointmentType int) {

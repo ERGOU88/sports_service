@@ -55,7 +55,7 @@ func checkBannerStatus() {
 // 获取所有banner
 func getAllBanner() []*models.Banner {
 	var list []*models.Banner
-	if err := dao.Engine.Find(&list); err != nil {
+	if err := dao.AppEngine.Find(&list); err != nil {
 		return nil
 	}
 
@@ -64,7 +64,7 @@ func getAllBanner() []*models.Banner {
 
 // 更新banner状态
 func updateBannerStatus(banner *models.Banner) error {
-	if _, err := dao.Engine.Where("id=?", banner.Id).Update(banner); err != nil {
+	if _, err := dao.AppEngine.Where("id=?", banner.Id).Update(banner); err != nil {
 		log.Log.Errorf("job_trace: update banner status err:%v", err)
 		return err
 	}

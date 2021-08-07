@@ -26,7 +26,7 @@ func CheckTimedNotify() {
 
 // 执行检测任务 检测定时广播推送 是否已发送 修改消息发送状态
 func checkTimedNotify() {
-  session := dao.Engine.NewSession()
+  session := dao.AppEngine.NewSession()
   defer session.Close()
   nmodel := mnotify.NewNotifyModel(session)
   list := nmodel.GetAllSystemNotify()

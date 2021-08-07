@@ -73,7 +73,7 @@ func handleEvent(event protocol.Event) error {
 		return nil
 	}
 
-	session := dao.Engine.NewSession()
+	session := dao.AppEngine.NewSession()
 	defer session.Close()
 	umodel := muser.NewUserModel(session)
 	user := umodel.FindUserByUserid(event.UserId)

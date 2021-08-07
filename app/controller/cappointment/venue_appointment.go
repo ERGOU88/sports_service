@@ -16,13 +16,15 @@ type VenueAppointmentModule struct {
 }
 
 func NewVenue(c *gin.Context) *VenueAppointmentModule {
-	socket := dao.Engine.NewSession()
-	defer socket.Close()
+	venueSocket := dao.VenueEngine.NewSession()
+	defer venueSocket.Close()
+	appSocket := dao.AppEngine.NewSession()
+	defer appSocket.Close()
 	return &VenueAppointmentModule{
 		context: c,
-		user: muser.NewUserModel(socket),
-		engine:  socket,
-		base: New(socket),
+		user: muser.NewUserModel(appSocket),
+		engine:  venueSocket,
+		base: New(venueSocket),
 	}
 }
 
