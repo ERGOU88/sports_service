@@ -8,6 +8,7 @@ import (
 	"sports_service/server/global/app/log"
 	"strconv"
 )
+
 // 获取场馆信息
 func VenueInfo(c *gin.Context) {
 	reply := errdef.New(c)

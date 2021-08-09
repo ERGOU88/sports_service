@@ -5,7 +5,9 @@ import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/models/mappointment"
 	"sports_service/server/models/muser"
+	"sports_service/server/global/app/log"
 )
 
 type CoachAppointmentModule struct {
@@ -41,7 +43,29 @@ func (svc *CoachAppointmentModule) AppointmentCancel() int {
 
 // 获取某天的预约选项
 func (svc *CoachAppointmentModule) AppointmentOptions() (int, interface{}) {
-	return 7000, nil
+	date := svc.GetDateById(svc.DateId)
+	if date <= 0 {
+		return errdef.ERROR, nil
+	}
+
+	list, err := svc.GetAppointmentOptions()
+	if err != nil {
+		log.Log.Errorf("venue_trace: get options fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, []interface{}{}
+	}
+
+	res := make([]*mappointment.OptionsInfo, len(list))
+	for index, item := range list {
+		info := svc.SetAppointmentOptionsRes(date, item)
+		res[index] = info
+	}
+
+
+	return errdef.SUCCESS, res
 }
 
 func (svc *CoachAppointmentModule) AppointmentDetail() (int, interface{}) {

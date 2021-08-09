@@ -8,13 +8,14 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/muser"
-	"fmt"
+	"sports_service/server/models/mvenue"
 )
 
 type VenueAppointmentModule struct {
 	context         *gin.Context
 	engine          *xorm.Session
 	user            *muser.UserModel
+	venue           *mvenue.VenueModel
 	*base
 }
 
@@ -26,6 +27,7 @@ func NewVenue(c *gin.Context) *VenueAppointmentModule {
 	return &VenueAppointmentModule{
 		context: c,
 		user:    muser.NewUserModel(appSocket),
+		venue:   mvenue.NewVenueModel(venueSocket),
 		engine:  venueSocket,
 		base:    New(venueSocket),
 	}
@@ -43,54 +45,61 @@ func (svc *VenueAppointmentModule) AppointmentCancel() int {
 
 // 预约场馆选项
 func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
+	date := svc.GetDateById(svc.DateId)
+	if date <= 0 {
+		return errdef.ERROR, nil
+	}
+
 	list, err := svc.GetAppointmentOptions()
 	if err != nil {
 		log.Log.Errorf("venue_trace: get options fail, err:%s", err)
-		return errdef.ERROR, list
+		return errdef.ERROR, nil
 	}
 
 	if len(list) == 0 {
-		return errdef.SUCCESS, list
+		return errdef.SUCCESS, []interface{}{}
 	}
 
 	res := make([]*mappointment.OptionsInfo, len(list))
-	for _, item := range list {
-		info := &mappointment.OptionsInfo{
-			RelatedId: item.RelatedId,
-			CurAmount: item.CurAmount,
-			TimeNode: item.TimeNode,
-			Duration: item.Duration,
-			RealAmount: item.RealAmount,
-			QuotaNum: item.QuotaNum,
-			RecommendType: item.RecommendType,
-			AppointmentType: item.AppointmentType,
-			WeekNum: item.WeekNum,
-			AmountCn: fmt.Sprintf("¥%.2f", float64(item.CurAmount)/100),
+	for index, item := range list {
+		info := svc.SetAppointmentOptionsRes(date, item)
+
+		svc.venue.Venue.Id = item.RelatedId
+		ok, err := svc.venue.GetVenueInfoById()
+		if err != nil {
+			log.Log.Errorf("venue_trace: get venue info by id fail, err:%s", err)
 		}
 
-		// 售价 < 定价 表示有优惠
-		if item.CurAmount < item.RealAmount {
-			info.HasDiscount = 1
-			info.DiscountRate = item.DiscountRate
-			info.DiscountAmount = item.DiscountAmount
+		if ok {
+			info.Name = svc.venue.Venue.VenueName
 		}
 
-		date := svc.GetDateById(svc.DateId)
-		if date <= 0 {
-			return errdef.ERROR, nil
+		svc.venue.Labels.TimeNode = item.TimeNode
+		svc.venue.Labels.Date = int64(date)
+		svc.venue.Labels.VenueId = item.RelatedId
+		labels, err := svc.venue.GetVenueUserLabels()
+		if err != nil {
+			log.Log.Errorf("venue_trace: get venue user lables fail, err:%s", err)
 		}
 
-		svc.SetStockRelatedId(item.RelatedId)
-		svc.SetStockDate(date)
-		if err := svc.appointment.GetPurchaseNum(); err != nil {
-			log.Log.Errorf("venue_trace: get purchase num fail, err:%s", err)
-		} else {
-			info.PurchasedNum = svc.appointment.Stock.PurchasedNum
+		info.Labels = make([]*mappointment.LabelInfo, len(labels))
+		for key, val := range labels {
+			label := &mappointment.LabelInfo{
+				UserId: val.UserId,
+				LabelId: val.LabelId,
+				LabelName: val.LabelName,
+			}
+
+			user := svc.user.FindUserByUserid(val.UserId)
+			if user != nil {
+				label.NickName = user.NickName
+				label.Avatar = user.Avatar
+			}
+
+			info.Labels[key] = label
 		}
 
-
-
-
+		res[index] = info
 	}
 
 

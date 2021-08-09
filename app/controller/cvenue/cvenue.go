@@ -9,6 +9,8 @@ import (
 	"sports_service/server/models"
 	"sports_service/server/models/morder"
 	"sports_service/server/models/mvenue"
+	"sports_service/server/util"
+	"strconv"
 )
 
 type VenueModule struct {
@@ -18,40 +20,87 @@ type VenueModule struct {
 	order       *morder.OrderModel
 }
 
+type VenueInfoRes struct {
+	Id            int64    `json:"id"`
+	VenueName     string   `json:"venue_name"`
+	Address       string   `json:"address"`
+	Describe      string   `json:"describe"`
+	Telephone     string   `json:"telephone"`
+	VenueImages   []string `json:"venue_images"`
+	BusinessHours string   `json:"business_hours"`
+	Services      string   `json:"services"`
+	Longitude     float64  `json:"longitude"`
+	Latitude      float64  `json:"latitude"`
+	Status        int      `json:"status"`
+	ImageNum      int      `json:"image_num"`
+}
+
 func New(c *gin.Context) *VenueModule {
-	socket := dao.AppEngine.NewSession()
-	defer socket.Close()
+	venueSocket := dao.VenueEngine.NewSession()
+	defer venueSocket.Close()
 	return &VenueModule{
 		context: c,
-		venue: mvenue.NewVenueModel(socket),
-		order: morder.NewOrderModel(socket),
-		engine:  socket,
+		venue:   mvenue.NewVenueModel(venueSocket),
+		order:   morder.NewOrderModel(venueSocket),
+		engine:  venueSocket,
 	}
 }
 
 // 获取首页数据
-func (svc *VenueModule) GetHomePageInfo(venueId int64) (int, *models.VenueInfo, []*mvenue.VenueProduct) {
+func (svc *VenueModule) GetHomePageInfo(venueId int64) (int, *VenueInfoRes, []*mvenue.VenueProduct) {
 	venueInfo, err := svc.GetVenueInfo(venueId)
 	if err != nil {
+		log.Log.Errorf("venue_trace: get venue info fail, err:%s", err)
 		return errdef.ERROR, nil, nil
 	}
 
 	if venueInfo == nil {
+		log.Log.Errorf("venue_trace: get venue info fail, err:%s", err)
 		return errdef.ERROR, nil, nil
 	}
 
-	productInfo, err := svc.GetVenueProducts(venueId)
-	if err != nil {
-		return errdef.ERROR, venueInfo, productInfo
+	res := &VenueInfoRes{
+		Id: venueInfo.Id,
+		VenueName: venueInfo.VenueName,
+		Address: venueInfo.Address,
+		Describe: venueInfo.Describe,
+		Telephone: venueInfo.Telephone,
+		BusinessHours: venueInfo.BusinessHours,
+		Services: venueInfo.Services,
+		Status: venueInfo.ServiceStatus,
 	}
 
-	return errdef.SUCCESS, venueInfo, productInfo
+	if err = util.JsonFast.UnmarshalFromString(venueInfo.VenueImages, &res.VenueImages); err != nil {
+		log.Log.Errorf("venue_trace: image unmarshal fail, err:%s", err)
+	}
+
+	res.ImageNum = len(res.VenueImages)
+
+	res.Longitude, err = strconv.ParseFloat(venueInfo.Longitude, 64)
+	if err != nil {
+		log.Log.Errorf("venue_trace: parse float fail, err:%s", err)
+	}
+
+	res.Latitude, err = strconv.ParseFloat(venueInfo.Latitude, 64)
+	if err != nil {
+		log.Log.Errorf("venue_trace: parse float fail, err:%s", err)
+	}
+
+
+	productInfo, err := svc.GetVenueProducts(venueId)
+	if err != nil {
+		log.Log.Errorf("venue_trace: get venue products fail, err:%s", err)
+		return errdef.ERROR, res, productInfo
+	}
+
+	return errdef.SUCCESS, res, productInfo
 }
 
 // 获取场馆信息
 func (svc *VenueModule) GetVenueInfo(venueId int64) (*models.VenueInfo, error) {
 	svc.venue.Venue.Id = venueId
-	if err := svc.venue.GetVenueInfoById(); err != nil {
+	ok, err := svc.venue.GetVenueInfoById()
+	if !ok || err != nil {
 		return nil, err
 	}
 
