@@ -688,7 +688,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				}
 
 				// 获取评论对应的帖子信息
-				post, err := svc.post.GetPostById(fmt.Sprint(receiveAt.ComposeId))
+				post, err := svc.post.GetPostById(fmt.Sprint(comment.PostId))
 				if post != nil && err == nil {
 					info.ComposeId = post.Id
 					info.Title = post.Title
