@@ -52,9 +52,11 @@ type LabelInfo struct {
 }
 
 type Options struct {
-	Id       int64        `json:"id"`
-	Name     string       `json:"name"`
-	Describe string       `json:"describe,omitempty"`
+	Id                 int64        `json:"id"`
+	Name               string       `json:"name"`
+	Describe           string       `json:"describe,omitempty"`
+	CostDescription    string       `json:"cost_description,omitempty"`     // 费用说明
+	Instructions       string       `json:"instructions,omitempty"`         // 购买须知
 }
 
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {

@@ -58,6 +58,8 @@ func (svc *CourseAppointmentModule) Options(relatedId int64) (int, interface{}) 
 			Id: item.Id,
 			Name: item.Title,
 			Describe: item.Describe,
+			CostDescription: "费用须知",
+			Instructions: "购买说明",
 		}
 
 		res[index] = info
