@@ -2,7 +2,7 @@ package cappointment
 
 type IAppointment interface {
 	// 选项 [场馆、私课、大课]
-	Options(relatedId, appointmentType string) (int, interface{})
+	Options(relatedId int64) (int, interface{})
 	// 进行预约
 	Appointment() (int, interface{})
 	// 取消预约
@@ -23,8 +23,8 @@ type IAppointment interface {
 	SetDateId(id int)
 }
 
-func Options(i IAppointment, relatedId, appointmentType string) (int, interface{}) {
-	return i.Options(relatedId, appointmentType)
+func GetOptions(i IAppointment, relatedId int64) (int, interface{}) {
+	return i.Options(relatedId)
 }
 
 func UserAppointment(i IAppointment) (int, interface{}) {
@@ -35,7 +35,7 @@ func UserAppointmentCancel(i IAppointment) int {
 	return i.AppointmentCancel()
 }
 
-func GetAppointmentOptions(i IAppointment) (int, interface{}) {
+func GetAppointmentTimeOptions(i IAppointment) (int, interface{}) {
 	return i.AppointmentOptions()
 }
 

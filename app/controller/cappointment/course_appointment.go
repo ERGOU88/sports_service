@@ -6,6 +6,7 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/models/mappointment"
+	"sports_service/server/models/mcoach"
 	"sports_service/server/models/muser"
 	"sports_service/server/global/app/log"
 )
@@ -14,6 +15,7 @@ type CourseAppointmentModule struct {
 	context     *gin.Context
 	engine      *xorm.Session
 	user        *muser.UserModel
+	coach       *mcoach.CoachModel
 	*base
 }
 
@@ -26,14 +28,37 @@ func NewCourse(c *gin.Context) *CourseAppointmentModule {
 	return &CourseAppointmentModule{
 		context: c,
 		user:    muser.NewUserModel(appSocket),
+		coach:   mcoach.NewCoachModel(venueSocket),
 		engine:  venueSocket,
 		base:    New(venueSocket),
 	}
 }
 
-// 大课选项
-func (svc *CourseAppointmentModule) Options(relatedId, appointmentType string) (int, interface{}) {
-	return 200, nil
+// 课程教练选项
+func (svc *CourseAppointmentModule) Options(relatedId int64) (int, interface{}) {
+	svc.coach.Coach.CourseId = relatedId
+	svc.coach.Coach.CoachType = 2
+	list, err := svc.coach.GetCoachList()
+	if err != nil {
+		log.Log.Errorf("")
+		return errdef.ERROR, nil
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, []interface{}{}
+	}
+
+	res := make([]*mappointment.Options, len(list))
+	for index, item := range list {
+		info := &mappointment.Options{
+			Id: item.Id,
+			Name: item.Title,
+		}
+
+		res[index] = info
+	}
+
+	return errdef.SUCCESS, res
 }
 
 

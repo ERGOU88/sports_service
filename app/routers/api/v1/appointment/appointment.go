@@ -27,7 +27,7 @@ func AppointmentDate(c *gin.Context) {
 }
 
 // 预约时间选项
-func AppointmentOptions(c *gin.Context) {
+func AppointmentTimeOptions(c *gin.Context) {
 	reply := errdef.New(c)
 	queryType, err := strconv.Atoi(c.DefaultQuery("query_type", "0"))
 	if err != nil {
@@ -67,7 +67,30 @@ func AppointmentOptions(c *gin.Context) {
 	i.SetAppointmentType(queryType)
 	i.SetRelatedId(relatedId)
 	i.SetDateId(id)
-	syscode, list := cappointment.GetAppointmentOptions(i)
+	syscode, list := cappointment.GetAppointmentTimeOptions(i)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, syscode)
+}
+
+// 预约选项
+func AppointmentOptions(c *gin.Context) {
+	reply := errdef.New(c)
+	queryType, err := strconv.Atoi(c.DefaultQuery("query_type", "0"))
+	if err != nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	relatedId, err := strconv.Atoi(c.Query("related_id"))
+	if err != nil || relatedId <= 0 {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	var i cappointment.IAppointment
+	factory := &cappointment.AppointmentFactory{}
+	i = factory.Create(queryType, c)
+	syscode, list := cappointment.GetOptions(i, int64(relatedId))
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)
 }

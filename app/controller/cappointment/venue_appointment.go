@@ -33,9 +33,28 @@ func NewVenue(c *gin.Context) *VenueAppointmentModule {
 	}
 }
 
-// 私教课程选项
-func (svc *VenueAppointmentModule) Options(relatedId, appointmentType string) (int, interface{}) {
-	return 200, nil
+// 场馆选项 todo：暂时只有一个场馆
+func (svc *VenueAppointmentModule) Options(relatedId int64) (int, interface{}) {
+	list, err := svc.venue.GetVenueList()
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+
+	if list == nil {
+		return errdef.SUCCESS, []interface{}{}
+	}
+
+	res := make([]*mappointment.Options, len(list))
+	for index, item := range list {
+		info := &mappointment.Options{
+			Id: item.Id,
+			Name: item.VenueName,
+		}
+
+		res[index] = info
+	}
+
+	return errdef.SUCCESS, res
 }
 
 // 预约场馆

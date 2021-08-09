@@ -14,6 +14,8 @@ func Router(engine *gin.Engine) {
 		// 预约日期选项
 		appointment.GET("/date", AppointmentDate)
 		// 预约时间选项
+		appointment.GET("/time/options", AppointmentTimeOptions)
+		// 预约选项 [场馆、私课、大课选项]
 		appointment.GET("/options", AppointmentOptions)
 	}
 }
