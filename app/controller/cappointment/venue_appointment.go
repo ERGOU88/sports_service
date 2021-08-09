@@ -33,6 +33,11 @@ func NewVenue(c *gin.Context) *VenueAppointmentModule {
 	}
 }
 
+// 私教课程选项
+func (svc *VenueAppointmentModule) Options(relatedId, appointmentType string) (int, interface{}) {
+	return 200, nil
+}
+
 // 预约场馆
 func (svc *VenueAppointmentModule) Appointment() (int, interface{}) {
 	return 0, nil

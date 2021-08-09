@@ -76,14 +76,16 @@ func (svc *VenueModule) GetHomePageInfo(venueId int64) (int, *VenueInfoRes, []*m
 
 	res.ImageNum = len(res.VenueImages)
 
-	res.Longitude, err = strconv.ParseFloat(venueInfo.Longitude, 64)
-	if err != nil {
-		log.Log.Errorf("venue_trace: parse float fail, err:%s", err)
-	}
+	if venueInfo.Latitude != "" && venueInfo.Longitude != "" {
+		res.Longitude, err = strconv.ParseFloat(venueInfo.Longitude, 64)
+		if err != nil {
+			log.Log.Errorf("venue_trace: parse float fail, err:%s", err)
+		}
 
-	res.Latitude, err = strconv.ParseFloat(venueInfo.Latitude, 64)
-	if err != nil {
-		log.Log.Errorf("venue_trace: parse float fail, err:%s", err)
+		res.Latitude, err = strconv.ParseFloat(venueInfo.Latitude, 64)
+		if err != nil {
+			log.Log.Errorf("venue_trace: parse float fail, err:%s", err)
+		}
 	}
 
 

@@ -21,6 +21,8 @@ func (factory *AppointmentFactory) Create(appointmentType int, c *gin.Context) I
 		return NewVenue(c)
 	case 1:
 		return NewCoach(c)
+	case 2:
+		return NewCourse(c)
 	}
 
 	return nil
