@@ -30,3 +30,19 @@ func CoachDetail(c *gin.Context) {
 	reply.Data["detail"] = detail
 	reply.Response(http.StatusOK, code)
 }
+
+// 私教评价
+func CoachEvaluate(c *gin.Context) {
+	reply := errdef.New(c)
+	coachId := c.Query("coach_id")
+	if coachId == "" {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	svc := coach.New(c)
+	code, list := svc.GetEvaluateList(coachId, page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}

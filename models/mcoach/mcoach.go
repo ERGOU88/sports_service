@@ -44,6 +44,23 @@ type CourseInfo struct {
 	PeriodNum      int    `json:"period_num"`
 }
 
+// 评价信息
+type EvaluateInfo struct {
+	Id        int64        `json:"id"`
+	//UserId    string       `json:"user_id"`
+	//NickName  string       `json:"nick_name"`
+	//Avatar    string       `json:"avatar"`
+	CoachId   string       `json:"coach_id"`
+	Star      int          `json:"star"`
+	Content   string       `json:"content"`
+	Labels    []*LabelInfo `json:"labels"`
+}
+
+type LabelInfo struct {
+	Id     int64     `json:"id"`
+	Name   string    `json:"name"`
+}
+
 
 func NewCoachModel(engine *xorm.Session) *CoachModel {
 	return &CoachModel{
@@ -68,3 +85,12 @@ func (m *CoachModel) GetCoachList(offset, size int) ([]*models.VenueCoachDetail,
 	return list, nil
 }
 
+// 获取私教的评价列表
+func (m *CoachModel) GetEvaluateListByCoach(coachId string, offset, size int) ([]*models.VenueUserEvaluateRecord, error) {
+	var list []*models.VenueUserEvaluateRecord
+	if err := m.Engine.Where("status=0 AND coach_id=?", coachId).Limit(size, offset).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}

@@ -15,5 +15,7 @@ func Router(engine *gin.Engine) {
 		coach.GET("/list", CoachList)
 		// 私教详情
 		coach.GET("/detail", CoachDetail)
+        // 评价列表
+		coach.GET("/evaluate/list", CoachEvaluate)
 	}
 }
