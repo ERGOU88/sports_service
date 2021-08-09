@@ -33,3 +33,13 @@ func (m *CourseModel) GetCourseList() ([]*models.VenueCourseDetail, error) {
 	return list, nil
 }
 
+// 通过私教id获取 私教的课程
+func (m *CourseModel) GetCourseByCoachId(coachId string) ([]*models.VenueCourseDetail, error) {
+	var list []*models.VenueCourseDetail
+	if err := m.Engine.Where("status=0 AND coach_id=? AND course_type=1", coachId).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+

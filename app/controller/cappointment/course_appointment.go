@@ -10,6 +10,7 @@ import (
 	"sports_service/server/models/mcourse"
 	"sports_service/server/models/muser"
 	"sports_service/server/global/app/log"
+	"fmt"
 )
 
 type CourseAppointmentModule struct {
@@ -95,7 +96,7 @@ func (svc *CourseAppointmentModule) AppointmentOptions() (int, interface{}) {
 	res := make([]*mappointment.OptionsInfo, len(list))
 	for index, item := range list {
 		info := svc.SetAppointmentOptionsRes(date, item)
-		ok, err := svc.coach.GetCoachInfoById(item.CoachId)
+		ok, err := svc.coach.GetCoachInfoById(fmt.Sprint(item.CoachId))
 		if err != nil {
 			log.Log.Errorf("venue_trace: get venue info by id fail, err:%s", err)
 		}

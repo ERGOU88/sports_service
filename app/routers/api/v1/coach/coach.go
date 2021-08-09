@@ -16,3 +16,17 @@ func CoachList(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)
 }
+
+func CoachDetail(c *gin.Context) {
+	reply := errdef.New(c)
+	coachId := c.Query("coach_id")
+	if coachId == "" {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := coach.New(c)
+	code, detail := svc.GetCoachDetail(coachId)
+	reply.Data["detail"] = detail
+	reply.Response(http.StatusOK, code)
+}
