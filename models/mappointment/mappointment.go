@@ -54,6 +54,7 @@ type LabelInfo struct {
 type Options struct {
 	Id       int64        `json:"id"`
 	Name     string       `json:"name"`
+	Describe string       `json:"describe,omitempty"`
 }
 
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {

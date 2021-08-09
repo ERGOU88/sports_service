@@ -57,6 +57,7 @@ func (svc *CourseAppointmentModule) Options(relatedId int64) (int, interface{}) 
 		info := &mappointment.Options{
 			Id: item.Id,
 			Name: item.Title,
+			Describe: item.Describe,
 		}
 
 		res[index] = info
