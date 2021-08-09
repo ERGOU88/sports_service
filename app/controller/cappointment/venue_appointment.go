@@ -8,6 +8,7 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/muser"
+	"fmt"
 )
 
 type VenueAppointmentModule struct {
@@ -60,18 +61,40 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 			TimeNode: item.TimeNode,
 			Duration: item.Duration,
 			RealAmount: item.RealAmount,
-			DiscountRate: item.DiscountRate,
-			DiscountAmount: item.DiscountAmount,
 			QuotaNum: item.QuotaNum,
 			RecommendType: item.RecommendType,
 			AppointmentType: item.AppointmentType,
 			WeekNum: item.WeekNum,
-
+			AmountCn: fmt.Sprintf("¥%.2f", float64(item.CurAmount)/100),
 		}
+
+		// 售价 < 定价 表示有优惠
+		if item.CurAmount < item.RealAmount {
+			info.HasDiscount = 1
+			info.DiscountRate = item.DiscountRate
+			info.DiscountAmount = item.DiscountAmount
+		}
+
+		date := svc.GetDateById(svc.DateId)
+		if date <= 0 {
+			return errdef.ERROR, nil
+		}
+
+		svc.SetStockRelatedId(item.RelatedId)
+		svc.SetStockDate(date)
+		if err := svc.appointment.GetPurchaseNum(); err != nil {
+			log.Log.Errorf("venue_trace: get purchase num fail, err:%s", err)
+		} else {
+			info.PurchasedNum = svc.appointment.Stock.PurchasedNum
+		}
+
+
+
+
 	}
 
 
-	return errdef.SUCCESS, list
+	return errdef.SUCCESS, res
 }
 
 func (svc *VenueAppointmentModule) AppointmentDetail() (int, interface{}) {

@@ -1,18 +1,21 @@
 package cappointment
 
 import (
+	"fmt"
 	"github.com/go-xorm/xorm"
+	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/util"
+	"strconv"
 	"time"
-	"sports_service/server/global/app/log"
-	"fmt"
 )
 
 type base struct {
 	Engine  *xorm.Session
 	appointment *mappointment.AppointmentModel
+	DateId  int
 }
 
 func New(socket *xorm.Session) *base {
@@ -87,4 +90,38 @@ func (svc *base) SetRelatedId(relatedId int) {
 
 func (svc *base) SetAppointmentType(appointmentType int) {
 	svc.appointment.AppointmentInfo.AppointmentType = appointmentType
+}
+
+func (svc *base) SetStockRelatedId(relatedId int64) {
+	svc.appointment.Stock.RelatedId = relatedId
+}
+
+func (svc *base) SetStockDate(date int) {
+	svc.appointment.Stock.Date = int64(date)
+}
+
+func (svc *base) SetStockTimeNode(timeNode string) {
+	svc.appointment.Stock.TimeNode = timeNode
+}
+
+// 日期id
+func (svc *base) SetDateId(id int) {
+	svc.DateId = id
+}
+
+// 通过id获取日期
+func (svc *base) GetDateById(id int) int {
+	var date string
+	curTime := time.Now()
+
+	if id >= 1 {
+		date = curTime.AddDate(0, 0, id - 1).Format(consts.FORMAT_DATE)
+	}
+
+	res, err := strconv.Atoi(date)
+	if err != nil {
+		return 0
+	}
+
+	return res
 }

@@ -17,6 +17,8 @@ type IAppointment interface {
 	SetRelatedId(relatedId int)
 	// 设置预约类型
 	SetAppointmentType(appointmentType int)
+	// 设置日期id
+	SetDateId(id int)
 }
 
 func UserAppointment(i IAppointment) (int, interface{}) {

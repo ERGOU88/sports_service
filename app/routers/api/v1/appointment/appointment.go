@@ -52,12 +52,21 @@ func AppointmentOptions(c *gin.Context) {
 		return
 	}
 
+	// 日期id
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+
 	var i cappointment.IAppointment
 	factory := &cappointment.AppointmentFactory{}
 	i = factory.Create(queryType, c)
 	i.SetWeek(week)
 	i.SetAppointmentType(queryType)
 	i.SetRelatedId(relatedId)
+	i.SetDateId(id)
 	syscode, list := cappointment.GetAppointmentOptions(i)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)
