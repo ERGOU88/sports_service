@@ -5,6 +5,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/consts"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/mcoach"
 	"sports_service/server/models/mcourse"
@@ -81,8 +82,8 @@ func (svc *CourseAppointmentModule) AppointmentCancel() int {
 
 // 获取某天的预约选项
 func (svc *CourseAppointmentModule) AppointmentOptions() (int, interface{}) {
-	date := svc.GetDateById(svc.DateId)
-	if date <= 0 {
+	date := svc.GetDateById(svc.DateId, consts.FORMAT_DATE)
+	if date == "" {
 		return errdef.ERROR, nil
 	}
 
@@ -96,9 +97,13 @@ func (svc *CourseAppointmentModule) AppointmentOptions() (int, interface{}) {
 		return errdef.SUCCESS, []interface{}{}
 	}
 
-	res := make([]*mappointment.OptionsInfo, len(list))
-	for index, item := range list {
+	res := make([]*mappointment.OptionsInfo, 0)
+	for _, item := range list {
 		info := svc.SetAppointmentOptionsRes(date, item)
+		if info == nil {
+			continue
+		}
+
 		ok, err := svc.coach.GetCoachInfoById(fmt.Sprint(item.CoachId))
 		if err != nil {
 			log.Log.Errorf("venue_trace: get venue info by id fail, err:%s", err)
@@ -110,7 +115,7 @@ func (svc *CourseAppointmentModule) AppointmentOptions() (int, interface{}) {
 		}
 
 
-		res[index] = info
+		res = append(res, info)
 	}
 
 

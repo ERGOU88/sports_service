@@ -6,6 +6,7 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/mcourse"
 	"sports_service/server/models/muser"
@@ -72,8 +73,8 @@ func (svc *CoachAppointmentModule) AppointmentCancel() int {
 
 // 获取某天的预约选项
 func (svc *CoachAppointmentModule) AppointmentOptions() (int, interface{}) {
-	date := svc.GetDateById(svc.DateId)
-	if date <= 0 {
+	date := svc.GetDateById(svc.DateId, consts.FORMAT_DATE)
+	if date == "" {
 		return errdef.ERROR, nil
 	}
 
@@ -87,10 +88,14 @@ func (svc *CoachAppointmentModule) AppointmentOptions() (int, interface{}) {
 		return errdef.SUCCESS, []interface{}{}
 	}
 
-	res := make([]*mappointment.OptionsInfo, len(list))
-	for index, item := range list {
+	res := make([]*mappointment.OptionsInfo, 0)
+	for _, item := range list {
 		info := svc.SetAppointmentOptionsRes(date, item)
-		res[index] = info
+		if info == nil {
+			continue
+		}
+
+		res = append(res, info)
 	}
 
 

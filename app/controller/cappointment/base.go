@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/util"
-	"strconv"
+	"strings"
 	"time"
 )
 
@@ -96,8 +95,8 @@ func (svc *base) SetStockRelatedId(relatedId int64) {
 	svc.appointment.Stock.RelatedId = relatedId
 }
 
-func (svc *base) SetStockDate(date int) {
-	svc.appointment.Stock.Date = int64(date)
+func (svc *base) SetStockDate(date string) {
+	svc.appointment.Stock.Date = date
 }
 
 func (svc *base) SetStockTimeNode(timeNode string) {
@@ -110,23 +109,34 @@ func (svc *base) SetDateId(id int) {
 }
 
 // 通过id获取日期
-func (svc *base) GetDateById(id int) int {
+func (svc *base) GetDateById(id int, formatType string) string {
 	var date string
 	curTime := time.Now()
 
 	if id >= 1 {
-		date = curTime.AddDate(0, 0, id - 1).Format(consts.FORMAT_DATE)
+		date = curTime.AddDate(0, 0, id - 1).Format(formatType)
 	}
 
-	res, err := strconv.Atoi(date)
-	if err != nil {
-		return 0
-	}
-
-	return res
+	return date
 }
 
-func (svc *base) SetAppointmentOptionsRes(date int, item *models.VenueAppointmentInfo) *mappointment.OptionsInfo {
+func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppointmentInfo) *mappointment.OptionsInfo {
+	if svc.DateId == 1 {
+		nodes := strings.Split(item.TimeNode, "-")
+		if len(nodes) ==  2 {
+			now := time.Now().Unix()
+			// 获取 预约时间配置的开始时间
+			start := fmt.Sprintf("%s %s", date, nodes[0])
+			ts := new(util.TimeS)
+			startTm := ts.GetTimeStrOrStamp(start, "YmdHi")
+			// 如果当前时间 > 配置中的开始时间 过滤该配置项
+			if now > startTm.(int64) {
+				log.Log.Errorf("过滤id：%d, date:%s", item.Id, date)
+				return nil
+			}
+		}
+	}
+
 	info := &mappointment.OptionsInfo{
 		RelatedId: item.RelatedId,
 		CurAmount: item.CurAmount,

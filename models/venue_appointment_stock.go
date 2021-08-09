@@ -2,7 +2,7 @@ package models
 
 type VenueAppointmentStock struct {
 	Id              int64  `json:"id" xorm:"pk BIGINT(20)"`
-	Date            int64  `json:"date" xorm:"not null comment('日期 例如 20211001') unique(date) BIGINT(20)"`
+	Date            string `json:"date" xorm:"not null default '' comment('日期 例如 2021-10-01') unique(date) VARCHAR(128)"`
 	TimeNode        string `json:"time_node" xorm:"not null comment('时间节点 例如 10:00-12:00') unique(date) VARCHAR(128)"`
 	QuotaNum        int    `json:"quota_num" xorm:"not null default 0 comment('配额：可容纳人数/可预约人数 -1表示没有限制') INT(10)"`
 	PurchasedNum    int    `json:"purchased_num" xorm:"not null default 0 comment('已购买数量 [冻结库存]') INT(10)"`

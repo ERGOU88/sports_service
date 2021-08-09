@@ -6,6 +6,7 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
@@ -69,8 +70,8 @@ func (svc *VenueAppointmentModule) AppointmentCancel() int {
 
 // 预约场馆选项
 func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
-	date := svc.GetDateById(svc.DateId)
-	if date <= 0 {
+	date := svc.GetDateById(svc.DateId, consts.FORMAT_DATE)
+	if date == "" {
 		return errdef.ERROR, nil
 	}
 
@@ -84,9 +85,12 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 		return errdef.SUCCESS, []interface{}{}
 	}
 
-	res := make([]*mappointment.OptionsInfo, len(list))
-	for index, item := range list {
+	res := make([]*mappointment.OptionsInfo, 0)
+	for _, item := range list {
 		info := svc.SetAppointmentOptionsRes(date, item)
+		if info == nil {
+			continue
+		}
 
 		svc.venue.Venue.Id = item.RelatedId
 		ok, err := svc.venue.GetVenueInfoById()
@@ -99,7 +103,7 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 		}
 
 		svc.venue.Labels.TimeNode = item.TimeNode
-		svc.venue.Labels.Date = int64(date)
+		svc.venue.Labels.Date = date
 		svc.venue.Labels.VenueId = item.RelatedId
 		labels, err := svc.venue.GetVenueUserLabels()
 		if err != nil {
@@ -123,7 +127,7 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 			info.Labels[key] = label
 		}
 
-		res[index] = info
+		res = append(res, info)
 	}
 
 

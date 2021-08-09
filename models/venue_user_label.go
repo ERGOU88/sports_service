@@ -2,7 +2,7 @@ package models
 
 type VenueUserLabel struct {
 	Id        int64  `json:"id" xorm:"pk autoincr comment('自增ID') BIGINT(20)"`
-	Date      int64  `json:"date" xorm:"not null comment('日期 例如 20211001') BIGINT(20)"`
+	Date      string `json:"date" xorm:"not null default '' comment('日期 例如 2021-10-01') VARCHAR(128)"`
 	TimeNode  string `json:"time_node" xorm:"not null default '' comment('时间节点 例如 10:00-12:00') VARCHAR(128)"`
 	UserId    string `json:"user_id" xorm:"not null comment('用户id') VARCHAR(60)"`
 	LabelType int    `json:"label_type" xorm:"not null default 0 comment('0为用户添加标签 1为系统添加标签') TINYINT(1)"`
