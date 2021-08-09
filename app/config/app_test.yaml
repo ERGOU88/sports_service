@@ -10,7 +10,14 @@ mysql:
       - root:root@2020@tcp(10.6.176.147:3306)/sports_service?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
-
+  venue:
+    master: root:root@2020@tcp(10.6.176.147:3306)/sports_service?charset=utf8mb4
+    slave:
+      - root:root@2020@tcp(10.6.176.147:3306)/sports_service?charset=utf8mb4
+      - root:root@2020@tcp(10.6.176.147:3306)/sports_service?charset=utf8mb4
+      - root:root@2020@tcp(10.6.176.147:3306)/sports_service?charset=utf8mb4
+    maxIdle: 128
+    maxActive: 128
 redis:
   main:
     master:
