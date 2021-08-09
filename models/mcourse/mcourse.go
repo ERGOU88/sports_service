@@ -23,7 +23,7 @@ func (m *CourseModel) GetCourseInfoById() (bool, error) {
 	return m.Engine.Get(m.Course)
 }
 
-// 通过私教id、私教类型 获取课程列表
+// 通过私教id、课程类型 获取课程列表
 func (m *CourseModel) GetCourseList() ([]*models.VenueCourseDetail, error) {
 	var list []*models.VenueCourseDetail
 	if err := m.Engine.Where("status=0 AND coach_id=? AND course_type=?", m.Course.CoachId, m.Course.CourseType).Find(&list); err != nil {

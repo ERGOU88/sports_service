@@ -7,6 +7,7 @@ import (
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/mcoach"
+	"sports_service/server/models/mcourse"
 	"sports_service/server/models/muser"
 	"sports_service/server/global/app/log"
 )
@@ -15,6 +16,7 @@ type CourseAppointmentModule struct {
 	context     *gin.Context
 	engine      *xorm.Session
 	user        *muser.UserModel
+	course      *mcourse.CourseModel
 	coach       *mcoach.CoachModel
 	*base
 }
@@ -28,17 +30,18 @@ func NewCourse(c *gin.Context) *CourseAppointmentModule {
 	return &CourseAppointmentModule{
 		context: c,
 		user:    muser.NewUserModel(appSocket),
+		course:  mcourse.NewCourseModel(venueSocket),
 		coach:   mcoach.NewCoachModel(venueSocket),
 		engine:  venueSocket,
 		base:    New(venueSocket),
 	}
 }
 
-// 课程教练选项
+// 大课选项
 func (svc *CourseAppointmentModule) Options(relatedId int64) (int, interface{}) {
-	svc.coach.Coach.CourseId = relatedId
-	svc.coach.Coach.CoachType = 2
-	list, err := svc.coach.GetCoachList()
+	svc.course.Course.CoachId = 0
+	svc.course.Course.CourseType = 2
+	list, err := svc.course.GetCourseList()
 	if err != nil {
 		log.Log.Errorf("")
 		return errdef.ERROR, nil
@@ -92,6 +95,17 @@ func (svc *CourseAppointmentModule) AppointmentOptions() (int, interface{}) {
 	res := make([]*mappointment.OptionsInfo, len(list))
 	for index, item := range list {
 		info := svc.SetAppointmentOptionsRes(date, item)
+		ok, err := svc.coach.GetCoachInfoById(item.CoachId)
+		if err != nil {
+			log.Log.Errorf("venue_trace: get venue info by id fail, err:%s", err)
+		}
+
+		if ok {
+			info.Name = svc.coach.Coach.Name
+			info.Avatar = svc.coach.Coach.Avatar
+		}
+
+
 		res[index] = info
 	}
 

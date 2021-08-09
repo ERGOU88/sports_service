@@ -2,7 +2,7 @@ package models
 
 type VenueCourseDetail struct {
 	Id             int64  `json:"id" xorm:"pk autoincr comment('课程id') BIGINT(20)"`
-	CoachId        int64  `json:"coach_id" xorm:"not null comment('关联的教兽id') index BIGINT(20)"`
+	CoachId        int64  `json:"coach_id" xorm:"not null default 0 comment('关联的教兽id') index BIGINT(20)"`
 	ClassPeriod    int    `json:"class_period" xorm:"not null comment('课时（秒）') INT(11)"`
 	Title          string `json:"title" xorm:"comment('课程标题') MEDIUMTEXT"`
 	Describe       string `json:"describe" xorm:"comment('课程描述') MEDIUMTEXT"`

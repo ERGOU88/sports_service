@@ -21,5 +21,5 @@ type VenueCoachDetail struct {
 	UpdateAt         int    `json:"update_at" xorm:"not null default 0 comment('修改时间') INT(11)"`
 	Status           int    `json:"status" xorm:"not null default 0 comment('0 正常 1 废弃') TINYINT(1)"`
 	CoachType        int    `json:"coach_type" xorm:"not null default 0 comment('1 私教课老师 2 大课老师') TINYINT(1)"`
-	CourseId         int64  `json:"course_id" xorm:"not null comment('课程id') BIGINT(20)"`
+	CourseId         int64  `json:"course_id" xorm:"not null default 0 comment('课程id') BIGINT(20)"`
 }

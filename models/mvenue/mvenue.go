@@ -43,6 +43,16 @@ func (m *VenueModel) GetVenueInfoById() (bool, error) {
 	return m.Engine.Get(m.Venue)
 }
 
+// 获取场馆列表
+func (m *VenueModel) GetVenueList() ([]*models.VenueInfo, error) {
+	var list []*models.VenueInfo
+	if err := m.Engine.Where("status=0").Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
 // 通过场馆id 获取场馆商品列表
 func (m *VenueModel) GetVenueProducts() ([]*models.VenueProductInfo, error) {
 	var list []*models.VenueProductInfo

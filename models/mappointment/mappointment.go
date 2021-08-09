@@ -36,10 +36,10 @@ type OptionsInfo struct {
 
 	HasDiscount     int    `json:"has_discount,omitempty"`       // 是否有优惠 0无 1有
 	AmountCn        string `json:"amount_cn,omitempty"`          // 中文价格
-	IsFull          int    `json:"is_full"`            // 是否满场
+	IsFull          int    `json:"is_full"`                      // 是否满场
 	PurchasedNum    int    `json:"purchased_num,omitempty"`      // 已购买人数 包含[成功购买及已下单]
     Name            string `json:"name,omitempty"`               // 场馆名称
-
+    Avatar          string `json:"avatar,omitempty"`             // 大课老师头像
     Labels          []*LabelInfo `json:"labels,omitempty"`       // 标签列表
 }
 
@@ -49,6 +49,11 @@ type LabelInfo struct {
 	Avatar      string       `json:"avatar"`
 	LabelId     int64        `json:"label_id"`
 	LabelName   string       `json:"label_name"`
+}
+
+type Options struct {
+	Id       int64        `json:"id"`
+	Name     string       `json:"name"`
 }
 
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
@@ -85,6 +90,5 @@ func (m *AppointmentModel) GetOptionsByWeek() ([]*models.VenueAppointmentInfo, e
 
 // 获取某时间点 场馆预约人数 包含已成功及已下单且订单未超时
 func (m *AppointmentModel) GetPurchaseNum() (bool, error) {
-	return m.Engine.Where("date=? AND time_node=? AND related_id=?",
-		m.Stock.Date, m.Stock.TimeNode, m.Stock.RelatedId).Get(m.Stock)
+	return m.Engine.Get(m.Stock)
 }
