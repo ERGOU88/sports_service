@@ -675,7 +675,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 		case consts.TYPE_POST_COMMENT:
 			info := new(mnotify.ReceiveAtInfo)
 			info.AtTime = receiveAt.UpdateAt
-			info.Type = consts.TYPE_VIDEO_COMMENT
+			info.Type = consts.TYPE_POST_COMMENT
 			// 获取评论信息
 			comment := svc.comment.GetPostCommentById(fmt.Sprint(receiveAt.ComposeId))
 			if comment != nil {
@@ -688,7 +688,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				}
 
 				// 获取评论对应的帖子信息
-				post, err := svc.post.GetPostById(fmt.Sprint(receiveAt.ComposeId))
+				post, err := svc.post.GetPostById(fmt.Sprint(comment.PostId))
 				if post != nil && err == nil {
 					info.ComposeId = post.Id
 					info.Title = post.Title
