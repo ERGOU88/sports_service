@@ -9,6 +9,7 @@ import (
 	"sports_service/server/app/routers/api/v1/attention"
 	"sports_service/server/app/routers/api/v1/barrage"
 	"sports_service/server/app/routers/api/v1/client"
+	"sports_service/server/app/routers/api/v1/coach"
 	"sports_service/server/app/routers/api/v1/collect"
 	"sports_service/server/app/routers/api/v1/comment"
 	"sports_service/server/app/routers/api/v1/community"
@@ -82,4 +83,6 @@ func InitRouters(engine *gin.Engine) {
 	venue.Router(engine)
 	// 预约模块
 	appointment.Router(engine)
+	// 私教模块
+	coach.Router(engine)
 }

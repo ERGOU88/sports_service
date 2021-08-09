@@ -11,6 +11,13 @@ type CoachModel struct {
 	Labels    *models.VenueUserLabel
 }
 
+type CoachInfo struct {
+	Id           int64      `json:"id"`
+	Cover        string     `json:"cover"`
+	Name         string     `json:"name"`
+	Designation  string     `json:"designation"`
+}
+
 func NewCoachModel(engine *xorm.Session) *CoachModel {
 	return &CoachModel{
 		Coach: new(models.VenueCoachDetail),
@@ -25,9 +32,9 @@ func (m *CoachModel) GetCoachInfoById(id int64) (bool, error) {
 }
 
 // 通过课程id、私教类型 获取老师列表
-func (m *CoachModel) GetCoachList() ([]*models.VenueCoachDetail, error) {
+func (m *CoachModel) GetCoachList(offset, size int) ([]*models.VenueCoachDetail, error) {
 	var list []*models.VenueCoachDetail
-	if err := m.Engine.Where("status=0 AND course_id=? AND coach_type=?", m.Coach.CourseId, m.Coach.CoachType).Find(&list); err != nil {
+	if err := m.Engine.Where("status=0 AND course_id=? AND coach_type=?", m.Coach.CourseId, m.Coach.CoachType).Limit(size, offset).Find(&list); err != nil {
 		return nil, err
 	}
 
