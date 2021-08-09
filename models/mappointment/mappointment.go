@@ -8,6 +8,7 @@ import (
 type AppointmentModel struct {
 	AppointmentInfo  *models.VenueAppointmentInfo
 	Engine           *xorm.Session
+	Stock            *models.VenueAppointmentStock
 }
 
 type WeekInfo struct {
@@ -43,6 +44,7 @@ type OptionsInfo struct {
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
 	return &AppointmentModel{
 		AppointmentInfo: new(models.VenueAppointmentInfo),
+		Stock: new(models.VenueAppointmentStock),
 		Engine: engine,
 	}
 }
@@ -69,4 +71,15 @@ func (m *AppointmentModel) GetOptionsByWeek() ([]*models.VenueAppointmentInfo, e
 	}
 
 	return list, nil
+}
+
+// 获取某时间点 场馆预约人数 包含已成功及已下单且订单未超时
+func (m *AppointmentModel) GetPurchaseNum() error {
+	ok, err := m.Engine.Where("date=? AND time_node=? AND related_id=?",
+		m.Stock.Date, m.Stock.TimeNode, m.Stock.RelatedId).Get(m.Stock)
+	if !ok || err != nil {
+		return err
+	}
+
+	return nil
 }
