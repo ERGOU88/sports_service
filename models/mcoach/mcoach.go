@@ -94,3 +94,13 @@ func (m *CoachModel) GetEvaluateListByCoach(coachId string, offset, size int) ([
 
 	return list, nil
 }
+
+// 获取评价配置
+func (m *CoachModel) GetEvaluateConfig() ([]*models.VenueCoachLabelConfig, error) {
+	var list []*models.VenueCoachLabelConfig
+	if err := m.Engine.Where("status=0").Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
