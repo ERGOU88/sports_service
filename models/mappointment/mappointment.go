@@ -42,10 +42,10 @@ type OptionsInfo struct {
 	AmountCn        string `json:"amount_cn,omitempty"`          // 中文价格
 	IsFull          int    `json:"is_full"`                      // 是否满场
 	PurchasedNum    int    `json:"purchased_num,omitempty"`      // 已购买人数 包含[成功购买及已下单]
-    Name            string `json:"name,omitempty"`               // 场馆名称
-    Avatar          string `json:"avatar,omitempty"`             // 大课老师头像
-    Address         string `json:"address,omitempty"`            // 上课地点
-    Labels          []*LabelInfo     `json:"labels,omitempty"`   // 标签列表
+	Name            string `json:"name,omitempty"`               // 场馆名称
+	Avatar          string `json:"avatar,omitempty"`             // 大课老师头像
+	Address         string `json:"address,omitempty"`            // 上课地点
+	Labels          []*LabelInfo     `json:"labels,omitempty"`   // 标签列表
 	ReservedUsers   []*ReservedUsers `json:"reserved_users"`     // 已预约人数
 
 }
@@ -125,6 +125,11 @@ func (m *AppointmentModel) GetOptionsByWeek() ([]*models.VenueAppointmentInfo, e
 // 获取某时间点 场馆预约人数 包含已成功及已下单且订单未超时
 func (m *AppointmentModel) GetPurchaseNum() (bool, error) {
 	return m.Engine.Get(m.Stock)
+}
+
+// 是否存在库存信息 todo: 前期并发不高 可以读取快照
+func (m *AppointmentModel) HasExistsStockInfo() (bool, error) {
+	return m.Engine.Exist(m.AppointmentInfo)
 }
 
 // 添加预约库存数据
