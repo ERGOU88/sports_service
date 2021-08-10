@@ -35,7 +35,11 @@ func UserAppointmentCancel(i IAppointment) int {
 	return i.AppointmentCancel()
 }
 
-func GetAppointmentTimeOptions(i IAppointment) (int, interface{}) {
+func GetAppointmentTimeOptions(i IAppointment, week, queryType, relatedId, id int) (int, interface{}) {
+	i.SetWeek(week)
+	i.SetAppointmentType(queryType)
+	i.SetRelatedId(relatedId)
+	i.SetDateId(id)
 	return i.AppointmentOptions()
 }
 
