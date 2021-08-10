@@ -24,7 +24,7 @@ func New(socket *xorm.Session) *base {
 	}
 }
 
-func (svc *base) AppointmentDateInfo(days int) interface{} {
+func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 	list := svc.GetAppointmentDate(days)
 	res := make([]*mappointment.WeekInfo, len(list))
 	for index, v := range list {
@@ -37,7 +37,7 @@ func (svc *base) AppointmentDateInfo(days int) interface{} {
 
 		svc.appointment.AppointmentInfo.WeekNum = v.Week
 		svc.appointment.AppointmentInfo.WeekNum = v.Week
-		svc.appointment.AppointmentInfo.AppointmentType = 0
+		svc.appointment.AppointmentInfo.AppointmentType = appointmentType
 		svc.appointment.AppointmentInfo.CurAmount = 0
 
 		if err := svc.appointment.GetMinPriceByWeek(); err != nil {

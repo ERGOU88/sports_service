@@ -75,11 +75,13 @@ type Options struct {
 
 // 预约请求数据
 type AppointmentReq struct {
-	Id        int64      `json:"id"`         // 场馆id/私教课程id/大课id
+	RelatedId int64      `json:"id"`         // 场馆id/私教课程id/大课id
 	DateId    int        `json:"date_id"`    // 1为今天
-	TimeNode  string     `json:"time_node"`  // 预约时间节点
+	//TimeNode  string     `json:"time_node"`  // 预约时间节点
 	UserId    string     `json:"user_id"`    // 用户id
 	AppointmentType int  `json:"appointment_type"` // 0场馆 1私教课 2大课
+	Count     int        `json:"count"`            // 数量
+	Id        int64      `json:"id"`               // 配置id
 }
 
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
@@ -104,6 +106,11 @@ func (m *AppointmentModel) GetMinPriceByWeek() error {
 	return nil
 }
 
+// 通过id获取预约配置
+func (m *AppointmentModel) GetAppointmentConfById() (bool, error) {
+	return m.Engine.Get(m.AppointmentInfo)
+}
+
 // 通过场馆id、课程id、星期 及 预约类型 获取可预约选项
 func (m *AppointmentModel) GetOptionsByWeek() ([]*models.VenueAppointmentInfo, error) {
 	var list []*models.VenueAppointmentInfo
@@ -118,6 +125,29 @@ func (m *AppointmentModel) GetOptionsByWeek() ([]*models.VenueAppointmentInfo, e
 // 获取某时间点 场馆预约人数 包含已成功及已下单且订单未超时
 func (m *AppointmentModel) GetPurchaseNum() (bool, error) {
 	return m.Engine.Get(m.Stock)
+}
+
+// 添加预约库存数据
+func (m *AppointmentModel) AddStockInfo(stock []*models.VenueAppointmentStock) (int64, error) {
+	return m.Engine.InsertMulti(stock)
+}
+
+const (
+	UPDATE_STOCK_INFO = "UPDATE `venue_appointment_stock` SET `purchased_num`= `purchased_num`+ ?, `update_at`=? WHERE date=? AND " +
+		"time_node=? AND appointment_type=? AND related_id=? AND quota_num >= `purchased_num`+ ?"
+)
+func (m *AppointmentModel) UpdateStockInfo(count, now, date, timeNode, appointmentType, relatedId int) (int64, error) {
+	res, err := m.Engine.Exec(UPDATE_STOCK_INFO, count, now, date, timeNode, appointmentType, relatedId, count)
+	if err != nil {
+		return 0, err
+	}
+
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return affected, nil
 }
 
 // 获取成功预约的记录[包含已付款和支付中]

@@ -7,9 +7,11 @@ import (
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
+	"sports_service/server/models"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
+	"time"
 )
 
 type VenueAppointmentModule struct {
@@ -60,6 +62,16 @@ func (svc *VenueAppointmentModule) Options(relatedId int64) (int, interface{}) {
 
 // 预约场馆
 func (svc *VenueAppointmentModule) Appointment(param *mappointment.AppointmentReq) (int, interface{}) {
+	svc.appointment.AppointmentInfo.Id = param.Id
+	ok, err := svc.appointment.GetAppointmentConfById()
+	if err != nil || !ok {
+		return errdef.ERROR, nil
+	}
+
+	if param.Count <=0 || param.Count > svc.appointment.AppointmentInfo.QuotaNum {
+		return errdef.ERROR, nil
+	}
+
 	user := svc.user.FindUserByUserid(param.UserId)
 	if user == nil {
 		return errdef.USER_NOT_EXISTS, nil
@@ -70,6 +82,43 @@ func (svc *VenueAppointmentModule) Appointment(param *mappointment.AppointmentRe
 		return errdef.ERROR, nil
 	}
 
+	svc.venue.Venue.Id = param.RelatedId
+	ok, err = svc.venue.GetVenueInfoById()
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get venue info fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+
+
+	now := int(time.Now().Unix())
+	data := make([]*models.VenueAppointmentStock, 1)
+	info := &models.VenueAppointmentStock{
+		Date: date,
+		TimeNode: svc.appointment.AppointmentInfo.TimeNode,
+		QuotaNum: svc.appointment.AppointmentInfo.QuotaNum,
+		PurchasedNum: param.Count,
+		AppointmentType: svc.appointment.AppointmentInfo.AppointmentType,
+		RelatedId: svc.appointment.AppointmentInfo.RelatedId,
+		CreateAt: now,
+		UpdateAt: now,
+	}
+
+	data[0] = info
+
+	affected, err := svc.appointment.AddStockInfo(data)
+	if err != nil && affected == 0 {
+
+	}
+
+	ok, err = svc.appointment.GetPurchaseNum()
+	if err != nil {
+		log.Log.Errorf("venue_trace: get purchase num fail, err:%s", err)
+	}
+
+	//
+	if !ok && err == nil {
+
+	}
 
 
 	return 0, nil
@@ -179,5 +228,5 @@ func (svc *VenueAppointmentModule) AppointmentDetail() (int, interface{}) {
 
 // 场馆预约日期配置
 func (svc *VenueAppointmentModule) AppointmentDate() (int, interface{}) {
-	return errdef.SUCCESS, svc.AppointmentDateInfo(6)
+	return errdef.SUCCESS, svc.AppointmentDateInfo(6, 0)
 }

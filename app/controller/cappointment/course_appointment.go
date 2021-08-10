@@ -130,7 +130,7 @@ func (svc *CourseAppointmentModule) AppointmentDetail() (int, interface{}) {
 
 // 预约大课日期配置
 func (svc *CourseAppointmentModule) AppointmentDate() (int, interface{}) {
-	return errdef.SUCCESS, svc.AppointmentDateInfo(6)
+	return errdef.SUCCESS, svc.AppointmentDateInfo(6, 2)
 }
 
 

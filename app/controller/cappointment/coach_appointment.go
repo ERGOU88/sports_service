@@ -106,9 +106,9 @@ func (svc *CoachAppointmentModule) AppointmentDetail() (int, interface{}) {
 	return 8000, nil
 }
 
-// 预约私教日期配置
+// 预约私教课程日期配置
 func (svc *CoachAppointmentModule) AppointmentDate() (int, interface{}) {
-	return errdef.SUCCESS, svc.AppointmentDateInfo(6)
+	return errdef.SUCCESS, svc.AppointmentDateInfo(6, 1)
 }
 
 
