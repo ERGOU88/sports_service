@@ -103,6 +103,10 @@ func (svc *base) SetStockTimeNode(timeNode string) {
 	svc.appointment.Stock.TimeNode = timeNode
 }
 
+func (svc *base) SetStockAppointmentType(appointmentType int) {
+	svc.appointment.Stock.AppointmentType = appointmentType
+}
+
 // 日期id
 func (svc *base) SetDateId(id int) {
 	svc.DateId = id
@@ -167,6 +171,7 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 	svc.SetStockRelatedId(item.RelatedId)
 	svc.SetStockDate(date)
 	svc.SetStockTimeNode(item.TimeNode)
+	svc.SetStockAppointmentType(item.AppointmentType)
 	ok, err := svc.appointment.GetPurchaseNum()
 	if err != nil {
 		log.Log.Errorf("venue_trace: get purchase num fail, err:%s", err)
