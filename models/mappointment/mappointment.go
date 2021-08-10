@@ -27,8 +27,10 @@ type OptionsInfo struct {
 	Duration        int    `json:"duration"`
 	DurationCn      string `json:"duration_cn"`
 	RealAmount      int    `json:"real_amount"`
+	RealAmountCn    string `json:"real_amount_cn"`
 	CurAmount       int    `json:"cur_amount"`
 	DiscountRate    int    `json:"discount_rate"`
+	RateCn          string `json:"rate_cn"`
 	DiscountAmount  int    `json:"discount_amount"`
 	QuotaNum        int    `json:"quota_num"`
 	RelatedId       int64  `json:"related_id"`
@@ -42,6 +44,7 @@ type OptionsInfo struct {
 	PurchasedNum    int    `json:"purchased_num,omitempty"`      // 已购买人数 包含[成功购买及已下单]
     Name            string `json:"name,omitempty"`               // 场馆名称
     Avatar          string `json:"avatar,omitempty"`             // 大课老师头像
+    Address         string `json:"address,omitempty"`            // 上课地点
     Labels          []*LabelInfo     `json:"labels,omitempty"`   // 标签列表
 	ReservedUsers   []*ReservedUsers `json:"reserved_users"`     // 已预约人数
 
@@ -72,9 +75,11 @@ type Options struct {
 
 // 预约请求数据
 type AppointmentReq struct {
-	Id      int64      `json:"id"`
-	DateId  int64      `json:"date_id"`
-
+	Id        int64      `json:"id"`         // 场馆id/私教课程id/大课id
+	DateId    int        `json:"date_id"`    // 1为今天
+	TimeNode  string     `json:"time_node"`  // 预约时间节点
+	UserId    string     `json:"user_id"`    // 用户id
+	AppointmentType int  `json:"appointment_type"` // 0场馆 1私教课 2大课
 }
 
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {

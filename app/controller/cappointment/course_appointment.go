@@ -71,7 +71,8 @@ func (svc *CourseAppointmentModule) Options(relatedId int64) (int, interface{}) 
 
 
 // 预约大课
-func (svc *CourseAppointmentModule) Appointment() (int, interface{}) {
+func (svc *CourseAppointmentModule) Appointment(param *mappointment.AppointmentReq) (int, interface{}) {
+
 	return 5000, nil
 }
 
@@ -112,6 +113,7 @@ func (svc *CourseAppointmentModule) AppointmentOptions() (int, interface{}) {
 		if ok {
 			info.Name = svc.coach.Coach.Name
 			info.Avatar = svc.coach.Coach.Avatar
+			info.Address = svc.coach.Coach.Address
 		}
 
 

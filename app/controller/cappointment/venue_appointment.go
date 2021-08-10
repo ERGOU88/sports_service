@@ -59,7 +59,19 @@ func (svc *VenueAppointmentModule) Options(relatedId int64) (int, interface{}) {
 }
 
 // 预约场馆
-func (svc *VenueAppointmentModule) Appointment() (int, interface{}) {
+func (svc *VenueAppointmentModule) Appointment(param *mappointment.AppointmentReq) (int, interface{}) {
+	user := svc.user.FindUserByUserid(param.UserId)
+	if user == nil {
+		return errdef.USER_NOT_EXISTS, nil
+	}
+
+	date := svc.GetDateById(param.DateId, consts.FORMAT_DATE)
+	if date == "" {
+		return errdef.ERROR, nil
+	}
+
+
+
 	return 0, nil
 }
 

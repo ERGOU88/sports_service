@@ -1,10 +1,14 @@
 package cappointment
 
+import (
+	"sports_service/server/models/mappointment"
+)
+
 type IAppointment interface {
 	// 选项 [场馆、私课、大课]
 	Options(relatedId int64) (int, interface{})
 	// 进行预约
-	Appointment() (int, interface{})
+	Appointment(*mappointment.AppointmentReq) (int, interface{})
 	// 取消预约
 	AppointmentCancel() int
 	// 预约时间选项
@@ -27,8 +31,8 @@ func GetOptions(i IAppointment, relatedId int64) (int, interface{}) {
 	return i.Options(relatedId)
 }
 
-func UserAppointment(i IAppointment) (int, interface{}) {
-	return i.Appointment()
+func UserAppointment(i IAppointment, param *mappointment.AppointmentReq) (int, interface{}) {
+	return i.Appointment(param)
 }
 
 func UserAppointmentCancel(i IAppointment) int {

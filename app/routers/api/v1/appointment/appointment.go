@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"sports_service/server/app/controller/cappointment"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
+	"sports_service/server/models/mappointment"
 	"strconv"
 )
 
@@ -105,4 +108,29 @@ func AppointmentOptions(c *gin.Context) {
 	syscode, list := cappointment.GetOptions(i, int64(relatedId))
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)
+}
+
+// 开始预约
+func AppointmentStart(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mappointment.AppointmentReq{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("appointment_trace: invalid param, err:%s", err)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	var i cappointment.IAppointment
+	factory := &cappointment.AppointmentFactory{}
+	i = factory.Create(param.AppointmentType, c)
+	if i == nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	userId, _ := c.Get(consts.USER_ID)
+	param.UserId = userId.(string)
+	cappointment.UserAppointment(i, param)
+
+
 }

@@ -157,6 +157,11 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		info.HasDiscount = 1
 		info.DiscountRate = item.DiscountRate
 		info.DiscountAmount = item.DiscountAmount
+		if item.DiscountRate % 10 == 0 {
+			info.RateCn = fmt.Sprintf("%d", item.DiscountRate/10)
+		} else {
+			info.RateCn = fmt.Sprintf("%.1f", float64(item.DiscountRate)/10)
+		}
 	}
 
 	svc.SetStockRelatedId(item.RelatedId)
