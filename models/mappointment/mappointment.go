@@ -9,6 +9,7 @@ type AppointmentModel struct {
 	AppointmentInfo  *models.VenueAppointmentInfo
 	Engine           *xorm.Session
 	Stock            *models.VenueAppointmentStock
+	Record           *models.AppointmentRecord
 }
 
 type WeekInfo struct {
@@ -24,6 +25,7 @@ type OptionsInfo struct {
 	Id              int64  `json:"id"`
 	TimeNode        string `json:"time_node"`
 	Duration        int    `json:"duration"`
+	DurationCn      string `json:"duration_cn"`
 	RealAmount      int    `json:"real_amount"`
 	CurAmount       int    `json:"cur_amount"`
 	DiscountRate    int    `json:"discount_rate"`
@@ -40,13 +42,22 @@ type OptionsInfo struct {
 	PurchasedNum    int    `json:"purchased_num,omitempty"`      // 已购买人数 包含[成功购买及已下单]
     Name            string `json:"name,omitempty"`               // 场馆名称
     Avatar          string `json:"avatar,omitempty"`             // 大课老师头像
-    Labels          []*LabelInfo `json:"labels,omitempty"`       // 标签列表
+    Labels          []*LabelInfo     `json:"labels,omitempty"`   // 标签列表
+	ReservedUsers   []*ReservedUsers `json:"reserved_users"`     // 已预约人数
+
+}
+
+// 已预约人数
+type ReservedUsers struct {
+	UserId      string       `json:"user_id"`
+	NickName    string       `json:"nick_name"`
+	Avatar      string       `json:"avatar"`
 }
 
 type LabelInfo struct {
 	UserId      string       `json:"user_id"`
-	NickName    string       `json:"nick_name"`
-	Avatar      string       `json:"avatar"`
+	//NickName    string       `json:"nick_name"`
+	//Avatar      string       `json:"avatar"`
 	LabelId     int64        `json:"label_id"`
 	LabelName   string       `json:"label_name"`
 }
@@ -59,10 +70,18 @@ type Options struct {
 	Instructions       string       `json:"instructions,omitempty"`         // 购买须知
 }
 
+// 预约请求数据
+type AppointmentReq struct {
+	Id      int64      `json:"id"`
+	DateId  int64      `json:"date_id"`
+
+}
+
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
 	return &AppointmentModel{
 		AppointmentInfo: new(models.VenueAppointmentInfo),
 		Stock: new(models.VenueAppointmentStock),
+		Record: new(models.AppointmentRecord),
 		Engine: engine,
 	}
 }
@@ -94,4 +113,16 @@ func (m *AppointmentModel) GetOptionsByWeek() ([]*models.VenueAppointmentInfo, e
 // 获取某时间点 场馆预约人数 包含已成功及已下单且订单未超时
 func (m *AppointmentModel) GetPurchaseNum() (bool, error) {
 	return m.Engine.Get(m.Stock)
+}
+
+// 获取成功预约的记录[包含已付款和支付中]
+func (m *AppointmentModel) GetAppointmentRecord() ([]*models.AppointmentRecord, error) {
+	var list []*models.AppointmentRecord
+	sql := "SELECT * FROM appointment_record WHERE status in(0, 2) AND appointment_type=? AND related_id=? AND time_node=? " +
+		"AND date=? ORDER BY id ASC"
+	if err := m.Engine.SQL(sql, m.Record.AppointmentType, m.Record.RelatedId, m.Record.TimeNode, m.Record.Date).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
 }

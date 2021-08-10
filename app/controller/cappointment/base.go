@@ -141,6 +141,7 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		RelatedId: item.RelatedId,
 		CurAmount: item.CurAmount,
 		TimeNode: item.TimeNode,
+		DurationCn: util.ResolveTime(item.Duration),
 		Duration: item.Duration,
 		RealAmount: item.RealAmount,
 		QuotaNum: item.QuotaNum,

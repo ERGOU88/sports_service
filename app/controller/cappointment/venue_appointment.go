@@ -118,13 +118,40 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 				LabelName: val.LabelName,
 			}
 
-			user := svc.user.FindUserByUserid(val.UserId)
-			if user != nil {
-				label.NickName = user.NickName
-				label.Avatar = user.Avatar
-			}
-
 			info.Labels[key] = label
+		}
+
+		svc.appointment.Record.AppointmentType = 0
+		svc.appointment.Record.TimeNode = item.TimeNode
+		svc.appointment.Record.RelatedId = item.RelatedId
+		svc.appointment.Record.Date = date
+		records, err := svc.appointment.GetAppointmentRecord()
+		if err != nil {
+			log.Log.Errorf("venue_trace: get appointment record fail, err:%s", err)
+		}
+
+		info.ReservedUsers = make([]*mappointment.ReservedUsers, 0)
+		if len(records) > 0 {
+			for _, val := range records {
+				uinfo := &mappointment.ReservedUsers{
+					UserId: val.UserId,
+				}
+
+				user := svc.user.FindUserByUserid(val.UserId)
+				if user != nil {
+					uinfo.NickName = user.NickName
+					uinfo.Avatar = user.Avatar
+				}
+
+				info.ReservedUsers = append(info.ReservedUsers, uinfo)
+
+				if val.PurchasedNum > 1 {
+					for i := 0; i < val.PurchasedNum; i++ {
+						info.ReservedUsers = append(info.ReservedUsers, uinfo)
+					}
+				}
+
+			}
 		}
 
 		res = append(res, info)

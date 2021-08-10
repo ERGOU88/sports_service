@@ -7,6 +7,7 @@ import (
 	"github.com/rs/xid"
 	"github.com/zheng-ji/goSnowFlake"
 	"log"
+	"math"
 	"math/rand"
 	"regexp"
 	"strconv"
@@ -340,4 +341,49 @@ func IsSpace(r []rune) bool {
 	}
 
 	return false
+}
+
+// 转换为时分秒
+func ResolveTime(seconds int) string {
+	oneSecond := 60
+	oneHour := 60 * oneSecond
+	oneDay := 24 * oneHour
+
+	var day = seconds / oneDay
+	hour := (seconds - day * oneDay) / oneHour
+	minute := (seconds - day * oneDay - hour * oneHour) / oneSecond
+	second := seconds - day * oneDay - hour * oneHour - minute * oneSecond
+
+	var res string
+	if hour > 0 {
+		res = fmt.Sprintf("%dh", hour)
+	}
+
+	if minute > 0 {
+		res += fmt.Sprintf("%dm", minute)
+	}
+
+	if second > 0 {
+		res += fmt.Sprintf("%ds", second)
+	}
+
+	return res
+}
+
+func FormatDuration(duration time.Time) string {
+	hours := time.Now().Sub(duration).Hours()
+	if hours > 24 * 365 {
+		return duration.Format("2006-01-02")
+	}
+
+	if hours > 24 {
+		return duration.Format("01-02 ")
+	}
+
+	if hours > 1 {
+		return fmt.Sprintf("%d小时前", int(math.Ceil(hours)))
+	}
+
+	minute := time.Now().Sub(duration).Minutes()
+	return fmt.Sprintf("%d分钟之前", int(math.Ceil(minute)))
 }

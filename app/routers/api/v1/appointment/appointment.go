@@ -20,6 +20,10 @@ func AppointmentDate(c *gin.Context) {
 
 	factory := &cappointment.AppointmentFactory{}
 	i = factory.Create(queryType, c)
+	if i == nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
 
 	syscode, list := cappointment.GetAppointmentDate(i)
 	reply.Data["list"] = list
@@ -62,6 +66,11 @@ func AppointmentTimeOptions(c *gin.Context) {
 	var i cappointment.IAppointment
 	factory := &cappointment.AppointmentFactory{}
 	i = factory.Create(queryType, c)
+	if i == nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
 	syscode, list := cappointment.GetAppointmentTimeOptions(i, week, queryType, relatedId, id)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)
@@ -88,6 +97,11 @@ func AppointmentOptions(c *gin.Context) {
 	var i cappointment.IAppointment
 	factory := &cappointment.AppointmentFactory{}
 	i = factory.Create(queryType, c)
+	if i == nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
 	syscode, list := cappointment.GetOptions(i, int64(relatedId))
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)
