@@ -35,7 +35,8 @@ const (
 
 	SEARCH_HISTORY_CONTENT    = SUGAR + "search_history_content_%s"                // 记录历史搜索内容{拼接 userId}
 
-	MSG_EVENT_KEY             = SUGAR + "msg_event_key"                            // 消息（App推送等）
+	MSG_PUSH_EVENT_KEY        = SUGAR + "push_event_key"                           // 推送消息（App推送等）
+	MSG_ORDER_EVENT_KEY       = SUGAR + "order_event_key"                          // 订单消息
 
 	AUDIT_MODE                = SUGAR + "audit_mode"                               // [视频、帖子] 审核模式 1 人工 + AI 2 人工审核
 )

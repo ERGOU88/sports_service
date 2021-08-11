@@ -143,38 +143,11 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 			return errdef.ERROR, nil
 		}
 
-		orderMp[item.Id] = &models.VenueOrderProductInfo{
-			ProductId:   item.Id,
-			OrderType:   consts.ORDER_TYPE_APPOINTMENT_VENUE,
-			Count:       item.Count,
-			RealAmount:  svc.appointment.AppointmentInfo.RealAmount,
-			CurAmount:   svc.appointment.AppointmentInfo.CurAmount,
-			DiscountRate: svc.appointment.AppointmentInfo.DiscountRate,
-			DiscountAmount: svc.appointment.AppointmentInfo.DiscountAmount,
-			Amount: svc.appointment.AppointmentInfo.CurAmount * item.Count,
-			Duration: svc.appointment.AppointmentInfo.Duration * item.Count,
-			CreateAt: now,
-			UpdateAt: now,
-			RelatedId: item.RelatedId,
-			PayOrderId: orderId,
-		}
-
-		recordMp[item.Id] = &models.AppointmentRecord{
-			UserId: user.UserId,
-			RelatedId: item.RelatedId,
-			AppointmentType: params.AppointmentType,
-			TimeNode: svc.appointment.AppointmentInfo.TimeNode,
-			Date: date,
-			PayOrderId: orderId,
-			CreateAt: now,
-			UpdateAt: now,
-			PurchasedNum: item.Count,
-			SeatNo: item.SeatNo,
-		}
+		orderMp[item.Id] = svc.SetOrderProductInfo(orderId, now, item)
+		recordMp[item.Id] = svc.SetAppointmentRecordInfo(user.UserId, date, orderId, now, item)
 
 		// 数量 * 售价
 		totalAmount += item.Count * svc.appointment.AppointmentInfo.CurAmount
-
 		ok, err = svc.appointment.HasExistsStockInfo()
 		if err != nil {
 			svc.engine.Rollback()
@@ -184,8 +157,6 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 		var (
 			myErr *mysql.MySQLError
 		)
-
-
 		if !ok {
 			// 库存数据不存在 写入
 			data := &models.VenueAppointmentStock{
@@ -300,7 +271,6 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 					recordMp[val.Id].DeductionTm = int64(val.Duration)
 					totalDeductionTm += val.Duration
 				}
-
 			}
 		}
 	}

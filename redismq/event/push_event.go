@@ -16,7 +16,7 @@ func PushEventMsg(msg []byte) {
 	//body := newEvent(userId, nickname, cover, content, eventType)
 	conn := dao.RedisPool().Get()
 
-	num, err := redis.Int(conn.Do("LPUSH", rdskey.MSG_EVENT_KEY, msg))
+	num, err := redis.Int(conn.Do("LPUSH", rdskey.MSG_PUSH_EVENT_KEY, msg))
 	if err != nil || num != 1 {
 		log.Log.Infof("event_trace: msg push fail, err:%s", err)
 	}
@@ -30,7 +30,7 @@ func NewEvent(toUserId, composeId, nickname, cover, content string, eventType in
 	event.EventType = eventType
 	event.Ts = time.Now().Unix()
 
-	data := new(protocol.Data)
+	data := new(protocol.PushData)
 	data.NickName = nickname
 	data.Cover = cover
 	data.Content = content

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/util"
@@ -207,5 +208,38 @@ func (svc *base) QueryStockInfo(appointmentType int, relatedId int64, date, time
 	svc.SetStockDate(date)
 	svc.SetStockTimeNode(timeNode)
 	return svc.appointment.GetPurchaseNum()
+}
+
+func (svc *base) SetOrderProductInfo(orderId string, now int, item *mappointment.AppointmentInfo) *models.VenueOrderProductInfo {
+	return &models.VenueOrderProductInfo{
+		ProductId:   item.Id,
+		OrderType:   consts.ORDER_TYPE_APPOINTMENT_VENUE,
+		Count:       item.Count,
+		RealAmount:  svc.appointment.AppointmentInfo.RealAmount,
+		CurAmount:   svc.appointment.AppointmentInfo.CurAmount,
+		DiscountRate: svc.appointment.AppointmentInfo.DiscountRate,
+		DiscountAmount: svc.appointment.AppointmentInfo.DiscountAmount,
+		Amount: svc.appointment.AppointmentInfo.CurAmount * item.Count,
+		Duration: svc.appointment.AppointmentInfo.Duration * item.Count,
+		CreateAt: now,
+		UpdateAt: now,
+		RelatedId: item.RelatedId,
+		PayOrderId: orderId,
+	}
+}
+
+func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now int, item *mappointment.AppointmentInfo) *models.AppointmentRecord {
+	return &models.AppointmentRecord{
+		UserId: userId,
+		RelatedId: item.RelatedId,
+		AppointmentType: svc.appointment.AppointmentInfo.AppointmentType,
+		TimeNode: svc.appointment.AppointmentInfo.TimeNode,
+		Date: date,
+		PayOrderId: orderId,
+		CreateAt: now,
+		UpdateAt: now,
+		PurchasedNum: item.Count,
+		SeatNo: item.SeatNo,
+	}
 }
 
