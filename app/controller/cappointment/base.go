@@ -168,11 +168,7 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		}
 	}
 
-	svc.SetStockRelatedId(item.RelatedId)
-	svc.SetStockDate(date)
-	svc.SetStockTimeNode(item.TimeNode)
-	svc.SetStockAppointmentType(item.AppointmentType)
-	ok, err := svc.appointment.GetPurchaseNum()
+	ok, err := svc.QueryStockInfo(item.AppointmentType, item.RelatedId, date, item.TimeNode)
 	if err != nil {
 		log.Log.Errorf("venue_trace: get purchase num fail, err:%s", err)
 	}
@@ -189,3 +185,27 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 
 	return info
 }
+
+func (svc *base) GetAppointmentConf(id int64) error {
+	svc.appointment.AppointmentInfo.Id = id
+	ok, err := svc.appointment.GetAppointmentConfById()
+	if err != nil || !ok {
+		return err
+	}
+
+	return nil
+}
+
+func (svc *base) GetAppointmentConfByIds(ids []interface{}) ([]*models.VenueAppointmentInfo, error) {
+	return svc.appointment.GetAppointmentConfByIds(ids)
+}
+
+// 预约类型、关联ID、日期、时间节点查询库存信息
+func (svc *base) QueryStockInfo(appointmentType int, relatedId int64, date, timeNode string) (bool, error) {
+	svc.SetAppointmentType(appointmentType)
+	svc.SetStockRelatedId(relatedId)
+	svc.SetStockDate(date)
+	svc.SetStockTimeNode(timeNode)
+	return svc.appointment.GetPurchaseNum()
+}
+

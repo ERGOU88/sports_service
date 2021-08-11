@@ -62,7 +62,7 @@ func (svc *CoachAppointmentModule) Options(relatedId int64) (int, interface{}) {
 }
 
 // 预约私教
-func (svc *CoachAppointmentModule) Appointment(param *mappointment.AppointmentReq) (int, interface{}) {
+func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentReq) (int, interface{}) {
 	return 5000, nil
 }
 

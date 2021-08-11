@@ -11,8 +11,8 @@ import (
 	"math/rand"
 	"regexp"
 	"strconv"
-	"time"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -38,8 +38,8 @@ func GetSnowId() int64 {
 	return id
 }
 
-// NewUserId 年+月+日+时间+4位随机
-func NewUserId() string {
+// NewOrderId 年+月+日+时间+4位随机
+func NewOrderId() string {
 	t := time.Now().Format("060102150405")
 	return fmt.Sprintf("%s%d", t, GenerateRandnum(1000, 9999))
 }

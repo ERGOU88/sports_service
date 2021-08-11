@@ -10,6 +10,7 @@ type AppointmentModel struct {
 	Engine           *xorm.Session
 	Stock            *models.VenueAppointmentStock
 	Record           *models.AppointmentRecord
+	Vip              *models.VenueVipInfo
 }
 
 type WeekInfo struct {
@@ -73,15 +74,28 @@ type Options struct {
 	Instructions       string       `json:"instructions,omitempty"`         // 购买须知
 }
 
-// 预约请求数据
 type AppointmentReq struct {
-	RelatedId int64      `json:"id"`         // 场馆id/私教课程id/大课id
+	AppointmentType int                 `json:"appointment_type"` // 0场馆 1私教课 2大课
+	UserId          string              `json:"user_id"`          // 用户id
+	Infos           []*AppointmentInfo  `json:"infos"`            // 预约请求数据 1个时间点对应1条数据
+	Ids             []interface{}       `json:"ids"`              // 时间配置ids
+	LabelIds        []int64             `json:"label_ids"`        // 用户选择的标签id列表
+}
+
+// 预约请求数据
+type AppointmentInfo struct {
+	RelatedId int64      `json:"id"`         // 场馆id/私教课程id/大课老师id
 	DateId    int        `json:"date_id"`    // 1为今天
 	//TimeNode  string     `json:"time_node"`  // 预约时间节点
-	UserId    string     `json:"user_id"`    // 用户id
-	AppointmentType int  `json:"appointment_type"` // 0场馆 1私教课 2大课
 	Count     int        `json:"count"`            // 数量
-	Id        int64      `json:"id"`               // 配置id
+	Id        int64      `json:"id"`               // 时间配置id
+	SeatNo    int        `json:"seat_no"`          // 座位号
+}
+
+// 预约请求返回库存数据
+type StockInfoResp struct {
+	Id        int64      `json:"id"`               // 时间配置id
+	Stock     int        `json:"stock"`            // 剩余数量
 }
 
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
@@ -89,6 +103,7 @@ func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
 		AppointmentInfo: new(models.VenueAppointmentInfo),
 		Stock: new(models.VenueAppointmentStock),
 		Record: new(models.AppointmentRecord),
+		Vip: new(models.VenueVipInfo),
 		Engine: engine,
 	}
 }
@@ -111,6 +126,16 @@ func (m *AppointmentModel) GetAppointmentConfById() (bool, error) {
 	return m.Engine.Get(m.AppointmentInfo)
 }
 
+// 通过ids[多个id]获取预约配置列表
+func (m *AppointmentModel) GetAppointmentConfByIds(ids []interface{}) ([]*models.VenueAppointmentInfo, error) {
+	var list []*models.VenueAppointmentInfo
+	if err := m.Engine.In("id", ids...).OrderBy("cur_amount DESC").Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
 // 通过场馆id、课程id、星期 及 预约类型 获取可预约选项
 func (m *AppointmentModel) GetOptionsByWeek() ([]*models.VenueAppointmentInfo, error) {
 	var list []*models.VenueAppointmentInfo
@@ -122,7 +147,7 @@ func (m *AppointmentModel) GetOptionsByWeek() ([]*models.VenueAppointmentInfo, e
 	return list, nil
 }
 
-// 获取某时间点 场馆预约人数 包含已成功及已下单且订单未超时
+// 查库存表 获取某时间点 场馆预约人数 包含已成功及已下单且订单未超时
 func (m *AppointmentModel) GetPurchaseNum() (bool, error) {
 	return m.Engine.Get(m.Stock)
 }
@@ -132,16 +157,21 @@ func (m *AppointmentModel) HasExistsStockInfo() (bool, error) {
 	return m.Engine.Exist(m.AppointmentInfo)
 }
 
-// 添加预约库存数据
-func (m *AppointmentModel) AddStockInfo(stock []*models.VenueAppointmentStock) (int64, error) {
+// 添加预约库存数据[多条]
+func (m *AppointmentModel) AddMultiStockInfo(stock []*models.VenueAppointmentStock) (int64, error) {
 	return m.Engine.InsertMulti(stock)
+}
+
+// 添加预约库存数据[单条]
+func (m *AppointmentModel) AddStockInfo(stock *models.VenueAppointmentStock) (int64, error) {
+	return m.Engine.Insert(stock)
 }
 
 const (
 	UPDATE_STOCK_INFO = "UPDATE `venue_appointment_stock` SET `purchased_num`= `purchased_num`+ ?, `update_at`=? WHERE date=? AND " +
-		"time_node=? AND appointment_type=? AND related_id=? AND quota_num >= `purchased_num`+ ?"
+		"time_node=? AND appointment_type=? AND related_id=? AND quota_num >= `purchased_num`+ ? LIMIT 1"
 )
-func (m *AppointmentModel) UpdateStockInfo(count, now, date, timeNode, appointmentType, relatedId int) (int64, error) {
+func (m *AppointmentModel) UpdateStockInfo(timeNode, date string, count, now, appointmentType, relatedId int) (int64, error) {
 	res, err := m.Engine.Exec(UPDATE_STOCK_INFO, count, now, date, timeNode, appointmentType, relatedId, count)
 	if err != nil {
 		return 0, err
@@ -165,4 +195,38 @@ func (m *AppointmentModel) GetAppointmentRecord() ([]*models.AppointmentRecord, 
 	}
 
 	return list, nil
+}
+
+// 获取场馆会员数据
+func (m *AppointmentModel) GetVenueVipInfo(userId string) (*models.VenueVipInfo, error) {
+	ok, err := m.Engine.Where("user_id=?", userId).Get(m.Vip)
+	if !ok || err != nil {
+		return nil, err
+	}
+
+	return m.Vip, nil
+}
+
+const (
+	UPDATE_VENUE_VIP_INFO = "UPDATE `venue_vip_info` SET `duration` = `duration` + ?, `update_at`=? WHERE `user_id`=? " +
+		"AND `duration` + ? >= 0 LIMIT 1"
+)
+// 更新场馆会员数据 duration < 0 减少 duration > 0 增加
+func (m *AppointmentModel) UpdateVenueVipInfo(duration int, userId string) (int64, error) {
+	res, err := m.Engine.Exec(UPDATE_VENUE_VIP_INFO, duration, userId)
+	if err != nil {
+		return 0, err
+	}
+
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return affected, nil
+}
+
+// 批量添加预约记录
+func (m *AppointmentModel) AddMultiAppointmentRecord(list []*models.AppointmentRecord) (int64, error) {
+	return m.Engine.InsertMulti(list)
 }
