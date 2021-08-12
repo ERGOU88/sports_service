@@ -387,3 +387,4 @@ func FormatDuration(duration time.Time) string {
 	minute := time.Now().Sub(duration).Minutes()
 	return fmt.Sprintf("%d分钟之前", int(math.Ceil(minute)))
 }
+

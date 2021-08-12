@@ -80,11 +80,13 @@ type AppointmentReq struct {
 	Infos           []*AppointmentInfo  `json:"infos"`            // 预约请求数据 1个时间点对应1条数据
 	Ids             []interface{}       `json:"ids"`              // 时间配置ids
 	LabelIds        []int64             `json:"label_ids"`        // 用户选择的标签id列表
+	RelatedId       int64               `json:"related_id"`       // 场馆id/私教课程id/大课老师id
+	WeekNum         int                 `json:"week_num"`         // 星期几
+	ReqType         int                 `json:"req_type"`         // 1 查询购物车数据 2 下单
 }
 
 // 预约请求数据
 type AppointmentInfo struct {
-	RelatedId int64      `json:"id"`         // 场馆id/私教课程id/大课老师id
 	DateId    int        `json:"date_id"`    // 1为今天
 	//TimeNode  string     `json:"time_node"`  // 预约时间节点
 	Count     int        `json:"count"`            // 数量
@@ -96,6 +98,32 @@ type AppointmentInfo struct {
 type StockInfoResp struct {
 	Id        int64      `json:"id"`               // 时间配置id
 	Stock     int        `json:"stock"`            // 剩余数量
+}
+
+// 预约返回数据
+type AppointmentResp struct {
+	Id       int64      `json:"id"`          // 场馆id
+	Name     string     `json:"name"`        // 场馆名称
+	Date     string     `json:"date"`        // 下单日期
+	WeekCn   string     `json:"week_cn"`     // 星期几
+	TotalTm  int        `json:"total_tm"`    // 预约总时长
+	TmCn     string     `json:"tm_cn"`       // 总时长 中文
+	TotalDeductionTm int `json:"total_deduction_tm"`  // 抵扣总时长
+	TotalAmount int     `json:"total_amount"` // 总金额
+	MobileNum string    `json:"mobile_num"`   // 手机号
+	TotalDiscount int   `json:"total_discount"` // 总优惠
+	TimeNodeInfo  []*TimeNodeInfo `json:"node_info"` // 多时间节点预约数据
+}
+
+// 单时间节点预约数据
+type TimeNodeInfo struct {
+	Date        string       `json:"date"`        // 预约的日期
+	TimeNode    string       `json:"time_node"`   // 预约时间节点
+	Count       int          `json:"count"`       // 数量
+	Id          int64        `json:"id"`          // 时间配置id
+	Amount      int          `json:"amount"`      // 单价
+	DeductionTm int64        `json:"deduction_tm"`// 抵扣会员时长
+	Discount    int          `json:"discount"`    // 优惠的金额
 }
 
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
@@ -122,8 +150,9 @@ func (m *AppointmentModel) GetMinPriceByWeek() error {
 }
 
 // 通过id获取预约配置
-func (m *AppointmentModel) GetAppointmentConfById() (bool, error) {
-	return m.Engine.Get(m.AppointmentInfo)
+func (m *AppointmentModel) GetAppointmentConfById(id string) (bool, error) {
+	m.AppointmentInfo = new(models.VenueAppointmentInfo)
+	return m.Engine.ID(id).Get(m.AppointmentInfo)
 }
 
 // 通过ids[多个id]获取预约配置列表
@@ -148,13 +177,17 @@ func (m *AppointmentModel) GetOptionsByWeek() ([]*models.VenueAppointmentInfo, e
 }
 
 // 查库存表 获取某时间点 场馆预约人数 包含已成功及已下单且订单未超时
-func (m *AppointmentModel) GetPurchaseNum() (bool, error) {
-	return m.Engine.Get(m.Stock)
+func (m *AppointmentModel) GetStockInfo(appointmentType int, relatedId int64, date, timeNode string) (bool, error) {
+	m.Stock = new(models.VenueAppointmentStock)
+	return m.Engine.Where("appointment_type=? AND related_id=? AND date=? AND time_node=?", appointmentType,
+		relatedId, date, timeNode).Get(m.Stock)
 }
 
 // 是否存在库存信息 todo: 前期并发不高 可以读取快照
-func (m *AppointmentModel) HasExistsStockInfo() (bool, error) {
-	return m.Engine.Exist(m.AppointmentInfo)
+func (m *AppointmentModel) HasExistsStockInfo(appointmentType int, relatedId int64, date, timeNode string) (bool, error) {
+	m.Stock = new(models.VenueAppointmentStock)
+	return m.Engine.Where("appointment_type=? AND related_id=? AND date=? AND time_node=?", appointmentType,
+		relatedId, date, timeNode).Exist(m.Stock)
 }
 
 // 添加预约库存数据[多条]

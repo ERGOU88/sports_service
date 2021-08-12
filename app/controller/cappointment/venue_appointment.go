@@ -1,9 +1,7 @@
 package cappointment
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
-	"github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
@@ -11,11 +9,11 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mappointment"
-	"sports_service/server/models/morder"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
 	"sports_service/server/util"
 	"time"
+	"fmt"
 )
 
 type VenueAppointmentModule struct {
@@ -23,7 +21,6 @@ type VenueAppointmentModule struct {
 	engine          *xorm.Session
 	user            *muser.UserModel
 	venue           *mvenue.VenueModel
-	order           *morder.OrderModel
 	*base
 }
 
@@ -36,7 +33,6 @@ func NewVenue(c *gin.Context) *VenueAppointmentModule {
 		context: c,
 		user:    muser.NewUserModel(appSocket),
 		venue:   mvenue.NewVenueModel(venueSocket),
-		order:   morder.NewOrderModel(venueSocket),
 		engine:  venueSocket,
 		base:    New(venueSocket),
 	}
@@ -102,236 +98,72 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 		return errdef.ERROR, nil
 	}
 
-	isEnough := true
+	ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(params.RelatedId))
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get venue info fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
+	}
+
+
 	totalAmount := 0
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
-	stockInfo := make([]*mappointment.StockInfoResp, 0)
-	// 订单商品流水map
-	orderMp := make(map[int64]*models.VenueOrderProductInfo)
-	// 预约流水map
-	recordMp := make(map[int64]*models.AppointmentRecord)
-	for index, item := range params.Infos {
-		if item.Count <= 0 || item.Count > svc.appointment.AppointmentInfo.QuotaNum {
-			svc.engine.Rollback()
-			return errdef.ERROR, nil
-		}
 
-		svc.venue.Venue.Id = item.RelatedId
-		ok, err := svc.venue.GetVenueInfoById()
-		if !ok || err != nil {
-			log.Log.Errorf("venue_trace: get venue info fail, err:%s", err)
-			svc.engine.Rollback()
-			return errdef.ERROR, nil
-		}
-
-		if err := svc.GetAppointmentConf(item.Id); err != nil {
-			svc.engine.Rollback()
-			return errdef.ERROR, nil
-		}
-
-		svc.appointment.AppointmentInfo.Id = item.Id
-		ok, err = svc.appointment.GetAppointmentConfById()
-		if err != nil || !ok {
-			svc.engine.Rollback()
-			return errdef.ERROR, nil
-		}
-
-		date := svc.GetDateById(item.DateId, consts.FORMAT_DATE)
-		if date == "" {
-			svc.engine.Rollback()
-			return errdef.ERROR, nil
-		}
-
-		orderMp[item.Id] = svc.SetOrderProductInfo(orderId, now, item)
-		recordMp[item.Id] = svc.SetAppointmentRecordInfo(user.UserId, date, orderId, now, item)
-
-		// 数量 * 售价
-		totalAmount += item.Count * svc.appointment.AppointmentInfo.CurAmount
-		ok, err = svc.appointment.HasExistsStockInfo()
-		if err != nil {
-			svc.engine.Rollback()
-			return errdef.ERROR, nil
-		}
-
-		var (
-			myErr *mysql.MySQLError
-		)
-		if !ok {
-			// 库存数据不存在 写入
-			data := &models.VenueAppointmentStock{
-				Date:            date,
-				TimeNode:        svc.appointment.AppointmentInfo.TimeNode,
-				QuotaNum:        svc.appointment.AppointmentInfo.QuotaNum,
-				PurchasedNum:    item.Count,
-				AppointmentType: svc.appointment.AppointmentInfo.AppointmentType,
-				RelatedId:       svc.appointment.AppointmentInfo.RelatedId,
-				CreateAt:        now,
-				UpdateAt:        now,
-			}
-
-			_, err = svc.appointment.AddStockInfo(data)
-			// 是否为mysql错误
-			if err != nil && errors.As(err, &myErr) {
-				// 不是唯一索引约束错误 则直接返回错误
-				if myErr.Number != 1062 {
-					svc.engine.Rollback()
-					return errdef.ERROR, nil
-				}
-			}
-		}
-
-		// 数据存在 或 插入时唯一索引约束错误
-		if ok || myErr.Number == 1062 {
-			// 更新库存
-			affected, err := svc.appointment.UpdateStockInfo(svc.appointment.AppointmentInfo.TimeNode, date, item.Count, now,
-				params.AppointmentType, int(item.RelatedId))
-			if err != nil {
-				svc.engine.Rollback()
-				return errdef.ERROR, nil
-			}
-
-			// 更新未成功 库存不够 || 当前预约库存足够 但已出现库存不足的预约时间点 则需返回最新各预约节点的剩余库存
-			if affected == 0 || affected == 1 && !isEnough {
-				isEnough = false
-				// 查看最新的库存 并返回 tips：读快照无问题 购买时保证数据一致性即可
-				ok, err := svc.QueryStockInfo(params.AppointmentType, item.RelatedId, date, svc.appointment.AppointmentInfo.TimeNode)
-				if !ok || err != nil {
-					log.Log.Errorf("venue_trace: get stock info fail, err:%s", err)
-				} else {
-					info := &mappointment.StockInfoResp{
-						Id: item.Id,
-						Stock: svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum,
-					}
-
-					stockInfo = append(stockInfo, info)
-				}
-
-				svc.engine.Rollback()
-				continue
-			}
-		}
-
-		// 是否遍历完所有预约节点
-		if index < len(params.Infos) - 1 {
-			continue
-		}
-
-		// 如果出现库存不足的情况
-		if !isEnough {
-			svc.engine.Rollback()
-			return errdef.ERROR, stockInfo
-		}
-
+	isEnough, err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.Infos)
+	if err != nil {
+		log.Log.Errorf("venue_trace: appointment fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
 	}
 
+	svc.Extra.Id = params.RelatedId
+	svc.Extra.Name = svc.venue.Venue.VenueName
+	svc.Extra.Date = time.Now().Format(consts.FORMAT_DATE)
+	svc.Extra.WeekCn = util.GetWeekCn(params.WeekNum)
+	svc.Extra.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
+	svc.Extra.TmCn = util.ResolveTime(svc.Extra.TotalTm)
 	// 库存都足够 则判断用户是否充值会员时长
-	//// 存在会员数据 则需要先抵扣时间
-	vip, err := svc.appointment.GetVenueVipInfo(params.UserId)
-	if err != nil {
-		// 查询失败
+	// 存在会员数据 则需要先抵扣时间
+	if err := svc.VipDeductionProcess(user.UserId, list); err != nil {
+		log.Log.Errorf("venue_trace: vip deduction process fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.ERROR, nil
 	}
 
-	// 总抵扣时长
-	totalDeductionTm := 0
-	// 如果是会员
-	if vip != nil {
-		// 会员时长 > 0
-		if vip.Duration > 0 {
-			// 开始走抵扣流程 预约的时间节点[多个] 按价格从高至低 开始抵扣 每个时间节点最多只可抵扣一次
-			for _, val := range list {
-				if val.Duration <= 0 {
-					continue
-				}
-
-				// 是否足够抵扣
-				affected, err := svc.appointment.UpdateVenueVipInfo(val.Duration * -1, user.UserId)
-				if err != nil {
-					log.Log.Errorf("venue_trace: update vip duration fail, err:%s", err)
-					svc.engine.Rollback()
-					return errdef.ERROR, nil
-				}
-
-				// 会员时长不够 查看下一个预约节点 是否可抵扣
-				if affected == 0 {
-					continue
-				}
-
-				// 足够抵扣 则记录抵扣的记录
-				if affected == 1 {
-					// 抵扣一个 则 减去一个的售价
-					totalAmount = totalAmount - val.CurAmount
-					orderMp[val.Id].DeductionNum = affected
-					orderMp[val.Id].DeductionTm = int64(val.Duration)
-					orderMp[val.Id].DeductionAmount = int64(val.CurAmount)
-					recordMp[val.Id].DeductionTm = int64(val.Duration)
-					totalDeductionTm += val.Duration
-				}
-			}
-		}
+	// 库存不足 / 请求类型不是下单 返回最新数据 事务回滚
+	if !isEnough || params.ReqType != 2 {
+		log.Log.Errorf("venue_trace: rollback, isEnough:%v, reqType:%d", isEnough, params.ReqType)
+		svc.engine.Rollback()
+		return errdef.ERROR, svc.Extra
 	}
 
-	svc.order.Order.Extra = ""
-	svc.order.Order.PayOrderId = orderId
-	svc.order.Order.UserId = user.UserId
-	svc.order.Order.CreateAt = now
-	svc.order.Order.UpdateAt = now
-	svc.order.Order.Amount = totalAmount
-	affected, err := svc.order.AddOrder()
-	if err != nil {
+	// 添加订单
+	if err := svc.AddOrder(orderId, user.UserId, now, totalAmount); err != nil {
+		log.Log.Errorf("venue_trace: add order fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.ERROR, nil
-	}
-
-	if affected != 1 {
-		svc.engine.Rollback()
-		return errdef.ERROR, nil
-	}
-
-	var olst []*models.VenueOrderProductInfo
-	for _, val := range orderMp {
-		olst = append(olst, val)
 	}
 
 	// 添加订单商品流水
-	affected, err = svc.order.AddMultiOrderProduct(olst)
-	if err != nil {
+	if err := svc.AddOrderProducts(); err != nil {
+		log.Log.Errorf("venue_trace: add order products fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.ERROR, nil
-	}
-
-	if affected != int64(len(olst)) {
-		svc.engine.Rollback()
-		return errdef.ERROR, nil
-	}
-
-	var rlst []*models.AppointmentRecord
-	for _, val := range recordMp {
-		rlst = append(rlst, val)
 	}
 
 	// 添加预约记录流水
-	affected, err = svc.appointment.AddMultiAppointmentRecord(rlst)
-	if err != nil {
-		svc.engine.Rollback()
-		return errdef.ERROR, nil
-	}
-
-	if affected != int64(len(rlst)) {
+	if err := svc.AddAppointmentRecord(); err != nil {
+		log.Log.Errorf("venue_trace: add appointment record fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.ERROR, nil
 	}
 
 	svc.engine.Commit()
 
-	// todo: 订单15分钟过期
+	// todo: 订单15分钟过期 以及标签列表
 	return errdef.SUCCESS, nil
 }
-
-
-
 
 // 取消预约
 func (svc *VenueAppointmentModule) AppointmentCancel() int {
@@ -362,8 +194,7 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 			continue
 		}
 
-		svc.venue.Venue.Id = item.RelatedId
-		ok, err := svc.venue.GetVenueInfoById()
+		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.RelatedId))
 		if err != nil {
 			log.Log.Errorf("venue_trace: get venue info by id fail, err:%s", err)
 		}
@@ -442,3 +273,50 @@ func (svc *VenueAppointmentModule) AppointmentDate() (int, interface{}) {
 	return errdef.SUCCESS, svc.AppointmentDateInfo(6, 0)
 }
 
+// 会员抵扣流程
+func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*models.VenueAppointmentInfo) error {
+	vip, err := svc.appointment.GetVenueVipInfo(userId)
+	if err != nil {
+		// 查询失败
+		return err
+	}
+
+	// 如果是会员
+	if vip != nil {
+		// 会员时长 > 0
+		if vip.Duration > 0 {
+			// 开始走抵扣流程 预约的时间节点[多个] 按价格从高至低 开始抵扣 每个时间节点最多只可抵扣一次
+			for _, val := range list {
+				if val.Duration <= 0 {
+					continue
+				}
+
+				// 是否足够抵扣
+				affected, err := svc.appointment.UpdateVenueVipInfo(val.Duration * -1, userId)
+				if err != nil {
+					log.Log.Errorf("venue_trace: update vip duration fail, err:%s", err)
+					return err
+				}
+
+				// 会员时长不够 查看下一个预约节点 是否可抵扣
+				if affected == 0 {
+					continue
+				}
+
+				// 足够抵扣 则记录抵扣的记录
+				if affected == 1 {
+					// 抵扣一个 则 减去一个的售价
+					svc.orderMp[val.Id].DeductionNum = affected
+					svc.orderMp[val.Id].DeductionTm = int64(val.Duration)
+					svc.orderMp[val.Id].DeductionAmount = int64(val.CurAmount)
+					svc.recordMp[val.Id].DeductionTm = int64(val.Duration)
+					svc.Extra.TotalDeductionTm += val.Duration
+					svc.Extra.TotalAmount = svc.Extra.TotalAmount - val.CurAmount
+
+				}
+			}
+		}
+	}
+
+	return nil
+}

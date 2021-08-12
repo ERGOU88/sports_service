@@ -11,6 +11,7 @@ import (
 	"sports_service/server/models/mvenue"
 	"sports_service/server/util"
 	"strconv"
+	"fmt"
 )
 
 type VenueModule struct {
@@ -48,7 +49,7 @@ func New(c *gin.Context) *VenueModule {
 
 // 获取首页数据
 func (svc *VenueModule) GetHomePageInfo(venueId int64) (int, *VenueInfoRes, []*mvenue.VenueProduct) {
-	venueInfo, err := svc.GetVenueInfo(venueId)
+	venueInfo, err := svc.GetVenueInfo(fmt.Sprint(venueId))
 	if err != nil {
 		log.Log.Errorf("venue_trace: get venue info fail, err:%s", err)
 		return errdef.ERROR, nil, nil
@@ -99,9 +100,8 @@ func (svc *VenueModule) GetHomePageInfo(venueId int64) (int, *VenueInfoRes, []*m
 }
 
 // 获取场馆信息
-func (svc *VenueModule) GetVenueInfo(venueId int64) (*models.VenueInfo, error) {
-	svc.venue.Venue.Id = venueId
-	ok, err := svc.venue.GetVenueInfoById()
+func (svc *VenueModule) GetVenueInfo(id string) (*models.VenueInfo, error) {
+	ok, err := svc.venue.GetVenueInfoById(id)
 	if !ok || err != nil {
 		return nil, err
 	}
