@@ -210,8 +210,6 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 				svc.engine.Rollback()
 				continue
 			}
-
-
 		}
 
 		// 是否遍历完所有预约节点
@@ -433,7 +431,9 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 	return errdef.SUCCESS, res
 }
 
+// 预约详情
 func (svc *VenueAppointmentModule) AppointmentDetail() (int, interface{}) {
+
 	return 4000, nil
 }
 

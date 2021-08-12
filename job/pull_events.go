@@ -4,6 +4,7 @@ import (
   "errors"
   "github.com/garyburd/redigo/redis"
   "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod/v20180717"
+  "sports_service/server/app/config"
   "sports_service/server/dao"
   "sports_service/server/global/app/log"
   "sports_service/server/global/consts"
@@ -870,6 +871,12 @@ func newUploadEvent(event *v20180717.EventContent) error {
     log.Log.Errorf("job_trace: invalid source info, source:%+v", source)
     session.Rollback()
     return errors.New("invalid source info")
+  }
+
+  // 如果 透传参数里的mode 与 当前运行环境不匹配
+  if source.Mode != config.Global.Mode {
+    session.Rollback()
+    return errors.New("mode not match")
   }
 
   // 当前时间 - 任务开始时间 >= 10分钟 结束任务
