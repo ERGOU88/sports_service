@@ -240,7 +240,8 @@ func (svc *base) SetOrderProductInfo(orderId string, now, count int, relatedId i
 	}
 }
 
-func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, count, seatNo int, relatedId int64) *models.AppointmentRecord {
+func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, count int, seatInfo []*mappointment.SeatInfo, relatedId int64) *models.AppointmentRecord {
+	info, _ := util.JsonFast.MarshalToString(seatInfo)
 	return &models.AppointmentRecord{
 		UserId: userId,
 		RelatedId: relatedId,
@@ -251,7 +252,7 @@ func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, cou
 		CreateAt: now,
 		UpdateAt: now,
 		PurchasedNum: count,
-		SeatNo: seatNo,
+		SeatInfo: info,
 	}
 }
 
@@ -377,8 +378,8 @@ func (svc *base) SetLatestInventoryResp(date string) (*mappointment.TimeNodeInfo
 }
 
 // 预约流程
-func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, infos []*mappointment.AppointmentInfo) (bool, error) {
-	isEnough := true
+func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, infos []*mappointment.AppointmentInfo) error {
+	svc.Extra.IsEnough = true
 	now := int(time.Now().Unix())
 	//stockInfo := make([]*mappointment.StockInfoResp, 0)
 	//// 订单商品流水map
@@ -389,20 +390,25 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, inf
 		err := svc.GetAppointmentConf(item.Id)
 		if svc.appointment.AppointmentInfo == nil || err != nil {
 			log.Log.Errorf("venue_trace: get appointment conf fail, id:%d", item.Id)
-			return false, errors.New("get appointment conf fail")
+			return errors.New("get appointment conf fail")
+		}
+
+		if len(item.SeatInfos) != item.Count {
+			log.Log.Errorf("venue_trace: seat num not match, count:%d, len:%d", item.Count, len(item.SeatInfos))
+			return errors.New("seat num not match")
 		}
 
 		log.Log.Errorf("appointment_info:%+v, id:%d", svc.appointment.AppointmentInfo, svc.appointment.AppointmentInfo.Id)
 
 		if item.Count <= 0 || item.Count > svc.appointment.AppointmentInfo.QuotaNum {
 			log.Log.Errorf("venue_trace: invalid count, count:%d, quotaNum:%d", item.Count, svc.appointment.AppointmentInfo.QuotaNum)
-			return false, errors.New("invalid count")
+			return errors.New("invalid count")
 		}
 
 		date := svc.GetDateById(item.DateId, consts.FORMAT_DATE)
 		if date == "" {
 			log.Log.Errorf("venue_trace: invalid date, dateId:%d", item.DateId)
-			return false, errors.New("invalid date")
+			return errors.New("invalid date")
 		}
 
 		svc.Extra.TotalTm += svc.appointment.AppointmentInfo.Duration * item.Count
@@ -410,13 +416,13 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, inf
 		svc.Extra.TotalAmount += item.Count * svc.appointment.AppointmentInfo.CurAmount
 		svc.Extra.TotalDiscount += item.Count * svc.appointment.AppointmentInfo.DiscountAmount
 		svc.orderMp[item.Id] = svc.SetOrderProductInfo(orderId, now, item.Count, relatedId)
-		svc.recordMp[item.Id] = svc.SetAppointmentRecordInfo(userId, date, orderId, now, item.Count, item.SeatNo, relatedId)
+		svc.recordMp[item.Id] = svc.SetAppointmentRecordInfo(userId, date, orderId, now, item.Count, item.SeatInfos, relatedId)
 
 		ok, err := svc.appointment.HasExistsStockInfo(svc.appointment.AppointmentInfo.AppointmentType,
 			svc.appointment.AppointmentInfo.RelatedId, date, svc.appointment.AppointmentInfo.TimeNode)
 		if err != nil {
 			log.Log.Errorf("venue_trace: query stock info fail, err:%s", err)
-			return false, err
+			return err
 		}
 
 
@@ -427,7 +433,7 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, inf
 			// false 表示存在错误 但不是唯一索引约束错误
 			if !b && err != nil {
 				log.Log.Errorf("venue_trace: add stock fail, err:%s", err)
-				return false, err
+				return err
 			}
 		}
 
@@ -437,19 +443,19 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, inf
 			affected, err := svc.UpdateStock(date, item.Count, now)
 			if err != nil {
 				log.Log.Errorf("venue_trace: update stock fail, err:%s", err)
-				return false, err
+				return err
 			}
 
 			log.Log.Errorf("venue_trace: affected:%d", affected)
 
 			// 更新未成功 库存不够 || 当前预约库存足够 但已出现库存不足的预约时间点 则需返回最新各预约节点的剩余库存
-			if affected == 0 || affected == 1 && !isEnough {
-				isEnough = false
+			if affected == 0 || affected == 1 && !svc.Extra.IsEnough {
+				svc.Extra.IsEnough = false
 				// 查看最新的库存 并返回 tips：读快照无问题 购买时保证数据一致性即可
 				resp, err := svc.SetLatestInventoryResp(date)
 				if err != nil {
 					log.Log.Errorf("venue_trace:set inventory resp fail, err:%s", err)
-					return false, err
+					return err
 				}
 
 				svc.Extra.TimeNodeInfo = append(svc.Extra.TimeNodeInfo, resp)
@@ -468,6 +474,6 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, inf
 	//	return stockInfo, totalAmount, errors.New("not enough stock")
 	//}
 
-	return isEnough, nil
+	return nil
 }
 

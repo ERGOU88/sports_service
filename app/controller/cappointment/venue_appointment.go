@@ -110,8 +110,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
 
-	isEnough, err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.Infos)
-	if err != nil {
+	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.Infos); err != nil {
 		log.Log.Errorf("venue_trace: appointment fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.ERROR, nil
@@ -131,9 +130,9 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 		return errdef.ERROR, nil
 	}
 
-	// 库存不足 / 请求类型不是下单 返回最新数据 事务回滚
-	if !isEnough || params.ReqType != 2 {
-		log.Log.Errorf("venue_trace: rollback, isEnough:%v, reqType:%d", isEnough, params.ReqType)
+	// 库存不足 返回最新数据 事务回滚
+	if !svc.Extra.IsEnough || params.ReqType != 2 {
+		log.Log.Errorf("venue_trace: rollback, isEnough:%v, reqType:%d", svc.Extra.IsEnough, params.ReqType)
 		svc.engine.Rollback()
 		return errdef.ERROR, svc.Extra
 	}
@@ -286,7 +285,7 @@ func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*mo
 		// 会员时长 > 0
 		if vip.Duration > 0 {
 			// 开始走抵扣流程 预约的时间节点[多个] 按价格从高至低 开始抵扣 每个时间节点最多只可抵扣一次
-			for _, val := range list {
+			for key, val := range list {
 				if val.Duration <= 0 {
 					continue
 				}
@@ -312,7 +311,10 @@ func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*mo
 					svc.recordMp[val.Id].DeductionTm = int64(val.Duration)
 					svc.Extra.TotalDeductionTm += val.Duration
 					svc.Extra.TotalAmount = svc.Extra.TotalAmount - val.CurAmount
-
+					svc.Extra.IsDeduct = true
+					if len(svc.Extra.TimeNodeInfo) <= key {
+						svc.Extra.TimeNodeInfo[key].DeductionTm = svc.orderMp[val.Id].DeductionTm
+					}
 				}
 			}
 		}

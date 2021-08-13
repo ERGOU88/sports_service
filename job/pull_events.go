@@ -428,22 +428,22 @@ func aiContentReviewEvent(event *v20180717.EventContent, vmodel *mvideo.VideoMod
 // 文件删除事件 todo: 修改数据状态？
 func fileDeletedEvent(event *v20180717.EventContent) error {
   client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
-  session := dao.AppEngine.NewSession()
-  defer session.Close()
-  vmodel := mvideo.NewVideoModel(session)
-  now := time.Now().Unix()
-  // 记录事件回调信息
-  fileId, _ := strconv.Atoi(*event.ProcedureStateChangeEvent.FileId)
-  vmodel.Events.FileId = int64(fileId)
-  vmodel.Events.CreateAt = int(now)
-  vmodel.Events.EventType = consts.EVENT_PROCEDURE_STATE_CHANGED_TYPE
-  bts, _ := util.JsonFast.Marshal(event)
-  vmodel.Events.Event = string(bts)
-  affected, err := vmodel.RecordTencentEvent()
-  if err != nil || affected != 1 {
-    log.Log.Errorf("job_trace: record tencent transcode complete event err:%s, affected:%d", err, affected)
-    return errors.New("record tencent complete event fail")
-  }
+  //session := dao.AppEngine.NewSession()
+  //defer session.Close()
+  //vmodel := mvideo.NewVideoModel(session)
+  //now := time.Now().Unix()
+  //// 记录事件回调信息
+  //fileId, _ := strconv.Atoi(*event.ProcedureStateChangeEvent.FileId)
+  //vmodel.Events.FileId = int64(fileId)
+  //vmodel.Events.CreateAt = int(now)
+  //vmodel.Events.EventType = consts.EVENT_PROCEDURE_STATE_CHANGED_TYPE
+  //bts, _ := util.JsonFast.Marshal(event)
+  //vmodel.Events.Event = string(bts)
+  //affected, err := vmodel.RecordTencentEvent()
+  //if err != nil || affected != 1 {
+  //  log.Log.Errorf("job_trace: record tencent transcode complete event err:%s, affected:%d", err, affected)
+  //  return errors.New("record tencent complete event fail")
+  //}
 
   if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
     log.Log.Errorf("job_trace: confirm events err:%s", err)

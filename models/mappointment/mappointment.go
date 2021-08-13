@@ -87,11 +87,19 @@ type AppointmentReq struct {
 
 // 预约请求数据
 type AppointmentInfo struct {
-	DateId    int        `json:"date_id"`    // 1为今天
-	//TimeNode  string     `json:"time_node"`  // 预约时间节点
-	Count     int        `json:"count"`            // 数量
-	Id        int64      `json:"id"`               // 时间配置id
-	SeatNo    int        `json:"seat_no"`          // 座位号
+	DateId      int            `json:"date_id"`    // 1为今天
+	//TimeNode  string         `json:"time_node"`  // 预约时间节点
+	Count       int            `json:"count"`      // 数量
+	Id          int64          `json:"id"`         // 时间配置id
+	SeatInfos   []*SeatInfo    `json:"seat_info"`  // 座位号
+}
+
+// 座位信息
+type SeatInfo struct {
+	UserId      string     `json:"user_id"`
+	Avatar      string     `json:"avatar"`
+	NickName    string     `json:"nick_name"`
+	SeatNo      int        `json:"seat_no"`       // 座位号
 }
 
 // 预约请求返回库存数据
@@ -108,6 +116,8 @@ type AppointmentResp struct {
 	WeekCn   string     `json:"week_cn"`     // 星期几
 	TotalTm  int        `json:"total_tm"`    // 预约总时长
 	TmCn     string     `json:"tm_cn"`       // 总时长 中文
+	IsEnough bool       `json:"is_enough"`    // 库存是否足够 false 不足 true 足够
+	IsDeduct bool       `json:"is_deduct"`    // 是否可扣除会员时长
 	TotalDeductionTm int `json:"total_deduction_tm"`  // 抵扣总时长
 	TotalAmount int     `json:"total_amount"` // 总金额
 	MobileNum string    `json:"mobile_num"`   // 手机号
@@ -117,13 +127,13 @@ type AppointmentResp struct {
 
 // 单时间节点预约数据
 type TimeNodeInfo struct {
-	Date        string       `json:"date"`        // 预约的日期
-	TimeNode    string       `json:"time_node"`   // 预约时间节点
-	Count       int          `json:"count"`       // 数量
-	Id          int64        `json:"id"`          // 时间配置id
-	Amount      int          `json:"amount"`      // 单价
-	DeductionTm int64        `json:"deduction_tm"`// 抵扣会员时长
-	Discount    int          `json:"discount"`    // 优惠的金额
+	Date         string       `json:"date"`         // 预约的日期
+	TimeNode     string       `json:"time_node"`    // 预约时间节点
+	Count        int          `json:"count"`        // 数量
+	Id           int64        `json:"id"`           // 时间配置id
+	Amount       int          `json:"amount"`       // 单价
+	DeductionTm  int64        `json:"deduction_tm"` // 抵扣会员时长
+	Discount     int          `json:"discount"`     // 优惠的金额
 }
 
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
