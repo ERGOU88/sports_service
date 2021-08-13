@@ -959,7 +959,7 @@ func newUploadEvent(event *v20180717.EventContent) error {
     return errors.New("get publish info fail")
   }
 
-  infos := strings.Split(str, "_")
+  infos := strings.Split(str, "__")
   if len(infos) != 3 {
     log.Log.Errorf("job_trace: get publish info err:%s", err)
     session.Rollback()
