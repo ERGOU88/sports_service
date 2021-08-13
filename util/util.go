@@ -7,11 +7,12 @@ import (
 	"github.com/rs/xid"
 	"github.com/zheng-ji/goSnowFlake"
 	"log"
+	"math"
 	"math/rand"
 	"regexp"
 	"strconv"
-	"time"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -37,8 +38,8 @@ func GetSnowId() int64 {
 	return id
 }
 
-// NewUserId 年+月+日+时间+4位随机
-func NewUserId() string {
+// NewOrderId 年+月+日+时间+4位随机
+func NewOrderId() string {
 	t := time.Now().Format("060102150405")
 	return fmt.Sprintf("%s%d", t, GenerateRandnum(1000, 9999))
 }
@@ -240,7 +241,7 @@ func GetBetweenDates(start, end string) []DateInfo {
 	timeFormatTpl = "2006-01-02"
 	date2Str := date2.Format(timeFormatTpl)
 	info := DateInfo{}
-	info.Date = date.Format("01/02")
+	info.Date = date.Format("01-02")
 	info.Week = int(date.Weekday())
 	info.WeekCn = GetWeekCn(info.Week)
 	info.Id = id
@@ -251,7 +252,7 @@ func GetBetweenDates(start, end string) []DateInfo {
 		info := DateInfo{}
 		date = date.AddDate(0, 0, 1)
 		dateStr := date.Format(timeFormatTpl)
-		info.Date = date.Format("01/02")
+		info.Date = date.Format("01-02")
 		info.Week = int(date.Weekday())
 		info.WeekCn = GetWeekCn(info.Week)
 		info.Id = id
@@ -325,5 +326,65 @@ func HideMobileNum(mobileNum string) string {
 	}
 
 	return strings.Join(slice[0:3], "") + "****" + strings.Join(slice[7:], "")
+}
+
+// 判断字符串是否都为空格
+func IsSpace(r []rune) bool {
+	if len(r) == 0 {
+		return false
+	}
+
+	for _, v := range r {
+		if b := unicode.IsSpace(v); !b {
+			return true
+		}
+	}
+
+	return false
+}
+
+// 转换为时分秒
+func ResolveTime(seconds int) string {
+	oneSecond := 60
+	oneHour := 60 * oneSecond
+	oneDay := 24 * oneHour
+
+	var day = seconds / oneDay
+	hour := (seconds - day * oneDay) / oneHour
+	minute := (seconds - day * oneDay - hour * oneHour) / oneSecond
+	second := seconds - day * oneDay - hour * oneHour - minute * oneSecond
+
+	var res string
+	if hour > 0 {
+		res = fmt.Sprintf("%dh", hour)
+	}
+
+	if minute > 0 {
+		res += fmt.Sprintf("%dm", minute)
+	}
+
+	if second > 0 {
+		res += fmt.Sprintf("%ds", second)
+	}
+
+	return res
+}
+
+func FormatDuration(duration time.Time) string {
+	hours := time.Now().Sub(duration).Hours()
+	if hours > 24 * 365 {
+		return duration.Format("2006-01-02")
+	}
+
+	if hours > 24 {
+		return duration.Format("01-02 ")
+	}
+
+	if hours > 1 {
+		return fmt.Sprintf("%d小时前", int(math.Ceil(hours)))
+	}
+
+	minute := time.Now().Sub(duration).Minutes()
+	return fmt.Sprintf("%d分钟之前", int(math.Ceil(minute)))
 }
 

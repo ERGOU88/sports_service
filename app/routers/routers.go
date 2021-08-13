@@ -5,9 +5,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sports_service/server/app/config"
+	"sports_service/server/app/routers/api/v1/appointment"
 	"sports_service/server/app/routers/api/v1/attention"
 	"sports_service/server/app/routers/api/v1/barrage"
 	"sports_service/server/app/routers/api/v1/client"
+	"sports_service/server/app/routers/api/v1/coach"
 	"sports_service/server/app/routers/api/v1/collect"
 	"sports_service/server/app/routers/api/v1/comment"
 	"sports_service/server/app/routers/api/v1/community"
@@ -21,6 +23,7 @@ import (
 	"sports_service/server/app/routers/api/v1/swag"
 	"sports_service/server/app/routers/api/v1/tencentCloud"
 	"sports_service/server/app/routers/api/v1/user"
+	"sports_service/server/app/routers/api/v1/venue"
 	"sports_service/server/app/routers/api/v1/video"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
@@ -76,4 +79,10 @@ func InitRouters(engine *gin.Engine) {
 	community.Router(engine)
 	// 订单模块
 	order.Router(engine)
+	// 场馆模块
+	venue.Router(engine)
+	// 预约模块
+	appointment.Router(engine)
+	// 私教模块
+	coach.Router(engine)
 }

@@ -5,6 +5,10 @@ import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
+	"sports_service/server/models/mappointment"
+	"sports_service/server/models/mcourse"
 	"sports_service/server/models/muser"
 )
 
@@ -12,22 +16,80 @@ type CoachAppointmentModule struct {
 	context     *gin.Context
 	engine      *xorm.Session
 	user        *muser.UserModel
+	course      *mcourse.CourseModel
 	*base
 }
 
 func NewCoach(c *gin.Context) *CoachAppointmentModule {
-	socket := dao.Engine.NewSession()
-	defer socket.Close()
+	venueSocket := dao.VenueEngine.NewSession()
+	defer venueSocket.Close()
+	appSocket := dao.AppEngine.NewSession()
+	defer appSocket.Close()
+
 	return &CoachAppointmentModule{
 		context: c,
-		user: muser.NewUserModel(socket),
-		engine:  socket,
-		base: New(socket),
+		user:    muser.NewUserModel(appSocket),
+		course:  mcourse.NewCourseModel(venueSocket),
+		engine:  venueSocket,
+		base:    New(venueSocket),
 	}
 }
 
+// 私教课程选项
+func (svc *CoachAppointmentModule) Options(relatedId int64) (int, interface{}) {
+	svc.course.Course.CoachId = relatedId
+	svc.course.Course.CourseType = 1
+	list, err := svc.course.GetCourseList()
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, []interface{}{}
+	}
+
+	res := make([]*mappointment.Options, len(list))
+	for index, item := range list {
+		info := &mappointment.Options{
+			Id: item.Id,
+			Name: item.Title,
+		}
+
+		res[index] = info
+	}
+
+	return errdef.SUCCESS, res
+}
+
 // 预约私教
-func (svc *CoachAppointmentModule) Appointment() (int, interface{}) {
+func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentReq) (int, interface{}) {
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("venue_trace: session begin fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+
+	if len(params.Infos) == 0 {
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
+	}
+
+	user := svc.user.FindUserByUserid(params.UserId)
+	if user == nil {
+		svc.engine.Rollback()
+		return errdef.USER_NOT_EXISTS, nil
+	}
+
+	list, err := svc.GetAppointmentConfByIds(params.Ids)
+	if err != nil {
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
+	}
+
+	if len(list) != len(params.Infos) {
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
+	}
+
 	return 5000, nil
 }
 
@@ -38,16 +100,42 @@ func (svc *CoachAppointmentModule) AppointmentCancel() int {
 
 // 获取某天的预约选项
 func (svc *CoachAppointmentModule) AppointmentOptions() (int, interface{}) {
-	return 7000, nil
+	date := svc.GetDateById(svc.DateId, consts.FORMAT_DATE)
+	if date == "" {
+		return errdef.ERROR, nil
+	}
+
+	list, err := svc.GetAppointmentOptions()
+	if err != nil {
+		log.Log.Errorf("venue_trace: get options fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, []interface{}{}
+	}
+
+	res := make([]*mappointment.OptionsInfo, 0)
+	for _, item := range list {
+		info := svc.SetAppointmentOptionsRes(date, item)
+		if info == nil {
+			continue
+		}
+
+		res = append(res, info)
+	}
+
+
+	return errdef.SUCCESS, res
 }
 
 func (svc *CoachAppointmentModule) AppointmentDetail() (int, interface{}) {
 	return 8000, nil
 }
 
-// 预约私教日期配置
+// 预约私教课程日期配置
 func (svc *CoachAppointmentModule) AppointmentDate() (int, interface{}) {
-	return errdef.SUCCESS, svc.AppointmentDateInfo(6)
+	return errdef.SUCCESS, svc.AppointmentDateInfo(6, 1)
 }
 
 

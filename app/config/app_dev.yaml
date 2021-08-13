@@ -10,7 +10,14 @@ mysql:
       - root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
-
+  venue:
+    master: root:bluetrans888@tcp(192.168.5.12:3306)/venue?charset=utf8mb4
+    slave:
+      - root:bluetrans888@tcp(192.168.5.12:3306)/venue?charset=utf8mb4
+      - root:bluetrans888@tcp(192.168.5.12:3306)/venue?charset=utf8mb4
+      - root:bluetrans888@tcp(192.168.5.12:3306)/venue?charset=utf8mb4
+    maxIdle: 128
+    maxActive: 128
 redis:
   main:
     master:
@@ -40,6 +47,6 @@ staticDomain: http://fpv-web-qa.youzu.com
 log:
   path: /data/service/fpv-app-api/log/app_server_%s.log
   level: 0
-  showColor: true
+  showColor: false
 
 debug: true

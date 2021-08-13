@@ -1,9 +1,9 @@
 package models
 
-type VenueCoachCourseDetail struct {
+type VenueCourseDetail struct {
 	Id             int64  `json:"id" xorm:"pk autoincr comment('课程id') BIGINT(20)"`
-	CoachId        int64  `json:"coach_id" xorm:"not null comment('关联的私教id') index BIGINT(20)"`
-	ClassPeriod    int    `json:"class_period" xorm:"not null comment('课时（秒）') INT(11)"`
+	CoachId        int64  `json:"coach_id" xorm:"not null default 0 comment('关联的教兽id') index BIGINT(20)"`
+	ClassPeriod    int    `json:"class_period" xorm:"not null comment('单课程时长（秒）') INT(11)"`
 	Title          string `json:"title" xorm:"comment('课程标题') MEDIUMTEXT"`
 	Describe       string `json:"describe" xorm:"comment('课程描述') MEDIUMTEXT"`
 	Price          int    `json:"price" xorm:"not null comment('课程价格（分/每课时）') INT(11)"`
@@ -18,4 +18,6 @@ type VenueCoachCourseDetail struct {
 	CreateAt       int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt       int    `json:"update_at" xorm:"not null default 0 comment('修改时间') INT(11)"`
 	Status         int    `json:"status" xorm:"not null default 0 comment('0 正常 1 废弃') TINYINT(1)"`
+	CourseType     int    `json:"course_type" xorm:"not null default 0 comment('1 私教课 2 大课') TINYINT(1)"`
+	PeriodNum      int    `json:"period_num" xorm:"not null comment('总课时数') INT(6)"`
 }

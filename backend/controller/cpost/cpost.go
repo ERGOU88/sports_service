@@ -22,7 +22,7 @@ type PostModule struct {
 }
 
 func New(c *gin.Context) PostModule {
-	socket := dao.Engine.NewSession()
+	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return PostModule{
 		context: c,

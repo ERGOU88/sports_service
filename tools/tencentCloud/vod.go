@@ -12,6 +12,7 @@ import (
 	tms "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tms/v20200713"
 	vod "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod/v20180717"
 	vodSdk "github.com/tencentyun/vod-go-sdk"
+	"sports_service/server/app/config"
 	"sports_service/server/util"
 	"time"
 )
@@ -21,6 +22,7 @@ type SourceContext struct {
 	UserId    string   `json:"user_id"`   // 用户id
 	TaskId    int64    `json:"task_id"`   // 任务id
 	Tm        int64    `json:"tm"`        // 任务开始时间
+	Mode      string   `json:"mode"`      // 环境
 }
 
 // 生成上传签名 todo: 任务流模版名  procedure
@@ -32,6 +34,7 @@ func (tc *TencentCloud) GenerateSign(userId, procedure string, taskId int64) str
 		UserId: userId,
 		TaskId:	taskId,
 		Tm: time.Now().Unix(),
+		Mode: config.Global.Mode,
 	}
 
 	context, _ := util.JsonFast.Marshal(sourceContext)

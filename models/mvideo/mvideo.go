@@ -116,6 +116,8 @@ type RecommendVideoInfo struct {
 	IsCollect     int                   `json:"is_collect" example:"1"`               // 是否收藏
 	IsLike        int                   `json:"is_like" example:"1"`                  // 是否点赞
 	Size          int                   `json:"size"`                                 // 视频总字节数
+	SubareaInfo   *models.VideoSubarea  `json:"subarea_info"`                         // 视频分区信息
+	Subarea       int                   `json:"subarea_id"`                           // 视频分区id
 }
 
 type VideoDetailInfo struct {
@@ -826,7 +828,7 @@ const (
 // 获取相关视频列表（暂时随机2个）
 func (m *VideoModel) GetRecommendVideos(offset, limit int32) []*VideoDetailInfo {
 	var list []*VideoDetailInfo
-	if err := dao.Engine.Sql(QUERY_RECOMMEND_VIDEOS, offset, limit).Find(&list); err != nil {
+	if err := dao.AppEngine.Sql(QUERY_RECOMMEND_VIDEOS, offset, limit).Find(&list); err != nil {
 		return nil
 	}
 

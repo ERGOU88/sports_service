@@ -10,6 +10,7 @@ import (
 	"sports_service/server/global/rdskey"
 	"sports_service/server/tools/tencentCloud"
 	"time"
+	"errors"
 )
 
 var (
@@ -83,6 +84,14 @@ func (m *SmsModel) Send(mobileNum, code string) error {
 	if err != nil {
 		log.Log.Errorf("sms_trace: send sms fail, rsp:%+v, err:%s", rsp, err)
 		return err
+	}
+
+	if len(rsp.Response.SendStatusSet) > 0 {
+		if *rsp.Response.SendStatusSet[0].Code != "Ok" {
+			log.Log.Errorf("sms_trace: send sms fail, mobile:%s, rsp:%+v, code:%s", mobileNum, rsp, *rsp.Response.SendStatusSet[0].Code)
+		}
+
+		return errors.New("send sms fail")
 	}
 
 	return nil

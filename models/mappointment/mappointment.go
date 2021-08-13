@@ -8,6 +8,9 @@ import (
 type AppointmentModel struct {
 	AppointmentInfo  *models.VenueAppointmentInfo
 	Engine           *xorm.Session
+	Stock            *models.VenueAppointmentStock
+	Record           *models.AppointmentRecord
+	Vip              *models.VenueVipInfo
 }
 
 type WeekInfo struct {
@@ -16,11 +19,129 @@ type WeekInfo struct {
 	Id        int32     `json:"id"`
 	WeekCn    string    `json:"week_cn"`
 	MinPrice  int       `json:"min_price"`
+	PriceCn   string    `json:"price_cn"`
+}
+
+type OptionsInfo struct {
+	Id              int64  `json:"id"`
+	TimeNode        string `json:"time_node"`
+	Duration        int    `json:"duration"`
+	DurationCn      string `json:"duration_cn"`
+	RealAmount      int    `json:"real_amount"`
+	RealAmountCn    string `json:"real_amount_cn"`
+	CurAmount       int    `json:"cur_amount"`
+	DiscountRate    int    `json:"discount_rate"`
+	RateCn          string `json:"rate_cn"`
+	DiscountAmount  int    `json:"discount_amount"`
+	QuotaNum        int    `json:"quota_num"`
+	RelatedId       int64  `json:"related_id"`
+	RecommendType   int    `json:"recommend_type"`
+	AppointmentType int    `json:"appointment_type"`
+	WeekNum         int    `json:"week_num"`
+
+	HasDiscount     int    `json:"has_discount,omitempty"`       // 是否有优惠 0无 1有
+	AmountCn        string `json:"amount_cn,omitempty"`          // 中文价格
+	IsFull          int    `json:"is_full"`                      // 是否满场
+	PurchasedNum    int    `json:"purchased_num,omitempty"`      // 已购买人数 包含[成功购买及已下单]
+	Name            string `json:"name,omitempty"`               // 场馆名称
+	Avatar          string `json:"avatar,omitempty"`             // 大课老师头像
+	Address         string `json:"address,omitempty"`            // 上课地点
+	Labels          []*LabelInfo     `json:"labels,omitempty"`   // 标签列表
+	ReservedUsers   []*ReservedUsers `json:"reserved_users"`     // 已预约人数
+
+}
+
+// 已预约人数
+type ReservedUsers struct {
+	UserId      string       `json:"user_id"`
+	NickName    string       `json:"nick_name"`
+	Avatar      string       `json:"avatar"`
+}
+
+type LabelInfo struct {
+	UserId      string       `json:"user_id"`
+	//NickName    string       `json:"nick_name"`
+	//Avatar      string       `json:"avatar"`
+	LabelId     int64        `json:"label_id"`
+	LabelName   string       `json:"label_name"`
+}
+
+type Options struct {
+	Id                 int64        `json:"id"`
+	Name               string       `json:"name"`
+	Describe           string       `json:"describe,omitempty"`
+	CostDescription    string       `json:"cost_description,omitempty"`     // 费用说明
+	Instructions       string       `json:"instructions,omitempty"`         // 购买须知
+}
+
+type AppointmentReq struct {
+	AppointmentType int                 `json:"appointment_type"` // 0场馆 1私教课 2大课
+	UserId          string              `json:"user_id"`          // 用户id
+	Infos           []*AppointmentInfo  `json:"infos"`            // 预约请求数据 1个时间点对应1条数据
+	Ids             []interface{}       `json:"ids"`              // 时间配置ids
+	LabelIds        []int64             `json:"label_ids"`        // 用户选择的标签id列表
+	RelatedId       int64               `json:"related_id"`       // 场馆id/私教课程id/大课老师id
+	WeekNum         int                 `json:"week_num"`         // 星期几
+	ReqType         int                 `json:"req_type"`         // 1 查询购物车数据 2 下单
+}
+
+// 预约请求数据
+type AppointmentInfo struct {
+	DateId      int            `json:"date_id"`    // 1为今天
+	//TimeNode  string         `json:"time_node"`  // 预约时间节点
+	Count       int            `json:"count"`      // 数量
+	Id          int64          `json:"id"`         // 时间配置id
+	SeatInfos   []*SeatInfo    `json:"seat_info"`  // 座位号
+}
+
+// 座位信息
+type SeatInfo struct {
+	UserId      string     `json:"user_id"`
+	Avatar      string     `json:"avatar"`
+	NickName    string     `json:"nick_name"`
+	SeatNo      int        `json:"seat_no"`       // 座位号
+}
+
+// 预约请求返回库存数据
+type StockInfoResp struct {
+	Id        int64      `json:"id"`               // 时间配置id
+	Stock     int        `json:"stock"`            // 剩余数量
+}
+
+// 预约返回数据
+type AppointmentResp struct {
+	Id       int64      `json:"id"`          // 场馆id
+	Name     string     `json:"name"`        // 场馆名称
+	Date     string     `json:"date"`        // 下单日期
+	WeekCn   string     `json:"week_cn"`     // 星期几
+	TotalTm  int        `json:"total_tm"`    // 预约总时长
+	TmCn     string     `json:"tm_cn"`       // 总时长 中文
+	IsEnough bool       `json:"is_enough"`    // 库存是否足够 false 不足 true 足够
+	IsDeduct bool       `json:"is_deduct"`    // 是否可扣除会员时长
+	TotalDeductionTm int `json:"total_deduction_tm"`  // 抵扣总时长
+	TotalAmount int     `json:"total_amount"` // 总金额
+	MobileNum string    `json:"mobile_num"`   // 手机号
+	TotalDiscount int   `json:"total_discount"` // 总优惠
+	TimeNodeInfo  []*TimeNodeInfo `json:"node_info"` // 多时间节点预约数据
+}
+
+// 单时间节点预约数据
+type TimeNodeInfo struct {
+	Date         string       `json:"date"`         // 预约的日期
+	TimeNode     string       `json:"time_node"`    // 预约时间节点
+	Count        int          `json:"count"`        // 数量
+	Id           int64        `json:"id"`           // 时间配置id
+	Amount       int          `json:"amount"`       // 单价
+	DeductionTm  int64        `json:"deduction_tm"` // 抵扣会员时长
+	Discount     int          `json:"discount"`     // 优惠的金额
 }
 
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
 	return &AppointmentModel{
 		AppointmentInfo: new(models.VenueAppointmentInfo),
+		Stock: new(models.VenueAppointmentStock),
+		Record: new(models.AppointmentRecord),
+		Vip: new(models.VenueVipInfo),
 		Engine: engine,
 	}
 }
@@ -38,13 +159,117 @@ func (m *AppointmentModel) GetMinPriceByWeek() error {
 	return nil
 }
 
-// 通过场馆id、私教id、星期 及 预约类型 获取可预约选项
-func (m *AppointmentModel) GetOptionsByWeek() ([]*models.VenueAppointmentInfo, error) {
+// 通过id获取预约配置
+func (m *AppointmentModel) GetAppointmentConfById(id string) (bool, error) {
+	m.AppointmentInfo = new(models.VenueAppointmentInfo)
+	return m.Engine.ID(id).Get(m.AppointmentInfo)
+}
+
+// 通过ids[多个id]获取预约配置列表
+func (m *AppointmentModel) GetAppointmentConfByIds(ids []interface{}) ([]*models.VenueAppointmentInfo, error) {
 	var list []*models.VenueAppointmentInfo
-	if err := m.Engine.Where("related_id=？ AND week_num=? AND appointment_type=? AND status=0", m.AppointmentInfo.RelatedId,
-		m.AppointmentInfo.WeekNum, m.AppointmentInfo.AppointmentType).Find(&list); err != nil {
+	if err := m.Engine.In("id", ids...).OrderBy("cur_amount DESC").Find(&list); err != nil {
 		return nil, err
 	}
 
 	return list, nil
+}
+
+// 通过场馆id、课程id、星期 及 预约类型 获取可预约选项
+func (m *AppointmentModel) GetOptionsByWeek() ([]*models.VenueAppointmentInfo, error) {
+	var list []*models.VenueAppointmentInfo
+	if err := m.Engine.Where("related_id=? AND week_num=? AND appointment_type=? AND status=0", m.AppointmentInfo.RelatedId,
+		m.AppointmentInfo.WeekNum, m.AppointmentInfo.AppointmentType).Asc("id").Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 查库存表 获取某时间点 场馆预约人数 包含已成功及已下单且订单未超时
+func (m *AppointmentModel) GetStockInfo(appointmentType int, relatedId int64, date, timeNode string) (bool, error) {
+	m.Stock = new(models.VenueAppointmentStock)
+	return m.Engine.Where("appointment_type=? AND related_id=? AND date=? AND time_node=?", appointmentType,
+		relatedId, date, timeNode).Get(m.Stock)
+}
+
+// 是否存在库存信息 todo: 前期并发不高 可以读取快照
+func (m *AppointmentModel) HasExistsStockInfo(appointmentType int, relatedId int64, date, timeNode string) (bool, error) {
+	m.Stock = new(models.VenueAppointmentStock)
+	return m.Engine.Where("appointment_type=? AND related_id=? AND date=? AND time_node=?", appointmentType,
+		relatedId, date, timeNode).Exist(m.Stock)
+}
+
+// 添加预约库存数据[多条]
+func (m *AppointmentModel) AddMultiStockInfo(stock []*models.VenueAppointmentStock) (int64, error) {
+	return m.Engine.InsertMulti(stock)
+}
+
+// 添加预约库存数据[单条]
+func (m *AppointmentModel) AddStockInfo(stock *models.VenueAppointmentStock) (int64, error) {
+	return m.Engine.Insert(stock)
+}
+
+const (
+	UPDATE_STOCK_INFO = "UPDATE `venue_appointment_stock` SET `purchased_num`= `purchased_num`+ ?, `update_at`=? WHERE date=? AND " +
+		"time_node=? AND appointment_type=? AND related_id=? AND quota_num >= `purchased_num`+ ? LIMIT 1"
+)
+func (m *AppointmentModel) UpdateStockInfo(timeNode, date string, count, now, appointmentType, relatedId int) (int64, error) {
+	res, err := m.Engine.Exec(UPDATE_STOCK_INFO, count, now, date, timeNode, appointmentType, relatedId, count)
+	if err != nil {
+		return 0, err
+	}
+
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return affected, nil
+}
+
+// 获取成功预约的记录[包含已付款和支付中]
+func (m *AppointmentModel) GetAppointmentRecord() ([]*models.AppointmentRecord, error) {
+	var list []*models.AppointmentRecord
+	sql := "SELECT * FROM appointment_record WHERE status in(0, 2) AND appointment_type=? AND related_id=? AND time_node=? " +
+		"AND date=? ORDER BY id ASC"
+	if err := m.Engine.SQL(sql, m.Record.AppointmentType, m.Record.RelatedId, m.Record.TimeNode, m.Record.Date).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 获取场馆会员数据
+func (m *AppointmentModel) GetVenueVipInfo(userId string) (*models.VenueVipInfo, error) {
+	ok, err := m.Engine.Where("user_id=?", userId).Get(m.Vip)
+	if !ok || err != nil {
+		return nil, err
+	}
+
+	return m.Vip, nil
+}
+
+const (
+	UPDATE_VENUE_VIP_INFO = "UPDATE `venue_vip_info` SET `duration` = `duration` + ?, `update_at`=? WHERE `user_id`=? " +
+		"AND `duration` + ? >= 0 LIMIT 1"
+)
+// 更新场馆会员数据 duration < 0 减少 duration > 0 增加
+func (m *AppointmentModel) UpdateVenueVipInfo(duration int, userId string) (int64, error) {
+	res, err := m.Engine.Exec(UPDATE_VENUE_VIP_INFO, duration, userId)
+	if err != nil {
+		return 0, err
+	}
+
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return affected, nil
+}
+
+// 批量添加预约记录
+func (m *AppointmentModel) AddMultiAppointmentRecord(list []*models.AppointmentRecord) (int64, error) {
+	return m.Engine.InsertMulti(list)
 }

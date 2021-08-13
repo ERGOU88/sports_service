@@ -23,11 +23,15 @@ type Event struct {
 	Data      []byte `json:"data"`
 }
 
-// 事件数据
-type Data struct {
+// 推送事件数据
+type PushData struct {
 	ComposeId   string    `json:"compose_id"` // 作品id
 	Cover       string    `json:"cover"`      // 封面
 	NickName    string    `json:"nick_name"`  // 昵称
 	Content     string    `json:"content"`    // 内容
 }
 
+// 订单事件数据
+type OrderData struct {
+	OrderId    string     `json:"order_id"`   // 订单id
+}

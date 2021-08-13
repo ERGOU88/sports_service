@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	Engine *xorm.EngineGroup
+	AppEngine   *xorm.EngineGroup
+	VenueEngine *xorm.EngineGroup
 )
 
 func ConnectDb(mysqlDsn string) *xorm.Engine {

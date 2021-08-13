@@ -22,7 +22,7 @@ import (
 func LoopPopStatEvent() {
 	for !closing {
 		conn := dao.RedisPool().Get()
-		values, err := redis.Values(conn.Do("BRPOP", rdskey.MSG_EVENT_KEY, 0))
+		values, err := redis.Values(conn.Do("BRPOP", rdskey.MSG_PUSH_EVENT_KEY, 0))
 		conn.Close()
 		if err != nil {
 			log.Log.Errorf("redisMq_trace: loopPop event fail, err:%s", err)
@@ -67,13 +67,13 @@ func EventConsumer(bts []byte) error {
 }
 
 func handleEvent(event protocol.Event) error {
-	info := &protocol.Data{}
+	info := &protocol.PushData{}
 	if err := util.JsonFast.Unmarshal(event.Data, info); err != nil {
 		log.Log.Errorf("redisMq_trace: proto unmarshal data err:%s", err)
 		return nil
 	}
 
-	session := dao.Engine.NewSession()
+	session := dao.AppEngine.NewSession()
 	defer session.Close()
 	umodel := muser.NewUserModel(session)
 	user := umodel.FindUserByUserid(event.UserId)

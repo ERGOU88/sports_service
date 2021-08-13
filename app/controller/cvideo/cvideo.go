@@ -42,7 +42,7 @@ type VideoModule struct {
 }
 
 func New(c *gin.Context) VideoModule {
-	socket := dao.Engine.NewSession()
+	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return VideoModule{
 		context: c,
@@ -130,7 +130,7 @@ func (svc *VideoModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPu
 
 // 生成视频信息标签
 func (svc *VideoModule) genVideoTag(videoId int64, info string, pubType int) string {
-	return fmt.Sprintf("%d_%s_%d",videoId, info, pubType)
+	return fmt.Sprintf("%d__%s__%d",videoId, info, pubType)
 }
 
 // 用户发布视频
@@ -581,6 +581,15 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 		// 获取收藏的信息
 		if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
 			video.IsCollect = collectInfo.Status
+		}
+
+		// 获取分区信息
+		if video.Subarea > 0 {
+			var err error
+			video.SubareaInfo, err = svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))
+			if err != nil {
+				log.Log.Errorf("video_trace: get subarea info fail, err:%s, videoId:%d", err, video.VideoId)
+			}
 		}
 	}
 
