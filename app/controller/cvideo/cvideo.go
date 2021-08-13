@@ -224,22 +224,24 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 		}
 	}
 
-	// 同步到社区
-	svc.post.Posting.UserId = userId
-	svc.post.Posting.VideoId = svc.video.Videos.VideoId
-	// 默认发布到综合
-	svc.post.Posting.SectionId = 1
-	// 视频+文
-	svc.post.Posting.PostingType = consts.POST_TYPE_VIDEO
-	// 社区发布
-	svc.post.Posting.ContentType = consts.COMMUNITY_PUB_POST
+	if params.PubType == 2 {
+		// 同步到社区
+		svc.post.Posting.UserId = userId
+		svc.post.Posting.VideoId = svc.video.Videos.VideoId
+		// 默认发布到综合
+		svc.post.Posting.SectionId = 1
+		// 视频+文
+		svc.post.Posting.PostingType = consts.POST_TYPE_VIDEO
+		// 社区发布
+		svc.post.Posting.ContentType = consts.COMMUNITY_PUB_POST
 
-	svc.post.Posting.CreateAt = now
-	svc.post.Posting.UpdateAt = now
-	// 添加帖子
-	if _, err := svc.post.AddPost() ; err != nil {
-		log.Log.Errorf("video_trace: add post fail, err:%s", err)
-		return errors.New("add post fail")
+		svc.post.Posting.CreateAt = now
+		svc.post.Posting.UpdateAt = now
+		// 添加帖子
+		if _, err := svc.post.AddPost(); err != nil {
+			log.Log.Errorf("video_trace: add post fail, err:%s", err)
+			return errors.New("add post fail")
+		}
 	}
 
 	svc.video.Statistic.VideoId = svc.video.Videos.VideoId
