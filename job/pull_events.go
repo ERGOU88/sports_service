@@ -1010,7 +1010,7 @@ func newUploadEvent(event *v20180717.EventContent) error {
   vmodel.Videos.Size = *event.FileUploadEvent.MetaData.Size
   fileId, _ := strconv.Atoi(*event.FileUploadEvent.FileId)
   //vmodel.Videos.FileId = int64(fileId)
-  vmodel.Videos.Size = pubInfo.Size
+  //vmodel.Videos.Size = pubInfo.Size
   // todo: 如果有 记录用户自定义标签
 
   // 更新视频信息
