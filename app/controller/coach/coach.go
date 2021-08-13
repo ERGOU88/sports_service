@@ -9,8 +9,11 @@ import (
 	"sports_service/server/models"
 	"sports_service/server/models/mcoach"
 	"sports_service/server/models/mcourse"
+	"sports_service/server/models/morder"
 	"sports_service/server/models/muser"
 	"sports_service/server/util"
+	"fmt"
+	"time"
 )
 
 type CoachModule struct {
@@ -19,6 +22,7 @@ type CoachModule struct {
 	coach       *mcoach.CoachModel
 	course      *mcourse.CourseModel
 	user        *muser.UserModel
+	order       *morder.OrderModel
 }
 
 func New(c *gin.Context) *CoachModule {
@@ -32,6 +36,7 @@ func New(c *gin.Context) *CoachModule {
 		coach:   mcoach.NewCoachModel(venueSocket),
 		course:  mcourse.NewCourseModel(venueSocket),
 		user:    muser.NewUserModel(appSocket),
+		order:   morder.NewOrderModel(venueSocket),
 		engine:  venueSocket,
 	}
 }
@@ -167,4 +172,76 @@ func (svc *CoachModule) GetEvaluateConfig() (int, []*models.VenueCoachLabelConfi
 	}
 
 	return errdef.SUCCESS, list
+}
+
+// 发布评价
+func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluateParam) int {
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("coach_trace: begin session fail, err:%s", err)
+		return errdef.ERROR
+	}
+
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
+		log.Log.Errorf("coach_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
+		return errdef.USER_NOT_EXISTS
+	}
+
+	ok, err := svc.coach.GetCoachInfoById(fmt.Sprint(param.CoachId))
+	if !ok || err != nil {
+		log.Log.Errorf("coach_trace: coach not found, coachId:%d", param.CoachId)
+		svc.engine.Rollback()
+		return errdef.COACH_NOT_EXISTS
+	}
+
+	ok, err = svc.order.GetOrder(param.OrderId)
+	if !ok || err != nil {
+		log.Log.Errorf("coach_trace: coach order not found, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.COACH_ORDER_NOT_EXISTS
+	}
+
+	if svc.order.Order.Status != 2 {
+		log.Log.Errorf("coach_trace: coach order not success, status:%d", svc.order.Order.Status)
+		svc.engine.Rollback()
+		return errdef.COACH_ORDER_NOT_SUCCESS
+	}
+
+
+	var labels string
+	if len(param.LabelIds) > 0 {
+		list, err := svc.coach.GetCoachLabelByIds(param.LabelIds)
+		if err != nil {
+			log.Log.Errorf("coach_trace: get coach label fail, err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COACH_GET_LABEL_FAIL
+		}
+
+		labels, _ = util.JsonFast.MarshalToString(list)
+	}
+
+	now := int(time.Now().Unix())
+	svc.coach.Evaluate.CoachId = param.CoachId
+	svc.coach.Evaluate.UserId = userId
+	svc.coach.Evaluate.Star = param.Star
+	svc.coach.Evaluate.CreateAt = now
+	svc.coach.Evaluate.UpdateAt = now
+	svc.coach.Evaluate.LabelInfo = labels
+	// 添加私教评价
+	if _, err := svc.coach.AddCoachEvaluate(); err != nil {
+		log.Log.Errorf("coach_trace: add coach evaluate fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.COACH_PUB_EVALUATE_FAIL
+	}
+
+	// 记录评价总计
+	if _, err := svc.coach.RecordCoachScoreInfo(param.CoachId, param.Star, now); err != nil {
+		log.Log.Errorf("coach_trace: record coach score fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.COACH_PUB_EVALUATE_FAIL
+	}
+
+	svc.engine.Commit()
+	return errdef.SUCCESS
 }

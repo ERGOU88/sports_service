@@ -3,7 +3,7 @@ package models
 type VenueUserEvaluateRecord struct {
 	Id        int64  `json:"id" xorm:"pk autoincr comment('自增主键') BIGINT(20)"`
 	UserId    string `json:"user_id" xorm:"not null comment('用户id') index VARCHAR(60)"`
-	CoachId   string `json:"coach_id" xorm:"not null comment('教练id') index VARCHAR(60)"`
+	CoachId   int64  `json:"coach_id" xorm:"not null comment('教练id') index BIGINT(20)"`
 	Star      int    `json:"star" xorm:"not null comment('评价几颗星 1~5星') TINYINT(2)"`
 	OrderId   string `json:"order_id" xorm:"not null comment('订单id') VARCHAR(256)"`
 	OrderType int    `json:"order_type" xorm:"not null default 1 comment('订单类型 默认 1 私教课程') TINYINT(1)"`

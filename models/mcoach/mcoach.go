@@ -3,12 +3,15 @@ package mcoach
 import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/models"
+	"fmt"
 )
 
 type CoachModel struct {
-	Coach     *models.VenueCoachDetail
-	Engine    *xorm.Session
-	Labels    *models.VenueUserLabel
+	Coach       *models.VenueCoachDetail
+	Engine      *xorm.Session
+	Labels      *models.VenueCoachLabelConfig
+	CoachScore  *models.VenueCoachScore
+	Evaluate    *models.VenueUserEvaluateRecord
 }
 
 type CoachInfo struct {
@@ -50,7 +53,7 @@ type EvaluateInfo struct {
 	//UserId    string       `json:"user_id"`
 	//NickName  string       `json:"nick_name"`
 	//Avatar    string       `json:"avatar"`
-	CoachId   string       `json:"coach_id"`
+	CoachId   int64       `json:"coach_id"`
 	Star      int          `json:"star"`
 	Content   string       `json:"content"`
 	Labels    []*LabelInfo `json:"labels"`
@@ -61,10 +64,19 @@ type LabelInfo struct {
 	Name   string    `json:"name"`
 }
 
+type PubEvaluateParam struct {
+	CoachId     int64          `json:"coach_id"`
+	OrderId     string         `json:"order_id"`
+	Star        int            `json:"star"`
+	LabelIds    []interface{}  `json:"label_ids"`
+}
 
 func NewCoachModel(engine *xorm.Session) *CoachModel {
 	return &CoachModel{
 		Coach: new(models.VenueCoachDetail),
+		Labels: new(models.VenueCoachLabelConfig),
+		CoachScore: new(models.VenueCoachScore),
+		Evaluate: new(models.VenueUserEvaluateRecord),
 		Engine: engine,
 	}
 }
@@ -99,6 +111,53 @@ func (m *CoachModel) GetEvaluateListByCoach(coachId string, offset, size int) ([
 func (m *CoachModel) GetEvaluateConfig() ([]*models.VenueCoachLabelConfig, error) {
 	var list []*models.VenueCoachLabelConfig
 	if err := m.Engine.Where("status=0").Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+const (
+	RECORD_COACH_SCORE_INFO = "INSERT INTO venue_coach_score(`coach_id`, `total_score`, `total_num`, `total_%d_star`, `create_at`, `update_at`) " +
+		"VALUES(?, ?, 1, 1, ?, ?) " +
+		"ON DUPLICATE KEY UPDATE " +
+		"total_%d_star = total_%d_star + 1, " +
+		"total_num = total_num + 1, " +
+		"total_score = total_score + ?, " +
+		"update_at = ?"
+)
+
+// 记录私教评价总计
+// 1星 = 1分
+func (m *CoachModel) RecordCoachScoreInfo(coachId int64, starNum, now int) (int64, error) {
+	sql := fmt.Sprintf(RECORD_COACH_SCORE_INFO, starNum, starNum, starNum)
+	res, err := m.Engine.Exec(sql, coachId, starNum, now, now, starNum, now)
+	if err != nil {
+		return 0, err
+	}
+
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return affected, nil
+}
+
+// 获取私教评价总计
+func (m *CoachModel) GetCoachScoreInfo(coachId string) (bool, error) {
+	return m.Engine.Where("coach_id=? AND status=0", coachId).Get(m.CoachScore)
+}
+
+// 添加私教评价
+func (m *CoachModel) AddCoachEvaluate() (int64, error) {
+	return m.Engine.InsertOne(m.Evaluate)
+}
+
+// 通过ids[多个id]获取标签配置列表
+func (m *CoachModel) GetCoachLabelByIds(ids []interface{}) ([]*models.VenueCoachLabelConfig, error) {
+	var list []*models.VenueCoachLabelConfig
+	if err := m.Engine.In("id", ids...).Find(&list); err != nil {
 		return nil, err
 	}
 

@@ -163,6 +163,14 @@ const (
 	COMMUNITY_POSTS_BY_SECTION   = 14006
 	COMMUNITY_POSTS_BY_TOPIC     = 14007
 
+	// 私教相关错误吗 15001-16000
+	COACH_NOT_EXISTS             = 15001
+	COACH_GET_LABEL_FAIL         = 15002
+	COACH_PUB_EVALUATE_FAIL      = 15003
+	COACH_ORDER_NOT_EXISTS       = 15004
+	COACH_ORDER_NOT_SUCCESS      = 15005
+
+
 )
 
 var MsgFlags = map[int]string{
@@ -311,6 +319,12 @@ var MsgFlags = map[int]string{
 	COMMUNITY_TOPIC_FAIL:        "获取社区话题失败",
 	COMMUNITY_POSTS_BY_SECTION:  "获取当前板块下的帖子失败",
 	COMMUNITY_POSTS_BY_TOPIC:    "获取当前话题下的帖子失败",
+
+	COACH_NOT_EXISTS:            "私教不存在",
+	COACH_GET_LABEL_FAIL:        "获取私教标签失败",
+	COACH_PUB_EVALUATE_FAIL:     "添加评价失败",
+	COACH_ORDER_NOT_EXISTS:      "私教订单不存在",
+	COACH_ORDER_NOT_SUCCESS:     "私教订单未成功",
 }
 
 func GetMsg(code int) string {
