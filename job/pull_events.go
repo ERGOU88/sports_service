@@ -863,6 +863,10 @@ func newUploadEvent(event *v20180717.EventContent) error {
   source := new(cloud.SourceContext)
   if err := util.JsonFast.Unmarshal([]byte(*event.FileUploadEvent.MediaBasicInfo.SourceInfo.SourceContext), source); err != nil {
     log.Log.Errorf("job_trace: jsonfast unmarshal event sourceContext err:%s", err)
+    // 确认事件回调
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+      log.Log.Errorf("job_trace: confirm events err:%s", err)
+    }
     session.Rollback()
     return errors.New("jsonfast unmarshal event sourceContext err")
   }
@@ -875,6 +879,10 @@ func newUploadEvent(event *v20180717.EventContent) error {
 
   // 如果 透传参数里的mode 与 当前运行环境不匹配
   if source.Mode != config.Global.Mode {
+    // 确认事件回调
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+      log.Log.Errorf("job_trace: confirm events err:%s", err)
+    }
     session.Rollback()
     return errors.New("mode not match")
   }
