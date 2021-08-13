@@ -89,7 +89,7 @@ func AppointmentOptions(c *gin.Context) {
 	}
 
 	var relatedId int
-	if queryType == 2 {
+	if queryType == 1 {
 		relatedId, err = strconv.Atoi(c.Query("related_id"))
 		if err != nil || relatedId <= 0 {
 			reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
