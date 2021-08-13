@@ -31,3 +31,8 @@ func (m *OrderModel) GetSalesByProduct() (int64, error) {
 	return m.Engine.Where("product_id=? AND order_type=? AND status=2", m.OrderProduct.ProductId,
 		m.OrderProduct.OrderType).SumInt(m.OrderProduct, "count")
 }
+
+// 批量添加订单商品流水
+func (m *OrderModel) AddMultiOrderProduct(list []*models.VenueOrderProductInfo) (int64, error) {
+	return m.Engine.InsertMulti(list)
+}

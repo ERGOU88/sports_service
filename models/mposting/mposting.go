@@ -131,6 +131,7 @@ type RelatedVideo struct {
 	Avatar        string                `json:"avatar" example:"头像"`                 // 头像
 	Nickname      string                `json:"nick_name"  example:"昵称"`             // 昵称
 	Size          int64                 `json:"size"`                                 // 视频总字节数
+	IsLike        int                   `json:"is_like"`                              // 是否点赞
 
 	FabulousNum   int                   `json:"fabulous_num" example:"10"`             // 点赞数
 	ShareNum      int                   `json:"share_num" example:"10"`                // 分享/转发数

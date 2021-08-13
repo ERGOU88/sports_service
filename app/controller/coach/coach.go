@@ -6,6 +6,7 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
+	"sports_service/server/models"
 	"sports_service/server/models/mcoach"
 	"sports_service/server/models/mcourse"
 	"sports_service/server/models/muser"
@@ -152,4 +153,18 @@ func (svc *CoachModule) GetEvaluateList(coachId string, page, size int) (int, []
 	}
 
 	return errdef.SUCCESS, res
+}
+
+// 获取评价配置
+func (svc *CoachModule) GetEvaluateConfig() (int, []*models.VenueCoachLabelConfig) {
+	list, err := svc.coach.GetEvaluateConfig()
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*models.VenueCoachLabelConfig{}
+	}
+
+	return errdef.SUCCESS, list
 }

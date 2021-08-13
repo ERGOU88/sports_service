@@ -297,6 +297,11 @@ func (svc *CommunityModule) GetPostDetailByList(userId string, list []*mposting.
 					item.RelatedVideo.Avatar = user.Avatar
 				}
 
+				// 是否点赞
+				if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEOS); likeInfo != nil {
+					item.RelatedVideo.IsLike = likeInfo.Status
+				}
+
 				subarea, err := svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))
 				if err != nil || subarea == nil {
 					log.Log.Errorf("community_trace: get subarea by id fail, err:%s", err)

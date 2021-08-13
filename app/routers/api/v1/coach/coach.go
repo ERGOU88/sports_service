@@ -46,3 +46,12 @@ func CoachEvaluate(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
+
+
+func CoachEvaluateConf(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := coach.New(c)
+	code, list := svc.GetEvaluateConfig()
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}

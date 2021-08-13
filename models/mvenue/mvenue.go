@@ -39,8 +39,9 @@ func NewVenueModel(engine *xorm.Session) *VenueModel {
 }
 
 // 通过场馆id 获取场馆信息
-func (m *VenueModel) GetVenueInfoById() (bool, error) {
-	return m.Engine.Get(m.Venue)
+func (m *VenueModel) GetVenueInfoById(id string) (bool, error) {
+	m.Venue = new(models.VenueInfo)
+	return m.Engine.Where("id=?", id).Get(m.Venue)
 }
 
 // 获取场馆列表

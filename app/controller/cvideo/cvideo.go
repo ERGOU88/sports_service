@@ -130,7 +130,7 @@ func (svc *VideoModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPu
 
 // 生成视频信息标签
 func (svc *VideoModule) genVideoTag(videoId int64, info string, pubType int) string {
-	return fmt.Sprintf("%d_%s_%d",videoId, info, pubType)
+	return fmt.Sprintf("%d__%s__%d",videoId, info, pubType)
 }
 
 // 用户发布视频

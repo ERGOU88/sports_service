@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"sports_service/server/app/controller/cappointment"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
+	"sports_service/server/models/mappointment"
 	"strconv"
 )
 
@@ -20,6 +23,10 @@ func AppointmentDate(c *gin.Context) {
 
 	factory := &cappointment.AppointmentFactory{}
 	i = factory.Create(queryType, c)
+	if i == nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
 
 	syscode, list := cappointment.GetAppointmentDate(i)
 	reply.Data["list"] = list
@@ -59,15 +66,15 @@ func AppointmentTimeOptions(c *gin.Context) {
 		return
 	}
 
-
 	var i cappointment.IAppointment
 	factory := &cappointment.AppointmentFactory{}
 	i = factory.Create(queryType, c)
-	i.SetWeek(week)
-	i.SetAppointmentType(queryType)
-	i.SetRelatedId(relatedId)
-	i.SetDateId(id)
-	syscode, list := cappointment.GetAppointmentTimeOptions(i)
+	if i == nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	syscode, list := cappointment.GetAppointmentTimeOptions(i, week, queryType, relatedId, id)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)
 }
@@ -81,16 +88,49 @@ func AppointmentOptions(c *gin.Context) {
 		return
 	}
 
-	relatedId, err := strconv.Atoi(c.Query("related_id"))
-	if err != nil || relatedId <= 0 {
+	var relatedId int
+	if queryType != 0 {
+		relatedId, err = strconv.Atoi(c.Query("related_id"))
+		if err != nil || relatedId <= 0 {
+			reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+			return
+		}
+	}
+
+	var i cappointment.IAppointment
+	factory := &cappointment.AppointmentFactory{}
+	i = factory.Create(queryType, c)
+	if i == nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	syscode, list := cappointment.GetOptions(i, int64(relatedId))
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, syscode)
+}
+
+// 开始预约
+func AppointmentStart(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mappointment.AppointmentReq{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("appointment_trace: invalid param, err:%s", err)
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
 
 	var i cappointment.IAppointment
 	factory := &cappointment.AppointmentFactory{}
-	i = factory.Create(queryType, c)
-	syscode, list := cappointment.GetOptions(i, int64(relatedId))
-	reply.Data["list"] = list
+	i = factory.Create(param.AppointmentType, c)
+	if i == nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	userId, _ := c.Get(consts.USER_ID)
+	param.UserId = userId.(string)
+	syscode, resp := cappointment.UserAppointment(i, param)
+	reply.Data["resp"] = resp
 	reply.Response(http.StatusOK, syscode)
 }

@@ -62,7 +62,34 @@ func (svc *CoachAppointmentModule) Options(relatedId int64) (int, interface{}) {
 }
 
 // 预约私教
-func (svc *CoachAppointmentModule) Appointment() (int, interface{}) {
+func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentReq) (int, interface{}) {
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("venue_trace: session begin fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+
+	if len(params.Infos) == 0 {
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
+	}
+
+	user := svc.user.FindUserByUserid(params.UserId)
+	if user == nil {
+		svc.engine.Rollback()
+		return errdef.USER_NOT_EXISTS, nil
+	}
+
+	list, err := svc.GetAppointmentConfByIds(params.Ids)
+	if err != nil {
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
+	}
+
+	if len(list) != len(params.Infos) {
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
+	}
+
 	return 5000, nil
 }
 
@@ -106,9 +133,9 @@ func (svc *CoachAppointmentModule) AppointmentDetail() (int, interface{}) {
 	return 8000, nil
 }
 
-// 预约私教日期配置
+// 预约私教课程日期配置
 func (svc *CoachAppointmentModule) AppointmentDate() (int, interface{}) {
-	return errdef.SUCCESS, svc.AppointmentDateInfo(6)
+	return errdef.SUCCESS, svc.AppointmentDateInfo(6, 1)
 }
 
 
