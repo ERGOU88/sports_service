@@ -1021,33 +1021,33 @@ func newUploadEvent(event *v20180717.EventContent) error {
     return errors.New("publish video fail")
   }
 
-  lmodel := mlabel.NewLabelModel(session)
-  labelIds := strings.Split(pubInfo.VideoLabels, ",")
-  // 组装多条记录 写入视频标签表
-  labelInfos := make([]*models.VideoLabels, 0)
-  for _, labelId := range labelIds {
-    if lmodel.GetLabelInfoByMem(labelId) == nil {
-      log.Log.Errorf("job_trace: label not found, labelId:%s", labelId)
-      continue
-    }
+  //lmodel := mlabel.NewLabelModel(session)
+  //labelIds := strings.Split(pubInfo.VideoLabels, ",")
+  //// 组装多条记录 写入视频标签表
+  //labelInfos := make([]*models.VideoLabels, 0)
+  //for _, labelId := range labelIds {
+  //  if lmodel.GetLabelInfoByMem(labelId) == nil {
+  //    log.Log.Errorf("job_trace: label not found, labelId:%s", labelId)
+  //    continue
+  //  }
+  //
+  //  info := new(models.VideoLabels)
+  //  info.VideoId = vmodel.Videos.VideoId
+  //  info.LabelId = labelId
+  //  info.LabelName = lmodel.GetLabelNameByMem(labelId)
+  //  info.CreateAt = int(now)
+  //  labelInfos = append(labelInfos, info)
+  //}
 
-    info := new(models.VideoLabels)
-    info.VideoId = vmodel.Videos.VideoId
-    info.LabelId = labelId
-    info.LabelName = lmodel.GetLabelNameByMem(labelId)
-    info.CreateAt = int(now)
-    labelInfos = append(labelInfos, info)
-  }
-
-  if len(labelInfos) > 0 {
-    // 添加视频标签（多条）
-    affected, err = vmodel.AddVideoLabels(labelInfos)
-    if err != nil || int(affected) != len(labelInfos) {
-      log.Log.Errorf("job_trace: add video labels err:%s", err)
-      session.Rollback()
-      return errors.New("add video labels fail")
-    }
-  }
+  //if len(labelInfos) > 0 {
+  //  // 添加视频标签（多条）
+  //  affected, err = vmodel.AddVideoLabels(labelInfos)
+  //  if err != nil || int(affected) != len(labelInfos) {
+  //    log.Log.Errorf("job_trace: add video labels err:%s", err)
+  //    session.Rollback()
+  //    return errors.New("add video labels fail")
+  //  }
+  //}
 
 
   // 记录事件回调信息
