@@ -414,6 +414,7 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, lab
 
 		if svc.appointment.AppointmentInfo.AppointmentType == 0 {
 			var list []*models.VenuePersonalLabelConf
+			labelType := 0
 			if len(labelIds) > 0 {
 				list, err = svc.appointment.GetLabelsByIds(labelIds)
 				if err != nil || list == nil {
@@ -421,17 +422,22 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, lab
 				}
 			}
 
-			if len(list) == 0 {
+			if len(list) == 0 || len(labelIds) == 0 {
 				list, err = svc.appointment.GetLabelsByRand()
 				if err != nil || list == nil {
 					log.Log.Errorf("venue_trace: get labels by rand fail, err:%s", err)
 					return errors.New("get labels by rand fail")
 				}
+
+				labelType = 1
+
 			}
 
-			if err := svc.AddLabels(list, date, userId, relatedId, 0); err != nil {
-				log.Log.Errorf("venue_trace: add labels fail, err:%s", err)
-				return err
+			if len(list) > 0 {
+				if err := svc.AddLabels(list, date, userId, relatedId, labelType); err != nil {
+					log.Log.Errorf("venue_trace: add labels fail, err:%s", err)
+					return err
+				}
 			}
 		}
 
