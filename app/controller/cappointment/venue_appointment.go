@@ -122,12 +122,16 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 	svc.Extra.WeekCn = util.GetWeekCn(params.WeekNum)
 	svc.Extra.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
 	svc.Extra.TmCn = util.ResolveTime(svc.Extra.TotalTm)
-	// 库存都足够 则判断用户是否充值会员时长
-	// 存在会员数据 则需要先抵扣时间
-	if err := svc.VipDeductionProcess(user.UserId, list); err != nil {
-		log.Log.Errorf("venue_trace: vip deduction process fail, err:%s", err)
-		svc.engine.Rollback()
-		return errdef.ERROR, nil
+
+	// 用户选择抵扣时长
+	if params.IsDiscount == 1 {
+		// 库存都足够 则判断用户是否充值会员时长
+		// 存在会员数据 则需要先抵扣时间
+		if err := svc.VipDeductionProcess(user.UserId, list); err != nil {
+			log.Log.Errorf("venue_trace: vip deduction process fail, err:%s", err)
+			svc.engine.Rollback()
+			return errdef.ERROR, nil
+		}
 	}
 
 	// 库存不足 返回最新数据 事务回滚

@@ -83,6 +83,7 @@ type AppointmentReq struct {
 	RelatedId       int64               `json:"related_id"`       // 场馆id/私教课程id/大课老师id
 	WeekNum         int                 `json:"week_num"`         // 星期几
 	ReqType         int                 `json:"req_type"`         // 1 查询购物车数据 2 下单
+	IsDiscount      int32               `json:"is_discount"`      // 是否抵扣时长 1 抵扣 0 不抵扣
 }
 
 // 预约请求数据
