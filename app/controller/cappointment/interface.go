@@ -52,7 +52,8 @@ func GetAppointmentDetail(i IAppointment) (int, interface{}) {
 }
 
 // 预约日期
-func GetAppointmentDate(i IAppointment) (int, interface{}) {
+func GetAppointmentDate(i IAppointment, relatedId int) (int, interface{}) {
+	i.SetRelatedId(relatedId)
 	return i.AppointmentDate()
 }
 

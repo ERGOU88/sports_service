@@ -47,6 +47,12 @@ type CourseInfo struct {
 	PeriodNum      int    `json:"period_num"`
 }
 
+// 评价列表返回数据
+type EvaluateResp struct {
+	List     []*EvaluateInfo   `json:"list"`
+
+}
+
 // 评价信息
 type EvaluateInfo struct {
 	Id        int64        `json:"id"`

@@ -147,11 +147,12 @@ func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
 }
 
 const (
-	QUERY_MIN_PRICE = "SELECT min(cur_amount) as cur_amount FROM venue_appointment_info WHERE week_num=? AND appointment_type=? AND status=0"
+	QUERY_MIN_PRICE = "SELECT min(cur_amount) as cur_amount FROM venue_appointment_info WHERE week_num=? " +
+		"AND related_id=? AND appointment_type=? AND status=0"
 )
 // 根据星期 及 预约类型 获取最低价格
 func (m *AppointmentModel) GetMinPriceByWeek() error {
-	ok, err := m.Engine.SQL(QUERY_MIN_PRICE, m.AppointmentInfo.WeekNum, m.AppointmentInfo.AppointmentType).Get(m.AppointmentInfo)
+	ok, err := m.Engine.SQL(QUERY_MIN_PRICE, m.AppointmentInfo.WeekNum, m.AppointmentInfo.RelatedId, m.AppointmentInfo.AppointmentType).Get(m.AppointmentInfo)
 	if !ok || err != nil {
 		return err
 	}

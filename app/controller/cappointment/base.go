@@ -50,7 +50,6 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 		}
 
 		svc.appointment.AppointmentInfo.WeekNum = v.Week
-		svc.appointment.AppointmentInfo.WeekNum = v.Week
 		svc.appointment.AppointmentInfo.AppointmentType = appointmentType
 		svc.appointment.AppointmentInfo.CurAmount = 0
 
