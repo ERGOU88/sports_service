@@ -1,6 +1,7 @@
 package cappointment
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
@@ -13,7 +14,6 @@ import (
 	"sports_service/server/models/mvenue"
 	"sports_service/server/util"
 	"time"
-	"fmt"
 )
 
 type VenueAppointmentModule struct {
@@ -106,11 +106,10 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 	}
 
 
-	totalAmount := 0
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
 
-	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.Infos); err != nil {
+	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.LabelIds, params.Infos); err != nil {
 		log.Log.Errorf("venue_trace: appointment fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.ERROR, nil
@@ -142,7 +141,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 	}
 
 	// 添加订单
-	if err := svc.AddOrder(orderId, user.UserId, now, totalAmount); err != nil {
+	if err := svc.AddOrder(orderId, user.UserId, now); err != nil {
 		log.Log.Errorf("venue_trace: add order fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.ERROR, nil
@@ -164,7 +163,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 
 	svc.engine.Commit()
 
-	// todo: 订单15分钟过期 以及标签列表
+	//redismq.PushOrderEventMsg()
 	return errdef.SUCCESS, nil
 }
 
@@ -206,10 +205,10 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 			info.Name = svc.venue.Venue.VenueName
 		}
 
-		svc.venue.Labels.TimeNode = item.TimeNode
-		svc.venue.Labels.Date = date
-		svc.venue.Labels.VenueId = item.RelatedId
-		labels, err := svc.venue.GetVenueUserLabels()
+		svc.appointment.Labels.TimeNode = item.TimeNode
+		svc.appointment.Labels.Date = date
+		svc.appointment.Labels.VenueId = item.RelatedId
+		labels, err := svc.appointment.GetVenueUserLabels()
 		if err != nil {
 			log.Log.Errorf("venue_trace: get venue user lables fail, err:%s", err)
 		}
@@ -247,10 +246,11 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 					uinfo.Avatar = user.Avatar
 				}
 
+
 				info.ReservedUsers = append(info.ReservedUsers, uinfo)
 
 				if val.PurchasedNum > 1 {
-					for i := 0; i < val.PurchasedNum; i++ {
+					for i := 0; i < val.PurchasedNum-1; i++ {
 						info.ReservedUsers = append(info.ReservedUsers, uinfo)
 					}
 				}

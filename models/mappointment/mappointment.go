@@ -11,6 +11,8 @@ type AppointmentModel struct {
 	Stock            *models.VenueAppointmentStock
 	Record           *models.AppointmentRecord
 	Vip              *models.VenueVipInfo
+	Labels           *models.VenueUserLabel
+	LabelConf        *models.VenuePersonalLabelConf
 }
 
 type WeekInfo struct {
@@ -79,7 +81,7 @@ type AppointmentReq struct {
 	UserId          string              `json:"user_id"`          // 用户id
 	Infos           []*AppointmentInfo  `json:"infos"`            // 预约请求数据 1个时间点对应1条数据
 	Ids             []interface{}       `json:"ids"`              // 时间配置ids
-	LabelIds        []int64             `json:"label_ids"`        // 用户选择的标签id列表
+	LabelIds        []interface{}       `json:"label_ids"`        // 用户选择的标签id列表
 	RelatedId       int64               `json:"related_id"`       // 场馆id/私教课程id/大课老师id
 	WeekNum         int                 `json:"week_num"`         // 星期几
 	ReqType         int                 `json:"req_type"`         // 1 查询购物车数据 2 下单
@@ -142,6 +144,8 @@ func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
 		AppointmentInfo: new(models.VenueAppointmentInfo),
 		Stock: new(models.VenueAppointmentStock),
 		Record: new(models.AppointmentRecord),
+		Labels: new(models.VenueUserLabel),
+		LabelConf: new(models.VenuePersonalLabelConf),
 		Vip: new(models.VenueVipInfo),
 		Engine: engine,
 	}
@@ -274,4 +278,55 @@ func (m *AppointmentModel) UpdateVenueVipInfo(duration int, userId string) (int6
 // 批量添加预约记录
 func (m *AppointmentModel) AddMultiAppointmentRecord(list []*models.AppointmentRecord) (int64, error) {
 	return m.Engine.InsertMulti(list)
+}
+
+// 获取场馆用户标签
+func (m *AppointmentModel) GetVenueUserLabels() ([]*models.VenueUserLabel, error) {
+	var list []*models.VenueUserLabel
+	if err := m.Engine.Where("date=? AND time_node=? AND status=0 AND venue_id=?", m.Labels.Date,
+		m.Labels.TimeNode, m.Labels.VenueId).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 获取所有标签配置
+func (m *AppointmentModel) GetUserLabelConf() ([]*models.VenuePersonalLabelConf, error) {
+	var list []*models.VenuePersonalLabelConf
+	if err := m.Engine.Where("status=0").Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 通过id列表获取标签配置
+func (m *AppointmentModel) GetLabelsByIds(ids []interface{}) ([]*models.VenuePersonalLabelConf, error) {
+	var list []*models.VenuePersonalLabelConf
+	if err := m.Engine.Where("status=0").In("id", ids...).OrderBy("id DESC").Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+const (
+	GET_LABELS_BY_RAND = "SELECT * FROM `venue_personal_label_conf` AS t1 JOIN (SELECT ROUND(RAND() * " +
+		"((SELECT MAX(id) FROM `venue_personal_label_conf`)-(SELECT MIN(id) FROM `venue_personal_label_conf`)) " +
+		"+ (SELECT MIN(id) FROM `venue_personal_label_conf`)) AS id) AS t2 WHERE t1.id >= t2.id ORDER BY t1.id LIMIT 3;"
+)
+// 随机获取标签
+func (m *AppointmentModel) GetLabelsByRand() ([]*models.VenuePersonalLabelConf, error) {
+	var list []*models.VenuePersonalLabelConf
+	if err := m.Engine.SQL(GET_LABELS_BY_RAND).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 添加场馆用户标签
+func (m *AppointmentModel) AddLabels(labels []*models.VenueUserLabel) (int64, error) {
+	return m.Engine.InsertMulti(labels)
 }

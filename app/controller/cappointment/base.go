@@ -334,7 +334,7 @@ func (svc *base) AddOrderProducts() error {
 }
 
 // 添加订单
-func (svc *base) AddOrder(orderId, userId string, now, total int) error {
+func (svc *base) AddOrder(orderId, userId string, now int) error {
 	extra, _ := util.JsonFast.MarshalToString(svc.Extra)
 	svc.order.Order.Extra = extra
 	svc.order.Order.PayOrderId = orderId
@@ -342,7 +342,7 @@ func (svc *base) AddOrder(orderId, userId string, now, total int) error {
 	svc.order.Order.OrderType = 1001
 	svc.order.Order.CreateAt = now
 	svc.order.Order.UpdateAt = now
-	svc.order.Order.Amount = total
+	svc.order.Order.Amount = svc.Extra.TotalAmount
 	affected, err := svc.order.AddOrder()
 	if err != nil {
 		return err
@@ -377,7 +377,9 @@ func (svc *base) SetLatestInventoryResp(date string) (*mappointment.TimeNodeInfo
 }
 
 // 预约流程
-func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, infos []*mappointment.AppointmentInfo) error {
+func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, labelIds []interface{},
+	infos []*mappointment.AppointmentInfo) error {
+
 	svc.Extra.IsEnough = true
 	now := int(time.Now().Unix())
 	//stockInfo := make([]*mappointment.StockInfoResp, 0)
@@ -408,6 +410,29 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, inf
 		if date == "" {
 			log.Log.Errorf("venue_trace: invalid date, dateId:%d", item.DateId)
 			return errors.New("invalid date")
+		}
+
+		if svc.appointment.AppointmentInfo.AppointmentType == 0 {
+			var list []*models.VenuePersonalLabelConf
+			if len(labelIds) > 0 {
+				list, err = svc.appointment.GetLabelsByIds(labelIds)
+				if err != nil || list == nil {
+					log.Log.Errorf("venue_trace: get labels by ids fail, err:%s", err)
+				}
+			}
+
+			if len(list) == 0 {
+				list, err = svc.appointment.GetLabelsByRand()
+				if err != nil || list == nil {
+					log.Log.Errorf("venue_trace: get labels by rand fail, err:%s", err)
+					return errors.New("get labels by rand fail")
+				}
+			}
+
+			if err := svc.AddLabels(list, date, userId, relatedId, 0); err != nil {
+				log.Log.Errorf("venue_trace: add labels fail, err:%s", err)
+				return err
+			}
 		}
 
 		svc.Extra.TotalTm += svc.appointment.AppointmentInfo.Duration * item.Count
@@ -476,3 +501,28 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, inf
 	return nil
 }
 
+// labelType 0 表示用户添加 1 表示系统添加
+func (svc *base) AddLabels(list []*models.VenuePersonalLabelConf, date, userId string, relatedId int64, labelType int) error {
+	labels := make([]*models.VenueUserLabel, len(list))
+	for k, v := range list {
+		label := &models.VenueUserLabel{
+			Date: date,
+			TimeNode: svc.appointment.AppointmentInfo.TimeNode,
+			UserId: userId,
+			LabelId: v.Id,
+			LabelName: v.LabelName,
+			VenueId: relatedId,
+			LabelType: labelType,
+		}
+
+		labels[k] = label
+	}
+
+	affected, err := svc.appointment.AddLabels(labels)
+	if err != nil || affected != int64(len(list)) {
+		log.Log.Errorf("venue_trace: add labels failm err:%s, affected:%d, len:%d", err, affected, len(list))
+		return errors.New("add labels fail")
+	}
+
+	return nil
+}
