@@ -8,6 +8,11 @@ const (
     ORDER_TYPE_APPOINTMENT_COURSE = 3002
 )
 
+const (
+    // 预约可支付时长
+    APPOINTMENT_PAYMENT_DURATION = 15 * 60
+)
+
 
 // 0 预约场馆
 // 1 预约私教课

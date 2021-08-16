@@ -207,7 +207,7 @@ func JsonStringToMap(jsonStr string) (m map[string]interface{}, err error) {
 type DateInfo struct {
 	Date      string    `json:"date"`
 	Week      int       `json:"week"`
-	Id        int32     `json:"id"`
+	Id        int       `json:"id"`
 	WeekCn    string    `json:"week_cn"`
 }
 
@@ -236,7 +236,7 @@ func GetBetweenDates(start, end string) []DateInfo {
 		return list
 	}
 
-	var id int32 = 1
+	var id int = 1
 	// 输出日期格式固定
 	timeFormatTpl = "2006-01-02"
 	date2Str := date2.Format(timeFormatTpl)

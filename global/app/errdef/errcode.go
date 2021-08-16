@@ -185,6 +185,9 @@ const (
 	// 订单错误 18001-19000
 	ORDER_ADD_FAIL               = 18001
 	ORDER_PRODUCT_ADD_FAIL       = 18002
+
+	// 大课相关错误
+	COURSE_NOT_EXISTS            = 19001
 )
 
 var MsgFlags = map[int]string{
@@ -352,6 +355,8 @@ var MsgFlags = map[int]string{
 
 	ORDER_ADD_FAIL:              "添加订单失败",
 	ORDER_PRODUCT_ADD_FAIL:      "添加商品订单失败",
+
+	COURSE_NOT_EXISTS:           "课程不存在",
 }
 
 func GetMsg(code int) string {

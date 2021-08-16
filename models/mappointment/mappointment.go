@@ -18,10 +18,17 @@ type AppointmentModel struct {
 type WeekInfo struct {
 	Date      string    `json:"date"`
 	Week      int       `json:"week"`
-	Id        int32     `json:"id"`
+	Id        int       `json:"id"`
 	WeekCn    string    `json:"week_cn"`
 	MinPrice  int       `json:"min_price"`
 	PriceCn   string    `json:"price_cn"`
+	Total     int64     `json:"total"`
+}
+
+// 日期信息
+type DateInfo struct {
+	List   []*WeekInfo   `json:"week_info"`
+	Id      int          `json:"id"`
 }
 
 type OptionsInfo struct {
@@ -50,6 +57,7 @@ type OptionsInfo struct {
 	Address         string `json:"address,omitempty"`            // 上课地点
 	Labels          []*LabelInfo     `json:"labels,omitempty"`   // 标签列表
 	ReservedUsers   []*ReservedUsers `json:"reserved_users"`     // 已预约人数
+	IsExpire        bool   `json:"is_expire"`                    // 是否过期
 
 }
 
@@ -127,6 +135,9 @@ type AppointmentResp struct {
 	MobileNum string    `json:"mobile_num"`   // 手机号
 	TotalDiscount int   `json:"total_discount"` // 总优惠
 	TimeNodeInfo  []*TimeNodeInfo `json:"node_info"` // 多时间节点预约数据
+	OrderId       string `json:"order_id"`           // 订单ID
+	OrderType     int    `json:"order_type"`         // 订单类型
+	PayDuration   int64  `json:"pay_duration"`       // 支付时长
 }
 
 // 单时间节点预约数据
@@ -164,6 +175,13 @@ func (m *AppointmentModel) GetMinPriceByWeek() error {
 	}
 
 	return nil
+}
+
+// 获取可预约的时间节点总数
+func (m *AppointmentModel) GetTotalNodeByWeek() (int64, error) {
+	return m.Engine.Where("week_num=? AND related_id=? AND appointment_type=? AND status=0",
+		m.AppointmentInfo.WeekNum, m.AppointmentInfo.RelatedId, m.AppointmentInfo.AppointmentType).
+		Count(&models.VenueAppointmentInfo{})
 }
 
 // 通过id获取预约配置
