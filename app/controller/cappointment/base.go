@@ -356,7 +356,7 @@ func (svc *base) AddOrder(orderId, userId string, now int) error {
 }
 
 // 设置最新库存数据（返回使用）
-func (svc *base) SetLatestInventoryResp(date string) (*mappointment.TimeNodeInfo, error) {
+func (svc *base) SetLatestInventoryResp(date string, count int) (*mappointment.TimeNodeInfo, error) {
 	info := &mappointment.TimeNodeInfo{}
 	info.Id = svc.appointment.AppointmentInfo.Id
 	info.TimeNode = svc.appointment.AppointmentInfo.TimeNode
@@ -369,8 +369,19 @@ func (svc *base) SetLatestInventoryResp(date string) (*mappointment.TimeNodeInfo
 	if !ok || err != nil {
 		log.Log.Errorf("venue_trace: get stock info fail, err:%s", err)
 		//return nil, errors.New("get stock info fail")
+		// 如果查询失败 返回当前数量
+		info.Count = count
 	} else {
-		info.Count = svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum
+		// 剩余库存 = 总库存 - 冻结库存 + 当前购买
+		stockNum := svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum + count
+		// 剩余库存 >= 当前购买数量
+		if stockNum >= count {
+			// 可购数量 = 当前购买数量
+			info.Count = count
+		} else {
+			// 可购数量 = 剩余库存
+			info.Count = stockNum
+		}
 	}
 
 	return info, nil
@@ -487,7 +498,7 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, lab
 		}
 
 		// 查看最新的库存 并返回 tips：读快照无问题 购买时保证数据一致性即可
-		resp, err := svc.SetLatestInventoryResp(date)
+		resp, err := svc.SetLatestInventoryResp(date, item.Count)
 		if err != nil {
 			log.Log.Errorf("venue_trace:set inventory resp fail, err:%s", err)
 			return err
