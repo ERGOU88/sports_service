@@ -166,7 +166,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 	if err := svc.AddAppointmentRecord(); err != nil {
 		log.Log.Errorf("venue_trace: add appointment record fail, err:%s", err)
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.APPOINTMENT_ADD_RECORD_FAIL, nil
 	}
 
 	svc.engine.Commit()
