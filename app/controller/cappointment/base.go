@@ -381,6 +381,7 @@ func (svc *base) AddOrder(orderId, userId string, now int) error {
 	}
 
 	if affected != 1 {
+		log.Log.Errorf("venue_trace: add order fail, err:%s", err)
 		return errors.New("add order fail, affected not 1")
 	}
 
