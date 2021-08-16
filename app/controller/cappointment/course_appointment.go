@@ -60,6 +60,7 @@ func (svc *CourseAppointmentModule) Options(relatedId int64) (int, interface{}) 
 		info := &mappointment.Options{
 			Id: item.Id,
 			Name: item.Title,
+			Avatar: item.PromotionPic,
 			Describe: item.Describe,
 			CostDescription: "费用须知",
 			Instructions: "购买说明",

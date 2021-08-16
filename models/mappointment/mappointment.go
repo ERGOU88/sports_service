@@ -80,6 +80,7 @@ type LabelInfo struct {
 type Options struct {
 	Id                 int64        `json:"id"`
 	Name               string       `json:"name"`
+	Avatar             string       `json:"avatar"`
 	Describe           string       `json:"describe,omitempty"`
 	CostDescription    string       `json:"cost_description,omitempty"`     // 费用说明
 	Instructions       string       `json:"instructions,omitempty"`         // 购买须知
