@@ -107,6 +107,7 @@ type AppointmentInfo struct {
 	Count       int            `json:"count"`      // 数量
 	Id          int64          `json:"id"`         // 时间配置id
 	SeatInfos   []*SeatInfo    `json:"seat_info"`  // 座位号
+	IsEnough    bool
 }
 
 // 座位信息
@@ -155,6 +156,7 @@ type TimeNodeInfo struct {
 	Amount       int          `json:"amount"`       // 单价
 	DeductionTm  int64        `json:"deduction_tm"` // 抵扣会员时长
 	Discount     int          `json:"discount"`     // 优惠的金额
+	IsEnough     bool         `json:"is_enough"`    // 当前节点库存是否足够
 }
 
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {

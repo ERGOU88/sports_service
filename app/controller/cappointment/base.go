@@ -389,7 +389,7 @@ func (svc *base) AddOrder(orderId, userId string, now int) error {
 }
 
 // 设置最新库存数据（返回使用）
-func (svc *base) SetLatestInventoryResp(date string, count int) (*mappointment.TimeNodeInfo, error) {
+func (svc *base) SetLatestInventoryResp(date string, count int, isEnough bool) (*mappointment.TimeNodeInfo, error) {
 	info := &mappointment.TimeNodeInfo{}
 	info.Id = svc.appointment.AppointmentInfo.Id
 	info.TimeNode = svc.appointment.AppointmentInfo.TimeNode
@@ -405,18 +405,26 @@ func (svc *base) SetLatestInventoryResp(date string, count int) (*mappointment.T
 		// 如果查询失败 返回当前数量
 		info.Count = count
 	} else {
-		// 剩余库存 = 总库存 - 冻结库存 + 当前购买
-		stockNum := svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum + count
 		log.Log.Infof("venue_trace: info:%+v, quotaNum:%d, purchasedNum:%d, count:%d", info,
 			svc.appointment.Stock.QuotaNum, svc.appointment.Stock.PurchasedNum, count)
-		// 剩余库存 >= 当前购买数量
-		if stockNum >= count {
-			// 可购数量 = 当前购买数量
-			info.Count = count
-		} else {
+		// 默认当前节点库存足够
+		info.Count = count
+		// 如果不够 更新库存失败了
+		if !isEnough {
 			// 可购数量 = 总库存 - 已购买
 			info.Count = svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum
 		}
+
+		// 剩余库存 = 总库存 - 冻结库存 + 当前购买
+		//stockNum := svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum + count
+		//// 剩余库存 >= 当前购买数量
+		//if stockNum >= count {
+		//	// 可购数量 = 当前购买数量
+		//	info.Count = count
+		//} else {
+		//	// 可购数量 = 总库存 - 已购买
+		//	info.Count = svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum
+		//}
 	}
 
 	return info, nil
@@ -532,15 +540,20 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, lab
 				svc.appointment.AppointmentInfo.TimeNode)
 
 			// 更新未成功 库存不够 || 当前预约库存足够 但已出现库存不足的预约时间点 则需返回最新各预约节点的剩余库存
-			if affected == 0 || affected == 1 && !svc.Extra.IsEnough {
+			//if affected == 0 || affected == 1 && !svc.Extra.IsEnough {
+			//	svc.Extra.IsEnough = false
+			//	//continue
+			//}
+
+			if affected == 0 {
 				svc.Extra.IsEnough = false
-				//continue
+				item.IsEnough = false
 			}
 
 		}
 
 		// 查看最新的库存 并返回 tips：读快照无问题 购买时保证数据一致性即可
-		resp, err := svc.SetLatestInventoryResp(date, item.Count)
+		resp, err := svc.SetLatestInventoryResp(date, item.Count, item.IsEnough)
 		if err != nil {
 			log.Log.Errorf("venue_trace:set inventory resp fail, err:%s", err)
 			return err
