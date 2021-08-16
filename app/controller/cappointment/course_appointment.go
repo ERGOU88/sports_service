@@ -81,7 +81,7 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 
 	if len(params.Infos) == 0 {
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.APPOINTMENT_INVALID_INFO, nil
 	}
 
 	user := svc.user.FindUserByUserid(params.UserId)
@@ -93,12 +93,12 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 	list, err := svc.GetAppointmentConfByIds(params.Ids)
 	if err != nil {
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.APPOINTMENT_QUERY_NODE_FAIL, nil
 	}
 
 	if len(list) != len(params.Infos) {
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.APPOINTMENT_INVALID_NODE_ID, nil
 	}
 
 	// 获取课程信息
@@ -106,7 +106,7 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 	if !ok || err != nil {
 		log.Log.Errorf("venue_trace: get course info fail, err:%s", err)
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.COURSE_NOT_EXISTS, nil
 	}
 
 
@@ -116,42 +116,42 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.LabelIds, params.Infos); err != nil {
 		log.Log.Errorf("venue_trace: appointment fail, err:%s", err)
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.APPOINTMENT_PROCESS_FAIL, nil
 	}
 
 	svc.Extra.Id = params.RelatedId
-	//svc.Extra.Name = svc.venue.Venue.VenueName
+	svc.Extra.Name = svc.course.Course.Title
 	svc.Extra.Date = time.Now().Format(consts.FORMAT_DATE)
 	svc.Extra.WeekCn = util.GetWeekCn(params.WeekNum)
 	svc.Extra.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
 	svc.Extra.TmCn = util.ResolveTime(svc.Extra.TotalTm)
 
 	// 库存不足 返回最新数据 事务回滚
-	if !svc.Extra.IsEnough || params.ReqType != 2 {
+	if !svc.Extra.IsEnough {
 		log.Log.Errorf("venue_trace: rollback, isEnough:%v, reqType:%d", svc.Extra.IsEnough, params.ReqType)
 		svc.engine.Rollback()
-		return errdef.SUCCESS, svc.Extra
+		return errdef.APPOINTMENT_NOT_ENOUGH_STOCK, svc.Extra
 	}
 
 	// 添加订单
 	if err := svc.AddOrder(orderId, user.UserId, now); err != nil {
 		log.Log.Errorf("venue_trace: add order fail, err:%s", err)
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.ORDER_ADD_FAIL, nil
 	}
 
 	// 添加订单商品流水
 	if err := svc.AddOrderProducts(); err != nil {
 		log.Log.Errorf("venue_trace: add order products fail, err:%s", err)
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.ORDER_PRODUCT_ADD_FAIL, nil
 	}
 
 	// 添加预约记录流水
 	if err := svc.AddAppointmentRecord(); err != nil {
 		log.Log.Errorf("venue_trace: add appointment record fail, err:%s", err)
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.APPOINTMENT_ADD_RECORD_FAIL, nil
 	}
 
 	svc.engine.Commit()

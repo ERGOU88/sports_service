@@ -41,6 +41,7 @@ func New(socket *xorm.Session) *base {
 func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 	list := svc.GetAppointmentDate(days)
 	res := make([]*mappointment.WeekInfo, len(list))
+	id := 0
 	for index, v := range list {
 		info := &mappointment.WeekInfo{
 			Id: v.Id,
@@ -59,10 +60,26 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 
 		info.MinPrice = svc.appointment.AppointmentInfo.CurAmount
 		info.PriceCn = fmt.Sprintf("¥%.2f", float64(info.MinPrice)/100)
+
+		total, err := svc.appointment.GetTotalNodeByWeek()
+		if err != nil {
+			log.Log.Errorf("venue_trace: get total node by week fail, err:%s", err)
+		}
+		info.Total = total
+
+		if id == 0 && info.Total > 0 {
+			id = v.Id
+		}
+
 		res[index] = info
 	}
 
-	return res
+	dateInfo := &mappointment.DateInfo{
+		List: res,
+		Id: id,
+	}
+
+	return dateInfo
 }
 
 // 获取预约的日期信息（从当天开始推算）
@@ -138,6 +155,7 @@ func (svc *base) GetDateById(id int, formatType string) string {
 }
 
 func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppointmentInfo) *mappointment.OptionsInfo {
+	var isExpire bool
 	if svc.DateId == 1 {
 		nodes := strings.Split(item.TimeNode, "-")
 		if len(nodes) ==  2 {
@@ -146,11 +164,18 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 			start := fmt.Sprintf("%s %s", date, nodes[0])
 			ts := new(util.TimeS)
 			startTm := ts.GetTimeStrOrStamp(start, "YmdHi")
-			// 如果当前时间 > 配置中的开始时间 过滤该配置项
 			if now > startTm.(int64) {
-				log.Log.Errorf("过滤id：%d, date:%s", item.Id, date)
-				return nil
+				// 预约私教、预约大课 如果当前时间 > 配置中的开始时间 过滤该配置项
+				if item.AppointmentType != 0 {
+						log.Log.Errorf("过滤id：%d, date:%s", item.Id, date)
+						return nil
+				}
+
+				// 预约场馆则给标示
+				isExpire = true
 			}
+
+
 		}
 	}
 
@@ -167,6 +192,7 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		WeekNum: item.WeekNum,
 		AmountCn: fmt.Sprintf("¥%.2f", float64(item.CurAmount)/100),
 		Id: item.Id,
+		IsExpire: isExpire,
 	}
 
 	// 售价 < 定价 表示有优惠
@@ -452,6 +478,12 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, lab
 			}
 		}
 
+
+		svc.Extra.OrderType, err = svc.GetOrderType(svc.appointment.AppointmentInfo.AppointmentType)
+		if err != nil {
+			return err
+		}
+
 		svc.Extra.TotalTm += svc.appointment.AppointmentInfo.Duration * item.Count
 		// 数量 * 售价
 		svc.Extra.TotalAmount += item.Count * svc.appointment.AppointmentInfo.CurAmount
@@ -544,4 +576,18 @@ func (svc *base) AddLabels(list []*models.VenuePersonalLabelConf, date, userId s
 	}
 
 	return nil
+}
+
+// 获取订单类型
+func (svc *base) GetOrderType(appointmentType int) (int, error) {
+	switch appointmentType {
+	case 0:
+		return consts.ORDER_TYPE_APPOINTMENT_VENUE, nil
+	case 1:
+		return consts.ORDER_TYPE_APPOINTMENT_COACH, nil
+	case 2:
+		return consts.ORDER_TYPE_APPOINTMENT_COURSE, nil
+	}
+
+	return 0, errors.New("invalid appointmentType")
 }
