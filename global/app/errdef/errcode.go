@@ -169,8 +169,6 @@ const (
 	COACH_PUB_EVALUATE_FAIL      = 15003
 	COACH_ORDER_NOT_EXISTS       = 15004
 	COACH_ORDER_NOT_SUCCESS      = 15005
-
-
 )
 
 var MsgFlags = map[int]string{

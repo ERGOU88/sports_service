@@ -82,7 +82,8 @@ type AppointmentReq struct {
 	Infos           []*AppointmentInfo  `json:"infos"`            // 预约请求数据 1个时间点对应1条数据
 	Ids             []interface{}       `json:"ids"`              // 时间配置ids
 	LabelIds        []interface{}       `json:"label_ids"`        // 用户选择的标签id列表
-	RelatedId       int64               `json:"related_id"`       // 场馆id/私教课程id/大课老师id
+	RelatedId       int64               `json:"related_id"`       // 场馆id/私教课程id/大课id
+	CoachId         int64               `json:"coach_id"`         // 老师id
 	WeekNum         int                 `json:"week_num"`         // 星期几
 	ReqType         int                 `json:"req_type"`         // 1 查询购物车数据 2 下单
 	IsDiscount      int32               `json:"is_discount"`      // 是否抵扣时长 1 抵扣 0 不抵扣

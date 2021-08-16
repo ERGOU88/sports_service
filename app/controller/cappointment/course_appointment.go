@@ -12,6 +12,8 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/global/app/log"
 	"fmt"
+	"sports_service/server/util"
+	"time"
 )
 
 type CourseAppointmentModule struct {
@@ -71,9 +73,92 @@ func (svc *CourseAppointmentModule) Options(relatedId int64) (int, interface{}) 
 
 
 // 预约大课
-func (svc *CourseAppointmentModule) Appointment(param *mappointment.AppointmentReq) (int, interface{}) {
+func (svc *CourseAppointmentModule) Appointment(params *mappointment.AppointmentReq) (int, interface{}) {
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("venue_trace: session begin fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
 
-	return 5000, nil
+	if len(params.Infos) == 0 {
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
+	}
+
+	user := svc.user.FindUserByUserid(params.UserId)
+	if user == nil {
+		svc.engine.Rollback()
+		return errdef.USER_NOT_EXISTS, nil
+	}
+
+	list, err := svc.GetAppointmentConfByIds(params.Ids)
+	if err != nil {
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
+	}
+
+	if len(list) != len(params.Infos) {
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
+	}
+
+	// 获取课程信息
+	ok, err := svc.course.GetCourseInfoById(fmt.Sprint(params.RelatedId))
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get course info fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
+	}
+
+
+	orderId := util.NewOrderId()
+	now := int(time.Now().Unix())
+
+	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.LabelIds, params.Infos); err != nil {
+		log.Log.Errorf("venue_trace: appointment fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
+	}
+
+	svc.Extra.Id = params.RelatedId
+	//svc.Extra.Name = svc.venue.Venue.VenueName
+	svc.Extra.Date = time.Now().Format(consts.FORMAT_DATE)
+	svc.Extra.WeekCn = util.GetWeekCn(params.WeekNum)
+	svc.Extra.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
+	svc.Extra.TmCn = util.ResolveTime(svc.Extra.TotalTm)
+
+	// 库存不足 返回最新数据 事务回滚
+	if !svc.Extra.IsEnough || params.ReqType != 2 {
+		log.Log.Errorf("venue_trace: rollback, isEnough:%v, reqType:%d", svc.Extra.IsEnough, params.ReqType)
+		svc.engine.Rollback()
+		return errdef.SUCCESS, svc.Extra
+	}
+
+	// 添加订单
+	if err := svc.AddOrder(orderId, user.UserId, now); err != nil {
+		log.Log.Errorf("venue_trace: add order fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
+	}
+
+	// 添加订单商品流水
+	if err := svc.AddOrderProducts(); err != nil {
+		log.Log.Errorf("venue_trace: add order products fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
+	}
+
+	// 添加预约记录流水
+	if err := svc.AddAppointmentRecord(); err != nil {
+		log.Log.Errorf("venue_trace: add appointment record fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.ERROR, nil
+	}
+
+	svc.engine.Commit()
+
+	//redismq.PushOrderEventMsg()
+	return errdef.SUCCESS, nil
+
 }
 
 // 取消预约
@@ -132,5 +217,6 @@ func (svc *CourseAppointmentModule) AppointmentDetail() (int, interface{}) {
 func (svc *CourseAppointmentModule) AppointmentDate() (int, interface{}) {
 	return errdef.SUCCESS, svc.AppointmentDateInfo(6, 2)
 }
+
 
 

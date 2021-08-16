@@ -89,11 +89,13 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 
 	list, err := svc.GetAppointmentConfByIds(params.Ids)
 	if err != nil {
+		log.Log.Errorf("venue_trace: get appointment conf by ids fail, err:%s, ids:%v", err, params.Ids)
 		svc.engine.Rollback()
 		return errdef.ERROR, nil
 	}
 
 	if len(list) != len(params.Infos) {
+		log.Log.Errorf("venue_trace: length not match, list len:%d, infos len:%d", len(list), len(params.Infos))
 		svc.engine.Rollback()
 		return errdef.ERROR, nil
 	}
@@ -325,4 +327,14 @@ func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*mo
 	}
 
 	return nil
+}
+
+// 获取标签信息
+func (svc *VenueAppointmentModule) GetLabelInfo() (int, []*models.VenuePersonalLabelConf) {
+	list, err := svc.appointment.GetUserLabelConf()
+	if err != nil {
+		return errdef.ERROR, []*models.VenuePersonalLabelConf{}
+	}
+
+	return errdef.SUCCESS, list
 }

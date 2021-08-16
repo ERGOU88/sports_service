@@ -20,5 +20,7 @@ func Router(engine *gin.Engine) {
 		appointment.GET("/options", AppointmentOptions)
 		// 开始预约
 		appointment.POST("/start", token.TokenAuth(), AppointmentStart)
+		// 标签信息
+		appointment.GET("/labels", LabelInfo)
 	}
 }

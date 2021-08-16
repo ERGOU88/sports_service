@@ -140,3 +140,12 @@ func AppointmentStart(c *gin.Context) {
 	reply.Data["resp"] = resp
 	reply.Response(http.StatusOK, syscode)
 }
+
+// 标签信息
+func LabelInfo(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cappointment.NewVenue(c)
+	code, list := svc.GetLabelInfo()
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}

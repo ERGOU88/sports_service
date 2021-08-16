@@ -481,17 +481,19 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, lab
 			// 更新未成功 库存不够 || 当前预约库存足够 但已出现库存不足的预约时间点 则需返回最新各预约节点的剩余库存
 			if affected == 0 || affected == 1 && !svc.Extra.IsEnough {
 				svc.Extra.IsEnough = false
-				// 查看最新的库存 并返回 tips：读快照无问题 购买时保证数据一致性即可
-				resp, err := svc.SetLatestInventoryResp(date)
-				if err != nil {
-					log.Log.Errorf("venue_trace:set inventory resp fail, err:%s", err)
-					return err
-				}
-
-				svc.Extra.TimeNodeInfo = append(svc.Extra.TimeNodeInfo, resp)
-				continue
+				//continue
 			}
+
 		}
+
+		// 查看最新的库存 并返回 tips：读快照无问题 购买时保证数据一致性即可
+		resp, err := svc.SetLatestInventoryResp(date)
+		if err != nil {
+			log.Log.Errorf("venue_trace:set inventory resp fail, err:%s", err)
+			return err
+		}
+
+		svc.Extra.TimeNodeInfo = append(svc.Extra.TimeNodeInfo, resp)
 
 		// 是否遍历完所有预约节点
 		//if index < len(infos) - 1 {
