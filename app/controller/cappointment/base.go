@@ -407,6 +407,8 @@ func (svc *base) SetLatestInventoryResp(date string, count int) (*mappointment.T
 	} else {
 		// 剩余库存 = 总库存 - 冻结库存 + 当前购买
 		stockNum := svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum + count
+		log.Log.Infof("venue_trace: info:%+v, quotaNum:%d, purchasedNum:%d, count:%d", info,
+			svc.appointment.Stock.QuotaNum, svc.appointment.Stock.PurchasedNum, count)
 		// 剩余库存 >= 当前购买数量
 		if stockNum >= count {
 			// 可购数量 = 当前购买数量

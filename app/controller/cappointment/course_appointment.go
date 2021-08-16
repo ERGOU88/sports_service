@@ -59,7 +59,8 @@ func (svc *CourseAppointmentModule) Options(relatedId int64) (int, interface{}) 
 	for index, item := range list {
 		info := &mappointment.Options{
 			Id: item.Id,
-			Name: item.Title,
+			Name: item.Name,
+			Title: item.Title,
 			Avatar: item.PromotionPic,
 			Describe: item.Describe,
 			CostDescription: "费用须知",
@@ -110,6 +111,26 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 		return errdef.COURSE_NOT_EXISTS, nil
 	}
 
+	if svc.course.Course.CourseType != 2 {
+		log.Log.Errorf("venue_trace: course type fail, courseType:%d", svc.course.Course.CourseType)
+		svc.engine.Rollback()
+		return errdef.COURSE_TYPE_FAIL, nil
+	}
+
+	// 获取老师信息
+	ok, err = svc.coach.GetCoachInfoById(fmt.Sprint(params.CoachId))
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get coach inf by id fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.COACH_NOT_EXISTS, nil
+	}
+
+	// 课程id不匹配
+	if svc.coach.Coach.CourseId != svc.course.Course.Id {
+		log.Log.Error("venue_trace: course id not match")
+		svc.engine.Rollback()
+		return errdef.COURSE_ID_NOT_MATCH, nil
+	}
 
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())

@@ -10,6 +10,10 @@ import (
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/mcourse"
 	"sports_service/server/models/muser"
+	"sports_service/server/util"
+	"time"
+	"fmt"
+	"sports_service/server/models/mcoach"
 )
 
 type CoachAppointmentModule struct {
@@ -17,6 +21,7 @@ type CoachAppointmentModule struct {
 	engine      *xorm.Session
 	user        *muser.UserModel
 	course      *mcourse.CourseModel
+	coach       *mcoach.CoachModel
 	*base
 }
 
@@ -30,6 +35,7 @@ func NewCoach(c *gin.Context) *CoachAppointmentModule {
 		context: c,
 		user:    muser.NewUserModel(appSocket),
 		course:  mcourse.NewCourseModel(venueSocket),
+		coach:   mcoach.NewCoachModel(venueSocket),
 		engine:  venueSocket,
 		base:    New(venueSocket),
 	}
@@ -70,7 +76,7 @@ func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentR
 
 	if len(params.Infos) == 0 {
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.APPOINTMENT_INVALID_INFO, nil
 	}
 
 	user := svc.user.FindUserByUserid(params.UserId)
@@ -82,15 +88,89 @@ func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentR
 	list, err := svc.GetAppointmentConfByIds(params.Ids)
 	if err != nil {
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.APPOINTMENT_QUERY_NODE_FAIL, nil
 	}
 
 	if len(list) != len(params.Infos) {
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.APPOINTMENT_INVALID_NODE_ID, nil
 	}
 
-	return 5000, nil
+	// 获取私教课程信息
+	ok, err := svc.course.GetCourseInfoById(fmt.Sprint(params.RelatedId))
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get course info fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.COURSE_NOT_EXISTS, nil
+	}
+
+	if svc.course.Course.CoachId != params.CoachId {
+		log.Log.Error("venue_trace: coach id not match")
+		svc.engine.Rollback()
+		return errdef.COACH_ID_NOT_MATCH, nil
+	}
+
+	ok, err = svc.coach.GetCoachInfoById(fmt.Sprint(svc.course.Course.CoachId))
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get coach by id fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.COACH_NOT_EXISTS, nil
+	}
+
+	if svc.coach.Coach.CoachType != 1 {
+		log.Log.Errorf("venue_trace: coach type fail, coachType:%d", svc.coach.Coach.CoachType)
+		return errdef.COACH_TYPE_FAIL, nil
+	}
+
+	svc.Extra.CoachId = svc.coach.Coach.Id
+	svc.Extra.CoachName = svc.coach.Coach.Name
+
+	orderId := util.NewOrderId()
+	now := int(time.Now().Unix())
+
+	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.LabelIds, params.Infos); err != nil {
+		log.Log.Errorf("venue_trace: appointment fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.APPOINTMENT_PROCESS_FAIL, nil
+	}
+
+	svc.Extra.Id = params.RelatedId
+	svc.Extra.Name = svc.course.Course.Title
+	svc.Extra.Date = time.Now().Format(consts.FORMAT_DATE)
+	svc.Extra.WeekCn = util.GetWeekCn(params.WeekNum)
+	svc.Extra.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
+	svc.Extra.TmCn = util.ResolveTime(svc.Extra.TotalTm)
+
+	// 库存不足 返回最新数据 事务回滚
+	if !svc.Extra.IsEnough {
+		log.Log.Errorf("venue_trace: rollback, isEnough:%v, reqType:%d", svc.Extra.IsEnough, params.ReqType)
+		svc.engine.Rollback()
+		return errdef.APPOINTMENT_NOT_ENOUGH_STOCK, svc.Extra
+	}
+
+	// 添加订单
+	if err := svc.AddOrder(orderId, user.UserId, now); err != nil {
+		log.Log.Errorf("venue_trace: add order fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.ORDER_ADD_FAIL, nil
+	}
+
+	// 添加订单商品流水
+	if err := svc.AddOrderProducts(); err != nil {
+		log.Log.Errorf("venue_trace: add order products fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.ORDER_PRODUCT_ADD_FAIL, nil
+	}
+
+	// 添加预约记录流水
+	if err := svc.AddAppointmentRecord(); err != nil {
+		log.Log.Errorf("venue_trace: add appointment record fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.APPOINTMENT_ADD_RECORD_FAIL, nil
+	}
+
+	svc.engine.Commit()
+	return errdef.SUCCESS, nil
 }
 
 // 取消预约
