@@ -414,8 +414,8 @@ func (svc *base) SetLatestInventoryResp(date string, count int) (*mappointment.T
 			// 可购数量 = 当前购买数量
 			info.Count = count
 		} else {
-			// 可购数量 = 剩余库存
-			info.Count = stockNum
+			// 可购数量 = 总库存 - 已购买
+			info.Count = svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum
 		}
 	}
 
