@@ -42,6 +42,7 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 	list := svc.GetAppointmentDate(days)
 	res := make([]*mappointment.WeekInfo, len(list))
 	id := 0
+	week := -1
 	for index, v := range list {
 		info := &mappointment.WeekInfo{
 			Id: v.Id,
@@ -71,12 +72,17 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 			id = v.Id
 		}
 
+		if week == -1 && info.Total > 0 {
+			week = v.Week
+		}
+
 		res[index] = info
 	}
 
 	dateInfo := &mappointment.DateInfo{
 		List: res,
 		Id: id,
+		Week: week,
 	}
 
 	return dateInfo
@@ -375,6 +381,7 @@ func (svc *base) AddOrder(orderId, userId string, now int) error {
 	}
 
 	if affected != 1 {
+		log.Log.Errorf("venue_trace: add order fail, err:%s", err)
 		return errors.New("add order fail, affected not 1")
 	}
 

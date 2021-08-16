@@ -29,6 +29,7 @@ type WeekInfo struct {
 type DateInfo struct {
 	List   []*WeekInfo   `json:"week_info"`
 	Id      int          `json:"id"`
+	Week    int          `json:"week"`
 }
 
 type OptionsInfo struct {
