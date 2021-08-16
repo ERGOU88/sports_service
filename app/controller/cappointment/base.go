@@ -528,7 +528,8 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, lab
 				return err
 			}
 
-			log.Log.Errorf("venue_trace: affected:%d", affected)
+			log.Log.Errorf("venue_trace: affected:%d, id:%d, node:%s", affected, item.Id,
+				svc.appointment.AppointmentInfo.TimeNode)
 
 			// 更新未成功 库存不够 || 当前预约库存足够 但已出现库存不足的预约时间点 则需返回最新各预约节点的剩余库存
 			if affected == 0 || affected == 1 && !svc.Extra.IsEnough {
