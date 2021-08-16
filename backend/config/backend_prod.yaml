@@ -14,11 +14,11 @@ mysql:
 redis:
   main:
     master:
-      ip: 10.34.16.102
+      ip: 192.168.0.218
       port: 6379
 
     slave:
-      - ip: 10.34.16.102
+      - ip: 192.168.0.218
         port: 6379
 
     dboption:
@@ -26,7 +26,7 @@ redis:
         name:
         maxIdle: 128
         maxActive: 128
-redisPassword: Furyqdz7JMkAGjRM
+redisPassword: o6DPVfuCAUwOgrNM
 nsqAddr: 127.0.0.1:4150
 fileAddr: http://192.168.50.148:13002/upload/
 amqpDsn: amqp://admin:admin@127.0.0.1:5672

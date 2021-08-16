@@ -204,6 +204,7 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 	for _, item := range list {
 		info := svc.SetAppointmentOptionsRes(date, item)
 		if info == nil {
+			log.Log.Error("venue_trace: options res nil")
 			continue
 		}
 
