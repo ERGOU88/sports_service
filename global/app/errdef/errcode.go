@@ -169,6 +169,8 @@ const (
 	COACH_PUB_EVALUATE_FAIL      = 15003
 	COACH_ORDER_NOT_EXISTS       = 15004
 	COACH_ORDER_NOT_SUCCESS      = 15005
+	COACH_TYPE_FAIL              = 15006
+	COACH_ID_NOT_MATCH           = 15007
 
 	// 预约错误 16001-17000
 	APPOINTMENT_INVALID_INFO     = 16001
@@ -188,6 +190,8 @@ const (
 
 	// 大课相关错误
 	COURSE_NOT_EXISTS            = 19001
+	COURSE_TYPE_FAIL             = 19002
+	COURSE_ID_NOT_MATCH          = 19003
 )
 
 var MsgFlags = map[int]string{
@@ -342,6 +346,8 @@ var MsgFlags = map[int]string{
 	COACH_PUB_EVALUATE_FAIL:     "添加评价失败",
 	COACH_ORDER_NOT_EXISTS:      "私教订单不存在",
 	COACH_ORDER_NOT_SUCCESS:     "私教订单未成功",
+	COACH_TYPE_FAIL:             "私教类型错误",
+	COACH_ID_NOT_MATCH:          "私教id不匹配",
 
 	APPOINTMENT_INVALID_INFO:    "预约信息错误",
 	APPOINTMENT_QUERY_NODE_FAIL: "查询时间节点配置错误",
@@ -357,6 +363,8 @@ var MsgFlags = map[int]string{
 	ORDER_PRODUCT_ADD_FAIL:      "添加商品订单失败",
 
 	COURSE_NOT_EXISTS:           "课程不存在",
+	COURSE_TYPE_FAIL:            "课程类型错误",
+	COURSE_ID_NOT_MATCH:         "课程id不匹配",
 }
 
 func GetMsg(code int) string {

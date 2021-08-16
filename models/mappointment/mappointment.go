@@ -80,6 +80,7 @@ type LabelInfo struct {
 type Options struct {
 	Id                 int64        `json:"id"`
 	Name               string       `json:"name"`
+	Title              string       `json:"title"`
 	Avatar             string       `json:"avatar"`
 	Describe           string       `json:"describe,omitempty"`
 	CostDescription    string       `json:"cost_description,omitempty"`     // 费用说明
@@ -140,6 +141,9 @@ type AppointmentResp struct {
 	OrderId       string `json:"order_id"`           // 订单ID
 	OrderType     int    `json:"order_type"`         // 订单类型
 	PayDuration   int64  `json:"pay_duration"`       // 支付时长
+	Address       string `json:"address"`            // 上课地点
+	CoachName     string `json:"coach_name"`         // 老师名称
+	CoachId       int64  `json:"coach_id"`           // 老师id
 }
 
 // 单时间节点预约数据
