@@ -3,12 +3,16 @@ package dao
 import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
+	"sports_service/server/global/consts"
+	"sports_service/server/app/config"
+
 	//"fmt"
 	//"github.com/arthurkiller/rollingwriter"
 )
 
 var (
-	Engine *xorm.EngineGroup
+	AppEngine   *xorm.EngineGroup
+	VenueEngine *xorm.EngineGroup
 )
 
 func ConnectDb(mysqlDsn string) *xorm.Engine {
@@ -71,7 +75,10 @@ func ConnectDbs(masterDsn string, slaveDsn []string) (*xorm.EngineGroup, error) 
 	//}
 	//engineGroup.SetLogger(xorm.NewSimpleLogger(writer))
 
-	engineGroup.ShowSQL(true)
+	if config.Global.Mode != string(consts.ModeProd) {
+		engineGroup.ShowSQL(true)
+	}
+
 	engineGroup.SetMaxIdleConns(150)
 	engineGroup.SetMaxOpenConns(1000)
 	return engineGroup, nil

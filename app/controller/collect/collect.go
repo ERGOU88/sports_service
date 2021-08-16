@@ -30,7 +30,7 @@ type CollectModule struct {
 }
 
 func New(c *gin.Context) CollectModule {
-	socket := dao.Engine.NewSession()
+	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return CollectModule{
 		context: c,
@@ -210,6 +210,7 @@ func (svc *CollectModule) GetUserCollectVideos(userId string, page, size int) []
 		resp := new(mvideo.VideosInfoResp)
 		resp.VideoId = video.VideoId
 		resp.Title = video.Title
+		resp.Cover = video.Cover
 		resp.Describe = util.TrimHtml(video.Describe)
 		resp.Title = util.TrimHtml(video.Title)
 		resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)

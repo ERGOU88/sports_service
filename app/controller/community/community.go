@@ -31,7 +31,7 @@ type CommunityModule struct {
 }
 
 func New(c *gin.Context) CommunityModule {
-	socket := dao.Engine.NewSession()
+	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return CommunityModule{
 		context: c,
@@ -295,6 +295,11 @@ func (svc *CommunityModule) GetPostDetailByList(userId string, list []*mposting.
 				if user != nil {
 					item.RelatedVideo.Nickname = user.NickName
 					item.RelatedVideo.Avatar = user.Avatar
+				}
+
+				// 是否点赞
+				if likeInfo := svc.like.GetLikeInfo(userId, video.VideoId, consts.TYPE_VIDEOS); likeInfo != nil {
+					item.RelatedVideo.IsLike = likeInfo.Status
 				}
 
 				subarea, err := svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))

@@ -52,7 +52,7 @@ func init() {
 }
 
 func InitLabelList() {
-	socket := dao.Engine.NewSession()
+	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	labelModel := NewLabelModel(socket)
 	labelModel.GetVideoLabelList()

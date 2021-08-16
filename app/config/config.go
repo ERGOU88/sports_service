@@ -59,7 +59,8 @@ type Config struct {
 
 	// mysql
 	Mysql struct {
-		Main MysqlType
+		Main  MysqlType
+		Venue MysqlType
 	}
 
 	// redis连接

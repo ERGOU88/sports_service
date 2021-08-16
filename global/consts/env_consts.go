@@ -18,8 +18,8 @@ const (
 )
 
 const (
-  FORMAT_INFO = "2006-01-02 15:04"
-  FORMAT_DATE = "2006-01-02"
-  FORMAT_TM   = "2006-01-02 15:04:05"
+  FORMAT_INFO     = "2006-01-02 15:04"
+  FORMAT_DATE     = "2006-01-02"
+  FORMAT_TM       = "2006-01-02 15:04:05"
 )
 

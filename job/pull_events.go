@@ -4,6 +4,7 @@ import (
   "errors"
   "github.com/garyburd/redigo/redis"
   "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod/v20180717"
+  "sports_service/server/app/config"
   "sports_service/server/dao"
   "sports_service/server/global/app/log"
   "sports_service/server/global/consts"
@@ -47,11 +48,11 @@ func pullEvents() error {
   }
 
   for _, event := range resp.Response.EventSet {
-    log.Log.Debugf("event:%v, eventType:%v", *event, *event.EventType)
+    log.Log.Debugf("event:%#v, eventType:%#v", *event, *event.EventType)
     switch *event.EventType {
     // 上传事件
     case consts.EVENT_TYPE_UPLOAD:
-      log.Log.Debugf("upload event:%+v", *event.FileUploadEvent)
+      log.Log.Debugf("upload event:%#v", *event.FileUploadEvent)
       if err := newUploadEvent(event); err != nil {
         log.Log.Errorf("job_trace: uploadEvent err:%s", err)
         continue
@@ -84,7 +85,7 @@ func procedureStateChangedEvent(event *v20180717.EventContent) error {
     return err
   }
 
-  session := dao.Engine.NewSession()
+  session := dao.AppEngine.NewSession()
   defer session.Close()
   if err := session.Begin(); err != nil {
     log.Log.Errorf("job_trace: session begin err:%s", err)
@@ -173,7 +174,7 @@ func procedureStateChangedEvent(event *v20180717.EventContent) error {
 // segments 有嫌疑的视频片段，帮助定位视频中具体哪一段涉嫌违规
 // confidence 审核评分（0 - 100），评分越高，嫌疑越大
 func aiContentReviewEvent(event *v20180717.EventContent, vmodel *mvideo.VideoModel) error {
-  //session := dao.Engine.NewSession()
+  //session := dao.AppEngine.NewSession()
   //defer session.Close()
   //if err := session.Begin(); err != nil {
   //  log.Log.Errorf("job_trace: session begin err:%s", err)
@@ -427,22 +428,22 @@ func aiContentReviewEvent(event *v20180717.EventContent, vmodel *mvideo.VideoMod
 // 文件删除事件 todo: 修改数据状态？
 func fileDeletedEvent(event *v20180717.EventContent) error {
   client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
-  session := dao.Engine.NewSession()
-  defer session.Close()
-  vmodel := mvideo.NewVideoModel(session)
-  now := time.Now().Unix()
-  // 记录事件回调信息
-  fileId, _ := strconv.Atoi(*event.ProcedureStateChangeEvent.FileId)
-  vmodel.Events.FileId = int64(fileId)
-  vmodel.Events.CreateAt = int(now)
-  vmodel.Events.EventType = consts.EVENT_PROCEDURE_STATE_CHANGED_TYPE
-  bts, _ := util.JsonFast.Marshal(event)
-  vmodel.Events.Event = string(bts)
-  affected, err := vmodel.RecordTencentEvent()
-  if err != nil || affected != 1 {
-    log.Log.Errorf("job_trace: record tencent transcode complete event err:%s, affected:%d", err, affected)
-    return errors.New("record tencent complete event fail")
-  }
+  //session := dao.AppEngine.NewSession()
+  //defer session.Close()
+  //vmodel := mvideo.NewVideoModel(session)
+  //now := time.Now().Unix()
+  //// 记录事件回调信息
+  //fileId, _ := strconv.Atoi(*event.ProcedureStateChangeEvent.FileId)
+  //vmodel.Events.FileId = int64(fileId)
+  //vmodel.Events.CreateAt = int(now)
+  //vmodel.Events.EventType = consts.EVENT_PROCEDURE_STATE_CHANGED_TYPE
+  //bts, _ := util.JsonFast.Marshal(event)
+  //vmodel.Events.Event = string(bts)
+  //affected, err := vmodel.RecordTencentEvent()
+  //if err != nil || affected != 1 {
+  //  log.Log.Errorf("job_trace: record tencent transcode complete event err:%s, affected:%d", err, affected)
+  //  return errors.New("record tencent complete event fail")
+  //}
 
   if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
     log.Log.Errorf("job_trace: confirm events err:%s", err)
@@ -454,7 +455,7 @@ func fileDeletedEvent(event *v20180717.EventContent) error {
 
 // 视频转码事件
 func transCodeCompleteEvent(event *v20180717.EventContent, video *models.Videos) error {
-  //session := dao.Engine.NewSession()
+  //session := dao.AppEngine.NewSession()
   //defer session.Close()
   //if err := session.Begin(); err != nil {
   //  log.Log.Errorf("job_trace: session begin err:%s", err)
@@ -537,7 +538,7 @@ func transCodeCompleteEvent(event *v20180717.EventContent, video *models.Videos)
 
     case "AdaptiveDynamicStreaming":
       if *info.AdaptiveDynamicStreamingTask.ErrCode != 0 {
-        log.Log.Errorf("job_trace: media process errCode:%d", *info.TranscodeTask.ErrCode)
+        log.Log.Errorf("job_trace: media process errCode:%d", *info.AdaptiveDynamicStreamingTask.ErrCode)
         continue
       }
 
@@ -601,7 +602,7 @@ func transCodeCompleteEvent(event *v20180717.EventContent, video *models.Videos)
 
 // 上传事件
 func uploadEvent(event *v20180717.EventContent) error {
-  session := dao.Engine.NewSession()
+  session := dao.AppEngine.NewSession()
   defer session.Close()
   if err := session.Begin(); err != nil {
     log.Log.Errorf("job_trace: session begin err:%s", err)
@@ -831,7 +832,7 @@ func uploadEvent(event *v20180717.EventContent) error {
 
 // 新版上传事件处理 todo: 处理帖子关联逻辑
 func newUploadEvent(event *v20180717.EventContent) error {
-  session := dao.Engine.NewSession()
+  session := dao.AppEngine.NewSession()
   defer session.Close()
   if err := session.Begin(); err != nil {
     log.Log.Errorf("job_trace: session begin err:%s", err)
@@ -861,20 +862,35 @@ func newUploadEvent(event *v20180717.EventContent) error {
 
   source := new(cloud.SourceContext)
   if err := util.JsonFast.Unmarshal([]byte(*event.FileUploadEvent.MediaBasicInfo.SourceInfo.SourceContext), source); err != nil {
-    log.Log.Errorf("job_trace: jsonfast unmarshal event sourceContext err:%s", err)
+    log.Log.Errorf("job_trace: jsonfast unmarshal event sourceContext err:%s, fileId:%s", err, *event.FileUploadEvent.FileId)
+    // 确认事件回调
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+      log.Log.Errorf("job_trace: confirm events err:%s, fileId:%s", err, *event.FileUploadEvent.FileId)
+    }
     session.Rollback()
     return errors.New("jsonfast unmarshal event sourceContext err")
   }
 
   if source.UserId == "" || source.TaskId == 0 {
-    log.Log.Errorf("job_trace: invalid source info, source:%+v", source)
+    log.Log.Errorf("job_trace: invalid source info, source:%+v, fileId:%s", source, *event.FileUploadEvent.FileId)
     session.Rollback()
     return errors.New("invalid source info")
   }
 
+  // 如果 透传参数里的mode 与 当前运行环境不匹配
+  if source.Mode != config.Global.Mode {
+    log.Log.Errorf("job_trace: mode not match, fileId:%s", *event.FileUploadEvent.FileId)
+    // 确认事件回调
+    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+      log.Log.Errorf("job_trace: confirm events err:%s, fileId:%s", err, *event.FileUploadEvent.FileId)
+    }
+    session.Rollback()
+    return errors.New("mode not match")
+  }
+
   // 当前时间 - 任务开始时间 >= 10分钟 结束任务
   if time.Now().Unix() - source.Tm >= 10 * 60 {
-    log.Log.Errorf("job_trace: end job, source:%+v", source)
+    log.Log.Errorf("job_trace: end job, source:%+v, fileId:%s", source, *event.FileUploadEvent.FileId)
     // 确认事件回调
     if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
       log.Log.Errorf("job_trace: confirm events err:%s", err)
@@ -886,10 +902,12 @@ func newUploadEvent(event *v20180717.EventContent) error {
 
   // 修改封面 没有视频时长
   if int(*event.FileUploadEvent.MetaData.VideoDuration) == 0 {
-    log.Log.Errorf("job_trace: invalid video duration, duration:%v", *event.FileUploadEvent.MetaData.VideoDuration)
+    log.Log.Errorf("job_trace: invalid video duration, duration:%v, fileId:%s",
+      *event.FileUploadEvent.MetaData.VideoDuration, *event.FileUploadEvent.FileId)
+
     // 确认事件回调
     if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-      log.Log.Errorf("job_trace: confirm events err:%s", err)
+      log.Log.Errorf("job_trace: confirm events err:%s, fileId:%s", err, *event.FileUploadEvent.FileId)
     }
 
     session.Rollback()
@@ -901,14 +919,14 @@ func newUploadEvent(event *v20180717.EventContent) error {
   // 通过任务id 获取 用户id
   userId, err := vmodel.GetUploadUserIdByTaskId(source.TaskId)
   if err != nil && err != redis.ErrNil {
-    log.Log.Errorf("job_trace: invalid taskId, taskId:%d", source.TaskId)
+    log.Log.Errorf("job_trace: invalid taskId, taskId:%d, fileId:%s", source.TaskId, *event.FileUploadEvent.FileId)
     session.Rollback()
     return errors.New("invalid taskId")
   }
 
   // userId 为空 表示该上传任务已过期（三天过期）
   if userId == "" {
-    log.Log.Error("job_trace: user id not exists")
+    log.Log.Error("job_trace: user id not exists, fileId:%s", *event.FileUploadEvent.FileId)
     // 确认事件回调
     if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
       log.Log.Errorf("job_trace: confirm events err:%s", err)
@@ -920,21 +938,21 @@ func newUploadEvent(event *v20180717.EventContent) error {
   umodel := muser.NewUserModel(session)
   // 查询用户是否存在
   if user := umodel.FindUserByUserid(userId); user == nil {
-    log.Log.Errorf("job_trace: user not found, userId:%s", userId)
+    log.Log.Errorf("job_trace: user not found, userId:%s, fileId:%s", userId, *event.FileUploadEvent.FileId)
     session.Rollback()
     return errors.New("user not found")
   }
 
   // 是否为同一个用户
   if strings.Compare(userId, source.UserId) != 0 {
-    log.Log.Errorf("job_trace: userId not match, eventUserId:%s, redis userId:%s", source.UserId, userId)
+    log.Log.Errorf("job_trace: userId not match, eventUserId:%s, redis userId:%s, fileId:%s", source.UserId, userId, *event.FileUploadEvent.FileId)
     session.Rollback()
     return errors.New("userId not match")
   }
 
   str, err := vmodel.GetPublishInfo(source.UserId, source.TaskId)
   if err != nil || str == "" {
-    log.Log.Errorf("job_trace: get publish info err:%s", err)
+    log.Log.Errorf("job_trace: get publish info err:%s, fileId:%s", err, *event.FileUploadEvent.FileId)
     // 确认事件回调
     //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
     // log.Log.Errorf("job_trace: confirm events err:%s", err)
@@ -944,9 +962,9 @@ func newUploadEvent(event *v20180717.EventContent) error {
     return errors.New("get publish info fail")
   }
 
-  infos := strings.Split(str, "_")
+  infos := strings.Split(str, "__")
   if len(infos) != 3 {
-    log.Log.Errorf("job_trace: get publish info err:%s", err)
+    log.Log.Errorf("job_trace: get publish info err:%s, fileId:%s", err, *event.FileUploadEvent.FileId)
     session.Rollback()
     return errors.New("get publish info fail")
   }
@@ -954,7 +972,7 @@ func newUploadEvent(event *v20180717.EventContent) error {
   videoId := infos[0]
   vmodel.Videos = vmodel.FindVideoById(videoId)
   if vmodel.Videos == nil {
-    log.Log.Errorf("job_trace: video not found, videoId:%s", videoId)
+    log.Log.Errorf("job_trace: video not found, videoId:%s, fileId:%s", videoId, *event.FileUploadEvent.FileId)
     session.Rollback()
     return errors.New("video not found")
   }
@@ -962,13 +980,13 @@ func newUploadEvent(event *v20180717.EventContent) error {
   // 获取用户发布的视频信息
   pubInfo := new(mvideo.VideoPublishParams)
   if err := util.JsonFast.Unmarshal([]byte(infos[1]), pubInfo); err != nil {
-    log.Log.Errorf("job_trace: jsonFast unmarshal err: %s", err)
+    log.Log.Errorf("job_trace: jsonFast unmarshal err: %s, fileId:%s", err, *event.FileUploadEvent.FileId)
     session.Rollback()
     return errors.New("jsonFast unmarshal err")
   }
 
   if pubInfo.TaskId != source.TaskId {
-    log.Log.Errorf("job_trace: task id not match, pub taskId:%d, source taskId:%d", pubInfo.TaskId, source.TaskId)
+    log.Log.Errorf("job_trace: task id not match, pub taskId:%d, source taskId:%d, fileId:%s", pubInfo.TaskId, source.TaskId, *event.FileUploadEvent.FileId)
     session.Rollback()
     return errors.New("taskId not match")
   }
@@ -992,47 +1010,47 @@ func newUploadEvent(event *v20180717.EventContent) error {
   vmodel.Videos.VideoWidth = *event.FileUploadEvent.MetaData.Width
   vmodel.Videos.VideoHeight = *event.FileUploadEvent.MetaData.Height
   // 单位：字节
-  //vmodel.Videos.Size = *event.FileUploadEvent.MetaData.Size
+  vmodel.Videos.Size = *event.FileUploadEvent.MetaData.Size
   fileId, _ := strconv.Atoi(*event.FileUploadEvent.FileId)
   //vmodel.Videos.FileId = int64(fileId)
-  vmodel.Videos.Size = pubInfo.Size
+  //vmodel.Videos.Size = pubInfo.Size
   // todo: 如果有 记录用户自定义标签
 
   // 更新视频信息
   affected, err := vmodel.UpdateVideoInfo()
   if err != nil || affected != 1 {
-    log.Log.Errorf("job_trace: publish video err:%s, affected:%d", err, affected)
+    log.Log.Errorf("job_trace: publish video err:%s, affected:%d, fileId:%s", err, affected, *event.FileUploadEvent.FileId)
     session.Rollback()
     return errors.New("publish video fail")
   }
 
-  lmodel := mlabel.NewLabelModel(session)
-  labelIds := strings.Split(pubInfo.VideoLabels, ",")
-  // 组装多条记录 写入视频标签表
-  labelInfos := make([]*models.VideoLabels, 0)
-  for _, labelId := range labelIds {
-    if lmodel.GetLabelInfoByMem(labelId) == nil {
-      log.Log.Errorf("job_trace: label not found, labelId:%s", labelId)
-      continue
-    }
+  //lmodel := mlabel.NewLabelModel(session)
+  //labelIds := strings.Split(pubInfo.VideoLabels, ",")
+  //// 组装多条记录 写入视频标签表
+  //labelInfos := make([]*models.VideoLabels, 0)
+  //for _, labelId := range labelIds {
+  //  if lmodel.GetLabelInfoByMem(labelId) == nil {
+  //    log.Log.Errorf("job_trace: label not found, labelId:%s", labelId)
+  //    continue
+  //  }
+  //
+  //  info := new(models.VideoLabels)
+  //  info.VideoId = vmodel.Videos.VideoId
+  //  info.LabelId = labelId
+  //  info.LabelName = lmodel.GetLabelNameByMem(labelId)
+  //  info.CreateAt = int(now)
+  //  labelInfos = append(labelInfos, info)
+  //}
 
-    info := new(models.VideoLabels)
-    info.VideoId = vmodel.Videos.VideoId
-    info.LabelId = labelId
-    info.LabelName = lmodel.GetLabelNameByMem(labelId)
-    info.CreateAt = int(now)
-    labelInfos = append(labelInfos, info)
-  }
-
-  if len(labelInfos) > 0 {
-    // 添加视频标签（多条）
-    affected, err = vmodel.AddVideoLabels(labelInfos)
-    if err != nil || int(affected) != len(labelInfos) {
-      log.Log.Errorf("job_trace: add video labels err:%s", err)
-      session.Rollback()
-      return errors.New("add video labels fail")
-    }
-  }
+  //if len(labelInfos) > 0 {
+  //  // 添加视频标签（多条）
+  //  affected, err = vmodel.AddVideoLabels(labelInfos)
+  //  if err != nil || int(affected) != len(labelInfos) {
+  //    log.Log.Errorf("job_trace: add video labels err:%s", err)
+  //    session.Rollback()
+  //    return errors.New("add video labels fail")
+  //  }
+  //}
 
 
   // 记录事件回调信息
@@ -1043,7 +1061,7 @@ func newUploadEvent(event *v20180717.EventContent) error {
   vmodel.Events.Event = string(bts)
   affected, err = vmodel.RecordTencentEvent()
   if err != nil || affected != 1 {
-    log.Log.Errorf("job_trace: record tencent event err:%s, affected:%d", err, affected)
+    log.Log.Errorf("job_trace: record tencent event err:%s, affected:%d, fileId:%s", err, affected, *event.FileUploadEvent.FileId)
     session.Rollback()
     return errors.New("record tencent event fail")
   }

@@ -31,7 +31,7 @@ type SearchModule struct {
 }
 
 func New(c *gin.Context) SearchModule {
-	socket := dao.Engine.NewSession()
+	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return SearchModule{
 		context: c,
@@ -46,16 +46,16 @@ func New(c *gin.Context) SearchModule {
 }
 
 // 综合搜索（视频+用户 默认视频取10条 用户取20条 帖子取3条 视频默认播放量排序） 如果视频和用户都未搜索到 则推荐两个视频
-func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDetailInfo, []*muser.UserSearchResults, []*mvideo.VideoDetailInfo) {
+func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDetailInfo, []*muser.UserSearchResults, []*mposting.PostDetailInfo, []*mvideo.VideoDetailInfo) {
 	if name == "" {
 		log.Log.Errorf("search_trace: search name can't empty, name:%s", name)
-		return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, []*mvideo.VideoDetailInfo{}
+		return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, []*mposting.PostDetailInfo{}, []*mvideo.VideoDetailInfo{}
 	}
 
 	length := util.GetStrLen([]rune(name))
 	if length > 20 {
 		log.Log.Errorf("search_trace: invalid search name len, len:%s", length)
-		return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, []*mvideo.VideoDetailInfo{}
+		return []*mvideo.VideoDetailInfo{}, []*muser.UserSearchResults{}, []*mposting.PostDetailInfo{}, []*mvideo.VideoDetailInfo{}
 	}
 
 	if userId != "" {
@@ -82,7 +82,7 @@ func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDe
 		recommend = []*mvideo.VideoDetailInfo{}
 	}
 
-	return videos, users, recommend
+	return videos, users, posts, recommend
 }
 
 // 推荐视频 默认取两条
@@ -471,26 +471,42 @@ func (svc *SearchModule) PostSearch(userId, name string, page, size int) []*mpos
 		// 如果是转发的视频数据
 		if item.ContentType == consts.COMMUNITY_FORWARD_VIDEO {
 			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardVideo); err != nil {
-				log.Log.Errorf("search_trace: get forward video info err:%s", err)
-				return []*mposting.PostDetailInfo{}
+				log.Log.Errorf("community_trace: get forward video info err:%s", err)
+				//return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
+			} else {
+				item.ForwardVideo.VideoAddr = svc.video.AntiStealingLink(item.ForwardVideo.VideoAddr)
 			}
+
 		}
 
 		// 如果是转发的帖子
 		if item.PostingType == consts.POST_TYPE_TEXT && item.ContentType == consts.COMMUNITY_FORWARD_POST {
 			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardPost); err != nil {
-				log.Log.Errorf("search_trace: get forward post info err:%s", err)
-				return []*mposting.PostDetailInfo{}
+				log.Log.Errorf("community_trace: get forward post info err:%s", err)
+				//return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
+			}
+
+			// 如果转发的是图文类型 需要展示图文
+			if item.ForwardPost.PostingType == consts.POST_TYPE_IMAGE {
+				if err := util.JsonFast.UnmarshalFromString(item.ForwardPost.Content, &item.ForwardPost.ImagesAddr); err != nil {
+					log.Log.Errorf("community_trace: get images by forward post fail, err:%s", err)
+				}
 			}
 		}
 
 		// 图文帖
 		if item.PostingType == consts.POST_TYPE_IMAGE {
 			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ImagesAddr); err != nil {
-				log.Log.Errorf("search_trace: get image info err:%s", err)
-				return []*mposting.PostDetailInfo{}
+				log.Log.Errorf("community_trace: get image info err:%s", err)
+				//return errdef.COMMUNITY_POSTS_BY_SECTION, []*mposting.PostDetailInfo{}
 			}
 		}
+
+		if user := svc.user.FindUserByUserid(item.UserId); user != nil {
+			item.Avatar = user.Avatar
+			item.Nickname = user.NickName
+		}
+
 
 		item.Content = ""
 

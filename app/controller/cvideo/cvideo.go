@@ -42,7 +42,7 @@ type VideoModule struct {
 }
 
 func New(c *gin.Context) VideoModule {
-	socket := dao.Engine.NewSession()
+	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return VideoModule{
 		context: c,
@@ -130,7 +130,7 @@ func (svc *VideoModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPu
 
 // 生成视频信息标签
 func (svc *VideoModule) genVideoTag(videoId int64, info string, pubType int) string {
-	return fmt.Sprintf("%d_%s_%d",videoId, info, pubType)
+	return fmt.Sprintf("%d__%s__%d",videoId, info, pubType)
 }
 
 // 用户发布视频
@@ -224,22 +224,24 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 		}
 	}
 
-	// 同步到社区
-	svc.post.Posting.UserId = userId
-	svc.post.Posting.VideoId = svc.video.Videos.VideoId
-	// 默认发布到综合
-	svc.post.Posting.SectionId = 1
-	// 视频+文
-	svc.post.Posting.PostingType = consts.POST_TYPE_VIDEO
-	// 社区发布
-	svc.post.Posting.ContentType = consts.COMMUNITY_PUB_POST
+	if params.PubType == 2 {
+		// 同步到社区
+		svc.post.Posting.UserId = userId
+		svc.post.Posting.VideoId = svc.video.Videos.VideoId
+		// 默认发布到综合
+		svc.post.Posting.SectionId = 1
+		// 视频+文
+		svc.post.Posting.PostingType = consts.POST_TYPE_VIDEO
+		// 社区发布
+		svc.post.Posting.ContentType = consts.COMMUNITY_PUB_POST
 
-	svc.post.Posting.CreateAt = now
-	svc.post.Posting.UpdateAt = now
-	// 添加帖子
-	if _, err := svc.post.AddPost() ; err != nil {
-		log.Log.Errorf("video_trace: add post fail, err:%s", err)
-		return errors.New("add post fail")
+		svc.post.Posting.CreateAt = now
+		svc.post.Posting.UpdateAt = now
+		// 添加帖子
+		if _, err := svc.post.AddPost(); err != nil {
+			log.Log.Errorf("video_trace: add post fail, err:%s", err)
+			return errors.New("add post fail")
+		}
 	}
 
 	svc.video.Statistic.VideoId = svc.video.Videos.VideoId
@@ -581,6 +583,15 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 		// 获取收藏的信息
 		if collectInfo := svc.collect.GetCollectInfo(userId, video.VideoId, consts.TYPE_VIDEO); collectInfo != nil {
 			video.IsCollect = collectInfo.Status
+		}
+
+		// 获取分区信息
+		if video.Subarea > 0 {
+			var err error
+			video.SubareaInfo, err = svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))
+			if err != nil {
+				log.Log.Errorf("video_trace: get subarea info fail, err:%s, videoId:%d", err, video.VideoId)
+			}
 		}
 	}
 

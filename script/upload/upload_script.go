@@ -36,12 +36,12 @@ func main() {
   fmt.Printf("当前时间点:%s\n", now)
   switch *server {
   case "local":
-    dao.Engine = dao.InitXorm("root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4", []string{"root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4"})
+    dao.AppEngine = dao.InitXorm("root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4", []string{"root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4"})
     dao.InitRedis("192.168.5.12:6378", "")
     engine2 = dao.InitXorm("root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4", []string{"root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4"})
   // 测试服
   case "test":
-    dao.Engine = dao.InitXorm(fmt.Sprintf("%s", *masterDb), nil)
+    dao.AppEngine = dao.InitXorm(fmt.Sprintf("%s", *masterDb), nil)
     dao.InitRedis(*rdshost, *pwd)
     engine2 = dao.InitXorm(fmt.Sprintf("%s", *spiderDb), nil)
   // qa服
@@ -53,9 +53,9 @@ func main() {
     }
 
     if *masterDb != "" {
-      dao.Engine = dao.InitXorm(fmt.Sprintf("%s", *masterDb), nil)
+      dao.AppEngine = dao.InitXorm(fmt.Sprintf("%s", *masterDb), nil)
     } else {
-      dao.Engine = dao.InitXorm("root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4", []string{"root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4"})
+      dao.AppEngine = dao.InitXorm("root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4", []string{"root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4"})
     }
 
     if *spiderDb != "" {
@@ -66,7 +66,7 @@ func main() {
 
   // 自定义
   case "custom":
-    dao.Engine = dao.InitXorm(fmt.Sprintf("%s", *masterDb), nil)
+    dao.AppEngine = dao.InitXorm(fmt.Sprintf("%s", *masterDb), nil)
     dao.InitRedis(*rdshost, *pwd)
     engine2 = dao.InitXorm(fmt.Sprintf("%s", *spiderDb), nil)
   default:
@@ -232,7 +232,7 @@ func ReadDirInfo() []string {
 // 获取用户id列表
 func GetUserIds() []string {
   var uids []string
-  if err := dao.Engine.Table(&models.User{}).Cols("user_id").Find(&uids); err != nil {
+  if err := dao.AppEngine.Table(&models.User{}).Cols("user_id").Find(&uids); err != nil {
     return nil
   }
 

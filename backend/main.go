@@ -41,7 +41,7 @@ func setupLogger() {
 
 // 初始化mysql
 func setupMysql() {
-	dao.Engine = dao.InitXorm(config.Global.Mysql.Main.Master, config.Global.Mysql.Main.Slave)
+	dao.AppEngine = dao.InitXorm(config.Global.Mysql.Main.Master, config.Global.Mysql.Main.Slave)
 }
 
 // 初始化redis

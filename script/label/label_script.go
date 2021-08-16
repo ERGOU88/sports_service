@@ -16,7 +16,7 @@ import (
 )
 
 func init() {
-	dao.Engine = dao.InitXorm("root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4", []string{"root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4"})
+	dao.AppEngine = dao.InitXorm("root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4", []string{"root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4"})
 }
 
 func main() {
@@ -28,7 +28,7 @@ func AddVideoLabels() {
 	svc := cvideo.New(c)
 	svc.GetVideoLabelList()
 
-	session := dao.Engine.NewSession()
+	session := dao.AppEngine.NewSession()
 	defer session.Close()
 	if err := session.Begin(); err != nil {
 		log.Log.Errorf("job_trace: session begin err:%s", err)

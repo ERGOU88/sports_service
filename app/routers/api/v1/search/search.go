@@ -109,9 +109,10 @@ func ColligateSearch(c *gin.Context) {
 
 	svc := csearch.New(c)
 	// 综合搜索
-	videoList, userList, recommendList := svc.ColligateSearch(userId, name)
+	videoList, userList, postList, recommendList := svc.ColligateSearch(userId, name)
 	reply.Data["video_list"] = videoList
 	reply.Data["user_list"] = userList
+	reply.Data["post_list"] = postList
 	reply.Data["recommend_list"] = recommendList
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
