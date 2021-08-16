@@ -19,8 +19,9 @@ func NewCourseModel(engine *xorm.Session) *CourseModel {
 }
 
 // 通过课程id 获取课程信息
-func (m *CourseModel) GetCourseInfoById() (bool, error) {
-	return m.Engine.Get(m.Course)
+func (m *CourseModel) GetCourseInfoById(id string) (bool, error) {
+	m.Course = new(models.VenueCourseDetail)
+	return m.Engine.Where("id=?", id).Get(m.Course)
 }
 
 // 通过私教id、课程类型 获取课程列表

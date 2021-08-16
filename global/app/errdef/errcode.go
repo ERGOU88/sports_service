@@ -163,6 +163,31 @@ const (
 	COMMUNITY_POSTS_BY_SECTION   = 14006
 	COMMUNITY_POSTS_BY_TOPIC     = 14007
 
+	// 私教相关错误码 15001-16000
+	COACH_NOT_EXISTS             = 15001
+	COACH_GET_LABEL_FAIL         = 15002
+	COACH_PUB_EVALUATE_FAIL      = 15003
+	COACH_ORDER_NOT_EXISTS       = 15004
+	COACH_ORDER_NOT_SUCCESS      = 15005
+
+	// 预约错误 16001-17000
+	APPOINTMENT_INVALID_INFO     = 16001
+	APPOINTMENT_QUERY_NODE_FAIL  = 16002
+	APPOINTMENT_INVALID_NODE_ID  = 16003
+	APPOINTMENT_PROCESS_FAIL     = 16004
+	APPOINTMENT_VIP_DEDUCTION    = 16005
+	APPOINTMENT_NOT_ENOUGH_STOCK = 16006
+	APPOINTMENT_ADD_RECORD_FAIL  = 16007
+
+	// 场馆错误 17001-18000
+	VENUE_NOT_EXISTS             = 17001
+
+	// 订单错误 18001-19000
+	ORDER_ADD_FAIL               = 18001
+	ORDER_PRODUCT_ADD_FAIL       = 18002
+
+	// 大课相关错误
+	COURSE_NOT_EXISTS            = 19001
 )
 
 var MsgFlags = map[int]string{
@@ -311,6 +336,27 @@ var MsgFlags = map[int]string{
 	COMMUNITY_TOPIC_FAIL:        "获取社区话题失败",
 	COMMUNITY_POSTS_BY_SECTION:  "获取当前板块下的帖子失败",
 	COMMUNITY_POSTS_BY_TOPIC:    "获取当前话题下的帖子失败",
+
+	COACH_NOT_EXISTS:            "私教不存在",
+	COACH_GET_LABEL_FAIL:        "获取私教标签失败",
+	COACH_PUB_EVALUATE_FAIL:     "添加评价失败",
+	COACH_ORDER_NOT_EXISTS:      "私教订单不存在",
+	COACH_ORDER_NOT_SUCCESS:     "私教订单未成功",
+
+	APPOINTMENT_INVALID_INFO:    "预约信息错误",
+	APPOINTMENT_QUERY_NODE_FAIL: "查询时间节点配置错误",
+	APPOINTMENT_INVALID_NODE_ID: "错误的时间节点id",
+	APPOINTMENT_PROCESS_FAIL:    "预约流程错误",
+	APPOINTMENT_VIP_DEDUCTION:   "VIP抵扣时长错误",
+	APPOINTMENT_NOT_ENOUGH_STOCK:"库存不足",
+	APPOINTMENT_ADD_RECORD_FAIL: "添加预约流水失败",
+
+	VENUE_NOT_EXISTS:            "场馆不存在",
+
+	ORDER_ADD_FAIL:              "添加订单失败",
+	ORDER_PRODUCT_ADD_FAIL:      "添加商品订单失败",
+
+	COURSE_NOT_EXISTS:           "课程不存在",
 }
 
 func GetMsg(code int) string {

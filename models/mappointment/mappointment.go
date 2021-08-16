@@ -11,15 +11,24 @@ type AppointmentModel struct {
 	Stock            *models.VenueAppointmentStock
 	Record           *models.AppointmentRecord
 	Vip              *models.VenueVipInfo
+	Labels           *models.VenueUserLabel
+	LabelConf        *models.VenuePersonalLabelConf
 }
 
 type WeekInfo struct {
 	Date      string    `json:"date"`
 	Week      int       `json:"week"`
-	Id        int32     `json:"id"`
+	Id        int       `json:"id"`
 	WeekCn    string    `json:"week_cn"`
 	MinPrice  int       `json:"min_price"`
 	PriceCn   string    `json:"price_cn"`
+	Total     int64     `json:"total"`
+}
+
+// 日期信息
+type DateInfo struct {
+	List   []*WeekInfo   `json:"week_info"`
+	Id      int          `json:"id"`
 }
 
 type OptionsInfo struct {
@@ -48,6 +57,7 @@ type OptionsInfo struct {
 	Address         string `json:"address,omitempty"`            // 上课地点
 	Labels          []*LabelInfo     `json:"labels,omitempty"`   // 标签列表
 	ReservedUsers   []*ReservedUsers `json:"reserved_users"`     // 已预约人数
+	IsExpire        bool   `json:"is_expire"`                    // 是否过期
 
 }
 
@@ -79,10 +89,12 @@ type AppointmentReq struct {
 	UserId          string              `json:"user_id"`          // 用户id
 	Infos           []*AppointmentInfo  `json:"infos"`            // 预约请求数据 1个时间点对应1条数据
 	Ids             []interface{}       `json:"ids"`              // 时间配置ids
-	LabelIds        []int64             `json:"label_ids"`        // 用户选择的标签id列表
-	RelatedId       int64               `json:"related_id"`       // 场馆id/私教课程id/大课老师id
+	LabelIds        []interface{}       `json:"label_ids"`        // 用户选择的标签id列表
+	RelatedId       int64               `json:"related_id"`       // 场馆id/私教课程id/大课id
+	CoachId         int64               `json:"coach_id"`         // 老师id
 	WeekNum         int                 `json:"week_num"`         // 星期几
 	ReqType         int                 `json:"req_type"`         // 1 查询购物车数据 2 下单
+	IsDiscount      int32               `json:"is_discount"`      // 是否抵扣时长 1 抵扣 0 不抵扣
 }
 
 // 预约请求数据
@@ -123,6 +135,9 @@ type AppointmentResp struct {
 	MobileNum string    `json:"mobile_num"`   // 手机号
 	TotalDiscount int   `json:"total_discount"` // 总优惠
 	TimeNodeInfo  []*TimeNodeInfo `json:"node_info"` // 多时间节点预约数据
+	OrderId       string `json:"order_id"`           // 订单ID
+	OrderType     int    `json:"order_type"`         // 订单类型
+	PayDuration   int64  `json:"pay_duration"`       // 支付时长
 }
 
 // 单时间节点预约数据
@@ -141,22 +156,32 @@ func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
 		AppointmentInfo: new(models.VenueAppointmentInfo),
 		Stock: new(models.VenueAppointmentStock),
 		Record: new(models.AppointmentRecord),
+		Labels: new(models.VenueUserLabel),
+		LabelConf: new(models.VenuePersonalLabelConf),
 		Vip: new(models.VenueVipInfo),
 		Engine: engine,
 	}
 }
 
 const (
-	QUERY_MIN_PRICE = "SELECT min(cur_amount) as cur_amount FROM venue_appointment_info WHERE week_num=? AND appointment_type=? AND status=0"
+	QUERY_MIN_PRICE = "SELECT min(cur_amount) as cur_amount FROM venue_appointment_info WHERE week_num=? " +
+		"AND related_id=? AND appointment_type=? AND status=0"
 )
 // 根据星期 及 预约类型 获取最低价格
 func (m *AppointmentModel) GetMinPriceByWeek() error {
-	ok, err := m.Engine.SQL(QUERY_MIN_PRICE, m.AppointmentInfo.WeekNum, m.AppointmentInfo.AppointmentType).Get(m.AppointmentInfo)
+	ok, err := m.Engine.SQL(QUERY_MIN_PRICE, m.AppointmentInfo.WeekNum, m.AppointmentInfo.RelatedId, m.AppointmentInfo.AppointmentType).Get(m.AppointmentInfo)
 	if !ok || err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// 获取可预约的时间节点总数
+func (m *AppointmentModel) GetTotalNodeByWeek() (int64, error) {
+	return m.Engine.Where("week_num=? AND related_id=? AND appointment_type=? AND status=0",
+		m.AppointmentInfo.WeekNum, m.AppointmentInfo.RelatedId, m.AppointmentInfo.AppointmentType).
+		Count(&models.VenueAppointmentInfo{})
 }
 
 // 通过id获取预约配置
@@ -272,4 +297,55 @@ func (m *AppointmentModel) UpdateVenueVipInfo(duration int, userId string) (int6
 // 批量添加预约记录
 func (m *AppointmentModel) AddMultiAppointmentRecord(list []*models.AppointmentRecord) (int64, error) {
 	return m.Engine.InsertMulti(list)
+}
+
+// 获取场馆用户标签
+func (m *AppointmentModel) GetVenueUserLabels() ([]*models.VenueUserLabel, error) {
+	var list []*models.VenueUserLabel
+	if err := m.Engine.Where("date=? AND time_node=? AND status=0 AND venue_id=?", m.Labels.Date,
+		m.Labels.TimeNode, m.Labels.VenueId).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 获取所有标签配置
+func (m *AppointmentModel) GetUserLabelConf() ([]*models.VenuePersonalLabelConf, error) {
+	var list []*models.VenuePersonalLabelConf
+	if err := m.Engine.Where("status=0").Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 通过id列表获取标签配置
+func (m *AppointmentModel) GetLabelsByIds(ids []interface{}) ([]*models.VenuePersonalLabelConf, error) {
+	var list []*models.VenuePersonalLabelConf
+	if err := m.Engine.Where("status=0").In("id", ids...).OrderBy("id DESC").Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+const (
+	GET_LABELS_BY_RAND = "SELECT * FROM `venue_personal_label_conf` AS t1 JOIN (SELECT ROUND(RAND() * " +
+		"((SELECT MAX(id) FROM `venue_personal_label_conf`)-(SELECT MIN(id) FROM `venue_personal_label_conf`)) " +
+		"+ (SELECT MIN(id) FROM `venue_personal_label_conf`)) AS id) AS t2 WHERE t1.id >= t2.id ORDER BY t1.id LIMIT 3;"
+)
+// 随机获取标签
+func (m *AppointmentModel) GetLabelsByRand() ([]*models.VenuePersonalLabelConf, error) {
+	var list []*models.VenuePersonalLabelConf
+	if err := m.Engine.SQL(GET_LABELS_BY_RAND).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 添加场馆用户标签
+func (m *AppointmentModel) AddLabels(labels []*models.VenueUserLabel) (int64, error) {
+	return m.Engine.InsertMulti(labels)
 }

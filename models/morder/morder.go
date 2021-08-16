@@ -26,6 +26,12 @@ func (m *OrderModel) AddOrder() (int64, error) {
 	return m.Engine.InsertOne(m.Order)
 }
 
+// 获取订单
+func (m *OrderModel) GetOrder(orderId string) (bool, error) {
+	m.Order = new(models.VenuePayOrders)
+	return m.Engine.Where("pay_order_id=?", orderId).Get(m.Order)
+}
+
 // 查看订单商品流水表 获取商品销量
 func (m *OrderModel) GetSalesByProduct() (int64, error) {
 	return m.Engine.Where("product_id=? AND order_type=? AND status=2", m.OrderProduct.ProductId,

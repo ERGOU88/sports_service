@@ -1032,7 +1032,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/mcomment.PublishCommentParams"
+                            "$ref": "#/definitions/mcomment.V2PubCommentParams"
                         }
                     }
                 ],
@@ -1401,7 +1401,7 @@ var doc = `{
                 "tags": [
                     "点赞模块"
                 ],
-                "summary": "评论点赞 (ok)",
+                "summary": "视频评论点赞 (ok)",
                 "parameters": [
                     {
                         "type": "string",
@@ -1540,6 +1540,156 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/like/comment/post": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "点赞模块"
+                ],
+                "summary": "帖子评论点赞 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "评论点赞请求参数",
+                        "name": "GiveLikeParam",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/mlike.GiveLikeParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/like/comment/post/cancel": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "点赞模块"
+                ],
+                "summary": "取消帖子评论点赞 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "取消评论点赞请求参数",
+                        "name": "CancelLikeParam",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/mlike.CancelLikeParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/like/other/list": {
             "get": {
                 "consumes": [
@@ -1602,6 +1752,156 @@ var doc = `{
                         "name": "size",
                         "in": "query",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/like/post": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "点赞模块"
+                ],
+                "summary": "帖子点赞 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "点赞视频请求参数",
+                        "name": "GiveLikeParam",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/mlike.GiveLikeParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/like/post/cancel": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "点赞模块"
+                ],
+                "summary": "取消帖子点赞 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "取消视频点赞请求参数",
+                        "name": "CancelLikeParam",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/mlike.CancelLikeParam"
+                        }
                     }
                 ],
                 "responses": {
@@ -2870,6 +3170,93 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/search/posting": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "搜索模块"
+                ],
+                "summary": "搜索帖子",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "页码 从1开始",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页展示多少 最多50条",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索的名称",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/search/users": {
             "get": {
                 "consumes": [
@@ -3061,6 +3448,81 @@ var doc = `{
                         "name": "user_id",
                         "in": "query",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"success\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "{\"code\":500,\"data\":{},\"msg\":\"fail\",\"tm\":\"1588888888\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/share/social": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分享模块"
+                ],
+                "summary": "分享 (ok)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "AppId",
+                        "name": "AppId",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "调用/api/v1/client/init接口 服务端下发的secret",
+                        "name": "Secret",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求时间戳 单位：秒",
+                        "name": "Timestamp",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "签名 md5签名32位值",
+                        "name": "Sign",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1.0.0",
+                        "description": "版本",
+                        "name": "Version",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -5117,6 +5579,9 @@ var doc = `{
                 "comment_id": {
                     "type": "integer"
                 },
+                "comment_type": {
+                    "type": "integer"
+                },
                 "reason": {
                     "type": "string"
                 },
@@ -5143,19 +5608,53 @@ var doc = `{
         "mcomment.ReplyCommentParams": {
             "type": "object",
             "required": [
+                "compose_id",
                 "content",
-                "reply_id",
-                "video_id"
+                "reply_id"
             ],
             "properties": {
+                "at_info": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "comment_type": {
+                    "type": "integer"
+                },
+                "compose_id": {
+                    "type": "integer"
+                },
                 "content": {
                     "type": "string"
                 },
                 "reply_id": {
-                    "type": "string"
-                },
-                "video_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "mcomment.V2PubCommentParams": {
+            "type": "object",
+            "required": [
+                "comment_type",
+                "compose_id",
+                "content"
+            ],
+            "properties": {
+                "at_info": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "comment_type": {
+                    "type": "integer"
+                },
+                "compose_id": {
+                    "type": "integer"
+                },
+                "content": {
+                    "type": "string"
                 }
             }
         },
@@ -5165,6 +5664,9 @@ var doc = `{
                 "compose_id"
             ],
             "properties": {
+                "comment_type": {
+                    "type": "integer"
+                },
                 "compose_id": {
                     "type": "integer",
                     "example": 10000000000
@@ -5177,6 +5679,9 @@ var doc = `{
                 "compose_id"
             ],
             "properties": {
+                "comment_type": {
+                    "type": "integer"
+                },
                 "compose_id": {
                     "type": "integer",
                     "example": 10000000000
@@ -5377,7 +5882,6 @@ var doc = `{
         "mvideo.VideoPublishParams": {
             "type": "object",
             "required": [
-                "describe",
                 "file_id",
                 "task_id",
                 "title",
@@ -5385,6 +5889,9 @@ var doc = `{
                 "video_labels"
             ],
             "properties": {
+                "album_id": {
+                    "type": "string"
+                },
                 "cover": {
                     "type": "string"
                 },
@@ -5397,8 +5904,14 @@ var doc = `{
                 "file_id": {
                     "type": "string"
                 },
+                "pub_type": {
+                    "type": "integer"
+                },
                 "size": {
                     "type": "integer"
+                },
+                "subarea_id": {
+                    "type": "string"
                 },
                 "task_id": {
                     "type": "integer"
@@ -5426,9 +5939,13 @@ var doc = `{
         "mvideo.VideoReportParam": {
             "type": "object",
             "required": [
+                "reason",
                 "video_id"
             ],
             "properties": {
+                "reason": {
+                    "type": "string"
+                },
                 "user_id": {
                     "type": "string"
                 },

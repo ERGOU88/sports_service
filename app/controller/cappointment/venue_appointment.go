@@ -1,6 +1,7 @@
 package cappointment
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
@@ -13,7 +14,6 @@ import (
 	"sports_service/server/models/mvenue"
 	"sports_service/server/util"
 	"time"
-	"fmt"
 )
 
 type VenueAppointmentModule struct {
@@ -78,7 +78,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 
 	if len(params.Infos) == 0 {
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.APPOINTMENT_INVALID_INFO, nil
 	}
 
 	user := svc.user.FindUserByUserid(params.UserId)
@@ -89,79 +89,93 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 
 	list, err := svc.GetAppointmentConfByIds(params.Ids)
 	if err != nil {
+		log.Log.Errorf("venue_trace: get appointment conf by ids fail, err:%s, ids:%v", err, params.Ids)
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.APPOINTMENT_QUERY_NODE_FAIL, nil
 	}
 
 	if len(list) != len(params.Infos) {
+		log.Log.Errorf("venue_trace: length not match, list len:%d, infos len:%d", len(list), len(params.Infos))
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.APPOINTMENT_INVALID_NODE_ID, nil
 	}
 
 	ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(params.RelatedId))
 	if !ok || err != nil {
 		log.Log.Errorf("venue_trace: get venue info fail, err:%s", err)
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.VENUE_NOT_EXISTS, nil
 	}
 
 
-	totalAmount := 0
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
 
-	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.Infos); err != nil {
+	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.LabelIds, params.Infos); err != nil {
 		log.Log.Errorf("venue_trace: appointment fail, err:%s", err)
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.APPOINTMENT_PROCESS_FAIL, nil
 	}
 
+	svc.Extra.OrderId = orderId
 	svc.Extra.Id = params.RelatedId
 	svc.Extra.Name = svc.venue.Venue.VenueName
 	svc.Extra.Date = time.Now().Format(consts.FORMAT_DATE)
 	svc.Extra.WeekCn = util.GetWeekCn(params.WeekNum)
 	svc.Extra.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
 	svc.Extra.TmCn = util.ResolveTime(svc.Extra.TotalTm)
-	// 库存都足够 则判断用户是否充值会员时长
-	// 存在会员数据 则需要先抵扣时间
-	if err := svc.VipDeductionProcess(user.UserId, list); err != nil {
-		log.Log.Errorf("venue_trace: vip deduction process fail, err:%s", err)
-		svc.engine.Rollback()
-		return errdef.ERROR, nil
+
+	// 用户选择抵扣时长
+	if params.IsDiscount == 1 {
+		// 库存都足够 则判断用户是否充值会员时长
+		// 存在会员数据 则需要先抵扣时间
+		if err := svc.VipDeductionProcess(user.UserId, list); err != nil {
+			log.Log.Errorf("venue_trace: vip deduction process fail, err:%s", err)
+			svc.engine.Rollback()
+			return errdef.APPOINTMENT_VIP_DEDUCTION, nil
+		}
 	}
 
 	// 库存不足 返回最新数据 事务回滚
-	if !svc.Extra.IsEnough || params.ReqType != 2 {
+	if !svc.Extra.IsEnough {
 		log.Log.Errorf("venue_trace: rollback, isEnough:%v, reqType:%d", svc.Extra.IsEnough, params.ReqType)
 		svc.engine.Rollback()
-		return errdef.ERROR, svc.Extra
+		return errdef.APPOINTMENT_NOT_ENOUGH_STOCK, svc.Extra
+	}
+
+	// 查询数据 则返回200
+	if params.ReqType != 2 {
+		svc.engine.Rollback()
+		return errdef.SUCCESS, svc.Extra
 	}
 
 	// 添加订单
-	if err := svc.AddOrder(orderId, user.UserId, now, totalAmount); err != nil {
+	if err := svc.AddOrder(orderId, user.UserId, now); err != nil {
 		log.Log.Errorf("venue_trace: add order fail, err:%s", err)
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.ORDER_ADD_FAIL, nil
 	}
 
 	// 添加订单商品流水
 	if err := svc.AddOrderProducts(); err != nil {
 		log.Log.Errorf("venue_trace: add order products fail, err:%s", err)
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.ORDER_PRODUCT_ADD_FAIL, nil
 	}
 
 	// 添加预约记录流水
 	if err := svc.AddAppointmentRecord(); err != nil {
 		log.Log.Errorf("venue_trace: add appointment record fail, err:%s", err)
 		svc.engine.Rollback()
-		return errdef.ERROR, nil
+		return errdef.APPOINTMENT_ADD_RECORD_FAIL, nil
 	}
 
 	svc.engine.Commit()
 
-	// todo: 订单15分钟过期 以及标签列表
-	return errdef.SUCCESS, nil
+	svc.Extra.PayDuration = consts.APPOINTMENT_PAYMENT_DURATION
+
+	//redismq.PushOrderEventMsg()
+	return errdef.SUCCESS, svc.Extra
 }
 
 // 取消预约
@@ -202,10 +216,10 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 			info.Name = svc.venue.Venue.VenueName
 		}
 
-		svc.venue.Labels.TimeNode = item.TimeNode
-		svc.venue.Labels.Date = date
-		svc.venue.Labels.VenueId = item.RelatedId
-		labels, err := svc.venue.GetVenueUserLabels()
+		svc.appointment.Labels.TimeNode = item.TimeNode
+		svc.appointment.Labels.Date = date
+		svc.appointment.Labels.VenueId = item.RelatedId
+		labels, err := svc.appointment.GetVenueUserLabels()
 		if err != nil {
 			log.Log.Errorf("venue_trace: get venue user lables fail, err:%s", err)
 		}
@@ -243,10 +257,11 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 					uinfo.Avatar = user.Avatar
 				}
 
+
 				info.ReservedUsers = append(info.ReservedUsers, uinfo)
 
 				if val.PurchasedNum > 1 {
-					for i := 0; i < val.PurchasedNum; i++ {
+					for i := 0; i < val.PurchasedNum-1; i++ {
 						info.ReservedUsers = append(info.ReservedUsers, uinfo)
 					}
 				}
@@ -321,4 +336,14 @@ func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*mo
 	}
 
 	return nil
+}
+
+// 获取标签信息
+func (svc *VenueAppointmentModule) GetLabelInfo() (int, []*models.VenuePersonalLabelConf) {
+	list, err := svc.appointment.GetUserLabelConf()
+	if err != nil {
+		return errdef.ERROR, []*models.VenuePersonalLabelConf{}
+	}
+
+	return errdef.SUCCESS, list
 }

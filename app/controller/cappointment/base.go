@@ -41,6 +41,7 @@ func New(socket *xorm.Session) *base {
 func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 	list := svc.GetAppointmentDate(days)
 	res := make([]*mappointment.WeekInfo, len(list))
+	id := 0
 	for index, v := range list {
 		info := &mappointment.WeekInfo{
 			Id: v.Id,
@@ -49,7 +50,6 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 			WeekCn: v.WeekCn,
 		}
 
-		svc.appointment.AppointmentInfo.WeekNum = v.Week
 		svc.appointment.AppointmentInfo.WeekNum = v.Week
 		svc.appointment.AppointmentInfo.AppointmentType = appointmentType
 		svc.appointment.AppointmentInfo.CurAmount = 0
@@ -60,10 +60,26 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 
 		info.MinPrice = svc.appointment.AppointmentInfo.CurAmount
 		info.PriceCn = fmt.Sprintf("¥%.2f", float64(info.MinPrice)/100)
+
+		total, err := svc.appointment.GetTotalNodeByWeek()
+		if err != nil {
+			log.Log.Errorf("venue_trace: get total node by week fail, err:%s", err)
+		}
+		info.Total = total
+
+		if id == 0 && info.Total > 0 {
+			id = v.Id
+		}
+
 		res[index] = info
 	}
 
-	return res
+	dateInfo := &mappointment.DateInfo{
+		List: res,
+		Id: id,
+	}
+
+	return dateInfo
 }
 
 // 获取预约的日期信息（从当天开始推算）
@@ -139,6 +155,7 @@ func (svc *base) GetDateById(id int, formatType string) string {
 }
 
 func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppointmentInfo) *mappointment.OptionsInfo {
+	var isExpire bool
 	if svc.DateId == 1 {
 		nodes := strings.Split(item.TimeNode, "-")
 		if len(nodes) ==  2 {
@@ -147,11 +164,18 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 			start := fmt.Sprintf("%s %s", date, nodes[0])
 			ts := new(util.TimeS)
 			startTm := ts.GetTimeStrOrStamp(start, "YmdHi")
-			// 如果当前时间 > 配置中的开始时间 过滤该配置项
 			if now > startTm.(int64) {
-				log.Log.Errorf("过滤id：%d, date:%s", item.Id, date)
-				return nil
+				// 预约私教、预约大课 如果当前时间 > 配置中的开始时间 过滤该配置项
+				if item.AppointmentType != 0 {
+						log.Log.Errorf("过滤id：%d, date:%s", item.Id, date)
+						return nil
+				}
+
+				// 预约场馆则给标示
+				isExpire = true
 			}
+
+
 		}
 	}
 
@@ -168,6 +192,7 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		WeekNum: item.WeekNum,
 		AmountCn: fmt.Sprintf("¥%.2f", float64(item.CurAmount)/100),
 		Id: item.Id,
+		IsExpire: isExpire,
 	}
 
 	// 售价 < 定价 表示有优惠
@@ -335,7 +360,7 @@ func (svc *base) AddOrderProducts() error {
 }
 
 // 添加订单
-func (svc *base) AddOrder(orderId, userId string, now, total int) error {
+func (svc *base) AddOrder(orderId, userId string, now int) error {
 	extra, _ := util.JsonFast.MarshalToString(svc.Extra)
 	svc.order.Order.Extra = extra
 	svc.order.Order.PayOrderId = orderId
@@ -343,7 +368,7 @@ func (svc *base) AddOrder(orderId, userId string, now, total int) error {
 	svc.order.Order.OrderType = 1001
 	svc.order.Order.CreateAt = now
 	svc.order.Order.UpdateAt = now
-	svc.order.Order.Amount = total
+	svc.order.Order.Amount = svc.Extra.TotalAmount
 	affected, err := svc.order.AddOrder()
 	if err != nil {
 		return err
@@ -357,7 +382,7 @@ func (svc *base) AddOrder(orderId, userId string, now, total int) error {
 }
 
 // 设置最新库存数据（返回使用）
-func (svc *base) SetLatestInventoryResp(date string) (*mappointment.TimeNodeInfo, error) {
+func (svc *base) SetLatestInventoryResp(date string, count int) (*mappointment.TimeNodeInfo, error) {
 	info := &mappointment.TimeNodeInfo{}
 	info.Id = svc.appointment.AppointmentInfo.Id
 	info.TimeNode = svc.appointment.AppointmentInfo.TimeNode
@@ -370,15 +395,28 @@ func (svc *base) SetLatestInventoryResp(date string) (*mappointment.TimeNodeInfo
 	if !ok || err != nil {
 		log.Log.Errorf("venue_trace: get stock info fail, err:%s", err)
 		//return nil, errors.New("get stock info fail")
+		// 如果查询失败 返回当前数量
+		info.Count = count
 	} else {
-		info.Count = svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum
+		// 剩余库存 = 总库存 - 冻结库存 + 当前购买
+		stockNum := svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum + count
+		// 剩余库存 >= 当前购买数量
+		if stockNum >= count {
+			// 可购数量 = 当前购买数量
+			info.Count = count
+		} else {
+			// 可购数量 = 剩余库存
+			info.Count = stockNum
+		}
 	}
 
 	return info, nil
 }
 
 // 预约流程
-func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, infos []*mappointment.AppointmentInfo) error {
+func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, labelIds []interface{},
+	infos []*mappointment.AppointmentInfo) error {
+
 	svc.Extra.IsEnough = true
 	now := int(time.Now().Unix())
 	//stockInfo := make([]*mappointment.StockInfoResp, 0)
@@ -409,6 +447,41 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, inf
 		if date == "" {
 			log.Log.Errorf("venue_trace: invalid date, dateId:%d", item.DateId)
 			return errors.New("invalid date")
+		}
+
+		if svc.appointment.AppointmentInfo.AppointmentType == 0 {
+			var list []*models.VenuePersonalLabelConf
+			labelType := 0
+			if len(labelIds) > 0 {
+				list, err = svc.appointment.GetLabelsByIds(labelIds)
+				if err != nil || list == nil {
+					log.Log.Errorf("venue_trace: get labels by ids fail, err:%s", err)
+				}
+			}
+
+			if len(list) == 0 || len(labelIds) == 0 {
+				list, err = svc.appointment.GetLabelsByRand()
+				if err != nil || list == nil {
+					log.Log.Errorf("venue_trace: get labels by rand fail, err:%s", err)
+					return errors.New("get labels by rand fail")
+				}
+
+				labelType = 1
+
+			}
+
+			if len(list) > 0 {
+				if err := svc.AddLabels(list, date, userId, relatedId, labelType); err != nil {
+					log.Log.Errorf("venue_trace: add labels fail, err:%s", err)
+					return err
+				}
+			}
+		}
+
+
+		svc.Extra.OrderType, err = svc.GetOrderType(svc.appointment.AppointmentInfo.AppointmentType)
+		if err != nil {
+			return err
 		}
 
 		svc.Extra.TotalTm += svc.appointment.AppointmentInfo.Duration * item.Count
@@ -451,17 +524,19 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, inf
 			// 更新未成功 库存不够 || 当前预约库存足够 但已出现库存不足的预约时间点 则需返回最新各预约节点的剩余库存
 			if affected == 0 || affected == 1 && !svc.Extra.IsEnough {
 				svc.Extra.IsEnough = false
-				// 查看最新的库存 并返回 tips：读快照无问题 购买时保证数据一致性即可
-				resp, err := svc.SetLatestInventoryResp(date)
-				if err != nil {
-					log.Log.Errorf("venue_trace:set inventory resp fail, err:%s", err)
-					return err
-				}
-
-				svc.Extra.TimeNodeInfo = append(svc.Extra.TimeNodeInfo, resp)
-				continue
+				//continue
 			}
+
 		}
+
+		// 查看最新的库存 并返回 tips：读快照无问题 购买时保证数据一致性即可
+		resp, err := svc.SetLatestInventoryResp(date, item.Count)
+		if err != nil {
+			log.Log.Errorf("venue_trace:set inventory resp fail, err:%s", err)
+			return err
+		}
+
+		svc.Extra.TimeNodeInfo = append(svc.Extra.TimeNodeInfo, resp)
 
 		// 是否遍历完所有预约节点
 		//if index < len(infos) - 1 {
@@ -477,3 +552,42 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, inf
 	return nil
 }
 
+// labelType 0 表示用户添加 1 表示系统添加
+func (svc *base) AddLabels(list []*models.VenuePersonalLabelConf, date, userId string, relatedId int64, labelType int) error {
+	labels := make([]*models.VenueUserLabel, len(list))
+	for k, v := range list {
+		label := &models.VenueUserLabel{
+			Date: date,
+			TimeNode: svc.appointment.AppointmentInfo.TimeNode,
+			UserId: userId,
+			LabelId: v.Id,
+			LabelName: v.LabelName,
+			VenueId: relatedId,
+			LabelType: labelType,
+		}
+
+		labels[k] = label
+	}
+
+	affected, err := svc.appointment.AddLabels(labels)
+	if err != nil || affected != int64(len(list)) {
+		log.Log.Errorf("venue_trace: add labels failm err:%s, affected:%d, len:%d", err, affected, len(list))
+		return errors.New("add labels fail")
+	}
+
+	return nil
+}
+
+// 获取订单类型
+func (svc *base) GetOrderType(appointmentType int) (int, error) {
+	switch appointmentType {
+	case 0:
+		return consts.ORDER_TYPE_APPOINTMENT_VENUE, nil
+	case 1:
+		return consts.ORDER_TYPE_APPOINTMENT_COACH, nil
+	case 2:
+		return consts.ORDER_TYPE_APPOINTMENT_COURSE, nil
+	}
+
+	return 0, errors.New("invalid appointmentType")
+}

@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"sports_service/server/app/controller/coach"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
+	"sports_service/server/models/mcoach"
 	"sports_service/server/util"
 )
 
@@ -54,4 +57,19 @@ func CoachEvaluateConf(c *gin.Context) {
 	code, list := svc.GetEvaluateConfig()
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
+}
+
+func PubEvaluate(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mcoach.PubEvaluateParam{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("coach_trace: invalid param, param:%+v, err:%s", param, err)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	userId, _ := c.Get(consts.USER_ID)
+	svc := coach.New(c)
+	svc.PubEvaluate(userId.(string), param)
+
 }

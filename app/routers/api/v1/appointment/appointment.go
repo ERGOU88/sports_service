@@ -21,6 +21,12 @@ func AppointmentDate(c *gin.Context) {
 		return
 	}
 
+	relatedId, err := strconv.Atoi(c.Query("related_id"))
+	if err != nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
 	factory := &cappointment.AppointmentFactory{}
 	i = factory.Create(queryType, c)
 	if i == nil {
@@ -28,7 +34,7 @@ func AppointmentDate(c *gin.Context) {
 		return
 	}
 
-	syscode, list := cappointment.GetAppointmentDate(i)
+	syscode, list := cappointment.GetAppointmentDate(i, relatedId)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)
 }
@@ -89,7 +95,7 @@ func AppointmentOptions(c *gin.Context) {
 	}
 
 	var relatedId int
-	if queryType != 0 {
+	if queryType == 1 {
 		relatedId, err = strconv.Atoi(c.Query("related_id"))
 		if err != nil || relatedId <= 0 {
 			reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
@@ -133,4 +139,13 @@ func AppointmentStart(c *gin.Context) {
 	syscode, resp := cappointment.UserAppointment(i, param)
 	reply.Data["resp"] = resp
 	reply.Response(http.StatusOK, syscode)
+}
+
+// 标签信息
+func LabelInfo(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cappointment.NewVenue(c)
+	code, list := svc.GetLabelInfo()
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
 }

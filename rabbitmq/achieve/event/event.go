@@ -42,7 +42,8 @@ func ConnectEventConsumer() error {
   }
 
   for dataBody := range events {
-    log.Log.Debug(string(dataBody.Body))
+    
+    
     if err := EventConsumer(dataBody.Body); err == nil {
       // 执行完毕 通知mq 确认消息接收
       dataBody.Ack(false)

@@ -6,9 +6,8 @@ import (
 )
 
 type VenueModel struct {
-	Venue    *models.VenueInfo
-	Engine   *xorm.Session
-	Labels   *models.VenueUserLabel
+	Venue     *models.VenueInfo
+	Engine    *xorm.Session
 }
 
 // 场馆商品
@@ -33,7 +32,6 @@ type VenueProduct struct {
 func NewVenueModel(engine *xorm.Session) *VenueModel {
 	return &VenueModel{
 		Venue: new(models.VenueInfo),
-		Labels: new(models.VenueUserLabel),
 		Engine: engine,
 	}
 }
@@ -59,17 +57,6 @@ func (m *VenueModel) GetVenueProducts() ([]*models.VenueProductInfo, error) {
 	var list []*models.VenueProductInfo
 	if err := m.Engine.Where("venue_id=?", m.Venue.Id).Find(&list); err != nil {
 		return nil, err
-	}
-
-	return list, nil
-}
-
-// 获取场馆用户标签
-func (m *VenueModel) GetVenueUserLabels() ([]*models.VenueUserLabel, error) {
-	var list []*models.VenueUserLabel
-	if err := m.Engine.Where("date=? AND time_node=? AND status=0 AND venue_id=?", m.Labels.Date,
-		m.Labels.TimeNode, m.Labels.VenueId).Find(&list); err != nil {
-			return nil, err
 	}
 
 	return list, nil
