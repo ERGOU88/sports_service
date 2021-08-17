@@ -42,3 +42,19 @@ func (m *OrderModel) GetSalesByProduct() (int64, error) {
 func (m *OrderModel) AddMultiOrderProduct(list []*models.VenueOrderProductInfo) (int64, error) {
 	return m.Engine.InsertMulti(list)
 }
+
+// 订单超时 更新订单状态
+func (m *OrderModel) UpdateOrderStatus() (int64, error) {
+	return m.Engine.Where("pay_order_id=? AND status=?", m.Order.PayOrderId, m.Order.Status).Cols("update_at", "status").Update(m.Order)
+}
+
+// 通过订单id 获取订单流水信息
+func (m *OrderModel) GetOrderProductsById(orderId string, status int) (bool, error) {
+	m.OrderProduct = new(models.VenueOrderProductInfo)
+	return m.Engine.Where("order_id=? AND status=?", orderId, status).Get(m.OrderProduct)
+}
+
+// 更新订单商品状态
+func (m *OrderModel) UpdateOrderProductStatus(orderId string, status int) (int64, error) {
+	return m.Engine.Where("order_id=? AND status=?", orderId, status).Cols("update_at", "status").Update(m.OrderProduct)
+}
