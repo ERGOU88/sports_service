@@ -126,7 +126,7 @@ func AppointmentStart(c *gin.Context) {
 		return
 	}
 
-	log.Log.Infof("appointment params:%+v", param)
+	log.Log.Infof("appointment params:%#v", param)
 
 	var i cappointment.IAppointment
 	factory := &cappointment.AppointmentFactory{}
