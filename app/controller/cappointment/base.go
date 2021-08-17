@@ -453,9 +453,11 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, lab
 			return errors.New("get appointment conf fail")
 		}
 
-		if len(item.SeatInfos) != item.Count {
-			log.Log.Errorf("venue_trace: seat num not match, count:%d, len:%d", item.Count, len(item.SeatInfos))
-			return errors.New("seat num not match")
+		if svc.appointment.AppointmentInfo.AppointmentType == consts.APPOINTMENT_VENUE {
+			if len(item.SeatInfos) != item.Count {
+				log.Log.Errorf("venue_trace: seat num not match, count:%d, len:%d", item.Count, len(item.SeatInfos))
+				return errors.New("seat num not match")
+			}
 		}
 
 		log.Log.Errorf("appointment_info:%+v, id:%d", svc.appointment.AppointmentInfo, svc.appointment.AppointmentInfo.Id)
