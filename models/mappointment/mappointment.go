@@ -46,6 +46,7 @@ type OptionsInfo struct {
 	QuotaNum        int    `json:"quota_num"`
 	RelatedId       int64  `json:"related_id"`
 	RecommendType   int    `json:"recommend_type"`
+	RecommendName   string `json:"recommend_name"`
 	AppointmentType int    `json:"appointment_type"`
 	WeekNum         int    `json:"week_num"`
 

@@ -247,6 +247,12 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 			log.Log.Errorf("venue_trace: get appointment record fail, err:%s", err)
 		}
 
+		ok, err = svc.venue.GetRecommendInfoById(fmt.Sprint(info.RecommendType))
+		if !ok || err != nil {
+			log.Log.Errorf("venue_trace: get recommend info by id fail, id:%d", info.RecommendType)
+		}
+		info.RecommendName = svc.venue.Recommend.Name
+
 		info.ReservedUsers = make([]*mappointment.ReservedUsers, 0)
 		if len(records) > 0 {
 			for _, val := range records {

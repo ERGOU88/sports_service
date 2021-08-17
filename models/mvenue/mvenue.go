@@ -8,6 +8,7 @@ import (
 type VenueModel struct {
 	Venue     *models.VenueInfo
 	Engine    *xorm.Session
+	Recommend   *models.VenueRecommendConf
 }
 
 // 场馆商品
@@ -32,6 +33,7 @@ type VenueProduct struct {
 func NewVenueModel(engine *xorm.Session) *VenueModel {
 	return &VenueModel{
 		Venue: new(models.VenueInfo),
+		Recommend: new(models.VenueRecommendConf),
 		Engine: engine,
 	}
 }
@@ -60,4 +62,10 @@ func (m *VenueModel) GetVenueProducts() ([]*models.VenueProductInfo, error) {
 	}
 
 	return list, nil
+}
+
+// 通过id获取推荐信息配置
+func (m *VenueModel) GetRecommendInfoById(id string) (bool, error) {
+	m.Recommend = new(models.VenueRecommendConf)
+	return m.Engine.Where("id=? AND status=0", id).Get(m.Recommend)
 }
