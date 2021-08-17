@@ -196,7 +196,7 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		RecommendType: item.RecommendType,
 		AppointmentType: item.AppointmentType,
 		WeekNum: item.WeekNum,
-		AmountCn: fmt.Sprintf("¥%.2f", float64(item.CurAmount)/100),
+		AmountCn: fmt.Sprintf("%.2f", float64(item.CurAmount)/100),
 		Id: item.Id,
 		IsExpire: isExpire,
 	}
