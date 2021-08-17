@@ -201,6 +201,7 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		IsExpire: isExpire,
 		StartTm: tm,
 		Date: fmt.Sprintf("%s %s", date, item.TimeNode),
+		CoachId: item.CoachId,
 	}
 
 	// 售价 < 定价 表示有优惠

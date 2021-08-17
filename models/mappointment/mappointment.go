@@ -62,6 +62,7 @@ type OptionsInfo struct {
 	IsExpire        bool   `json:"is_expire"`                    // 是否过期
 	Date            string `json:"date"`                         // 年月日
 	StartTm         int64  `json:"start_tm"`                     // 开始时间戳
+	CoachId         int64  `json:"coach_id"`                     // 教练id
 }
 
 // 已预约人数
