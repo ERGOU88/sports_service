@@ -517,6 +517,8 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, lab
 
 
 		var b bool
+		// 默认该节点库存足够
+		item.IsEnough = true
 		if !ok {
 			b, err = svc.AddStock(date, now, item.Count)
 			log.Log.Errorf("id:%d, b:%v, err:%s", svc.appointment.AppointmentInfo.Id, b, err)
@@ -547,6 +549,7 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, lab
 
 			if affected == 0 {
 				svc.Extra.IsEnough = false
+				// 该节点库存不够
 				item.IsEnough = false
 			}
 
