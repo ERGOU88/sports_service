@@ -254,27 +254,38 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 		}
 		info.RecommendName = svc.venue.Recommend.Name
 
-		info.ReservedUsers = make([]*mappointment.ReservedUsers, 0)
+		info.ReservedUsers = make([]*mappointment.SeatInfo, 0)
 		if len(records) > 0 {
 			for _, val := range records {
-				uinfo := &mappointment.ReservedUsers{
-					UserId: val.UserId,
-				}
-
-				user := svc.user.FindUserByUserid(val.UserId)
-				if user != nil {
-					uinfo.NickName = user.NickName
-					uinfo.Avatar = user.Avatar
-				}
-
-
-				info.ReservedUsers = append(info.ReservedUsers, uinfo)
-
-				if val.PurchasedNum > 1 {
-					for i := 0; i < val.PurchasedNum-1; i++ {
-						info.ReservedUsers = append(info.ReservedUsers, uinfo)
+				if val.Date == date && val.TimeNode == item.TimeNode {
+					seatInfo := make([]*mappointment.SeatInfo, 0)
+					if err := util.JsonFast.UnmarshalFromString(val.SeatInfo, &seatInfo); err == nil {
+						info.ReservedUsers = append(info.ReservedUsers, seatInfo...)
+					} else {
+						log.Log.Errorf("venue_trace: unmarshal seat info fail, err:%s", err)
 					}
 				}
+
+
+				//uinfo := &mappointment.SeatInfo{
+				//	UserId: val.UserId,
+				//}
+				//
+				//user := svc.user.FindUserByUserid(val.UserId)
+				//if user != nil {
+				//	uinfo.NickName = user.NickName
+				//	uinfo.Avatar = user.Avatar
+				//	uinfo.SeatNo = 1
+				//}
+				//
+				//info.ReservedUsers = append(info.ReservedUsers, uinfo)
+				//
+				//if val.PurchasedNum > 1 {
+				//	for i := 0; i < val.PurchasedNum-1; i++ {
+				//		uinfo.SeatNo += 1
+				//		info.ReservedUsers = append(info.ReservedUsers, uinfo)
+				//	}
+				//}
 
 			}
 		}

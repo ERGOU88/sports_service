@@ -58,7 +58,7 @@ type OptionsInfo struct {
 	Avatar          string `json:"avatar,omitempty"`             // 大课老师头像
 	Address         string `json:"address,omitempty"`            // 上课地点
 	Labels          []*LabelInfo     `json:"labels,omitempty"`   // 标签列表
-	ReservedUsers   []*ReservedUsers `json:"reserved_users"`     // 已预约人数
+	ReservedUsers   []*SeatInfo      `json:"reserved_users"`     // 已预约人数
 	IsExpire        bool   `json:"is_expire"`                    // 是否过期
 	Date            string `json:"date"`                         // 年月日
 	StartTm         int64  `json:"start_tm"`                     // 开始时间戳
