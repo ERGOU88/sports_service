@@ -59,6 +59,7 @@ func CoachEvaluateConf(c *gin.Context) {
 	reply.Response(http.StatusOK, code)
 }
 
+// 发布评价 [私教]
 func PubEvaluate(c *gin.Context) {
 	reply := errdef.New(c)
 	param := &mcoach.PubEvaluateParam{}
@@ -70,6 +71,6 @@ func PubEvaluate(c *gin.Context) {
 
 	userId, _ := c.Get(consts.USER_ID)
 	svc := coach.New(c)
-	svc.PubEvaluate(userId.(string), param)
-
+	code := svc.PubEvaluate(userId.(string), param)
+	reply.Response(http.StatusOK, code)
 }
