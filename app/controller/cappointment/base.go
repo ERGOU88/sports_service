@@ -203,13 +203,15 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 
 	// 售价 < 定价 表示有优惠
 	if item.CurAmount < item.RealAmount {
-		info.HasDiscount = 1
 		info.DiscountRate = item.DiscountRate
 		info.DiscountAmount = item.DiscountAmount
-		if item.DiscountRate % 10 == 0 {
-			info.RateCn = fmt.Sprintf("%d", item.DiscountRate/10)
-		} else {
-			info.RateCn = fmt.Sprintf("%.1f", float64(item.DiscountRate)/10)
+		if item.DiscountAmount > 0 {
+			info.HasDiscount = 1
+			if item.DiscountRate % 10 == 0 {
+				info.RateCn = fmt.Sprintf("%d折券", item.DiscountRate/10)
+			} else {
+				info.RateCn = fmt.Sprintf("%.1f折券", float64(item.DiscountRate)/10)
+			}
 		}
 	}
 
