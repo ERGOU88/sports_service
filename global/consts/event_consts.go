@@ -57,3 +57,14 @@ const (
   POST_COMMENT_AT_MSG
   POST_PUBLISH_AT_MSG
 )
+
+
+
+const (
+  // 预约场馆订单超时事件
+  ORDER_EVENT_VENUE_TIME_OUT           = 1
+  // 预约私教订单超时
+  ORDER_EVENT_COACH_TIME_OUT           = 2
+  // 预约大课订单超时
+  ORDER_EVENT_COURSE_TIME_OUT          = 3
+)
