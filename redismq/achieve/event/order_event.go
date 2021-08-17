@@ -138,6 +138,8 @@ func orderTimeOut(appointmentType int, orderId string) error {
 		return errors.New("update order status fail")
 	}
 
+	orderModel.OrderProduct.Status = consts.PAY_TYPE_UNPAID
+	orderModel.OrderProduct.UpdateAt = now
 	// 更新订单商品流水状态
 	affected, err = orderModel.UpdateOrderProductStatus(orderId, consts.PAY_TYPE_WAIT)
 	if affected != 1 || err != nil {
@@ -164,6 +166,13 @@ func orderTimeOut(appointmentType int, orderId string) error {
 			session.Rollback()
 			return errors.New("update stock info fail")
 		}
+	}
+
+	// 更新标签状态[废弃]
+	if _, err = amodel.UpdateLabelsStatus(orderId, 1); err != nil {
+		log.Log.Errorf("redisMq_trace: update labels status fail, err:%s", err)
+		session.Rollback()
+		return errors.New("update label status fail")
 	}
 
 	session.Commit()

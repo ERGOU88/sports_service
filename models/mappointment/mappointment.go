@@ -311,7 +311,11 @@ func (m *AppointmentModel) AddMultiAppointmentRecord(list []*models.AppointmentR
 	return m.Engine.InsertMulti(list)
 }
 
-// 获取场馆用户标签
+const (
+	GET_VENUE_USER_LABELS = "SELECT distinct(label_name),label_id FROM venue_user_label WHERE date=? AND time_node=? " +
+		"AND status=0 AND venue_id=? LIMIT 3"
+)
+// 获取场馆用户标签[去重 最多取3条]
 func (m *AppointmentModel) GetVenueUserLabels() ([]*models.VenueUserLabel, error) {
 	var list []*models.VenueUserLabel
 	if err := m.Engine.Where("date=? AND time_node=? AND status=0 AND venue_id=?", m.Labels.Date,
@@ -355,6 +359,11 @@ func (m *AppointmentModel) GetLabelsByRand() ([]*models.VenuePersonalLabelConf, 
 	}
 
 	return list, nil
+}
+
+// 订单超时 更新标签数据状态
+func (m *AppointmentModel) UpdateLabelsStatus(orderId string, status int) (int64, error) {
+	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Update(m.Labels)
 }
 
 // 添加场馆用户标签

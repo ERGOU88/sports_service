@@ -495,13 +495,12 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, lab
 			}
 
 			if len(list) > 0 {
-				if err := svc.AddLabels(list, date, userId, relatedId, labelType); err != nil {
+				if err := svc.AddLabels(list, date, userId, orderId, relatedId, labelType); err != nil {
 					log.Log.Errorf("venue_trace: add labels fail, err:%s", err)
 					return err
 				}
 			}
 		}
-
 
 		svc.Extra.OrderType, err = svc.GetOrderType(svc.appointment.AppointmentInfo.AppointmentType)
 		if err != nil {
@@ -586,7 +585,7 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, lab
 }
 
 // labelType 0 表示用户添加 1 表示系统添加
-func (svc *base) AddLabels(list []*models.VenuePersonalLabelConf, date, userId string, relatedId int64, labelType int) error {
+func (svc *base) AddLabels(list []*models.VenuePersonalLabelConf, date, userId, orderId string, relatedId int64, labelType int) error {
 	labels := make([]*models.VenueUserLabel, len(list))
 	for k, v := range list {
 		label := &models.VenueUserLabel{
@@ -597,6 +596,7 @@ func (svc *base) AddLabels(list []*models.VenuePersonalLabelConf, date, userId s
 			LabelName: v.LabelName,
 			VenueId: relatedId,
 			LabelType: labelType,
+			PayOrderId: orderId,
 		}
 
 		labels[k] = label

@@ -11,7 +11,7 @@ type AppointmentRecord struct {
 	CreateAt        int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt        int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
 	PurchasedNum    int    `json:"purchased_num" xorm:"not null comment('购买的数量') INT(10)"`
-	Status          int    `json:"status" xorm:"not null default 0 comment('0 待支付 1 订单超时/未支付 2 已支付 3 已完成 4 已取消  5 退款中 6 已退款 7 软删除') TINYINT(1)"`
+	Status          int    `json:"status" xorm:"not null default 0 comment('0 待支付 1 订单超时/未支付 2 已支付 3 已完成 4 已取消  5 退款中 6 已退款 7 退款中 8 软删除') TINYINT(1)"`
 	SeatInfo        string `json:"seat_info" xorm:"not null default '0' comment('预约的座位信息 ') VARCHAR(1000)"`
 	DeductionTm     int64  `json:"deduction_tm" xorm:"not null default 0 comment('抵扣会员时长') BIGINT(20)"`
 }
