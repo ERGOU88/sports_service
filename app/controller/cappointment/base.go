@@ -162,6 +162,7 @@ func (svc *base) GetDateById(id int, formatType string) string {
 
 func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppointmentInfo) *mappointment.OptionsInfo {
 	var isExpire bool
+	var tm int64
 	if svc.DateId == 1 {
 		nodes := strings.Split(item.TimeNode, "-")
 		if len(nodes) ==  2 {
@@ -173,15 +174,14 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 			if now > startTm.(int64) {
 				// 预约私教、预约大课 如果当前时间 > 配置中的开始时间 过滤该配置项
 				if item.AppointmentType != 0 {
-						log.Log.Errorf("过滤id：%d, date:%s", item.Id, date)
-						return nil
+					log.Log.Errorf("过滤id：%d, date:%s", item.Id, date)
+					return nil
 				}
 
+				tm = startTm.(int64)
 				// 预约场馆则给标示
 				isExpire = true
 			}
-
-
 		}
 	}
 
@@ -199,6 +199,8 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		AmountCn: fmt.Sprintf("%.2f", float64(item.CurAmount)/100),
 		Id: item.Id,
 		IsExpire: isExpire,
+		StartTm: tm,
+		Date: fmt.Sprintf("%s %s", date, item.TimeNode),
 	}
 
 	// 售价 < 定价 表示有优惠
