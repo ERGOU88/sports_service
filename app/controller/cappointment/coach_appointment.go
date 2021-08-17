@@ -105,7 +105,8 @@ func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentR
 	}
 
 	if svc.course.Course.CoachId != params.CoachId {
-		log.Log.Error("venue_trace: coach id not match")
+		log.Log.Error("venue_trace: coach id not match, coachId:%d, curCoachId:%d",
+		svc.course.Course.CoachId, params.CoachId)
 		svc.engine.Rollback()
 		return errdef.COACH_ID_NOT_MATCH, nil
 	}

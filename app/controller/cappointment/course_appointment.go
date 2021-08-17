@@ -127,7 +127,8 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 
 	// 课程id不匹配
 	if svc.coach.Coach.CourseId != svc.course.Course.Id {
-		log.Log.Error("venue_trace: course id not match")
+		log.Log.Error("venue_trace: course id not match, courseId:%d, curCourseId:%d",
+			svc.coach.Coach.CourseId, svc.course.Course.Id)
 		svc.engine.Rollback()
 		return errdef.COURSE_ID_NOT_MATCH, nil
 	}
