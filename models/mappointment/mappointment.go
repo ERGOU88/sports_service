@@ -46,6 +46,7 @@ type OptionsInfo struct {
 	QuotaNum        int    `json:"quota_num"`
 	RelatedId       int64  `json:"related_id"`
 	RecommendType   int    `json:"recommend_type"`
+	RecommendName   string `json:"recommend_name"`
 	AppointmentType int    `json:"appointment_type"`
 	WeekNum         int    `json:"week_num"`
 
@@ -59,7 +60,9 @@ type OptionsInfo struct {
 	Labels          []*LabelInfo     `json:"labels,omitempty"`   // 标签列表
 	ReservedUsers   []*ReservedUsers `json:"reserved_users"`     // 已预约人数
 	IsExpire        bool   `json:"is_expire"`                    // 是否过期
-
+	Date            string `json:"date"`                         // 年月日
+	StartTm         int64  `json:"start_tm"`                     // 开始时间戳
+	CoachId         int64  `json:"coach_id"`                     // 教练id
 }
 
 // 已预约人数
@@ -80,6 +83,8 @@ type LabelInfo struct {
 type Options struct {
 	Id                 int64        `json:"id"`
 	Name               string       `json:"name"`
+	Title              string       `json:"title"`
+	Avatar             string       `json:"avatar"`
 	Describe           string       `json:"describe,omitempty"`
 	CostDescription    string       `json:"cost_description,omitempty"`     // 费用说明
 	Instructions       string       `json:"instructions,omitempty"`         // 购买须知
@@ -105,6 +110,7 @@ type AppointmentInfo struct {
 	Count       int            `json:"count"`      // 数量
 	Id          int64          `json:"id"`         // 时间配置id
 	SeatInfos   []*SeatInfo    `json:"seat_info"`  // 座位号
+	IsEnough    bool
 }
 
 // 座位信息
@@ -139,6 +145,9 @@ type AppointmentResp struct {
 	OrderId       string `json:"order_id"`           // 订单ID
 	OrderType     int    `json:"order_type"`         // 订单类型
 	PayDuration   int64  `json:"pay_duration"`       // 支付时长
+	Address       string `json:"address"`            // 上课地点
+	CoachName     string `json:"coach_name"`         // 老师名称
+	CoachId       int64  `json:"coach_id"`           // 老师id
 }
 
 // 单时间节点预约数据
@@ -150,6 +159,7 @@ type TimeNodeInfo struct {
 	Amount       int          `json:"amount"`       // 单价
 	DeductionTm  int64        `json:"deduction_tm"` // 抵扣会员时长
 	Discount     int          `json:"discount"`     // 优惠的金额
+	IsEnough     bool         `json:"is_enough"`    // 当前节点库存是否足够
 }
 
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {

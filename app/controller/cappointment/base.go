@@ -162,6 +162,7 @@ func (svc *base) GetDateById(id int, formatType string) string {
 
 func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppointmentInfo) *mappointment.OptionsInfo {
 	var isExpire bool
+	var tm int64
 	if svc.DateId == 1 {
 		nodes := strings.Split(item.TimeNode, "-")
 		if len(nodes) ==  2 {
@@ -173,15 +174,14 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 			if now > startTm.(int64) {
 				// 预约私教、预约大课 如果当前时间 > 配置中的开始时间 过滤该配置项
 				if item.AppointmentType != 0 {
-						log.Log.Errorf("过滤id：%d, date:%s", item.Id, date)
-						return nil
+					log.Log.Errorf("过滤id：%d, date:%s", item.Id, date)
+					return nil
 				}
 
+				tm = startTm.(int64)
 				// 预约场馆则给标示
 				isExpire = true
 			}
-
-
 		}
 	}
 
@@ -196,20 +196,25 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		RecommendType: item.RecommendType,
 		AppointmentType: item.AppointmentType,
 		WeekNum: item.WeekNum,
-		AmountCn: fmt.Sprintf("¥%.2f", float64(item.CurAmount)/100),
+		AmountCn: fmt.Sprintf("%.2f", float64(item.CurAmount)/100),
 		Id: item.Id,
 		IsExpire: isExpire,
+		StartTm: tm,
+		Date: fmt.Sprintf("%s %s", date, item.TimeNode),
+		CoachId: item.CoachId,
 	}
 
 	// 售价 < 定价 表示有优惠
 	if item.CurAmount < item.RealAmount {
-		info.HasDiscount = 1
 		info.DiscountRate = item.DiscountRate
 		info.DiscountAmount = item.DiscountAmount
-		if item.DiscountRate % 10 == 0 {
-			info.RateCn = fmt.Sprintf("%d", item.DiscountRate/10)
-		} else {
-			info.RateCn = fmt.Sprintf("%.1f", float64(item.DiscountRate)/10)
+		if item.DiscountAmount > 0 {
+			info.HasDiscount = 1
+			if item.DiscountRate % 10 == 0 {
+				info.RateCn = fmt.Sprintf("%d折券", item.DiscountRate/10)
+			} else {
+				info.RateCn = fmt.Sprintf("%.1f折券", float64(item.DiscountRate)/10)
+			}
 		}
 	}
 
@@ -389,7 +394,7 @@ func (svc *base) AddOrder(orderId, userId string, now int) error {
 }
 
 // 设置最新库存数据（返回使用）
-func (svc *base) SetLatestInventoryResp(date string, count int) (*mappointment.TimeNodeInfo, error) {
+func (svc *base) SetLatestInventoryResp(date string, count int, isEnough bool) (*mappointment.TimeNodeInfo, error) {
 	info := &mappointment.TimeNodeInfo{}
 	info.Id = svc.appointment.AppointmentInfo.Id
 	info.TimeNode = svc.appointment.AppointmentInfo.TimeNode
@@ -405,16 +410,26 @@ func (svc *base) SetLatestInventoryResp(date string, count int) (*mappointment.T
 		// 如果查询失败 返回当前数量
 		info.Count = count
 	} else {
-		// 剩余库存 = 总库存 - 冻结库存 + 当前购买
-		stockNum := svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum + count
-		// 剩余库存 >= 当前购买数量
-		if stockNum >= count {
-			// 可购数量 = 当前购买数量
-			info.Count = count
-		} else {
-			// 可购数量 = 剩余库存
-			info.Count = stockNum
+		log.Log.Infof("venue_trace: info:%+v, quotaNum:%d, purchasedNum:%d, count:%d", info,
+			svc.appointment.Stock.QuotaNum, svc.appointment.Stock.PurchasedNum, count)
+		// 默认当前节点库存足够
+		info.Count = count
+		// 如果不够 更新库存失败了
+		if !isEnough {
+			// 可购数量 = 总库存 - 已购买
+			info.Count = svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum
 		}
+
+		// 剩余库存 = 总库存 - 冻结库存 + 当前购买
+		//stockNum := svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum + count
+		//// 剩余库存 >= 当前购买数量
+		//if stockNum >= count {
+		//	// 可购数量 = 当前购买数量
+		//	info.Count = count
+		//} else {
+		//	// 可购数量 = 总库存 - 已购买
+		//	info.Count = svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum
+		//}
 	}
 
 	return info, nil
@@ -507,6 +522,8 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, lab
 
 
 		var b bool
+		// 默认该节点库存足够
+		item.IsEnough = true
 		if !ok {
 			b, err = svc.AddStock(date, now, item.Count)
 			log.Log.Errorf("id:%d, b:%v, err:%s", svc.appointment.AppointmentInfo.Id, b, err)
@@ -526,18 +543,25 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, lab
 				return err
 			}
 
-			log.Log.Errorf("venue_trace: affected:%d", affected)
+			log.Log.Errorf("venue_trace: affected:%d, id:%d, node:%s", affected, item.Id,
+				svc.appointment.AppointmentInfo.TimeNode)
 
 			// 更新未成功 库存不够 || 当前预约库存足够 但已出现库存不足的预约时间点 则需返回最新各预约节点的剩余库存
-			if affected == 0 || affected == 1 && !svc.Extra.IsEnough {
+			//if affected == 0 || affected == 1 && !svc.Extra.IsEnough {
+			//	svc.Extra.IsEnough = false
+			//	//continue
+			//}
+
+			if affected == 0 {
 				svc.Extra.IsEnough = false
-				//continue
+				// 该节点库存不够
+				item.IsEnough = false
 			}
 
 		}
 
 		// 查看最新的库存 并返回 tips：读快照无问题 购买时保证数据一致性即可
-		resp, err := svc.SetLatestInventoryResp(date, item.Count)
+		resp, err := svc.SetLatestInventoryResp(date, item.Count, item.IsEnough)
 		if err != nil {
 			log.Log.Errorf("venue_trace:set inventory resp fail, err:%s", err)
 			return err

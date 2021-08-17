@@ -89,9 +89,8 @@ func (m *SmsModel) Send(mobileNum, code string) error {
 	if len(rsp.Response.SendStatusSet) > 0 {
 		if *rsp.Response.SendStatusSet[0].Code != "Ok" {
 			log.Log.Errorf("sms_trace: send sms fail, mobile:%s, rsp:%+v, code:%s", mobileNum, rsp, *rsp.Response.SendStatusSet[0].Code)
+			return errors.New("send sms fail")
 		}
-
-		return errors.New("send sms fail")
 	}
 
 	return nil

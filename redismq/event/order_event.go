@@ -21,17 +21,15 @@ func PushOrderEventMsg(msg []byte) {
 	}
 }
 
-func NewOrderEvent(toUserId, composeId, nickname, cover, content string, eventType int32) []byte {
+// 订单超时事件
+func NewOrderEvent(orderId string, processTm int64, eventType int32) []byte {
 	event := new(protocol.Event)
-	event.UserId = toUserId
 	event.EventType = eventType
 	event.Ts = time.Now().Unix()
 
-	data := new(protocol.PushData)
-	data.NickName = nickname
-	data.Cover = cover
-	data.Content = content
-	data.ComposeId = composeId
+	data := new(protocol.OrderData)
+	data.OrderId = orderId
+	data.ProcessTm = processTm
 
 	msg , _ := util.JsonFast.Marshal(data)
 	event.Data = msg

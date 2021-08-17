@@ -34,4 +34,5 @@ type PushData struct {
 // 订单事件数据
 type OrderData struct {
 	OrderId    string     `json:"order_id"`   // 订单id
+	ProcessTm  int64      `json:"process_tm"` // 处理事件
 }

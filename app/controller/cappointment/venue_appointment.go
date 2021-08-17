@@ -12,6 +12,7 @@ import (
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
+	redismq "sports_service/server/redismq/event"
 	"sports_service/server/util"
 	"time"
 )
@@ -173,8 +174,9 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 	svc.engine.Commit()
 
 	svc.Extra.PayDuration = consts.APPOINTMENT_PAYMENT_DURATION
-
-	//redismq.PushOrderEventMsg()
+    // 超时
+	redismq.PushOrderEventMsg(redismq.NewOrderEvent(svc.Extra.OrderId, int64(svc.order.Order.CreateAt) + svc.Extra.PayDuration,
+		consts.ORDER_EVENT_VENUE_TIME_OUT))
 	return errdef.SUCCESS, svc.Extra
 }
 
@@ -244,6 +246,12 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 		if err != nil {
 			log.Log.Errorf("venue_trace: get appointment record fail, err:%s", err)
 		}
+
+		ok, err = svc.venue.GetRecommendInfoById(fmt.Sprint(info.RecommendType))
+		if !ok || err != nil {
+			log.Log.Errorf("venue_trace: get recommend info by id fail, id:%d", info.RecommendType)
+		}
+		info.RecommendName = svc.venue.Recommend.Name
 
 		info.ReservedUsers = make([]*mappointment.ReservedUsers, 0)
 		if len(records) > 0 {
