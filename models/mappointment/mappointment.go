@@ -138,7 +138,8 @@ type AppointmentResp struct {
 	IsEnough bool       `json:"is_enough"`    // 库存是否足够 false 不足 true 足够
 	IsDeduct bool       `json:"is_deduct"`    // 是否可扣除会员时长
 	TotalDeductionTm int `json:"total_deduction_tm"`  // 抵扣总时长
-	TotalAmount int     `json:"total_amount"` // 总金额
+	TotalAmount int     `json:"total_amount"` // 总金额 真实支付金额
+	TotalSalesPrice int  `json:"total_sales_price"` // 总售价
 	MobileNum string    `json:"mobile_num"`   // 手机号
 	TotalDiscount int   `json:"total_discount"` // 总优惠
 	TimeNodeInfo  []*TimeNodeInfo `json:"node_info"` // 多时间节点预约数据
@@ -248,7 +249,7 @@ func (m *AppointmentModel) AddStockInfo(stock *models.VenueAppointmentStock) (in
 
 const (
 	UPDATE_STOCK_INFO = "UPDATE `venue_appointment_stock` SET `purchased_num`= `purchased_num`+ ?, `update_at`=? WHERE date=? AND " +
-		"time_node=? AND appointment_type=? AND related_id=? AND quota_num >= `purchased_num`+ ? LIMIT 1"
+		"time_node=? AND appointment_type=? AND related_id=? AND quota_num >= `purchased_num`+ ? AND `purchased_num` >= 0 LIMIT 1"
 )
 func (m *AppointmentModel) UpdateStockInfo(timeNode, date string, count, now, appointmentType, relatedId int) (int64, error) {
 	res, err := m.Engine.Exec(UPDATE_STOCK_INFO, count, now, date, timeNode, appointmentType, relatedId, count)
@@ -310,7 +311,11 @@ func (m *AppointmentModel) AddMultiAppointmentRecord(list []*models.AppointmentR
 	return m.Engine.InsertMulti(list)
 }
 
-// 获取场馆用户标签
+const (
+	GET_VENUE_USER_LABELS = "SELECT distinct(label_name),label_id FROM venue_user_label WHERE date=? AND time_node=? " +
+		"AND status=0 AND venue_id=? LIMIT 3"
+)
+// 获取场馆用户标签[去重 最多取3条]
 func (m *AppointmentModel) GetVenueUserLabels() ([]*models.VenueUserLabel, error) {
 	var list []*models.VenueUserLabel
 	if err := m.Engine.Where("date=? AND time_node=? AND status=0 AND venue_id=?", m.Labels.Date,
@@ -356,7 +361,27 @@ func (m *AppointmentModel) GetLabelsByRand() ([]*models.VenuePersonalLabelConf, 
 	return list, nil
 }
 
+// 订单超时 更新标签数据状态
+func (m *AppointmentModel) UpdateLabelsStatus(orderId string, status int) (int64, error) {
+	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Update(m.Labels)
+}
+
 // 添加场馆用户标签
 func (m *AppointmentModel) AddLabels(labels []*models.VenueUserLabel) (int64, error) {
 	return m.Engine.InsertMulti(labels)
+}
+
+// 通过订单id获取预约流水
+func (m *AppointmentModel) GetAppointmentRecordByOrderId(orderId string, status int) ([]*models.AppointmentRecord, error) {
+	var list []*models.AppointmentRecord
+	if err := m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 更新预约记录状态
+func (m *AppointmentModel) UpdateAppointmentRecordStatus(orderId string, status int) (int64, error) {
+	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Cols("update_at, status").Update(m.Record)
 }

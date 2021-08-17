@@ -22,3 +22,19 @@ const (
     ORDER_APPOINTMENT_COACH_MSG
     ORDER_APPOINTMENT_COURSE_MSG
 )
+
+// 0 待支付
+// 1 订单超时/未支付
+// 2 已支付
+// 3 已完成
+// 4 已取消
+// 5 退款中
+// 6 已退款
+// 7 退款失败
+const (
+    PAY_TYPE_WAIT = iota
+    PAY_TYPE_UNPAID
+    PAY_TYPE_PAID
+    PAY_TYPE_COMPLETED
+)
+

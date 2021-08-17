@@ -125,6 +125,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 	svc.Extra.WeekCn = util.GetWeekCn(params.WeekNum)
 	svc.Extra.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
 	svc.Extra.TmCn = util.ResolveTime(svc.Extra.TotalTm)
+	svc.Extra.TotalSalesPrice = svc.Extra.TotalAmount
 
 	// 用户选择抵扣时长
 	if params.IsDiscount == 1 {
