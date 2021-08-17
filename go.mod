@@ -14,7 +14,7 @@ require (
 	github.com/garyburd/redigo v1.6.2
 	github.com/gin-contrib/gzip v0.0.3
 	github.com/gin-gonic/gin v1.6.3
-	github.com/go-pay/gopay v1.5.55 // indirect
+	//github.com/go-pay/gopay v1.5.55 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-xorm/core v0.6.3
 	github.com/go-xorm/xorm v0.7.9
