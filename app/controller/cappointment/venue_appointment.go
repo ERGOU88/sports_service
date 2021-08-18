@@ -78,6 +78,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 	}
 
 	if len(params.Infos) == 0 {
+		log.Log.Errorf("venue_trace: infos len%d", len(params.Infos))
 		svc.engine.Rollback()
 		return errdef.APPOINTMENT_INVALID_INFO, nil
 	}
