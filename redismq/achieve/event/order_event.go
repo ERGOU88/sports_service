@@ -73,6 +73,7 @@ func handleOrderEvent(event protocol.Event) error {
 
 	// 如果超时处理时间 < 当前时间 则重新入队列
 	if info.ProcessTm < time.Now().Unix() {
+		log.Log.Errorf("redisMq_trace: orderId:%s, requeue", info.OrderId)
 		return errors.New("requeue")
 	}
 
@@ -96,7 +97,7 @@ func handleOrderEvent(event protocol.Event) error {
 		}
 
 	default:
-		log.Log.Errorf("redisMq_trace: unsupported eventType, eventType:%d", event.EventType)
+		log.Log.Errorf("redisMq_trace: unsupported eventType, orderId:%s, eventType:%d", info.OrderId, event.EventType)
 	}
 
 	return nil
@@ -108,7 +109,7 @@ func orderTimeOut(appointmentType int, orderId string) error {
 	defer session.Close()
 
 	if err := session.Begin(); err != nil {
-		log.Log.Errorf("redisMq_trace: session begin err:%s", err)
+		log.Log.Errorf("redisMq_trace: session begin err:%s, orderId:%s", err, orderId)
 		return err
 	}
 
@@ -153,7 +154,7 @@ func orderTimeOut(appointmentType int, orderId string) error {
 	amodel := mappointment.NewAppointmentModel(session)
 	list, err := amodel.GetAppointmentRecordByOrderId(orderId, consts.PAY_TYPE_WAIT)
 	if err != nil {
-		log.Log.Errorf("redisMq_trace: get appointment record by orderId fail, err:%s", err)
+		log.Log.Errorf("redisMq_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
 		session.Rollback()
 		return err
 	}
@@ -163,7 +164,7 @@ func orderTimeOut(appointmentType int, orderId string) error {
 		affected, err = amodel.RevertStockNum(record.TimeNode, record.Date,  record.PurchasedNum * -1, now,
 			record.AppointmentType, int(record.RelatedId))
 		if affected != 1 || err != nil {
-			log.Log.Errorf("redisMq_trace: update stock info fail, err:%s, affected:%d, id:%d", err, affected, record.Id)
+			log.Log.Errorf("redisMq_trace: update stock info fail, orderId:%s, err:%s, affected:%d, id:%d", orderId, err, affected, record.Id)
 			session.Rollback()
 			return errors.New("update stock info fail")
 		}
@@ -171,7 +172,7 @@ func orderTimeOut(appointmentType int, orderId string) error {
 
 	// 更新标签状态[废弃]
 	if _, err = amodel.UpdateLabelsStatus(orderId, 1); err != nil {
-		log.Log.Errorf("redisMq_trace: update labels status fail, err:%s", err)
+		log.Log.Errorf("redisMq_trace: update labels status fail, orderId:%s, err:%s", orderId, err)
 		session.Rollback()
 		return errors.New("update label status fail")
 	}
