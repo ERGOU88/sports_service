@@ -3,6 +3,7 @@ package event
 import (
 	"os"
 	"os/signal"
+	"sports_service/server/global/app/log"
 	"syscall"
 )
 
@@ -15,6 +16,7 @@ func InitSignal() {
 		s := <-sigChan
 		switch s {
 		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGSTOP, syscall.SIGINT, syscall.SIGSTOP:
+			log.Log.Errorf("system signal")
 			closing = true
 			return
 		case syscall.SIGHUP:
