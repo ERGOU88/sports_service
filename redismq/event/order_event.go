@@ -16,9 +16,8 @@ func PushOrderEventMsg(msg []byte) {
 	conn := dao.RedisPool().Get()
 	defer conn.Close()
 
-	num, err := redis.Int(conn.Do("LPUSH", rdskey.MSG_ORDER_EVENT_KEY, msg))
-	if err != nil || num != 2 {
-		log.Log.Infof("event_trace: msg push fail, err:%s, num:%d", err, num)
+	if _, err := redis.Int(conn.Do("LPUSH", rdskey.MSG_ORDER_EVENT_KEY, msg)); err != nil {
+		log.Log.Infof("event_trace: msg push fail, err:%s", err)
 	}
 
 	return
