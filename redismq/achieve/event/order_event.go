@@ -146,8 +146,7 @@ func orderTimeOut(appointmentType int, orderId string) error {
 	orderModel.OrderProduct.Status = consts.PAY_TYPE_UNPAID
 	orderModel.OrderProduct.UpdateAt = now
 	// 更新订单商品流水状态
-	affected, err = orderModel.UpdateOrderProductStatus(orderId, consts.PAY_TYPE_WAIT)
-	if affected != 1 || err != nil {
+	if _, err = orderModel.UpdateOrderProductStatus(orderId, consts.PAY_TYPE_WAIT); err != nil {
 		log.Log.Errorf("redisMq_trace: update order product status fail, err:%s, affected:%d, orderId:%s", err, affected, orderId)
 		session.Rollback()
 		return errors.New("update order product status fail")
