@@ -69,6 +69,7 @@ func handleOrderEvent(event protocol.Event) error {
 		log.Log.Errorf("redisMq_trace: proto unmarshal order data err:%s", err)
 		return nil
 	}
+	log.Log.Infof("redisMq_trace: info:%+v", info)
 
 	// 如果超时处理时间 < 当前时间 则重新入队列
 	if info.ProcessTm < time.Now().Unix() {
@@ -131,9 +132,9 @@ func orderTimeOut(appointmentType int, orderId string) error {
 	orderModel.Order.UpdateAt = now
 	orderModel.Order.Status = consts.PAY_TYPE_UNPAID
 	// 更新订单状态为 超时未支付
-	affected, err := orderModel.UpdateOrderStatus()
+	affected, err := orderModel.UpdateOrderStatus(orderId, consts.PAY_TYPE_WAIT)
 	if affected != 1 || err != nil {
-		log.Log.Errorf("redisMq_trace: update order status fail, orderId:%s", orderId)
+		log.Log.Errorf("redisMq_trace: update order status fail, orderId:%s, err:%s", orderId, err)
 		session.Rollback()
 		return errors.New("update order status fail")
 	}

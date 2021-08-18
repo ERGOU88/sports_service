@@ -44,8 +44,8 @@ func (m *OrderModel) AddMultiOrderProduct(list []*models.VenueOrderProductInfo) 
 }
 
 // 订单超时 更新订单状态
-func (m *OrderModel) UpdateOrderStatus() (int64, error) {
-	return m.Engine.Where("pay_order_id=? AND status=?", m.Order.PayOrderId, m.Order.Status).Cols("update_at", "status").Update(m.Order)
+func (m *OrderModel) UpdateOrderStatus(orderId string, status int) (int64, error) {
+	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Cols("update_at", "status").Update(m.Order)
 }
 
 // 通过订单id 获取订单流水信息
