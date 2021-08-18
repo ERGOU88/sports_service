@@ -138,6 +138,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 		}
 	}
 
+	log.Log.Errorf("venue_trace: extra Info:%+v", svc.Extra)
 	// 库存不足 返回最新数据 事务回滚
 	if !svc.Extra.IsEnough {
 		log.Log.Errorf("venue_trace: rollback, isEnough:%v, reqType:%d", svc.Extra.IsEnough, params.ReqType)
