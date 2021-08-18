@@ -173,7 +173,8 @@ func orderTimeOut(appointmentType int, orderId string) error {
 	}
 
 	// 更新标签状态[废弃]
-	if _, err = amodel.UpdateLabelsStatus(orderId, 1); err != nil {
+	amodel.Labels.Status = 1
+	if _, err = amodel.UpdateLabelsStatus(orderId, 0); err != nil {
 		log.Log.Errorf("redisMq_trace: update labels status fail, orderId:%s, err:%s", orderId, err)
 		session.Rollback()
 		return errors.New("update label status fail")
