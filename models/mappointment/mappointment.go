@@ -101,6 +101,7 @@ type AppointmentReq struct {
 	WeekNum         int                 `json:"week_num"`         // 星期几
 	ReqType         int                 `json:"req_type"`         // 1 查询购物车数据 2 下单
 	IsDiscount      int32               `json:"is_discount"`      // 是否抵扣时长 1 抵扣 0 不抵扣
+	Channel         int                 `json:"channel"`          // 1001 安卓 1002 ios
 }
 
 // 预约请求数据
@@ -149,6 +150,7 @@ type AppointmentResp struct {
 	Address       string `json:"address"`            // 上课地点
 	CoachName     string `json:"coach_name"`         // 老师名称
 	CoachId       int64  `json:"coach_id"`           // 老师id
+	Channel       int    `json:"channel"`            // 1001 安卓 1002 ios
 }
 
 // 单时间节点预约数据

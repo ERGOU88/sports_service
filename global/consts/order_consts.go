@@ -38,3 +38,10 @@ const (
     PAY_TYPE_COMPLETED
 )
 
+
+// 1001表示android
+// 1002表示ios
+const (
+    PLT_TYPE_ANDROID = 1001
+    PLT_TYPE_IOS     = 1002
+)

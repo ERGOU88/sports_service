@@ -149,12 +149,19 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 	svc.Extra.WeekCn = util.GetWeekCn(params.WeekNum)
 	svc.Extra.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
 	svc.Extra.TmCn = util.ResolveTime(svc.Extra.TotalTm)
+	svc.Extra.Channel = params.Channel
 
 	// 库存不足 返回最新数据 事务回滚
 	if !svc.Extra.IsEnough {
 		log.Log.Errorf("venue_trace: rollback, isEnough:%v, reqType:%d", svc.Extra.IsEnough, params.ReqType)
 		svc.engine.Rollback()
 		return errdef.APPOINTMENT_NOT_ENOUGH_STOCK, svc.Extra
+	}
+
+	// 查询数据 则返回200
+	if params.ReqType != 2 {
+		svc.engine.Rollback()
+		return errdef.SUCCESS, svc.Extra
 	}
 
 	// 添加订单

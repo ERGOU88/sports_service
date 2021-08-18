@@ -150,6 +150,12 @@ func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentR
 		return errdef.APPOINTMENT_NOT_ENOUGH_STOCK, svc.Extra
 	}
 
+	// 查询数据 则返回200
+	if params.ReqType != 2 {
+		svc.engine.Rollback()
+		return errdef.SUCCESS, svc.Extra
+	}
+
 	// 添加订单
 	if err := svc.AddOrder(orderId, user.UserId, now); err != nil {
 		log.Log.Errorf("venue_trace: add order fail, err:%s", err)

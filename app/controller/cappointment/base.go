@@ -381,6 +381,7 @@ func (svc *base) AddOrder(orderId, userId string, now int) error {
 	svc.order.Order.CreateAt = now
 	svc.order.Order.UpdateAt = now
 	svc.order.Order.Amount = svc.Extra.TotalAmount
+	svc.order.Order.ChannelId = svc.Extra.Channel
 	affected, err := svc.order.AddOrder()
 	if err != nil {
 		return err

@@ -316,42 +316,45 @@ func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*mo
 		return err
 	}
 
-	// 如果是会员
-	if vip != nil {
-		// 会员时长 > 0
-		if vip.Duration > 0 {
-			// 开始走抵扣流程 预约的时间节点[多个] 按价格从高至低 开始抵扣 每个时间节点最多只可抵扣一次
-			for key, val := range list {
-				if val.Duration <= 0 {
-					continue
-				}
+	if vip == nil {
+		return nil
+	}
 
-				// 是否足够抵扣
-				affected, err := svc.appointment.UpdateVenueVipInfo(val.Duration * -1, userId)
-				if err != nil {
-					log.Log.Errorf("venue_trace: update vip duration fail, err:%s", err)
-					return err
-				}
+	if vip.Duration <= 0 {
+		return nil
+	}
 
-				// 会员时长不够 查看下一个预约节点 是否可抵扣
-				if affected == 0 {
-					continue
-				}
+	// 如果是会员 且 会员时长 > 0
+	// 开始走抵扣流程 预约的时间节点[多个] 按价格从高至低 开始抵扣 每个时间节点最多只可抵扣一次
+	for key, val := range list {
+		if val.Duration <= 0 {
+			continue
+		}
 
-				// 足够抵扣 则记录抵扣的记录
-				if affected == 1 {
-					// 抵扣一个 则 减去一个的售价
-					svc.orderMp[val.Id].DeductionNum = affected
-					svc.orderMp[val.Id].DeductionTm = int64(val.Duration)
-					svc.orderMp[val.Id].DeductionAmount = int64(val.CurAmount)
-					svc.recordMp[val.Id].DeductionTm = int64(val.Duration)
-					svc.Extra.TotalDeductionTm += val.Duration
-					svc.Extra.TotalAmount = svc.Extra.TotalAmount - val.CurAmount
-					svc.Extra.IsDeduct = true
-					if len(svc.Extra.TimeNodeInfo) <= key {
-						svc.Extra.TimeNodeInfo[key].DeductionTm = svc.orderMp[val.Id].DeductionTm
-					}
-				}
+		// 是否足够抵扣
+		affected, err := svc.appointment.UpdateVenueVipInfo(val.Duration * -1, userId)
+		if err != nil {
+			log.Log.Errorf("venue_trace: update vip duration fail, err:%s", err)
+			return err
+		}
+
+		// 会员时长不够 查看下一个预约节点 是否可抵扣
+		if affected == 0 {
+			continue
+		}
+
+		// 足够抵扣 则记录抵扣的记录
+		if affected == 1 {
+			// 抵扣一个 则 减去一个的售价
+			svc.orderMp[val.Id].DeductionNum = affected
+			svc.orderMp[val.Id].DeductionTm = int64(val.Duration)
+			svc.orderMp[val.Id].DeductionAmount = int64(val.CurAmount)
+			svc.recordMp[val.Id].DeductionTm = int64(val.Duration)
+			svc.Extra.TotalDeductionTm += val.Duration
+			svc.Extra.TotalAmount = svc.Extra.TotalAmount - val.CurAmount
+			svc.Extra.IsDeduct = true
+			if len(svc.Extra.TimeNodeInfo) <= key {
+				svc.Extra.TimeNodeInfo[key].DeductionTm = svc.orderMp[val.Id].DeductionTm
 			}
 		}
 	}
