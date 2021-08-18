@@ -18,7 +18,7 @@ func PushEventMsg(msg []byte) {
 	defer conn.Close()
 
 	num, err := redis.Int(conn.Do("LPUSH", rdskey.MSG_PUSH_EVENT_KEY, msg))
-	if err != nil || num != 1 {
+	if err != nil || num != 2 {
 		log.Log.Infof("event_trace: msg push fail, err:%s", err)
 	}
 

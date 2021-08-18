@@ -251,6 +251,7 @@ const (
 	UPDATE_STOCK_INFO = "UPDATE `venue_appointment_stock` SET `quota_num`=?, `purchased_num`= `purchased_num`+ ?, `update_at`=? WHERE date=? AND " +
 		"time_node=? AND appointment_type=? AND related_id=? AND ? >= `purchased_num`+ ? AND `purchased_num` >= 0 LIMIT 1"
 )
+// 需求：允许动态增加库存 需注意：不可动态减少
 func (m *AppointmentModel) UpdateStockInfo(timeNode, date string, quotaNum, count, now, appointmentType, relatedId int) (int64, error) {
 	res, err := m.Engine.Exec(UPDATE_STOCK_INFO, quotaNum, count, now, date, timeNode, appointmentType, relatedId, quotaNum, count)
 	if err != nil {
