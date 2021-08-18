@@ -15,7 +15,7 @@ func InitSignal() {
 	for {
 		s := <-sigChan
 		switch s {
-		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGSTOP, syscall.SIGINT, syscall.SIGSTOP:
+		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGSTOP, syscall.SIGINT:
 			log.Log.Errorf("system signal")
 			closing = true
 			return

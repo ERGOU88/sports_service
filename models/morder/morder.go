@@ -2,6 +2,8 @@ package morder
 
 import (
 	"github.com/go-xorm/xorm"
+	"sports_service/server/dao"
+	"sports_service/server/global/rdskey"
 	"sports_service/server/models"
 )
 
@@ -65,3 +67,10 @@ func (m *OrderModel) GetOrderProductsById(orderId string, status int) (bool, err
 func (m *OrderModel) UpdateOrderProductStatus(orderId string, status int) (int64, error) {
 	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Cols("update_at", "status").Update(m.OrderProduct)
 }
+
+// 记录需处理超时的订单号
+func (m *OrderModel) RecordOrderId(orderId string) (int, error) {
+	rds := dao.NewRedisDao()
+	return rds.SADD(rdskey.ORDER_EXPIRE_INFO, orderId)
+}
+
