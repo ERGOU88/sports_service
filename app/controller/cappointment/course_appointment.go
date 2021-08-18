@@ -180,7 +180,7 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 	svc.engine.Commit()
 
 	//redismq.PushOrderEventMsg()
-	return errdef.SUCCESS, nil
+	return errdef.SUCCESS, svc.Extra
 
 }
 

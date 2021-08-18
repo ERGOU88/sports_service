@@ -171,7 +171,7 @@ func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentR
 	}
 
 	svc.engine.Commit()
-	return errdef.SUCCESS, nil
+	return errdef.SUCCESS, svc.Extra
 }
 
 // 取消预约
