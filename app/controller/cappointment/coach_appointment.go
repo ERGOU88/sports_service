@@ -170,6 +170,8 @@ func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentR
 		return errdef.APPOINTMENT_ADD_RECORD_FAIL, nil
 	}
 
+	svc.Extra.OrderId = orderId
+	svc.Extra.PayDuration = consts.APPOINTMENT_PAYMENT_DURATION
 	svc.engine.Commit()
 	return errdef.SUCCESS, svc.Extra
 }

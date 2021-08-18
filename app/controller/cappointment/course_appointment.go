@@ -179,6 +179,8 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 
 	svc.engine.Commit()
 
+	svc.Extra.OrderId = orderId
+	svc.Extra.PayDuration = consts.APPOINTMENT_PAYMENT_DURATION
 	//redismq.PushOrderEventMsg()
 	return errdef.SUCCESS, svc.Extra
 

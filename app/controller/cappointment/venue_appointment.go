@@ -118,7 +118,6 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 		return errdef.APPOINTMENT_PROCESS_FAIL, nil
 	}
 
-	svc.Extra.OrderId = orderId
 	svc.Extra.Id = params.RelatedId
 	svc.Extra.Name = svc.venue.Venue.VenueName
 	svc.Extra.Date = time.Now().Format(consts.FORMAT_DATE)
@@ -174,6 +173,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 
 	svc.engine.Commit()
 
+	svc.Extra.OrderId = orderId
 	svc.Extra.PayDuration = consts.APPOINTMENT_PAYMENT_DURATION
     // 超时
 	redismq.PushOrderEventMsg(redismq.NewOrderEvent(svc.Extra.OrderId, int64(svc.order.Order.CreateAt) + svc.Extra.PayDuration,
