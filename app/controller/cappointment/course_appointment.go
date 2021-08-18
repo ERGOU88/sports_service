@@ -137,7 +137,7 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
 
-	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.LabelIds, params.Infos); err != nil {
+	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.WeekNum, params.LabelIds, params.Infos); err != nil {
 		log.Log.Errorf("venue_trace: appointment fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.APPOINTMENT_PROCESS_FAIL, nil

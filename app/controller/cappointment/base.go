@@ -437,8 +437,13 @@ func (svc *base) SetLatestInventoryResp(date string, count int, isEnough bool) (
 }
 
 // 预约流程
-func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, labelIds []interface{},
+func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, weekNum int, labelIds []interface{},
 	infos []*mappointment.AppointmentInfo) error {
+
+	if len(infos) == 0 {
+		log.Log.Errorf("venue_trace: invalid params, infos len:%d", len(infos))
+		return errors.New("invalid params")
+	}
 
 	svc.Extra.IsEnough = true
 	now := int(time.Now().Unix())
@@ -472,6 +477,18 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, lab
 		if date == "" {
 			log.Log.Errorf("venue_trace: invalid date, dateId:%d", item.DateId)
 			return errors.New("invalid date")
+		}
+
+		tmInfo, err := time.Parse(consts.FORMAT_DATE, date)
+		if err != nil {
+			log.Log.Errorf("venue_trace: time.Parse fail, err:%s", err)
+			return err
+		}
+
+		week := int(tmInfo.Weekday())
+		if week != weekNum {
+			log.Log.Errorf("venue_trace: week not match, week:%d, clientWeek:%d", week, weekNum)
+			return errors.New("week not match")
 		}
 
 		if svc.appointment.AppointmentInfo.AppointmentType == 0 {
