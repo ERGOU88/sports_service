@@ -41,7 +41,6 @@ func LoopPopOrderEvent() {
 		if err := OrderEventConsumer(bts); err != nil {
 			log.Log.Errorf("redisMq_trace: event consumer fail, err:%s, msg:%s", err, string(bts))
 			// 重新投递消息
-			time.Sleep(10 * time.Second)
 			producer.PushOrderEventMsg(bts)
 		}
 
