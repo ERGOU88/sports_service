@@ -71,8 +71,8 @@ func handleOrderEvent(event protocol.Event) error {
 	}
 	log.Log.Infof("redisMq_trace: info:%+v", info)
 
-	// 如果超时处理时间 < 当前时间 则重新入队列
-	if info.ProcessTm < time.Now().Unix() {
+	// 如果超时处理时间 > 当前时间 则重新入队列
+	if info.ProcessTm > time.Now().Unix() {
 		log.Log.Errorf("redisMq_trace: orderId:%s, requeue", info.OrderId)
 		return errors.New("requeue")
 	}
