@@ -248,11 +248,30 @@ func (m *AppointmentModel) AddStockInfo(stock *models.VenueAppointmentStock) (in
 }
 
 const (
-	UPDATE_STOCK_INFO = "UPDATE `venue_appointment_stock` SET `purchased_num`= `purchased_num`+ ?, `update_at`=? WHERE date=? AND " +
-		"time_node=? AND appointment_type=? AND related_id=? AND quota_num >= `purchased_num`+ ? AND `purchased_num` >= 0 LIMIT 1"
+	UPDATE_STOCK_INFO = "UPDATE `venue_appointment_stock` SET `quota_num`=?, `purchased_num`= `purchased_num`+ ?, `update_at`=? WHERE date=? AND " +
+		"time_node=? AND appointment_type=? AND related_id=? AND ? >= `purchased_num`+ ? AND `purchased_num` >= 0 LIMIT 1"
 )
-func (m *AppointmentModel) UpdateStockInfo(timeNode, date string, count, now, appointmentType, relatedId int) (int64, error) {
-	res, err := m.Engine.Exec(UPDATE_STOCK_INFO, count, now, date, timeNode, appointmentType, relatedId, count)
+func (m *AppointmentModel) UpdateStockInfo(timeNode, date string, quotaNum, count, now, appointmentType, relatedId int) (int64, error) {
+	res, err := m.Engine.Exec(UPDATE_STOCK_INFO, quotaNum, count, now, date, timeNode, appointmentType, relatedId, quotaNum, count)
+	if err != nil {
+		return 0, err
+	}
+
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return affected, nil
+}
+
+const (
+	REVERT_STOCK_NUM = "UPDATE `venue_appointment_stock` SET `purchased_num`= `purchased_num`+ ?, `update_at`=? WHERE date=? AND " +
+		"time_node=? AND appointment_type=? AND related_id=? AND `quota_num` >= `purchased_num`+ ? AND `purchased_num` >= 0 LIMIT 1"
+)
+// 恢复冻结的库存
+func (m *AppointmentModel) RevertStockNum(timeNode, date string, count, now, appointmentType, relatedId int) (int64, error) {
+	res, err := m.Engine.Exec(REVERT_STOCK_NUM, count, now, date, timeNode, appointmentType, relatedId, count)
 	if err != nil {
 		return 0, err
 	}

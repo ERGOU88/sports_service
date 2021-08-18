@@ -172,14 +172,14 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 			ts := new(util.TimeS)
 			startTm := ts.GetTimeStrOrStamp(start, "YmdHi")
 			if now > startTm.(int64) {
-				// 预约私教、预约大课 如果当前时间 > 配置中的开始时间 过滤该配置项
-				if item.AppointmentType != 0 {
+				// 预约大课 如果当前时间 > 配置中的开始时间 过滤该配置项
+				if item.AppointmentType == consts.APPOINTMENT_COURSE {
 					log.Log.Errorf("过滤id：%d, date:%s", item.Id, date)
 					return nil
 				}
 
 				tm = startTm.(int64)
-				// 预约场馆则给标示
+				// 预约场馆/ 预约私教 则给标示
 				isExpire = true
 			}
 		}
@@ -326,8 +326,9 @@ func (svc *base) AddStock(date string, now, count int) (bool, error) {
 // 更新库存
 func (svc *base) UpdateStock(date string, count, now int) (int64, error) {
 	// 更新库存
-	return svc.appointment.UpdateStockInfo(svc.appointment.AppointmentInfo.TimeNode, date, count, now,
-		svc.appointment.AppointmentInfo.AppointmentType, int(svc.appointment.AppointmentInfo.RelatedId))
+	return svc.appointment.UpdateStockInfo(svc.appointment.AppointmentInfo.TimeNode, date,
+		svc.appointment.AppointmentInfo.QuotaNum, count, now, svc.appointment.AppointmentInfo.AppointmentType,
+		int(svc.appointment.AppointmentInfo.RelatedId))
 }
 
 // 添加预约流水
