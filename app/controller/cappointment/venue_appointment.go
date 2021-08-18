@@ -176,7 +176,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 	svc.Extra.OrderId = orderId
 	svc.Extra.PayDuration = consts.APPOINTMENT_PAYMENT_DURATION
     // 超时
-	redismq.PushOrderEventMsg(redismq.NewOrderEvent(svc.Extra.OrderId, int64(svc.order.Order.CreateAt) + svc.Extra.PayDuration,
+	redismq.PushOrderEventMsg(redismq.NewOrderEvent(user.UserId, svc.Extra.OrderId, int64(svc.order.Order.CreateAt) + svc.Extra.PayDuration,
 		consts.ORDER_EVENT_VENUE_TIME_OUT))
 	return errdef.SUCCESS, svc.Extra
 }

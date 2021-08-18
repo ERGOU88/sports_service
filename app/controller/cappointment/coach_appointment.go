@@ -10,6 +10,7 @@ import (
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/mcourse"
 	"sports_service/server/models/muser"
+	redismq "sports_service/server/redismq/event"
 	"sports_service/server/util"
 	"time"
 	"fmt"
@@ -170,9 +171,13 @@ func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentR
 		return errdef.APPOINTMENT_ADD_RECORD_FAIL, nil
 	}
 
+	svc.engine.Commit()
+
 	svc.Extra.OrderId = orderId
 	svc.Extra.PayDuration = consts.APPOINTMENT_PAYMENT_DURATION
-	svc.engine.Commit()
+	// 超时
+	redismq.PushOrderEventMsg(redismq.NewOrderEvent(user.UserId, svc.Extra.OrderId, int64(svc.order.Order.CreateAt) + svc.Extra.PayDuration,
+		consts.ORDER_EVENT_COACH_TIME_OUT))
 	return errdef.SUCCESS, svc.Extra
 }
 

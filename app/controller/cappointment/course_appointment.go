@@ -12,6 +12,7 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/global/app/log"
 	"fmt"
+	redismq "sports_service/server/redismq/event"
 	"sports_service/server/util"
 	"time"
 )
@@ -181,6 +182,9 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 
 	svc.Extra.OrderId = orderId
 	svc.Extra.PayDuration = consts.APPOINTMENT_PAYMENT_DURATION
+	// 超时
+	redismq.PushOrderEventMsg(redismq.NewOrderEvent(user.UserId, svc.Extra.OrderId, int64(svc.order.Order.CreateAt) + svc.Extra.PayDuration,
+		consts.ORDER_EVENT_COURSE_TIME_OUT))
 	//redismq.PushOrderEventMsg()
 	return errdef.SUCCESS, svc.Extra
 

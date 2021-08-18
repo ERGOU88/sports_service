@@ -54,8 +54,8 @@ func OrderEventConsumer (bts []byte) error {
 		return err
 	}
 
-	if err := handleEvent(event); err != nil {
-		log.Log.Errorf("handleEvent err:%s", err)
+	if err := handleOrderEvent(event); err != nil {
+		log.Log.Errorf("handleOrderEvent err:%s", err)
 		return err
 	}
 

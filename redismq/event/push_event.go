@@ -15,11 +15,14 @@ func PushEventMsg(msg []byte) {
 	log.Log.Infof("event_trace: 事件推送, msg:%s", string(msg))
 	//body := newEvent(userId, nickname, cover, content, eventType)
 	conn := dao.RedisPool().Get()
+	defer conn.Close()
 
 	num, err := redis.Int(conn.Do("LPUSH", rdskey.MSG_PUSH_EVENT_KEY, msg))
 	if err != nil || num != 1 {
 		log.Log.Infof("event_trace: msg push fail, err:%s", err)
 	}
+
+	return
 }
 
 // toUserId 接收者id
