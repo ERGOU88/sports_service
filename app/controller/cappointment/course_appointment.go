@@ -165,7 +165,7 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 	}
 
 	// 添加订单
-	if err := svc.AddOrder(orderId, user.UserId, now); err != nil {
+	if err := svc.AddOrder(orderId, user.UserId, "预约课程", now); err != nil {
 		log.Log.Errorf("venue_trace: add order fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.ORDER_ADD_FAIL, nil

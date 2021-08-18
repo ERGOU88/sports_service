@@ -45,3 +45,8 @@ const (
     PLT_TYPE_ANDROID = 1001
     PLT_TYPE_IOS     = 1002
 )
+
+const (
+    ALIPAY  = 1
+    WEICHAT = 2
+)

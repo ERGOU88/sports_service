@@ -187,11 +187,17 @@ const (
 	// 订单错误 18001-19000
 	ORDER_ADD_FAIL               = 18001
 	ORDER_PRODUCT_ADD_FAIL       = 18002
+	ORDER_NOT_EXISTS             = 18003
+	ORDER_STATUS_FAIL            = 18004
 
-	// 大课相关错误
+	// 大课相关错误 19001-20000
 	COURSE_NOT_EXISTS            = 19001
 	COURSE_TYPE_FAIL             = 19002
 	COURSE_ID_NOT_MATCH          = 19003
+
+	// 支付相关错误 20001-30000
+	PAY_INVALID_TYPE             = 20001
+	PAY_ALI_PARAM_FAIL           = 20002
 )
 
 var MsgFlags = map[int]string{
@@ -361,10 +367,15 @@ var MsgFlags = map[int]string{
 
 	ORDER_ADD_FAIL:              "添加订单失败",
 	ORDER_PRODUCT_ADD_FAIL:      "添加商品订单失败",
+	ORDER_NOT_EXISTS:            "订单不存在",
+	ORDER_STATUS_FAIL:           "订单状态错误",
 
 	COURSE_NOT_EXISTS:           "课程不存在",
 	COURSE_TYPE_FAIL:            "课程类型错误",
 	COURSE_ID_NOT_MATCH:         "课程id不匹配",
+
+	PAY_INVALID_TYPE:            "无效的支付类型",
+	PAY_ALI_PARAM_FAIL:          "获取支付宝请求参数失败",
 }
 
 func GetMsg(code int) string {

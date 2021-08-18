@@ -5,6 +5,13 @@ import (
 	"sports_service/server/models"
 )
 
+// 支付请求参数
+type PayReqParam struct {
+	PayType   int     `binding:"required" json:"pay_type"`     // 1 支付宝 2 微信 3 钱包 4 苹果内购
+	OrderId   string  `binding:"required" json:"order_id"`     // 订单id
+	UserId    string
+}
+
 type OrderModel struct {
 	Engine         *xorm.Session
 	Order          *models.VenuePayOrders
@@ -51,10 +58,10 @@ func (m *OrderModel) UpdateOrderStatus(orderId string, status int) (int64, error
 // 通过订单id 获取订单流水信息
 func (m *OrderModel) GetOrderProductsById(orderId string, status int) (bool, error) {
 	m.OrderProduct = new(models.VenueOrderProductInfo)
-	return m.Engine.Where("order_id=? AND status=?", orderId, status).Get(m.OrderProduct)
+	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Get(m.OrderProduct)
 }
 
 // 更新订单商品状态
 func (m *OrderModel) UpdateOrderProductStatus(orderId string, status int) (int64, error) {
-	return m.Engine.Where("order_id=? AND status=?", orderId, status).Cols("update_at", "status").Update(m.OrderProduct)
+	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Cols("update_at", "status").Update(m.OrderProduct)
 }

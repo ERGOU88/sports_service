@@ -372,7 +372,7 @@ func (svc *base) AddOrderProducts() error {
 }
 
 // 添加订单
-func (svc *base) AddOrder(orderId, userId string, now int) error {
+func (svc *base) AddOrder(orderId, userId, subject string, now int) error {
 	extra, _ := util.JsonFast.MarshalToString(svc.Extra)
 	svc.order.Order.Extra = extra
 	svc.order.Order.PayOrderId = orderId
@@ -382,6 +382,7 @@ func (svc *base) AddOrder(orderId, userId string, now int) error {
 	svc.order.Order.UpdateAt = now
 	svc.order.Order.Amount = svc.Extra.TotalAmount
 	svc.order.Order.ChannelId = svc.Extra.Channel
+	svc.order.Order.Subject = subject
 	affected, err := svc.order.AddOrder()
 	if err != nil {
 		return err
