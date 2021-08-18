@@ -274,7 +274,7 @@ const (
 )
 // 恢复冻结的库存
 func (m *AppointmentModel) RevertStockNum(timeNode, date string, count, now, appointmentType, relatedId int) (int64, error) {
-	res, err := m.Engine.Exec(REVERT_STOCK_NUM, count, now, date, timeNode, appointmentType, relatedId, count)
+	res, err := m.Engine.Exec(REVERT_STOCK_NUM, count, now, date, timeNode, appointmentType, relatedId, count, count)
 	if err != nil {
 		return 0, err
 	}
