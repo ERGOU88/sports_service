@@ -260,6 +260,16 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 				if val.Date == date && val.TimeNode == item.TimeNode {
 					seatInfo := make([]*mappointment.SeatInfo, 0)
 					if err := util.JsonFast.UnmarshalFromString(val.SeatInfo, &seatInfo); err == nil {
+						for _, v := range seatInfo {
+							user := svc.user.FindUserByUserid(val.UserId)
+							if user != nil {
+								v.NickName = user.NickName
+								v.Avatar = user.Avatar
+							}
+
+							continue
+						}
+
 						info.ReservedUsers = append(info.ReservedUsers, seatInfo...)
 					} else {
 						log.Log.Errorf("venue_trace: unmarshal seat info fail, err:%s", err)
