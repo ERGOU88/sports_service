@@ -90,17 +90,6 @@ func (svc *CoachModule) GetCoachDetail(coachId string) (int, *mcoach.CoachDetail
 		Avatar: svc.coach.Coach.Avatar,
 	}
 
-	ok, err = svc.coach.GetCoachScoreInfo(fmt.Sprint(svc.coach.Coach.Id))
-	if !ok || err != nil {
-		log.Log.Errorf("coach_trace: get coach score info fail, err:%s", err)
-		res.TotalNum = 0
-		res.Score = fmt.Sprintf("%.1f", math.Ceil(float64(svc.coach.CoachScore.TotalScore) / float64(svc.coach.CoachScore.TotalNum)))
-	} else {
-	    res.TotalNum =  svc.coach.CoachScore.TotalNum
-		res.Score = fmt.Sprintf("%.1f", math.Ceil(float64(svc.coach.CoachScore.TotalScore) / float64(svc.coach.CoachScore.TotalNum)))
-	}
-
-
 	courses, err := svc.course.GetCourseByCoachId(coachId)
 	if err != nil {
 		log.Log.Errorf("coach_trace: get course by id fail, err:%s, coachId:%s", err, coachId)
@@ -256,4 +245,19 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 
 	svc.engine.Commit()
 	return errdef.SUCCESS
+}
+
+// 获取私教评分信息
+func (svc *CoachModule) GetCoachScore(coachId string) (totalNum int, score float64) {
+	ok, err := svc.coach.GetCoachScoreInfo(fmt.Sprint(coachId))
+	if !ok || err != nil {
+		log.Log.Errorf("coach_trace: get coach score info fail, err:%s", err)
+		totalNum = 0
+		score = 0
+	} else {
+		totalNum =  svc.coach.CoachScore.TotalNum
+		score = math.Ceil(float64(svc.coach.CoachScore.TotalScore) / float64(svc.coach.CoachScore.TotalNum))
+	}
+
+	return
 }

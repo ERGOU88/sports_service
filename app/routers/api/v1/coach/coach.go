@@ -34,7 +34,7 @@ func CoachDetail(c *gin.Context) {
 	reply.Response(http.StatusOK, code)
 }
 
-// 私教评价
+// 私教评价列表
 func CoachEvaluate(c *gin.Context) {
 	reply := errdef.New(c)
 	coachId := c.Query("coach_id")
@@ -47,6 +47,9 @@ func CoachEvaluate(c *gin.Context) {
 	svc := coach.New(c)
 	code, list := svc.GetEvaluateList(coachId, page, size)
 	reply.Data["list"] = list
+	total, score := svc.GetCoachScore(coachId)
+	reply.Data["score"] = score
+	reply.Data["total_num"] = total
 	reply.Response(http.StatusOK, code)
 }
 
