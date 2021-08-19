@@ -43,6 +43,7 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 	res := make([]*mappointment.WeekInfo, len(list))
 	id := 0
 	week := -1
+	date := ""
 	for index, v := range list {
 		info := &mappointment.WeekInfo{
 			Id: v.Id,
@@ -70,6 +71,7 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 
 		if id == 0 && info.Total > 0 {
 			id = v.Id
+			date = v.Date
 		}
 
 		if week == -1 && info.Total > 0 {
@@ -83,6 +85,8 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 		List: res,
 		Id: id,
 		Week: week,
+		WeekCn: util.GetWeekCn(week),
+		DateCn: date,
 	}
 
 	return dateInfo
