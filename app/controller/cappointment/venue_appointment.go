@@ -121,7 +121,6 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 
 	svc.Extra.Id = params.RelatedId
 	svc.Extra.Name = svc.venue.Venue.VenueName
-	svc.Extra.Date = time.Now().Format(consts.FORMAT_DATE)
 	svc.Extra.WeekCn = util.GetWeekCn(params.WeekNum)
 	svc.Extra.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
 	svc.Extra.TmCn = util.ResolveTime(svc.Extra.TotalTm)
