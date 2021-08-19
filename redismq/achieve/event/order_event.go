@@ -169,6 +169,15 @@ func orderTimeOut(appointmentType int, orderId string) error {
 		}
 	}
 
+	// 更新订单对应的预约流水状态
+	amodel.AppointmentInfo.Status = consts.PAY_TYPE_UNPAID
+	amodel.AppointmentInfo.UpdateAt = now
+	if _, err := amodel.UpdateAppointmentRecordStatus(orderId, consts.PAY_TYPE_WAIT); err != nil {
+		log.Log.Errorf("redisMq_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
+		session.Rollback()
+		return err
+	}
+
 	// 更新标签状态[废弃]
 	amodel.Labels.Status = 1
 	if _, err = amodel.UpdateLabelsStatus(orderId, 0); err != nil {
