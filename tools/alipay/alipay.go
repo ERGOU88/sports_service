@@ -15,7 +15,7 @@ type AliPayClient struct {
 	Client       *alipay.Client
 	Subject      string        // 商品名称
 	OutTradeNo   string        // 订单号
-	TotalAmount  string        // 金额
+	TotalAmount  string        // 金额   （元）
 }
 
 // appId：应用ID
