@@ -11,6 +11,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/morder"
 	"sports_service/server/tools/alipay"
+	"sports_service/server/tools/wechat"
 	"strconv"
 	"strings"
 	"time"
@@ -119,5 +120,71 @@ func AliPayNotify(c *gin.Context) {
 
 // 微信回调通知
 func WechatNotify(c *gin.Context) {
+	reply := errdef.New(c)
+	req := c.Request
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		log.Log.Errorf("wxNotify_trace: err:%s", err.Error())
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
 
+	cli := wechat.NewWechatPay(true)
+	ok, err := cli.VerifySign(string(body))
+	if !ok || err != nil {
+		log.Log.Error("wxNotify_trace: sign not match")
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	log.Log.Debug("wxNotify_trace: info %s", string(body))
+	params, err := url.ParseQuery(string(body))
+	if err != nil {
+		log.Log.Errorf("wxNotify_trace: err:%s, params:%v", err.Error(), params)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	if params.Get("result_code") != "SUCCESS" {
+		log.Log.Errorf("wxNotify_trace: trade not success")
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	orderId := params.Get("out_trade_no")
+	svc := corder.New(c)
+	order, err := svc.GetOrder(orderId)
+	if order == nil || err != nil {
+		log.Log.Error("wxNotify_trace: order not found, orderId:%s, err:%s", orderId, err)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	if order.Status != consts.PAY_TYPE_WAIT {
+		log.Log.Error("wxNotify_trace: order already pay, orderId:%s, err:%s", orderId, err)
+		reply.Response(http.StatusOK, errdef.SUCCESS)
+		return
+	}
+
+	amount, err := strconv.Atoi(strings.Trim(params.Get("total_fee"), " "))
+	if err != nil {
+		log.Log.Errorf("wxNotify_trace: parse float fail, err:%s", err)
+		reply.Response(http.StatusBadRequest, errdef.ERROR)
+		return
+	}
+
+	if amount != order.Amount {
+		log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d", order.Amount, amount * 100)
+		reply.Response(http.StatusBadRequest, errdef.ERROR)
+		return
+	}
+
+	status := strings.Trim(params.Get("trade_status"), " ")
+	payTime, _ := time.Parse("20060102150405", params.Get("time_end"))
+	if err := svc.OrderProcess(string(body), status, payTime.Unix()); err != nil {
+		reply.Response(http.StatusInternalServerError, errdef.ERROR)
+		return
+	}
+
+	reply.Response(http.StatusOK, errdef.PAY_SUCCESS)
 }
