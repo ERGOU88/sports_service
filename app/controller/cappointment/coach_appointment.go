@@ -1,6 +1,7 @@
 package cappointment
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
@@ -8,13 +9,11 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mappointment"
+	"sports_service/server/models/mcoach"
 	"sports_service/server/models/mcourse"
 	"sports_service/server/models/muser"
-	redismq "sports_service/server/redismq/event"
 	"sports_service/server/util"
 	"time"
-	"fmt"
-	"sports_service/server/models/mcoach"
 )
 
 type CoachAppointmentModule struct {
@@ -177,13 +176,20 @@ func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentR
 		return errdef.APPOINTMENT_ADD_RECORD_FAIL, nil
 	}
 
+	// 记录需处理支付超时的订单
+	if _, err := svc.order.RecordOrderId(orderId); err != nil {
+		log.Log.Errorf("venue_trace: record orderId fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.APPOINTMENT_RECORD_ORDER_FAIL, nil
+	}
+
 	svc.engine.Commit()
 
 	svc.Extra.OrderId = orderId
 	svc.Extra.PayDuration = consts.APPOINTMENT_PAYMENT_DURATION
 	// 超时
-	redismq.PushOrderEventMsg(redismq.NewOrderEvent(user.UserId, svc.Extra.OrderId, int64(svc.order.Order.CreateAt) + svc.Extra.PayDuration,
-		consts.ORDER_EVENT_COACH_TIME_OUT))
+	//redismq.PushOrderEventMsg(redismq.NewOrderEvent(user.UserId, svc.Extra.OrderId, int64(svc.order.Order.CreateAt) + svc.Extra.PayDuration,
+	//	consts.ORDER_EVENT_COACH_TIME_OUT))
 	return errdef.SUCCESS, svc.Extra
 }
 

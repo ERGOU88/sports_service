@@ -79,7 +79,9 @@ func orderTimeOut(orderId string) error {
 	}
 
 	now := int(time.Now().Unix())
-	if now > orderModel.Order.CreateAt + consts.APPOINTMENT_PAYMENT_DURATION + 30 {
+	// 如果当前时间 < 超时处理时间 不处理
+	if now < orderModel.Order.CreateAt + consts.APPOINTMENT_PAYMENT_DURATION {
+		session.Rollback()
 		return nil
 	}
 
