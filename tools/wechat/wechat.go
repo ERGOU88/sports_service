@@ -64,7 +64,7 @@ func (c *WechatPayClient) TradeAppPay() (map[string]interface{}, error){
 	mp["time_stamp"] = timeStamp
 	mp["nonce_str"] = wxRsp.NonceStr
 	mp["prepay_id"] = wxRsp.PrepayId
-	mp["package"] = "WXPay"
+	mp["pkg_name"] = "WXPay"
 
 	return mp, nil
 }
