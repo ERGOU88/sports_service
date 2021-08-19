@@ -71,6 +71,7 @@ func (svc *VenueAppointmentModule) Options(relatedId int64) (int, interface{}) {
 // 5 如未充值会员时长 或 会员时长不足 则剩余预约 按售价 * 预约数量 计算订单总价
 // 6 记录订单、订单商品流水、预约流水
 func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentReq) (int, interface{}) {
+	log.Log.Infof("params:%+v", params)
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("venue_trace: session begin fail, err:%s", err)
 		return errdef.ERROR, nil
