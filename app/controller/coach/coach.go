@@ -182,6 +182,11 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 		return errdef.ERROR
 	}
 
+	if param.Star <= 0 || param.Star > 5 {
+		log.Log.Errorf("coach_trace: invalid star, star:%d", param.Star)
+		return errdef.INVALID_PARAMS
+	}
+
 	user := svc.user.FindUserByUserid(userId)
 	if user == nil {
 		log.Log.Errorf("coach_trace: user not found, userId:%s", userId)
