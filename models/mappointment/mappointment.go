@@ -292,7 +292,7 @@ func (m *AppointmentModel) RevertStockNum(timeNode, date string, count, now, app
 // 获取成功预约的记录[包含已付款和支付中]
 func (m *AppointmentModel) GetAppointmentRecord() ([]*models.VenueAppointmentRecord, error) {
 	var list []*models.VenueAppointmentRecord
-	sql := "SELECT * FROM appointment_record WHERE status in(0, 2) AND appointment_type=? AND related_id=? AND time_node=? " +
+	sql := "SELECT * FROM venue_appointment_record WHERE status in(0, 2) AND appointment_type=? AND related_id=? AND time_node=? " +
 		"AND date=? ORDER BY id ASC"
 	if err := m.Engine.SQL(sql, m.Record.AppointmentType, m.Record.RelatedId, m.Record.TimeNode, m.Record.Date).Find(&list); err != nil {
 		return nil, err
