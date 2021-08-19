@@ -405,7 +405,15 @@ func (m *AppointmentModel) GetAppointmentRecordByOrderId(orderId string, status 
 	return list, nil
 }
 
+const (
+	UPDATE_RECORD_STATUS = "UPDATE `venue_appointment_record` SET `update_at`=?, `status`=? " +
+		"WHERE `pay_order_id`=? AND status=?"
+)
 // 更新预约记录状态
-func (m *AppointmentModel) UpdateAppointmentRecordStatus(orderId string, status int) (int64, error) {
-	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Cols("update_at, status").Update(m.Record)
+func (m *AppointmentModel) UpdateAppointmentRecordStatus(orderId string, now, newStatus, status int) error {
+	if _, err := m.Engine.Exec(UPDATE_RECORD_STATUS, now, newStatus, orderId, status); err != nil {
+		return err
+	}
+
+	return nil
 }

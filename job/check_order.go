@@ -125,10 +125,8 @@ func orderTimeOut(orderId string) error {
 	}
 
 	// 更新订单对应的预约流水状态
-	amodel.AppointmentInfo.Status = consts.PAY_TYPE_UNPAID
-	amodel.AppointmentInfo.UpdateAt = now
-	if _, err := amodel.UpdateAppointmentRecordStatus(orderId, consts.PAY_TYPE_WAIT); err != nil {
-		log.Log.Errorf("orderJob_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
+	if err := amodel.UpdateAppointmentRecordStatus(orderId, now, consts.PAY_TYPE_UNPAID, consts.PAY_TYPE_WAIT); err != nil {
+		log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
 		session.Rollback()
 		return err
 	}

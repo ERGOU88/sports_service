@@ -99,9 +99,7 @@ func (svc *OrderModule) OrderProcess(orderId, body string, payTm int64) error {
 	}
 
 	// 更新订单对应的预约流水状态
-	svc.appointment.AppointmentInfo.Status = consts.PAY_TYPE_PAID
-	svc.appointment.AppointmentInfo.UpdateAt = now
-	if _, err := svc.appointment.UpdateAppointmentRecordStatus(orderId, consts.PAY_TYPE_WAIT); err != nil {
+	if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, consts.PAY_TYPE_PAID, consts.PAY_TYPE_WAIT); err != nil {
 		log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
 		svc.engine.Rollback()
 		return err
