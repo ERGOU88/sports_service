@@ -18,7 +18,7 @@ type OrderModel struct {
 	Engine         *xorm.Session
 	Order          *models.VenuePayOrders
 	OrderProduct   *models.VenueOrderProductInfo
-	Record         *models.AppointmentRecord
+	Record         *models.VenueAppointmentRecord
 }
 
 func NewOrderModel(engine *xorm.Session) *OrderModel {
@@ -26,7 +26,7 @@ func NewOrderModel(engine *xorm.Session) *OrderModel {
 		Engine: engine,
 		Order: new(models.VenuePayOrders),
 		OrderProduct: new(models.VenueOrderProductInfo),
-		Record: new(models.AppointmentRecord),
+		Record: new(models.VenueAppointmentRecord),
 	}
 }
 

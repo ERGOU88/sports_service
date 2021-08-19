@@ -9,7 +9,7 @@ type AppointmentModel struct {
 	AppointmentInfo  *models.VenueAppointmentInfo
 	Engine           *xorm.Session
 	Stock            *models.VenueAppointmentStock
-	Record           *models.AppointmentRecord
+	Record           *models.VenueAppointmentRecord
 	Vip              *models.VenueVipInfo
 	Labels           *models.VenueUserLabel
 	LabelConf        *models.VenuePersonalLabelConf
@@ -169,7 +169,7 @@ func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
 	return &AppointmentModel{
 		AppointmentInfo: new(models.VenueAppointmentInfo),
 		Stock: new(models.VenueAppointmentStock),
-		Record: new(models.AppointmentRecord),
+		Record: new(models.VenueAppointmentRecord),
 		Labels: new(models.VenueUserLabel),
 		LabelConf: new(models.VenuePersonalLabelConf),
 		Vip: new(models.VenueVipInfo),
@@ -288,8 +288,8 @@ func (m *AppointmentModel) RevertStockNum(timeNode, date string, count, now, app
 }
 
 // 获取成功预约的记录[包含已付款和支付中]
-func (m *AppointmentModel) GetAppointmentRecord() ([]*models.AppointmentRecord, error) {
-	var list []*models.AppointmentRecord
+func (m *AppointmentModel) GetAppointmentRecord() ([]*models.VenueAppointmentRecord, error) {
+	var list []*models.VenueAppointmentRecord
 	sql := "SELECT * FROM appointment_record WHERE status in(0, 2) AND appointment_type=? AND related_id=? AND time_node=? " +
 		"AND date=? ORDER BY id ASC"
 	if err := m.Engine.SQL(sql, m.Record.AppointmentType, m.Record.RelatedId, m.Record.TimeNode, m.Record.Date).Find(&list); err != nil {
@@ -329,7 +329,7 @@ func (m *AppointmentModel) UpdateVenueVipInfo(duration int, userId string) (int6
 }
 
 // 批量添加预约记录
-func (m *AppointmentModel) AddMultiAppointmentRecord(list []*models.AppointmentRecord) (int64, error) {
+func (m *AppointmentModel) AddMultiAppointmentRecord(list []*models.VenueAppointmentRecord) (int64, error) {
 	return m.Engine.InsertMulti(list)
 }
 
@@ -394,8 +394,8 @@ func (m *AppointmentModel) AddLabels(labels []*models.VenueUserLabel) (int64, er
 }
 
 // 通过订单id获取预约流水
-func (m *AppointmentModel) GetAppointmentRecordByOrderId(orderId string, status int) ([]*models.AppointmentRecord, error) {
-	var list []*models.AppointmentRecord
+func (m *AppointmentModel) GetAppointmentRecordByOrderId(orderId string, status int) ([]*models.VenueAppointmentRecord, error) {
+	var list []*models.VenueAppointmentRecord
 	if err := m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Find(&list); err != nil {
 		return nil, err
 	}

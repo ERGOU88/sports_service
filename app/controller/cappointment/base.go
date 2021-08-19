@@ -22,7 +22,7 @@ type base struct {
 	DateId      int
 	Extra       *mappointment.AppointmentResp
 	// 预约流水map
-	recordMp    map[int64]*models.AppointmentRecord
+	recordMp    map[int64]*models.VenueAppointmentRecord
 	// 订单商品流水map
 	orderMp     map[int64]*models.VenueOrderProductInfo
 }
@@ -33,7 +33,7 @@ func New(socket *xorm.Session) *base {
 		appointment: mappointment.NewAppointmentModel(socket),
 		order: morder.NewOrderModel(socket),
 		Extra:  &mappointment.AppointmentResp{TimeNodeInfo: make([]*mappointment.TimeNodeInfo, 0)},
-		recordMp: make(map[int64]*models.AppointmentRecord),
+		recordMp: make(map[int64]*models.VenueAppointmentRecord),
 		orderMp: make(map[int64]*models.VenueOrderProductInfo),
 	}
 }
@@ -276,9 +276,9 @@ func (svc *base) SetOrderProductInfo(orderId string, now, count int, relatedId i
 	}
 }
 
-func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, count int, seatInfo []*mappointment.SeatInfo, relatedId int64) *models.AppointmentRecord {
+func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, count int, seatInfo []*mappointment.SeatInfo, relatedId int64) *models.VenueAppointmentRecord {
 	info, _ := util.JsonFast.MarshalToString(seatInfo)
-	return &models.AppointmentRecord{
+	return &models.VenueAppointmentRecord{
 		UserId: userId,
 		RelatedId: relatedId,
 		AppointmentType: svc.appointment.AppointmentInfo.AppointmentType,
@@ -333,7 +333,7 @@ func (svc *base) UpdateStock(date string, count, now int) (int64, error) {
 
 // 添加预约流水
 func (svc *base) AddAppointmentRecord() error {
-	var rlst []*models.AppointmentRecord
+	var rlst []*models.VenueAppointmentRecord
 	for _, val := range svc.recordMp {
 		rlst = append(rlst, val)
 	}
@@ -453,7 +453,7 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 	//// 订单商品流水map
 	//orderMp := make(map[int64]*models.VenueOrderProductInfo)
 	//// 预约流水map
-	//recordMp := make(map[int64]*models.AppointmentRecord)
+	//recordMp := make(map[int64]*models.VenueAppointmentRecord)
 	for _, item := range infos {
 		err := svc.GetAppointmentConf(item.Id)
 		if svc.appointment.AppointmentInfo == nil || err != nil {

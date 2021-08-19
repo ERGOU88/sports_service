@@ -79,6 +79,10 @@ func orderTimeOut(orderId string) error {
 	}
 
 	now := int(time.Now().Unix())
+	if now > orderModel.Order.CreateAt + consts.APPOINTMENT_PAYMENT_DURATION + 30 {
+		return nil
+	}
+
 	orderModel.Order.UpdateAt = now
 	orderModel.Order.Status = consts.PAY_TYPE_UNPAID
 	// 更新订单状态为 超时未支付
