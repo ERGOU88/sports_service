@@ -84,7 +84,7 @@ func (svc *PayModule) AppPay(param *morder.PayReqParam) (int, interface{}) {
 }
 
 func (svc *PayModule) AliPay() (string, error) {
-	client := alipay.NewAliPay(false)
+	client := alipay.NewAliPay(true)
 	client.OutTradeNo = svc.order.Order.PayOrderId
 	client.TotalAmount = fmt.Sprintf("%.2f", float64(svc.order.Order.Amount)/100)
 	client.Subject = svc.order.Order.Subject
@@ -97,7 +97,7 @@ func (svc *PayModule) AliPay() (string, error) {
 }
 
 func (svc *PayModule) WechatPay() (map[string]interface{}, error) {
-	client := wechat.NewWechatPay(false)
+	client := wechat.NewWechatPay(true)
 	client.OutTradeNo = svc.order.Order.PayOrderId
 	client.TotalAmount = svc.order.Order.Amount
 	client.Subject = svc.order.Order.Subject
