@@ -3,7 +3,6 @@ package alipay
 import (
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/alipay"
-	"net/url"
 	"sports_service/server/global/app/log"
 )
 
@@ -45,10 +44,11 @@ func (c *AliPayClient) TradeAppPay() (string, error) {
 		log.Log.Errorf("ali_trace: trade app pay fail, err:%s, orderId:%s", err, c.OutTradeNo)
 		return "", err
 	}
-	payParam, err = url.QueryUnescape(payParam)
-	if err != nil {
-		return "", err
-	}
 
 	return payParam, nil
+}
+
+// 校验签名
+func (c *AliPayClient) VerifySign(body interface{}) (bool, error) {
+	return false, nil
 }

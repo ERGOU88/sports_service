@@ -69,3 +69,13 @@ func (c *WechatPayClient) TradeAppPay() (map[string]interface{}, error){
 	return mp, nil
 }
 
+// 校验签名
+func (c *WechatPayClient) VerifySign(body interface{}) (bool, error) {
+	ok, err := wechat.VerifySign(WECHAT_SECRET, wechat.SignType_MD5, body)
+	if !ok || err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
