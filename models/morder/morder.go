@@ -19,6 +19,7 @@ type OrderModel struct {
 	Order          *models.VenuePayOrders
 	OrderProduct   *models.VenueOrderProductInfo
 	Record         *models.VenueAppointmentRecord
+	Notify         *models.VenuePayNotify
 }
 
 func NewOrderModel(engine *xorm.Session) *OrderModel {
@@ -27,6 +28,7 @@ func NewOrderModel(engine *xorm.Session) *OrderModel {
 		Order: new(models.VenuePayOrders),
 		OrderProduct: new(models.VenueOrderProductInfo),
 		Record: new(models.VenueAppointmentRecord),
+		Notify: new(models.VenuePayNotify),
 	}
 }
 
@@ -54,7 +56,8 @@ func (m *OrderModel) AddMultiOrderProduct(list []*models.VenueOrderProductInfo) 
 
 // 订单超时 更新订单状态
 func (m *OrderModel) UpdateOrderStatus(orderId string, status int) (int64, error) {
-	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Cols("update_at", "status").Update(m.Order)
+	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Cols("update_at",
+		"status", "is_callback", "pay_time").Update(m.Order)
 }
 
 // 通过订单id 获取订单流水信息
@@ -72,5 +75,10 @@ func (m *OrderModel) UpdateOrderProductStatus(orderId string, status int) (int64
 func (m *OrderModel) RecordOrderId(orderId string) (int, error) {
 	rds := dao.NewRedisDao()
 	return rds.SADD(rdskey.ORDER_EXPIRE_INFO, orderId)
+}
+
+// 记录订单回调通知
+func (m *OrderModel) AddOrderPayNotify() (int64, error) {
+	return m.Engine.InsertOne(m.Notify)
 }
 

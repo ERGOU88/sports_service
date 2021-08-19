@@ -1,6 +1,7 @@
 package errdef
 
 const (
+	PAY_SUCCESS        = 1
 	SUCCESS            = 200
 	ERROR              = 500
 	INVALID_PARAMS     = 400
@@ -206,6 +207,7 @@ const (
 var MsgFlags = map[int]string{
 	SUCCESS:        "ok",
 	ERROR:          "fail",
+	PAY_SUCCESS:    "success",
 	INVALID_PARAMS: "请求参数错误",
 	UNAUTHORIZED:   "未经授权",
 	INVALID_TOKEN:  "鉴权失败，请重新登陆",

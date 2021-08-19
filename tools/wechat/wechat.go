@@ -58,13 +58,15 @@ func (c *WechatPayClient) TradeAppPay() (map[string]interface{}, error){
 
 	timeStamp := strconv.FormatInt(time.Now().Unix(), 10)
 	// 获取App支付需要的paySign
-	paySign := wechat.GetAppPaySign(WECHAT_APP_ID, MERCHANT_ID, wxRsp.NonceStr, wxRsp.PrepayId, wechat.SignType_MD5, timeStamp, WECHAT_SECRET)
+	paySign := wechat.GetAppPaySign(WECHAT_APP_ID, MERCHANT_ID, wxRsp.NonceStr, wxRsp.PrepayId, wechat.SignType_MD5,
+		timeStamp, WECHAT_SECRET)
+
 	mp["partner_id"] = MERCHANT_ID
 	mp["sign"] = paySign
 	mp["time_stamp"] = timeStamp
 	mp["nonce_str"] = wxRsp.NonceStr
 	mp["prepay_id"] = wxRsp.PrepayId
-	mp["pkg_name"] = "WXPay"
+	mp["pkg_name"] = "Sign=WXPay"
 
 	return mp, nil
 }
