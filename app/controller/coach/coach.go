@@ -1,8 +1,10 @@
 package coach
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
+	"math"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
@@ -12,7 +14,6 @@ import (
 	"sports_service/server/models/morder"
 	"sports_service/server/models/muser"
 	"sports_service/server/util"
-	"fmt"
 	"time"
 )
 
@@ -88,6 +89,17 @@ func (svc *CoachModule) GetCoachDetail(coachId string) (int, *mcoach.CoachDetail
 		Cover: svc.coach.Coach.Cover,
 		Avatar: svc.coach.Coach.Avatar,
 	}
+
+	ok, err = svc.coach.GetCoachScoreInfo(fmt.Sprint(svc.coach.Coach.Id))
+	if !ok || err != nil {
+		log.Log.Errorf("coach_trace: get coach score info fail, err:%s", err)
+		res.TotalNum = 0
+		res.Score = fmt.Sprintf("%.1f", math.Ceil(float64(svc.coach.CoachScore.TotalScore) / float64(svc.coach.CoachScore.TotalNum))),
+	} else {
+	    res.TotalNum =  svc.coach.CoachScore.TotalNum
+		res.Score = fmt.Sprintf("%.1f", math.Ceil(float64(svc.coach.CoachScore.TotalScore) / float64(svc.coach.CoachScore.TotalNum))),
+	}
+
 
 	courses, err := svc.course.GetCourseByCoachId(coachId)
 	if err != nil {

@@ -31,6 +31,8 @@ type CoachDetail struct {
 	AreasOfExpertise  string  `json:"areas_of_expertise"`
 	Cover             string  `json:"cover"`
 	Avatar            string  `json:"avatar"`
+	Score             string  `json:"score"`
+	TotalNum          int     `json:"total_num"`
 	Courses           []*CourseInfo    `json:"courses"`
 }
 
