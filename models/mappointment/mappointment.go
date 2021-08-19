@@ -134,7 +134,7 @@ type StockInfoResp struct {
 type AppointmentResp struct {
 	Id       int64      `json:"id"`          // 场馆id
 	Name     string     `json:"name"`        // 场馆名称
-	Date     string     `json:"date"`        // 下单日期
+	Date     string     `json:"date"`        // 预定日期
 	WeekCn   string     `json:"week_cn"`     // 星期几
 	TotalTm  int        `json:"total_tm"`    // 预约总时长
 	TmCn     string     `json:"tm_cn"`       // 总时长 中文

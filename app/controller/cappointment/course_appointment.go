@@ -144,7 +144,6 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 
 	svc.Extra.Id = params.RelatedId
 	svc.Extra.Name = svc.course.Course.Title
-	svc.Extra.Date = time.Now().Format(consts.FORMAT_DATE)
 	svc.Extra.WeekCn = util.GetWeekCn(params.WeekNum)
 	svc.Extra.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
 	svc.Extra.TmCn = util.ResolveTime(svc.Extra.TotalTm)

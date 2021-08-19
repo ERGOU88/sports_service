@@ -498,6 +498,10 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 			return errors.New("week not match")
 		}
 
+		if svc.Extra.Date == "" {
+			svc.Extra.Date = date
+		}
+
 		if svc.appointment.AppointmentInfo.AppointmentType == 0 {
 			var list []*models.VenuePersonalLabelConf
 			labelType := 0
