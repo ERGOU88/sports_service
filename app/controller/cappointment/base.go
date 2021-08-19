@@ -459,6 +459,7 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 	//// 预约流水map
 	//recordMp := make(map[int64]*models.VenueAppointmentRecord)
 	for _, item := range infos {
+		log.Log.Infof("param:%+v", item)
 		err := svc.GetAppointmentConf(item.Id)
 		if svc.appointment.AppointmentInfo == nil || err != nil {
 			log.Log.Errorf("venue_trace: get appointment conf fail, id:%d", item.Id)
