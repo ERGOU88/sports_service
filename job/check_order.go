@@ -11,12 +11,13 @@ import (
 	"errors"
 )
 
-// 检测订单支付是否超时（每分钟）
+// 检测订单支付是否超时（30秒）
 func CheckOrder() {
-	ticker := time.NewTicker(time.Minute * 1)
+	ticker := time.NewTicker(time.Second * 30)
 	defer ticker.Stop()
 
 	for {
+		
 		select {
 		case <- ticker.C:
 			log.Log.Debugf("开始检测订单支付是否超时")
