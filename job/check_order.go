@@ -1,7 +1,7 @@
 package job
 
 import (
-	"github.com/go-xorm/xorm"
+	//"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
@@ -35,19 +35,15 @@ func checkOrderTimeOut() {
 		return
 	}
 
-	for _, orderId := range orderIds {
-		session := dao.VenueEngine.NewSession()
-		if err := session.Begin(); err != nil {
-			log.Log.Errorf("orderJob_trace: session begin err:%s, orderId:%s", err, orderId)
-			return
-		}
+	if len(orderIds) == 0 {
+		return
+	}
 
-		if err := orderTimeOut(orderId, session); err != nil {
+	for _, orderId := range orderIds {
+		if err := orderTimeOut(orderId); err != nil {
 			log.Log.Errorf("orderJob_trace: orderTimeOut fail, err:%s", err)
-			session.Rollback()
-			return
+			continue
 		}
-		session.Commit()
 	}
 }
 
@@ -64,18 +60,25 @@ func DelOrderId(orderId string) (int, error) {
 }
 
 // 订单超时
-func orderTimeOut(orderId string, session *xorm.Session) error {
-	//if err := session.Begin(); err != nil {
-	//	log.Log.Errorf("orderJob_trace: session begin err:%s, orderId:%s", err, orderId)
-	//	return err
-	//}
-	log.Log.Errorf("session:%v", session)
+func orderTimeOut(orderId string) error {
+	session := dao.VenueEngine.NewSession()
+	if err := session.Begin(); err != nil {
+		log.Log.Errorf("orderJob_trace: session begin err:%s", err)
+		return err
+	}
+
+	if err := session.Begin(); err != nil {
+		log.Log.Errorf("orderJob_trace: session begin err:%s, orderId:%s", err, orderId)
+		return err
+	}
+
+	log.Log.Errorf("session:%#v", session)
 
 	orderModel := morder.NewOrderModel(session)
 	ok, err := orderModel.GetOrder(orderId)
 	if !ok || err != nil {
 		log.Log.Errorf("orderJob_trace: get order info fail, err:%s, ok:%v, orderId:%s", err, ok, orderId)
-		//session.Rollback()
+		session.Rollback()
 		return errors.New("fail")
 	}
 
@@ -83,7 +86,7 @@ func orderTimeOut(orderId string, session *xorm.Session) error {
 	if orderModel.Order.Status != consts.PAY_TYPE_WAIT {
 		log.Log.Errorf("orderJob_trace: don't need to change，orderId:%s, status:%d", orderId,
 			orderModel.Order.Status)
-		//session.Rollback()
+		session.Rollback()
 		return errors.New("fail")
 	}
 
@@ -92,7 +95,7 @@ func orderTimeOut(orderId string, session *xorm.Session) error {
 	if now < orderModel.Order.CreateAt + consts.APPOINTMENT_PAYMENT_DURATION {
 		log.Log.Errorf("orderJob_trace: now < processTm, orderId:%s, now:%d, createAt:%d", orderId,
 			now, orderModel.Order.CreateAt)
-		//session.Rollback()
+		session.Rollback()
 		return errors.New("fail")
 	}
 
@@ -102,7 +105,7 @@ func orderTimeOut(orderId string, session *xorm.Session) error {
 	affected, err := orderModel.UpdateOrderStatus(orderId, consts.PAY_TYPE_WAIT)
 	if affected != 1 || err != nil {
 		log.Log.Errorf("orderJob_trace: update order status fail, orderId:%s, err:%s", orderId, err)
-		//session.Rollback()
+		session.Rollback()
 		return errors.New("update order status fail")
 	}
 
@@ -111,7 +114,7 @@ func orderTimeOut(orderId string, session *xorm.Session) error {
 	// 更新订单商品流水状态
 	if _, err = orderModel.UpdateOrderProductStatus(orderId, consts.PAY_TYPE_WAIT); err != nil {
 		log.Log.Errorf("orderJob_trace: update order product status fail, err:%s, affected:%d, orderId:%s", err, affected, orderId)
-		//session.Rollback()
+		session.Rollback()
 		return errors.New("update order product status fail")
 	}
 
@@ -120,7 +123,7 @@ func orderTimeOut(orderId string, session *xorm.Session) error {
 	list, err := amodel.GetAppointmentRecordByOrderId(orderId, consts.PAY_TYPE_WAIT)
 	if err != nil {
 		log.Log.Errorf("orderJob_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
-		//session.Rollback()
+		session.Rollback()
 		return err
 	}
 
@@ -130,7 +133,7 @@ func orderTimeOut(orderId string, session *xorm.Session) error {
 			record.AppointmentType, int(record.RelatedId))
 		if affected != 1 || err != nil {
 			log.Log.Errorf("orderJob_trace: update stock info fail, orderId:%s, err:%s, affected:%d, id:%d", orderId, err, affected, record.Id)
-			//session.Rollback()
+			session.Rollback()
 			return errors.New("update stock info fail")
 		}
 	}
@@ -138,7 +141,7 @@ func orderTimeOut(orderId string, session *xorm.Session) error {
 	// 更新订单对应的预约流水状态
 	if err := amodel.UpdateAppointmentRecordStatus(orderId, now, consts.PAY_TYPE_UNPAID, consts.PAY_TYPE_WAIT); err != nil {
 		log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
-		//session.Rollback()
+		session.Rollback()
 		return err
 	}
 
@@ -146,19 +149,19 @@ func orderTimeOut(orderId string, session *xorm.Session) error {
 	amodel.Labels.Status = 1
 	if _, err = amodel.UpdateLabelsStatus(orderId, 0); err != nil {
 		log.Log.Errorf("orderJob_trace: update labels status fail, orderId:%s, err:%s", orderId, err)
-		//session.Rollback()
+		session.Rollback()
 		return errors.New("update label status fail")
 	}
 
-	if _, err := DelOrderId(orderId); err != nil {
-		log.Log.Errorf("orderJob_trace: del orderId fail, err:%s", err)
-		//session.Rollback()
-		return err
-	}
+	//if _, err := DelOrderId(orderId); err != nil {
+	//	log.Log.Errorf("orderJob_trace: del orderId fail, err:%s", err)
+	//	session.Rollback()
+	//	return err
+	//}
 
 	log.Log.Errorf("orderJob_trace: del redis orderId success, orderId:%s", orderId)
 
-	//session.Commit()
+	session.Commit()
 
 	return nil
 }
