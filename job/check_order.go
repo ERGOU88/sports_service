@@ -90,7 +90,8 @@ func orderTimeOut(orderId string, session *xorm.Session) error {
 	now := int(time.Now().Unix())
 	// 如果当前时间 < 超时处理时间 不处理
 	if now < orderModel.Order.CreateAt + consts.APPOINTMENT_PAYMENT_DURATION {
-		log.Log.Errorf("orderJob_trace: now < processTm, orderId:%s", orderId)
+		log.Log.Errorf("orderJob_trace: now < processTm, orderId:%s, now:%d, createAt:%d", orderId,
+			now, orderModel.Order.CreateAt)
 		//session.Rollback()
 		return errors.New("fail")
 	}
