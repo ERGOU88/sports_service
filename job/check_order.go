@@ -14,7 +14,7 @@ import (
 
 // 检测订单支付是否超时（30秒）
 func CheckOrder() {
-	ticker := time.NewTicker(time.Second * 5)
+	ticker := time.NewTicker(time.Second * 30)
 	defer ticker.Stop()
 
 	for {
@@ -56,7 +56,7 @@ func GetOrderIds() ([]string, error) {
 // 超时处理完毕 删除缓存中的订单号
 func DelOrderId(orderId string) (int, error) {
 	rds := dao.NewRedisDao()
-	return rds.Del(rdskey.ORDER_EXPIRE_INFO, orderId)
+	return rds.SREM(rdskey.ORDER_EXPIRE_INFO, orderId)
 }
 
 // 订单超时
@@ -153,11 +153,11 @@ func orderTimeOut(orderId string) error {
 		return errors.New("update label status fail")
 	}
 
-	//if _, err := DelOrderId(orderId); err != nil {
-	//	log.Log.Errorf("orderJob_trace: del orderId fail, err:%s", err)
-	//	session.Rollback()
-	//	return err
-	//}
+	if _, err := DelOrderId(orderId); err != nil {
+		log.Log.Errorf("orderJob_trace: del orderId fail, err:%s", err)
+		session.Rollback()
+		return err
+	}
 
 	log.Log.Errorf("orderJob_trace: del redis orderId success, orderId:%s", orderId)
 
