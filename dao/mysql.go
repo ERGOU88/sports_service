@@ -79,7 +79,7 @@ func ConnectDbs(masterDsn string, slaveDsn []string) (*xorm.EngineGroup, error) 
 		engineGroup.ShowSQL(true)
 	}
 
-	engineGroup.SetMaxIdleConns(150)
-	engineGroup.SetMaxOpenConns(1000)
+	engineGroup.SetMaxIdleConns(config.Global.Mysql.Main.MaxIdle)
+	engineGroup.SetMaxOpenConns(config.Global.Mysql.Main.MaxActive)
 	return engineGroup, nil
 }
