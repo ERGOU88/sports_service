@@ -165,6 +165,7 @@ type TimeNodeInfo struct {
 	DeductionTm  int64        `json:"deduction_tm"` // 抵扣会员时长
 	Discount     int          `json:"discount"`     // 优惠的金额
 	IsEnough     bool         `json:"is_enough"`    // 当前节点库存是否足够
+	StartTm      int64        `json:"start_tm"`     // 预约开始时间戳
 }
 
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
