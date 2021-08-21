@@ -4,6 +4,7 @@ import (
 	"crypto"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/alipay"
+	"sports_service/server/app/config"
 	"sports_service/server/global/app/log"
 	"sports_service/server/util"
 )
@@ -30,7 +31,7 @@ func NewAliPay(isProd bool) *AliPayClient {
 	// 配置公共参数
 	ali.Client.SetCharset("utf-8").
 		SetSignType(alipay.RSA2).
-		SetPrivateKeyType(alipay.PKCS1)
+		SetPrivateKeyType(alipay.PKCS1).SetNotifyUrl(config.Global.AlipayNotifyUrl)
 	return ali
 }
 
