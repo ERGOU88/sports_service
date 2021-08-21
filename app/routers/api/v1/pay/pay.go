@@ -129,6 +129,8 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
+	log.Log.Errorf("wxNotify_trace: body:%s", string(body))
+
 	cli := wechat.NewWechatPay(true)
 	ok, err := cli.VerifySign(string(body))
 	if !ok || err != nil {
