@@ -16,4 +16,5 @@ type VenuePayOrders struct {
 	IsCallback  int    `json:"is_callback" xorm:"not null default 0 comment('是否接收到第三方回调 0 未接收到回调 1 已接收回调') TINYINT(1)"`
 	CreateAt    int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt    int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
+	Subject     string `json:"subject" xorm:"not null default '' comment('商品名称') VARCHAR(150)"`
 }

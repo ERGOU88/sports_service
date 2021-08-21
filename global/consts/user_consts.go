@@ -32,6 +32,7 @@ const (
 	// cookie存储的key
 	COOKIE_NAME    = "auth"
 	USER_ID        = "user_id"
+	CHANNEL        = "channel"
 	USER_STATUS    = "user_status"
 	// todo: 默认头像
 	DEFAULT_AVATAR = "https://fpv-1251316249.cos.ap-shanghai.myqcloud.com/fpv/1607511276163.png"

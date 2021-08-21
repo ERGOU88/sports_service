@@ -1,8 +1,10 @@
 package coach
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
+	"math"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
@@ -12,7 +14,6 @@ import (
 	"sports_service/server/models/morder"
 	"sports_service/server/models/muser"
 	"sports_service/server/util"
-	"fmt"
 	"time"
 )
 
@@ -181,6 +182,11 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 		return errdef.ERROR
 	}
 
+	if param.Star <= 0 || param.Star > 5 {
+		log.Log.Errorf("coach_trace: invalid star, star:%d", param.Star)
+		return errdef.INVALID_PARAMS
+	}
+
 	user := svc.user.FindUserByUserid(userId)
 	if user == nil {
 		log.Log.Errorf("coach_trace: user not found, userId:%s", userId)
@@ -244,4 +250,19 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 
 	svc.engine.Commit()
 	return errdef.SUCCESS
+}
+
+// 获取私教评分信息
+func (svc *CoachModule) GetCoachScore(coachId string) (totalNum int, score float64) {
+	ok, err := svc.coach.GetCoachScoreInfo(fmt.Sprint(coachId))
+	if !ok || err != nil {
+		log.Log.Errorf("coach_trace: get coach score info fail, err:%s", err)
+		totalNum = 0
+		score = 0
+	} else {
+		totalNum =  svc.coach.CoachScore.TotalNum
+		score = math.Ceil(float64(svc.coach.CoachScore.TotalScore) / float64(svc.coach.CoachScore.TotalNum))
+	}
+
+	return
 }

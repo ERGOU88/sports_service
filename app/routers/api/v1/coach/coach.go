@@ -34,7 +34,7 @@ func CoachDetail(c *gin.Context) {
 	reply.Response(http.StatusOK, code)
 }
 
-// 私教评价
+// 私教评价列表
 func CoachEvaluate(c *gin.Context) {
 	reply := errdef.New(c)
 	coachId := c.Query("coach_id")
@@ -47,6 +47,9 @@ func CoachEvaluate(c *gin.Context) {
 	svc := coach.New(c)
 	code, list := svc.GetEvaluateList(coachId, page, size)
 	reply.Data["list"] = list
+	total, score := svc.GetCoachScore(coachId)
+	reply.Data["score"] = score
+	reply.Data["total_num"] = total
 	reply.Response(http.StatusOK, code)
 }
 
@@ -59,6 +62,7 @@ func CoachEvaluateConf(c *gin.Context) {
 	reply.Response(http.StatusOK, code)
 }
 
+// 发布评价 [私教]
 func PubEvaluate(c *gin.Context) {
 	reply := errdef.New(c)
 	param := &mcoach.PubEvaluateParam{}
@@ -70,6 +74,6 @@ func PubEvaluate(c *gin.Context) {
 
 	userId, _ := c.Get(consts.USER_ID)
 	svc := coach.New(c)
-	svc.PubEvaluate(userId.(string), param)
-
+	code := svc.PubEvaluate(userId.(string), param)
+	reply.Response(http.StatusOK, code)
 }

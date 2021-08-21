@@ -17,6 +17,7 @@ import (
 	"sports_service/server/app/routers/api/v1/like"
 	"sports_service/server/app/routers/api/v1/notify"
 	"sports_service/server/app/routers/api/v1/order"
+	"sports_service/server/app/routers/api/v1/pay"
 	"sports_service/server/app/routers/api/v1/posting"
 	"sports_service/server/app/routers/api/v1/search"
 	"sports_service/server/app/routers/api/v1/share"
@@ -85,4 +86,6 @@ func InitRouters(engine *gin.Engine) {
 	appointment.Router(engine)
 	// 私教模块
 	coach.Router(engine)
+	// 支付模块
+	pay.Router(engine)
 }

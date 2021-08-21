@@ -21,6 +21,7 @@ var AppInfo = map[string]string{
 // 检查签名
 func CheckSign() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		c.Set(consts.CHANNEL, 0)
 		// debug模式下 不校验签名
 		if config.Global.Debug == true {
 			c.Next()
@@ -72,6 +73,9 @@ func CheckSign() gin.HandlerFunc {
 			return
 		}
 
+		plt := getChannel(appId)
+		c.Set(consts.CHANNEL, plt)
+
 		c.Next()
 	}
 }
@@ -102,6 +106,18 @@ func getAppKey(appId string) string {
 	}
 
 	return ""
+}
+
+
+func getChannel(appId string) int {
+	switch appId {
+	case string(consts.IOS_APP_ID):
+		return consts.PLT_TYPE_IOS
+	case string(consts.AND_APP_ID):
+		return consts.PLT_TYPE_ANDROID
+	}
+
+	return 0
 }
 
 

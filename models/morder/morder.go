@@ -2,14 +2,24 @@ package morder
 
 import (
 	"github.com/go-xorm/xorm"
+	"sports_service/server/dao"
+	"sports_service/server/global/rdskey"
 	"sports_service/server/models"
 )
+
+// 支付请求参数
+type PayReqParam struct {
+	PayType   int     `binding:"required" json:"pay_type"`     // 1 支付宝 2 微信 3 钱包 4 苹果内购
+	OrderId   string  `binding:"required" json:"order_id"`     // 订单id
+	UserId    string
+}
 
 type OrderModel struct {
 	Engine         *xorm.Session
 	Order          *models.VenuePayOrders
 	OrderProduct   *models.VenueOrderProductInfo
-	Record         *models.AppointmentRecord
+	Record         *models.VenueAppointmentRecord
+	Notify         *models.VenuePayNotify
 }
 
 func NewOrderModel(engine *xorm.Session) *OrderModel {
@@ -17,7 +27,8 @@ func NewOrderModel(engine *xorm.Session) *OrderModel {
 		Engine: engine,
 		Order: new(models.VenuePayOrders),
 		OrderProduct: new(models.VenueOrderProductInfo),
-		Record: new(models.AppointmentRecord),
+		Record: new(models.VenueAppointmentRecord),
+		Notify: new(models.VenuePayNotify),
 	}
 }
 
@@ -44,17 +55,30 @@ func (m *OrderModel) AddMultiOrderProduct(list []*models.VenueOrderProductInfo) 
 }
 
 // 订单超时 更新订单状态
-func (m *OrderModel) UpdateOrderStatus() (int64, error) {
-	return m.Engine.Where("pay_order_id=? AND status=?", m.Order.PayOrderId, m.Order.Status).Cols("update_at", "status").Update(m.Order)
+func (m *OrderModel) UpdateOrderStatus(orderId string, status int) (int64, error) {
+	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Cols("update_at",
+		"status", "is_callback", "pay_time").Update(m.Order)
 }
 
 // 通过订单id 获取订单流水信息
 func (m *OrderModel) GetOrderProductsById(orderId string, status int) (bool, error) {
 	m.OrderProduct = new(models.VenueOrderProductInfo)
-	return m.Engine.Where("order_id=? AND status=?", orderId, status).Get(m.OrderProduct)
+	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Get(m.OrderProduct)
 }
 
 // 更新订单商品状态
 func (m *OrderModel) UpdateOrderProductStatus(orderId string, status int) (int64, error) {
-	return m.Engine.Where("order_id=? AND status=?", orderId, status).Cols("update_at", "status").Update(m.OrderProduct)
+	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Cols("update_at", "status").Update(m.OrderProduct)
 }
+
+// 记录需处理超时的订单号
+func (m *OrderModel) RecordOrderId(orderId string) (int, error) {
+	rds := dao.NewRedisDao()
+	return rds.SADD(rdskey.ORDER_EXPIRE_INFO, orderId)
+}
+
+// 记录订单回调通知
+func (m *OrderModel) AddOrderPayNotify() (int64, error) {
+	return m.Engine.InsertOne(m.Notify)
+}
+
