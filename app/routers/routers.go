@@ -1,7 +1,6 @@
 package routers
 
 import (
-	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sports_service/server/app/config"
@@ -44,11 +43,11 @@ func InitRouters(engine *gin.Engine) {
 	}
 
 	engine.Use(gin.Recovery())
+	//engine.Use(gzip.Gzip(gzip.DefaultCompression))
 	engine.Any("/", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 		return
 	})
-	engine.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	// 初始化接口
 	client.Router(engine)
