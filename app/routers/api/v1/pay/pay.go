@@ -51,6 +51,14 @@ func AliPayNotify(c *gin.Context) {
 	}
 
 	log.Log.Debug("aliNotify_trace: info %s", string(body))
+	cli := alipay.NewAliPay(true)
+	b, err := cli.VerifySign(string(body))
+	if !b || err != nil {
+		log.Log.Errorf("aliNotify_trace: sign not match, bool:%v, err:%s", b, err)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
 	params, err := url.ParseQuery(string(body))
 	if err != nil {
 		log.Log.Errorf("aliNotify_trace: err:%s, params:%v", err.Error(), params)
@@ -58,19 +66,19 @@ func AliPayNotify(c *gin.Context) {
 		return
 	}
 
-	sign := params.Get("sign")
-	params.Del("sign")
-	params.Del("sign_type")
-	query := params.Encode()
-	msg, err := url.QueryUnescape(query)
-	if err != nil {
-		log.Log.Error("aliNotify_trace: QueryUnescape failed: %s", err)
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
-		return
-	}
+	//sign := params.Get("sign")
+	//params.Del("sign")
+	//params.Del("sign_type")
+	//query := params.Encode()
+	//msg, err := url.QueryUnescape(query)
+	//if err != nil {
+	//	log.Log.Error("aliNotify_trace: QueryUnescape failed: %s", err)
+	//	reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+	//	return
+	//}
 
-	sign, _ = url.PathUnescape(sign)
-	log.Log.Debug("aliNotify_trace: msg:%s, sign:%v", msg, sign)
+	//sign, _ = url.PathUnescape(sign)
+	//log.Log.Debug("aliNotify_trace: msg:%s, sign:%v", msg, sign)
 
 	orderId := params.Get("out_trade_no")
 	svc := corder.New(c)
@@ -87,13 +95,12 @@ func AliPayNotify(c *gin.Context) {
 		return
 	}
 
-	cli := alipay.NewAliPay(true)
-	ok, err := cli.VerifyData(msg, "RSA2", sign)
-	if !ok || err != nil {
-		log.Log.Errorf("aliNotify_trace: verify data fail, err:%s", err)
-		reply.Response(http.StatusBadRequest, errdef.ERROR)
-		return
-	}
+	//ok, err := cli.VerifyData(msg, "RSA2", sign)
+	//if !ok || err != nil {
+	//	log.Log.Errorf("aliNotify_trace: verify data fail, err:%s", err)
+	//	reply.Response(http.StatusBadRequest, errdef.ERROR)
+	//	return
+	//}
 
 	amount, err := strconv.ParseFloat(strings.Trim(params.Get("total_amount"), " "), 64)
 	if err != nil {

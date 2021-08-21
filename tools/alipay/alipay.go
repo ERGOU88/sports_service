@@ -53,14 +53,14 @@ func (c *AliPayClient) TradeAppPay() (string, error) {
 }
 
 // 校验签名
-//func (c *AliPayClient) VerifySign(body interface{}) (bool, error) {
-//	ok, err := alipay.VerifySign(ALIPAY_PUBLIC_KEY, body)
-//	if !ok || err != nil {
-//		return false, err
-//	}
-//
-//	return true, nil
-//}
+func (c *AliPayClient) VerifySign(body interface{}) (bool, error) {
+	ok, err := alipay.VerifySign(ALIPAY_PUBLIC_KEY, body)
+	if !ok || err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
 
 // 校验签名
 func (c *AliPayClient) VerifyData(data, signType, sign string) (ok bool, err error) {
