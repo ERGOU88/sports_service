@@ -72,8 +72,6 @@ func orderTimeOut(orderId string) error {
 		return err
 	}
 
-	log.Log.Errorf("session:%#v", session)
-
 	orderModel := morder.NewOrderModel(session)
 	ok, err := orderModel.GetOrder(orderId)
 	if !ok || err != nil {
