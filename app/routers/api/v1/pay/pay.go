@@ -110,7 +110,7 @@ func AliPayNotify(c *gin.Context) {
 
 	status := strings.Trim(params.Get("trade_status"), " ")
 	payTime, _ := time.Parse("2006-01-02 15:04:05", params.Get("gmt_payment"))
-	if err := svc.OrderProcess(string(body), status, payTime.Unix()); err != nil {
+	if err := svc.AliPayNotify(orderId, string(body), status, payTime.Unix()); err != nil {
 		reply.Response(http.StatusInternalServerError, errdef.ERROR)
 		return
 	}
@@ -181,9 +181,8 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-	status := strings.Trim(params.Get("trade_status"), " ")
 	payTime, _ := time.Parse("20060102150405", params.Get("time_end"))
-	if err := svc.OrderProcess(string(body), status, payTime.Unix()); err != nil {
+	if err := svc.OrderProcess(orderId, string(body), payTime.Unix()); err != nil {
 		reply.Response(http.StatusInternalServerError, errdef.ERROR)
 		return
 	}
