@@ -134,7 +134,7 @@ func WechatNotify(c *gin.Context) {
 	cli := wechat.NewWechatPay(true)
 	ok, err := cli.VerifySign(string(body))
 	if !ok || err != nil {
-		log.Log.Error("wxNotify_trace: sign not match")
+		log.Log.Error("wxNotify_trace: sign not match, err:%s", err)
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
