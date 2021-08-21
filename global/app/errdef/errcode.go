@@ -1,6 +1,7 @@
 package errdef
 
 const (
+	PAY_SUCCESS        = 1
 	SUCCESS            = 200
 	ERROR              = 500
 	INVALID_PARAMS     = 400
@@ -171,6 +172,7 @@ const (
 	COACH_ORDER_NOT_SUCCESS      = 15005
 	COACH_TYPE_FAIL              = 15006
 	COACH_ID_NOT_MATCH           = 15007
+	COACH_SCORE_INFO_FAIL        = 15008
 
 	// 预约错误 16001-17000
 	APPOINTMENT_INVALID_INFO     = 16001
@@ -180,6 +182,7 @@ const (
 	APPOINTMENT_VIP_DEDUCTION    = 16005
 	APPOINTMENT_NOT_ENOUGH_STOCK = 16006
 	APPOINTMENT_ADD_RECORD_FAIL  = 16007
+	APPOINTMENT_RECORD_ORDER_FAIL= 16008
 
 	// 场馆错误 17001-18000
 	VENUE_NOT_EXISTS             = 17001
@@ -187,16 +190,24 @@ const (
 	// 订单错误 18001-19000
 	ORDER_ADD_FAIL               = 18001
 	ORDER_PRODUCT_ADD_FAIL       = 18002
+	ORDER_NOT_EXISTS             = 18003
+	ORDER_STATUS_FAIL            = 18004
 
-	// 大课相关错误
+	// 大课相关错误 19001-20000
 	COURSE_NOT_EXISTS            = 19001
 	COURSE_TYPE_FAIL             = 19002
 	COURSE_ID_NOT_MATCH          = 19003
+
+	// 支付相关错误 20001-30000
+	PAY_INVALID_TYPE             = 20001
+	PAY_ALI_PARAM_FAIL           = 20002
+	PAY_WX_PARAM_FAIL            = 20003
 )
 
 var MsgFlags = map[int]string{
 	SUCCESS:        "ok",
 	ERROR:          "fail",
+	PAY_SUCCESS:    "success",
 	INVALID_PARAMS: "请求参数错误",
 	UNAUTHORIZED:   "未经授权",
 	INVALID_TOKEN:  "鉴权失败，请重新登陆",
@@ -348,6 +359,7 @@ var MsgFlags = map[int]string{
 	COACH_ORDER_NOT_SUCCESS:     "私教订单未成功",
 	COACH_TYPE_FAIL:             "私教类型错误",
 	COACH_ID_NOT_MATCH:          "私教id不匹配",
+	COACH_SCORE_INFO_FAIL:       "获取私教评价信息失败",
 
 	APPOINTMENT_INVALID_INFO:    "预约信息错误",
 	APPOINTMENT_QUERY_NODE_FAIL: "查询时间节点配置错误",
@@ -356,15 +368,22 @@ var MsgFlags = map[int]string{
 	APPOINTMENT_VIP_DEDUCTION:   "VIP抵扣时长错误",
 	APPOINTMENT_NOT_ENOUGH_STOCK:"库存不足",
 	APPOINTMENT_ADD_RECORD_FAIL: "添加预约流水失败",
+	APPOINTMENT_RECORD_ORDER_FAIL: "记录预约订单号失败",
 
 	VENUE_NOT_EXISTS:            "场馆不存在",
 
 	ORDER_ADD_FAIL:              "添加订单失败",
 	ORDER_PRODUCT_ADD_FAIL:      "添加商品订单失败",
+	ORDER_NOT_EXISTS:            "订单不存在",
+	ORDER_STATUS_FAIL:           "订单状态错误",
 
 	COURSE_NOT_EXISTS:           "课程不存在",
 	COURSE_TYPE_FAIL:            "课程类型错误",
 	COURSE_ID_NOT_MATCH:         "课程id不匹配",
+
+	PAY_INVALID_TYPE:            "无效的支付类型",
+	PAY_ALI_PARAM_FAIL:          "获取支付宝请求参数失败",
+	PAY_WX_PARAM_FAIL:           "获取微信请求参数失败",
 }
 
 func GetMsg(code int) string {

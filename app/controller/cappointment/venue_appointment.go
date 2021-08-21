@@ -12,7 +12,6 @@ import (
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
-	redismq "sports_service/server/redismq/event"
 	"sports_service/server/util"
 	"time"
 )
@@ -72,12 +71,14 @@ func (svc *VenueAppointmentModule) Options(relatedId int64) (int, interface{}) {
 // 5 如未充值会员时长 或 会员时长不足 则剩余预约 按售价 * 预约数量 计算订单总价
 // 6 记录订单、订单商品流水、预约流水
 func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentReq) (int, interface{}) {
+	log.Log.Infof("params:%+v", params)
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("venue_trace: session begin fail, err:%s", err)
 		return errdef.ERROR, nil
 	}
 
 	if len(params.Infos) == 0 {
+		log.Log.Errorf("venue_trace: infos len%d", len(params.Infos))
 		svc.engine.Rollback()
 		return errdef.APPOINTMENT_INVALID_INFO, nil
 	}
@@ -112,16 +113,14 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
 
-	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.LabelIds, params.Infos); err != nil {
+	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.WeekNum, params.LabelIds, params.Infos); err != nil {
 		log.Log.Errorf("venue_trace: appointment fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.APPOINTMENT_PROCESS_FAIL, nil
 	}
 
-	svc.Extra.OrderId = orderId
 	svc.Extra.Id = params.RelatedId
 	svc.Extra.Name = svc.venue.Venue.VenueName
-	svc.Extra.Date = time.Now().Format(consts.FORMAT_DATE)
 	svc.Extra.WeekCn = util.GetWeekCn(params.WeekNum)
 	svc.Extra.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
 	svc.Extra.TmCn = util.ResolveTime(svc.Extra.TotalTm)
@@ -138,6 +137,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 		}
 	}
 
+	log.Log.Errorf("venue_trace: extra Info:%+v", svc.Extra)
 	// 库存不足 返回最新数据 事务回滚
 	if !svc.Extra.IsEnough {
 		log.Log.Errorf("venue_trace: rollback, isEnough:%v, reqType:%d", svc.Extra.IsEnough, params.ReqType)
@@ -152,7 +152,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 	}
 
 	// 添加订单
-	if err := svc.AddOrder(orderId, user.UserId, now); err != nil {
+	if err := svc.AddOrder(orderId, user.UserId, "预约场馆", now); err != nil {
 		log.Log.Errorf("venue_trace: add order fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.ORDER_ADD_FAIL, nil
@@ -172,12 +172,20 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 		return errdef.APPOINTMENT_ADD_RECORD_FAIL, nil
 	}
 
+	// 记录需处理支付超时的订单
+	if _, err := svc.order.RecordOrderId(orderId); err != nil {
+		log.Log.Errorf("venue_trace: record orderId fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.APPOINTMENT_RECORD_ORDER_FAIL, nil
+	}
+
 	svc.engine.Commit()
 
+	svc.Extra.OrderId = orderId
 	svc.Extra.PayDuration = consts.APPOINTMENT_PAYMENT_DURATION
     // 超时
-	redismq.PushOrderEventMsg(redismq.NewOrderEvent(svc.Extra.OrderId, int64(svc.order.Order.CreateAt) + svc.Extra.PayDuration,
-		consts.ORDER_EVENT_VENUE_TIME_OUT))
+	//redismq.PushOrderEventMsg(redismq.NewOrderEvent(user.UserId, svc.Extra.OrderId, int64(svc.order.Order.CreateAt) + svc.Extra.PayDuration,
+	//	consts.ORDER_EVENT_VENUE_TIME_OUT))
 	return errdef.SUCCESS, svc.Extra
 }
 
@@ -186,7 +194,7 @@ func (svc *VenueAppointmentModule) AppointmentCancel() int {
 	return 2000
 }
 
-// 预约场馆选项
+// 预约场馆时间选项
 func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 	date := svc.GetDateById(svc.DateId, consts.FORMAT_DATE)
 	if date == "" {
@@ -254,27 +262,48 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 		}
 		info.RecommendName = svc.venue.Recommend.Name
 
-		info.ReservedUsers = make([]*mappointment.ReservedUsers, 0)
+		info.ReservedUsers = make([]*mappointment.SeatInfo, 0)
 		if len(records) > 0 {
 			for _, val := range records {
-				uinfo := &mappointment.ReservedUsers{
-					UserId: val.UserId,
-				}
+				if val.Date == date && val.TimeNode == item.TimeNode {
+					seatInfo := make([]*mappointment.SeatInfo, 0)
+					if err := util.JsonFast.UnmarshalFromString(val.SeatInfo, &seatInfo); err == nil {
+						for _, v := range seatInfo {
+							user := svc.user.FindUserByUserid(val.UserId)
+							if user != nil {
+								v.NickName = user.NickName
+								v.Avatar = user.Avatar
+							}
 
-				user := svc.user.FindUserByUserid(val.UserId)
-				if user != nil {
-					uinfo.NickName = user.NickName
-					uinfo.Avatar = user.Avatar
-				}
+							continue
+						}
 
-
-				info.ReservedUsers = append(info.ReservedUsers, uinfo)
-
-				if val.PurchasedNum > 1 {
-					for i := 0; i < val.PurchasedNum-1; i++ {
-						info.ReservedUsers = append(info.ReservedUsers, uinfo)
+						info.ReservedUsers = append(info.ReservedUsers, seatInfo...)
+					} else {
+						log.Log.Errorf("venue_trace: unmarshal seat info fail, err:%s", err)
 					}
 				}
+
+
+				//uinfo := &mappointment.SeatInfo{
+				//	UserId: val.UserId,
+				//}
+				//
+				//user := svc.user.FindUserByUserid(val.UserId)
+				//if user != nil {
+				//	uinfo.NickName = user.NickName
+				//	uinfo.Avatar = user.Avatar
+				//	uinfo.SeatNo = 1
+				//}
+				//
+				//info.ReservedUsers = append(info.ReservedUsers, uinfo)
+				//
+				//if val.PurchasedNum > 1 {
+				//	for i := 0; i < val.PurchasedNum-1; i++ {
+				//		uinfo.SeatNo += 1
+				//		info.ReservedUsers = append(info.ReservedUsers, uinfo)
+				//	}
+				//}
 
 			}
 		}
@@ -305,42 +334,45 @@ func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*mo
 		return err
 	}
 
-	// 如果是会员
-	if vip != nil {
-		// 会员时长 > 0
-		if vip.Duration > 0 {
-			// 开始走抵扣流程 预约的时间节点[多个] 按价格从高至低 开始抵扣 每个时间节点最多只可抵扣一次
-			for key, val := range list {
-				if val.Duration <= 0 {
-					continue
-				}
+	if vip == nil {
+		return nil
+	}
 
-				// 是否足够抵扣
-				affected, err := svc.appointment.UpdateVenueVipInfo(val.Duration * -1, userId)
-				if err != nil {
-					log.Log.Errorf("venue_trace: update vip duration fail, err:%s", err)
-					return err
-				}
+	if vip.Duration <= 0 {
+		return nil
+	}
 
-				// 会员时长不够 查看下一个预约节点 是否可抵扣
-				if affected == 0 {
-					continue
-				}
+	// 如果是会员 且 会员时长 > 0
+	// 开始走抵扣流程 预约的时间节点[多个] 按价格从高至低 开始抵扣 每个时间节点最多只可抵扣一次
+	for key, val := range list {
+		if val.Duration <= 0 {
+			continue
+		}
 
-				// 足够抵扣 则记录抵扣的记录
-				if affected == 1 {
-					// 抵扣一个 则 减去一个的售价
-					svc.orderMp[val.Id].DeductionNum = affected
-					svc.orderMp[val.Id].DeductionTm = int64(val.Duration)
-					svc.orderMp[val.Id].DeductionAmount = int64(val.CurAmount)
-					svc.recordMp[val.Id].DeductionTm = int64(val.Duration)
-					svc.Extra.TotalDeductionTm += val.Duration
-					svc.Extra.TotalAmount = svc.Extra.TotalAmount - val.CurAmount
-					svc.Extra.IsDeduct = true
-					if len(svc.Extra.TimeNodeInfo) <= key {
-						svc.Extra.TimeNodeInfo[key].DeductionTm = svc.orderMp[val.Id].DeductionTm
-					}
-				}
+		// 是否足够抵扣
+		affected, err := svc.appointment.UpdateVenueVipInfo(val.Duration * -1, userId)
+		if err != nil {
+			log.Log.Errorf("venue_trace: update vip duration fail, err:%s", err)
+			return err
+		}
+
+		// 会员时长不够 查看下一个预约节点 是否可抵扣
+		if affected == 0 {
+			continue
+		}
+
+		// 足够抵扣 则记录抵扣的记录
+		if affected == 1 {
+			// 抵扣一个 则 减去一个的售价
+			svc.orderMp[val.Id].DeductionNum = affected
+			svc.orderMp[val.Id].DeductionTm = int64(val.Duration)
+			svc.orderMp[val.Id].DeductionAmount = int64(val.CurAmount)
+			svc.recordMp[val.Id].DeductionTm = int64(val.Duration)
+			svc.Extra.TotalDeductionTm += val.Duration
+			svc.Extra.TotalAmount = svc.Extra.TotalAmount - val.CurAmount
+			svc.Extra.IsDeduct = true
+			if len(svc.Extra.TimeNodeInfo) <= key {
+				svc.Extra.TimeNodeInfo[key].DeductionTm = svc.orderMp[val.Id].DeductionTm
 			}
 		}
 	}

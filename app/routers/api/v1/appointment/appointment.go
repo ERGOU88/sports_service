@@ -138,6 +138,8 @@ func AppointmentStart(c *gin.Context) {
 
 	userId, _ := c.Get(consts.USER_ID)
 	param.UserId = userId.(string)
+	channel, _ := c.Get(consts.CHANNEL)
+	param.Channel = channel.(int)
 	syscode, resp := cappointment.UserAppointment(i, param)
 	reply.Data["resp"] = resp
 	reply.Response(http.StatusOK, syscode)

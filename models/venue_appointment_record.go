@@ -1,6 +1,6 @@
 package models
 
-type AppointmentRecord struct {
+type VenueAppointmentRecord struct {
 	Id              int64  `json:"id" xorm:"pk autoincr comment('id') BIGINT(20)"`
 	UserId          string `json:"user_id" xorm:"not null comment('用户id') VARCHAR(60)"`
 	RelatedId       int64  `json:"related_id" xorm:"not null comment('关联id 私教/场馆/课程') index BIGINT(20)"`

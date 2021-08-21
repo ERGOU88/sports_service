@@ -1,17 +1,17 @@
 package cappointment
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/mcoach"
 	"sports_service/server/models/mcourse"
 	"sports_service/server/models/muser"
-	"sports_service/server/global/app/log"
-	"fmt"
 	"sports_service/server/util"
 	"time"
 )
@@ -127,7 +127,8 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 
 	// 课程id不匹配
 	if svc.coach.Coach.CourseId != svc.course.Course.Id {
-		log.Log.Error("venue_trace: course id not match")
+		log.Log.Error("venue_trace: course id not match, courseId:%d, curCourseId:%d",
+			svc.coach.Coach.CourseId, svc.course.Course.Id)
 		svc.engine.Rollback()
 		return errdef.COURSE_ID_NOT_MATCH, nil
 	}
@@ -135,7 +136,7 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
 
-	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.LabelIds, params.Infos); err != nil {
+	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.WeekNum, params.LabelIds, params.Infos); err != nil {
 		log.Log.Errorf("venue_trace: appointment fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.APPOINTMENT_PROCESS_FAIL, nil
@@ -143,10 +144,10 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 
 	svc.Extra.Id = params.RelatedId
 	svc.Extra.Name = svc.course.Course.Title
-	svc.Extra.Date = time.Now().Format(consts.FORMAT_DATE)
 	svc.Extra.WeekCn = util.GetWeekCn(params.WeekNum)
 	svc.Extra.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
 	svc.Extra.TmCn = util.ResolveTime(svc.Extra.TotalTm)
+	svc.Extra.Channel = params.Channel
 
 	// 库存不足 返回最新数据 事务回滚
 	if !svc.Extra.IsEnough {
@@ -155,8 +156,14 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 		return errdef.APPOINTMENT_NOT_ENOUGH_STOCK, svc.Extra
 	}
 
+	// 查询数据 则返回200
+	if params.ReqType != 2 {
+		svc.engine.Rollback()
+		return errdef.SUCCESS, svc.Extra
+	}
+
 	// 添加订单
-	if err := svc.AddOrder(orderId, user.UserId, now); err != nil {
+	if err := svc.AddOrder(orderId, user.UserId, "预约课程", now); err != nil {
 		log.Log.Errorf("venue_trace: add order fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.ORDER_ADD_FAIL, nil
@@ -176,10 +183,22 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 		return errdef.APPOINTMENT_ADD_RECORD_FAIL, nil
 	}
 
+	// 记录需处理支付超时的订单
+	if _, err := svc.order.RecordOrderId(orderId); err != nil {
+		log.Log.Errorf("venue_trace: record orderId fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.APPOINTMENT_RECORD_ORDER_FAIL, nil
+	}
+
 	svc.engine.Commit()
 
+	svc.Extra.OrderId = orderId
+	svc.Extra.PayDuration = consts.APPOINTMENT_PAYMENT_DURATION
+	// 超时
+	//redismq.PushOrderEventMsg(redismq.NewOrderEvent(user.UserId, svc.Extra.OrderId, int64(svc.order.Order.CreateAt) + svc.Extra.PayDuration,
+	//	consts.ORDER_EVENT_COURSE_TIME_OUT))
 	//redismq.PushOrderEventMsg()
-	return errdef.SUCCESS, nil
+	return errdef.SUCCESS, svc.Extra
 
 }
 

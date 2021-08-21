@@ -31,6 +31,8 @@ type CoachDetail struct {
 	AreasOfExpertise  string  `json:"areas_of_expertise"`
 	Cover             string  `json:"cover"`
 	Avatar            string  `json:"avatar"`
+	Score             string  `json:"score"`
+	TotalNum          int     `json:"total_num"`
 	Courses           []*CourseInfo    `json:"courses"`
 }
 
@@ -71,9 +73,9 @@ type LabelInfo struct {
 }
 
 type PubEvaluateParam struct {
-	CoachId     int64          `json:"coach_id"`
-	OrderId     string         `json:"order_id"`
-	Star        int            `json:"star"`
+	CoachId     int64          `binding:"required" json:"coach_id"`
+	OrderId     string         `binding:"required" json:"order_id"`
+	Star        int            `binding:"required" json:"star"`
 	LabelIds    []interface{}  `json:"label_ids"`
 }
 
