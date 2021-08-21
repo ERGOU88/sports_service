@@ -3,6 +3,7 @@ package cpay
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
+	"sports_service/server/app/config"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
@@ -101,8 +102,8 @@ func (svc *PayModule) WechatPay() (map[string]interface{}, error) {
 	client.OutTradeNo = svc.order.Order.PayOrderId
 	client.TotalAmount = svc.order.Order.Amount
 	client.Subject = svc.order.Order.Subject
-	client.NotifyUrl = "http://fpv-app-api-qa.bluetrans.cn/api/v1/pay/wechat/notify"
-	client.CreateIp = "127.0.0.1"
+	client.NotifyUrl = config.Global.WechatNotifyUrl
+	client.CreateIp = svc.context.ClientIP()
 	mp, err := client.TradeAppPay()
 	if err != nil {
 		return nil, err

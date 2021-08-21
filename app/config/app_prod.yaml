@@ -36,6 +36,8 @@ redis:
 redisPassword: o6DPVfuCAUwOgrNM
 amqpDsn: amqp://admin:admin@127.0.0.1:5672
 staticDomain: http://fpv-web.youzu.com
+## 微信支付 回调地址
+wechatNotifyUrl: https://fpv-app-api.bluetrans.cn/api/v1/pay/wechat/notify
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
   path: /data/logs/fpv-app-api/app_server_%s.log

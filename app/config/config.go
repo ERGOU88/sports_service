@@ -70,6 +70,7 @@ type Config struct {
 	}
 
 	RedisPassword string
+	WechatNotifyUrl string
 
 	Debug bool
 }
