@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sports_service/server/app/config"
+	"sports_service/server/app/routers/api/v1/apple"
 	"sports_service/server/app/routers/api/v1/appointment"
 	"sports_service/server/app/routers/api/v1/attention"
 	"sports_service/server/app/routers/api/v1/barrage"
@@ -87,4 +88,6 @@ func InitRouters(engine *gin.Engine) {
 	coach.Router(engine)
 	// 支付模块
 	pay.Router(engine)
+	// 苹果相关
+	apple.Router(engine)
 }

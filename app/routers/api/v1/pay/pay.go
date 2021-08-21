@@ -1,10 +1,12 @@
 package pay
 
 import (
+	"encoding/xml"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"sports_service/server/app/controller/corder"
 	"sports_service/server/app/controller/cpay"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
@@ -12,10 +14,10 @@ import (
 	"sports_service/server/models/morder"
 	"sports_service/server/tools/alipay"
 	"sports_service/server/tools/wechat"
+	"sports_service/server/util"
 	"strconv"
 	"strings"
 	"time"
-	"sports_service/server/app/controller/corder"
 )
 
 // app发起支付
@@ -118,6 +120,36 @@ func AliPayNotify(c *gin.Context) {
 	reply.Response(http.StatusOK, errdef.PAY_SUCCESS)
 }
 
+
+type WXPayNotify struct {
+	ReturnCode    string `xml:"return_code"`
+	ReturnMsg     string `xml:"return_msg"`
+	Appid         string `xml:"appid"`
+	MchID         string `xml:"mch_id"`
+	DeviceInfo    string `xml:"device_info"`
+	NonceStr      string `xml:"nonce_str"`
+	Sign          string `xml:"sign"`
+	ResultCode    string `xml:"result_code"`
+	ErrCode       string `xml:"err_code"`
+	ErrCodeDes    string `xml:"err_code_des"`
+	Openid        string `xml:"openid"`
+	IsSubscribe   string `xml:"is_subscribe"`
+	TradeType     string `xml:"trade_type"`
+	BankType      string `xml:"bank_type"`
+	TotalFee      int64  `xml:"total_fee"`
+	FeeType       string `xml:"fee_type"`
+	CashFee       int64  `xml:"cash_fee"`
+	CashFeeType   string `xml:"cash_fee_type"`
+	CouponFee     int64  `xml:"coupon_fee"`
+	CouponCount   int64  `xml:"coupon_count"`
+	CouponID0     string `xml:"coupon_id_0"`
+	CouponFee0    int64  `xml:"coupon_fee_0"`
+	TransactionID string `xml:"transaction_id"`
+	OutTradeNo    string `xml:"out_trade_no"`
+	Attach        string `xml:"attach"`
+	TimeEnd       string `xml:"time_end"`
+}
+
 // 微信回调通知
 func WechatNotify(c *gin.Context) {
 	reply := errdef.New(c)
@@ -130,9 +162,31 @@ func WechatNotify(c *gin.Context) {
 	}
 
 	log.Log.Errorf("wxNotify_trace: body:%s", string(body))
+	var wx WXPayNotify
+	err = xml.Unmarshal(body, &wx)
+	if err != nil {
+		log.Log.Errorf("wxNotify_trace: xml unmarshal err:%s", err.Error())
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+
+	bts, err := util.JsonFast.Marshal(wx)
+	if err != nil {
+		log.Log.Errorf("wxNotify_trace: jsonMarshal err:%s", err.Error())
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	mp := make(map[string]interface{})
+	if err := util.JsonFast.Unmarshal(bts, &mp); err != nil {
+		log.Log.Errorf("wxNotify_trace: Unmarshal err:%s", err.Error())
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
 
 	cli := wechat.NewWechatPay(true)
-	ok, err := cli.VerifySign(string(body))
+	ok, err := cli.VerifySign(mp)
 	if !ok || err != nil {
 		log.Log.Error("wxNotify_trace: sign not match, err:%s", err)
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
@@ -147,13 +201,13 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-	if params.Get("result_code") != "SUCCESS" {
+	if !(wx.ReturnCode == "SUCCESS" && wx.ResultCode == "SUCCESS") {
 		log.Log.Errorf("wxNotify_trace: trade not success")
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
 
-	orderId := params.Get("out_trade_no")
+	orderId := wx.OutTradeNo
 	svc := corder.New(c)
 	order, err := svc.GetOrder(orderId)
 	if order == nil || err != nil {
@@ -168,20 +222,13 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-	amount, err := strconv.Atoi(strings.Trim(params.Get("total_fee"), " "))
-	if err != nil {
-		log.Log.Errorf("wxNotify_trace: parse float fail, err:%s", err)
+	if int(wx.TotalFee) != order.Amount {
+		log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d", order.Amount, wx.TotalFee)
 		reply.Response(http.StatusBadRequest, errdef.ERROR)
 		return
 	}
 
-	if amount != order.Amount {
-		log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d", order.Amount, amount * 100)
-		reply.Response(http.StatusBadRequest, errdef.ERROR)
-		return
-	}
-
-	payTime, _ := time.Parse("20060102150405", params.Get("time_end"))
+	payTime, _ := time.Parse("20060102150405", wx.TimeEnd)
 	if err := svc.OrderProcess(orderId, string(body), payTime.Unix()); err != nil {
 		reply.Response(http.StatusInternalServerError, errdef.ERROR)
 		return

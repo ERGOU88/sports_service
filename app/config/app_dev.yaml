@@ -46,6 +46,8 @@ staticDomain: http://fpv-web-qa.youzu.com
 wechatNotifyUrl: http://fpv-app-api-qa.bluetrans.cn/api/v1/pay/wechat/notify
 ## 支付宝 回调地址
 alipayNotifyUrl: http://fpv-app-api-qa.bluetrans.cn/api/v1/pay/alipay/notify
+# 苹果
+appleLinkPath: /data/service/fpv-app-api/config
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
   path: ./log/app_server_%s.log
