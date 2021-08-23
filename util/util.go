@@ -2,6 +2,7 @@ package util
 
 import (
 	"crypto/md5"
+	"errors"
 	"fmt"
 	"github.com/json-iterator/go"
 	"github.com/rs/xid"
@@ -9,6 +10,7 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -388,3 +390,32 @@ func FormatDuration(duration time.Time) string {
 	return fmt.Sprintf("%d分钟之前", int(math.Ceil(minute)))
 }
 
+// map to struct
+func ToStruct(m map[string]interface{}, u interface{}) error {
+	v := reflect.ValueOf(u)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+		if v.Kind() != reflect.Struct {
+			return errors.New("must struct")
+		}
+
+		findFromMap := func(key string,nameTag string ) interface {} {
+			for k,v := range m {
+				if k == key || k == nameTag {
+					return v
+				}
+			}
+
+			return nil
+		}
+
+		for i := 0; i < v.NumField(); i++ {
+			val := findFromMap(v.Type().Field(i).Name,v.Type().Field(i).Tag.Get("name"))
+			if val != nil && reflect.ValueOf(val).Kind() == v.Field(i).Kind() {
+				v.Field(i).Set(reflect.ValueOf(val))
+			}
+		}
+	}
+
+	return errors.New("must ptr")
+}

@@ -167,17 +167,15 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-	body, _ := util.JsonFast.Marshal(bm)
-	log.Log.Errorf("wxNotify_trace: body:%s", string(body))
-	var wx WXPayNotify
-	err = util.JsonFast.Unmarshal(body, &wx)
-	if err != nil {
-		log.Log.Errorf("wxNotify_trace: xml unmarshal err:%s", err.Error())
+	wx := &WXPayNotify{}
+	if err := util.ToStruct(bm, wx); err != nil {
+		log.Log.Error("wxNotify_trace: map to struct fail, err:%s", err)
 		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
-	log.Log.Debug("wxNotify_trace: info %s, notify:%+v", string(body), wx)
+	body, _ := util.JsonFast.Marshal(wx)
+	log.Log.Debug("wxNotify_trace: body:%s, notify:%+v", string(body), wx)
 
 	if wx.ReturnCode != "SUCCESS" || wx.ResultCode != "SUCCESS" {
 		log.Log.Errorf("wxNotify_trace: trade not success")
