@@ -178,14 +178,8 @@ func WechatNotify(c *gin.Context) {
 	}
 
 	log.Log.Debug("wxNotify_trace: info %s", string(body))
-	params, err := url.ParseQuery(string(body))
-	if err != nil {
-		log.Log.Errorf("wxNotify_trace: err:%s, params:%v", err.Error(), params)
-		c.String(http.StatusBadRequest, "fail")
-		return
-	}
 
-	if !(wx.ReturnCode == "SUCCESS" && wx.ResultCode == "SUCCESS") {
+	if wx.ReturnCode != "SUCCESS" || wx.ResultCode != "SUCCESS" {
 		log.Log.Errorf("wxNotify_trace: trade not success")
 		c.String(http.StatusBadRequest, "fail")
 		return
