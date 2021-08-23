@@ -12,8 +12,8 @@ func Router(engine *gin.Engine) {
 	order := api.Group("/order")
 	order.Use(sign.CheckSign(), token.TokenAuth())
 	{
-
-
+		// 订单列表
+		order.GET("/list", OrderList)
 	}
 }
 

@@ -166,10 +166,11 @@ func (svc *base) GetDateById(id int, formatType string) string {
 
 func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppointmentInfo) *mappointment.OptionsInfo {
 	var isExpire bool
-	var tm int64
+	var start, end int64
 	if svc.DateId == 1 {
-		startTm, hasExpire := svc.TimeNodeHasExpire(date, item.TimeNode)
-		tm = startTm
+		startTm, endTm, hasExpire := svc.TimeNodeHasExpire(date, item.TimeNode)
+		start = startTm
+		end = endTm
 		if hasExpire {
 			// 预约大课 如果当前时间 > 配置中的开始时间 过滤该配置项
 			if item.AppointmentType == consts.APPOINTMENT_COURSE {
@@ -216,7 +217,8 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		AmountCn: fmt.Sprintf("%.2f", float64(item.CurAmount)/100),
 		Id: item.Id,
 		IsExpire: isExpire,
-		StartTm: tm,
+		StartTm: start,
+		EndTm: end,
 		Date: fmt.Sprintf("%s %s", date, item.TimeNode),
 		CoachId: item.CoachId,
 	}
@@ -278,7 +280,7 @@ func (svc *base) QueryStockInfo(appointmentType int, relatedId int64, date, time
 func (svc *base) SetOrderProductInfo(orderId string, now, count int, relatedId int64) *models.VenueOrderProductInfo {
 	return &models.VenueOrderProductInfo{
 		ProductId:   svc.appointment.AppointmentInfo.Id,
-		OrderType:   consts.ORDER_TYPE_APPOINTMENT_VENUE,
+		ProductType:   consts.ORDER_TYPE_APPOINTMENT_VENUE,
 		Count:       count,
 		RealAmount:  svc.appointment.AppointmentInfo.RealAmount,
 		CurAmount:   svc.appointment.AppointmentInfo.CurAmount,
@@ -389,7 +391,7 @@ func (svc *base) AddOrderProducts() error {
 }
 
 // 添加订单
-func (svc *base) AddOrder(orderId, userId, subject string, now int) error {
+func (svc *base) AddOrder(orderId, userId, subject string, now, productType int) error {
 	extra, _ := util.JsonFast.MarshalToString(svc.Extra)
 	svc.order.Order.Extra = extra
 	svc.order.Order.PayOrderId = orderId
@@ -400,6 +402,7 @@ func (svc *base) AddOrder(orderId, userId, subject string, now int) error {
 	svc.order.Order.Amount = svc.Extra.TotalAmount
 	svc.order.Order.ChannelId = svc.Extra.Channel
 	svc.order.Order.Subject = subject
+	svc.order.Order.ProductType = productType
 	affected, err := svc.order.AddOrder()
 	if err != nil {
 		return err
@@ -414,23 +417,25 @@ func (svc *base) AddOrder(orderId, userId, subject string, now int) error {
 }
 
 // 预约的时间节点是否过期 true 表示节点已过期
-func (svc *base) TimeNodeHasExpire(date, timeNode string) (int64, bool) {
+func (svc *base) TimeNodeHasExpire(date, timeNode string) (int64, int64, bool) {
 	nodes := strings.Split(timeNode, "-")
 	if len(nodes) == 2 {
 		now := time.Now().Unix()
 		// 获取 预约时间配置的开始时间
 		start := fmt.Sprintf("%s %s", date, nodes[0])
+		end := fmt.Sprintf("%s %s", date, nodes[1])
 		ts := new(util.TimeS)
 		startTm := ts.GetTimeStrOrStamp(start, "YmdHi")
+		endTm := ts.GetTimeStrOrStamp(end, "YmdHi")
 		// 如果当前时间 > 配置中的开始时间 走库存不足流程 count置为0
 		if now > startTm.(int64) {
-			return startTm.(int64), true
+			return startTm.(int64), endTm.(int64), true
 		}
 
-		return startTm.(int64), false
+		return startTm.(int64), endTm.(int64), false
 	}
 
-	return 0, false
+	return 0, 0, false
 }
 
 // 设置最新库存数据（返回使用）
@@ -443,8 +448,9 @@ func (svc *base) SetLatestInventoryResp(date string, count int, isEnough bool) (
 	info.Discount = svc.appointment.AppointmentInfo.DiscountAmount
 
 	// 节点是否已过期
-	startTm, hasExpire := svc.TimeNodeHasExpire(info.Date, info.TimeNode)
+	startTm, endTm, hasExpire := svc.TimeNodeHasExpire(info.Date, info.TimeNode)
 	info.StartTm = startTm
+	info.EndTm = endTm
 	if hasExpire {
 		// 节点过期 走库存不足流程 同时正常返回购物车数据 客户端清除库存不足的节点即可
 		info.Count = 0

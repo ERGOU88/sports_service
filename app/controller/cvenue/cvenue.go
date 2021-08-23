@@ -137,7 +137,7 @@ func (svc *VenueModule) GetVenueProducts(venueId int64) ([]*mvenue.VenueProduct,
 			VenueId: val.VenueId,
 		}
 
-		svc.order.OrderProduct.OrderType = val.ProductType
+		svc.order.OrderProduct.ProductType = val.ProductType
 		svc.order.OrderProduct.ProductId = val.Id
 		info.Sales, err = svc.order.GetSalesByProduct()
 		if err != nil {
