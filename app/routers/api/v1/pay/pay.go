@@ -152,6 +152,21 @@ type WXPayNotify struct {
 
 // 微信回调通知
 func WechatNotify(c *gin.Context) {
+	bm, err := wxCli.ParseNotifyToBodyMap(c.Request)
+	if err != nil {
+		log.Log.Errorf("wxNotify_trace: parse notify to bodyMap fail, err:%s", err.Error())
+		c.String(http.StatusBadRequest, "fail")
+		return
+	}
+
+	cli := wechat.NewWechatPay(true)
+	ok, err := cli.VerifySign(bm)
+	if !ok || err != nil {
+		log.Log.Error("wxNotify_trace: sign not match, err:%s", err)
+		c.String(http.StatusBadRequest, "fail")
+		return
+	}
+
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		log.Log.Errorf("wxNotify_trace: err:%s", err.Error())
@@ -164,21 +179,6 @@ func WechatNotify(c *gin.Context) {
 	err = xml.Unmarshal(body, &wx)
 	if err != nil {
 		log.Log.Errorf("wxNotify_trace: xml unmarshal err:%s", err.Error())
-		c.String(http.StatusBadRequest, "fail")
-		return
-	}
-
-	bm, err := wxCli.ParseNotifyToBodyMap(c.Request)
-	if err != nil {
-		log.Log.Errorf("wxNotify_trace: parse notify to bodyMap fail, err:%s", err.Error())
-		c.String(http.StatusBadRequest, "fail")
-		return
-	}
-
-	cli := wechat.NewWechatPay(true)
-	ok, err := cli.VerifySign(bm)
-	if !ok || err != nil {
-		log.Log.Error("wxNotify_trace: sign not match, err:%s", err)
 		c.String(http.StatusBadRequest, "fail")
 		return
 	}
