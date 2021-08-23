@@ -177,7 +177,7 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-	log.Log.Debug("wxNotify_trace: info %s", string(body))
+	log.Log.Debug("wxNotify_trace: info %s, notify:%+v", string(body), wx)
 
 	if wx.ReturnCode != "SUCCESS" || wx.ResultCode != "SUCCESS" {
 		log.Log.Errorf("wxNotify_trace: trade not success")
