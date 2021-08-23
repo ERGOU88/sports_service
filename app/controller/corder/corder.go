@@ -75,8 +75,6 @@ func (svc *OrderModule) OrderProcess(orderId, body string, payTm int64) error {
 	}
 
 	now := int(time.Now().Unix())
-	// 订单成功
-	log.Log.Debug("payNotify_trace: 订单成功， orderId: %s", orderId)
 	svc.order.Order.Status = consts.PAY_TYPE_PAID
 	svc.order.Order.IsCallback = 1
 	svc.order.Order.PayTime = int(payTm)
@@ -119,5 +117,6 @@ func (svc *OrderModule) OrderProcess(orderId, body string, payTm int64) error {
 	}
 
 	svc.engine.Commit()
+	log.Log.Debug("payNotify_trace: 订单成功， orderId: %s", orderId)
 	return nil
 }

@@ -3,6 +3,7 @@ package pay
 import (
 	"encoding/xml"
 	"github.com/gin-gonic/gin"
+	"github.com/go-pay/gopay"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -178,7 +179,7 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-	mp := make(map[string]interface{})
+	mp := make(gopay.BodyMap)
 	if err := util.JsonFast.Unmarshal(bts, &mp); err != nil {
 		log.Log.Errorf("wxNotify_trace: Unmarshal err:%s", err.Error())
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
