@@ -182,6 +182,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 		info.CreatAt = order.CreateAt
 		info.OrderStatus = int32(order.Status)
 		info.OrderId = order.PayOrderId
+		info.UserId = order.UserId
 		info.Amount = fmt.Sprintf("%.2f", float64(order.Amount)/100)
 		switch order.OrderType {
 		// 预约场馆、私教、大课

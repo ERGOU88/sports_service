@@ -25,7 +25,6 @@ type OrderInfo struct {
 	UserId             string      `json:"user_id"`
 	OrderId            string      `json:"order_id"`            // 订单id
 	Count              int         `json:"count"`
-	StatusCn           string      `json:"status_cn"`           // 状态中文
 }
 
 
