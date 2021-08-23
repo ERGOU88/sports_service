@@ -196,6 +196,16 @@ func MapExist(m map[string]interface{}, key string) bool {
 	return false
 }
 
+func MapExistBySlice(m map[string]interface{}, keys []string) bool {
+	for _, key := range keys {
+		if _, ok := m[key]; !ok {
+			return false
+		}
+	}
+
+	return true
+}
+
 // 解析json字符串成 map
 func JsonStringToMap(jsonStr string) (m map[string]interface{}, err error) {
 	mp := map[string]interface{}{}

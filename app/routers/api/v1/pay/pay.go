@@ -167,23 +167,23 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-	wx := &WXPayNotify{}
-	if err := util.ToStruct(bm, wx); err != nil {
-		log.Log.Error("wxNotify_trace: map to struct fail, err:%s", err)
+	body, _ := util.JsonFast.Marshal(bm)
+	log.Log.Debug("wxNotify_trace: body:%s, bm:%+v", string(body), bm)
+
+	if hasExist := util.MapExistBySlice(bm, []string{"return_code", "result_code", "out_trade_no", "total_fee",
+		"time_end", "transaction_id"}); !hasExist {
+		log.Log.Error("wxNotify_trace: map key not exists")
 		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
-	body, _ := util.JsonFast.Marshal(wx)
-	log.Log.Debug("wxNotify_trace: body:%s, notify:%+v, bm:%+v", string(body), wx, bm)
-
-	if wx.ReturnCode != "SUCCESS" || wx.ResultCode != "SUCCESS" {
+	if bm["return_code"].(string) != "SUCCESS" || bm["result_code"].(string) != "SUCCESS" {
 		log.Log.Errorf("wxNotify_trace: trade not success")
 		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
-	orderId := wx.OutTradeNo
+	orderId := bm["out_trade_no"].(string)
 	svc := corder.New(c)
 	order, err := svc.GetOrder(orderId)
 	if order == nil || err != nil {
@@ -198,14 +198,15 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-	if int(wx.TotalFee) != order.Amount {
-		log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d", order.Amount, wx.TotalFee)
+	totalFee := bm["total_fee"].(int)
+	if totalFee != order.Amount {
+		log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d", order.Amount, totalFee)
 		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
-	payTime, _ := time.Parse("20060102150405", wx.TimeEnd)
-	if err := svc.OrderProcess(orderId, string(body), wx.TransactionID, payTime.Unix()); err != nil {
+	payTime, _ := time.Parse("20060102150405", bm["time_end"].(string))
+	if err := svc.OrderProcess(orderId, string(body), bm["transaction_id"].(string), payTime.Unix()); err != nil {
 		log.Log.Errorf("wxNotify_trace: order process fail, err:%s", err)
 		c.String(http.StatusInternalServerError, "fail")
 		return
