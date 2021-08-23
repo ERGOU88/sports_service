@@ -152,8 +152,7 @@ type WXPayNotify struct {
 
 // 微信回调通知
 func WechatNotify(c *gin.Context) {
-	req := c.Request
-	body, err := ioutil.ReadAll(req.Body)
+	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		log.Log.Errorf("wxNotify_trace: err:%s", err.Error())
 		c.String(http.StatusBadRequest, "fail")
@@ -169,7 +168,7 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-	bm, err := wxCli.ParseNotifyToBodyMap(req)
+	bm, err := wxCli.ParseNotifyToBodyMap(c.Request)
 	if err != nil {
 		log.Log.Errorf("wxNotify_trace: parse notify to bodyMap fail, err:%s", err.Error())
 		c.String(http.StatusBadRequest, "fail")
