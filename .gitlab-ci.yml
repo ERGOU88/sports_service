@@ -27,7 +27,7 @@ build-job-backend:
     - gitlab_build_theseus
   stage: build
   only:
-    - tags
+    - feature/venue
   script:
     - echo $build_shell
     - 'eval $build_shell'
