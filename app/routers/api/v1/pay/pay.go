@@ -1,7 +1,6 @@
 package pay
 
 import (
-	"encoding/xml"
 	"github.com/gin-gonic/gin"
 	wxCli "github.com/go-pay/gopay/wechat"
 	"io/ioutil"
@@ -15,6 +14,7 @@ import (
 	"sports_service/server/models/morder"
 	"sports_service/server/tools/alipay"
 	"sports_service/server/tools/wechat"
+	"sports_service/server/util"
 	"strconv"
 	"strings"
 	"time"
@@ -167,16 +167,10 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-	body, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		log.Log.Errorf("wxNotify_trace: err:%s", err.Error())
-		c.String(http.StatusBadRequest, "fail")
-		return
-	}
-
+	body, _ := util.JsonFast.Marshal(bm)
 	log.Log.Errorf("wxNotify_trace: body:%s", string(body))
 	var wx WXPayNotify
-	err = xml.Unmarshal(body, &wx)
+	err = util.JsonFast.Unmarshal(body, &wx)
 	if err != nil {
 		log.Log.Errorf("wxNotify_trace: xml unmarshal err:%s", err.Error())
 		c.String(http.StatusBadRequest, "fail")
