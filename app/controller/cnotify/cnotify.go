@@ -134,14 +134,13 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 		// 被点赞的视频评论
 		case consts.TYPE_VIDEO_COMMENT:
 			info.Type = consts.TYPE_VIDEO_COMMENT
-			info.JumpVideoId = liked.TypeId
+			info.ComposeId = liked.TypeId
 
 			// 获取评论信息
 			comment := svc.comment.GetVideoCommentById(fmt.Sprint(liked.TypeId))
 			if comment != nil {
 				// 被点赞的信息
 				info.Content = comment.Content
-				info.ComposeId = comment.Id
 				// 顶级评论id
 				info.ParentCommentId = comment.ParentCommentId
 				if info.ParentCommentId == 0 {
@@ -152,6 +151,7 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 				// 获取评论对应的视频信息
 				video := svc.video.FindVideoById(fmt.Sprint(comment.VideoId))
 				if video != nil {
+					info.JumpVideoId = video.VideoId
 					//info.Title = video.Title
 					//info.Describe = video.Describe
 					info.Describe = util.TrimHtml(video.Describe)
@@ -174,14 +174,13 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 
 			case consts.TYPE_POST_COMMENT:
 				info.Type = consts.TYPE_POST_COMMENT
-				info.JumpPostId = liked.TypeId
+				info.ComposeId = liked.TypeId
 
 				// 获取视频评论信息
 				comment := svc.comment.GetPostCommentById(fmt.Sprint(liked.TypeId))
 				if comment != nil {
 					// 被点赞的信息
 					info.Content = comment.Content
-					info.ComposeId = comment.Id
 					// 顶级评论id
 					info.ParentCommentId = comment.ParentCommentId
 					if info.ParentCommentId == 0 {
@@ -191,7 +190,7 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 
 					post, err := svc.post.GetPostById(fmt.Sprint(liked.TypeId))
 					if post != nil && err == nil {
-						info.ComposeId = post.Id
+						info.JumpPostId = post.Id
 						info.Title = post.Title
 						info.Describe = post.Describe
 						info.CreateAt = post.CreateAt
@@ -269,7 +268,7 @@ func (svc *NotifyModule) SaveUserNotifySetting(userId string, params *mnotify.No
 	return errdef.SUCCESS
 }
 
-// todo: review
+// todo: 废弃
 // 获取用户被点赞的作品列表 返回值：map中key表示类型 1 点赞视频 2 点赞帖子 3 点赞评论
 func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interface{} {
 	if userId == "" {
