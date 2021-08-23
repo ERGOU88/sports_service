@@ -46,10 +46,10 @@ func (svc *OrderModule) GetOrder(orderId string) (*models.VenuePayOrders, error)
 }
 
 // 订单处理流程
-func (svc *OrderModule) AliPayNotify(orderId, body, status string, payTm int64) error {
+func (svc *OrderModule) AliPayNotify(orderId, body, status, tradeNo string, payTm int64) error {
 	switch status {
 	case consts.TradeSuccess:
-		if err := svc.OrderProcess(orderId, body, payTm); err != nil {
+		if err := svc.OrderProcess(orderId, body, tradeNo, payTm); err != nil {
 			return err
 		}
 
@@ -68,7 +68,7 @@ func (svc *OrderModule) AliPayNotify(orderId, body, status string, payTm int64) 
 }
 
 // 订单处理流程
-func (svc *OrderModule) OrderProcess(orderId, body string, payTm int64) error {
+func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64) error {
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("payNotify_trace: session begin fail, err:%s", err)
 		return err
@@ -79,6 +79,7 @@ func (svc *OrderModule) OrderProcess(orderId, body string, payTm int64) error {
 	svc.order.Order.IsCallback = 1
 	svc.order.Order.PayTime = int(payTm)
 	svc.order.Order.UpdateAt = now
+	svc.order.Order.Transaction = tradeNo
 	// 更新订单状态
 	affected, err := svc.order.UpdateOrderStatus(orderId, consts.PAY_TYPE_WAIT)
 	if affected != 1 || err != nil {

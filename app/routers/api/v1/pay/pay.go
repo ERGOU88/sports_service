@@ -43,12 +43,11 @@ func AppPay(c *gin.Context) {
 
 // 支付宝回调通知
 func AliPayNotify(c *gin.Context) {
-	reply := errdef.New(c)
 	req := c.Request
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		log.Log.Errorf("aliNotify_trace: err:%s", err.Error())
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
@@ -56,7 +55,7 @@ func AliPayNotify(c *gin.Context) {
 	params, err := url.ParseQuery(string(body))
 	if err != nil {
 		log.Log.Errorf("aliNotify_trace: err:%s, params:%v", err.Error(), params)
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
@@ -67,7 +66,7 @@ func AliPayNotify(c *gin.Context) {
 	msg, err := url.QueryUnescape(query)
 	if err != nil {
 		log.Log.Error("aliNotify_trace: QueryUnescape failed: %s", err)
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
@@ -79,13 +78,13 @@ func AliPayNotify(c *gin.Context) {
 	order, err := svc.GetOrder(orderId)
 	if order == nil || err != nil {
 		log.Log.Error("aliNotify_trace: order not found, orderId:%s, err:%s", orderId, err)
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
 	if order.Status != consts.PAY_TYPE_WAIT {
 		log.Log.Error("aliNotify_trace: order already pay, orderId:%s, err:%s", orderId, err)
-		reply.Response(http.StatusOK, errdef.SUCCESS)
+		c.String(http.StatusOK, "success")
 		return
 	}
 
@@ -93,31 +92,32 @@ func AliPayNotify(c *gin.Context) {
 	ok, err := cli.VerifyData(msg, "RSA2", sign)
 	if !ok || err != nil {
 		log.Log.Errorf("aliNotify_trace: verify data fail, err:%s", err)
-		reply.Response(http.StatusBadRequest, errdef.ERROR)
+		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
 	amount, err := strconv.ParseFloat(strings.Trim(params.Get("total_amount"), " "), 64)
 	if err != nil {
 		log.Log.Errorf("aliNotify_trace: parse float fail, err:%s", err)
-		reply.Response(http.StatusBadRequest, errdef.ERROR)
+		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
 	if int(amount * 100) != order.Amount {
 		log.Log.Error("aliNotify_trace: amount not match, orderAmount:%d, amount:%d", order.Amount, amount * 100)
-		reply.Response(http.StatusBadRequest, errdef.ERROR)
+		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
 	status := strings.Trim(params.Get("trade_status"), " ")
 	payTime, _ := time.Parse("2006-01-02 15:04:05", params.Get("gmt_payment"))
-	if err := svc.AliPayNotify(orderId, string(body), status, payTime.Unix()); err != nil {
-		reply.Response(http.StatusInternalServerError, errdef.ERROR)
+	tradeNo := params.Get("trade_no")
+	if err := svc.AliPayNotify(orderId, string(body), status, tradeNo, payTime.Unix()); err != nil {
+		c.String(http.StatusInternalServerError, "fail")
 		return
 	}
 
-	reply.Response(http.StatusOK, errdef.PAY_SUCCESS)
+	c.String(http.StatusOK, "success")
 }
 
 
@@ -152,13 +152,11 @@ type WXPayNotify struct {
 
 // 微信回调通知
 func WechatNotify(c *gin.Context) {
-	reply := errdef.New(c)
 	req := c.Request
-
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		log.Log.Errorf("wxNotify_trace: err:%s", err.Error())
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
@@ -167,14 +165,14 @@ func WechatNotify(c *gin.Context) {
 	err = xml.Unmarshal(body, &wx)
 	if err != nil {
 		log.Log.Errorf("wxNotify_trace: xml unmarshal err:%s", err.Error())
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
 	bm, err := wxCli.ParseNotifyToBodyMap(req)
 	if err != nil {
 		log.Log.Errorf("wxNotify_trace: parse notify to bodyMap fail, err:%s", err.Error())
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
@@ -182,7 +180,7 @@ func WechatNotify(c *gin.Context) {
 	ok, err := cli.VerifySign(bm)
 	if !ok || err != nil {
 		log.Log.Error("wxNotify_trace: sign not match, err:%s", err)
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
@@ -190,13 +188,13 @@ func WechatNotify(c *gin.Context) {
 	params, err := url.ParseQuery(string(body))
 	if err != nil {
 		log.Log.Errorf("wxNotify_trace: err:%s, params:%v", err.Error(), params)
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
 	if !(wx.ReturnCode == "SUCCESS" && wx.ResultCode == "SUCCESS") {
 		log.Log.Errorf("wxNotify_trace: trade not success")
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
@@ -205,27 +203,28 @@ func WechatNotify(c *gin.Context) {
 	order, err := svc.GetOrder(orderId)
 	if order == nil || err != nil {
 		log.Log.Error("wxNotify_trace: order not found, orderId:%s, err:%s", orderId, err)
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
 	if order.Status != consts.PAY_TYPE_WAIT {
 		log.Log.Error("wxNotify_trace: order already pay, orderId:%s, err:%s", orderId, err)
-		reply.Response(http.StatusOK, errdef.SUCCESS)
+		c.String(http.StatusOK, "SUCCESS")
 		return
 	}
 
 	if int(wx.TotalFee) != order.Amount {
 		log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d", order.Amount, wx.TotalFee)
-		reply.Response(http.StatusBadRequest, errdef.ERROR)
+		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
 	payTime, _ := time.Parse("20060102150405", wx.TimeEnd)
-	if err := svc.OrderProcess(orderId, string(body), payTime.Unix()); err != nil {
-		reply.Response(http.StatusInternalServerError, errdef.ERROR)
+	if err := svc.OrderProcess(orderId, string(body), wx.TransactionID, payTime.Unix()); err != nil {
+		log.Log.Errorf("wxNotify_trace: order process fail, err:%s", err)
+		c.String(http.StatusInternalServerError, "fail")
 		return
 	}
 
-	reply.Response(http.StatusOK, errdef.PAY_SUCCESS)
+	c.String(http.StatusOK, "SUCCESS")
 }
