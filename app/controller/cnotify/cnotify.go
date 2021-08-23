@@ -188,7 +188,7 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 						info.ParentCommentId = comment.Id
 					}
 
-					post, err := svc.post.GetPostById(fmt.Sprint(liked.TypeId))
+					post, err := svc.post.GetPostById(fmt.Sprint(comment.PostId))
 					if post != nil && err == nil {
 						info.JumpPostId = post.Id
 						info.Title = post.Title
