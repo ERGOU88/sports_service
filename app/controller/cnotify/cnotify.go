@@ -172,43 +172,43 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 
 			}
 
-			case consts.TYPE_POST_COMMENT:
-				info.Type = consts.TYPE_POST_COMMENT
-				info.ComposeId = liked.TypeId
+		case consts.TYPE_POST_COMMENT:
+			info.Type = consts.TYPE_POST_COMMENT
+			info.ComposeId = liked.TypeId
 
-				// 获取视频评论信息
-				comment := svc.comment.GetPostCommentById(fmt.Sprint(liked.TypeId))
-				if comment != nil {
-					// 被点赞的信息
-					info.Content = comment.Content
-					// 顶级评论id
-					info.ParentCommentId = comment.ParentCommentId
-					if info.ParentCommentId == 0 {
-						// 当前评论即顶级评论
-						info.ParentCommentId = comment.Id
-					}
+			// 获取视频评论信息
+			comment := svc.comment.GetPostCommentById(fmt.Sprint(liked.TypeId))
+			if comment != nil {
+				// 被点赞的信息
+				info.Content = comment.Content
+				// 顶级评论id
+				info.ParentCommentId = comment.ParentCommentId
+				if info.ParentCommentId == 0 {
+					// 当前评论即顶级评论
+					info.ParentCommentId = comment.Id
+				}
 
-					post, err := svc.post.GetPostById(fmt.Sprint(comment.PostId))
-					if post != nil && err == nil {
-						info.JumpPostId = post.Id
-						info.Title = post.Title
-						info.Describe = post.Describe
-						info.CreateAt = post.CreateAt
-						// 图文帖
-						if post.PostingType == consts.POST_TYPE_IMAGE {
-							var images []string
-							if err = util.JsonFast.UnmarshalFromString(post.Content, &images); err != nil {
-								log.Log.Errorf("post_trace: get image info err:%s", err)
-							}
+				post, err := svc.post.GetPostById(fmt.Sprint(comment.PostId))
+				if post != nil && err == nil {
+					info.JumpPostId = post.Id
+					info.Title = post.Title
+					info.Describe = post.Describe
+					info.CreateAt = post.CreateAt
+					// 图文帖
+					if post.PostingType == consts.POST_TYPE_IMAGE {
+						var images []string
+						if err = util.JsonFast.UnmarshalFromString(post.Content, &images); err != nil {
+							log.Log.Errorf("post_trace: get image info err:%s", err)
+						}
 
-							// 使用第一张图片展示
-							if len(images) > 0 {
-								info.Cover = images[0]
-							}
+						// 使用第一张图片展示
+						if len(images) > 0 {
+							info.Cover = images[0]
 						}
 					}
-
 				}
+
+			}
 		}
 
 
