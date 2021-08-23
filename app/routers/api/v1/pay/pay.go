@@ -3,7 +3,7 @@ package pay
 import (
 	"encoding/xml"
 	"github.com/gin-gonic/gin"
-	"github.com/go-pay/gopay"
+	wxCli "github.com/go-pay/gopay/wechat"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -15,7 +15,6 @@ import (
 	"sports_service/server/models/morder"
 	"sports_service/server/tools/alipay"
 	"sports_service/server/tools/wechat"
-	"sports_service/server/util"
 	"strconv"
 	"strings"
 	"time"
@@ -155,6 +154,7 @@ type WXPayNotify struct {
 func WechatNotify(c *gin.Context) {
 	reply := errdef.New(c)
 	req := c.Request
+
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		log.Log.Errorf("wxNotify_trace: err:%s", err.Error())
@@ -171,23 +171,15 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-
-	bts, err := util.JsonFast.Marshal(wx)
+	bm, err := wxCli.ParseNotifyToBodyMap(req)
 	if err != nil {
-		log.Log.Errorf("wxNotify_trace: jsonMarshal err:%s", err.Error())
-		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
-		return
-	}
-
-	mp := make(gopay.BodyMap)
-	if err := util.JsonFast.Unmarshal(bts, &mp); err != nil {
-		log.Log.Errorf("wxNotify_trace: Unmarshal err:%s", err.Error())
+		log.Log.Errorf("wxNotify_trace: parse notify to bodyMap fail, err:%s", err.Error())
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
 
 	cli := wechat.NewWechatPay(true)
-	ok, err := cli.VerifySign(mp)
+	ok, err := cli.VerifySign(bm)
 	if !ok || err != nil {
 		log.Log.Error("wxNotify_trace: sign not match, err:%s", err)
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
