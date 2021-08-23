@@ -122,32 +122,32 @@ func AliPayNotify(c *gin.Context) {
 
 
 type WXPayNotify struct {
-	ReturnCode    string `xml:"return_code"`
-	ReturnMsg     string `xml:"return_msg"`
-	Appid         string `xml:"appid"`
-	MchID         string `xml:"mch_id"`
-	DeviceInfo    string `xml:"device_info"`
-	NonceStr      string `xml:"nonce_str"`
-	Sign          string `xml:"sign"`
-	ResultCode    string `xml:"result_code"`
-	ErrCode       string `xml:"err_code"`
-	ErrCodeDes    string `xml:"err_code_des"`
-	Openid        string `xml:"openid"`
-	IsSubscribe   string `xml:"is_subscribe"`
-	TradeType     string `xml:"trade_type"`
-	BankType      string `xml:"bank_type"`
-	TotalFee      int64  `xml:"total_fee"`
-	FeeType       string `xml:"fee_type"`
-	CashFee       int64  `xml:"cash_fee"`
-	CashFeeType   string `xml:"cash_fee_type"`
-	CouponFee     int64  `xml:"coupon_fee"`
-	CouponCount   int64  `xml:"coupon_count"`
-	CouponID0     string `xml:"coupon_id_0"`
-	CouponFee0    int64  `xml:"coupon_fee_0"`
-	TransactionID string `xml:"transaction_id"`
-	OutTradeNo    string `xml:"out_trade_no"`
-	Attach        string `xml:"attach"`
-	TimeEnd       string `xml:"time_end"`
+	ReturnCode    string `json:"return_code"`
+	ReturnMsg     string `json:"return_msg"`
+	Appid         string `json:"appid"`
+	MchID         string `json:"mch_id"`
+	DeviceInfo    string `json:"device_info"`
+	NonceStr      string `json:"nonce_str"`
+	Sign          string `json:"sign"`
+	ResultCode    string `json:"result_code"`
+	ErrCode       string `json:"err_code"`
+	ErrCodeDes    string `json:"err_code_des"`
+	Openid        string `json:"openid"`
+	IsSubscribe   string `json:"is_subscribe"`
+	TradeType     string `json:"trade_type"`
+	BankType      string `json:"bank_type"`
+	TotalFee      int64  `json:"total_fee"`
+	FeeType       string `json:"fee_type"`
+	CashFee       int64  `json:"cash_fee"`
+	CashFeeType   string `json:"cash_fee_type"`
+	CouponFee     int64  `json:"coupon_fee"`
+	CouponCount   int64  `json:"coupon_count"`
+	CouponID0     string `json:"coupon_id_0"`
+	CouponFee0    int64  `json:"coupon_fee_0"`
+	TransactionID string `json:"transaction_id"`
+	OutTradeNo    string `json:"out_trade_no"`
+	Attach        string `json:"attach"`
+	TimeEnd       string `json:"time_end"`
 }
 
 // 微信回调通知
@@ -175,7 +175,7 @@ func WechatNotify(c *gin.Context) {
 	}
 
 	body, _ := util.JsonFast.Marshal(wx)
-	log.Log.Debug("wxNotify_trace: body:%s, notify:%+v", string(body), wx)
+	log.Log.Debug("wxNotify_trace: body:%s, notify:%+v, bm:%+v", string(body), wx, bm)
 
 	if wx.ReturnCode != "SUCCESS" || wx.ResultCode != "SUCCESS" {
 		log.Log.Errorf("wxNotify_trace: trade not success")

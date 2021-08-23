@@ -402,7 +402,7 @@ func ToStruct(m map[string]interface{}, u interface{}) error {
 		return errors.New("must struct")
 	}
 
-	findFromMap := func(key string,nameTag string ) interface {} {
+	findFromMap := func(key string, nameTag string) interface {} {
 		for k,v := range m {
 			if k == key || k == nameTag {
 				return v
