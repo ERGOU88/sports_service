@@ -84,6 +84,7 @@ func orderTimeOut(orderId string) error {
 	if orderModel.Order.Status != consts.PAY_TYPE_WAIT {
 		log.Log.Errorf("orderJob_trace: don't need to change，orderId:%s, status:%d", orderId,
 			orderModel.Order.Status)
+		DelOrderId(orderId)
 		session.Rollback()
 		return errors.New("fail")
 	}
