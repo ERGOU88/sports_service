@@ -65,6 +65,12 @@ func (svc *PayModule) AppPay(param *morder.PayReqParam) (int, interface{}) {
 
 		info := make(map[string]interface{}, 0)
 		info["sign"] = payParam
+
+		if _, err = svc.UpdateOrderPayType(consts.ALIPAY, param.OrderId); err != nil {
+			log.Log.Errorf("pay_trace: update order payType by ali fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
+			return errdef.ORDER_UPDATE_FAIL, nil
+		}
+
 		return errdef.SUCCESS, info
 
 	case consts.WEICHAT:
@@ -75,6 +81,11 @@ func (svc *PayModule) AppPay(param *morder.PayReqParam) (int, interface{}) {
 			return errdef.PAY_WX_PARAM_FAIL, nil
 		}
 
+		if _, err = svc.UpdateOrderPayType(consts.WEICHAT, param.OrderId); err != nil {
+			log.Log.Errorf("pay_trace: update order payType by wx fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
+			return errdef.ORDER_UPDATE_FAIL, nil
+		}
+
 		return errdef.SUCCESS, mp
 	default:
 		log.Log.Errorf("pay_trace: unsupported payType:%d", param.PayType)
@@ -82,6 +93,14 @@ func (svc *PayModule) AppPay(param *morder.PayReqParam) (int, interface{}) {
 
 
 	return errdef.PAY_INVALID_TYPE, nil
+}
+
+// 更新订单支付类型
+func (svc *PayModule) UpdateOrderPayType(payType int, orderId string) (int64, error) {
+	svc.order.Order.PayType = payType
+	svc.order.Order.PayOrderId = orderId
+	cols := "pay_type"
+	return svc.order.UpdateOrderInfo(cols)
 }
 
 func (svc *PayModule) AliPay() (string, error) {

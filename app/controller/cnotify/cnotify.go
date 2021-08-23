@@ -176,7 +176,7 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 			info.Type = consts.TYPE_POST_COMMENT
 			info.ComposeId = liked.TypeId
 
-			// 获取视频评论信息
+			// 获取帖子评论信息
 			comment := svc.comment.GetPostCommentById(fmt.Sprint(liked.TypeId))
 			if comment != nil {
 				// 被点赞的信息
