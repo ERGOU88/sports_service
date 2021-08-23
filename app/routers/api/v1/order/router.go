@@ -14,6 +14,8 @@ func Router(engine *gin.Engine) {
 	{
 		// 订单列表
 		order.GET("/list", OrderList)
+		// 订单详情
+		order.GET("/detail", OrderDetail)
 	}
 }
 

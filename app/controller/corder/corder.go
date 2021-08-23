@@ -136,7 +136,7 @@ func (svc *OrderModule) GetOrderList(userId, status string, page, size int) (int
 	user := svc.user.FindUserByUserid(userId)
 	if user == nil {
 		log.Log.Errorf("user not found, userId:%s", userId)
-		return errdef.ERROR, []*morder.OrderInfo{}
+		return errdef.USER_NOT_EXISTS, []*morder.OrderInfo{}
 	}
 
 	var condition string
@@ -186,7 +186,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 		switch order.OrderType {
 		// 预约场馆、私教、大课
 		case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
-			extra := &mappointment.AppointmentResp{}
+			extra := &mappointment.OrderResp{}
 			if err := util.JsonFast.UnmarshalFromString(order.Extra, extra); err != nil {
 				log.Log.Errorf("order_trace: unmarshal extra fail, err:%s, orderId:%s", err, order.PayOrderId)
 				continue
@@ -209,4 +209,33 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 	}
 
 	return res
+}
+
+// 订单详情
+func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.OrderResp) {
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
+		log.Log.Errorf("order_trace: user not found, userId:%s", userId)
+		return errdef.USER_NOT_EXISTS, nil
+	}
+
+	ok, err := svc.order.GetOrder(orderId)
+	if !ok || err != nil {
+		log.Log.Errorf("order_trace: order not exists, orderId:%s, err:%s", orderId, err)
+		return errdef.ORDER_NOT_EXISTS, nil
+	}
+
+	// already delete
+	if svc.order.Order.Status == -1 {
+		log.Log.Errorf("order_trace: order already delete, orderId:%s", orderId)
+		return errdef.ORDER_ALREADY_DEL, nil
+	}
+
+	rsp := &mappointment.OrderResp{}
+	if err := util.JsonFast.UnmarshalFromString(svc.order.Order.Extra, rsp); err != nil {
+		log.Log.Errorf("order_trace: unmarshal extra info fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+
+	return errdef.SUCCESS, rsp
 }

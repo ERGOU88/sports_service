@@ -20,7 +20,7 @@ type base struct {
 	appointment *mappointment.AppointmentModel
 	order       *morder.OrderModel
 	DateId      int
-	Extra       *mappointment.AppointmentResp
+	Extra       *mappointment.OrderResp
 	// 预约流水map
 	recordMp    map[int64]*models.VenueAppointmentRecord
 	// 订单商品流水map
@@ -32,7 +32,7 @@ func New(socket *xorm.Session) *base {
 		Engine: socket,
 		appointment: mappointment.NewAppointmentModel(socket),
 		order: morder.NewOrderModel(socket),
-		Extra:  &mappointment.AppointmentResp{TimeNodeInfo: make([]*mappointment.TimeNodeInfo, 0)},
+		Extra:  &mappointment.OrderResp{TimeNodeInfo: make([]*mappointment.TimeNodeInfo, 0)},
 		recordMp: make(map[int64]*models.VenueAppointmentRecord),
 		orderMp: make(map[int64]*models.VenueOrderProductInfo),
 	}

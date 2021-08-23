@@ -131,8 +131,8 @@ type StockInfoResp struct {
 	Stock     int        `json:"stock"`            // 剩余数量
 }
 
-// 预约返回数据
-type AppointmentResp struct {
+// 预约订单返回数据
+type OrderResp struct {
 	Id       int64      `json:"id"`          // 场馆id
 	Name     string     `json:"name"`        // 场馆名称
 	Date     string     `json:"date"`        // 预定日期
