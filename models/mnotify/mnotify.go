@@ -29,7 +29,7 @@ type ReceiveAtInfo struct {
 	ComposeId     int64                 `json:"compose_id,omitempty" example:"1000000000"`      // 作品id
 	Title         string                `json:"title,omitempty" example:"视频标题"`               // 标题
 	Describe      string                `json:"describe,omitempty" example:"视频描述"`            // 描述
-	Cover         string                `json:"cover,omitempty" example:"视频封面地址"`           // 封面
+	Cover         string                `json:"cover" example:"视频封面地址"`                      // 封面
 	VideoAddr     string                `json:"video_addr,omitempty" example:"视频地址"`         // 视频地址
 	IsRecommend   int                   `json:"is_recommend,omitempty" example:"0"`             // 是否推荐
 	IsTop         int                   `json:"is_top,omitempty" example:"0"`                   // 是否置顶
