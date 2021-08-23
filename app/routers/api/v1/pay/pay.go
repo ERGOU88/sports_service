@@ -198,9 +198,16 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-	totalFee := bm["total_fee"].(int)
-	if totalFee != order.Amount {
-		log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d", order.Amount, totalFee)
+	totalFee := bm["total_fee"].(string)
+	fee, err := strconv.Atoi(totalFee)
+	if err != nil {
+		log.Log.Error("wxNotify_trace: amount not match, orderId:%s, err:%s", orderId, err)
+		c.String(http.StatusBadRequest, "fail")
+		return
+	}
+
+	if fee != order.Amount {
+		log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d", order.Amount, fee)
 		c.String(http.StatusBadRequest, "fail")
 		return
 	}
