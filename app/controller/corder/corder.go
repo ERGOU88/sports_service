@@ -237,5 +237,7 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 		return errdef.ERROR, nil
 	}
 
+	rsp.OrderId = orderId
+
 	return errdef.SUCCESS, rsp
 }
