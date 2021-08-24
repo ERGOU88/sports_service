@@ -137,10 +137,10 @@ type OrderResp struct {
 	Name     string     `json:"name,omitempty"`        // 场馆名称
 	Date     string     `json:"date,omitempty"`        // 预定日期
 	WeekCn   string     `json:"week_cn,omitempty"`     // 星期几
-	TotalTm  int        `json:"total_tm"`              // 预约总时长
+	TotalTm  int        `json:"total_tm,omitempty"`    // 预约总时长
 	TmCn     string     `json:"tm_cn,omitempty"`       // 总时长 中文
 	IsEnough bool       `json:"is_enough,omitempty"`   // 库存是否足够 false 不足 true 足够
-	IsDeduct bool       `json:"is_deduct"`             // 是否可扣除会员时长
+	IsDeduct bool       `json:"is_deduct,omitempty"`  // 是否可扣除会员时长
 	TotalDeductionTm int `json:"total_deduction_tm"`   // 抵扣总时长
 	TotalAmount int     `json:"total_amount"`          // 总金额 真实支付金额
 	TotalSalesPrice int  `json:"total_sales_price"`    // 总售价

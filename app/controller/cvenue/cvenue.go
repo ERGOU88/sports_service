@@ -250,12 +250,18 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 }
 
 // 更新会员信息
-func (svc *VenueModule) UpdateVipInfo(now, count, expireDuration int) error {
+func (svc *VenueModule) UpdateVipInfo(userId string, venueId int64, now, count, expireDuration, duration int) error {
+	ok, err := svc.venue.GetVenueVipInfo(userId, venueId)
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get venue vip info fail, userId:%s, err:%s", userId, err)
+		return errors.New("vip not exists")
+	}
+
 	var cols string
 	svc.venue.Vip.UpdateAt = now
 	// 如果vip结束时间 >= 当前时间戳 则为续费
 	if int(svc.venue.Vip.EndTm) >= now {
-		svc.venue.Vip.Duration += int64(svc.order.OrderProduct.Duration)
+		svc.venue.Vip.Duration += int64(duration)
 		svc.venue.Vip.EndTm = int64(now + expireDuration * count)
 		cols = "end_tm, duration, update_at"
 	} else {
@@ -264,7 +270,7 @@ func (svc *VenueModule) UpdateVipInfo(now, count, expireDuration int) error {
 		// 过期时间 叠加
 		svc.venue.Vip.EndTm = int64(now + expireDuration * count)
 		// 可用时长
-		svc.venue.Vip.Duration = int64(svc.order.OrderProduct.Duration)
+		svc.venue.Vip.Duration = int64(duration)
 		cols = "start_tm, end_tm, duration, update_at"
 	}
 
