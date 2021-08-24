@@ -12,6 +12,7 @@ import (
 	"errors"
 	"sports_service/server/global/app/log"
 	"sports_service/server/models/muser"
+	"sports_service/server/models/mvenue"
 	"sports_service/server/util"
 	"time"
 	"fmt"
@@ -23,6 +24,7 @@ type OrderModule struct {
 	order       *morder.OrderModel
 	appointment *mappointment.AppointmentModel
 	user        *muser.UserModel
+	venue       *mvenue.VenueModel
 }
 
 func New(c *gin.Context) OrderModule {
@@ -36,6 +38,7 @@ func New(c *gin.Context) OrderModule {
 		order: morder.NewOrderModel(socket),
 		appointment: mappointment.NewAppointmentModel(socket),
 		user: muser.NewUserModel(appSocket),
+		venue: mvenue.NewVenueModel(socket),
 		engine: socket,
 	}
 }
@@ -106,11 +109,16 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64)
 		return errors.New("update order product status fail")
 	}
 
-	// 更新订单对应的预约流水状态
-	if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, consts.PAY_TYPE_PAID, consts.PAY_TYPE_WAIT); err != nil {
-		log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
-		svc.engine.Rollback()
-		return err
+	switch svc.order.Order.ProductType {
+	case consts.ORDER_TYPE_APPOINTMENT_VENUE,consts.ORDER_TYPE_APPOINTMENT_COACH,consts.ORDER_TYPE_APPOINTMENT_COURSE:
+		// 更新订单对应的预约流水状态
+		if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, consts.PAY_TYPE_PAID, consts.PAY_TYPE_WAIT); err != nil {
+			log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
+			svc.engine.Rollback()
+			return err
+		}
+	case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_YEAR_CARD:
+
 	}
 
 	svc.order.Notify.CreateAt = now
@@ -201,6 +209,39 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 	}
 
 	return res
+}
+
+// 更新会员信息
+func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, now, count, expireDuration, duration int) error {
+	ok, err := svc.venue.GetVenueVipInfo(userId, venueId)
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get venue vip info fail, userId:%s, err:%s", userId, err)
+		return errors.New("vip not exists")
+	}
+
+	var cols string
+	svc.venue.Vip.UpdateAt = now
+	// 如果vip结束时间 >= 当前时间戳 则为续费
+	if int(svc.venue.Vip.EndTm) >= now {
+		svc.venue.Vip.Duration += int64(duration)
+		svc.venue.Vip.EndTm = int64(now + expireDuration * count)
+		cols = "end_tm, duration, update_at"
+	} else {
+		// 否则 为 重新购买
+		svc.venue.Vip.StartTm = int64(now)
+		// 过期时间 叠加
+		svc.venue.Vip.EndTm = int64(now + expireDuration * count)
+		// 可用时长
+		svc.venue.Vip.Duration = int64(duration)
+		cols = "start_tm, end_tm, duration, update_at"
+	}
+
+	if _, err := svc.venue.UpdateVenueVipInfo(cols); err != nil {
+		log.Log.Errorf("order_trace: update venue vip info err:%s", err)
+		return err
+	}
+
+	return nil
 }
 
 // 订单详情
