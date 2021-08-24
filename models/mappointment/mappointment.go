@@ -64,6 +64,7 @@ type OptionsInfo struct {
 	IsExpire        bool   `json:"is_expire"`                    // 是否过期
 	Date            string `json:"date"`                         // 年月日
 	StartTm         int64  `json:"start_tm"`                     // 开始时间戳
+	EndTm           int64  `json:"end_tm"`                       // 结束时间戳
 	CoachId         int64  `json:"coach_id"`                     // 教练id
 }
 
@@ -130,8 +131,8 @@ type StockInfoResp struct {
 	Stock     int        `json:"stock"`            // 剩余数量
 }
 
-// 预约返回数据
-type AppointmentResp struct {
+// 预约订单返回数据
+type OrderResp struct {
 	Id       int64      `json:"id"`          // 场馆id
 	Name     string     `json:"name"`        // 场馆名称
 	Date     string     `json:"date"`        // 预定日期
@@ -166,6 +167,7 @@ type TimeNodeInfo struct {
 	Discount     int          `json:"discount"`     // 优惠的金额
 	IsEnough     bool         `json:"is_enough"`    // 当前节点库存是否足够
 	StartTm      int64        `json:"start_tm"`     // 预约开始时间戳
+	EndTm        int64        `json:"end_tm"`
 }
 
 func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {

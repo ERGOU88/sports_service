@@ -193,6 +193,7 @@ const (
 	ORDER_NOT_EXISTS             = 18003
 	ORDER_STATUS_FAIL            = 18004
 	ORDER_UPDATE_FAIL            = 18005
+	ORDER_ALREADY_DEL            = 18006
 
 	// 大课相关错误 19001-20000
 	COURSE_NOT_EXISTS            = 19001
@@ -378,6 +379,7 @@ var MsgFlags = map[int]string{
 	ORDER_NOT_EXISTS:            "订单不存在",
 	ORDER_STATUS_FAIL:           "订单状态错误",
 	ORDER_UPDATE_FAIL:           "更新订单信息失败",
+	ORDER_ALREADY_DEL:           "订单已删除",
 
 	COURSE_NOT_EXISTS:           "课程不存在",
 	COURSE_TYPE_FAIL:            "课程类型错误",
