@@ -7,7 +7,7 @@
 #
 # Host: 192.168.5.12 (MySQL 5.7.34)
 # Database: venue
-# Generation Time: 2021-08-24 02:42:02 +0000
+# Generation Time: 2021-08-24 06:07:24 +0000
 # ************************************************************
 
 
@@ -293,6 +293,7 @@ CREATE TABLE `venue_pay_orders` (
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `subject` varchar(150) NOT NULL DEFAULT '' COMMENT '商品名称',
+  `write_off_code` varchar(200) NOT NULL DEFAULT '' COMMENT '核销码',
   PRIMARY KEY (`id`),
   KEY `pay_order_id` (`pay_order_id`),
   KEY `user_id` (`user_id`,`status`,`order_type`)
