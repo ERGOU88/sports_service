@@ -392,6 +392,7 @@ func (svc *base) AddOrderProducts() error {
 
 // 添加订单
 func (svc *base) AddOrder(orderId, userId, subject string, now, productType int) error {
+	svc.Extra.CreateAt = time.Unix(int64(now), 0).Format(consts.FORMAT_TM)
 	extra, _ := util.JsonFast.MarshalToString(svc.Extra)
 	svc.order.Order.Extra = extra
 	svc.order.Order.PayOrderId = orderId
@@ -703,5 +704,5 @@ func (svc *base) GetOrderType(appointmentType int) (int, error) {
 		return consts.ORDER_TYPE_APPOINTMENT_COURSE, nil
 	}
 
-	return 0, errors.New("invalid appointmentType")
+	return -1, errors.New("invalid appointmentType")
 }

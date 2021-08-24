@@ -186,6 +186,10 @@ const (
 
 	// 场馆错误 17001-18000
 	VENUE_NOT_EXISTS             = 17001
+	VENUE_PRODUCT_NOT_EXIST      = 17002
+	VENUE_VIP_INFO_FAIL          = 17003
+	VENUE_ADD_VIP_FAIL           = 17004
+	VENUE_UPDATE_VIP_FAIL        = 17005
 
 	// 订单错误 18001-19000
 	ORDER_ADD_FAIL               = 18001
@@ -373,6 +377,10 @@ var MsgFlags = map[int]string{
 	APPOINTMENT_RECORD_ORDER_FAIL: "记录预约订单号失败",
 
 	VENUE_NOT_EXISTS:            "场馆不存在",
+	VENUE_PRODUCT_NOT_EXIST:     "商品不存在",
+	VENUE_VIP_INFO_FAIL:         "获取场馆会员信息失败",
+	VENUE_ADD_VIP_FAIL:          "添加会员失败",
+	VENUE_UPDATE_VIP_FAIL:       "更新会员信息失败",
 
 	ORDER_ADD_FAIL:              "添加订单失败",
 	ORDER_PRODUCT_ADD_FAIL:      "添加商品订单失败",

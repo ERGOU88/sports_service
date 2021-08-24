@@ -133,29 +133,32 @@ type StockInfoResp struct {
 
 // 预约订单返回数据
 type OrderResp struct {
-	Id       int64      `json:"id"`          // 场馆id
-	Name     string     `json:"name"`        // 场馆名称
-	Date     string     `json:"date"`        // 预定日期
-	WeekCn   string     `json:"week_cn"`     // 星期几
-	TotalTm  int        `json:"total_tm"`    // 预约总时长
-	TmCn     string     `json:"tm_cn"`       // 总时长 中文
-	IsEnough bool       `json:"is_enough"`    // 库存是否足够 false 不足 true 足够
-	IsDeduct bool       `json:"is_deduct"`    // 是否可扣除会员时长
-	TotalDeductionTm int `json:"total_deduction_tm"`  // 抵扣总时长
-	TotalAmount int     `json:"total_amount"` // 总金额 真实支付金额
-	TotalSalesPrice int  `json:"total_sales_price"` // 总售价
-	MobileNum string    `json:"mobile_num"`   // 手机号
-	TotalDiscount int   `json:"total_discount"` // 总优惠
-	TimeNodeInfo  []*TimeNodeInfo `json:"node_info"` // 多时间节点预约数据
-	OrderId       string `json:"order_id"`           // 订单ID
-	OrderType     int    `json:"order_type"`         // 订单类型
-	PayDuration   int64  `json:"pay_duration"`       // 支付时长
-	Address       string `json:"address"`            // 上课地点
-	CoachName     string `json:"coach_name"`         // 老师名称
-	CoachId       int64  `json:"coach_id"`           // 老师id
-	Channel       int    `json:"channel"`            // 1001 安卓 1002 ios
-	WriteOffCode  string `json:"write_off_code"`     // 核销码
-	//OrderStatus   int    `json:"order_status,omitempty"` // 订单状态
+	Id       int64      `json:"id"`                    // 场馆id
+	Name     string     `json:"name,omitempty"`        // 场馆名称
+	Date     string     `json:"date,omitempty"`        // 预定日期
+	WeekCn   string     `json:"week_cn,omitempty"`     // 星期几
+	TotalTm  int        `json:"total_tm"`              // 预约总时长
+	TmCn     string     `json:"tm_cn,omitempty"`       // 总时长 中文
+	IsEnough bool       `json:"is_enough,omitempty"`   // 库存是否足够 false 不足 true 足够
+	IsDeduct bool       `json:"is_deduct"`             // 是否可扣除会员时长
+	TotalDeductionTm int `json:"total_deduction_tm"`   // 抵扣总时长
+	TotalAmount int     `json:"total_amount"`          // 总金额 真实支付金额
+	TotalSalesPrice int  `json:"total_sales_price"`    // 总售价
+	MobileNum string    `json:"mobile_num,omitempty"`   // 手机号
+	TotalDiscount int   `json:"total_discount"`         // 总优惠
+	TimeNodeInfo  []*TimeNodeInfo `json:"node_info,omitempty"` // 多时间节点预约数据
+	OrderId       string `json:"order_id,omitempty"`           // 订单ID
+	OrderType     int    `json:"order_type"`                   // 订单类型
+	PayDuration   int64  `json:"pay_duration"`                 // 支付时长
+	Address       string `json:"address,omitempty"`            // 上课地点
+	CoachName     string `json:"coach_name,omitempty"`         // 老师名称
+	CoachId       int64  `json:"coach_id,omitempty"`           // 老师id
+	Channel       int    `json:"channel,omitempty"`            // 1001 安卓 1002 ios
+	WriteOffCode  string `json:"write_off_code,omitempty"`     // 核销码
+	CreateAt      string `json:"create_at,omitempty"`          // 下单时间
+	//OrderStatus   int    `json:"order_status,omitempty"`     // 订单状态
+	Count         int    `json:"count,omitempty"`              // 次卡/月卡/季卡/年卡 数量
+	ExpireTm      int    `json:"expire_tm,omitempty"`          // 次卡/月卡/季卡/年卡 过期时长[单个]
 }
 
 // 单时间节点预约数据

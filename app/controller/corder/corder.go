@@ -143,17 +143,17 @@ func (svc *OrderModule) GetOrderList(userId, status string, page, size int) (int
 	offset := (page - 1) * size
 	switch status {
 	case "-1":
-		// 查看全部 0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 退款失败
-		condition = fmt.Sprintf("status >= 0 AND user_id=%s", userId)
+		// 查看全部 0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 已过期
+		condition = fmt.Sprintf("order_type=1001 AND status >= 0 AND user_id=%s", userId)
 	case "0":
 		// 0 待支付
-		condition = fmt.Sprintf("status = 0 AND user_id=%s", userId)
+		condition = fmt.Sprintf("order_type=1001 AND status = 0 AND user_id=%s", userId)
 	case "1":
 		// 1 可使用
-		condition = fmt.Sprintf("status = 2 AND user_id=%s", userId)
+		condition = fmt.Sprintf("order_type=1001 AND status = 2 AND user_id=%s", userId)
 	case "2":
-		// 2 退款/售后 包含[3 已完成 4 已取消  5 退款中 6 已退款 7 退款失败]
-		condition = fmt.Sprintf("status >= 3 AND user_id=%s", userId)
+		// 2 退款/售后 包含[3 已完成 4 退款中 5 已退款 6 已过期]
+		condition = fmt.Sprintf("order_type=1001 AND status >= 3 AND user_id=%s", userId)
 	default:
 		log.Log.Errorf("order_trace: unsupported query status, status:%d", status)
 		return errdef.ERROR, nil
@@ -179,7 +179,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 	for index, order := range list {
 		info := new(morder.OrderInfo)
 		info.OrderType = int32(order.ProductType)
-		info.CreatAt = order.CreateAt
+		info.CreatAt = time.Unix(int64(order.CreateAt), 0).Format(consts.FORMAT_TM)
 		info.OrderStatus = int32(order.Status)
 		info.OrderId = order.PayOrderId
 		info.UserId = order.UserId
@@ -193,19 +193,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 				continue
 			}
 
-			// 待支付订单 剩余支付时长
-			if order.Status == consts.PAY_TYPE_WAIT {
-				// 已过时长 =  当前时间戳 - 订单创建时间戳
-				duration := time.Now().Unix() - int64(order.CreateAt)
-				// 订单状态是待支付 且 已过时长 <= 总时差
-				if order.Status == consts.PAY_TYPE_WAIT && duration < consts.PAYMENT_DURATION {
-					log.Log.Debugf("order_trace: duration:%v", duration)
-					// 剩余支付时长 = 总时长[15分钟] - 已过时长
-					info.Duration = consts.PAYMENT_DURATION - duration
-				}
-			}
-
-			info.Title = extra.Name
+			info.Title = order.Subject
 			info.Count = len(extra.TimeNodeInfo)
 		}
 
@@ -239,6 +227,18 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 	if err := util.JsonFast.UnmarshalFromString(svc.order.Order.Extra, rsp); err != nil {
 		log.Log.Errorf("order_trace: unmarshal extra info fail, err:%s", err)
 		return errdef.ERROR, nil
+	}
+
+	// 待支付订单 剩余支付时长
+	if svc.order.Order.Status == consts.PAY_TYPE_WAIT {
+		// 已过时长 =  当前时间戳 - 订单创建时间戳
+		duration := time.Now().Unix() - int64(svc.order.Order.CreateAt)
+		// 订单状态是待支付 且 已过时长 <= 总时差
+		if svc.order.Order.Status == consts.PAY_TYPE_WAIT && duration < consts.PAYMENT_DURATION {
+			log.Log.Debugf("order_trace: duration:%v", duration)
+			// 剩余支付时长 = 总时长[15分钟] - 已过时长
+			rsp.PayDuration = consts.PAYMENT_DURATION - duration
+		}
 	}
 
 	rsp.OrderId = orderId

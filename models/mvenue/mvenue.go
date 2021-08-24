@@ -8,7 +8,18 @@ import (
 type VenueModel struct {
 	Venue     *models.VenueInfo
 	Engine    *xorm.Session
-	Recommend   *models.VenueRecommendConf
+	Recommend *models.VenueRecommendConf
+	Product   *models.VenueProductInfo
+	Vip       *models.VenueVipInfo
+}
+
+// 购买次卡/月卡/季卡/年卡 请求参数
+type PurchaseVipCardParam struct {
+	ProductId    int64  `binding:"required" json:"product_id"`   // 商品ID
+	Count        int    `binding:"required" json:"count"`        // 购买数量
+	UserId       string `json:"user_id"`
+	VenueId      int64  `json:"venue_id"`                        // 场馆id
+	ChannelId    int    `json:"channel_id"`                      // android/ios
 }
 
 // 场馆商品
@@ -34,6 +45,8 @@ func NewVenueModel(engine *xorm.Session) *VenueModel {
 	return &VenueModel{
 		Venue: new(models.VenueInfo),
 		Recommend: new(models.VenueRecommendConf),
+		Product: new(models.VenueProductInfo),
+		Vip: new(models.VenueVipInfo),
 		Engine: engine,
 	}
 }
@@ -54,18 +67,40 @@ func (m *VenueModel) GetVenueList() ([]*models.VenueInfo, error) {
 	return list, nil
 }
 
-// 通过场馆id 获取场馆商品列表
+// 通过场馆id 获取线上场馆商品列表
 func (m *VenueModel) GetVenueProducts() ([]*models.VenueProductInfo, error) {
 	var list []*models.VenueProductInfo
-	if err := m.Engine.Where("venue_id=?", m.Venue.Id).Find(&list); err != nil {
+	if err := m.Engine.Where("venue_id=? AND instance_type=1", m.Venue.Id).Find(&list); err != nil {
 		return nil, err
 	}
 
 	return list, nil
 }
 
+// 通过id获取商品
+func (m *VenueModel) GetVenueProductById(id string) (bool, error) {
+	m.Product = new(models.VenueProductInfo)
+	return m.Engine.Where("id=?", id).Get(m.Product)
+}
+
 // 通过id获取推荐信息配置
 func (m *VenueModel) GetRecommendInfoById(id string) (bool, error) {
 	m.Recommend = new(models.VenueRecommendConf)
 	return m.Engine.Where("id=? AND status=0", id).Get(m.Recommend)
+}
+
+// 获取场馆会员信息
+func (m *VenueModel) GetVenueVipInfo(userId string, venueId int64) (bool, error) {
+	m.Vip = new(models.VenueVipInfo)
+	return m.Engine.Where("user_id=? AND venue_id=?", userId, venueId).Get(m.Vip)
+}
+
+// 添加场馆会员数据
+func (m *VenueModel) AddVenueVipInfo() (int64, error) {
+	return m.Engine.InsertOne(m.Vip)
+}
+
+// 更新场馆会员数据
+func (m *VenueModel) UpdateVenueVipInfo(cols string) (int64, error) {
+	return m.Engine.Where("id=?", m.Vip.Id).Cols(cols).Update(m.Vip)
 }
