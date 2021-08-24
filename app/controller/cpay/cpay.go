@@ -13,6 +13,7 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/tools/alipay"
 	"sports_service/server/tools/wechat"
+	"time"
 )
 
 type PayModule struct {
@@ -108,6 +109,7 @@ func (svc *PayModule) AliPay() (string, error) {
 	client.OutTradeNo = svc.order.Order.PayOrderId
 	client.TotalAmount = fmt.Sprintf("%.2f", float64(svc.order.Order.Amount)/100)
 	client.Subject = svc.order.Order.Subject
+	client.TimeExpire = time.Unix(int64(svc.order.Order.CreateAt + consts.PAYMENT_DURATION), 0).Format(consts.FORMAT_TM)
 	payParam, err := client.TradeAppPay()
 	if err != nil {
 		return "", err
@@ -123,6 +125,8 @@ func (svc *PayModule) WechatPay() (map[string]interface{}, error) {
 	client.Subject = svc.order.Order.Subject
 	client.NotifyUrl = config.Global.WechatNotifyUrl
 	client.CreateIp = svc.context.ClientIP()
+	client.TimeStart = time.Unix(int64(svc.order.Order.CreateAt), 0).Format(consts.FORMAT_WX_TM)
+	client.TimeExpire = time.Unix(int64(svc.order.Order.CreateAt + consts.PAYMENT_DURATION), 0).Format(consts.FORMAT_WX_TM)
 	mp, err := client.TradeAppPay()
 	if err != nil {
 		return nil, err

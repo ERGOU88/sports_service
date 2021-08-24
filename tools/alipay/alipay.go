@@ -24,6 +24,7 @@ type AliPayClient struct {
 	Subject      string        // 商品名称
 	OutTradeNo   string        // 订单号
 	TotalAmount  string        // 金额   （元）
+	TimeExpire   string        // 订单超时时间
 }
 
 // appId：应用ID
@@ -46,6 +47,10 @@ func (c *AliPayClient) TradeAppPay() (string, error) {
 	body.Set("subject", c.Subject)
 	body.Set("out_trade_no", c.OutTradeNo)
 	body.Set("total_amount", c.TotalAmount)
+	if c.TimeExpire != "" {
+		body.Set("time_expire", c.TimeExpire)
+	}
+
 	// 手机APP支付参数请求
 	payParam, err := c.Client.TradeAppPay(body)
 	if err != nil {

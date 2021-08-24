@@ -9,8 +9,8 @@ const (
 )
 
 const (
-    // 预约可支付时长
-    APPOINTMENT_PAYMENT_DURATION = 15 * 60
+    // 可支付时长
+    PAYMENT_DURATION = 15 * 60
 )
 
 

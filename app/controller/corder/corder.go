@@ -178,7 +178,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 	res := make([]*morder.OrderInfo, len(list))
 	for index, order := range list {
 		info := new(morder.OrderInfo)
-		info.ProductType = int32(order.ProductType)
+		info.OrderType = int32(order.ProductType)
 		info.CreatAt = order.CreateAt
 		info.OrderStatus = int32(order.Status)
 		info.OrderId = order.PayOrderId
@@ -193,13 +193,16 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 				continue
 			}
 
-			// 已过时长 =  当前时间戳 - 订单创建时间戳
-			duration := time.Now().Unix() - int64(order.CreateAt)
-			// 订单状态是待支付 且 已过时长 <= 总时差
-			if order.Status == consts.PAY_TYPE_WAIT && duration < consts.APPOINTMENT_PAYMENT_DURATION {
-				log.Log.Debugf("order_trace: duration:%v", duration)
-				// 剩余支付时间 = 总时长[15分钟] - 已过时长
-				info.Duration = consts.APPOINTMENT_PAYMENT_DURATION - duration
+			// 待支付订单 剩余支付时长
+			if order.Status == consts.PAY_TYPE_WAIT {
+				// 已过时长 =  当前时间戳 - 订单创建时间戳
+				duration := time.Now().Unix() - int64(order.CreateAt)
+				// 订单状态是待支付 且 已过时长 <= 总时差
+				if order.Status == consts.PAY_TYPE_WAIT && duration < consts.PAYMENT_DURATION {
+					log.Log.Debugf("order_trace: duration:%v", duration)
+					// 剩余支付时长 = 总时长[15分钟] - 已过时长
+					info.Duration = consts.PAYMENT_DURATION - duration
+				}
 			}
 
 			info.Title = extra.Name
@@ -239,6 +242,7 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 	}
 
 	rsp.OrderId = orderId
+	//rsp.OrderStatus = svc.order.Order.Status
 
 	return errdef.SUCCESS, rsp
 }

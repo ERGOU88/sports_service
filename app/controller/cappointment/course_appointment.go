@@ -193,7 +193,7 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 	svc.engine.Commit()
 
 	svc.Extra.OrderId = orderId
-	svc.Extra.PayDuration = consts.APPOINTMENT_PAYMENT_DURATION
+	svc.Extra.PayDuration = consts.PAYMENT_DURATION
 	// 超时
 	//redismq.PushOrderEventMsg(redismq.NewOrderEvent(user.UserId, svc.Extra.OrderId, int64(svc.order.Order.CreateAt) + svc.Extra.PayDuration,
 	//	consts.ORDER_EVENT_COURSE_TIME_OUT))

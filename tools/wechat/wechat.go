@@ -21,6 +21,8 @@ type WechatPayClient struct {
 	Subject      string             // 商品名称
 	CreateIp     string             // 请求ip
 	NotifyUrl    string             // 回调地址
+	TimeStart    string             // 交易生成时间
+	TimeExpire   string             // 交易结束时间
 }
 
 // 初始化微信客户端
@@ -49,6 +51,14 @@ func (c *WechatPayClient) TradeAppPay() (map[string]interface{}, error){
 		Set("notify_url", c.NotifyUrl).
 		Set("trade_type", wechat.TradeType_App).
 		Set("sign_type", wechat.SignType_MD5)
+
+	if c.TimeStart != "" {
+		bm.Set("time_start", c.TimeStart)
+	}
+
+	if c.TimeExpire != "" {
+		bm.Set("time_expire", c.TimeExpire)
+	}
 
 	// 请求支付下单，成功后得到结果
 	wxRsp, err := c.Client.UnifiedOrder(bm)
