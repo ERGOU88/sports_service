@@ -403,7 +403,7 @@ func (svc *base) AddOrder(orderId, userId, subject string, now, productType int)
 	svc.order.Order.ChannelId = svc.Extra.Channel
 	svc.order.Order.Subject = subject
 	svc.order.Order.ProductType = productType
-	svc.order.Order.WriteOffCode = fmt.Sprint(util.GetSnowId())
+	svc.order.Order.WriteOffCode = svc.Extra.WriteOffCode
 	affected, err := svc.order.AddOrder()
 	if err != nil {
 		return err

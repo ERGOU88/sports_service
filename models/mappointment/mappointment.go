@@ -154,6 +154,7 @@ type OrderResp struct {
 	CoachName     string `json:"coach_name"`         // 老师名称
 	CoachId       int64  `json:"coach_id"`           // 老师id
 	Channel       int    `json:"channel"`            // 1001 安卓 1002 ios
+	WriteOffCode  string `json:"write_off_code"`     // 核销码
 	//OrderStatus   int    `json:"order_status,omitempty"` // 订单状态
 }
 
