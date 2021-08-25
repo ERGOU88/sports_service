@@ -214,6 +214,11 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 		return errdef.COACH_ORDER_NOT_SUCCESS
 	}
 
+	ok, err = svc.coach.HasEvaluateByUserId(userId, svc.order.Order.PayOrderId)
+	if !ok || err != nil {
+		log.Log.Errorf("coach_trace: coach already evaluate, userId:%s, orderId:%s", userId, svc.order.Order.PayOrderId)
+		return errdef.COACH_ALREADY_EVALUATE
+	}
 
 	var labels string
 	if len(param.LabelIds) > 0 {

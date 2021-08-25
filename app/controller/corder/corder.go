@@ -9,6 +9,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mappointment"
+	"sports_service/server/models/mcoach"
 	"sports_service/server/models/morder"
 	"errors"
 	"sports_service/server/global/app/log"
@@ -30,6 +31,7 @@ type OrderModule struct {
 	appointment *mappointment.AppointmentModel
 	user        *muser.UserModel
 	venue       *mvenue.VenueModel
+	coach       *mcoach.CoachModel
 }
 
 func New(c *gin.Context) OrderModule {
@@ -44,6 +46,7 @@ func New(c *gin.Context) OrderModule {
 		appointment: mappointment.NewAppointmentModel(socket),
 		user: muser.NewUserModel(appSocket),
 		venue: mvenue.NewVenueModel(socket),
+		coach: mcoach.NewCoachModel(socket),
 		engine: socket,
 	}
 }
@@ -251,6 +254,15 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 		// 预约场馆、私教、大课
 		case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
 			info.Count = len(extra.TimeNodeInfo)
+			if order.ProductType == consts.ORDER_TYPE_APPOINTMENT_COACH && order.Status == consts.PAY_TYPE_PAID {
+				// 查询是否评价
+				ok, err := svc.coach.HasEvaluateByUserId(svc.order.Order.UserId, svc.order.Order.PayOrderId)
+				if !ok || err != nil {
+					log.Log.Errorf("order_trace: already evaluate, userId:%s, orderId:%s", svc.order.Order.UserId, svc.order.Order.PayOrderId)
+				}
+
+				info.HasEvaluate = ok
+			}
 		case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_YEAR_CARD:
 			info.Count = extra.Count
 		}
@@ -334,6 +346,16 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 	if err := util.JsonFast.UnmarshalFromString(svc.order.Order.Extra, rsp); err != nil {
 		log.Log.Errorf("order_trace: unmarshal extra info fail, err:%s", err)
 		return errdef.ERROR, nil
+	}
+
+	if svc.order.Order.Status == consts.PAY_TYPE_PAID && svc.order.Order.ProductType == consts.ORDER_TYPE_APPOINTMENT_COACH  {
+		// 查询是否评价
+		ok, err := svc.coach.HasEvaluateByUserId(svc.order.Order.UserId, svc.order.Order.PayOrderId)
+		if !ok || err != nil {
+			log.Log.Errorf("order_trace: already evaluate, userId:%s, orderId:%s", svc.order.Order.UserId, svc.order.Order.PayOrderId)
+		}
+
+		rsp.HasEvaluate = ok
 	}
 
 	rsp.PayDuration = 0

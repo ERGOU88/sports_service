@@ -173,6 +173,7 @@ const (
 	COACH_TYPE_FAIL              = 15006
 	COACH_ID_NOT_MATCH           = 15007
 	COACH_SCORE_INFO_FAIL        = 15008
+	COACH_ALREADY_EVALUATE       = 15009
 
 	// 预约错误 16001-17000
 	APPOINTMENT_INVALID_INFO     = 16001
@@ -368,6 +369,7 @@ var MsgFlags = map[int]string{
 	COACH_TYPE_FAIL:             "私教类型错误",
 	COACH_ID_NOT_MATCH:          "私教id不匹配",
 	COACH_SCORE_INFO_FAIL:       "获取私教评价信息失败",
+	COACH_ALREADY_EVALUATE:      "已评价",
 
 	APPOINTMENT_INVALID_INFO:    "预约信息错误",
 	APPOINTMENT_QUERY_NODE_FAIL: "查询时间节点配置错误",

@@ -25,6 +25,7 @@ type OrderInfo struct {
 	UserId             string      `json:"user_id"`
 	OrderId            string      `json:"order_id"`            // 订单id
 	Count              int         `json:"count"`
+	HasEvaluate        bool        `json:"has_evaluate"`        // 是否评价
 }
 
 // 订单退款

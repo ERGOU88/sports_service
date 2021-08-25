@@ -164,6 +164,7 @@ type OrderResp struct {
 	OrderStatus   int32  `json:"order_status"`                 // 订单状态
 	OrderDescription string `json:"order_description,omitempty"` // 订单须知
 	CanRefund     bool   `json:"can_refund"`                   // 是否可退款
+	HasEvaluate   bool   `json:"has_evaluate，omitempty"`       // 是否已评价
 }
 
 // 单时间节点预约数据
