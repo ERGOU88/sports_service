@@ -246,6 +246,13 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 		}
 	}
 
+	// 记录需处理支付超时的订单
+	if _, err := svc.order.RecordOrderId(orderId); err != nil {
+		log.Log.Errorf("venue_trace: record orderId fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.ORDER_ADD_FAIL, nil
+	}
+
 	svc.engine.Commit()
 	return errdef.SUCCESS, extra
 }

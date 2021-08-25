@@ -163,6 +163,7 @@ type OrderResp struct {
 	VenueId       int64  `json:"venue_id,omitempty"`
 	OrderStatus   int32  `json:"order_status"`                 // 订单状态
 	OrderDescription string `json:"order_description,omitempty"` // 订单须知
+	CanRefund     bool   `json:"can_refund"`                   // 是否可退款
 }
 
 // 单时间节点预约数据
@@ -301,10 +302,10 @@ func (m *AppointmentModel) RevertStockNum(timeNode, date string, count, now, app
 	return affected, nil
 }
 
-// 获取成功预约的记录[包含已付款和支付中]
+// 获取成功预约的记录[包含已付款和支付中及已完成]
 func (m *AppointmentModel) GetAppointmentRecord() ([]*models.VenueAppointmentRecord, error) {
 	var list []*models.VenueAppointmentRecord
-	sql := "SELECT * FROM venue_appointment_record WHERE status in(0, 2) AND appointment_type=? AND related_id=? AND time_node=? " +
+	sql := "SELECT * FROM venue_appointment_record WHERE status in(0, 2, 3) AND appointment_type=? AND related_id=? AND time_node=? " +
 		"AND date=? ORDER BY id ASC"
 	if err := m.Engine.SQL(sql, m.Record.AppointmentType, m.Record.RelatedId, m.Record.TimeNode, m.Record.Date).Find(&list); err != nil {
 		return nil, err

@@ -4,7 +4,7 @@ type VenuePayOrders struct {
 	Id           int64  `json:"id" xorm:"pk autoincr comment('自增主键') BIGINT(20)"`
 	UserId       string `json:"user_id" xorm:"not null comment('用户id') index(user_id) VARCHAR(60)"`
 	Amount       int    `json:"amount" xorm:"not null comment('商品总价（分）') INT(11)"`
-	Status       int    `json:"status" xorm:"not null default 0 comment('-1 软删除 0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 已过期') index(user_id) TINYINT(4)"`
+	Status       int    `json:"status" xorm:"not null default 0 comment(' 0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 已过期') index(user_id) TINYINT(4)"`
 	Extra        string `json:"extra" xorm:"not null default '' comment('记录订单相关扩展数据') VARCHAR(1000)"`
 	Transaction  string `json:"transaction" xorm:"not null default '' comment('第三方订单号') VARCHAR(200)"`
 	PayType      int    `json:"pay_type" xorm:"not null comment('1 支付宝 2 微信 3 钱包 4 苹果内购') TINYINT(1)"`
@@ -19,4 +19,6 @@ type VenuePayOrders struct {
 	UpdateAt     int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
 	Subject      string `json:"subject" xorm:"not null default '' comment('商品名称') VARCHAR(150)"`
 	WriteOffCode string `json:"write_off_code" xorm:"not null default '' comment('核销码') VARCHAR(200)"`
+	RefundAmount int    `json:"refund_amount" xorm:"not null default 0 comment('退款金额（分）') INT(11)"`
+	IsDelete     int    `json:"is_delete" xorm:"not null default 0 comment('是否删除0正常 1删除') TINYINT(2)"`
 }

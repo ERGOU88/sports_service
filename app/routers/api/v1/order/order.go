@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"sports_service/server/app/controller/corder"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
+	"sports_service/server/models/morder"
 	"sports_service/server/util"
 )
 
@@ -35,5 +37,21 @@ func OrderDetail(c *gin.Context) {
 		reply.Data["detail"] = detail
 	}
 
+	reply.Response(http.StatusOK, code)
+}
+
+// 订单退款
+func OrderRefund(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &morder.OrderRefund{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("order_trace: invalid param, param:%+v, err:%s", param, err)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+	userId, _ := c.Get(consts.USER_ID)
+	svc := corder.New(c)
+	param.UserId = userId.(string)
+	code := svc.OrderRefund(param)
 	reply.Response(http.StatusOK, code)
 }

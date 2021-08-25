@@ -9,7 +9,9 @@ const (
 
 // 1 支付回调
 // 2 退款回调
+// 3 退款申请
 const (
 	PAY_NOTIFY    = 1
 	REFUND_NOTIFY = 2
+	APPLY_REFUND  = 3
 )

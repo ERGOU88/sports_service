@@ -27,6 +27,11 @@ type OrderInfo struct {
 	Count              int         `json:"count"`
 }
 
+// 订单退款
+type OrderRefund struct {
+	OrderId    string  `binding:"required" json:"order_id"`     // 订单id
+	UserId     string  `json:"user_id"`
+}
 
 type OrderModel struct {
 	Engine         *xorm.Session

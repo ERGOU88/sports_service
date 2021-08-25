@@ -3,6 +3,7 @@ package corder
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
+	"sports_service/server/app/config"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/consts"
@@ -13,6 +14,10 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
+	"sports_service/server/tools/alipay"
+	alipayCli "github.com/go-pay/gopay/alipay"
+	wxCli "github.com/go-pay/gopay/wechat"
+	"sports_service/server/tools/wechat"
 	"sports_service/server/util"
 	"time"
 	"fmt"
@@ -79,7 +84,7 @@ func (svc *OrderModule) AliPayNotify(orderId, body, status, tradeNo string, payT
 	return nil
 }
 
-// 订单处理流程
+// 订单处理流程 1 支付成功 2 退款流程 [用户申请退款成功时执行] 3 退款申请
 func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64, notifyType int) error {
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("payNotify_trace: session begin fail, err:%s", err)
@@ -95,10 +100,10 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		status = consts.PAY_TYPE_PAID
 	}
 
-	// 如果是退款成功回调 则订单当前状态 应是待退款 需更新状态为 已退款
-	if notifyType == consts.REFUND_NOTIFY {
-		curStatus = consts.PAY_TYPE_REFUND_WAIT
-		status = consts.PAY_TYPE_REFUND_SUCCESS
+	// 如果是申请退款 则订单当前状态 应是已付款 需更新状态为 退款中
+	if notifyType == consts.APPLY_REFUND {
+		curStatus = consts.PAY_TYPE_PAID
+		status = consts.PAY_TYPE_REFUND_WAIT
 	}
 
 	now := int(time.Now().Unix())
@@ -117,7 +122,7 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 
 	svc.order.OrderProduct.Status = status
 	svc.order.OrderProduct.UpdateAt = now
-	// 更新订单商品流水状态为已支付
+	// 更新订单商品流水状态
 	if _, err = svc.order.UpdateOrderProductStatus(orderId, curStatus); err != nil {
 		log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
 		svc.engine.Rollback()
@@ -150,11 +155,13 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		}
 	}
 
-	// 记录回调信息
-	if err := svc.RecordNotifyInfo(now, notifyType, orderId, body, tradeNo); err != nil {
-		log.Log.Errorf("payNotify_trace: record notify info fail, orderId:%s, err:%s", orderId, err)
-		svc.engine.Rollback()
-		return err
+	if notifyType != consts.APPLY_REFUND {
+		// 记录回调信息
+		if err := svc.RecordNotifyInfo(now, notifyType, orderId, body, tradeNo); err != nil {
+			log.Log.Errorf("payNotify_trace: record notify info fail, orderId:%s, err:%s", orderId, err)
+			svc.engine.Rollback()
+			return err
+		}
 	}
 
 	svc.engine.Commit()
@@ -265,12 +272,13 @@ func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, now, count, 
 	var cols string
 	svc.venue.Vip.UpdateAt = now
 	switch notifyType {
-	// 如果是退款回调通知 走退款流程
-	case consts.REFUND_NOTIFY:
-		// 会员 需扣减可用时长  同时 扣减过期时长
-		svc.venue.Vip.Duration += int64(duration * -1)
-		svc.venue.Vip.EndTm = svc.venue.Vip.EndTm - int64(expireDuration * count)
-		cols = "end_tm, duration, update_at"
+	// todo:月卡/季卡/年卡会员不可退款
+	// 如果是申请退款 走退款流程
+	//case consts.APPLY_REFUND:
+	//	// 会员 需扣减可用时长  同时 扣减过期时长
+	//	svc.venue.Vip.Duration += int64(duration * -1)
+	//	svc.venue.Vip.EndTm = svc.venue.Vip.EndTm - int64(expireDuration * count)
+	//	cols = "end_tm, duration, update_at"
 	// 支付成功回调通知
 	case consts.PAY_NOTIFY:
 		// 如果vip结束时间 >= 当前时间戳 则为续费
@@ -344,6 +352,185 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 	rsp.OrderId = orderId
 	rsp.OrderStatus = int32(svc.order.Order.Status)
 	rsp.OrderDescription = "订单需知"
+	// 是否可退款
+	rsp.CanRefund = svc.CanRefund(svc.order.Order.Status, svc.order.Order.OrderType, svc.order.Order.PayTime,
+		svc.order.Order.PayOrderId, svc.order.Order.Extra)
 
 	return errdef.SUCCESS, rsp
+}
+
+// 订单退款流程
+func (svc *OrderModule) OrderRefund(param *morder.OrderRefund) int {
+	if err := svc.engine.Begin(); err != nil {
+		return errdef.ERROR
+	}
+
+	user := svc.user.FindUserByUserid(param.UserId)
+	if user == nil {
+		log.Log.Errorf("order_trace: user not exists, userId:%s", param.UserId)
+		svc.engine.Rollback()
+		return errdef.USER_NOT_EXISTS
+	}
+
+	ok, err := svc.order.GetOrder(param.OrderId)
+	if !ok || err != nil {
+		log.Log.Errorf("order_trace: order not exists, orderId:%s", param.OrderId)
+		svc.engine.Rollback()
+		return errdef.ORDER_NOT_EXISTS
+	}
+
+	if svc.order.Order.UserId != user.UserId {
+		log.Log.Errorf("order_trace: user not match, userId:%s, curUser:%s", svc.order.Order.UserId, user.UserId)
+		svc.engine.Rollback()
+		return errdef.ORDER_REFUND_FAIL
+	}
+
+	// 是否可退款
+	if can := svc.CanRefund(svc.order.Order.Status, svc.order.Order.OrderType, svc.order.Order.PayTime,
+		svc.order.Order.PayOrderId, svc.order.Order.Extra); !can {
+		log.Log.Errorf("order_trace: user can't refund, orderId:%s", svc.order.Order.PayOrderId)
+		svc.engine.Rollback()
+		return errdef.ORDER_REFUND_FAIL
+	}
+
+	// 可退款
+	if _, err := svc.TradeRefund(); err != nil {
+		log.Log.Errorf("order_trace: trade refund err:%s", err)
+		svc.engine.Rollback()
+		return errdef.ORDER_REFUND_FAIL
+	}
+
+	if err := svc.OrderProcess(svc.order.Order.PayOrderId, "", svc.order.Order.Transaction,
+		int64(svc.order.Order.PayTime), consts.APPLY_REFUND); err != nil {
+		svc.engine.Rollback()
+		return errdef.ORDER_REFUND_FAIL
+	}
+
+	svc.engine.Commit()
+
+	return errdef.SUCCESS
+}
+
+// 交易退款 todo:计算手续费
+func (svc *OrderModule) TradeRefund() (string, error) {
+	var body string
+	switch svc.order.Order.PayType {
+	case consts.ALIPAY:
+		// 支付宝
+		resp, err := svc.AliRefund()
+		if err != nil {
+			log.Log.Errorf("pay_trace: alipay refund fail, orderId:%s, payType:%d", svc.order.Order.PayOrderId,
+				svc.order.Order.PayType)
+			return "", err
+		}
+
+		log.Log.Infof("order_trace: orderId:%s, alipay refund resp:%+v", svc.order.Order.PayOrderId, resp)
+		body, _ = util.JsonFast.MarshalToString(resp)
+
+	case consts.WEICHAT:
+		// 微信
+		resp, err := svc.WechatRefund()
+		if err != nil {
+			log.Log.Errorf("pay_trace: get wechatPay param fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
+			return "", err
+		}
+
+		log.Log.Infof("order_trace: orderId:%s, wechat refund resp:%+v", svc.order.Order.PayOrderId, resp)
+		body, _ = util.JsonFast.MarshalToString(resp)
+
+	default:
+		log.Log.Errorf("order_trace: unsupported payType:%d", svc.order.Order.PayType)
+		return "", errors.New("unsupported payType")
+	}
+
+
+	return body, nil
+}
+
+// 支付宝退款
+func (svc *OrderModule) AliRefund() (*alipayCli.TradeRefundResponse, error) {
+	client := alipay.NewAliPay(true)
+	client.OutTradeNo = svc.order.Order.PayOrderId
+	client.RefundAmount = fmt.Sprintf("%.2f", float64(svc.order.Order.Amount)/100)
+	client.RefundReson = fmt.Sprintf("%s%s", svc.order.Order.Subject, "退款")
+	resp, err := client.TradeRefund()
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// 微信退款
+func (svc *OrderModule) WechatRefund() (*wxCli.RefundResponse, error) {
+	client := wechat.NewWechatPay(true)
+	client.OutTradeNo = svc.order.Order.PayOrderId
+	client.TotalAmount = svc.order.Order.Amount
+	client.RefundAmount = svc.order.Order.Amount
+	client.RefundNotify = config.Global.WechatRefundNotify
+	resp, err := client.TradeRefund()
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// 是否可退款
+func (svc *OrderModule) CanRefund(status, orderType, payTime int, orderId, extra string) bool {
+	// 如果订单状态不等于已支付
+	if status != consts.PAY_TYPE_PAID {
+		return false
+	}
+
+	// 只有预约场馆/次卡/私教/课程可申请退款 同时需要判断 订单是否过期
+	if orderType == consts.ORDER_TYPE_YEAR_CARD || orderType == consts.ORDER_TYPE_MONTH_CARD ||
+		orderType == consts.ORDER_TYPE_SEANSON_CARD {
+		return false
+	}
+
+	now := time.Now().Unix()
+	switch orderType {
+	case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
+		// 获取预约流水
+		infos, err := svc.appointment.GetAppointmentRecordByOrderId(orderId, consts.PAY_TYPE_PAID)
+		if len(infos) == 0 || err != nil {
+			log.Log.Errorf("order_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
+			return false
+		}
+
+		rsp := &mappointment.OrderResp{}
+		if err := util.JsonFast.UnmarshalFromString(extra, rsp); err != nil {
+			log.Log.Errorf("order_trace: unmarshal extra fail, orderId:%s, err:%s", orderId, err)
+			return false
+		}
+
+		if len(rsp.TimeNodeInfo) == 0 {
+			log.Log.Errorf("order_trace: time node is empty, orderId:%s", orderId)
+			return false
+		}
+
+		for _, node := range rsp.TimeNodeInfo {
+			// 如果预约中 某个节点的开始时间 <= 当前时间 表示已过期 不能退款
+			if node.StartTm <= now {
+				return false
+			}
+		}
+
+	case consts.ORDER_TYPE_EXPERIENCE_CARD:
+		// 获取订单商品
+		ok, err := svc.order.GetOrderProductsById(orderId)
+		if !ok || err != nil {
+			log.Log.Errorf("order_trace: get order product by id fail, orderId:%s, err:%s", orderId, err)
+			return false
+		}
+
+		// 次卡  订单完成时间 + 过期时长 <= 当前时间戳 表示已过期
+		if payTime + svc.order.OrderProduct.ExpireDuration <= int(now) {
+			return false
+		}
+	}
+
+
+	return true
 }

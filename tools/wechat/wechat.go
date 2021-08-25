@@ -97,13 +97,12 @@ func (c *WechatPayClient) VerifySign(body interface{}) (bool, error) {
 
 // 微信退款
 func (c *WechatPayClient) TradeRefund() (*wechat.RefundResponse, error) {
-	s := util.GetRandomString(64)
 	// 初始化参数结构体
 	bm := make(gopay.BodyMap)
 	bm.Set("out_trade_no", c.OutTradeNo).
 		Set("nonce_str", util.GetRandomString(32)).
 		Set("sign_type", wechat.SignType_MD5).
-		Set("out_refund_no", s).
+		Set("out_refund_no", util.GetRandomString(64)).
 		Set("total_fee", c.TotalAmount).
 		Set("refund_fee", c.RefundAmount).
 		Set("notify_url", c.RefundNotify)

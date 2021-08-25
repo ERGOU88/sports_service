@@ -16,6 +16,8 @@ func Router(engine *gin.Engine) {
 		order.GET("/list", OrderList)
 		// 订单详情
 		order.GET("/detail", OrderDetail)
+		// 订单退款
+		order.POST("/refund", OrderRefund)
 	}
 }
 
