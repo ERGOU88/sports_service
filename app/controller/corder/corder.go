@@ -58,10 +58,10 @@ func (svc *OrderModule) GetOrder(orderId string) (*models.VenuePayOrders, error)
 }
 
 // 订单处理流程
-func (svc *OrderModule) AliPayNotify(orderId, body, status, tradeNo string, payTm int64) error {
+func (svc *OrderModule) AliPayNotify(orderId, body, status, tradeNo string, payTm int64, notifyType int) error {
 	switch status {
 	case consts.TradeSuccess:
-		if err := svc.OrderProcess(orderId, body, tradeNo, payTm); err != nil {
+		if err := svc.OrderProcess(orderId, body, tradeNo, payTm, notifyType); err != nil {
 			return err
 		}
 
@@ -80,30 +80,45 @@ func (svc *OrderModule) AliPayNotify(orderId, body, status, tradeNo string, payT
 }
 
 // 订单处理流程
-func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64) error {
+func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64, notifyType int) error {
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("payNotify_trace: session begin fail, err:%s", err)
 		return err
 	}
 
+	// tips: 不可直接更新状态 并发情况下会有问题
+	// 订单当前状态 及 需更新的状态
+	var curStatus, status int
+	// 如果是支付成功回调 则订单当前状态应是 待支付 需更新状态为 已支付
+	if notifyType == consts.PAY_NOTIFY {
+		curStatus = consts.PAY_TYPE_WAIT
+		status = consts.PAY_TYPE_PAID
+	}
+
+	// 如果是退款成功回调 则订单当前状态 应是待退款 需更新状态为 已退款
+	if notifyType == consts.REFUND_NOTIFY {
+		curStatus = consts.PAY_TYPE_REFUND_WAIT
+		status = consts.PAY_TYPE_REFUND_SUCCESS
+	}
+
 	now := int(time.Now().Unix())
-	svc.order.Order.Status = consts.PAY_TYPE_PAID
+	svc.order.Order.Status = status
 	svc.order.Order.IsCallback = 1
 	svc.order.Order.PayTime = int(payTm)
 	svc.order.Order.UpdateAt = now
 	svc.order.Order.Transaction = tradeNo
 	// 更新订单状态
-	affected, err := svc.order.UpdateOrderStatus(orderId, consts.PAY_TYPE_WAIT)
+	affected, err := svc.order.UpdateOrderStatus(orderId, curStatus)
 	if affected != 1 || err != nil {
 		log.Log.Errorf("payNotify_trace: update order status fail, orderId:%s", orderId)
 		svc.engine.Rollback()
 		return errors.New("update order status fail")
 	}
 
-	svc.order.OrderProduct.Status = consts.PAY_TYPE_PAID
+	svc.order.OrderProduct.Status = status
 	svc.order.OrderProduct.UpdateAt = now
 	// 更新订单商品流水状态为已支付
-	if _, err = svc.order.UpdateOrderProductStatus(orderId, consts.PAY_TYPE_WAIT); err != nil {
+	if _, err = svc.order.UpdateOrderProductStatus(orderId, curStatus); err != nil {
 		log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
 		svc.engine.Rollback()
 		return errors.New("update order product status fail")
@@ -112,44 +127,56 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64)
 	switch svc.order.Order.ProductType {
 	case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
 		// 更新订单对应的预约流水状态
-		if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, consts.PAY_TYPE_PAID, consts.PAY_TYPE_WAIT); err != nil {
+		if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, status, curStatus); err != nil {
 			log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
 			svc.engine.Rollback()
 			return err
 		}
 
 	case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_YEAR_CARD:
-		ok, err := svc.order.GetOrderProductsById(orderId, svc.order.Order.Status)
+		ok, err := svc.order.GetOrderProductsById(orderId)
 		if !ok || err != nil {
 			log.Log.Errorf("payNotify_trace: get order products by id fail, orderId:%s, err:%s", orderId, err)
 			svc.engine.Rollback()
 			return errors.New("get order product fail")
 		}
+
 		// 更新会员可用时长 及 过期时长
 		if err := svc.UpdateVipInfo(svc.user.User.UserId, svc.order.OrderProduct.RelatedId, now, svc.order.OrderProduct.Count,
-			svc.order.OrderProduct.ExpireDuration, svc.order.OrderProduct.Duration); err != nil {
+			svc.order.OrderProduct.ExpireDuration, svc.order.OrderProduct.Duration, notifyType); err != nil {
 			log.Log.Errorf("payNotify_trace: update vip info fail, orderId:%s, err:%s", orderId, err)
 			svc.engine.Rollback()
 			return err
 		}
 	}
 
+	// 记录回调信息
+	if err := svc.RecordNotifyInfo(now, notifyType, orderId, body, tradeNo); err != nil {
+		log.Log.Errorf("payNotify_trace: record notify info fail, orderId:%s, err:%s", orderId, err)
+		svc.engine.Rollback()
+		return err
+	}
+
+	svc.engine.Commit()
+	log.Log.Debug("payNotify_trace: 订单成功， orderId: %s", orderId)
+	return nil
+}
+
+func (svc *OrderModule) RecordNotifyInfo(now, notifyType int, orderId, body, tradeNo string) error {
 	svc.order.Notify.CreateAt = now
 	svc.order.Notify.UpdateAt = now
+	svc.order.Notify.NotifyType = notifyType
 	svc.order.Notify.PayType = svc.order.Order.PayType
 	svc.order.Notify.PayOrderId = orderId
 	svc.order.Notify.NotifyInfo = body
 	svc.order.Notify.Transaction = tradeNo
 	// 记录回调信息
-	affected, err = svc.order.AddOrderPayNotify()
+	affected, err := svc.order.AddOrderPayNotify()
 	if affected != 1 || err != nil {
-		log.Log.Errorf("payNotify_trace: record pay notify fail, err:%s", err)
-		svc.engine.Rollback()
+		log.Log.Errorf("payNotify_trace: record pay notify fail, orderId:%s, err:%s", orderId, err)
 		return errors.New("record pay notify fail")
 	}
 
-	svc.engine.Commit()
-	log.Log.Debug("payNotify_trace: 订单成功， orderId: %s", orderId)
 	return nil
 }
 
@@ -228,29 +255,44 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 }
 
 // 更新会员信息
-func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, now, count, expireDuration, duration int) error {
+func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, now, count, expireDuration, duration, notifyType int) error {
 	ok, err := svc.venue.GetVenueVipInfo(userId, venueId)
 	if !ok || err != nil {
-		log.Log.Errorf("venue_trace: get venue vip info fail, userId:%s, err:%s", userId, err)
+		log.Log.Errorf("order_trace: get venue vip info fail, userId:%s, err:%s", userId, err)
 		return errors.New("vip not exists")
 	}
 
 	var cols string
 	svc.venue.Vip.UpdateAt = now
-	// 如果vip结束时间 >= 当前时间戳 则为续费
-	if int(svc.venue.Vip.EndTm) >= now {
-		svc.venue.Vip.Duration += int64(duration)
-		svc.venue.Vip.EndTm = int64(now + expireDuration * count)
+	switch notifyType {
+	// 如果是退款回调通知 走退款流程
+	case consts.REFUND_NOTIFY:
+		// 会员 需扣减可用时长  同时 扣减过期时长
+		svc.venue.Vip.Duration += int64(duration * -1)
+		svc.venue.Vip.EndTm = svc.venue.Vip.EndTm - int64(expireDuration * count)
 		cols = "end_tm, duration, update_at"
-	} else {
-		// 否则 为 重新购买
-		svc.venue.Vip.StartTm = int64(now)
-		// 过期时间 叠加
-		svc.venue.Vip.EndTm = int64(now + expireDuration * count)
-		// 可用时长
-		svc.venue.Vip.Duration = int64(duration)
-		cols = "start_tm, end_tm, duration, update_at"
+	// 支付成功回调通知
+	case consts.PAY_NOTIFY:
+		// 如果vip结束时间 >= 当前时间戳 则为续费
+		if int(svc.venue.Vip.EndTm) >= now {
+			svc.venue.Vip.Duration += int64(duration)
+			svc.venue.Vip.EndTm = int64(now + expireDuration * count)
+			cols = "end_tm, duration, update_at"
+		} else {
+			// 否则 为 重新购买
+			svc.venue.Vip.StartTm = int64(now)
+			// 过期时间 叠加
+			svc.venue.Vip.EndTm = int64(now + expireDuration * count)
+			// 可用时长
+			svc.venue.Vip.Duration = int64(duration)
+			cols = "start_tm, end_tm, duration, update_at"
+		}
+
+	default:
+		log.Log.Errorf("order_trace: unsupported notify type:%d", notifyType)
+		return errors.New("unsupported notify type")
 	}
+
 
 	if _, err := svc.venue.UpdateVenueVipInfo(cols); err != nil {
 		log.Log.Errorf("order_trace: update venue vip info err:%s", err)

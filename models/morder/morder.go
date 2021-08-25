@@ -80,9 +80,9 @@ func (m *OrderModel) UpdateOrderStatus(orderId string, status int) (int64, error
 }
 
 // 通过订单id 获取订单流水信息
-func (m *OrderModel) GetOrderProductsById(orderId string, status int) (bool, error) {
+func (m *OrderModel) GetOrderProductsById(orderId string) (bool, error) {
 	m.OrderProduct = new(models.VenueOrderProductInfo)
-	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Get(m.OrderProduct)
+	return m.Engine.Where("pay_order_id=?", orderId).Get(m.OrderProduct)
 }
 
 // 更新订单商品状态

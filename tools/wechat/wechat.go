@@ -4,8 +4,10 @@ import (
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/pkg/util"
 	"github.com/go-pay/gopay/wechat"
+	"sports_service/server/global/app/log"
 	"strconv"
 	"time"
+	"errors"
 )
 
 const (
@@ -20,9 +22,11 @@ type WechatPayClient struct {
 	TotalAmount  int                // 金额（分）
 	Subject      string             // 商品名称
 	CreateIp     string             // 请求ip
-	NotifyUrl    string             // 回调地址
+	NotifyUrl    string             // 付款回调地址
 	TimeStart    string             // 交易生成时间
 	TimeExpire   string             // 交易结束时间
+	RefundAmount int                // 退款金额
+	RefundNotify string             // 退款回调地址
 }
 
 // 初始化微信客户端
@@ -91,3 +95,29 @@ func (c *WechatPayClient) VerifySign(body interface{}) (bool, error) {
 	return true, nil
 }
 
+// 微信退款
+func (c *WechatPayClient) TradeRefund() (*wechat.RefundResponse, error) {
+	s := util.GetRandomString(64)
+	// 初始化参数结构体
+	bm := make(gopay.BodyMap)
+	bm.Set("out_trade_no", c.OutTradeNo).
+		Set("nonce_str", util.GetRandomString(32)).
+		Set("sign_type", wechat.SignType_MD5).
+		Set("out_refund_no", s).
+		Set("total_fee", c.TotalAmount).
+		Set("refund_fee", c.RefundAmount).
+		Set("notify_url", c.RefundNotify)
+
+	wxRsp, _, err := c.Client.Refund(bm)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Log.Info("wxRsp:", *wxRsp)
+
+	if wxRsp.ReturnCode != "SUCCESS" || wxRsp.ResultCode != "SUCCESS" {
+		return nil, errors.New("wx refund fail")
+	}
+
+	return wxRsp, nil
+}

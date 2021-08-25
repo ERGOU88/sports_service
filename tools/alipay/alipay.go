@@ -7,6 +7,7 @@ import (
 	"sports_service/server/app/config"
 	"sports_service/server/global/app/log"
 	"sports_service/server/util"
+	"errors"
 )
 
 const (
@@ -25,6 +26,8 @@ type AliPayClient struct {
 	OutTradeNo   string        // 订单号
 	TotalAmount  string        // 金额   （元）
 	TimeExpire   string        // 订单超时时间
+	RefundAmount string        // 退款金额 (元)
+	RefundReson  string        // 退款理由
 }
 
 // appId：应用ID
@@ -85,4 +88,26 @@ func (c *AliPayClient) VerifyData(data, signType, sign string) (ok bool, err err
 	}
 
 	return true, nil
+}
+
+// 支付宝退款
+func (c *AliPayClient) TradeRefund() (*alipay.TradeRefundResponse, error) {
+	// 请求参数
+	body := make(gopay.BodyMap)
+	body.Set("out_trade_no", c.OutTradeNo)
+	body.Set("refund_amount", c.RefundAmount)
+	body.Set("refund_reason", c.RefundReson)
+	//发起退款请求
+	aliRsp, err := c.Client.TradeRefund(body)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Log.Info("aliRsp:", *aliRsp)
+
+	if aliRsp.Response.Code != "10000" || aliRsp.Response.Msg != "Success" {
+		return nil, errors.New("refund fail")
+	}
+
+	return aliRsp, nil
 }

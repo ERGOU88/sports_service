@@ -125,6 +125,9 @@ func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentR
 
 	svc.Extra.CoachId = svc.coach.Coach.Id
 	svc.Extra.CoachName = svc.coach.Coach.Name
+	svc.Extra.Address = svc.coach.Coach.Address
+	svc.Extra.CourseId = svc.course.Course.Id
+	svc.Extra.CourseName = svc.course.Course.Name
 
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
