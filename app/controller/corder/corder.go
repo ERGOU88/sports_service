@@ -122,11 +122,16 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64)
 		ok, err := svc.order.GetOrderProductsById(orderId, svc.order.Order.Status)
 		if !ok || err != nil {
 			log.Log.Errorf("payNotify_trace: get order products by id fail, orderId:%s, err:%s", orderId, err)
+			svc.engine.Rollback()
 			return errors.New("get order product fail")
 		}
 		// 更新会员可用时长 及 过期时长
-		svc.UpdateVipInfo(svc.user.User.UserId, svc.order.OrderProduct.RelatedId, now, svc.order.OrderProduct.Count,
-			svc.order.OrderProduct.ExpireDuration, svc.order.OrderProduct.Duration)
+		if err := svc.UpdateVipInfo(svc.user.User.UserId, svc.order.OrderProduct.RelatedId, now, svc.order.OrderProduct.Count,
+			svc.order.OrderProduct.ExpireDuration, svc.order.OrderProduct.Duration); err != nil {
+			log.Log.Errorf("payNotify_trace: update vip info fail, orderId:%s, err:%s", orderId, err)
+			svc.engine.Rollback()
+			return err
+		}
 	}
 
 	svc.order.Notify.CreateAt = now
