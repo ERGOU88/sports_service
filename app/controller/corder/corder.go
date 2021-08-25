@@ -292,7 +292,7 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 		// 已过时长 =  当前时间戳 - 订单创建时间戳
 		duration := time.Now().Unix() - int64(svc.order.Order.CreateAt)
 		// 订单状态是待支付 且 已过时长 <= 总时差
-		if svc.order.Order.Status == consts.PAY_TYPE_WAIT && duration < consts.PAYMENT_DURATION {
+		if duration < consts.PAYMENT_DURATION {
 			log.Log.Debugf("order_trace: duration:%v", duration)
 			// 剩余支付时长 = 总时长[15分钟] - 已过时长
 			rsp.PayDuration = consts.PAYMENT_DURATION - duration
@@ -300,7 +300,7 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 	}
 
 	rsp.OrderId = orderId
-	//rsp.OrderStatus = svc.order.Order.Status
+	rsp.OrderStatus = int32(svc.order.Order.Status)
 
 	return errdef.SUCCESS, rsp
 }

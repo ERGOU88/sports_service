@@ -156,10 +156,10 @@ type OrderResp struct {
 	Channel       int    `json:"channel,omitempty"`            // 1001 安卓 1002 ios
 	WriteOffCode  string `json:"write_off_code,omitempty"`     // 核销码
 	CreateAt      string `json:"create_at,omitempty"`          // 下单时间
-	//OrderStatus   int    `json:"order_status,omitempty"`     // 订单状态
 	Count         int    `json:"count,omitempty"`              // 次卡/月卡/季卡/年卡 数量
 	ExpireTm      int    `json:"expire_tm,omitempty"`          // 次卡/月卡/季卡/年卡 过期时长[单个]
 	VenueId       int64  `json:"venue_id,omitempty"`
+	OrderStatus   int32  `json:"order_status"`                 // 订单状态
 }
 
 // 单时间节点预约数据
