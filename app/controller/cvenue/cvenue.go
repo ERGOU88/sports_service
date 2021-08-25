@@ -195,6 +195,13 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 	totalAmount := svc.venue.Product.CurAmount * param.Count
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
+	// 添加订单商品流水
+	if err := svc.AddOrderProduct(orderId, param.VenueId, now, param.Count); err != nil {
+		log.Log.Errorf("venue_trace: add order products fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.ORDER_PRODUCT_ADD_FAIL, nil
+	}
+
 	extra := &mappointment.OrderResp{
 		OrderId: orderId,
 		CreateAt: time.Unix(int64(now), 0).Format(consts.FORMAT_TM),
@@ -205,6 +212,7 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 		PayDuration: consts.PAYMENT_DURATION,
 		TotalAmount: svc.order.OrderProduct.Amount,
 		ExpireTm: svc.venue.Product.ExpireDuration,
+		VenueId: param.VenueId,
 	}
 
 	// 添加订单
@@ -213,13 +221,6 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 		log.Log.Errorf("venue_trace: add order fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.ORDER_ADD_FAIL, nil
-	}
-
-	// 添加订单商品流水
-	if err := svc.AddOrderProduct(orderId, now, param.Count); err != nil {
-		log.Log.Errorf("venue_trace: add order products fail, err:%s", err)
-		svc.engine.Rollback()
-		return errdef.ORDER_PRODUCT_ADD_FAIL, nil
 	}
 
 	ok, err = svc.venue.GetVenueVipInfo(param.UserId, param.VenueId)
@@ -250,8 +251,9 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 }
 
 // 添加订单商品流水
-func (svc *VenueModule) AddOrderProduct(orderId string, now, count int) error {
+func (svc *VenueModule) AddOrderProduct(orderId string, venueId int64, now, count int) error {
 	svc.order.OrderProduct.ProductId = svc.venue.Product.Id
+	svc.order.OrderProduct.RelatedId = venueId
 	svc.order.OrderProduct.ProductType = svc.venue.Product.ProductType
 	svc.order.OrderProduct.Count = count
 	svc.order.OrderProduct.RealAmount = svc.venue.Product.RealAmount

@@ -110,15 +110,23 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64)
 	}
 
 	switch svc.order.Order.ProductType {
-	case consts.ORDER_TYPE_APPOINTMENT_VENUE,consts.ORDER_TYPE_APPOINTMENT_COACH,consts.ORDER_TYPE_APPOINTMENT_COURSE:
+	case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
 		// 更新订单对应的预约流水状态
 		if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, consts.PAY_TYPE_PAID, consts.PAY_TYPE_WAIT); err != nil {
 			log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
 			svc.engine.Rollback()
 			return err
 		}
-	case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_YEAR_CARD:
 
+	case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_YEAR_CARD:
+		ok, err := svc.order.GetOrderProductsById(orderId, svc.order.Order.Status)
+		if !ok || err != nil {
+			log.Log.Errorf("payNotify_trace: get order products by id fail, orderId:%s, err:%s", orderId, err)
+			return errors.New("get order product fail")
+		}
+		// 更新会员可用时长 及 过期时长
+		svc.UpdateVipInfo(svc.user.User.UserId, svc.order.OrderProduct.RelatedId, now, svc.order.OrderProduct.Count,
+			svc.order.OrderProduct.ExpireDuration, svc.order.OrderProduct.Duration)
 	}
 
 	svc.order.Notify.CreateAt = now
@@ -126,6 +134,7 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64)
 	svc.order.Notify.PayType = svc.order.Order.PayType
 	svc.order.Notify.PayOrderId = orderId
 	svc.order.Notify.NotifyInfo = body
+	svc.order.Notify.Transaction = tradeNo
 	// 记录回调信息
 	affected, err = svc.order.AddOrderPayNotify()
 	if affected != 1 || err != nil {
@@ -192,17 +201,19 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 		info.OrderId = order.PayOrderId
 		info.UserId = order.UserId
 		info.Amount = fmt.Sprintf("%.2f", float64(order.Amount)/100)
+		info.Title = order.Subject
+		extra := &mappointment.OrderResp{}
+		if err := util.JsonFast.UnmarshalFromString(order.Extra, extra); err != nil {
+			log.Log.Errorf("order_trace: unmarshal extra fail, err:%s, orderId:%s", err, order.PayOrderId)
+			continue
+		}
+
 		switch order.OrderType {
 		// 预约场馆、私教、大课
 		case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
-			extra := &mappointment.OrderResp{}
-			if err := util.JsonFast.UnmarshalFromString(order.Extra, extra); err != nil {
-				log.Log.Errorf("order_trace: unmarshal extra fail, err:%s, orderId:%s", err, order.PayOrderId)
-				continue
-			}
-
-			info.Title = order.Subject
 			info.Count = len(extra.TimeNodeInfo)
+		case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_YEAR_CARD:
+			info.Count = extra.Count
 		}
 
 		res[index] = info
@@ -270,6 +281,7 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 		return errdef.ERROR, nil
 	}
 
+	rsp.PayDuration = 0
 	// 待支付订单 剩余支付时长
 	if svc.order.Order.Status == consts.PAY_TYPE_WAIT {
 		// 已过时长 =  当前时间戳 - 订单创建时间戳

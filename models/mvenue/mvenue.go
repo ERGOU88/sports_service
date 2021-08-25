@@ -18,7 +18,7 @@ type PurchaseVipCardParam struct {
 	ProductId    int64  `binding:"required" json:"product_id"`   // 商品ID
 	Count        int    `binding:"required" json:"count"`        // 购买数量
 	UserId       string `json:"user_id"`
-	VenueId      int64  `json:"venue_id"`                        // 场馆id
+	VenueId      int64  `binding:"required" json:"venue_id" `    // 场馆id
 	ChannelId    int    `json:"channel_id"`                      // android/ios
 }
 

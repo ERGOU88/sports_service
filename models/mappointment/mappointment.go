@@ -133,7 +133,7 @@ type StockInfoResp struct {
 
 // 预约订单返回数据
 type OrderResp struct {
-	Id       int64      `json:"id"`                    // 场馆id
+	Id       int64      `json:"id"`                    // 场馆id/商品id
 	Name     string     `json:"name,omitempty"`        // 场馆名称
 	Date     string     `json:"date,omitempty"`        // 预定日期
 	WeekCn   string     `json:"week_cn,omitempty"`     // 星期几
@@ -159,6 +159,7 @@ type OrderResp struct {
 	//OrderStatus   int    `json:"order_status,omitempty"`     // 订单状态
 	Count         int    `json:"count,omitempty"`              // 次卡/月卡/季卡/年卡 数量
 	ExpireTm      int    `json:"expire_tm,omitempty"`          // 次卡/月卡/季卡/年卡 过期时长[单个]
+	VenueId       int64  `json:"venue_id,omitempty"`
 }
 
 // 单时间节点预约数据
