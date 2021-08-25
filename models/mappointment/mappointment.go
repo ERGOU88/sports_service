@@ -162,6 +162,7 @@ type OrderResp struct {
 	ExpireTm      int    `json:"expire_tm,omitempty"`          // 次卡/月卡/季卡/年卡 过期时长[单个]
 	VenueId       int64  `json:"venue_id,omitempty"`
 	OrderStatus   int32  `json:"order_status"`                 // 订单状态
+	OrderDescription string `json:"order_description,omitempty"` // 订单须知
 }
 
 // 单时间节点预约数据

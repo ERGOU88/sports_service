@@ -343,6 +343,7 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 
 	rsp.OrderId = orderId
 	rsp.OrderStatus = int32(svc.order.Order.Status)
+	rsp.OrderDescription = "订单需知"
 
 	return errdef.SUCCESS, rsp
 }
