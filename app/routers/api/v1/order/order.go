@@ -89,11 +89,11 @@ func OrderCouponCode(c *gin.Context) {
 
 // 取消订单
 func OrderCancel(c *gin.Context) {
-	//reply := errdef.New(c)
-	//param := &morder.ChangeOrder{}
-	//userId, _ := c.Get(consts.USER_ID)
-	//param.UserId = userId.(string)
-	//svc := corder.New(c)
-	//svc.OrderCancel(param)
-
+	reply := errdef.New(c)
+	param := &morder.ChangeOrder{}
+	userId, _ := c.Get(consts.USER_ID)
+	param.UserId = userId.(string)
+	svc := corder.New(c)
+	code := svc.OrderCancel(param)
+	reply.Response(http.StatusOK, code)
 }

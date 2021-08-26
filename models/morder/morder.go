@@ -44,6 +44,7 @@ type CouponCodeInfo struct {
 	Count       int    `json:"count"`
 	ExpireTm    string `json:"expire_tm"`
 	QrCodeInfo  string `json:"qr_code_info"`
+	QrCodeExpireDuration int64 `json:"qr_code_expire_duration"`
 }
 
 type OrderModel struct {

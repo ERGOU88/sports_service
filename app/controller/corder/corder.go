@@ -88,8 +88,8 @@ func (svc *OrderModule) AliPayNotify(orderId, body, status, tradeNo string, payT
 	return nil
 }
 
-// 订单处理流程 1 支付成功 2 退款流程 [用户申请退款成功时执行] 3 退款申请
-func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64, notifyType int) error {
+// 订单处理流程 1 支付成功 2 退款流程 [用户申请退款成功时执行] 3 退款申请 4 取消订单
+func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64, changeType int) error {
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("payNotify_trace: session begin fail, err:%s", err)
 		return err
@@ -98,24 +98,27 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 	// tips: 不可直接更新状态 并发情况下会有问题
 	// 订单当前状态 及 需更新的状态
 	var curStatus, status int
-	// 如果是支付成功回调 则订单当前状态应是 待支付 需更新状态为 已支付
-	if notifyType == consts.PAY_NOTIFY {
+	switch changeType {
+	case consts.PAY_NOTIFY:
+		// 如果是支付成功回调 则订单当前状态应是 待支付 需更新状态为 已支付
 		curStatus = consts.PAY_TYPE_WAIT
 		status = consts.PAY_TYPE_PAID
-	}
-
-	// 如果是申请退款 则订单当前状态 应是已付款 需更新状态为 退款中
-	if notifyType == consts.APPLY_REFUND {
+		svc.order.Order.IsCallback = 1
+	case consts.APPLY_REFUND:
+		// 如果是申请退款 则订单当前状态 应是已付款 需更新状态为 退款中
 		curStatus = consts.PAY_TYPE_PAID
 		status = consts.PAY_TYPE_REFUND_WAIT
+	case consts.CANCEL_ORDER:
+		// 如果是取消订单 则订单当前状态 应是待支付 需更新状态为 未支付
+		curStatus = consts.PAY_TYPE_WAIT
+		status = consts.PAY_TYPE_UNPAID
 	}
 
 	now := int(time.Now().Unix())
 	svc.order.Order.Status = status
-	svc.order.Order.IsCallback = 1
 	svc.order.Order.PayTime = int(payTm)
-	svc.order.Order.UpdateAt = now
 	svc.order.Order.Transaction = tradeNo
+	svc.order.Order.UpdateAt = now
 	// 更新订单状态
 	affected, err := svc.order.UpdateOrderStatus(orderId, curStatus)
 	if affected != 1 || err != nil {
@@ -152,16 +155,16 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 
 		// 更新会员可用时长 及 过期时长
 		if err := svc.UpdateVipInfo(svc.user.User.UserId, svc.order.OrderProduct.RelatedId, now, svc.order.OrderProduct.Count,
-			svc.order.OrderProduct.ExpireDuration, svc.order.OrderProduct.Duration, notifyType); err != nil {
+			svc.order.OrderProduct.ExpireDuration, svc.order.OrderProduct.Duration, changeType); err != nil {
 			log.Log.Errorf("payNotify_trace: update vip info fail, orderId:%s, err:%s", orderId, err)
 			svc.engine.Rollback()
 			return err
 		}
 	}
 
-	if notifyType != consts.APPLY_REFUND {
+	if changeType != consts.APPLY_REFUND {
 		// 记录回调信息
-		if err := svc.RecordNotifyInfo(now, notifyType, orderId, body, tradeNo); err != nil {
+		if err := svc.RecordNotifyInfo(now, changeType, orderId, body, tradeNo); err != nil {
 			log.Log.Errorf("payNotify_trace: record notify info fail, orderId:%s, err:%s", orderId, err)
 			svc.engine.Rollback()
 			return err
@@ -461,7 +464,7 @@ func (svc *OrderModule) DeleteOrder(param *morder.ChangeOrder) int {
 		return errdef.ORDER_DELETE_FAIL
 	}
 
-	// 退款中 / 已完成的订单 / 已过期的订单 不可删除
+	// 退款中 / 已支付的订单 / 已过期的订单 不可删除
 	if svc.order.Order.Status == consts.PAY_TYPE_PAID ||
 		svc.order.Order.Status == consts.PAY_TYPE_REFUND_WAIT ||
 		svc.order.Order.Status == consts.PAY_TYPE_EXPIRE {
@@ -643,6 +646,8 @@ func (svc *OrderModule) GetCouponCodeInfo(userId, orderId string) (int, *morder.
 	resp.Count = extra.Count
 	resp.TotalAmount = svc.order.Order.Amount
 	resp.QrCodeInfo = util.GenSecret(util.MIX_MODE, 16)
+	expire := rdskey.KEY_EXPIRE_MIN * 15
+	resp.QrCodeExpireDuration = int64(expire) - 30
 	cstSh, _ := time.LoadLocation("Asia/Shanghai")
 
 	// 只有次卡/预约场馆可以查看券码
@@ -667,7 +672,7 @@ func (svc *OrderModule) GetCouponCodeInfo(userId, orderId string) (int, *morder.
 		return errdef.ORDER_COUPON_CODE_FAIL, nil
 	}
 
-	if err = svc.SaveQrCodeInfo(resp.QrCodeInfo, orderId); err != nil {
+	if err = svc.SaveQrCodeInfo(resp.QrCodeInfo, orderId, expire); err != nil {
 		log.Log.Errorf("order_trace: save qrcode info fail, err:%s", err)
 		return errdef.ORDER_COUPON_CODE_FAIL, nil
 	}
@@ -676,9 +681,9 @@ func (svc *OrderModule) GetCouponCodeInfo(userId, orderId string) (int, *morder.
 }
 
 // 保存二维码数据
-func (svc *OrderModule) SaveQrCodeInfo(secret, orderId string) error {
+func (svc *OrderModule) SaveQrCodeInfo(secret, orderId string, expireTm int64) error {
 	rds := dao.NewRedisDao()
-	return rds.SETEX(fmt.Sprintf(rdskey.QRCODE_INFO, secret), rdskey.KEY_EXPIRE_MIN * 2, orderId)
+	return rds.SETEX(fmt.Sprintf(rdskey.QRCODE_INFO, secret), expireTm, orderId)
 }
 
 // 订单取消
@@ -706,7 +711,11 @@ func (svc *OrderModule) OrderCancel(param *morder.ChangeOrder) int {
 		return errdef.ORDER_NOT_ALLOW_CANCEL
 	}
 
-
+    // 取消订单流程
+	if err := svc.OrderProcess(svc.order.Order.PayOrderId, "", svc.order.Order.Transaction, 0, consts.CANCEL_ORDER); err != nil {
+		log.Log.Errorf("order_trace: order process fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
+		return errdef.ORDER_CANCEL_FAIL
+	}
 
 	return errdef.SUCCESS
 }
