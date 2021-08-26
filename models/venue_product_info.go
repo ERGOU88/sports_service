@@ -4,6 +4,7 @@ type VenueProductInfo struct {
 	Id                int64  `json:"id" xorm:"pk autoincr comment('主键') BIGINT(20)"`
 	ProductName       string `json:"product_name" xorm:"not null comment('商品名称') VARCHAR(128)"`
 	ProductType       int    `json:"product_type" xorm:"not null comment('类型 2001 月卡 2002 季卡 2003 年卡 2004 体验券 3001 储值卡') INT(8)"`
+	ProductCode       string `json:"product_code" xorm:"comment('商品码') VARCHAR(255)"`
 	RealAmount        int    `json:"real_amount" xorm:"not null comment('真实价格（单位：分）') INT(11)"`
 	CurAmount         int    `json:"cur_amount" xorm:"not null comment('当前价格 (包含真实价格、 折扣价格（单位：分）') INT(11)"`
 	DiscountRate      int    `json:"discount_rate" xorm:"not null default 0 comment('折扣率') INT(11)"`

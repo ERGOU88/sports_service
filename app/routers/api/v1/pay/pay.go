@@ -112,7 +112,7 @@ func AliPayNotify(c *gin.Context) {
 	status := strings.Trim(params.Get("trade_status"), " ")
 	payTime, _ := time.Parse("2006-01-02 15:04:05", params.Get("gmt_payment"))
 	tradeNo := params.Get("trade_no")
-	if err := svc.AliPayNotify(orderId, string(body), status, tradeNo, payTime.Unix()); err != nil {
+	if err := svc.AliPayNotify(orderId, string(body), status, tradeNo, payTime.Unix(), consts.PAY_NOTIFY); err != nil {
 		c.String(http.StatusInternalServerError, "fail")
 		return
 	}
@@ -213,7 +213,7 @@ func WechatNotify(c *gin.Context) {
 	}
 
 	payTime, _ := time.Parse("20060102150405", bm["time_end"].(string))
-	if err := svc.OrderProcess(orderId, string(body), bm["transaction_id"].(string), payTime.Unix()); err != nil {
+	if err := svc.OrderProcess(orderId, string(body), bm["transaction_id"].(string), payTime.Unix(), consts.PAY_NOTIFY); err != nil {
 		log.Log.Errorf("wxNotify_trace: order process fail, err:%s", err)
 		c.String(http.StatusInternalServerError, "fail")
 		return

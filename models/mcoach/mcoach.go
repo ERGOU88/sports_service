@@ -162,6 +162,11 @@ func (m *CoachModel) AddCoachEvaluate() (int64, error) {
 	return m.Engine.InsertOne(m.Evaluate)
 }
 
+// 用户是否已评价
+func (m *CoachModel) HasEvaluateByUserId(userId, orderId string) (bool, error) {
+	return m.Engine.Where("user_id=? AND order_id=? AND status=0", userId, orderId).Exist(m.Evaluate)
+}
+
 // 通过ids[多个id]获取标签配置列表
 func (m *CoachModel) GetCoachLabelByIds(ids []interface{}) ([]*models.VenueCoachLabelConfig, error) {
 	var list []*models.VenueCoachLabelConfig

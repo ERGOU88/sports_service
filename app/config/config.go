@@ -71,6 +71,7 @@ type Config struct {
 
 	RedisPassword string
 	WechatNotifyUrl string
+	WechatRefundNotify string
 	AlipayNotifyUrl string
 	AppleLinkPath string
 

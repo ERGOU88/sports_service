@@ -53,19 +53,19 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 		return errdef.ERROR
 	}
 
-	user := svc.user.FindUserByUserid(params.UserId)
-	if user == nil {
-		log.Log.Errorf("share_trace: user not found, userId:%s", params.UserId)
-		svc.engine.Rollback()
-		return errdef.USER_NOT_EXISTS
-	}
-
 	switch params.SharePlatform {
 	// 分享/转发 到微信、微博、qq todo: 记录即可
 	case consts.SHARE_PLATFORM_WECHAT,consts.SHARE_PLATFORM_WEIBO,consts.SHARE_PLATFORM_QQ:
 
 	// 分享到社区 则需发布一条新帖子
 	case consts.SHARE_PLATFORM_COMMUNITY:
+		user := svc.user.FindUserByUserid(params.UserId)
+		if user == nil {
+			log.Log.Errorf("share_trace: user not found, userId:%s", params.UserId)
+			svc.engine.Rollback()
+			return errdef.USER_NOT_EXISTS
+		}
+
 		client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 		// 检测帖子标题
 		isPass, err := client.TextModeration(params.Title)
@@ -216,6 +216,16 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 					svc.engine.Rollback()
 					return errdef.POST_PUBLISH_FAIL
 				}
+
+				// 发布帖子时@的用户列表
+				if len(params.AtInfo) > 0 {
+					for _, userId := range params.AtInfo {
+						// 给被@的人 发送 推送通知
+						redismq.PushEventMsg(redismq.NewEvent(userId, fmt.Sprint(svc.posting.Posting.Id), user.NickName,
+							"", "", consts.POST_PUBLISH_AT_MSG))
+					}
+				}
+
 			}
 		}
 
@@ -283,15 +293,6 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 	}
 
 	svc.engine.Commit()
-
-	// 发布帖子时@的用户列表
-	if len(params.AtInfo) > 0 {
-		for _, userId := range params.AtInfo {
-			// 给被@的人 发送 推送通知
-			redismq.PushEventMsg(redismq.NewEvent(userId, fmt.Sprint(svc.posting.Posting.Id), user.NickName,
-				"", "", consts.POST_PUBLISH_AT_MSG))
-		}
-	}
 
 	return errdef.SUCCESS
 }

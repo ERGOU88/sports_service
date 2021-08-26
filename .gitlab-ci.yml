@@ -13,7 +13,7 @@ build-job-fpv:
     - gitlab_build_theseus
   stage: build
   only:
-    - tags
+    - develop
   script:
     - echo $build_shell
     - 'eval $build_shell'
@@ -27,7 +27,7 @@ build-job-backend:
     - gitlab_build_theseus
   stage: build
   only:
-    - tags
+    - develop
   script:
     - echo $build_shell
     - 'eval $build_shell'

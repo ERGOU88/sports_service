@@ -173,6 +173,7 @@ const (
 	COACH_TYPE_FAIL              = 15006
 	COACH_ID_NOT_MATCH           = 15007
 	COACH_SCORE_INFO_FAIL        = 15008
+	COACH_ALREADY_EVALUATE       = 15009
 
 	// 预约错误 16001-17000
 	APPOINTMENT_INVALID_INFO     = 16001
@@ -186,6 +187,10 @@ const (
 
 	// 场馆错误 17001-18000
 	VENUE_NOT_EXISTS             = 17001
+	VENUE_PRODUCT_NOT_EXIST      = 17002
+	VENUE_VIP_INFO_FAIL          = 17003
+	VENUE_ADD_VIP_FAIL           = 17004
+	VENUE_UPDATE_VIP_FAIL        = 17005
 
 	// 订单错误 18001-19000
 	ORDER_ADD_FAIL               = 18001
@@ -194,6 +199,14 @@ const (
 	ORDER_STATUS_FAIL            = 18004
 	ORDER_UPDATE_FAIL            = 18005
 	ORDER_ALREADY_DEL            = 18006
+	ORDER_REFUND_FAIL            = 18007
+	ORDER_NOT_ALLOW_REFUND       = 18008
+	ORDER_DELETE_FAIL            = 18009
+	ORDER_COUPON_CODE_FAIL       = 18010
+	ORDER_CANCEL_FAIL            = 18011
+	ORDER_NOT_ALLOW_CANCEL       = 18012
+	ORDER_USER_NOT_MATCH         = 18013
+	ORDER_PROCESS_FAIL           = 18014
 
 	// 大课相关错误 19001-20000
 	COURSE_NOT_EXISTS            = 19001
@@ -362,6 +375,7 @@ var MsgFlags = map[int]string{
 	COACH_TYPE_FAIL:             "私教类型错误",
 	COACH_ID_NOT_MATCH:          "私教id不匹配",
 	COACH_SCORE_INFO_FAIL:       "获取私教评价信息失败",
+	COACH_ALREADY_EVALUATE:      "已评价",
 
 	APPOINTMENT_INVALID_INFO:    "预约信息错误",
 	APPOINTMENT_QUERY_NODE_FAIL: "查询时间节点配置错误",
@@ -373,6 +387,10 @@ var MsgFlags = map[int]string{
 	APPOINTMENT_RECORD_ORDER_FAIL: "记录预约订单号失败",
 
 	VENUE_NOT_EXISTS:            "场馆不存在",
+	VENUE_PRODUCT_NOT_EXIST:     "商品不存在",
+	VENUE_VIP_INFO_FAIL:         "获取场馆会员信息失败",
+	VENUE_ADD_VIP_FAIL:          "添加会员失败",
+	VENUE_UPDATE_VIP_FAIL:       "更新会员信息失败",
 
 	ORDER_ADD_FAIL:              "添加订单失败",
 	ORDER_PRODUCT_ADD_FAIL:      "添加商品订单失败",
@@ -380,6 +398,14 @@ var MsgFlags = map[int]string{
 	ORDER_STATUS_FAIL:           "订单状态错误",
 	ORDER_UPDATE_FAIL:           "更新订单信息失败",
 	ORDER_ALREADY_DEL:           "订单已删除",
+	ORDER_REFUND_FAIL:           "退款失败",
+	ORDER_NOT_ALLOW_REFUND:      "订单不允许退款",
+	ORDER_DELETE_FAIL:           "订单删除失败",
+	ORDER_COUPON_CODE_FAIL:      "获取券码失败",
+	ORDER_CANCEL_FAIL:           "订单取消失败",
+	ORDER_NOT_ALLOW_CANCEL:      "订单不允许取消",
+	ORDER_USER_NOT_MATCH:        "用户不配对",
+	ORDER_PROCESS_FAIL:          "订单处理失败",
 
 	COURSE_NOT_EXISTS:           "课程不存在",
 	COURSE_TYPE_FAIL:            "课程类型错误",

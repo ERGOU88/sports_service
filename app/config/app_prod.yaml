@@ -38,6 +38,8 @@ amqpDsn: amqp://admin:admin@127.0.0.1:5672
 staticDomain: http://fpv-web.youzu.com
 ## 微信支付 回调地址
 wechatNotifyUrl: https://fpv-app-api.bluetrans.cn/api/v1/pay/wechat/notify
+## 微信退款回调地址
+wechatRefundNotify: https://fpv-app-api.bluetrans.cn/api/v1/pay/wechat/refund
 ## 支付宝 回调地址
 alipayNotifyUrl: https://fpv-app-api.bluetrans.cn/api/v1/pay/alipay/notify
 # 苹果
