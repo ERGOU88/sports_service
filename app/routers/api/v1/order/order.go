@@ -55,3 +55,34 @@ func OrderRefund(c *gin.Context) {
 	code := svc.OrderRefund(param)
 	reply.Response(http.StatusOK, code)
 }
+
+// 删除订单
+func OrderDelete(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &morder.OrderDelete{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("order_trace: invalid param, param:%+v, err:%s", param, err)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	userId, _ := c.Get(consts.USER_ID)
+	svc := corder.New(c)
+	param.UserId = userId.(string)
+	code := svc.DeleteOrder(param)
+	reply.Response(http.StatusOK, code)
+}
+
+// 查看券码[次卡/预约场馆]
+func OrderCouponCode(c *gin.Context) {
+	reply := errdef.New(c)
+	orderId := c.Query("order_id")
+	userId, _ := c.Get(consts.USER_ID)
+	svc := corder.New(c)
+	code, resp := svc.GetCouponCodeInfo(userId.(string), orderId)
+	if code == errdef.SUCCESS {
+		reply.Data["detail"] = resp
+	}
+
+	reply.Response(http.StatusOK, code)
+}

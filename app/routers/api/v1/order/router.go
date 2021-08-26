@@ -18,6 +18,10 @@ func Router(engine *gin.Engine) {
 		order.GET("/detail", OrderDetail)
 		// 订单退款
 		order.POST("/refund", OrderRefund)
+		// 删除订单
+		order.POST("/delete", OrderDelete)
+        // 查看券码
+		order.GET("/coupon/code", OrderCouponCode)
 	}
 }
 

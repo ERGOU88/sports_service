@@ -7,6 +7,7 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/consts"
+	"sports_service/server/global/rdskey"
 	"sports_service/server/models"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/mcoach"
@@ -203,16 +204,16 @@ func (svc *OrderModule) GetOrderList(userId, status string, page, size int) (int
 	switch status {
 	case "-1":
 		// 查看全部 0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 已过期
-		condition = fmt.Sprintf("order_type=1001 AND status >= 0 AND user_id=%s", userId)
+		condition = fmt.Sprintf("order_type=1001 AND is_delete=0 AND status >= 0 AND user_id=%s", userId)
 	case "0":
 		// 0 待支付
-		condition = fmt.Sprintf("order_type=1001 AND status = 0 AND user_id=%s", userId)
+		condition = fmt.Sprintf("order_type=1001 AND is_delete=0 AND status = 0 AND user_id=%s", userId)
 	case "1":
 		// 1 可使用
-		condition = fmt.Sprintf("order_type=1001 AND status = 2 AND user_id=%s", userId)
+		condition = fmt.Sprintf("order_type=1001 AND is_delete=0  AND status = 2 AND user_id=%s", userId)
 	case "2":
 		// 2 退款/售后 包含[3 已完成 4 退款中 5 已退款 6 已过期]
-		condition = fmt.Sprintf("order_type=1001 AND status >= 3 AND user_id=%s", userId)
+		condition = fmt.Sprintf("order_type=1001 AND is_delete=0 AND status >= 3 AND user_id=%s", userId)
 	default:
 		log.Log.Errorf("order_trace: unsupported query status, status:%d", status)
 		return errdef.ERROR, nil
@@ -253,7 +254,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 		switch order.OrderType {
 		// 预约场馆、私教、大课
 		case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
-			info.Count = len(extra.TimeNodeInfo)
+			//info.Count = len(extra.TimeNodeInfo)
 			if order.ProductType == consts.ORDER_TYPE_APPOINTMENT_COACH && order.Status == consts.PAY_TYPE_PAID {
 				// 查询是否评价
 				ok, err := svc.coach.HasEvaluateByUserId(svc.order.Order.UserId, svc.order.Order.PayOrderId)
@@ -438,6 +439,45 @@ func (svc *OrderModule) OrderRefund(param *morder.OrderRefund) int {
 	return errdef.SUCCESS
 }
 
+// 删除订单
+func (svc *OrderModule) DeleteOrder(param *morder.OrderDelete) int {
+	user := svc.user.FindUserByUserid(param.UserId)
+	if user == nil {
+		log.Log.Errorf("order_trace: user not exists, userId:%s", param.UserId)
+		return errdef.USER_NOT_EXISTS
+	}
+
+	ok, err := svc.order.GetOrder(param.OrderId)
+	if !ok || err != nil {
+		log.Log.Errorf("order_trace: order not exists, orderId:%s", param.OrderId)
+		return errdef.ORDER_NOT_EXISTS
+	}
+
+	if svc.order.Order.UserId != user.UserId {
+		log.Log.Errorf("order_trace: user not match, userId:%s, curUser:%s", svc.order.Order.UserId, user.UserId)
+		return errdef.ORDER_DELETE_FAIL
+	}
+
+	// 退款中 / 已完成的订单 / 已过期的订单 不可删除
+	if svc.order.Order.Status == consts.PAY_TYPE_PAID ||
+		svc.order.Order.Status == consts.PAY_TYPE_REFUND_WAIT ||
+		svc.order.Order.Status == consts.PAY_TYPE_EXPIRE {
+		log.Log.Errorf("order_trace: order can't delete, orderId:%s", svc.order.Order.PayOrderId)
+		return errdef.ORDER_DELETE_FAIL
+	}
+
+	svc.order.Order.IsDelete = 1
+	svc.order.Order.UpdateAt = int(time.Now().Unix())
+	cols := "is_delete, update_at"
+	affected, err := svc.order.UpdateOrderInfo(cols)
+	if affected != 1 || err != nil {
+		log.Log.Errorf("order_trace: update order info fail, err:%s,affected:%d", err, affected)
+		return errdef.ORDER_DELETE_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
 // 交易退款 todo:计算手续费
 func (svc *OrderModule) TradeRefund() (string, error) {
 	var body string
@@ -560,4 +600,80 @@ func (svc *OrderModule) CanRefund(status, orderType, payTime int, orderId, extra
 
 
 	return true
+}
+
+// 获取券码信息
+func (svc *OrderModule) GetCouponCodeInfo(userId, orderId string) (int, *morder.CouponCodeInfo) {
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
+		log.Log.Errorf("order_trace: user not exists, userId:%s", userId)
+		return errdef.USER_NOT_EXISTS, nil
+	}
+
+	ok, err := svc.order.GetOrder(orderId)
+	if !ok || err != nil {
+		log.Log.Errorf("order_trace: order not exists, orderId:%s", orderId)
+		return errdef.ORDER_COUPON_CODE_FAIL, nil
+	}
+
+	if svc.order.Order.UserId != user.UserId {
+		log.Log.Errorf("order_trace: user not match, userId:%s, curUser:%s", svc.order.Order.UserId, user.UserId)
+		return errdef.ORDER_COUPON_CODE_FAIL, nil
+	}
+
+	// 只有支付成功之后才可查看券码
+	if svc.order.Order.Status < consts.PAY_TYPE_PAID {
+		log.Log.Errorf("order_trace: invalid order status, status:%d", svc.order.Order.Status)
+		return errdef.ORDER_COUPON_CODE_FAIL, nil
+	}
+
+	extra := &mappointment.OrderResp{}
+	if err := util.JsonFast.UnmarshalFromString(svc.order.Order.Extra, extra); err != nil {
+		log.Log.Errorf("order_trace: unmarshal extra fail, orderId:%s, err:%s", orderId, err)
+		return errdef.ORDER_COUPON_CODE_FAIL, nil
+	}
+
+	resp := &morder.CouponCodeInfo{}
+	resp.VenueName = extra.VenueName
+	resp.Subject = svc.order.Order.Subject
+	resp.Code = svc.order.Order.WriteOffCode
+	resp.Count = extra.Count
+	resp.TotalAmount = svc.order.Order.Amount
+	resp.QrCodeInfo = util.GenSecret(util.MIX_MODE, 16)
+	cstSh, _ := time.LoadLocation("Asia/Shanghai")
+
+	// 只有次卡/预约场馆可以查看券码
+	switch svc.order.Order.ProductType {
+	case consts.ORDER_TYPE_APPOINTMENT_VENUE:
+		// 到期时间 展示最近时间
+		var minTm int64
+		for _, val := range extra.TimeNodeInfo {
+			if minTm < val.StartTm {
+				minTm = val.StartTm
+			}
+		}
+
+		resp.ExpireTm = time.Unix(minTm + int64(extra.ExpireDuration), 0).In(cstSh).Format(consts.FORMAT_DATE)
+
+	case consts.ORDER_TYPE_EXPERIENCE_CARD:
+
+		resp.ExpireTm = time.Unix(int64(svc.order.Order.PayTime + extra.ExpireDuration), 0).In(cstSh).Format(consts.FORMAT_DATE)
+
+	default:
+		log.Log.Errorf("order_trace: unsupported product type, type:%d", svc.order.Order.ProductType)
+		return errdef.ORDER_COUPON_CODE_FAIL, nil
+	}
+
+	if err = svc.SaveQrCodeInfo(resp.QrCodeInfo, orderId); err != nil {
+		log.Log.Errorf("order_trace: save qrcode info fail, err:%s", err)
+		return errdef.ORDER_COUPON_CODE_FAIL, nil
+	}
+
+	return errdef.SUCCESS, resp
+}
+
+// 保存二维码数据
+func (svc *OrderModule) SaveQrCodeInfo(secret, orderId string) error {
+	rds := dao.NewRedisDao()
+	return rds.SETEX(fmt.Sprintf(rdskey.QRCODE_INFO, secret), rdskey.KEY_EXPIRE_MIN * 2, orderId)
 }

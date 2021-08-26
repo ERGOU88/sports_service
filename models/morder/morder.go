@@ -34,6 +34,23 @@ type OrderRefund struct {
 	UserId     string  `json:"user_id"`
 }
 
+// 券码信息
+type CouponCodeInfo struct {
+	Code        string `json:"code"`
+	VenueName   string `json:"name"`
+	Subject     string `json:"subject"`
+	TotalAmount int    `json:"total_amount"`
+	Count       int    `json:"count"`
+	ExpireTm    string `json:"expire_tm"`
+	QrCodeInfo  string `json:"qr_code_info"`
+}
+
+// 删除订单
+type OrderDelete struct {
+	OrderId  string  `binding:"required" json:"order_id"`       // 订单id
+	UserId   string  `json:"user_id"`
+}
+
 type OrderModel struct {
 	Engine         *xorm.Session
 	Order          *models.VenuePayOrders

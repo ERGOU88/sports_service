@@ -32,7 +32,7 @@ func HttpDo(uri, method, serviceName string, query []byte, timeout int64, header
 
 	req.Header = header
 	req.Header.Set("User-Agent", "youzu-go-notify")
-	req.Header.Set("Service-Name", serviceName)
+	req.Header.Set("Service-VenueName", serviceName)
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, 0, err

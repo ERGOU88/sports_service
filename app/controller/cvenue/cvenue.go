@@ -178,6 +178,12 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 		return errdef.ERROR, nil
 	}
 
+	ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(param.VenueId))
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: venue not found, venueId:%s", param.VenueId)
+		return errdef.VENUE_NOT_EXISTS, nil
+	}
+
 	user := svc.user.FindUserByUserid(param.UserId)
 	if user == nil {
 		log.Log.Errorf("venue_trace: user not found, userId:%s", param.UserId)
@@ -185,7 +191,7 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 		return errdef.USER_NOT_EXISTS, nil
 	}
 
-	ok, err := svc.venue.GetVenueProductById(fmt.Sprint(param.ProductId))
+	ok, err = svc.venue.GetVenueProductById(fmt.Sprint(param.ProductId))
 	if !ok || err != nil {
 		log.Log.Errorf("venue_trace: product not found, productId:%s", param.ProductId)
 		svc.engine.Rollback()
@@ -204,17 +210,18 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 
 	cstSh, _ := time.LoadLocation("Asia/Shanghai")
 	extra := &mappointment.OrderResp{
-		OrderId: orderId,
-		CreateAt: time.Unix(int64(now), 0).In(cstSh).Format(consts.FORMAT_TM),
-		Count: param.Count,
-		Id: param.ProductId,
-		MobileNum: util.HideMobileNum(fmt.Sprint(svc.user.User.MobileNum)),
-		Name: svc.venue.Product.ProductName,
-		PayDuration: consts.PAYMENT_DURATION,
-		TotalAmount: svc.order.OrderProduct.Amount,
-		ExpireTm: svc.venue.Product.ExpireDuration,
-		VenueId: param.VenueId,
-		OrderType: svc.venue.Product.ProductType,
+		OrderId:        orderId,
+		CreateAt:       time.Unix(int64(now), 0).In(cstSh).Format(consts.FORMAT_TM),
+		Count:          param.Count,
+		Id:             param.ProductId,
+		MobileNum:      util.HideMobileNum(fmt.Sprint(svc.user.User.MobileNum)),
+		Name:           svc.venue.Product.ProductName,
+		PayDuration:    consts.PAYMENT_DURATION,
+		TotalAmount:    svc.order.OrderProduct.Amount,
+		ExpireDuration: svc.venue.Product.ExpireDuration,
+		VenueId:        param.VenueId,
+		OrderType:      svc.venue.Product.ProductType,
+		VenueName:      svc.venue.Venue.VenueName,
 	}
 
 	// 添加订单

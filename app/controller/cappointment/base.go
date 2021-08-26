@@ -594,6 +594,8 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 		// 数量 * 售价
 		svc.Extra.TotalAmount += item.Count * svc.appointment.AppointmentInfo.CurAmount
 		svc.Extra.TotalDiscount += item.Count * svc.appointment.AppointmentInfo.DiscountAmount
+		// 购买总数量
+		svc.Extra.Count += item.Count
 		svc.orderMp[item.Id] = svc.SetOrderProductInfo(orderId, now, item.Count, relatedId)
 		svc.recordMp[item.Id] = svc.SetAppointmentRecordInfo(userId, date, orderId, now, item.Count, item.SeatInfos, relatedId)
 
