@@ -203,6 +203,8 @@ const (
 	ORDER_NOT_ALLOW_REFUND       = 18008
 	ORDER_DELETE_FAIL            = 18009
 	ORDER_COUPON_CODE_FAIL       = 18010
+	ORDER_CANCEL_FAIL            = 18011
+	ORDER_NOT_ALLOW_CANCEL       = 18012
 
 	// 大课相关错误 19001-20000
 	COURSE_NOT_EXISTS            = 19001
@@ -398,6 +400,8 @@ var MsgFlags = map[int]string{
 	ORDER_NOT_ALLOW_REFUND:      "订单不允许退款",
 	ORDER_DELETE_FAIL:           "订单删除失败",
 	ORDER_COUPON_CODE_FAIL:      "获取券码失败",
+	ORDER_CANCEL_FAIL:           "订单取消失败",
+	ORDER_NOT_ALLOW_CANCEL:      "订单不允许取消",
 
 	COURSE_NOT_EXISTS:           "课程不存在",
 	COURSE_TYPE_FAIL:            "课程类型错误",

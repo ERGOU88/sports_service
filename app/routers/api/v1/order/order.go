@@ -43,7 +43,7 @@ func OrderDetail(c *gin.Context) {
 // 订单退款
 func OrderRefund(c *gin.Context) {
 	reply := errdef.New(c)
-	param := &morder.OrderRefund{}
+	param := &morder.ChangeOrder{}
 	if err := c.BindJSON(param); err != nil {
 		log.Log.Errorf("order_trace: invalid param, param:%+v, err:%s", param, err)
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
@@ -59,7 +59,7 @@ func OrderRefund(c *gin.Context) {
 // 删除订单
 func OrderDelete(c *gin.Context) {
 	reply := errdef.New(c)
-	param := &morder.OrderDelete{}
+	param := &morder.ChangeOrder{}
 	if err := c.BindJSON(param); err != nil {
 		log.Log.Errorf("order_trace: invalid param, param:%+v, err:%s", param, err)
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
@@ -85,4 +85,15 @@ func OrderCouponCode(c *gin.Context) {
 	}
 
 	reply.Response(http.StatusOK, code)
+}
+
+// 取消订单
+func OrderCancel(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &morder.ChangeOrder{}
+	userId, _ := c.Get(consts.USER_ID)
+	param.UserId = userId.(string)
+	svc := corder.New(c)
+	svc.OrderCancel(param)
+
 }

@@ -21,6 +21,7 @@ type OrderInfo struct {
 	OrderStatus        int32       `json:"order_status"`        // 订单状态 0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 退款失败
 	Title              string      `json:"title"`               // 标题
 	Amount             string      `json:"amount"`              // 金额
+	TotalAmount        int         `json:"total_amount"`        // 总金额
 	Duration           int64       `json:"duration"`            // 剩余支付时长
 	UserId             string      `json:"user_id"`
 	OrderId            string      `json:"order_id"`            // 订单id
@@ -28,8 +29,8 @@ type OrderInfo struct {
 	HasEvaluate        bool        `json:"has_evaluate"`        // 是否评价
 }
 
-// 订单退款
-type OrderRefund struct {
+// 订单退款/删除订单/取消订单
+type ChangeOrder struct {
 	OrderId    string  `binding:"required" json:"order_id"`     // 订单id
 	UserId     string  `json:"user_id"`
 }
@@ -43,12 +44,6 @@ type CouponCodeInfo struct {
 	Count       int    `json:"count"`
 	ExpireTm    string `json:"expire_tm"`
 	QrCodeInfo  string `json:"qr_code_info"`
-}
-
-// 删除订单
-type OrderDelete struct {
-	OrderId  string  `binding:"required" json:"order_id"`       // 订单id
-	UserId   string  `json:"user_id"`
 }
 
 type OrderModel struct {

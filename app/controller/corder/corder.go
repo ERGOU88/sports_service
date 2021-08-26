@@ -244,6 +244,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 		info.OrderId = order.PayOrderId
 		info.UserId = order.UserId
 		info.Amount = fmt.Sprintf("%.2f", float64(order.Amount)/100)
+		info.TotalAmount = order.Amount
 		info.Title = order.Subject
 		extra := &mappointment.OrderResp{}
 		if err := util.JsonFast.UnmarshalFromString(order.Extra, extra); err != nil {
@@ -390,7 +391,7 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 }
 
 // 订单退款流程
-func (svc *OrderModule) OrderRefund(param *morder.OrderRefund) int {
+func (svc *OrderModule) OrderRefund(param *morder.ChangeOrder) int {
 	if err := svc.engine.Begin(); err != nil {
 		return errdef.ERROR
 	}
@@ -442,7 +443,7 @@ func (svc *OrderModule) OrderRefund(param *morder.OrderRefund) int {
 }
 
 // 删除订单
-func (svc *OrderModule) DeleteOrder(param *morder.OrderDelete) int {
+func (svc *OrderModule) DeleteOrder(param *morder.ChangeOrder) int {
 	user := svc.user.FindUserByUserid(param.UserId)
 	if user == nil {
 		log.Log.Errorf("order_trace: user not exists, userId:%s", param.UserId)
@@ -678,4 +679,34 @@ func (svc *OrderModule) GetCouponCodeInfo(userId, orderId string) (int, *morder.
 func (svc *OrderModule) SaveQrCodeInfo(secret, orderId string) error {
 	rds := dao.NewRedisDao()
 	return rds.SETEX(fmt.Sprintf(rdskey.QRCODE_INFO, secret), rdskey.KEY_EXPIRE_MIN * 2, orderId)
+}
+
+// 订单取消
+func (svc *OrderModule) OrderCancel(param *morder.ChangeOrder) int {
+	user := svc.user.FindUserByUserid(param.UserId)
+	if user == nil {
+		log.Log.Errorf("order_trace: user not exists, userId:%s", param.UserId)
+		return errdef.USER_NOT_EXISTS
+	}
+
+	ok, err := svc.order.GetOrder(param.OrderId)
+	if !ok || err != nil {
+		log.Log.Errorf("order_trace: order not exists, orderId:%s", param.OrderId)
+		return errdef.ORDER_NOT_EXISTS
+	}
+
+	if svc.order.Order.UserId != user.UserId {
+		log.Log.Errorf("order_trace: user not match, userId:%s, curUser:%s", svc.order.Order.UserId, user.UserId)
+		return errdef.ORDER_CANCEL_FAIL
+	}
+
+	// 只有待支付状态订单可以取消
+	if svc.order.Order.Status != consts.PAY_TYPE_WAIT {
+		log.Log.Errorf("order_trace: order not allow cancel, orderId:%s, status:%d", svc.order.Order.PayOrderId, svc.order.Order.Status)
+		return errdef.ORDER_NOT_ALLOW_CANCEL
+	}
+
+
+
+	return errdef.SUCCESS
 }
