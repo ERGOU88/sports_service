@@ -250,6 +250,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 			log.Log.Errorf("order_trace: unmarshal extra fail, err:%s, orderId:%s", err, order.PayOrderId)
 			continue
 		}
+		info.Count = extra.Count
 
 		switch order.OrderType {
 		// 预约场馆、私教、大课
@@ -264,13 +265,14 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 
 				info.HasEvaluate = ok
 			}
+
+
 		case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_YEAR_CARD:
 			ok, err := svc.order.GetOrderProductsById(order.PayOrderId)
 			if !ok || err != nil {
 				continue
 			}
 
-			info.Count = svc.order.OrderProduct.Count
 		}
 
 		res[index] = info
