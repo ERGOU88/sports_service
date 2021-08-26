@@ -37,7 +37,7 @@ type OrderRefund struct {
 // 券码信息
 type CouponCodeInfo struct {
 	Code        string `json:"code"`
-	VenueName   string `json:"name"`
+	VenueName   string `json:"venue_name"`
 	Subject     string `json:"subject"`
 	TotalAmount int    `json:"total_amount"`
 	Count       int    `json:"count"`
