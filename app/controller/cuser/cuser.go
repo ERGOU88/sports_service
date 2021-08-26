@@ -14,6 +14,7 @@ import (
   "sports_service/server/models/mlike"
 	"sports_service/server/models/mnotify"
 	"sports_service/server/models/muser"
+	"sports_service/server/models/mvenue"
 	"sports_service/server/models/mvideo"
 	"sports_service/server/models/sms"
 	"sports_service/server/tools/tencentCloud"
@@ -36,11 +37,15 @@ type UserModule struct {
 	video       *mvideo.VideoModel
 	sms         *sms.SmsModel
 	configure   *mconfigure.ConfigModel
+	venue       *mvenue.VenueModel
 }
 
 func New(c *gin.Context) UserModule {
-  socket := dao.AppEngine.NewSession()
+    socket := dao.AppEngine.NewSession()
 	defer socket.Close()
+
+    venueSocket := dao.VenueEngine.NewSession()
+    defer venueSocket.Close()
 	return UserModule{
 		context: c,
 		user: muser.NewUserModel(socket),
@@ -52,6 +57,7 @@ func New(c *gin.Context) UserModule {
 		video: mvideo.NewVideoModel(socket),
 		sms: sms.NewSmsModel(),
 		configure: mconfigure.NewConfigModel(socket),
+		venue: mvenue.NewVenueModel(venueSocket),
 		engine: socket,
 	}
 }
@@ -347,5 +353,52 @@ func (svc *UserModule) GetStrLen(r []rune) int {
 	return length
 }
 
+// 获取卡包信息
+func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
+		log.Log.Errorf("user_trace: user not found, userId:%s", userId)
+		return errdef.USER_NOT_EXISTS, nil
+	}
 
+	ok, err := svc.venue.GetVenueInfoById("1")
+	if !ok || err != nil {
+		log.Log.Error("user_trace: get venue info fail, venueId:", 1)
+		return errdef.VENUE_NOT_EXISTS, nil
+	}
 
+	// 暂时只有一个场馆
+	ok, err = svc.venue.GetVenueVipInfo(userId, 1)
+	if err != nil {
+		log.Log.Errorf("user_trace: get venue vip info fail, userId:%s, err:%s", userId, err)
+		return errdef.VENUE_VIP_INFO_FAIL, nil
+	}
+
+	kabaw := &muser.UserKabawInfo{}
+	// 默认非会员
+	kabaw.StartTm = 0
+	kabaw.EndTm = 0
+	kabaw.QrCodeInfo = util.GenSecret(util.MIX_MODE, 20)
+	kabaw.RemainDuration = 0
+	kabaw.Tips = "对准闸机扫描口 高度5cm刷码入场"
+	kabaw.VenueName = svc.venue.Venue.VenueName
+	kabaw.IsVip = false
+	// 存在会员信息
+	if ok {
+		// 表示已注册为会员
+		if svc.venue.Vip.StartTm > 0 {
+			kabaw.IsVip = true
+			kabaw.VipName = fmt.Sprintf("%s%s", svc.venue.Venue.VenueName, "会员")
+			kabaw.StartTm = svc.venue.Vip.StartTm
+			kabaw.EndTm = svc.venue.Vip.EndTm
+			kabaw.RemainDuration = svc.venue.Vip.Duration
+			// 查看会员是否过期 已过期
+			if svc.venue.Vip.EndTm < time.Now().Unix() {
+				// 会员已过期
+				kabaw.HasExpire = true
+			}
+		}
+	}
+
+	return errdef.SUCCESS, kabaw
+}
