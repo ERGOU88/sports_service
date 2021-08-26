@@ -416,7 +416,7 @@ func (svc *OrderModule) OrderRefund(param *morder.ChangeOrder) int {
 	if svc.order.Order.UserId != user.UserId {
 		log.Log.Errorf("order_trace: user not match, userId:%s, curUser:%s", svc.order.Order.UserId, user.UserId)
 		svc.engine.Rollback()
-		return errdef.ORDER_REFUND_FAIL
+		return errdef.ORDER_USER_NOT_MATCH
 	}
 
 	// 是否可退款
@@ -424,7 +424,7 @@ func (svc *OrderModule) OrderRefund(param *morder.ChangeOrder) int {
 		svc.order.Order.PayOrderId, svc.order.Order.Extra); !can {
 		log.Log.Errorf("order_trace: user can't refund, orderId:%s", svc.order.Order.PayOrderId)
 		svc.engine.Rollback()
-		return errdef.ORDER_REFUND_FAIL
+		return errdef.ORDER_NOT_ALLOW_REFUND
 	}
 
 	// 可退款
@@ -437,7 +437,7 @@ func (svc *OrderModule) OrderRefund(param *morder.ChangeOrder) int {
 	if err := svc.OrderProcess(svc.order.Order.PayOrderId, "", svc.order.Order.Transaction,
 		int64(svc.order.Order.PayTime), consts.APPLY_REFUND); err != nil {
 		svc.engine.Rollback()
-		return errdef.ORDER_REFUND_FAIL
+		return errdef.ORDER_PROCESS_FAIL
 	}
 
 	svc.engine.Commit()

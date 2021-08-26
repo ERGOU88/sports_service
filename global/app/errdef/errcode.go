@@ -205,6 +205,8 @@ const (
 	ORDER_COUPON_CODE_FAIL       = 18010
 	ORDER_CANCEL_FAIL            = 18011
 	ORDER_NOT_ALLOW_CANCEL       = 18012
+	ORDER_USER_NOT_MATCH         = 18013
+	ORDER_PROCESS_FAIL           = 18014
 
 	// 大课相关错误 19001-20000
 	COURSE_NOT_EXISTS            = 19001
@@ -402,6 +404,8 @@ var MsgFlags = map[int]string{
 	ORDER_COUPON_CODE_FAIL:      "获取券码失败",
 	ORDER_CANCEL_FAIL:           "订单取消失败",
 	ORDER_NOT_ALLOW_CANCEL:      "订单不允许取消",
+	ORDER_USER_NOT_MATCH:        "用户不配对",
+	ORDER_PROCESS_FAIL:          "订单处理失败",
 
 	COURSE_NOT_EXISTS:           "课程不存在",
 	COURSE_TYPE_FAIL:            "课程类型错误",

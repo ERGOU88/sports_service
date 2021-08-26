@@ -36,6 +36,8 @@ func Router(engine *gin.Engine) {
 		user.POST("/bind/deviceToken", sign.CheckSign(), token.TokenAuth(), BindDeviceToken)
 		// 版本更新（数据库控制）
 		user.GET("/version/up", sign.CheckSign(), VersionUp)
+		// 用户卡包
+		user.GET("/kabaw", sign.CheckSign(), token.TokenAuth(), UserKabaw)
 	}
 
 }

@@ -446,3 +446,9 @@ func VersionUp(c *gin.Context) {
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 	return
 }
+
+// 用户卡包
+func UserKabaw(c *gin.Context) {
+	reply := errdef.New(c)
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
