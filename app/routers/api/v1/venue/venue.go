@@ -6,6 +6,8 @@ import (
 	"sports_service/server/app/controller/cvenue"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
+	"sports_service/server/models/mvenue"
 	"strconv"
 )
 
@@ -23,5 +25,28 @@ func VenueInfo(c *gin.Context) {
 	code, venue, products := svc.GetHomePageInfo(int64(venueId))
 	reply.Data["venue"] = venue
 	reply.Data["products"] = products
+	reply.Response(http.StatusOK, code)
+}
+
+// 购买次卡/月卡/年卡
+func PurchaseVipCard(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mvenue.PurchaseVipCardParam{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("venue_trace: invalid param, err:%s", err)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
+	userId, _ := c.Get(consts.USER_ID)
+	svc := cvenue.New(c)
+	channel, _ := c.Get(consts.CHANNEL)
+	param.UserId = userId.(string)
+	param.ChannelId = channel.(int)
+	code, rsp := svc.PurchaseVipCard(param)
+	if code == errdef.SUCCESS {
+		reply.Data["info"] = rsp
+	}
+
 	reply.Response(http.StatusOK, code)
 }

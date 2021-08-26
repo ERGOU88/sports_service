@@ -392,6 +392,8 @@ func (svc *base) AddOrderProducts() error {
 
 // 添加订单
 func (svc *base) AddOrder(orderId, userId, subject string, now, productType int) error {
+	cstSh, _ := time.LoadLocation("Asia/Shanghai")
+	svc.Extra.CreateAt = time.Unix(int64(now), 0).In(cstSh).Format(consts.FORMAT_TM)
 	extra, _ := util.JsonFast.MarshalToString(svc.Extra)
 	svc.order.Order.Extra = extra
 	svc.order.Order.PayOrderId = orderId
@@ -403,6 +405,7 @@ func (svc *base) AddOrder(orderId, userId, subject string, now, productType int)
 	svc.order.Order.ChannelId = svc.Extra.Channel
 	svc.order.Order.Subject = subject
 	svc.order.Order.ProductType = productType
+	svc.order.Order.WriteOffCode = svc.Extra.WriteOffCode
 	affected, err := svc.order.AddOrder()
 	if err != nil {
 		return err
@@ -591,6 +594,8 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 		// 数量 * 售价
 		svc.Extra.TotalAmount += item.Count * svc.appointment.AppointmentInfo.CurAmount
 		svc.Extra.TotalDiscount += item.Count * svc.appointment.AppointmentInfo.DiscountAmount
+		// 购买总数量
+		svc.Extra.Count += item.Count
 		svc.orderMp[item.Id] = svc.SetOrderProductInfo(orderId, now, item.Count, relatedId)
 		svc.recordMp[item.Id] = svc.SetAppointmentRecordInfo(userId, date, orderId, now, item.Count, item.SeatInfos, relatedId)
 
@@ -702,5 +707,5 @@ func (svc *base) GetOrderType(appointmentType int) (int, error) {
 		return consts.ORDER_TYPE_APPOINTMENT_COURSE, nil
 	}
 
-	return 0, errors.New("invalid appointmentType")
+	return -1, errors.New("invalid appointmentType")
 }

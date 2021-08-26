@@ -7,7 +7,7 @@
 #
 # Host: 192.168.5.12 (MySQL 5.7.34)
 # Database: venue
-# Generation Time: 2021-08-24 06:07:24 +0000
+# Generation Time: 2021-08-21 06:28:22 +0000
 # ************************************************************
 
 
@@ -19,26 +19,6 @@ SET NAMES utf8mb4;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
-
-# Dump of table venue_administrator
-# ------------------------------------------------------------
-
-CREATE TABLE `venue_administrator` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` varchar(255) DEFAULT '',
-  `job_number` varchar(255) DEFAULT '' COMMENT '工号',
-  `mobile` int(11) unsigned DEFAULT '0' COMMENT '手机号',
-  `name` varchar(255) DEFAULT '' COMMENT '用户名称',
-  `username` varchar(255) NOT NULL DEFAULT '' COMMENT '账号',
-  `password` varchar(255) NOT NULL DEFAULT '' COMMENT '密码',
-  `status` tinyint(1) unsigned DEFAULT '0' COMMENT '状态',
-  `roles` varchar(255) DEFAULT NULL COMMENT '角色',
-  `create_at` int(11) unsigned DEFAULT '0' COMMENT '创建时间',
-  `update_at` int(11) unsigned DEFAULT '0' COMMENT '更新时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='管理员表';
-
 
 
 # Dump of table venue_appointment_info
@@ -65,6 +45,33 @@ CREATE TABLE `venue_appointment_info` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='场馆/私教/课程 预约配置信息表';
 
+LOCK TABLES `venue_appointment_info` WRITE;
+/*!40000 ALTER TABLE `venue_appointment_info` DISABLE KEYS */;
+
+INSERT INTO `venue_appointment_info` (`id`, `time_node`, `duration`, `real_amount`, `cur_amount`, `discount_rate`, `discount_amount`, `status`, `quota_num`, `related_id`, `recommend_type`, `appointment_type`, `week_num`, `sortorder`, `create_at`, `update_at`, `coach_id`)
+VALUES
+	(1,'9:00-10:00',3600,1000,500,50,500,0,5,1,1,0,5,0,0,0,0),
+	(16,'10:00-11:00',3600,1000,500,50,500,0,5,1,1,0,5,0,0,0,0),
+	(17,'11:00-12:00',3600,1400,700,50,500,0,5,1,1,0,5,0,0,0,0),
+	(18,'12:00-13:00',3600,1200,600,50,500,0,5,1,1,0,5,0,0,0,0),
+	(19,'13:00-14:00',3600,1200,600,50,500,0,5,1,1,0,5,0,0,0,0),
+	(20,'14:00-15:00',3600,1200,600,50,500,0,5,1,1,0,5,0,0,0,0),
+	(21,'15:00-16:00',3600,1200,600,50,500,0,5,1,1,0,5,0,0,0,0),
+	(22,'16:00-17:00',3600,1200,600,50,500,0,5,1,1,0,5,0,0,0,0),
+	(23,'17:00-18:00',3600,1200,600,50,500,0,5,1,1,0,5,0,0,0,0),
+	(24,'17:00-18:00',3600,1200,600,50,500,0,5,2,1,1,5,0,0,0,0),
+	(25,'18:00-19:00',3600,1200,600,50,500,0,5,2,1,1,5,0,0,0,0),
+	(26,'17:00-18:00',3600,1200,600,50,500,0,11,1,1,2,5,0,0,0,3),
+	(27,'18:00-19:00',3600,2500,2000,80,500,0,10,1,1,2,5,0,0,0,4),
+	(28,'17:00-18:00',3600,1200,600,50,500,0,10,3,1,1,5,0,0,0,0),
+	(29,'18:00-19:00',3600,1200,600,50,500,0,10,3,1,1,5,0,0,0,0),
+	(30,'18:00-19:00',3600,1200,600,50,500,0,11,1,1,2,5,0,0,0,3),
+	(31,'17:00-18:00',3600,1200,600,50,500,0,11,1,1,2,5,0,0,0,4),
+	(32,'16:00-17:00',3600,1200,600,50,500,0,5,1,1,0,6,0,0,0,0),
+	(33,'17:00-18:00',3600,1200,600,50,500,0,5,1,1,0,6,0,0,0,0);
+
+/*!40000 ALTER TABLE `venue_appointment_info` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table venue_appointment_record
@@ -81,7 +88,7 @@ CREATE TABLE `venue_appointment_record` (
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `purchased_num` int(10) NOT NULL COMMENT '购买的数量',
-  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '-1 软删除 0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 退款失败 ',
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0 待支付 1 订单超时/未支付 2 已支付 3 已完成 4 已取消  5 退款中 6 已退款 7 退款中 8 软删除',
   `seat_info` varchar(1000) NOT NULL DEFAULT '0' COMMENT '预约的座位信息 ',
   `deduction_tm` bigint(20) NOT NULL DEFAULT '0' COMMENT '抵扣会员时长',
   PRIMARY KEY (`id`),
@@ -137,6 +144,19 @@ CREATE TABLE `venue_coach_detail` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='私教表';
 
+LOCK TABLES `venue_coach_detail` WRITE;
+/*!40000 ALTER TABLE `venue_coach_detail` DISABLE KEYS */;
+
+INSERT INTO `venue_coach_detail` (`id`, `title`, `name`, `address`, `designation`, `describe`, `areas_of_expertise`, `cover`, `avatar`, `price`, `event_price`, `event_start_time`, `event_end_time`, `sortorder`, `is_recommend`, `is_top`, `create_at`, `update_at`, `status`, `coach_type`, `course_id`)
+VALUES
+	(1,'鉴黄大师[1对1教学]','1对1教学 [燕过拔毛]','王者峡谷','国服第一鉴黄师','专业 专注 专一','擅长拍黄片','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png',10008,0,0,0,1,1,0,0,0,0,1,0),
+	(2,'鉴黄大师[大课]','叶秋2[大课老师]','王者峡谷','国服第一鉴黄师','专业 专注 专一','擅长拍黄片','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png',10008,0,0,0,1,1,0,0,0,0,2,1),
+	(3,'鉴黄大师2[大课]','叶秋3[大课老师]','王者峡谷','国服第一鉴黄师','专业 专注 专一','擅长拍黄片','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png',10008,0,0,0,1,1,0,0,0,0,2,1),
+	(4,'鉴黄大师3[大课]','叶秋4[大课老师]','王者峡谷','国服第一鉴黄师','专业 专注 专一','擅长拍黄片','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png',10008,0,0,0,1,1,0,0,0,0,2,1),
+	(5,'鉴黄大师[1对1教学]','叶秋叫兽[1对1]','王者峡谷','国服第一鉴黄师','专业 专注 专一','擅长拍黄片','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png',10008,0,0,0,1,1,0,0,0,0,1,0);
+
+/*!40000 ALTER TABLE `venue_coach_detail` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table venue_coach_label_config
@@ -151,6 +171,16 @@ CREATE TABLE `venue_coach_label_config` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='私教标签配置';
 
+LOCK TABLES `venue_coach_label_config` WRITE;
+/*!40000 ALTER TABLE `venue_coach_label_config` DISABLE KEYS */;
+
+INSERT INTO `venue_coach_label_config` (`id`, `label_name`, `status`, `create_at`, `update_at`)
+VALUES
+	(1,'可可爱爱',0,0,0),
+	(2,'没有脑袋',0,0,0);
+
+/*!40000 ALTER TABLE `venue_coach_label_config` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table venue_coach_score
@@ -201,6 +231,18 @@ CREATE TABLE `venue_course_detail` (
   KEY `coach_id` (`coach_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='私教课程详情表';
 
+LOCK TABLES `venue_course_detail` WRITE;
+/*!40000 ALTER TABLE `venue_course_detail` DISABLE KEYS */;
+
+INSERT INTO `venue_course_detail` (`id`, `coach_id`, `class_period`, `title`, `describe`, `price`, `event_price`, `event_start_time`, `event_end_time`, `promotion_pic`, `icon`, `sortorder`, `is_recommend`, `is_top`, `create_at`, `update_at`, `status`, `course_type`, `period_num`, `name`)
+VALUES
+	(1,0,7200,'鉴黄系列课程','带你成为一名合格的鉴黄师',0,0,0,0,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png',1,0,0,0,0,0,2,0,'鉴黄课程'),
+	(2,1,3600,'鉴黄私教课程1','私人1对1教兽鉴黄本领基础篇',0,0,0,0,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png',1,0,0,0,0,0,1,0,'鉴黄课程'),
+	(3,1,3600,'鉴黄私教课程2','私人1对1教兽鉴黄本领进阶篇',0,0,0,0,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png',1,0,0,0,0,0,1,0,'鉴黄课程'),
+	(4,0,7200,'鉴黄系列课程2','带你成为一名合格的鉴黄师',0,0,0,0,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png',1,0,0,0,0,0,2,0,'鉴黄课程');
+
+/*!40000 ALTER TABLE `venue_course_detail` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table venue_info
@@ -224,6 +266,15 @@ CREATE TABLE `venue_info` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='场馆信息表';
 
+LOCK TABLES `venue_info` WRITE;
+/*!40000 ALTER TABLE `venue_info` DISABLE KEYS */;
+
+INSERT INTO `venue_info` (`id`, `venue_name`, `address`, `describe`, `telephone`, `venue_images`, `business_hours`, `services`, `longitude`, `latitude`, `status`, `create_at`, `update_at`, `service_status`)
+VALUES
+	(1,'X-FLY闵行店','上海市闵行区吴中路','爱fly','021-8888888','[\"https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png\",\"https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2d2166e9117a326823b3f38bc225f0088cd3659c115e1d34e3d467f5cc740442.png\",\"https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/1627963949391701.png\",\"https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png\"]','9:00-19:00','停车 茶饮  休息室','121.448815','31.187451',0,0,0,0);
+
+/*!40000 ALTER TABLE `venue_info` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table venue_order_product_info
@@ -233,7 +284,7 @@ CREATE TABLE `venue_order_product_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `pay_order_id` varchar(150) NOT NULL COMMENT '订单号',
   `product_id` bigint(20) NOT NULL COMMENT '商品id',
-  `product_type` int(8) NOT NULL COMMENT '1001 场馆预约 2001 购买月卡 2002 购买季卡 2003 购买年卡 2004 体验券 3001 私教（教练）订单 3002 课程订单 4001 充值订单',
+  `order_type` int(8) NOT NULL COMMENT '1001 场馆预约 2001 购买月卡 2002 购买季卡 2003 购买年卡 2004 体验券 3001 私教（教练）订单 3002 课程订单 4001 充值订单',
   `count` int(11) NOT NULL COMMENT '购买数量',
   `real_amount` int(11) NOT NULL COMMENT '真实价格（单位：分）',
   `cur_amount` int(11) NOT NULL COMMENT '当前价格 (包含真实价格、 折扣价格（单位：分）',
@@ -244,7 +295,7 @@ CREATE TABLE `venue_order_product_info` (
   `duration` int(11) NOT NULL DEFAULT '0' COMMENT '购买相关服务时长',
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
-  `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '-1 软删除 0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 退款失败 ',
+  `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '0 待支付 1 订单超时/未支付 2 已支付 3 已完成 4 已取消  5 退款中 6 已退款 7 退款中 8 软删除',
   `related_id` bigint(20) NOT NULL DEFAULT '1' COMMENT '场馆id/私教课id/大课老师id',
   `deduction_tm` bigint(20) NOT NULL DEFAULT '0' COMMENT '抵扣会员时长',
   `deduction_amount` bigint(20) NOT NULL DEFAULT '0' COMMENT '抵扣的价格',
@@ -279,11 +330,10 @@ CREATE TABLE `venue_pay_orders` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `user_id` varchar(60) NOT NULL COMMENT '用户id',
   `amount` int(11) NOT NULL COMMENT '商品总价（分）',
-  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '-1 软删除 0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 退款失败 ',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0 待支付 1 订单超时/未支付 2 已支付 3 已完成 4 已取消  5 退款中 6 已退款 7 退款失败 8 软删除',
   `extra` varchar(1000) NOT NULL DEFAULT '' COMMENT '记录订单相关扩展数据',
   `transaction` varchar(200) NOT NULL DEFAULT '' COMMENT '第三方订单号',
   `pay_type` tinyint(1) NOT NULL COMMENT '1 支付宝 2 微信 3 钱包 4 苹果内购',
-  `product_type` int(8) NOT NULL COMMENT '1001 场馆预约 2001 购买月卡 2002 购买季卡 2003 购买年卡 2004 体验券 3001 私教（教练）订单 3002 课程订单 4001 充值订单',
   `error_code` varchar(20) NOT NULL DEFAULT '' COMMENT '错误码',
   `pay_order_id` varchar(150) NOT NULL COMMENT '订单号',
   `order_type` int(8) NOT NULL COMMENT '下单方式：1001 APP下单，1002 前台购买，1003第三方推广渠道购买',
@@ -293,7 +343,6 @@ CREATE TABLE `venue_pay_orders` (
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `subject` varchar(150) NOT NULL DEFAULT '' COMMENT '商品名称',
-  `write_off_code` varchar(200) NOT NULL DEFAULT '' COMMENT '核销码',
   PRIMARY KEY (`id`),
   KEY `pay_order_id` (`pay_order_id`),
   KEY `user_id` (`user_id`,`status`,`order_type`)
@@ -313,6 +362,19 @@ CREATE TABLE `venue_personal_label_conf` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户个人标签配置表';
 
+LOCK TABLES `venue_personal_label_conf` WRITE;
+/*!40000 ALTER TABLE `venue_personal_label_conf` DISABLE KEYS */;
+
+INSERT INTO `venue_personal_label_conf` (`id`, `label_name`, `status`, `create_at`, `update_at`)
+VALUES
+	(1,'可可爱爱',0,0,0),
+	(2,'没有脑袋',0,0,0),
+	(3,'帅就完事儿了',0,0,0),
+	(4,'风流地毯',0,0,0),
+	(5,'高高手',0,0,0);
+
+/*!40000 ALTER TABLE `venue_personal_label_conf` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table venue_product_info
@@ -339,6 +401,19 @@ CREATE TABLE `venue_product_info` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='场馆商品配置表';
 
+LOCK TABLES `venue_product_info` WRITE;
+/*!40000 ALTER TABLE `venue_product_info` DISABLE KEYS */;
+
+INSERT INTO `venue_product_info` (`id`, `product_name`, `product_type`, `real_amount`, `cur_amount`, `discount_rate`, `discount_amount`, `venue_id`, `create_at`, `update_at`, `effective_duration`, `expire_duration`, `icon`, `image`, `describe`, `title`, `instance_type`)
+VALUES
+	(1,'x-fly月卡',2001,10000,9800,98,200,1,0,0,0,0,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','','月卡',1),
+	(2,'x-fly年卡',2003,50000,39800,0,0,1,0,0,0,0,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','','年卡',1),
+	(3,'x-fly季卡',2002,20000,19800,0,0,1,0,0,0,0,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','','季卡',1),
+	(4,'x-fly体验卡',2004,20000,19800,0,0,1,0,0,3600,0,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','','体验卡',1),
+	(5,'x-fly储值卡',4001,20000,19800,0,0,1,0,0,3600,0,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','','体验卡',1);
+
+/*!40000 ALTER TABLE `venue_product_info` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table venue_recharge_config
@@ -371,6 +446,17 @@ CREATE TABLE `venue_recommend_conf` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='场馆推荐角标配置表';
 
+LOCK TABLES `venue_recommend_conf` WRITE;
+/*!40000 ALTER TABLE `venue_recommend_conf` DISABLE KEYS */;
+
+INSERT INTO `venue_recommend_conf` (`id`, `name`, `status`, `create_at`, `update_at`)
+VALUES
+	(1,'低价推荐',0,0,0),
+	(2,'高手推荐',0,0,0),
+	(3,'美女推荐',0,0,0);
+
+/*!40000 ALTER TABLE `venue_recommend_conf` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table venue_user_evaluate_record
@@ -393,6 +479,18 @@ CREATE TABLE `venue_user_evaluate_record` (
   KEY `coach_id` (`coach_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户对私教评价记录';
 
+LOCK TABLES `venue_user_evaluate_record` WRITE;
+/*!40000 ALTER TABLE `venue_user_evaluate_record` DISABLE KEYS */;
+
+INSERT INTO `venue_user_evaluate_record` (`id`, `user_id`, `coach_id`, `star`, `order_id`, `order_type`, `content`, `label_info`, `status`, `create_at`, `update_at`)
+VALUES
+	(1,'10240220',1,3,'',1,'经老师悉心教导 ～ 已成为优秀的鉴黄师','[\"id\":1,\"name\":\"可可爱爱\"]',0,0,0),
+	(2,'10240220',1,1,'',1,'经老师悉心教导 ～ 已成为优秀的鉴黄师','[\"id\":1,\"name\":\"可可爱爱\"]',0,0,0),
+	(3,'10240220',1,4,'',1,'经老师悉心教导 ～ 已成为优秀的鉴黄师','[\"id\":1,\"name\":\"可可爱爱\"]',0,0,0),
+	(4,'10240220',1,5,'',1,'经老师悉心教导 ～ 已成为优秀的鉴黄师','[\"id\":1,\"name\":\"可可爱爱\"]',0,0,0);
+
+/*!40000 ALTER TABLE `venue_user_evaluate_record` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table venue_user_label

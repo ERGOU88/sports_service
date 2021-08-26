@@ -1,15 +1,17 @@
 package job
 
 import (
+	"errors"
+	"github.com/go-xorm/xorm"
+	"sports_service/server/models/mappointment"
+
 	//"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/global/rdskey"
-	"sports_service/server/models/mappointment"
 	"sports_service/server/models/morder"
 	"time"
-	"errors"
 )
 
 // 检测订单支付是否超时（30秒）
@@ -91,7 +93,7 @@ func orderTimeOut(orderId string) error {
 
 	now := int(time.Now().Unix())
 	// 如果当前时间 < 超时处理时间 不处理
-	if now < orderModel.Order.CreateAt + consts.APPOINTMENT_PAYMENT_DURATION {
+	if now < orderModel.Order.CreateAt + consts.PAYMENT_DURATION {
 		log.Log.Errorf("orderJob_trace: now < processTm, orderId:%s, now:%d, createAt:%d", orderId,
 			now, orderModel.Order.CreateAt)
 		session.Rollback()
@@ -117,39 +119,14 @@ func orderTimeOut(orderId string) error {
 		return errors.New("update order product status fail")
 	}
 
-	// 获取订单对应的预约流水
-	amodel := mappointment.NewAppointmentModel(session)
-	list, err := amodel.GetAppointmentRecordByOrderId(orderId, consts.PAY_TYPE_WAIT)
-	if err != nil {
-		log.Log.Errorf("orderJob_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
-		session.Rollback()
-		return err
-	}
-
-	for _, record := range list {
-		// 归还对应节点的冻结库存
-		affected, err = amodel.RevertStockNum(record.TimeNode, record.Date,  record.PurchasedNum * -1, now,
-			record.AppointmentType, int(record.RelatedId))
-		if affected != 1 || err != nil {
-			log.Log.Errorf("orderJob_trace: update stock info fail, orderId:%s, err:%s, affected:%d, id:%d", orderId, err, affected, record.Id)
+	switch orderModel.Order.ProductType {
+	// 预约类型的订单 需修改预约相关数据
+	case consts.ORDER_TYPE_APPOINTMENT_VENUE,consts.ORDER_TYPE_APPOINTMENT_COACH,consts.ORDER_TYPE_APPOINTMENT_COURSE:
+		if err := updateAppointmentInfo(session, orderId, now); err != nil {
+			log.Log.Errorf("orderJob_trace: update appointment info fail, err:%s", err)
 			session.Rollback()
-			return errors.New("update stock info fail")
+			return err
 		}
-	}
-
-	// 更新订单对应的预约流水状态
-	if err := amodel.UpdateAppointmentRecordStatus(orderId, now, consts.PAY_TYPE_UNPAID, consts.PAY_TYPE_WAIT); err != nil {
-		log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
-		session.Rollback()
-		return err
-	}
-
-	// 更新标签状态[废弃]
-	amodel.Labels.Status = 1
-	if _, err = amodel.UpdateLabelsStatus(orderId, 0); err != nil {
-		log.Log.Errorf("orderJob_trace: update labels status fail, orderId:%s, err:%s", orderId, err)
-		session.Rollback()
-		return errors.New("update label status fail")
 	}
 
 	if _, err := DelOrderId(orderId); err != nil {
@@ -161,6 +138,43 @@ func orderTimeOut(orderId string) error {
 	log.Log.Errorf("orderJob_trace: del redis orderId success, orderId:%s", orderId)
 
 	session.Commit()
+
+	return nil
+}
+
+// 更新预约信息
+func updateAppointmentInfo(session *xorm.Session, orderId string, now int) error {
+	// 获取订单对应的预约流水
+	amodel := mappointment.NewAppointmentModel(session)
+	list, err := amodel.GetAppointmentRecordByOrderId(orderId, consts.PAY_TYPE_WAIT)
+	if err != nil {
+		log.Log.Errorf("orderJob_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
+		session.Rollback()
+		return err
+	}
+
+	for _, record := range list {
+		// 归还对应节点的冻结库存
+		affected, err := amodel.RevertStockNum(record.TimeNode, record.Date,  record.PurchasedNum * -1, now,
+			record.AppointmentType, int(record.RelatedId))
+		if affected != 1 || err != nil {
+			log.Log.Errorf("orderJob_trace: update stock info fail, orderId:%s, err:%s, affected:%d, id:%d", orderId, err, affected, record.Id)
+			return errors.New("update stock info fail")
+		}
+	}
+
+	// 更新订单对应的预约流水状态
+	if err := amodel.UpdateAppointmentRecordStatus(orderId, now, consts.PAY_TYPE_UNPAID, consts.PAY_TYPE_WAIT); err != nil {
+		log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
+		return err
+	}
+
+	// 更新标签状态[废弃]
+	amodel.Labels.Status = 1
+	if _, err = amodel.UpdateLabelsStatus(orderId, 0); err != nil {
+		log.Log.Errorf("orderJob_trace: update labels status fail, orderId:%s, err:%s", orderId, err)
+		return errors.New("update label status fail")
+	}
 
 	return nil
 }

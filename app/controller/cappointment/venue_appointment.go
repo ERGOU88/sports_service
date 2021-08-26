@@ -121,6 +121,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 
 	svc.Extra.Id = params.RelatedId
 	svc.Extra.Name = svc.venue.Venue.VenueName
+	svc.Extra.VenueName = svc.venue.Venue.VenueName
 	svc.Extra.WeekCn = util.GetWeekCn(params.WeekNum)
 	svc.Extra.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
 	svc.Extra.TmCn = util.ResolveTime(svc.Extra.TotalTm)
@@ -151,6 +152,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 		return errdef.SUCCESS, svc.Extra
 	}
 
+	svc.Extra.WriteOffCode = fmt.Sprint(util.GetSnowId())
 	// 添加订单
 	if err := svc.AddOrder(orderId, user.UserId, "预约场馆", now, consts.ORDER_TYPE_APPOINTMENT_VENUE); err != nil {
 		log.Log.Errorf("venue_trace: add order fail, err:%s", err)
@@ -182,7 +184,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 	svc.engine.Commit()
 
 	svc.Extra.OrderId = orderId
-	svc.Extra.PayDuration = consts.APPOINTMENT_PAYMENT_DURATION
+	svc.Extra.PayDuration = consts.PAYMENT_DURATION
     // 超时
 	//redismq.PushOrderEventMsg(redismq.NewOrderEvent(user.UserId, svc.Extra.OrderId, int64(svc.order.Order.CreateAt) + svc.Extra.PayDuration,
 	//	consts.ORDER_EVENT_VENUE_TIME_OUT))
@@ -265,24 +267,27 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 		info.ReservedUsers = make([]*mappointment.SeatInfo, 0)
 		if len(records) > 0 {
 			for _, val := range records {
-				if val.Date == date && val.TimeNode == item.TimeNode {
-					seatInfo := make([]*mappointment.SeatInfo, 0)
-					if err := util.JsonFast.UnmarshalFromString(val.SeatInfo, &seatInfo); err == nil {
-						for _, v := range seatInfo {
-							user := svc.user.FindUserByUserid(val.UserId)
-							if user != nil {
-								v.NickName = user.NickName
-								v.Avatar = user.Avatar
-							}
+				if val.Date != date || val.TimeNode != item.TimeNode {
+					continue
+				}
 
-							continue
+				seatInfo := make([]*mappointment.SeatInfo, 0)
+				if err := util.JsonFast.UnmarshalFromString(val.SeatInfo, &seatInfo); err == nil {
+					for _, v := range seatInfo {
+						user := svc.user.FindUserByUserid(val.UserId)
+						if user != nil {
+							v.NickName = user.NickName
+							v.Avatar = user.Avatar
 						}
 
-						info.ReservedUsers = append(info.ReservedUsers, seatInfo...)
-					} else {
-						log.Log.Errorf("venue_trace: unmarshal seat info fail, err:%s", err)
+						continue
 					}
+
+					info.ReservedUsers = append(info.ReservedUsers, seatInfo...)
+				} else {
+					log.Log.Errorf("venue_trace: unmarshal seat info fail, err:%s", err)
 				}
+
 
 
 				//uinfo := &mappointment.SeatInfo{

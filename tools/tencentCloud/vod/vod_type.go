@@ -13,7 +13,7 @@ type SourceInfo struct {
 }
 
 type MediaBasicInfo struct {
-	Name string `json:"Name"`
+	Name string `json:"VenueName"`
 	Description string `json:"Description"`
 	CreateTime time.Time `json:"CreateTime"`
 	UpdateTime time.Time `json:"UpdateTime"`

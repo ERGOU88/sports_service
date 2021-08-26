@@ -133,6 +133,12 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 		return errdef.COURSE_ID_NOT_MATCH, nil
 	}
 
+	svc.Extra.CoachId = svc.coach.Coach.Id
+	svc.Extra.CoachName = svc.coach.Coach.Name
+	svc.Extra.Address = svc.coach.Coach.Address
+	svc.Extra.CourseId = svc.course.Course.Id
+	svc.Extra.CourseName = svc.course.Course.Name
+
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
 
@@ -193,7 +199,7 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 	svc.engine.Commit()
 
 	svc.Extra.OrderId = orderId
-	svc.Extra.PayDuration = consts.APPOINTMENT_PAYMENT_DURATION
+	svc.Extra.PayDuration = consts.PAYMENT_DURATION
 	// 超时
 	//redismq.PushOrderEventMsg(redismq.NewOrderEvent(user.UserId, svc.Extra.OrderId, int64(svc.order.Order.CreateAt) + svc.Extra.PayDuration,
 	//	consts.ORDER_EVENT_COURSE_TIME_OUT))

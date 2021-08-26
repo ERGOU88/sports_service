@@ -41,6 +41,7 @@ const (
 	ORDER_EXPIRE_INFO         = SUGAR + "order_expire_info"                        // 需过期的订单id集合
 
 	AUDIT_MODE                = SUGAR + "audit_mode"                               // [视频、帖子] 审核模式 1 人工 + AI 2 人工审核
+	QRCODE_INFO               = SUGAR + "qrcode_%s"                                // 保存二维码信息 存储订单号
 )
 
 // make redis key
