@@ -91,6 +91,11 @@ func OrderCouponCode(c *gin.Context) {
 func OrderCancel(c *gin.Context) {
 	reply := errdef.New(c)
 	param := &morder.ChangeOrder{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("order_trace: invalid param, err:%s, param:%+v", err, param)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
 	userId, _ := c.Get(consts.USER_ID)
 	param.UserId = userId.(string)
 	svc := corder.New(c)
