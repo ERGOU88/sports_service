@@ -264,7 +264,12 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 				info.HasEvaluate = ok
 			}
 		case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_YEAR_CARD:
-			info.Count = extra.Count
+			ok, err := svc.order.GetOrderProductsById(order.PayOrderId)
+			if !ok || err != nil {
+				continue
+			}
+
+			info.Count = svc.order.OrderProduct.Count
 		}
 
 		res[index] = info

@@ -213,6 +213,7 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 		TotalAmount: svc.order.OrderProduct.Amount,
 		ExpireTm: svc.venue.Product.ExpireDuration,
 		VenueId: param.VenueId,
+		OrderType: svc.venue.Product.ProductType,
 	}
 
 	// 添加订单
