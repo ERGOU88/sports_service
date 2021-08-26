@@ -392,7 +392,8 @@ func (svc *base) AddOrderProducts() error {
 
 // 添加订单
 func (svc *base) AddOrder(orderId, userId, subject string, now, productType int) error {
-	svc.Extra.CreateAt = time.Unix(int64(now), 0).Format(consts.FORMAT_TM)
+	cstSh, _ := time.LoadLocation("Asia/Shanghai")
+	svc.Extra.CreateAt = time.Unix(int64(now), 0).In(cstSh).Format(consts.FORMAT_TM)
 	extra, _ := util.JsonFast.MarshalToString(svc.Extra)
 	svc.order.Order.Extra = extra
 	svc.order.Order.PayOrderId = orderId

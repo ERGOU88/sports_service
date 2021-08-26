@@ -202,9 +202,10 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 		return errdef.ORDER_PRODUCT_ADD_FAIL, nil
 	}
 
+	cstSh, _ := time.LoadLocation("Asia/Shanghai")
 	extra := &mappointment.OrderResp{
 		OrderId: orderId,
-		CreateAt: time.Unix(int64(now), 0).Format(consts.FORMAT_TM),
+		CreateAt: time.Unix(int64(now), 0).In(cstSh).Format(consts.FORMAT_TM),
 		Count: param.Count,
 		Id: param.ProductId,
 		MobileNum: util.HideMobileNum(fmt.Sprint(svc.user.User.MobileNum)),
