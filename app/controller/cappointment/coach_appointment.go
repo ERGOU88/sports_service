@@ -59,6 +59,7 @@ func (svc *CoachAppointmentModule) Options(relatedId int64) (int, interface{}) {
 		info := &mappointment.Options{
 			Id: item.Id,
 			Name: item.Title,
+			Instructions: "预约须知",
 		}
 
 		res[index] = info

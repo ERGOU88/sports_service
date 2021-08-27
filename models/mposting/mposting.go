@@ -241,12 +241,25 @@ func (m *PostingModel) UpdatePostBrowseNum(postId int64, now, num int) error {
 }
 
 const (
+	UPDATE_POST_SHARE_NUM  = "UPDATE `posting_statistic` SET `share_num` = `share_num` + ?, " +
+		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `posting_id`=? AND `share_num` + ? >= 0 LIMIT 1"
+)
+// 更新帖子浏览数 及 帖子热度
+func (m *PostingModel) UpdatePostShareNum(postId int64, now, num int) error {
+	if _, err := m.Engine.Exec(UPDATE_POST_SHARE_NUM, num, num, now, postId, num); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+const (
 	UPDATE_POST_LIKE_NUM  = "UPDATE `posting_statistic` SET `fabulous_num` = `fabulous_num` + ?, " +
 		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `posting_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
 )
 // 更新帖子点赞数 及 帖子热度
-func (m *PostingModel) UpdatePostLikeNum(videoId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_POST_LIKE_NUM, num, num, now, videoId, num); err != nil {
+func (m *PostingModel) UpdatePostLikeNum(postId int64, now, num int) error {
+	if _, err := m.Engine.Exec(UPDATE_POST_LIKE_NUM, num, num, now, postId, num); err != nil {
 		return err
 	}
 

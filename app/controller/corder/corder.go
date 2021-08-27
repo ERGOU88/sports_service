@@ -88,7 +88,7 @@ func (svc *OrderModule) AliPayNotify(orderId, body, status, tradeNo string, payT
 	return nil
 }
 
-// 订单处理流程 1 支付成功 2 退款流程 [用户申请退款成功时执行] 3 退款申请 4 取消订单
+// 订单处理流程 1 支付成功 2 退款流程 [用户申请退款 第三方回调成功时执行] 3 退款申请 4 取消订单
 func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64, changeType int) error {
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("payNotify_trace: session begin fail, err:%s", err)
@@ -139,8 +139,14 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 	switch svc.order.Order.ProductType {
 	case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
 		// 更新订单对应的预约流水状态
-		if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, status, curStatus); err != nil {
-			log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
+		//if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, status, curStatus); err != nil {
+		//	log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
+		//	svc.engine.Rollback()
+		//	return err
+		//}
+
+		if err := svc.UpdateAppointmentInfo(orderId, now, status, curStatus); err != nil {
+			log.Log.Errorf("payNotify_trace: update appointment info fail, err:%s, orderId:%s", err, orderId)
 			svc.engine.Rollback()
 			return err
 		}
@@ -175,6 +181,42 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 	log.Log.Debug("payNotify_trace: 订单成功， orderId: %s", orderId)
 	return nil
 }
+
+// 更新预约信息
+func (svc *OrderModule) UpdateAppointmentInfo(orderId string, now, curStatus, status int) error {
+	// 获取订单对应的预约流水
+	list, err := svc.appointment.GetAppointmentRecordByOrderId(orderId, curStatus)
+	if err != nil {
+		log.Log.Errorf("order_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
+		return err
+	}
+
+	for _, record := range list {
+		// 归还对应节点的冻结库存
+		affected, err := svc.appointment.RevertStockNum(record.TimeNode, record.Date,  record.PurchasedNum * -1, now,
+			record.AppointmentType, int(record.RelatedId))
+		if affected != 1 || err != nil {
+			log.Log.Errorf("order_trace: update stock info fail, orderId:%s, err:%s, affected:%d, id:%d", orderId, err, affected, record.Id)
+			return errors.New("update stock info fail")
+		}
+	}
+
+	// 更新订单对应的预约流水状态
+	if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, status, curStatus); err != nil {
+		log.Log.Errorf("order_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
+		return err
+	}
+
+	// 更新标签状态[废弃]
+	svc.appointment.Labels.Status = 1
+	if _, err = svc.appointment.UpdateLabelsStatus(orderId, 0); err != nil {
+		log.Log.Errorf("order_trace: update labels status fail, orderId:%s, err:%s", orderId, err)
+		return errors.New("update label status fail")
+	}
+
+	return nil
+}
+
 
 func (svc *OrderModule) RecordNotifyInfo(now, notifyType int, orderId, body, tradeNo string) error {
 	svc.order.Notify.CreateAt = now
