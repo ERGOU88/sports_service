@@ -16,7 +16,6 @@ import (
 	"sports_service/server/tools/wechat"
 	"sports_service/server/util"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -73,21 +72,6 @@ func AliPayNotify(c *gin.Context) {
 	sign, _ = url.PathUnescape(sign)
 	log.Log.Debug("aliNotify_trace: msg:%s, sign:%v", msg, sign)
 
-	orderId := params.Get("out_trade_no")
-	svc := corder.New(c)
-	order, err := svc.GetOrder(orderId)
-	if order == nil || err != nil {
-		log.Log.Error("aliNotify_trace: order not found, orderId:%s, err:%s", orderId, err)
-		c.String(http.StatusBadRequest, "fail")
-		return
-	}
-
-	if order.Status != consts.PAY_TYPE_WAIT {
-		log.Log.Error("aliNotify_trace: order already pay, orderId:%s, err:%s", orderId, err)
-		c.String(http.StatusOK, "success")
-		return
-	}
-
 	cli := alipay.NewAliPay(true)
 	ok, err := cli.VerifyData(msg, "RSA2", sign)
 	if !ok || err != nil {
@@ -96,23 +80,8 @@ func AliPayNotify(c *gin.Context) {
 		return
 	}
 
-	amount, err := strconv.ParseFloat(strings.Trim(params.Get("total_amount"), " "), 64)
-	if err != nil {
-		log.Log.Errorf("aliNotify_trace: parse float fail, err:%s", err)
-		c.String(http.StatusBadRequest, "fail")
-		return
-	}
-
-	if int(amount * 100) != order.Amount {
-		log.Log.Error("aliNotify_trace: amount not match, orderAmount:%d, amount:%d", order.Amount, amount * 100)
-		c.String(http.StatusBadRequest, "fail")
-		return
-	}
-
-	status := strings.Trim(params.Get("trade_status"), " ")
-	payTime, _ := time.Parse("2006-01-02 15:04:05", params.Get("gmt_payment"))
-	tradeNo := params.Get("trade_no")
-	if err := svc.AliPayNotify(orderId, string(body), status, tradeNo, payTime.Unix(), consts.PAY_NOTIFY); err != nil {
+	svc := corder.New(c)
+	if code := svc.AliPayNotify(params, string(body)); code != errdef.SUCCESS {
 		c.String(http.StatusInternalServerError, "fail")
 		return
 	}
@@ -201,7 +170,7 @@ func WechatNotify(c *gin.Context) {
 	totalFee := bm["total_fee"].(string)
 	fee, err := strconv.Atoi(totalFee)
 	if err != nil {
-		log.Log.Error("wxNotify_trace: amount not match, orderId:%s, err:%s", orderId, err)
+		log.Log.Error("wxNotify_trace: amount fail, orderId:%s, err:%s", orderId, err)
 		c.String(http.StatusBadRequest, "fail")
 		return
 	}
@@ -213,7 +182,91 @@ func WechatNotify(c *gin.Context) {
 	}
 
 	payTime, _ := time.Parse("20060102150405", bm["time_end"].(string))
-	if err := svc.OrderProcess(orderId, string(body), bm["transaction_id"].(string), payTime.Unix(), consts.PAY_NOTIFY); err != nil {
+	if err := svc.WechatPayNotify(orderId, string(body), bm["transaction_id"].(string), payTime.Unix(), consts.PAY_NOTIFY); err != nil {
+		log.Log.Errorf("wxNotify_trace: order process fail, err:%s", err)
+		c.String(http.StatusInternalServerError, "fail")
+		return
+	}
+
+	c.String(http.StatusOK, "SUCCESS")
+}
+
+// 微信退款回调
+func WechatRefundNotify(c *gin.Context) {
+	bm, err := wxCli.ParseNotifyToBodyMap(c.Request)
+	if err != nil {
+		log.Log.Errorf("wxNotify_trace: parse notify to bodyMap fail, err:%s", err.Error())
+		c.String(http.StatusBadRequest, "fail")
+		return
+	}
+
+	cli := wechat.NewWechatPay(true)
+	ok, err := cli.VerifySign(bm)
+	if !ok || err != nil {
+		log.Log.Error("wxNotify_trace: sign not match, err:%s", err)
+		c.String(http.StatusBadRequest, "fail")
+		return
+	}
+
+	body, _ := util.JsonFast.Marshal(bm)
+	log.Log.Debug("wxNotify_trace: body:%s, bm:%+v", string(body), bm)
+	if hasExist := util.MapExistBySlice(bm, []string{"return_code", "refund_status", "out_trade_no", "total_fee",
+		"refund_fee", "transaction_id"}); !hasExist {
+		log.Log.Error("wxNotify_trace: map key not exists")
+		c.String(http.StatusBadRequest, "fail")
+		return
+	}
+
+	if bm["refund_status"].(string) != "SUCCESS" || bm["return_code"].(string) != "SUCCESS" {
+		log.Log.Errorf("wxNotify_trace: trade not success")
+		c.String(http.StatusBadRequest, "fail")
+		return
+	}
+
+	orderId := bm["out_trade_no"].(string)
+	svc := corder.New(c)
+	order, err := svc.GetOrder(orderId)
+	if order == nil || err != nil {
+		log.Log.Error("wxNotify_trace: order not found, orderId:%s, err:%s", orderId, err)
+		c.String(http.StatusBadRequest, "fail")
+		return
+	}
+
+	if order.Status != consts.PAY_TYPE_REFUND_WAIT {
+		log.Log.Error("wxNotify_trace: order status fail, orderId:%s, status:%d, err:%s", orderId, order.Status, err)
+		c.String(http.StatusOK, "SUCCESS")
+		return
+	}
+
+	totalFee := bm["total_fee"].(string)
+	amount, err := strconv.Atoi(totalFee)
+	if err != nil {
+		log.Log.Error("wxNotify_trace: amount not match, orderId:%s, err:%s", orderId, err)
+		c.String(http.StatusBadRequest, "fail")
+		return
+	}
+
+	if amount != order.Amount {
+		log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d", order.Amount, amount)
+		c.String(http.StatusBadRequest, "fail")
+		return
+	}
+
+	refundFee := bm["refund_fee"].(string)
+	refund, err := strconv.Atoi(refundFee)
+	if err != nil {
+		log.Log.Error("wxNotify_trace: refund amount fail, orderId:%s, err:%s", orderId, err)
+		c.String(http.StatusBadRequest, "fail")
+		return
+	}
+
+	if refund != order.RefundAmount {
+		log.Log.Errorf("wxNotify_trace: refund amount not match, orderId:%s", orderId)
+		c.String(http.StatusBadRequest, "fail")
+		return
+	}
+
+	if err := svc.WechatPayNotify(orderId, string(body), bm["transaction_id"].(string), int64(order.PayTime), consts.REFUND_NOTIFY); err != nil {
 		log.Log.Errorf("wxNotify_trace: order process fail, err:%s", err)
 		c.String(http.StatusInternalServerError, "fail")
 		return

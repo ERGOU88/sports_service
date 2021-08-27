@@ -1,28 +1,31 @@
 package corder
 
 import (
+	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	alipayCli "github.com/go-pay/gopay/alipay"
+	wxCli "github.com/go-pay/gopay/wechat"
 	"github.com/go-xorm/xorm"
+	"net/url"
 	"sports_service/server/app/config"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/global/rdskey"
 	"sports_service/server/models"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/mcoach"
 	"sports_service/server/models/morder"
-	"errors"
-	"sports_service/server/global/app/log"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
 	"sports_service/server/tools/alipay"
-	alipayCli "github.com/go-pay/gopay/alipay"
-	wxCli "github.com/go-pay/gopay/wechat"
 	"sports_service/server/tools/wechat"
 	"sports_service/server/util"
+	"strconv"
+	"strings"
 	"time"
-	"fmt"
 )
 
 type OrderModule struct {
@@ -66,35 +69,142 @@ func (svc *OrderModule) GetOrder(orderId string) (*models.VenuePayOrders, error)
 	return svc.order.Order, nil
 }
 
-// 订单处理流程
-func (svc *OrderModule) AliPayNotify(orderId, body, status, tradeNo string, payTm int64, notifyType int) error {
+// 支付宝通知 包含[支付成功、部分退款成功、全额退款成功]
+func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("payNotify_trace: session begin fail, err:%s", err)
+		return errdef.ERROR
+	}
+
+	orderId := params.Get("out_trade_no")
+	order, err := svc.GetOrder(orderId)
+	if order == nil || err != nil {
+		log.Log.Error("aliNotify_trace: order not found, orderId:%s, err:%s", orderId, err)
+		svc.engine.Rollback()
+		return errdef.ERROR
+	}
+
+	status := strings.Trim(params.Get("trade_status"), " ")
+	payTime, _ := time.Parse("2006-01-02 15:04:05", params.Get("gmt_payment"))
+	tradeNo := params.Get("trade_no")
+
 	switch status {
+	// 成功需区分 部分退款和支付成功
 	case consts.TradeSuccess:
-		if err := svc.OrderProcess(orderId, body, tradeNo, payTm, notifyType); err != nil {
-			return err
+		switch order.Status {
+		// 待支付状态
+		case consts.PAY_TYPE_WAIT:
+			amount, err := strconv.ParseFloat(strings.Trim(params.Get("total_amount"), " "), 64)
+			if err != nil {
+				log.Log.Errorf("aliNotify_trace: parse float fail, err:%s", err)
+				svc.engine.Rollback()
+				return errdef.ERROR
+			}
+
+			if int(amount * 100) != order.Amount {
+				log.Log.Error("aliNotify_trace: amount not match, orderAmount:%d, amount:%d", order.Amount, amount * 100)
+				svc.engine.Rollback()
+				return errdef.ERROR
+			}
+
+			if err := svc.OrderProcess(orderId, body, tradeNo, payTime.Unix(), consts.PAY_NOTIFY, order.RefundAmount); err != nil {
+				log.Log.Errorf("aliNotify_trace: order process fail, orderId:%s, err:%s", orderId, err)
+				svc.engine.Rollback()
+				return errdef.ERROR
+			}
+
+		// 退款中[部分退款]
+		case consts.PAY_TYPE_REFUND_WAIT:
+			refundFee, err := strconv.ParseFloat(strings.Trim(params.Get("refund_fee"), " "), 64)
+			if err != nil {
+				log.Log.Errorf("aliNotify_trace: parse float fail, err:%s", err)
+				svc.engine.Rollback()
+				return errdef.ERROR
+			}
+
+			if int(refundFee * 100) != order.RefundAmount {
+				log.Log.Errorf("aliNotify_trace: refundFee not match, refundFee:%d, order.RefundAmount:%d",
+					refundFee * 100, order.RefundAmount)
+				svc.engine.Rollback()
+				return errdef.ERROR
+			}
+
+			if err := svc.OrderProcess(order.PayOrderId, body, tradeNo, int64(order.PayTime), consts.REFUND_NOTIFY, order.RefundAmount); err != nil {
+				log.Log.Errorf("aliNotify_trace: order process fail, orderId:%s, err:%s", orderId, err)
+				svc.engine.Rollback()
+				return errdef.ERROR
+			}
+
+
+		default:
+			log.Log.Errorf("invalid order status, orderId:%s, status:%d", orderId, order.Status)
 		}
 
+
+	// 全额退款
 	case consts.TradeClosed:
 		log.Log.Debug("trade closed, order_id:%v", orderId)
+		refundFee, err := strconv.ParseFloat(strings.Trim(params.Get("refund_fee"), " "), 64)
+		if err != nil {
+			log.Log.Errorf("aliNotify_trace: parse float fail, err:%s", err)
+			svc.engine.Rollback()
+			return errdef.ERROR
+		}
+
+		if int(refundFee * 100) != order.RefundAmount {
+			log.Log.Errorf("aliNotify_trace: refundFee not match, refundFee:%d, order.RefundAmount:%d",
+				refundFee * 100, order.RefundAmount)
+			svc.engine.Rollback()
+			return errdef.ERROR
+		}
+
+		if err := svc.OrderProcess(order.PayOrderId, body, tradeNo, int64(order.PayTime), consts.REFUND_NOTIFY, order.RefundAmount); err != nil {
+			log.Log.Errorf("aliNotify_trace: order process fail, orderId:%s, err:%s", orderId, err)
+			svc.engine.Rollback()
+			return errdef.ERROR
+		}
 
 	case consts.WaitBuyerPay:
 		log.Log.Debug("wait buyer pay, order_id:%v", orderId)
+		return errdef.SUCCESS
 
 	case consts.TradeFinished:
 		log.Log.Debug("trade finished, order_id:%v", orderId)
+		return errdef.SUCCESS
 
 	}
+
+	svc.engine.Commit()
+
+	return errdef.SUCCESS
+}
+
+// 微信支付回调
+func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo string, payTm int64, changeType int) error {
+	if err := svc.engine.Begin(); err != nil {
+		return err
+	}
+
+	ok, err := svc.order.GetOrder(orderId)
+	if !ok || err != nil {
+		log.Log.Errorf("wxNotify_trace: order not exists, orderId:%s", orderId)
+		svc.engine.Rollback()
+		return errors.New("order not exists")
+	}
+
+	if err := svc.OrderProcess(orderId, body, tradeNo, payTm, changeType, svc.order.Order.RefundAmount); err != nil {
+		log.Log.Errorf("wxNotify_trace: order Process fail, orderId:%s, err:%s", orderId, err)
+		svc.engine.Rollback()
+		return err
+	}
+
+	svc.engine.Commit()
 
 	return nil
 }
 
 // 订单处理流程 1 支付成功 2 退款流程 [用户申请退款 第三方回调成功时执行] 3 退款申请 4 取消订单
-func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64, changeType int) error {
-	if err := svc.engine.Begin(); err != nil {
-		log.Log.Errorf("payNotify_trace: session begin fail, err:%s", err)
-		return err
-	}
-
+func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64, changeType, refundAmount int) error {
 	// tips: 不可直接更新状态 并发情况下会有问题
 	// 订单当前状态 及 需更新的状态
 	var curStatus, status int
@@ -103,6 +213,10 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		// 如果是支付成功回调 则订单当前状态应是 待支付 需更新状态为 已支付
 		curStatus = consts.PAY_TYPE_WAIT
 		status = consts.PAY_TYPE_PAID
+		svc.order.Order.IsCallback = 1
+	case consts.REFUND_NOTIFY:
+		curStatus = consts.PAY_TYPE_REFUND_WAIT
+		status = consts.PAY_TYPE_REFUND_SUCCESS
 		svc.order.Order.IsCallback = 1
 	case consts.APPLY_REFUND:
 		// 如果是申请退款 则订单当前状态 应是已付款 需更新状态为 退款中
@@ -119,11 +233,11 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 	svc.order.Order.PayTime = int(payTm)
 	svc.order.Order.Transaction = tradeNo
 	svc.order.Order.UpdateAt = now
+	svc.order.Order.RefundAmount = refundAmount
 	// 更新订单状态
 	affected, err := svc.order.UpdateOrderStatus(orderId, curStatus)
 	if affected != 1 || err != nil {
 		log.Log.Errorf("payNotify_trace: update order status fail, orderId:%s", orderId)
-		svc.engine.Rollback()
 		return errors.New("update order status fail")
 	}
 
@@ -132,7 +246,6 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 	// 更新订单商品流水状态
 	if _, err = svc.order.UpdateOrderProductStatus(orderId, curStatus); err != nil {
 		log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
-		svc.engine.Rollback()
 		return errors.New("update order product status fail")
 	}
 
@@ -147,7 +260,6 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 
 		if err := svc.UpdateAppointmentInfo(orderId, now, status, curStatus); err != nil {
 			log.Log.Errorf("payNotify_trace: update appointment info fail, err:%s, orderId:%s", err, orderId)
-			svc.engine.Rollback()
 			return err
 		}
 
@@ -156,7 +268,6 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 			svc.appointment.Labels.Status = 1
 			if _, err = svc.appointment.UpdateLabelsStatus(orderId, 0); err != nil {
 				log.Log.Errorf("order_trace: update labels status fail, orderId:%s, err:%s", orderId, err)
-				svc.engine.Rollback()
 				return errors.New("update label status fail")
 			}
 		}
@@ -165,7 +276,6 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		ok, err := svc.order.GetOrderProductsById(orderId)
 		if !ok || err != nil {
 			log.Log.Errorf("payNotify_trace: get order products by id fail, orderId:%s, err:%s", orderId, err)
-			svc.engine.Rollback()
 			return errors.New("get order product fail")
 		}
 
@@ -173,21 +283,18 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		if err := svc.UpdateVipInfo(svc.user.User.UserId, svc.order.OrderProduct.RelatedId, now, svc.order.OrderProduct.Count,
 			svc.order.OrderProduct.ExpireDuration, svc.order.OrderProduct.Duration, changeType); err != nil {
 			log.Log.Errorf("payNotify_trace: update vip info fail, orderId:%s, err:%s", orderId, err)
-			svc.engine.Rollback()
 			return err
 		}
 	}
 
-	if changeType != consts.APPLY_REFUND {
+	if changeType == consts.PAY_NOTIFY || changeType == consts.REFUND_NOTIFY {
 		// 记录回调信息
 		if err := svc.RecordNotifyInfo(now, changeType, orderId, body, tradeNo); err != nil {
 			log.Log.Errorf("payNotify_trace: record notify info fail, orderId:%s, err:%s", orderId, err)
-			svc.engine.Rollback()
 			return err
 		}
 	}
 
-	svc.engine.Commit()
 	log.Log.Debug("payNotify_trace: 订单成功， orderId: %s", orderId)
 	return nil
 }
@@ -485,8 +592,10 @@ func (svc *OrderModule) OrderRefund(param *morder.ChangeOrder) int {
 		return errdef.ORDER_REFUND_FAIL
 	}
 
+	// todo: 计算手续费
+
 	if err := svc.OrderProcess(svc.order.Order.PayOrderId, "", svc.order.Order.Transaction,
-		int64(svc.order.Order.PayTime), consts.APPLY_REFUND); err != nil {
+		int64(svc.order.Order.PayTime), consts.APPLY_REFUND, svc.order.Order.Amount); err != nil {
 		svc.engine.Rollback()
 		return errdef.ORDER_PROCESS_FAIL
 	}
@@ -739,34 +848,45 @@ func (svc *OrderModule) SaveQrCodeInfo(secret, orderId string, expireTm int64) e
 
 // 订单取消
 func (svc *OrderModule) OrderCancel(param *morder.ChangeOrder) int {
+	if err := svc.engine.Begin(); err != nil {
+		return errdef.ERROR
+	}
+
 	user := svc.user.FindUserByUserid(param.UserId)
 	if user == nil {
 		log.Log.Errorf("order_trace: user not exists, userId:%s", param.UserId)
+		svc.engine.Rollback()
 		return errdef.USER_NOT_EXISTS
 	}
 
 	ok, err := svc.order.GetOrder(param.OrderId)
 	if !ok || err != nil {
 		log.Log.Errorf("order_trace: order not exists, orderId:%s", param.OrderId)
+		svc.engine.Rollback()
 		return errdef.ORDER_NOT_EXISTS
 	}
 
 	if svc.order.Order.UserId != user.UserId {
 		log.Log.Errorf("order_trace: user not match, userId:%s, curUser:%s", svc.order.Order.UserId, user.UserId)
+		svc.engine.Rollback()
 		return errdef.ORDER_CANCEL_FAIL
 	}
 
 	// 只有待支付状态订单可以取消
 	if svc.order.Order.Status != consts.PAY_TYPE_WAIT {
 		log.Log.Errorf("order_trace: order not allow cancel, orderId:%s, status:%d", svc.order.Order.PayOrderId, svc.order.Order.Status)
+		svc.engine.Rollback()
 		return errdef.ORDER_NOT_ALLOW_CANCEL
 	}
 
     // 取消订单流程
-	if err := svc.OrderProcess(svc.order.Order.PayOrderId, "", svc.order.Order.Transaction, 0, consts.CANCEL_ORDER); err != nil {
+	if err := svc.OrderProcess(svc.order.Order.PayOrderId, "", svc.order.Order.Transaction, 0, consts.CANCEL_ORDER, svc.order.Order.RefundAmount); err != nil {
+		svc.engine.Rollback()
 		log.Log.Errorf("order_trace: order process fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
 		return errdef.ORDER_CANCEL_FAIL
 	}
+
+	svc.engine.Commit()
 
 	return errdef.SUCCESS
 }
