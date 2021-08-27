@@ -22,4 +22,5 @@ type VenuePayOrders struct {
 	RefundAmount   int    `json:"refund_amount" xorm:"not null default 0 comment('退款金额（分）') INT(11)"`
 	IsDelete       int    `json:"is_delete" xorm:"not null default 0 comment('是否删除0正常 1删除') TINYINT(2)"`
 	OriginalAmount int    `json:"original_amount" xorm:"not null comment('订单原始金额（分）') INT(11)"`
+	AdminId        int    `json:"admin_id" xorm:"default 0 comment('操作原') INT(11)"`
 }

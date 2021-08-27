@@ -2,9 +2,11 @@ package job
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
+	"net/http/httptest"
+	"sports_service/server/app/controller/corder"
 	"sports_service/server/models/mappointment"
-
 	//"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/log"
@@ -26,7 +28,18 @@ func CheckOrder() {
 			log.Log.Debugf("开始检测订单支付是否超时")
 			checkOrderTimeOut()
 			log.Log.Debugf("检测完毕")
+			log.Log.Debugf("开始检测订单是否过期")
+			checkOrderExpire()
+			log.Log.Debugf("检测完毕")
 		}
+	}
+}
+
+func checkOrderExpire() {
+	c, _ := gin.CreateTestContext(httptest.NewRecorder())
+	svc := corder.New(c)
+	if err := svc.CheckOrderExpire(); err != nil {
+		log.Log.Errorf("orderJob_trace: check order expire fail, err:%s", err)
 	}
 }
 
@@ -64,11 +77,7 @@ func DelOrderId(orderId string) (int, error) {
 // 订单超时
 func orderTimeOut(orderId string) error {
 	session := dao.VenueEngine.NewSession()
-	if err := session.Begin(); err != nil {
-		log.Log.Errorf("orderJob_trace: session begin err:%s", err)
-		return err
-	}
-
+	defer session.Close()
 	if err := session.Begin(); err != nil {
 		log.Log.Errorf("orderJob_trace: session begin err:%s, orderId:%s", err, orderId)
 		return err

@@ -377,14 +377,14 @@ var MsgFlags = map[int]string{
 	COACH_SCORE_INFO_FAIL:       "获取私教评价信息失败",
 	COACH_ALREADY_EVALUATE:      "已评价",
 
-	APPOINTMENT_INVALID_INFO:    "预约信息错误",
-	APPOINTMENT_QUERY_NODE_FAIL: "查询时间节点配置错误",
-	APPOINTMENT_INVALID_NODE_ID: "错误的时间节点id",
-	APPOINTMENT_PROCESS_FAIL:    "预约流程错误",
-	APPOINTMENT_VIP_DEDUCTION:   "VIP抵扣时长错误",
+	APPOINTMENT_INVALID_INFO:    "预约信息错误", // 场次信息有误,请重新选择～
+	APPOINTMENT_QUERY_NODE_FAIL: "查询时间节点配置错误",// 场次信息有误,请重新选择～
+	APPOINTMENT_INVALID_NODE_ID: "错误的时间节点id",   // 场次信息有误,请重新选择～
+	APPOINTMENT_PROCESS_FAIL:    "预约流程错误",       // 服务器开小差,请重试～ 需抛出code码
+	APPOINTMENT_VIP_DEDUCTION:   "VIP抵扣时长错误",    // 预约信息有错,请重试～
 	APPOINTMENT_NOT_ENOUGH_STOCK:"库存不足",
-	APPOINTMENT_ADD_RECORD_FAIL: "添加预约流水失败",
-	APPOINTMENT_RECORD_ORDER_FAIL: "记录预约订单号失败",
+	APPOINTMENT_ADD_RECORD_FAIL: "添加预约流水失败",    // 服务器开小差,请重试～
+	APPOINTMENT_RECORD_ORDER_FAIL: "记录预约订单号失败", // 服务器
 
 	VENUE_NOT_EXISTS:            "场馆不存在",
 	VENUE_PRODUCT_NOT_EXIST:     "商品不存在",

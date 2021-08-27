@@ -364,9 +364,16 @@ func (m *VideoModel) UpdateVideoBrowseNum(videoId int64, now, num int) error {
 	return nil
 }
 
+const (
+	UPDATE_VIDEO_SHARE_NUM  = "UPDATE `video_statistic` SET `share_num` = `share_num` + ?, `update_at`=? WHERE `video_id`=? AND `share_num` + ? >= 0 LIMIT 1"
+)
 // 更新视频分享数
-func (m *VideoModel) UpdateVideoShareNum() {
-	return
+func (m *VideoModel) UpdateVideoShareNum(videoId int64, now, num int) error {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_SHARE_NUM, num, now, videoId, num); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // 更新视频游币数
