@@ -258,7 +258,7 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		//	return err
 		//}
 
-		if err := svc.UpdateAppointmentInfo(orderId, now, status, curStatus); err != nil {
+		if err := svc.UpdateAppointmentInfo(orderId, now, curStatus, status); err != nil {
 			log.Log.Errorf("payNotify_trace: update appointment info fail, err:%s, orderId:%s", err, orderId)
 			return err
 		}
@@ -301,20 +301,23 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 
 // 更新预约信息
 func (svc *OrderModule) UpdateAppointmentInfo(orderId string, now, curStatus, status int) error {
-	// 获取订单对应的预约流水
-	list, err := svc.appointment.GetAppointmentRecordByOrderId(orderId, curStatus)
-	if err != nil {
-		log.Log.Errorf("order_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
-		return err
-	}
+	// 未支付/退款中
+	if status == consts.PAY_TYPE_UNPAID || status == consts.PAY_TYPE_REFUND_WAIT {
+		// 获取订单对应的预约流水
+		list, err := svc.appointment.GetAppointmentRecordByOrderId(orderId, curStatus)
+		if err != nil {
+			log.Log.Errorf("order_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
+			return err
+		}
 
-	for _, record := range list {
-		// 归还对应节点的冻结库存
-		affected, err := svc.appointment.RevertStockNum(record.TimeNode, record.Date,  record.PurchasedNum * -1, now,
-			record.AppointmentType, int(record.RelatedId))
-		if affected != 1 || err != nil {
-			log.Log.Errorf("order_trace: update stock info fail, orderId:%s, err:%s, affected:%d, id:%d", orderId, err, affected, record.Id)
-			return errors.New("update stock info fail")
+		for _, record := range list {
+			// 归还对应节点的冻结库存
+			affected, err := svc.appointment.RevertStockNum(record.TimeNode, record.Date, record.PurchasedNum*-1, now,
+				record.AppointmentType, int(record.RelatedId))
+			if affected != 1 || err != nil {
+				log.Log.Errorf("order_trace: update stock info fail, orderId:%s, err:%s, affected:%d, id:%d", orderId, err, affected, record.Id)
+				return errors.New("update stock info fail")
+			}
 		}
 	}
 
