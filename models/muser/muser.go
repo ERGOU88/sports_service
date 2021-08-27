@@ -133,6 +133,19 @@ type EditUserInfoParams struct {
 	Signature string `json:"signature" example:"emmmmmmmm"` // 个性签名
 }
 
+// 用户卡包信息
+type UserKabawInfo struct {
+	StartTm         int64  `json:"start_tm"`       // 会员开始时间
+	EndTm           int64  `json:"end_tm"`         // 会员结束时间
+	QrCodeInfo      string `json:"qr_code_info"`   // 二维码信息
+	VipName         string `json:"vip_name"`       // 会员名称
+	RemainDuration  int64  `json:"remain_duration"`// 剩余时长
+	Tips            string `json:"tips"`           // 提示
+	IsVip           bool   `json:"is_vip"`         // 是否会员
+	HasExpire       bool   `json:"has_expire"`     // 会员是否过期 true 过期
+	VenueName       string `json:"venue_name"`     // 场馆名称
+}
+
 // 用户反馈请求参数
 type FeedbackParam struct {
 	Phone    string `binding:"required" json:"phone" example:"手机号"`

@@ -14,7 +14,7 @@ type ShareModel struct {
 type ShareParams struct {
 	SharePlatform      int                `binding:"required" json:"share_platform"`        // 分享平台 1 微信 2 微博 3 qq 4 app内
 	ShareType          int                `binding:"required" json:"share_type"`            // 分享类型  1 分享视频 2 分享帖子
-	ComposeId          int                `binding:"required" json:"compose_id"`            // 视频/帖子id
+	ComposeId          int                `binding:"required" json:"compose_id"`            // 被分享的视频/帖子id
 	SectionId         int                 `json:"section_id"`                               // 主模块id
 	TopicIds          []string            `json:"topic_ids"`                                // 话题id （多个）
 	Title             string              `json:"title"`                                    // 标题

@@ -56,6 +56,42 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 	switch params.SharePlatform {
 	// 分享/转发 到微信、微博、qq todo: 记录即可
 	case consts.SHARE_PLATFORM_WECHAT,consts.SHARE_PLATFORM_WEIBO,consts.SHARE_PLATFORM_QQ:
+		switch params.ShareType {
+		case consts.SHARE_VIDEO:
+			video := svc.video.FindVideoById(fmt.Sprint(params.ComposeId))
+			if video == nil {
+				log.Log.Errorf("share_trace: video not found, videoId:%s", params.ComposeId)
+				svc.engine.Rollback()
+				return errdef.VIDEO_NOT_EXISTS
+			}
+
+			// 更新视频分享数量
+			if err := svc.video.UpdateVideoShareNum(video.VideoId, now, 1); err != nil {
+				log.Log.Errorf("share_trace: update video share num fail, err:%s", err)
+				svc.engine.Rollback()
+				return errdef.SHARE_DATA_FAIL
+			}
+
+		case consts.SHARE_POST:
+			post, err := svc.posting.GetPostById(fmt.Sprint(params.ComposeId))
+			if post == nil || err != nil {
+				log.Log.Errorf("share_trace: post not found, postId:%s", params.ComposeId)
+				svc.engine.Rollback()
+				return errdef.POST_NOT_EXISTS
+			}
+
+			if post.Status != 1 {
+				log.Log.Errorf("share_trace: post not pass, postId:%s", params.ComposeId)
+				svc.engine.Rollback()
+				return errdef.POST_NOT_EXISTS
+			}
+
+			if err := svc.posting.UpdatePostShareNum(post.Id, now, 1); err != nil {
+				log.Log.Errorf("share_trace: update post share num fail, err:%s", err)
+				svc.engine.Rollback()
+				return errdef.SHARE_DATA_FAIL
+			}
+		}
 
 	// 分享到社区 则需发布一条新帖子
 	case consts.SHARE_PLATFORM_COMMUNITY:
@@ -142,6 +178,12 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 			svc.posting.Posting.PostingType = consts.POST_TYPE_VIDEO
 			// 关联的视频id todo: 只有发布视频才有关联id
 			//svc.posting.Posting.VideoId = video.VideoId
+			// 更新视频分享数量
+			if err := svc.video.UpdateVideoShareNum(video.VideoId, now, 1); err != nil {
+				log.Log.Errorf("share_trace: update video share num fail, err:%s", err)
+				svc.engine.Rollback()
+				return errdef.SHARE_DATA_FAIL
+			}
 
 		// 分享帖子
 		case consts.SHARE_POST:
@@ -186,6 +228,12 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 			svc.posting.Posting.ContentType = consts.COMMUNITY_FORWARD_POST
 			// 产品需求： 分享的帖子 皆为文本
 			svc.posting.Posting.PostingType = consts.POST_TYPE_TEXT
+			// 更新原帖子分享数
+			if err := svc.posting.UpdatePostShareNum(int64(params.ComposeId), now, 1); err != nil {
+				log.Log.Errorf("share_trace: update post share num fail, err:%s", err)
+				svc.engine.Rollback()
+				return errdef.SHARE_DATA_FAIL
+			}
 
 			// 添加@
 			if len(params.AtInfo) > 0 {

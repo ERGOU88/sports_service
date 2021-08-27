@@ -450,5 +450,12 @@ func VersionUp(c *gin.Context) {
 // 用户卡包
 func UserKabaw(c *gin.Context) {
 	reply := errdef.New(c)
-	reply.Response(http.StatusOK, errdef.SUCCESS)
+	userId, _ := c.Get(consts.USER_ID)
+	svc := cuser.New(c)
+	code, kabaw := svc.GetKabawInfo(userId.(string))
+	if code == errdef.SUCCESS {
+		reply.Data["detail"] = kabaw
+	}
+
+	reply.Response(http.StatusOK, code)
 }
