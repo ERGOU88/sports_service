@@ -929,8 +929,9 @@ func (svc *OrderModule) CheckOrderExpire() error {
 		svc.order.Order = order
 		// 预约场馆/次卡 查看订单是否可退款 可退款表示未过期
 		can, err := svc.CanRefund(order.Status, order.OrderType, order.PayTime, order.PayOrderId, order.Extra)
-		if !can || err != nil {
-			// 未过期 或 出现错误 不处理
+		// 可以退款 表示未过期 或 出现错误 不处理
+		if can || err != nil {
+			log.Log.Errorf("order_trace: canRefund err:%s", err)
 			svc.engine.Rollback()
 			continue
 		}
