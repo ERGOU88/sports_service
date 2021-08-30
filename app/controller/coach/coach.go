@@ -216,7 +216,12 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 	}
 
 	ok, err = svc.coach.HasEvaluateByUserId(userId, svc.order.Order.PayOrderId)
-	if !ok || err != nil {
+	if err != nil {
+		log.Log.Errorf("coach_trace: get evaluate by userId fail, userId:%s, orderId:%s", userId, svc.order.Order.PayOrderId)
+		return errdef.COACH_PUB_EVALUATE_FAIL
+	}
+
+	if ok {
 		log.Log.Errorf("coach_trace: coach already evaluate, userId:%s, orderId:%s", userId, svc.order.Order.PayOrderId)
 		return errdef.COACH_ALREADY_EVALUATE
 	}

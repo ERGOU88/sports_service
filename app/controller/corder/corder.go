@@ -1047,7 +1047,7 @@ func (svc *OrderModule) CalculationRefundFee(amount, lastStartTime int) (int, er
 			if lastStartTime - now >= rule.RuleMinDuration && lastStartTime - now < rule.RuleMaxDuration && rule.FeeRate > 0 {
 				// 按此时间区间 计算手续费
 				// 手续费 = 订单实付金额[分] * 退款费率[数据库比例已乘以100] 单位[分]
-				if refundFee = amount * rule.FeeRate / 1e4; refundFee == 0 {
+				if refundFee = amount * rule.FeeRate / 1e4; refundFee < rule.MinimumCharge {
 					// 最低手续费
 					refundFee = rule.MinimumCharge
 				}
@@ -1059,7 +1059,7 @@ func (svc *OrderModule) CalculationRefundFee(amount, lastStartTime int) (int, er
 		// 如果 规则校验最大时长 = 0 表示只需校验最小时长
 		if rule.RuleMaxDuration == 0 {
 			if lastStartTime - now >= rule.RuleMinDuration && rule.FeeRate > 0 {
-				if refundFee = amount * rule.FeeRate / 1e4; refundFee == 0 {
+				if refundFee = amount * rule.FeeRate / 1e4; refundFee < rule.MinimumCharge {
 					// 最低手续费
 					refundFee = rule.MinimumCharge
 				}
