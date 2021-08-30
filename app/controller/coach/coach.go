@@ -245,6 +245,10 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 	svc.coach.Evaluate.CreateAt = now
 	svc.coach.Evaluate.UpdateAt = now
 	svc.coach.Evaluate.LabelInfo = labels
+	svc.coach.Evaluate.OrderType = 1
+	svc.coach.Evaluate.OrderId = param.OrderId
+	svc.coach.Evaluate.Content = param.Content
+
 	// 添加私教评价
 	if _, err := svc.coach.AddCoachEvaluate(); err != nil {
 		log.Log.Errorf("coach_trace: add coach evaluate fail, err:%s", err)

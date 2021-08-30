@@ -76,6 +76,7 @@ type PubEvaluateParam struct {
 	CoachId     int64          `binding:"required" json:"coach_id"`
 	OrderId     string         `binding:"required" json:"order_id"`
 	Star        int            `binding:"required" json:"star"`
+	Content     string         `json:"content"`                        // 暂时无评价内容
 	LabelIds    []interface{}  `json:"label_ids"`
 }
 
