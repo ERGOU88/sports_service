@@ -8,6 +8,7 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mcoach"
 	"sports_service/server/models/mcourse"
@@ -208,7 +209,7 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 		return errdef.COACH_ORDER_NOT_EXISTS
 	}
 
-	if svc.order.Order.Status != 2 {
+	if svc.order.Order.Status != consts.ORDER_TYPE_COMPLETED {
 		log.Log.Errorf("coach_trace: coach order not success, status:%d", svc.order.Order.Status)
 		svc.engine.Rollback()
 		return errdef.COACH_ORDER_NOT_SUCCESS
