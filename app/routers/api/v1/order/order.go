@@ -52,7 +52,7 @@ func OrderRefund(c *gin.Context) {
 	userId, _ := c.Get(consts.USER_ID)
 	svc := corder.New(c)
 	param.UserId = userId.(string)
-	code := svc.OrderRefund(param)
+	code, _, _ := svc.OrderRefund(param, consts.EXECUTE_TYPE_REFUND)
 	reply.Response(http.StatusOK, code)
 }
 
@@ -100,5 +100,35 @@ func OrderCancel(c *gin.Context) {
 	param.UserId = userId.(string)
 	svc := corder.New(c)
 	code := svc.OrderCancel(param)
+	reply.Response(http.StatusOK, code)
+}
+
+// 退款规则
+func RefundRules(c *gin.Context) {
+	reply := errdef.New(c)
+	orderId := c.Query("order_id")
+	userId, _ := c.Get(consts.USER_ID)
+	svc := corder.New(c)
+	code, refundAmount, refundFee := svc.OrderRefund(&morder.ChangeOrder{
+		UserId: userId.(string),
+		OrderId: orderId,
+	}, consts.EXECUTE_TYPE_QUERY)
+
+	if code != errdef.SUCCESS {
+		reply.Response(http.StatusOK, code)
+		return
+	}
+
+	code, rules := svc.OrderRefundRules()
+	if code != errdef.SUCCESS {
+		reply.Response(http.StatusOK, code)
+		return
+	}
+
+	reply.Data["list"] = rules
+	reply.Data["refund_amount"] = refundAmount
+	reply.Data["refund_fee"] = refundFee
+	reply.Data["order_amount"] = refundAmount + refundFee
+
 	reply.Response(http.StatusOK, code)
 }

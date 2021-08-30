@@ -16,6 +16,8 @@ func Router(engine *gin.Engine) {
 		venue.GET("/info", VenueInfo)
         // 购买次卡/月卡/年卡
 		venue.POST("/purchase/vipCard", token.TokenAuth(), PurchaseVipCard)
+        // 进出场记录
+		venue.GET("/action/record", token.TokenAuth(), ActionRecord)
 	}
 
 }
