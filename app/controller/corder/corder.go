@@ -93,7 +93,7 @@ func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 	case consts.TradeSuccess:
 		switch order.Status {
 		// 待支付状态
-		case consts.PAY_TYPE_WAIT:
+		case consts.ORDER_TYPE_WAIT:
 			amount, err := strconv.ParseFloat(strings.Trim(params.Get("total_amount"), " "), 64)
 			if err != nil {
 				log.Log.Errorf("aliNotify_trace: parse float fail, err:%s", err)
@@ -116,7 +116,7 @@ func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 			}
 
 		// 退款中[部分退款]
-		case consts.PAY_TYPE_REFUND_WAIT:
+		case consts.ORDER_TYPE_REFUND_WAIT:
 			refundAmount, err := strconv.ParseFloat(strings.Trim(params.Get("refund_fee"), " "), 64)
 			if err != nil {
 				log.Log.Errorf("aliNotify_trace: parse float fail, err:%s", err)
@@ -214,21 +214,21 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 	switch changeType {
 	case consts.PAY_NOTIFY:
 		// 如果是支付成功回调 则订单当前状态应是 待支付 需更新状态为 已支付
-		curStatus = consts.PAY_TYPE_WAIT
-		status = consts.PAY_TYPE_PAID
+		curStatus = consts.ORDER_TYPE_WAIT
+		status = consts.ORDER_TYPE_PAID
 		svc.order.Order.IsCallback = 1
 	case consts.REFUND_NOTIFY:
-		curStatus = consts.PAY_TYPE_REFUND_WAIT
-		status = consts.PAY_TYPE_REFUND_SUCCESS
+		curStatus = consts.ORDER_TYPE_REFUND_WAIT
+		status = consts.ORDER_TYPE_REFUND_SUCCESS
 		svc.order.Order.IsCallback = 1
 	case consts.APPLY_REFUND:
 		// 如果是申请退款 则订单当前状态 应是已付款 需更新状态为 退款中
-		curStatus = consts.PAY_TYPE_PAID
-		status = consts.PAY_TYPE_REFUND_WAIT
+		curStatus = consts.ORDER_TYPE_PAID
+		status = consts.ORDER_TYPE_REFUND_WAIT
 	case consts.CANCEL_ORDER:
 		// 如果是取消订单 则订单当前状态 应是待支付 需更新状态为 未支付
-		curStatus = consts.PAY_TYPE_WAIT
-		status = consts.PAY_TYPE_UNPAID
+		curStatus = consts.ORDER_TYPE_WAIT
+		status = consts.ORDER_TYPE_UNPAID
 	}
 
 	now := int(time.Now().Unix())
@@ -308,7 +308,7 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 // 更新预约信息
 func (svc *OrderModule) UpdateAppointmentInfo(orderId string, now, curStatus, status int) error {
 	// 未支付/退款中
-	if status == consts.PAY_TYPE_UNPAID || status == consts.PAY_TYPE_REFUND_WAIT {
+	if status == consts.ORDER_TYPE_UNPAID || status == consts.ORDER_TYPE_REFUND_WAIT {
 		// 获取订单对应的预约流水
 		list, err := svc.appointment.GetAppointmentRecordByOrderId(orderId, curStatus)
 		if err != nil {
@@ -421,7 +421,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 		// 预约场馆、私教、大课
 		case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
 			//info.Count = len(extra.TimeNodeInfo)
-			if order.ProductType == consts.ORDER_TYPE_APPOINTMENT_COACH && order.Status == consts.PAY_TYPE_PAID {
+			if order.ProductType == consts.ORDER_TYPE_APPOINTMENT_COACH && order.Status == consts.ORDER_TYPE_PAID {
 				// 查询是否评价
 				ok, err := svc.coach.HasEvaluateByUserId(svc.order.Order.UserId, svc.order.Order.PayOrderId)
 				if !ok || err != nil {
@@ -521,7 +521,7 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 		return errdef.ERROR, nil
 	}
 
-	if svc.order.Order.Status == consts.PAY_TYPE_PAID && svc.order.Order.ProductType == consts.ORDER_TYPE_APPOINTMENT_COACH  {
+	if svc.order.Order.Status == consts.ORDER_TYPE_PAID && svc.order.Order.ProductType == consts.ORDER_TYPE_APPOINTMENT_COACH  {
 		// 查询是否评价
 		ok, err := svc.coach.HasEvaluateByUserId(svc.order.Order.UserId, svc.order.Order.PayOrderId)
 		if !ok || err != nil {
@@ -533,7 +533,7 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 
 	rsp.PayDuration = 0
 	// 待支付订单 剩余支付时长
-	if svc.order.Order.Status == consts.PAY_TYPE_WAIT {
+	if svc.order.Order.Status == consts.ORDER_TYPE_WAIT {
 		// 已过时长 =  当前时间戳 - 订单创建时间戳
 		duration := time.Now().Unix() - int64(svc.order.Order.CreateAt)
 		// 订单状态是待支付 且 已过时长 <= 总时差
@@ -647,9 +647,9 @@ func (svc *OrderModule) DeleteOrder(param *morder.ChangeOrder) int {
 	}
 
 	// 退款中 / 已支付的订单 / 已过期的订单 不可删除
-	if svc.order.Order.Status == consts.PAY_TYPE_PAID ||
-		svc.order.Order.Status == consts.PAY_TYPE_REFUND_WAIT ||
-		svc.order.Order.Status == consts.PAY_TYPE_EXPIRE {
+	if svc.order.Order.Status == consts.ORDER_TYPE_PAID ||
+		svc.order.Order.Status == consts.ORDER_TYPE_REFUND_WAIT ||
+		svc.order.Order.Status == consts.ORDER_TYPE_EXPIRE {
 		log.Log.Errorf("order_trace: order can't delete, orderId:%s", svc.order.Order.PayOrderId)
 		return errdef.ORDER_DELETE_FAIL
 	}
@@ -735,7 +735,7 @@ func (svc *OrderModule) WechatRefund(refundAmount int) (*wxCli.RefundResponse, e
 // 返回值 是否可退款 [true表示可退] 及 退款手续费
 func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderId, extra string) (bool, int, error) {
 	// 如果订单状态不等于已支付
-	if status != consts.PAY_TYPE_PAID {
+	if status != consts.ORDER_TYPE_PAID {
 		return false, 0, nil
 	}
 
@@ -750,7 +750,7 @@ func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderI
 	switch orderType {
 	case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
 		// 获取预约流水
-		infos, err := svc.appointment.GetAppointmentRecordByOrderId(orderId, consts.PAY_TYPE_PAID)
+		infos, err := svc.appointment.GetAppointmentRecordByOrderId(orderId, consts.ORDER_TYPE_PAID)
 		if len(infos) == 0 || err != nil {
 			log.Log.Errorf("order_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
 			return false, 0, errors.New("get record fail")
@@ -842,7 +842,7 @@ func (svc *OrderModule) GetCouponCodeInfo(userId, orderId string) (int, *morder.
 	}
 
 	// 只有支付成功之后才可查看券码
-	if svc.order.Order.Status < consts.PAY_TYPE_PAID {
+	if svc.order.Order.Status < consts.ORDER_TYPE_PAID {
 		log.Log.Errorf("order_trace: invalid order status, status:%d", svc.order.Order.Status)
 		return errdef.ORDER_COUPON_CODE_FAIL, nil
 	}
@@ -927,7 +927,7 @@ func (svc *OrderModule) OrderCancel(param *morder.ChangeOrder) int {
 	}
 
 	// 只有待支付状态订单可以取消
-	if svc.order.Order.Status != consts.PAY_TYPE_WAIT {
+	if svc.order.Order.Status != consts.ORDER_TYPE_WAIT {
 		log.Log.Errorf("order_trace: order not allow cancel, orderId:%s, status:%d", svc.order.Order.PayOrderId, svc.order.Order.Status)
 		svc.engine.Rollback()
 		return errdef.ORDER_NOT_ALLOW_CANCEL
@@ -992,14 +992,14 @@ func (svc *OrderModule) CheckOrderExpire() error {
 		switch order.ProductType {
 		// 场馆/次卡 变更为已过期状态
 		case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_EXPERIENCE_CARD:
-			svc.order.Order.Status = consts.PAY_TYPE_EXPIRE
+			svc.order.Order.Status = consts.ORDER_TYPE_EXPIRE
 		// 课程/私教 变更为已完成
 		case consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
-			svc.order.Order.Status = consts.PAY_TYPE_COMPLETED
+			svc.order.Order.Status = consts.ORDER_TYPE_COMPLETED
 		}
 
 		// 更新订单状态
-		affected, err := svc.order.UpdateOrderStatus(order.PayOrderId, consts.PAY_TYPE_PAID)
+		affected, err := svc.order.UpdateOrderStatus(order.PayOrderId, consts.ORDER_TYPE_PAID)
 		if affected != 1 || err != nil {
 			log.Log.Errorf("payNotify_trace: update order status fail, orderId:%s", order.PayOrderId)
 			svc.engine.Rollback()

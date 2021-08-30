@@ -161,7 +161,7 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-	if order.Status != consts.PAY_TYPE_WAIT {
+	if order.Status != consts.ORDER_TYPE_WAIT {
 		log.Log.Error("wxNotify_trace: order already pay, orderId:%s, err:%s", orderId, err)
 		c.String(http.StatusOK, "SUCCESS")
 		return
@@ -232,7 +232,7 @@ func WechatRefundNotify(c *gin.Context) {
 		return
 	}
 
-	if order.Status != consts.PAY_TYPE_REFUND_WAIT {
+	if order.Status != consts.ORDER_TYPE_REFUND_WAIT {
 		log.Log.Error("wxNotify_trace: order status fail, orderId:%s, status:%d, err:%s", orderId, order.Status, err)
 		c.String(http.StatusOK, "SUCCESS")
 		return
