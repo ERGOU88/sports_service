@@ -192,11 +192,6 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 	return errdef.SUCCESS, svc.Extra
 }
 
-// 取消预约
-func (svc *VenueAppointmentModule) AppointmentCancel() int {
-	return 2000
-}
-
 // 预约场馆时间选项
 func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 	date := svc.GetDateById(svc.DateId, consts.FORMAT_DATE)

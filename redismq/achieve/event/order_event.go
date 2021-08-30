@@ -122,7 +122,7 @@ func orderTimeOut(appointmentType int, orderId string) error {
 	}
 
 	// 订单状态 != 0 (待支付) 表示 订单 已设为超时/已支付/已完成 等等...
-	if orderModel.Order.Status != consts.PAY_TYPE_WAIT {
+	if orderModel.Order.Status != consts.ORDER_TYPE_WAIT {
 		log.Log.Errorf("redisMq_trace: don't need to change，orderId:%s, status:%d", orderId,
 			orderModel.Order.Status)
 		session.Rollback()
@@ -131,19 +131,19 @@ func orderTimeOut(appointmentType int, orderId string) error {
 
 	now := int(time.Now().Unix())
 	orderModel.Order.UpdateAt = now
-	orderModel.Order.Status = consts.PAY_TYPE_UNPAID
+	orderModel.Order.Status = consts.ORDER_TYPE_UNPAID
 	// 更新订单状态为 超时未支付
-	affected, err := orderModel.UpdateOrderStatus(orderId, consts.PAY_TYPE_WAIT)
+	affected, err := orderModel.UpdateOrderStatus(orderId, consts.ORDER_TYPE_WAIT)
 	if affected != 1 || err != nil {
 		log.Log.Errorf("redisMq_trace: update order status fail, orderId:%s, err:%s", orderId, err)
 		session.Rollback()
 		return errors.New("update order status fail")
 	}
 
-	orderModel.OrderProduct.Status = consts.PAY_TYPE_UNPAID
+	orderModel.OrderProduct.Status = consts.ORDER_TYPE_UNPAID
 	orderModel.OrderProduct.UpdateAt = now
 	// 更新订单商品流水状态
-	if _, err = orderModel.UpdateOrderProductStatus(orderId, consts.PAY_TYPE_WAIT); err != nil {
+	if _, err = orderModel.UpdateOrderProductStatus(orderId, consts.ORDER_TYPE_WAIT); err != nil {
 		log.Log.Errorf("redisMq_trace: update order product status fail, err:%s, affected:%d, orderId:%s", err, affected, orderId)
 		session.Rollback()
 		return errors.New("update order product status fail")
@@ -151,7 +151,7 @@ func orderTimeOut(appointmentType int, orderId string) error {
 
 	// 获取订单对应的预约流水
 	amodel := mappointment.NewAppointmentModel(session)
-	list, err := amodel.GetAppointmentRecordByOrderId(orderId, consts.PAY_TYPE_WAIT)
+	list, err := amodel.GetAppointmentRecordByOrderId(orderId, consts.ORDER_TYPE_WAIT)
 	if err != nil {
 		log.Log.Errorf("redisMq_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
 		session.Rollback()
@@ -170,7 +170,7 @@ func orderTimeOut(appointmentType int, orderId string) error {
 	}
 
 	// 更新订单对应的预约流水状态
-	if err := amodel.UpdateAppointmentRecordStatus(orderId, now, consts.PAY_TYPE_UNPAID, consts.PAY_TYPE_WAIT); err != nil {
+	if err := amodel.UpdateAppointmentRecordStatus(orderId, now, consts.ORDER_TYPE_UNPAID, consts.ORDER_TYPE_WAIT); err != nil {
 		log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
 		session.Rollback()
 		return err

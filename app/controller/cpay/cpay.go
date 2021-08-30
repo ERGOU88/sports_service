@@ -50,7 +50,7 @@ func (svc *PayModule) AppPay(param *morder.PayReqParam) (int, interface{}) {
 	}
 
 	// 订单如果不是待支付状态
-	if svc.order.Order.Status != consts.PAY_TYPE_WAIT {
+	if svc.order.Order.Status != consts.ORDER_TYPE_WAIT {
 		log.Log.Errorf("pay_trace: order status fail, orderId:%s, status:%d", param.OrderId, svc.order.Order.Status)
 		return errdef.ORDER_NOT_EXISTS, nil
 	}
