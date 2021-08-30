@@ -11,6 +11,7 @@ type VenueModel struct {
 	Recommend *models.VenueRecommendConf
 	Product   *models.VenueProductInfo
 	Vip       *models.VenueVipInfo
+	Record    *models.VenueEntryOrExitRecords
 }
 
 // 购买次卡/月卡/季卡/年卡 请求参数
@@ -47,6 +48,7 @@ func NewVenueModel(engine *xorm.Session) *VenueModel {
 		Recommend: new(models.VenueRecommendConf),
 		Product: new(models.VenueProductInfo),
 		Vip: new(models.VenueVipInfo),
+		Record: new(models.VenueEntryOrExitRecords),
 		Engine: engine,
 	}
 }
@@ -103,4 +105,14 @@ func (m *VenueModel) AddVenueVipInfo() (int64, error) {
 // 更新场馆会员数据
 func (m *VenueModel) UpdateVenueVipInfo(cols string) (int64, error) {
 	return m.Engine.Where("id=?", m.Vip.Id).Cols(cols).Update(m.Vip)
+}
+
+// 场馆进出场记录
+func (m *VenueModel) VenueEntryOrExitRecords(userId string, offset, size int) ([]*models.VenueEntryOrExitRecords, error) {
+	var list []*models.VenueEntryOrExitRecords
+	if err := m.Engine.Where("user_id=? AND status=0", userId).Desc("id").Limit(size, offset).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
 }

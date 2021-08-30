@@ -95,7 +95,7 @@ func (m *OrderModel) AddOrderProduct() (int64, error) {
 // 更新订单信息
 func (m *OrderModel) UpdateOrderStatus(orderId string, status int) (int64, error) {
 	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Cols("update_at",
-		"status", "is_callback", "pay_time", "transaction", "refund_amount").Update(m.Order)
+		"status", "is_callback", "pay_time", "transaction", "refund_amount", "refund_fee").Update(m.Order)
 }
 
 // 通过订单id 获取订单流水信息
@@ -134,6 +134,16 @@ func (m *OrderModel) UpdateOrderInfo(cols string) (int64, error) {
 func (m *OrderModel) GetOrderListByStatus(condition string, offset, size int) ([]*models.VenuePayOrders, error) {
 	var list []*models.VenuePayOrders
 	if err := m.Engine.Where(condition).Desc("id").Limit(size, offset).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 按执行顺序 获取退款规则
+func (m *OrderModel) GetRefundRules() ([]*models.VenueRefundRules, error) {
+	var list []*models.VenueRefundRules
+	if err := m.Engine.Where("status=0").Asc("rule_order").Find(&list); err != nil {
 		return nil, err
 	}
 

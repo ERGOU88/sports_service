@@ -191,6 +191,7 @@ const (
 	VENUE_VIP_INFO_FAIL          = 17003
 	VENUE_ADD_VIP_FAIL           = 17004
 	VENUE_UPDATE_VIP_FAIL        = 17005
+	VENUE_ACTION_RECORD_FAIL     = 17006
 
 	// 订单错误 18001-19000
 	ORDER_ADD_FAIL               = 18001
@@ -391,6 +392,7 @@ var MsgFlags = map[int]string{
 	VENUE_VIP_INFO_FAIL:         "获取场馆会员信息失败",
 	VENUE_ADD_VIP_FAIL:          "添加会员失败",
 	VENUE_UPDATE_VIP_FAIL:       "更新会员信息失败",
+	VENUE_ACTION_RECORD_FAIL:    "获取进出场记录失败",
 
 	ORDER_ADD_FAIL:              "添加订单失败",
 	ORDER_PRODUCT_ADD_FAIL:      "添加商品订单失败",
