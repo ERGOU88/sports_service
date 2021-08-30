@@ -421,7 +421,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 		// 预约场馆、私教、大课
 		case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
 			//info.Count = len(extra.TimeNodeInfo)
-			if order.ProductType == consts.ORDER_TYPE_APPOINTMENT_COACH && order.Status == consts.ORDER_TYPE_PAID {
+			if order.ProductType == consts.ORDER_TYPE_APPOINTMENT_COACH && order.Status == consts.ORDER_TYPE_COMPLETED {
 				// 查询是否评价
 				ok, err := svc.coach.HasEvaluateByUserId(svc.order.Order.UserId, svc.order.Order.PayOrderId)
 				if !ok || err != nil {
