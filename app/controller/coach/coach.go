@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"math"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
@@ -185,6 +184,7 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 
 	if param.Star <= 0 || param.Star > 5 {
 		log.Log.Errorf("coach_trace: invalid star, star:%d", param.Star)
+		svc.engine.Rollback()
 		return errdef.INVALID_PARAMS
 	}
 
@@ -218,11 +218,13 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 	ok, err = svc.coach.HasEvaluateByUserId(userId, svc.order.Order.PayOrderId)
 	if err != nil {
 		log.Log.Errorf("coach_trace: get evaluate by userId fail, userId:%s, orderId:%s", userId, svc.order.Order.PayOrderId)
+		svc.engine.Rollback()
 		return errdef.COACH_PUB_EVALUATE_FAIL
 	}
 
 	if ok {
 		log.Log.Errorf("coach_trace: coach already evaluate, userId:%s, orderId:%s", userId, svc.order.Order.PayOrderId)
+		svc.engine.Rollback()
 		return errdef.COACH_ALREADY_EVALUATE
 	}
 
@@ -276,7 +278,7 @@ func (svc *CoachModule) GetCoachScore(coachId string) (totalNum int, score float
 		score = 0
 	} else {
 		totalNum =  svc.coach.CoachScore.TotalNum
-		score = math.Ceil(float64(svc.coach.CoachScore.TotalScore) / float64(svc.coach.CoachScore.TotalNum))
+		score = float64(svc.coach.CoachScore.TotalScore) / float64(svc.coach.CoachScore.TotalNum)
 	}
 
 	return

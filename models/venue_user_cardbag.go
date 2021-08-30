@@ -1,7 +1,7 @@
 package models
 
 type VenueUserCardbag struct {
-	Id       int    `json:"id" xorm:"INT(11)"`
+	Id       int    `json:"id" xorm:"not null pk autoincr INT(11)"`
 	UserId   string `json:"user_id" xorm:"comment('用户ID') VARCHAR(255)"`
 	QrCode   string `json:"qr_code" xorm:"comment('ID卡号') VARCHAR(255)"`
 	CardType int    `json:"card_type" xorm:"comment('卡类型:1、年卡、2半年卡、3季卡、4月卡、5、此卡') TINYINT(4)"`
