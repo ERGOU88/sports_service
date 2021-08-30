@@ -423,9 +423,9 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 			//info.Count = len(extra.TimeNodeInfo)
 			if order.ProductType == consts.ORDER_TYPE_APPOINTMENT_COACH && order.Status == consts.ORDER_TYPE_COMPLETED {
 				// 查询是否评价
-				ok, err := svc.coach.HasEvaluateByUserId(svc.order.Order.UserId, svc.order.Order.PayOrderId)
-				if !ok || err != nil {
-					log.Log.Errorf("order_trace: already evaluate, userId:%s, orderId:%s", svc.order.Order.UserId, svc.order.Order.PayOrderId)
+				ok, err := svc.coach.HasEvaluateByUserId(order.UserId, order.PayOrderId)
+				if ok || err != nil {
+					log.Log.Errorf("order_trace: already evaluate, userId:%s, orderId:%s", order.UserId, order.PayOrderId)
 				}
 
 				info.HasEvaluate = ok
