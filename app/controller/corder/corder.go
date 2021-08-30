@@ -521,7 +521,7 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 		return errdef.ERROR, nil
 	}
 
-	if svc.order.Order.Status == consts.ORDER_TYPE_PAID && svc.order.Order.ProductType == consts.ORDER_TYPE_APPOINTMENT_COACH  {
+	if svc.order.Order.Status == consts.ORDER_TYPE_COMPLETED && svc.order.Order.ProductType == consts.ORDER_TYPE_APPOINTMENT_COACH  {
 		// 查询是否评价
 		ok, err := svc.coach.HasEvaluateByUserId(svc.order.Order.UserId, svc.order.Order.PayOrderId)
 		if !ok || err != nil {
