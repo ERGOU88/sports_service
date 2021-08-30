@@ -68,8 +68,8 @@ type EvaluateInfo struct {
 }
 
 type LabelInfo struct {
-	Id     int64     `json:"id"`
-	Name   string    `json:"name"`
+	Id          int64     `json:"id"`
+	LabelName   string    `json:"label_name"`
 }
 
 type PubEvaluateParam struct {
@@ -127,10 +127,10 @@ func (m *CoachModel) GetEvaluateConfig() ([]*models.VenueCoachLabelConfig, error
 }
 
 const (
-	RECORD_COACH_SCORE_INFO = "INSERT INTO venue_coach_score(`coach_id`, `total_score`, `total_num`, `total_%d_star`, `create_at`, `update_at`) " +
+	RECORD_COACH_SCORE_INFO = "INSERT INTO venue_coach_score(`coach_id`, `total_score`, `total_num`, `total%d_star`, `create_at`, `update_at`) " +
 		"VALUES(?, ?, 1, 1, ?, ?) " +
 		"ON DUPLICATE KEY UPDATE " +
-		"total_%d_star = total_%d_star + 1, " +
+		"total%d_star = total%d_star + 1, " +
 		"total_num = total_num + 1, " +
 		"total_score = total_score + ?, " +
 		"update_at = ?"
