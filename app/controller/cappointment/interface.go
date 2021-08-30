@@ -9,8 +9,6 @@ type IAppointment interface {
 	Options(relatedId int64) (int, interface{})
 	// 进行预约
 	Appointment(*mappointment.AppointmentReq) (int, interface{})
-	// 取消预约
-	AppointmentCancel() int
 	// 预约时间选项
 	AppointmentOptions() (int, interface{})
 	// 预约详情
@@ -33,10 +31,6 @@ func GetOptions(i IAppointment, relatedId int64) (int, interface{}) {
 
 func UserAppointment(i IAppointment, param *mappointment.AppointmentReq) (int, interface{}) {
 	return i.Appointment(param)
-}
-
-func UserAppointmentCancel(i IAppointment) int {
-	return i.AppointmentCancel()
 }
 
 func GetAppointmentTimeOptions(i IAppointment, week, queryType, relatedId, id int) (int, interface{}) {

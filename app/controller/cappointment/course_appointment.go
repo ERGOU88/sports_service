@@ -208,11 +208,6 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 
 }
 
-// 取消预约
-func (svc *CourseAppointmentModule) AppointmentCancel() int {
-	return 6000
-}
-
 // 获取某天的预约选项
 func (svc *CourseAppointmentModule) AppointmentOptions() (int, interface{}) {
 	date := svc.GetDateById(svc.DateId, consts.FORMAT_DATE)
