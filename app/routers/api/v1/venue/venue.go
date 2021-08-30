@@ -2,6 +2,7 @@ package venue
 
 import (
 	"github.com/gin-gonic/gin"
+	"sports_service/server/util"
 	"net/http"
 	"sports_service/server/app/controller/cvenue"
 	"sports_service/server/global/app/errdef"
@@ -46,6 +47,20 @@ func PurchaseVipCard(c *gin.Context) {
 	code, rsp := svc.PurchaseVipCard(param)
 	if code == errdef.SUCCESS {
 		reply.Data["info"] = rsp
+	}
+
+	reply.Response(http.StatusOK, code)
+}
+
+// 进出场记录
+func ActionRecord(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	userId, _ := c.Get(consts.USER_ID)
+	svc := cvenue.New(c)
+	code, list := svc.GetActionRecord(userId.(string), page, size)
+	if code == errdef.SUCCESS {
+		reply.Data["list"] = list
 	}
 
 	reply.Response(http.StatusOK, code)

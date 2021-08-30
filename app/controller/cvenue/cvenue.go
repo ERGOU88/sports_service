@@ -327,3 +327,25 @@ func (svc *VenueModule) AddOrder(extra *mappointment.OrderResp, orderId, userId,
 
 	return nil
 }
+
+// 获取场馆用户进出场记录
+func (svc *VenueModule) GetActionRecord(userId string, page, size int) (int, []*models.VenueEntryOrExitRecords) {
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
+		log.Log.Errorf("venue_trace: user not found, userId:%s", userId)
+		return errdef.USER_NOT_EXISTS, nil
+	}
+
+	offset := (page - 1) * size
+	list, err := svc.venue.VenueEntryOrExitRecords(userId, offset, size)
+	if err != nil {
+		log.Log.Errorf("venue_trace: get action record fail, userId:%s", userId)
+		return errdef.VENUE_ACTION_RECORD_FAIL, nil
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*models.VenueEntryOrExitRecords{}
+	}
+
+	return errdef.SUCCESS, list
+}

@@ -7,6 +7,7 @@ import (
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
+	"sports_service/server/global/rdskey"
 	"sports_service/server/models"
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
@@ -400,5 +401,16 @@ func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
 		}
 	}
 
+	if err := svc.SaveQrCodeKabawInfo(util.GenSecret(util.MIX_MODE, 18), userId, rdskey.KEY_EXPIRE_MIN * 15); err != nil {
+		log.Log.Errorf("user_trace: save qrcode kabaw info fail, userId:%s, err:%s", userId, err)
+		return errdef.VENUE_VIP_INFO_FAIL, nil
+	}
+
 	return errdef.SUCCESS, kabaw
+}
+
+// 保存卡包二维码信息
+func (svc *UserModule) SaveQrCodeKabawInfo(secret, userId string, expireTm int64) error {
+	rds := dao.NewRedisDao()
+	return rds.SETEX(fmt.Sprintf(rdskey.QRCODE_KABAW, secret), expireTm, userId)
 }

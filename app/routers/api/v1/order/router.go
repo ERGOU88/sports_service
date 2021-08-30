@@ -24,6 +24,8 @@ func Router(engine *gin.Engine) {
 		order.GET("/coupon/code", OrderCouponCode)
 		// 取消订单
 		order.POST("/cancel", OrderCancel)
+        // 退款规则
+		order.GET("/refund/rules", RefundRules)
 	}
 }
 
