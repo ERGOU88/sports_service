@@ -949,7 +949,7 @@ func (svc *OrderModule) OrderCancel(param *morder.ChangeOrder) int {
 // 获取已支付的订单列表
 func (svc *OrderModule) GetOrderListByPaid() ([]*models.VenuePayOrders, error){
 	// 成功支付 未消费/未过期/未退款的订单
-	condition := fmt.Sprintf("status = 2 AND is_delete=0 AND product_type in(1001, 2004, 3001, 3002)")
+	condition := fmt.Sprintf("status = 2 AND is_delete=0")
 	list, err := svc.order.GetOrderListByStatus(condition, 0, 100)
 	if err != nil {
 		log.Log.Errorf("order_trace: get order list by status fail, err:%s", err)
@@ -996,6 +996,9 @@ func (svc *OrderModule) CheckOrderExpire() error {
 		// 课程/私教 变更为已完成
 		case consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
 			svc.order.Order.Status = consts.ORDER_TYPE_COMPLETED
+		default:
+			svc.engine.Rollback()
+			continue
 		}
 
 		// 更新订单状态
