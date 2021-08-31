@@ -113,6 +113,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
+	svc.Extra.ProductImg = svc.venue.Venue.PromotionPic
 
 	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.WeekNum, params.LabelIds, params.Infos); err != nil {
 		log.Log.Errorf("venue_trace: appointment fail, err:%s", err)
