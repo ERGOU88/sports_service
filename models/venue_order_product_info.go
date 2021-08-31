@@ -16,9 +16,10 @@ type VenueOrderProductInfo struct {
 	CreateAt        int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt        int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
 	Status          int    `json:"status" xorm:"not null default 0 comment('0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 已过期') TINYINT(2)"`
-	RelatedId       int64  `json:"related_id" xorm:"not null default 1 comment('场馆id/私教课id/大课老师id') BIGINT(20)"`
+	RelatedId       int64  `json:"related_id" xorm:"not null default 0 comment('场馆id/私教课id/大课id') BIGINT(20)"`
 	DeductionTm     int64  `json:"deduction_tm" xorm:"not null default 0 comment('抵扣会员时长') BIGINT(20)"`
 	DeductionAmount int64  `json:"deduction_amount" xorm:"not null default 0 comment('抵扣的价格') BIGINT(20)"`
 	DeductionNum    int64  `json:"deduction_num" xorm:"not null default 0 comment('抵扣的数量') BIGINT(20)"`
 	ExpireDuration  int    `json:"expire_duration" xorm:"not null default 0 comment('过期时长[单个商品]') INT(11)"`
+	CoachId         int64  `json:"coach_id" xorm:"not null default 0 comment('教练id 包含私教老师/大课老师') BIGINT(20)"`
 }
