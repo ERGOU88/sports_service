@@ -3,6 +3,7 @@ package mappointment
 import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/models"
+	"time"
 )
 
 type AppointmentModel struct {
@@ -333,7 +334,7 @@ const (
 )
 // 更新场馆会员数据 duration < 0 减少 duration > 0 增加
 func (m *AppointmentModel) UpdateVenueVipInfo(duration int, userId string) (int64, error) {
-	res, err := m.Engine.Exec(UPDATE_VENUE_VIP_INFO, duration, userId)
+	res, err := m.Engine.Exec(UPDATE_VENUE_VIP_INFO, duration, userId, time.Now().Unix(), duration)
 	if err != nil {
 		return 0, err
 	}
