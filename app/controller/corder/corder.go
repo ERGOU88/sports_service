@@ -138,9 +138,22 @@ func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 				return errdef.ERROR
 			}
 
+			refundTradeNo := params.Get("out_request_no")
+			svc.order.RefundRecord.Status = 1
+			affected, err := svc.order.UpdateRefundRecordStatus(refundTradeNo)
+			if affected != 1 || err != nil {
+				log.Log.Errorf("aliNotify_trace: update refund record fail, refundTradeNo:%s, err:%s",
+					refundTradeNo, err)
+
+				svc.engine.Rollback()
+				return errdef.ERROR
+			}
+
 
 		default:
 			log.Log.Errorf("invalid order status, orderId:%s, status:%d", orderId, order.Status)
+			svc.engine.Rollback()
+			return errdef.ERROR
 		}
 
 
@@ -167,14 +180,27 @@ func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 			return errdef.ERROR
 		}
 
+		refundTradeNo := params.Get("out_request_no")
+		// 状态为已退款
+		svc.order.RefundRecord.Status = 1
+		affected, err := svc.order.UpdateRefundRecordStatus(refundTradeNo)
+		if affected != 1 || err != nil {
+			log.Log.Errorf("aliNotify_trace: update refund record fail, refundTradeNo:%s, err:%s",
+				refundTradeNo, err)
+
+			svc.engine.Rollback()
+			return errdef.ERROR
+		}
+
 	case consts.WaitBuyerPay:
 		log.Log.Debug("wait buyer pay, order_id:%v", orderId)
+		svc.engine.Rollback()
 		return errdef.SUCCESS
 
 	case consts.TradeFinished:
 		log.Log.Debug("trade finished, order_id:%v", orderId)
+		svc.engine.Rollback()
 		return errdef.SUCCESS
-
 	}
 
 	svc.engine.Commit()
@@ -183,7 +209,7 @@ func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 }
 
 // 微信支付回调
-func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo string, payTm int64, changeType int) error {
+func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo, refundNo string, payTm int64, changeType int) error {
 	if err := svc.engine.Begin(); err != nil {
 		return err
 	}
@@ -199,6 +225,19 @@ func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo string, payTm int
 		log.Log.Errorf("wxNotify_trace: order Process fail, orderId:%s, err:%s", orderId, err)
 		svc.engine.Rollback()
 		return err
+	}
+
+	if changeType == consts.REFUND_NOTIFY {
+		// 状态为已退款
+		svc.order.RefundRecord.Status = 1
+		affected, err := svc.order.UpdateRefundRecordStatus(refundNo)
+		if affected != 1 || err != nil {
+			log.Log.Errorf("wxNotify_trace: update refund record fail, refundTradeNo:%s, err:%s",
+				refundNo, err)
+
+			svc.engine.Rollback()
+			return errors.New("update fail")
+		}
 	}
 
 	svc.engine.Commit()
@@ -561,45 +600,45 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 }
 
 // 订单退款流程
-func (svc *OrderModule) OrderRefund(param *morder.ChangeOrder, executeType int) (int, int, int) {
+func (svc *OrderModule) OrderRefund(param *morder.ChangeOrder, executeType int) (int, int, int, int) {
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("order_trace: session begin fail, err:%s", err)
-		return errdef.ERROR, 0, 0
+		return errdef.ERROR, 0, 0, 0
 	}
 
 	user := svc.user.FindUserByUserid(param.UserId)
 	if user == nil {
 		log.Log.Errorf("order_trace: user not exists, userId:%s", param.UserId)
 		svc.engine.Rollback()
-		return errdef.USER_NOT_EXISTS, 0, 0
+		return errdef.USER_NOT_EXISTS, 0, 0, 0
 	}
 
 	ok, err := svc.order.GetOrder(param.OrderId)
 	if !ok || err != nil {
 		log.Log.Errorf("order_trace: order not exists, orderId:%s", param.OrderId)
 		svc.engine.Rollback()
-		return errdef.ORDER_NOT_EXISTS, 0, 0
+		return errdef.ORDER_NOT_EXISTS, 0, 0, 0
 	}
 
 	if svc.order.Order.UserId != user.UserId {
 		log.Log.Errorf("order_trace: user not match, userId:%s, curUser:%s", svc.order.Order.UserId, user.UserId)
 		svc.engine.Rollback()
-		return errdef.ORDER_USER_NOT_MATCH, 0, 0
+		return errdef.ORDER_USER_NOT_MATCH, 0, 0, 0
 	}
 
 	// 是否可退款
-	can, refundFee, err := svc.CanRefund(svc.order.Order.Amount, svc.order.Order.Status, svc.order.Order.OrderType, svc.order.Order.PayTime,
+	can, refundFee, ruleId, err := svc.CanRefund(svc.order.Order.Amount, svc.order.Order.Status, svc.order.Order.OrderType, svc.order.Order.PayTime,
 		svc.order.Order.PayOrderId, svc.order.Order.Extra)
 	if err != nil {
 		log.Log.Errorf("order_trace: refund fail, orderId:%s, can:%v, err:%s", svc.order.Order.PayOrderId, can, err)
 		svc.engine.Rollback()
-		return errdef.ORDER_REFUND_FAIL, 0, 0
+		return errdef.ORDER_REFUND_FAIL, 0, 0, 0
 	}
 
 	if !can  {
 		log.Log.Errorf("order_trace: user can't refund, orderId:%s, can:%v, err:%s", svc.order.Order.PayOrderId, can, err)
 		svc.engine.Rollback()
-		return errdef.ORDER_NOT_ALLOW_REFUND, 0, 0
+		return errdef.ORDER_NOT_ALLOW_REFUND, 0, 0, 0
 	}
 
 	// 可退款金额 = 订单实付金额 - 手续费
@@ -607,25 +646,42 @@ func (svc *OrderModule) OrderRefund(param *morder.ChangeOrder, executeType int) 
 	// 如果是查询退款金额 及 手续费
 	if executeType == consts.EXECUTE_TYPE_QUERY {
 		svc.engine.Rollback()
-		return errdef.SUCCESS, refundAmount, refundFee
+		return errdef.SUCCESS, refundAmount, refundFee, 0
 	}
 
 	if err := svc.OrderProcess(svc.order.Order.PayOrderId, "", svc.order.Order.Transaction,
 		int64(svc.order.Order.PayTime), consts.APPLY_REFUND, refundAmount, refundFee); err != nil {
 		svc.engine.Rollback()
-		return errdef.ORDER_PROCESS_FAIL, 0, 0
+		return errdef.ORDER_PROCESS_FAIL, 0, 0, 0
+	}
+
+	outRequestNo := util.NewOrderId()
+	svc.order.RefundRecord.RefundWay = svc.order.Order.PayType
+	svc.order.RefundRecord.RefundType = 1001
+	svc.order.RefundRecord.RefundAmount = refundAmount
+	svc.order.RefundRecord.RefundFee = refundFee
+	svc.order.RefundRecord.CreateAt = int(time.Now().Unix())
+	svc.order.RefundRecord.RefundTradeNo = outRequestNo
+	svc.order.RefundRecord.UserId = svc.order.Order.UserId
+	svc.order.RefundRecord.PayOrderId = svc.order.Order.PayOrderId
+	svc.order.RefundRecord.Remark = fmt.Sprintf("%s%s", svc.order.Order.Subject, "退款")
+	affected, err := svc.order.AddRefundRecord()
+	if affected != 1 || err != nil {
+		log.Log.Errorf("order_trace: add refund record fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
+		svc.engine.Rollback()
+		return errdef.ORDER_ADD_REFUND_RECORD_FAIL, 0, 0, 0
 	}
 
 	// 第三方退款
-	if _, err := svc.TradeRefund(refundAmount); err != nil {
+	if _, err := svc.TradeRefund(refundAmount, outRequestNo); err != nil {
 		log.Log.Errorf("order_trace: trade refund err:%s", err)
 		svc.engine.Rollback()
-		return errdef.ORDER_REFUND_FAIL, 0, 0
+		return errdef.ORDER_REFUND_FAIL, 0, 0, 0
 	}
 
 	svc.engine.Commit()
 
-	return errdef.SUCCESS, refundAmount, refundFee
+	return errdef.SUCCESS, refundAmount, refundFee, ruleId
 }
 
 // 删除订单
@@ -668,12 +724,12 @@ func (svc *OrderModule) DeleteOrder(param *morder.ChangeOrder) int {
 }
 
 // 交易退款 todo:计算手续费
-func (svc *OrderModule) TradeRefund(refundAmount int) (string, error) {
+func (svc *OrderModule) TradeRefund(refundAmount int, outRequestNo string) (string, error) {
 	var body string
 	switch svc.order.Order.PayType {
 	case consts.ALIPAY:
 		// 支付宝
-		resp, err := svc.AliRefund(refundAmount)
+		resp, err := svc.AliRefund(refundAmount, outRequestNo)
 		if err != nil {
 			log.Log.Errorf("pay_trace: alipay refund fail, orderId:%s, payType:%d", svc.order.Order.PayOrderId,
 				svc.order.Order.PayType)
@@ -685,7 +741,7 @@ func (svc *OrderModule) TradeRefund(refundAmount int) (string, error) {
 
 	case consts.WEICHAT:
 		// 微信
-		resp, err := svc.WechatRefund(refundAmount)
+		resp, err := svc.WechatRefund(refundAmount, outRequestNo)
 		if err != nil {
 			log.Log.Errorf("pay_trace: get wechatPay param fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
 			return "", err
@@ -704,11 +760,12 @@ func (svc *OrderModule) TradeRefund(refundAmount int) (string, error) {
 }
 
 // 支付宝退款
-func (svc *OrderModule) AliRefund(refundAmount int) (*alipayCli.TradeRefundResponse, error) {
+func (svc *OrderModule) AliRefund(refundAmount int, outRequestNo string) (*alipayCli.TradeRefundResponse, error) {
 	client := alipay.NewAliPay(true)
+	client.OutRequestNo = outRequestNo
 	client.OutTradeNo = svc.order.Order.PayOrderId
 	client.RefundAmount = fmt.Sprintf("%.2f", float64(refundAmount)/100)
-	client.RefundReson = fmt.Sprintf("%s%s", svc.order.Order.Subject, "退款")
+	client.RefundReason = fmt.Sprintf("%s%s", svc.order.Order.Subject, "退款")
 	resp, err := client.TradeRefund()
 	if err != nil {
 		return nil, err
@@ -718,12 +775,13 @@ func (svc *OrderModule) AliRefund(refundAmount int) (*alipayCli.TradeRefundRespo
 }
 
 // 微信退款
-func (svc *OrderModule) WechatRefund(refundAmount int) (*wxCli.RefundResponse, error) {
+func (svc *OrderModule) WechatRefund(refundAmount int, outRequestNo string) (*wxCli.RefundResponse, error) {
 	client := wechat.NewWechatPay(true)
 	client.OutTradeNo = svc.order.Order.PayOrderId
 	client.TotalAmount = svc.order.Order.Amount
 	client.RefundAmount = refundAmount
 	client.RefundNotify = config.Global.WechatRefundNotify
+	client.OutRefundNo = outRequestNo
 	resp, err := client.TradeRefund()
 	if err != nil {
 		return nil, err
@@ -734,19 +792,21 @@ func (svc *OrderModule) WechatRefund(refundAmount int) (*wxCli.RefundResponse, e
 
 // 是否可退款
 // 返回值 是否可退款 [true表示可退] 及 退款手续费
-func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderId, extra string) (bool, int, error) {
+func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderId, extra string) (bool, int, int, error) {
 	// 如果订单状态不等于已支付
 	if status != consts.ORDER_TYPE_PAID {
-		return false, 0, nil
+		return false, 0, 0, nil
 	}
 
 	// 只有预约场馆/次卡/私教/课程可申请退款 同时需要判断 订单是否过期
 	if orderType == consts.ORDER_TYPE_YEAR_CARD || orderType == consts.ORDER_TYPE_MONTH_CARD ||
 		orderType == consts.ORDER_TYPE_SEANSON_CARD {
-		return false, 0, errors.New("invalid order type")
+		return false, 0, 0, errors.New("invalid order type")
 	}
 
-	var refundFee int
+	var (
+		refundFee, ruleId int
+	)
 	now := time.Now().Unix()
 	switch orderType {
 	case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
@@ -754,18 +814,18 @@ func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderI
 		infos, err := svc.appointment.GetAppointmentRecordByOrderId(orderId, consts.ORDER_TYPE_PAID)
 		if len(infos) == 0 || err != nil {
 			log.Log.Errorf("order_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
-			return false, 0, errors.New("get record fail")
+			return false, 0, 0, errors.New("get record fail")
 		}
 
 		rsp := &mappointment.OrderResp{}
 		if err := util.JsonFast.UnmarshalFromString(extra, rsp); err != nil {
 			log.Log.Errorf("order_trace: unmarshal extra fail, orderId:%s, err:%s", orderId, err)
-			return false, 0, errors.New("unmarshal fail")
+			return false, 0, 0, errors.New("unmarshal fail")
 		}
 
 		if len(rsp.TimeNodeInfo) == 0 {
 			log.Log.Errorf("order_trace: time node is empty, orderId:%s", orderId)
-			return false, 0, errors.New("time node empty")
+			return false, 0, 0, errors.New("time node empty")
 		}
 
 		// 默认预约可退
@@ -787,14 +847,14 @@ func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderI
 
 		// 不能退款
 		if !can {
-			return false, 0, nil
+			return false, 0, 0, nil
 		}
 
 		// 可退款 则计算手续费
-		refundFee, err = svc.CalculationRefundFee(amount, int(lastStartTime))
+		refundFee, ruleId, err = svc.CalculationRefundFee(amount, int(lastStartTime))
 		if err != nil {
 			log.Log.Errorf("order_trace: calculation refund fee fail, orderId:%s, err:%s", orderId, err)
-			return false, 0, nil
+			return false, 0, 0, nil
 		}
 
 	case consts.ORDER_TYPE_EXPERIENCE_CARD:
@@ -802,13 +862,13 @@ func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderI
 		ok, err := svc.order.GetOrderProductsById(orderId)
 		if !ok || err != nil {
 			log.Log.Errorf("order_trace: get order product by id fail, orderId:%s, err:%s", orderId, err)
-			return false, 0, errors.New("get order product fail")
+			return false, 0, 0, errors.New("get order product fail")
 		}
 
 		expireTm := payTime + svc.order.OrderProduct.ExpireDuration
 		// 次卡  订单完成时间 + 过期时长 <= 当前时间戳 表示已过期
 		if expireTm <= int(now) {
-			return false, 0, nil
+			return false, 0, 0, nil
 		}
 
 		// 未过期 可退款, 次卡 全额退 则 手续费为0
@@ -816,11 +876,11 @@ func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderI
 
 	default:
 		log.Log.Errorf("order_trace: invalid order type, orderId:%s", orderId)
-		return false, 0, errors.New("invalid order type")
+		return false, 0, 0, errors.New("invalid order type")
 	}
 
 
-	return true, refundFee, nil
+	return true, refundFee, ruleId, nil
 }
 
 // 获取券码信息
@@ -975,7 +1035,7 @@ func (svc *OrderModule) CheckOrderExpire() error {
 
 		svc.order.Order = order
 		// 预约场馆/次卡 查看订单是否可退款 可退款表示未过期
-		can, _, err := svc.CanRefund(order.Amount, order.Status, order.OrderType, order.PayTime, order.PayOrderId, order.Extra)
+		can, _, _, err := svc.CanRefund(order.Amount, order.Status, order.OrderType, order.PayTime, order.PayOrderId, order.Extra)
 		// 可以退款 表示未过期 或 出现错误 不处理
 		if can || err != nil {
 			log.Log.Errorf("order_trace: canRefund err:%s", err)
@@ -1026,15 +1086,15 @@ func (svc *OrderModule) OrderRefundRules() (int, []*models.VenueRefundRules) {
 // amount 订单实付金额
 // lastStartTime 场次/预约 最近开始时间
 // 返回手续费 [单位 分]
-func (svc *OrderModule) CalculationRefundFee(amount, lastStartTime int) (int, error) {
+func (svc *OrderModule) CalculationRefundFee(amount, lastStartTime int) (int, int, error) {
 	rules, err := svc.order.GetRefundRules()
 	if len(rules) == 0 || err != nil {
 		log.Log.Errorf("order_trace: get refund rules fail, err:%s", err)
-		return 0, errors.New("get refund rules fail")
+		return 0, 0, errors.New("get refund rules fail")
 	}
 
 	now := int(time.Now().Unix())
-	var refundFee int
+	var refundFee, ruleId int
 	for _, rule := range rules {
 		// 规则校验最大时长 != 0 表示需要校验时长区间
 		if rule.RuleMaxDuration > 0 {
@@ -1045,7 +1105,11 @@ func (svc *OrderModule) CalculationRefundFee(amount, lastStartTime int) (int, er
 				if refundFee = amount * rule.FeeRate / 1e4; refundFee < rule.MinimumCharge {
 					// 最低手续费
 					refundFee = rule.MinimumCharge
+					ruleId = rule.Id
 				}
+
+				svc.order.RefundRecord.MinimumCharge = rule.MinimumCharge
+				svc.order.RefundRecord.FeeRate = rule.FeeRate
 
 				break
 			}
@@ -1057,8 +1121,11 @@ func (svc *OrderModule) CalculationRefundFee(amount, lastStartTime int) (int, er
 				if refundFee = amount * rule.FeeRate / 1e4; refundFee < rule.MinimumCharge {
 					// 最低手续费
 					refundFee = rule.MinimumCharge
+					ruleId = rule.Id
 				}
 
+				svc.order.RefundRecord.MinimumCharge = rule.MinimumCharge
+				svc.order.RefundRecord.FeeRate = rule.FeeRate
 				break
 			}
 
@@ -1071,7 +1138,9 @@ func (svc *OrderModule) CalculationRefundFee(amount, lastStartTime int) (int, er
 	if amount <= refundFee {
 		// 全款退
 		refundFee = 0
+		// 属于特殊情况 规则id为0
+		ruleId = 0
 	}
 
-	return refundFee, nil
+	return refundFee, ruleId, nil
 }

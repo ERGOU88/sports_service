@@ -202,6 +202,12 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 		return errdef.COACH_NOT_EXISTS
 	}
 
+	if svc.coach.Coach.CoachType != 1 {
+		log.Log.Errorf("coach_trace: invalid coach type, coachId:%d", param.CoachId)
+		svc.engine.Rollback()
+		return errdef.COACH_NOT_EXISTS
+	}
+
 	ok, err = svc.order.GetOrder(param.OrderId)
 	if !ok || err != nil {
 		log.Log.Errorf("coach_trace: coach order not found, err:%s", err)
