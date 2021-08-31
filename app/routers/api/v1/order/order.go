@@ -52,7 +52,7 @@ func OrderRefund(c *gin.Context) {
 	userId, _ := c.Get(consts.USER_ID)
 	svc := corder.New(c)
 	param.UserId = userId.(string)
-	code, _, _ := svc.OrderRefund(param, consts.EXECUTE_TYPE_REFUND)
+	code, _, _, _ := svc.OrderRefund(param, consts.EXECUTE_TYPE_REFUND)
 	reply.Response(http.StatusOK, code)
 }
 
@@ -109,7 +109,7 @@ func RefundRules(c *gin.Context) {
 	orderId := c.Query("order_id")
 	userId, _ := c.Get(consts.USER_ID)
 	svc := corder.New(c)
-	code, refundAmount, refundFee := svc.OrderRefund(&morder.ChangeOrder{
+	code, refundAmount, refundFee, ruleId := svc.OrderRefund(&morder.ChangeOrder{
 		UserId: userId.(string),
 		OrderId: orderId,
 	}, consts.EXECUTE_TYPE_QUERY)
@@ -125,6 +125,7 @@ func RefundRules(c *gin.Context) {
 		return
 	}
 
+	reply.Data["rule_id"] = ruleId
 	reply.Data["list"] = rules
 	reply.Data["refund_amount"] = refundAmount
 	reply.Data["refund_fee"] = refundFee
