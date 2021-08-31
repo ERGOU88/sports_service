@@ -293,8 +293,8 @@ func (svc *base) QueryStockInfo(appointmentType int, relatedId int64, date, time
 
 func (svc *base) SetOrderProductInfo(orderId string, now, count int, relatedId int64) *models.VenueOrderProductInfo {
 	return &models.VenueOrderProductInfo{
-		ProductId:   svc.appointment.AppointmentInfo.Id,
-		ProductType:   consts.ORDER_TYPE_APPOINTMENT_VENUE,
+		ProductId:   consts.ORDER_TYPE_INTERIM_CARD,
+		ProductType: svc.Extra.OrderType,
 		Count:       count,
 		RealAmount:  svc.appointment.AppointmentInfo.RealAmount,
 		CurAmount:   svc.appointment.AppointmentInfo.CurAmount,
