@@ -138,7 +138,7 @@ func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 				return errdef.ERROR
 			}
 
-			refundTradeNo := params.Get("out_request_no")
+			refundTradeNo := params.Get("out_biz_no")
 			svc.order.RefundRecord.Status = 1
 			affected, err := svc.order.UpdateRefundRecordStatus(refundTradeNo)
 			if affected != 1 || err != nil {
@@ -180,7 +180,7 @@ func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 			return errdef.ERROR
 		}
 
-		refundTradeNo := params.Get("out_request_no")
+		refundTradeNo := params.Get("out_biz_no")
 		// 状态为已退款
 		svc.order.RefundRecord.Status = 1
 		affected, err := svc.order.UpdateRefundRecordStatus(refundTradeNo)
