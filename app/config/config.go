@@ -74,6 +74,9 @@ type Config struct {
 	WechatRefundNotify string
 	AlipayNotifyUrl string
 	AppleLinkPath string
+	CertFilePath string
+	KeyFilePath string
+	Pkcs12FilePath string
 
 	Debug bool
 }
