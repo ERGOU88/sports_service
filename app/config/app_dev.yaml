@@ -50,6 +50,10 @@ wechatRefundNotify: http://fpv-app-api-qa.bluetrans.cn/api/v1/pay/wechat/refund
 alipayNotifyUrl: http://fpv-app-api-qa.bluetrans.cn/api/v1/pay/alipay/notify
 # 苹果
 appleLinkPath: /data/service/fpv-app-api/config
+# 微信证书
+certFilePath: /data/service/fpv-app-api/config
+keyFilePath: /data/service/fpv-app-api/config
+pkcs12FilePath: /data/service/fpv-app-api/config
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
   path: ./log/app_server_%s.log

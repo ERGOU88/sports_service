@@ -1,13 +1,14 @@
 package wechat
 
 import (
+	"errors"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/pkg/util"
 	"github.com/go-pay/gopay/wechat"
+	"sports_service/server/app/config"
 	"sports_service/server/global/app/log"
 	"strconv"
 	"time"
-	"errors"
 )
 
 const (
@@ -107,6 +108,12 @@ func (c *WechatPayClient) TradeRefund() (*wechat.RefundResponse, error) {
 		Set("total_fee", c.TotalAmount).
 		Set("refund_fee", c.RefundAmount).
 		Set("notify_url", c.RefundNotify)
+
+
+	err := c.Client.AddCertFilePath(config.Global.CertFilePath, config.Global.KeyFilePath, config.Global.Pkcs12FilePath)
+	if err != nil {
+		return nil, err
+	}
 
 	wxRsp, _, err := c.Client.Refund(bm)
 	if err != nil {
