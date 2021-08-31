@@ -292,6 +292,7 @@ func (svc *base) SetOrderProductInfo(orderId string, now, count int, relatedId i
 		UpdateAt: now,
 		RelatedId: relatedId,
 		PayOrderId: orderId,
+		CoachId: svc.Extra.CoachId,
 	}
 }
 
@@ -308,6 +309,7 @@ func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, cou
 		UpdateAt: now,
 		PurchasedNum: count,
 		SeatInfo: info,
+		CoachId: svc.Extra.CoachId,
 	}
 }
 
