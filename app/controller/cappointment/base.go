@@ -63,6 +63,16 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 		info.MinPrice = svc.appointment.AppointmentInfo.CurAmount
 		info.PriceCn = fmt.Sprintf("¥%.2f", float64(info.MinPrice)/100)
 
+		// 预约大课的时间节点选项 过期的节点会在服务端直接过滤掉 所以日期配置展示最低价格时 也应排除过期的节点
+		if appointmentType == consts.APPOINTMENT_COURSE {
+			_, _, hasExpire := svc.TimeNodeHasExpire(v.Date, svc.appointment.AppointmentInfo.TimeNode)
+			// 已过期
+			if hasExpire {
+				info.MinPrice = 0
+				info.PriceCn = "¥0"
+			}
+		}
+
 		total, err := svc.appointment.GetTotalNodeByWeek()
 		if err != nil {
 			log.Log.Errorf("venue_trace: get total node by week fail, err:%s", err)
