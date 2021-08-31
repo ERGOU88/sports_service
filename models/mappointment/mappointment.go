@@ -196,7 +196,7 @@ func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
 }
 
 const (
-	QUERY_MIN_PRICE = "SELECT min(cur_amount) as cur_amount FROM venue_appointment_info WHERE week_num=? " +
+	QUERY_MIN_PRICE = "SELECT min(cur_amount) as cur_amount, time_node FROM venue_appointment_info WHERE week_num=? " +
 		"AND related_id=? AND appointment_type=? AND status=0"
 )
 // 根据星期 及 预约类型 获取最低价格
