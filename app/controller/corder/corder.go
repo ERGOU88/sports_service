@@ -646,7 +646,7 @@ func (svc *OrderModule) OrderRefund(param *morder.ChangeOrder, executeType int) 
 	// 如果是查询退款金额 及 手续费
 	if executeType == consts.EXECUTE_TYPE_QUERY {
 		svc.engine.Rollback()
-		return errdef.SUCCESS, refundAmount, refundFee, 0
+		return errdef.SUCCESS, refundAmount, refundFee, ruleId
 	}
 
 	if err := svc.OrderProcess(svc.order.Order.PayOrderId, "", svc.order.Order.Transaction,
