@@ -55,6 +55,7 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 		svc.appointment.AppointmentInfo.WeekNum = v.Week
 		svc.appointment.AppointmentInfo.AppointmentType = appointmentType
 		svc.appointment.AppointmentInfo.CurAmount = 0
+		svc.appointment.AppointmentInfo.TimeNode = ""
 
 		if err := svc.appointment.GetMinPriceByWeek(); err != nil {
 			log.Log.Errorf("venue_trace: get min price fail, err:%s", err)
@@ -65,11 +66,14 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 
 		// 预约大课的时间节点选项 过期的节点会在服务端直接过滤掉 所以日期配置展示最低价格时 也应排除过期的节点
 		if appointmentType == consts.APPOINTMENT_COURSE {
-			_, _, hasExpire := svc.TimeNodeHasExpire(v.Date, svc.appointment.AppointmentInfo.TimeNode)
-			// 已过期
-			if hasExpire {
-				info.MinPrice = 0
-				info.PriceCn = "¥0"
+			date := svc.GetDateById(v.Id, consts.FORMAT_DATE)
+			if date != "" {
+				_, _, hasExpire := svc.TimeNodeHasExpire(date, svc.appointment.AppointmentInfo.TimeNode)
+				// 已过期
+				if hasExpire {
+					info.MinPrice = 0
+					info.PriceCn = "¥0"
+				}
 			}
 		}
 
