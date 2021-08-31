@@ -14,6 +14,7 @@ import (
   "sports_service/server/models/mconfigure"
   "sports_service/server/models/mlike"
 	"sports_service/server/models/mnotify"
+	"sports_service/server/models/morder"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
 	"sports_service/server/models/mvideo"
@@ -39,6 +40,7 @@ type UserModule struct {
 	sms         *sms.SmsModel
 	configure   *mconfigure.ConfigModel
 	venue       *mvenue.VenueModel
+	order       *morder.OrderModel
 }
 
 func New(c *gin.Context) UserModule {
@@ -59,6 +61,7 @@ func New(c *gin.Context) UserModule {
 		sms: sms.NewSmsModel(),
 		configure: mconfigure.NewConfigModel(socket),
 		venue: mvenue.NewVenueModel(venueSocket),
+		order: morder.NewOrderModel(venueSocket),
 		engine: socket,
 	}
 }
@@ -401,7 +404,7 @@ func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
 		}
 	}
 
-	if err := svc.SaveQrCodeKabawInfo(util.GenSecret(util.MIX_MODE, 18), userId, rdskey.KEY_EXPIRE_MIN * 15); err != nil {
+	if err := svc.order.SaveQrCodeInfo(util.GenSecret(util.MIX_MODE, 18), userId, rdskey.KEY_EXPIRE_MIN * 15); err != nil {
 		log.Log.Errorf("user_trace: save qrcode kabaw info fail, userId:%s, err:%s", userId, err)
 		return errdef.VENUE_VIP_INFO_FAIL, nil
 	}
@@ -410,7 +413,4 @@ func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
 }
 
 // 保存卡包二维码信息
-func (svc *UserModule) SaveQrCodeKabawInfo(secret, userId string, expireTm int64) error {
-	rds := dao.NewRedisDao()
-	return rds.SETEX(fmt.Sprintf(rdskey.QRCODE_KABAW, secret), expireTm, userId)
-}
+

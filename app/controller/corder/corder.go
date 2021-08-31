@@ -887,18 +887,12 @@ func (svc *OrderModule) GetCouponCodeInfo(userId, orderId string) (int, *morder.
 		return errdef.ORDER_COUPON_CODE_FAIL, nil
 	}
 
-	if err = svc.SaveQrCodeInfo(resp.QrCodeInfo, orderId, expire); err != nil {
+	if err = svc.order.SaveQrCodeInfo(resp.QrCodeInfo, orderId, expire); err != nil {
 		log.Log.Errorf("order_trace: save qrcode info fail, err:%s", err)
 		return errdef.ORDER_COUPON_CODE_FAIL, nil
 	}
 
 	return errdef.SUCCESS, resp
-}
-
-// 保存二维码数据
-func (svc *OrderModule) SaveQrCodeInfo(secret, orderId string, expireTm int64) error {
-	rds := dao.NewRedisDao()
-	return rds.SETEX(fmt.Sprintf(rdskey.QRCODE_INFO, secret), expireTm, orderId)
 }
 
 // 订单取消
