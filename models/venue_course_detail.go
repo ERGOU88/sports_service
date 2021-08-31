@@ -10,7 +10,7 @@ type VenueCourseDetail struct {
 	EventPrice     int    `json:"event_price" xorm:"not null default 0 comment('活动价格') INT(11)"`
 	EventStartTime int    `json:"event_start_time" xorm:"not null default 0 comment('活动开始时间') INT(11)"`
 	EventEndTime   int    `json:"event_end_time" xorm:"not null default 0 comment('活动结束时间') INT(11)"`
-	PromotionPic   string `json:"promotion_pic" xorm:"not null default '' comment('宣传图') VARCHAR(521)"`
+	PromotionPic   string `json:"promotion_pic" xorm:"not null default '' comment('宣传图') VARCHAR(1000)"`
 	Icon           string `json:"icon" xorm:"not null default '' comment('图标') VARCHAR(256)"`
 	Sortorder      int    `json:"sortorder" xorm:"not null default 1 comment('排序') INT(11)"`
 	IsRecommend    int    `json:"is_recommend" xorm:"not null default 0 comment('推荐（0：不推荐；1：推荐）') TINYINT(1)"`

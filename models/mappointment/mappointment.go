@@ -166,6 +166,7 @@ type OrderResp struct {
 	CanRefund        bool   `json:"can_refund"`                   // 是否可退款
 	HasEvaluate      bool   `json:"has_evaluate"`                 // 是否已评价
 	VenueName        string `json:"venue_name,omitempty"`         // 场馆名称
+	ProductImg       string `json:"product_img,omitempty"`        // 商品图片
 }
 
 // 单时间节点预约数据
