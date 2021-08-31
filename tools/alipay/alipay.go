@@ -22,12 +22,13 @@ const (
 
 type AliPayClient struct {
 	Client       *alipay.Client
-	Subject      string        // 商品名称
-	OutTradeNo   string        // 订单号
-	TotalAmount  string        // 金额   （元）
-	TimeExpire   string        // 订单超时时间
-	RefundAmount string        // 退款金额 (元)
-	RefundReson  string        // 退款理由
+	Subject      string // 商品名称
+	OutTradeNo   string // 订单号
+	TotalAmount  string // 金额   （元）
+	TimeExpire   string // 订单超时时间
+	RefundAmount string // 退款金额 (元)
+	RefundReason string // 退款理由
+	OutRequestNo string // 退款请求号(部分退款必填)
 }
 
 // appId：应用ID
@@ -96,7 +97,8 @@ func (c *AliPayClient) TradeRefund() (*alipay.TradeRefundResponse, error) {
 	body := make(gopay.BodyMap)
 	body.Set("out_trade_no", c.OutTradeNo)
 	body.Set("refund_amount", c.RefundAmount)
-	body.Set("refund_reason", c.RefundReson)
+	body.Set("refund_reason", c.RefundReason)
+	body.Set("out_request_no", c.OutRequestNo)
 	//发起退款请求
 	aliRsp, err := c.Client.TradeRefund(body)
 	if err != nil {

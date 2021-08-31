@@ -182,7 +182,7 @@ func WechatNotify(c *gin.Context) {
 	}
 
 	payTime, _ := time.Parse("20060102150405", bm["time_end"].(string))
-	if err := svc.WechatPayNotify(orderId, string(body), bm["transaction_id"].(string), payTime.Unix(), consts.PAY_NOTIFY); err != nil {
+	if err := svc.WechatPayNotify(orderId, string(body),  bm["transaction_id"].(string), "", payTime.Unix(), consts.PAY_NOTIFY); err != nil {
 		log.Log.Errorf("wxNotify_trace: order process fail, err:%s", err)
 		c.String(http.StatusInternalServerError, "fail")
 		return
@@ -210,7 +210,7 @@ func WechatRefundNotify(c *gin.Context) {
 
 	body, _ := util.JsonFast.Marshal(bm)
 	log.Log.Debug("wxNotify_trace: body:%s, bm:%+v", string(body), bm)
-	if hasExist := util.MapExistBySlice(bm, []string{"return_code", "refund_status", "out_trade_no", "total_fee",
+	if hasExist := util.MapExistBySlice(bm, []string{"return_code", "out_refund_no", "refund_status", "out_trade_no", "total_fee",
 		"refund_fee", "transaction_id"}); !hasExist {
 		log.Log.Error("wxNotify_trace: map key not exists")
 		c.String(http.StatusBadRequest, "fail")
@@ -266,7 +266,7 @@ func WechatRefundNotify(c *gin.Context) {
 		return
 	}
 
-	if err := svc.WechatPayNotify(orderId, string(body), bm["transaction_id"].(string), int64(order.PayTime), consts.REFUND_NOTIFY); err != nil {
+	if err := svc.WechatPayNotify(orderId, string(body), bm["transaction_id"].(string), bm["out_refund_no"].(string), int64(order.PayTime), consts.REFUND_NOTIFY); err != nil {
 		log.Log.Errorf("wxNotify_trace: order process fail, err:%s", err)
 		c.String(http.StatusInternalServerError, "fail")
 		return

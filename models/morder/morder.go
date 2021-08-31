@@ -55,6 +55,7 @@ type OrderModel struct {
 	OrderProduct   *models.VenueOrderProductInfo
 	Record         *models.VenueAppointmentRecord
 	Notify         *models.VenuePayNotify
+	RefundRecord   *models.VenueRefundRecord
 }
 
 func NewOrderModel(engine *xorm.Session) *OrderModel {
@@ -64,6 +65,7 @@ func NewOrderModel(engine *xorm.Session) *OrderModel {
 		OrderProduct: new(models.VenueOrderProductInfo),
 		Record: new(models.VenueAppointmentRecord),
 		Notify: new(models.VenuePayNotify),
+		RefundRecord: new(models.VenueRefundRecord),
 	}
 }
 
@@ -156,4 +158,14 @@ func (m *OrderModel) GetRefundRules() ([]*models.VenueRefundRules, error) {
 func (m *OrderModel) SaveQrCodeInfo(secret, orderId string, expireTm int64) error {
 	rds := dao.NewRedisDao()
 	return rds.SETEX(fmt.Sprintf(rdskey.QRCODE_INFO, secret), expireTm, orderId)
+}
+
+// 添加退款记录
+func (m *OrderModel) AddRefundRecord() (int64, error) {
+	return m.Engine.InsertOne(m.RefundRecord)
+}
+
+// 更新退款记录状态
+func (m *OrderModel) UpdateRefundRecordStatus(refundTradeNo string) (int64, error) {
+	return m.Engine.Where("refund_trade_no=?", refundTradeNo).Cols("status").Update(m.RefundRecord)
 }

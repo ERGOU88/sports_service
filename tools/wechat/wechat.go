@@ -27,6 +27,7 @@ type WechatPayClient struct {
 	TimeExpire   string             // 交易结束时间
 	RefundAmount int                // 退款金额
 	RefundNotify string             // 退款回调地址
+	OutRefundNo  string             // 退款单号
 }
 
 // 初始化微信客户端
@@ -102,7 +103,7 @@ func (c *WechatPayClient) TradeRefund() (*wechat.RefundResponse, error) {
 	bm.Set("out_trade_no", c.OutTradeNo).
 		Set("nonce_str", util.GetRandomString(32)).
 		Set("sign_type", wechat.SignType_MD5).
-		Set("out_refund_no", util.GetRandomString(64)).
+		Set("out_refund_no", c.OutRefundNo).
 		Set("total_fee", c.TotalAmount).
 		Set("refund_fee", c.RefundAmount).
 		Set("notify_url", c.RefundNotify)
