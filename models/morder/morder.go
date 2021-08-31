@@ -5,6 +5,7 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/rdskey"
 	"sports_service/server/models"
+	"fmt"
 )
 
 // 支付请求参数
@@ -149,4 +150,10 @@ func (m *OrderModel) GetRefundRules() ([]*models.VenueRefundRules, error) {
 	}
 
 	return list, nil
+}
+
+// 保存二维码数据
+func (m *OrderModel) SaveQrCodeInfo(secret, orderId string, expireTm int64) error {
+	rds := dao.NewRedisDao()
+	return rds.SETEX(fmt.Sprintf(rdskey.QRCODE_INFO, secret), expireTm, orderId)
 }
