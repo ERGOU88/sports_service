@@ -8,7 +8,7 @@ type VenuePayOrders struct {
 	Extra          string `json:"extra" xorm:"not null default '' comment('记录订单相关扩展数据') VARCHAR(1000)"`
 	Transaction    string `json:"transaction" xorm:"not null default '' comment('第三方订单号') VARCHAR(200)"`
 	PayType        int    `json:"pay_type" xorm:"not null comment('1 支付宝 2 微信 3 钱包 4 苹果内购') TINYINT(1)"`
-	ProductType    int    `json:"product_type" xorm:"not null comment('1001 场馆预约 2000 体验券 2001 购买月卡 2002 购买季卡 2003 购买年卡  3001 私教（教练）订单 3002 课程订单 4001 充值订单') INT(8)"`
+	ProductType    int    `json:"product_type" xorm:"not null comment('2101 临时卡 2201 次卡 2311 月卡 2321 季卡 2331 半年卡 2341 年卡 4001 储值卡') INT(8)"`
 	ErrorCode      string `json:"error_code" xorm:"not null default '' comment('错误码') VARCHAR(20)"`
 	PayOrderId     string `json:"pay_order_id" xorm:"not null comment('订单号') index VARCHAR(150)"`
 	OrderType      int    `json:"order_type" xorm:"not null comment('下单方式：1001 APP下单，1002 前台购买，1003第三方推广渠道购买') index(user_id) INT(8)"`

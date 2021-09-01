@@ -419,6 +419,7 @@ func (svc *base) AddOrder(orderId, userId, subject string, now, productType int)
 	svc.order.Order.CreateAt = now
 	svc.order.Order.UpdateAt = now
 	svc.order.Order.Amount = svc.Extra.TotalAmount
+	svc.order.Order.OriginalAmount = svc.Extra.OriginalAmount
 	svc.order.Order.ChannelId = svc.Extra.Channel
 	svc.order.Order.Subject = subject
 	svc.order.Order.ProductType = productType
@@ -611,6 +612,7 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 		// 数量 * 售价
 		svc.Extra.TotalAmount += item.Count * svc.appointment.AppointmentInfo.CurAmount
 		svc.Extra.TotalDiscount += item.Count * svc.appointment.AppointmentInfo.DiscountAmount
+		svc.Extra.OriginalAmount += item.Count * svc.appointment.AppointmentInfo.RealAmount
 		// 购买总数量
 		svc.Extra.Count += item.Count
 		svc.orderMp[item.Id] = svc.SetOrderProductInfo(orderId, now, item.Count, relatedId)
