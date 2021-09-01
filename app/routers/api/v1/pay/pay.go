@@ -2,6 +2,7 @@ package pay
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/go-pay/gopay"
 	wxCli "github.com/go-pay/gopay/wechat"
 	"io/ioutil"
 	"net/http"
@@ -188,42 +189,42 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-	c.String(http.StatusOK, "SUCCESS")
+	rsp := new(wxCli.NotifyResponse)
+	rsp.ReturnCode = gopay.SUCCESS
+	rsp.ReturnMsg = "OK"
+
+	c.String(http.StatusOK, rsp.ToXmlString())
 }
 
 // 微信退款回调
+// 退款通知无sign，不用验签 只需解密数据
 func WechatRefundNotify(c *gin.Context) {
-	bm, err := wxCli.ParseNotifyToBodyMap(c.Request)
+	// 解析参数
+	notifyReq, err := wxCli.ParseRefundNotify(c.Request)
 	if err != nil {
-		log.Log.Errorf("wxNotify_trace: parse notify to bodyMap fail, err:%s", err.Error())
+		log.Log.Errorf("wxNotify_trace: parse refund notify fail, err:%s", err.Error())
 		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
-	cli := wechat.NewWechatPay(true)
-	ok, err := cli.VerifySign(bm)
-	if !ok || err != nil {
-		log.Log.Error("wxNotify_trace: sign not match, err:%s", err)
+	// 解密退款异步通知的加密数据
+	refundNotify, err := wxCli.DecryptRefundNotifyReqInfo(notifyReq.ReqInfo, wechat.WECHAT_SECRET)
+	if err != nil {
+		log.Log.Errorf("wxNotify_trace: decrypt refund notify fail, err:%s", err.Error())
 		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
-	body, _ := util.JsonFast.Marshal(bm)
-	log.Log.Debug("wxNotify_trace: body:%s, bm:%+v", string(body), bm)
-	if hasExist := util.MapExistBySlice(bm, []string{"return_code", "out_refund_no", "refund_status", "out_trade_no", "total_fee",
-		"refund_fee", "transaction_id"}); !hasExist {
-		log.Log.Error("wxNotify_trace: map key not exists")
-		c.String(http.StatusBadRequest, "fail")
-		return
-	}
+	body, _ := util.JsonFast.Marshal(refundNotify)
+	log.Log.Debug("wxNotify_trace: body:%s, notify:%+v", string(body), refundNotify)
 
-	if bm["refund_status"].(string) != "SUCCESS" || bm["return_code"].(string) != "SUCCESS" {
+	if refundNotify.RefundStatus != "SUCCESS" || notifyReq.ReturnCode != "SUCCESS" {
 		log.Log.Errorf("wxNotify_trace: trade not success")
 		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
-	orderId := bm["out_trade_no"].(string)
+	orderId := refundNotify.OutTradeNo
 	svc := corder.New(c)
 	order, err := svc.GetOrder(orderId)
 	if order == nil || err != nil {
@@ -238,7 +239,7 @@ func WechatRefundNotify(c *gin.Context) {
 		return
 	}
 
-	totalFee := bm["total_fee"].(string)
+	totalFee := refundNotify.TotalFee
 	amount, err := strconv.Atoi(totalFee)
 	if err != nil {
 		log.Log.Error("wxNotify_trace: amount not match, orderId:%s, err:%s", orderId, err)
@@ -252,7 +253,7 @@ func WechatRefundNotify(c *gin.Context) {
 		return
 	}
 
-	refundFee := bm["refund_fee"].(string)
+	refundFee := refundNotify.RefundFee
 	refund, err := strconv.Atoi(refundFee)
 	if err != nil {
 		log.Log.Error("wxNotify_trace: refund amount fail, orderId:%s, err:%s", orderId, err)
@@ -266,11 +267,15 @@ func WechatRefundNotify(c *gin.Context) {
 		return
 	}
 
-	if err := svc.WechatPayNotify(orderId, string(body), bm["transaction_id"].(string), bm["out_refund_no"].(string), int64(order.PayTime), consts.REFUND_NOTIFY); err != nil {
+	if err := svc.WechatPayNotify(orderId, string(body), refundNotify.TransactionId, refundNotify.OutRefundNo, int64(order.PayTime), consts.REFUND_NOTIFY); err != nil {
 		log.Log.Errorf("wxNotify_trace: order process fail, err:%s", err)
 		c.String(http.StatusInternalServerError, "fail")
 		return
 	}
 
-	c.String(http.StatusOK, "SUCCESS")
+	rsp := new(wxCli.NotifyResponse)
+	rsp.ReturnCode = gopay.SUCCESS
+	rsp.ReturnMsg = "OK"
+
+	c.String(http.StatusOK, rsp.ToXmlString())
 }
