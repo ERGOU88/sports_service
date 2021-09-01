@@ -417,7 +417,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	now := int(time.Now().Unix())
 	resp := &mcomment.ReplyComment{}
 	switch params.CommentType {
-	// 视频评论
+	// 视频回复
 	case consts.COMMENT_TYPE_VIDEO:
 		// 查询被回复的评论是否存在
 		replyInfo := svc.comment.GetVideoCommentById(fmt.Sprint(params.ReplyId))
@@ -507,7 +507,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 
 		atType = consts.TYPE_VIDEO_COMMENT
 
-	// 帖子评论
+	// 帖子回复
 	case consts.COMMENT_TYPE_POST:
 		// 查询被回复的评论是否存在
 		replyInfo := svc.comment.GetPostCommentById(fmt.Sprint(params.ReplyId))
@@ -604,6 +604,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	svc.comment.ReceiveAt.ComposeId = commentId
 	svc.comment.ReceiveAt.UpdateAt = now
 	svc.comment.ReceiveAt.CommentLevel = consts.COMMENT_REPLY
+	svc.comment.ReceiveAt.Status = 1
 	// 回复 记录到 @
 	if err := svc.comment.AddReceiveAt(); err != nil {
 		log.Log.Errorf("comment_trace: add receive at err:%s", err)
@@ -627,8 +628,9 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 				ComposeId:    commentId,
 				TopicType:    atType,
 				CreateAt:     now,
-				CommentLevel: consts.COMMENT_PUBLISH,
+				CommentLevel: consts.COMMENT_REPLY,
 				UpdateAt:     now,
+				Status:       1,
 			}
 
 			atList = append(atList, at)
