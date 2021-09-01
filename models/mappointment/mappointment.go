@@ -168,6 +168,7 @@ type OrderResp struct {
 	HasEvaluate      bool   `json:"has_evaluate"`                 // 是否已评价
 	VenueName        string `json:"venue_name,omitempty"`         // 场馆名称
 	ProductImg       string `json:"product_img,omitempty"`        // 商品图片
+	OriginalAmount   int    `json:"original_amount,omitempty"`    // 订单原始金额
 }
 
 // 单时间节点预约数据
