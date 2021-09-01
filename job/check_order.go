@@ -68,7 +68,7 @@ func GetOrderIds() ([]string, error) {
 	return rds.SMEMBERS(rdskey.ORDER_EXPIRE_INFO)
 }
 
-// 超时处理完毕 删除缓存中的订单号
+// 超时处理完毕 / 订单已成功 删除缓存中的订单号
 func DelOrderId(orderId string) (int, error) {
 	rds := dao.NewRedisDao()
 	return rds.SREM(rdskey.ORDER_EXPIRE_INFO, orderId)
