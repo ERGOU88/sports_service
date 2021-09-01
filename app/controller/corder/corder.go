@@ -329,12 +329,15 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 			return errors.New("get order product fail")
 		}
 
-		// 更新会员可用时长 及 过期时长
-		//if err := svc.UpdateVipInfo(svc.order.Order.UserId, svc.order.OrderProduct.RelatedId, now, svc.order.OrderProduct.Count,
-		//	svc.order.OrderProduct.ExpireDuration, svc.order.OrderProduct.Duration, changeType); err != nil {
-		//	log.Log.Errorf("payNotify_trace: update vip info fail, orderId:%s, err:%s", orderId, err)
-		//	return err
-		//}
+		// 支付成功/申请退款时 需更新会员数据
+		if changeType == consts.PAY_NOTIFY || changeType == consts.APPLY_REFUND {
+			// 更新会员可用时长 及 过期时长
+			if err := svc.UpdateVipInfo(svc.order.Order.UserId, svc.order.OrderProduct.RelatedId, now, svc.order.OrderProduct.Count,
+				svc.order.OrderProduct.ExpireDuration, svc.order.OrderProduct.Duration, changeType); err != nil {
+				log.Log.Errorf("payNotify_trace: update vip info fail, orderId:%s, err:%s", orderId, err)
+				return err
+			}
+		}
 	}
 
 	if changeType == consts.PAY_NOTIFY || changeType == consts.REFUND_NOTIFY {
