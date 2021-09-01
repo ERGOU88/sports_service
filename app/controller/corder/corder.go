@@ -264,6 +264,11 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		// 如果是申请退款 则订单当前状态 应是已付款 需更新状态为 退款中
 		curStatus = consts.ORDER_TYPE_PAID
 		status = consts.ORDER_TYPE_REFUND_WAIT
+		// 如果退款金额和退款手续费均为0 则表示退款单金额为0 直接将退款状态置为成功
+		if refundFee == 0 && refundAmount == 0 {
+			status = consts.ORDER_TYPE_REFUND_SUCCESS
+		}
+
 	case consts.CANCEL_ORDER:
 		// 如果是取消订单 则订单当前状态 应是待支付 需更新状态为 未支付
 		curStatus = consts.ORDER_TYPE_WAIT
