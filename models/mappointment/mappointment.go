@@ -335,7 +335,7 @@ const (
 )
 // 更新场馆会员数据 duration < 0 减少 duration > 0 增加
 func (m *AppointmentModel) UpdateVenueVipInfo(duration int, userId string) (int64, error) {
-	res, err := m.Engine.Exec(UPDATE_VENUE_VIP_INFO, duration, userId, time.Now().Unix(), duration)
+	res, err := m.Engine.Exec(UPDATE_VENUE_VIP_INFO, duration, time.Now().Unix(), userId, duration)
 	if err != nil {
 		return 0, err
 	}
