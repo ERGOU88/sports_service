@@ -509,7 +509,7 @@ func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, now, count, 
 		// 如果vip结束时间 >= 当前时间戳 则为续费
 		if int(svc.venue.Vip.EndTm) >= now {
 			svc.venue.Vip.Duration += int64(duration)
-			svc.venue.Vip.EndTm = int64(now + expireDuration * count)
+			svc.venue.Vip.EndTm = svc.venue.Vip.EndTm + int64(expireDuration * count)
 			cols = "end_tm, duration, update_at"
 		} else {
 			// 否则 为 重新购买
