@@ -708,6 +708,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 
 		// 帖子直接评论/回复 composeId 存储帖子评论/回复id
 		case consts.TYPE_POST_COMMENT:
+			log.Log.Infof("帖子评论/回复 composeId:%d", receiveAt.ComposeId)
 			info := new(mnotify.ReceiveAtInfo)
 			info.AtTime = receiveAt.UpdateAt
 			info.Type = consts.TYPE_POST_COMMENT
