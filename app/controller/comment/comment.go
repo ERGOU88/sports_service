@@ -127,7 +127,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		}
 
 		// 更新视频总计（视频评论总数）
-		if err := svc.video.UpdateVideoCommentNum(params.ComposeId, int(now), 1); err != nil {
+		if err := svc.video.UpdateVideoCommentNum(params.ComposeId, now, 1); err != nil {
 			log.Log.Errorf("comment_trace: update video comment num err:%s", err)
 			svc.engine.Rollback()
 			return errdef.COMMENT_PUBLISH_FAIL, nil
