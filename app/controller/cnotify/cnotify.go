@@ -514,7 +514,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 	res := make([]interface{}, len(list))
 	for index, receiveAt := range list {
 		switch receiveAt.TopicType {
-		// 视频评论里@ 则展示视频内容
+		// 视频评论里@ 则展示视频内容 composeId 存储帖子评论id
 		case consts.TYPE_VIDEOS:
 			info := new(mnotify.ReceiveAtInfo)
 			info.AtTime = receiveAt.UpdateAt
@@ -540,8 +540,8 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 					}
 				}
 			}
-		// 帖子评论里@ 或 发布帖子时 内容@用户 则展示帖子内容 todo: 展示待确认
-		case consts.TYPE_POSTS, consts.TYPE_PUBLISH_POST:
+		// 帖子评论里@  则展示帖子内容 composeId 存储帖子评论id todo: 展示待确认
+		case consts.TYPE_POSTS:
 			info := new(mnotify.ReceiveAtInfo)
 			info.AtTime = receiveAt.UpdateAt
 			info.Type = receiveAt.TopicType
@@ -578,8 +578,44 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 
 				res[index] = info
 			}
+		// 发布帖子时 内容@用户 composeId 存储帖子id
+		case consts.TYPE_PUBLISH_POST:
+			info := new(mnotify.ReceiveAtInfo)
+			info.AtTime = receiveAt.UpdateAt
+			info.Type = receiveAt.TopicType
+			post, err := svc.post.GetPostById(fmt.Sprint(receiveAt.ComposeId))
+			if post != nil && err == nil {
+				info.ComposeId = post.Id
+				info.Title = post.Title
+				info.Describe = post.Describe
+				info.CreateAt = post.CreateAt
 
-		// 视频直接评论/回复
+				// 图文帖
+				if post.PostingType == consts.POST_TYPE_IMAGE {
+					var images []string
+					if err = util.JsonFast.UnmarshalFromString(post.Content, &images); err != nil {
+						log.Log.Errorf("post_trace: get image info err:%s", err)
+					}
+
+					// 使用第一张图片展示
+					if len(images) > 0 {
+						info.Cover = images[0]
+					}
+				}
+
+			}
+
+			// 执行@的用户信息
+			if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
+				info.UserId = user.UserId
+				info.Avatar = user.Avatar
+				info.Nickname = user.NickName
+			}
+
+			res[index] = info
+
+
+		// 视频直接评论/回复 composeId 存储视频评论/回复id
 		case consts.TYPE_VIDEO_COMMENT:
 			info := new(mnotify.ReceiveAtInfo)
 			info.AtTime = receiveAt.UpdateAt
@@ -670,7 +706,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 
 			}
 
-		// 帖子直接评论/回复
+		// 帖子直接评论/回复 composeId 存储帖子评论/回复id
 		case consts.TYPE_POST_COMMENT:
 			info := new(mnotify.ReceiveAtInfo)
 			info.AtTime = receiveAt.UpdateAt
