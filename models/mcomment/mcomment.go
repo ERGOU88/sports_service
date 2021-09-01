@@ -250,7 +250,7 @@ func (m *CommentModel) DelVideoComments(commentIds string) error {
 // 获取视频评论列表(1级评论)
 func (m *CommentModel) GetVideoCommentList(composeId string, offset, size int) []*models.VideoComment {
 	var list []*models.VideoComment
-	if err := m.Engine.Where("video_id=? AND coment_level=1", composeId).
+	if err := m.Engine.Where("video_id=? AND comment_level=1", composeId).
 		Desc("is_top").
 		Desc("id").
 		Limit(size, offset).
