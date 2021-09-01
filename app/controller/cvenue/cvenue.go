@@ -277,11 +277,12 @@ func (svc *VenueModule) AddOrderProduct(orderId string, venueId int64, now, coun
 	svc.order.OrderProduct.DiscountRate = svc.venue.Product.DiscountRate
 	svc.order.OrderProduct.DiscountAmount = svc.venue.Product.DiscountAmount
 	svc.order.OrderProduct.Amount = svc.venue.Product.CurAmount * count
-	svc.order.OrderProduct.Duration = svc.venue.Product.EffectiveDuration
+	svc.order.OrderProduct.SingleDuration = svc.venue.Product.EffectiveDuration
 	svc.order.OrderProduct.CreateAt = now
 	svc.order.OrderProduct.UpdateAt = now
 	svc.order.OrderProduct.PayOrderId = orderId
 	svc.order.OrderProduct.ExpireDuration = svc.venue.Product.ExpireDuration
+	svc.order.OrderProduct.Duration = svc.venue.Product.EffectiveDuration * count
 
 	affected, err := svc.order.AddOrderProduct()
 	if err != nil {
