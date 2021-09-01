@@ -371,8 +371,11 @@ func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*mo
 			svc.orderMp[val.Id].DeductionAmount = int64(val.CurAmount)
 			svc.recordMp[val.Id].DeductionTm = int64(val.Duration)
 			svc.Extra.TotalDeductionTm += val.Duration
+			// 订单总金额 = 商品总价 - 抵扣金额
 			svc.Extra.TotalAmount = svc.Extra.TotalAmount - val.CurAmount
 			svc.Extra.IsDeduct = true
+			// 当前节点付款金额 = 当前节点总价 - 当前抵扣金额
+			svc.orderMp[val.Id].Amount = svc.orderMp[val.Id].Amount - val.CurAmount
 			if len(svc.Extra.TimeNodeInfo) <= key {
 				svc.Extra.TimeNodeInfo[key].DeductionTm = svc.orderMp[val.Id].DeductionTm
 			}

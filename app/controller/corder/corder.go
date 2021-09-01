@@ -363,6 +363,17 @@ func (svc *OrderModule) UpdateAppointmentInfo(orderId string, now, curStatus, st
 				log.Log.Errorf("order_trace: update stock info fail, orderId:%s, err:%s, affected:%d, id:%d", orderId, err, affected, record.Id)
 				return errors.New("update stock info fail")
 			}
+
+			// 归还抵扣的会员时长
+			if record.DeductionTm > 0 {
+				affected, err := svc.appointment.UpdateVenueVipInfo(int(record.DeductionTm), record.UserId)
+				if affected != 1 || err != nil {
+					log.Log.Errorf("order_trace: revert vip duration fail, orderId:%s, err:%s", record.PayOrderId, err)
+					return err
+				}
+
+			}
+
 		}
 	}
 
@@ -655,29 +666,33 @@ func (svc *OrderModule) OrderRefund(param *morder.ChangeOrder, executeType int) 
 		return errdef.ORDER_PROCESS_FAIL, 0, 0, 0
 	}
 
-	outRequestNo := util.NewOrderId()
-	svc.order.RefundRecord.RefundWay = svc.order.Order.PayType
-	svc.order.RefundRecord.RefundType = 1001
-	svc.order.RefundRecord.RefundAmount = refundAmount
-	svc.order.RefundRecord.RefundFee = refundFee
-	svc.order.RefundRecord.CreateAt = int(time.Now().Unix())
-	svc.order.RefundRecord.RefundTradeNo = outRequestNo
-	svc.order.RefundRecord.UserId = svc.order.Order.UserId
-	svc.order.RefundRecord.PayOrderId = svc.order.Order.PayOrderId
-	svc.order.RefundRecord.Remark = fmt.Sprintf("%s%s", svc.order.Order.Subject, "退款")
-	affected, err := svc.order.AddRefundRecord()
-	if affected != 1 || err != nil {
-		log.Log.Errorf("order_trace: add refund record fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
-		svc.engine.Rollback()
-		return errdef.ORDER_ADD_REFUND_RECORD_FAIL, 0, 0, 0
+	// 可退款金额 > 0
+	if refundAmount > 0 {
+		outRequestNo := util.NewOrderId()
+		svc.order.RefundRecord.RefundWay = svc.order.Order.PayType
+		svc.order.RefundRecord.RefundType = 1001
+		svc.order.RefundRecord.RefundAmount = refundAmount
+		svc.order.RefundRecord.RefundFee = refundFee
+		svc.order.RefundRecord.CreateAt = int(time.Now().Unix())
+		svc.order.RefundRecord.RefundTradeNo = outRequestNo
+		svc.order.RefundRecord.UserId = svc.order.Order.UserId
+		svc.order.RefundRecord.PayOrderId = svc.order.Order.PayOrderId
+		svc.order.RefundRecord.Remark = fmt.Sprintf("%s%s", svc.order.Order.Subject, "退款")
+		affected, err := svc.order.AddRefundRecord()
+		if affected != 1 || err != nil {
+			log.Log.Errorf("order_trace: add refund record fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
+			svc.engine.Rollback()
+			return errdef.ORDER_ADD_REFUND_RECORD_FAIL, 0, 0, 0
+		}
+
+		// 第三方退款
+		if _, err := svc.TradeRefund(refundAmount, outRequestNo); err != nil {
+			log.Log.Errorf("order_trace: trade refund err:%s", err)
+			svc.engine.Rollback()
+			return errdef.ORDER_REFUND_FAIL, 0, 0, 0
+		}
 	}
 
-	// 第三方退款
-	if _, err := svc.TradeRefund(refundAmount, outRequestNo); err != nil {
-		log.Log.Errorf("order_trace: trade refund err:%s", err)
-		svc.engine.Rollback()
-		return errdef.ORDER_REFUND_FAIL, 0, 0, 0
-	}
 
 	svc.engine.Commit()
 
@@ -1091,6 +1106,10 @@ func (svc *OrderModule) CalculationRefundFee(amount, lastStartTime int) (int, in
 	if len(rules) == 0 || err != nil {
 		log.Log.Errorf("order_trace: get refund rules fail, err:%s", err)
 		return 0, 0, errors.New("get refund rules fail")
+	}
+
+	if amount == 0 {
+		return 0, 0, nil
 	}
 
 	now := int(time.Now().Unix())

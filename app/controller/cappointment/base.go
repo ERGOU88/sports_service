@@ -371,6 +371,11 @@ func (svc *base) UpdateStock(date string, count, now int) (int64, error) {
 func (svc *base) AddAppointmentRecord() error {
 	var rlst []*models.VenueAppointmentRecord
 	for _, val := range svc.recordMp {
+		// 实付金额为0 表示使用时长抵扣 或 活动免费 直接置为成功
+		if svc.order.Order.Amount == 0 {
+			val.Status = consts.ORDER_TYPE_PAID
+		}
+
 		rlst = append(rlst, val)
 	}
 
@@ -391,6 +396,11 @@ func (svc *base) AddAppointmentRecord() error {
 func (svc *base) AddOrderProducts() error {
 	var olst []*models.VenueOrderProductInfo
 	for _, val := range svc.orderMp {
+		// 实付金额为0 表示使用时长抵扣 或 活动免费 直接置为成功
+		if svc.order.Order.Amount == 0 {
+			val.Status = consts.ORDER_TYPE_PAID
+		}
+
 		olst = append(olst, val)
 	}
 
@@ -424,6 +434,11 @@ func (svc *base) AddOrder(orderId, userId, subject string, now, productType int)
 	svc.order.Order.Subject = subject
 	svc.order.Order.ProductType = productType
 	svc.order.Order.WriteOffCode = svc.Extra.WriteOffCode
+	// 实付金额为0 表示使用时长抵扣 或 活动免费  订单直接置为成功
+	if svc.order.Order.Amount == 0 {
+		svc.order.Order.Status = consts.ORDER_TYPE_PAID
+	}
+
 	affected, err := svc.order.AddOrder()
 	if err != nil {
 		return err
