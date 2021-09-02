@@ -476,7 +476,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 		info.Count = extra.Count
 		info.ProductImg = extra.ProductImg
 
-		switch order.OrderType {
+		switch order.ProductType {
 		// 预约场馆、私教、大课
 		case consts.ORDER_TYPE_APPOINTMENT_VENUE:
 
