@@ -461,7 +461,8 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 	for index, order := range list {
 		info := new(morder.OrderInfo)
 		info.OrderType = int32(order.ProductType)
-		info.CreatAt = time.Unix(int64(order.CreateAt), 0).Format(consts.FORMAT_TM)
+		cstSh, _ := time.LoadLocation("Asia/Shanghai")
+		info.CreatAt = time.Unix(int64(order.CreateAt), 0).In(cstSh).Format(consts.FORMAT_TM)
 		info.OrderStatus = int32(order.Status)
 		info.OrderId = order.PayOrderId
 		info.UserId = order.UserId
@@ -476,11 +477,22 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 		info.Count = extra.Count
 		info.ProductImg = extra.ProductImg
 
-		switch order.OrderType {
+		switch order.ProductType {
 		// 预约场馆、私教、大课
-		case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
-			//info.Count = len(extra.TimeNodeInfo)
-			if order.ProductType == consts.ORDER_TYPE_APPOINTMENT_COACH && order.Status == consts.ORDER_TYPE_COMPLETED {
+		case consts.ORDER_TYPE_APPOINTMENT_VENUE:
+
+
+		case consts.ORDER_TYPE_APPOINTMENT_COURSE:
+			// 课程名称 + 老师名称
+			info.Title = fmt.Sprintf("%s %s", extra.CourseName, extra.CoachName)
+			if len(extra.TimeNodeInfo) > 0 {
+				info.TimeNode = fmt.Sprintf("%s %s", extra.TimeNodeInfo[0].Date, extra.TimeNodeInfo[0].TimeNode)
+			}
+
+		case consts.ORDER_TYPE_APPOINTMENT_COACH:
+			// 私教名称 + 课程名称
+			info.Title = fmt.Sprintf("%s %s", extra.CoachName, extra.CourseName)
+			if order.Status == consts.ORDER_TYPE_COMPLETED {
 				// 查询是否评价
 				ok, err := svc.coach.HasEvaluateByUserId(order.UserId, order.PayOrderId)
 				if ok || err != nil {
@@ -490,6 +502,9 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 				info.HasEvaluate = ok
 			}
 
+			if len(extra.TimeNodeInfo) > 0 {
+				info.TimeNode = fmt.Sprintf("%s %s", extra.TimeNodeInfo[0].Date, extra.TimeNodeInfo[0].TimeNode)
+			}
 
 		case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_YEAR_CARD:
 			ok, err := svc.order.GetOrderProductsById(order.PayOrderId)
