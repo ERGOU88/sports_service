@@ -478,9 +478,20 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 
 		switch order.OrderType {
 		// 预约场馆、私教、大课
-		case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
-			//info.Count = len(extra.TimeNodeInfo)
-			if order.ProductType == consts.ORDER_TYPE_APPOINTMENT_COACH && order.Status == consts.ORDER_TYPE_COMPLETED {
+		case consts.ORDER_TYPE_APPOINTMENT_VENUE:
+
+
+		case consts.ORDER_TYPE_APPOINTMENT_COURSE:
+			// 课程名称 + 老师名称
+			info.Title = fmt.Sprintf("%s %s", extra.CourseName, extra.CoachName)
+			if len(extra.TimeNodeInfo) > 0 {
+				info.TimeNode = fmt.Sprintf("%s %s", extra.TimeNodeInfo[0].Date, extra.TimeNodeInfo[0].TimeNode)
+			}
+
+		case consts.ORDER_TYPE_APPOINTMENT_COACH:
+			// 私教名称 + 课程名称
+			info.Title = fmt.Sprintf("%s %s", extra.CoachName, extra.CourseName)
+			if order.Status == consts.ORDER_TYPE_COMPLETED {
 				// 查询是否评价
 				ok, err := svc.coach.HasEvaluateByUserId(order.UserId, order.PayOrderId)
 				if ok || err != nil {
@@ -490,6 +501,9 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 				info.HasEvaluate = ok
 			}
 
+			if len(extra.TimeNodeInfo) > 0 {
+				info.TimeNode = fmt.Sprintf("%s %s", extra.TimeNodeInfo[0].Date, extra.TimeNodeInfo[0].TimeNode)
+			}
 
 		case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_YEAR_CARD:
 			ok, err := svc.order.GetOrderProductsById(order.PayOrderId)
