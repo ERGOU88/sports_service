@@ -169,6 +169,8 @@ type OrderResp struct {
 	VenueName        string `json:"venue_name,omitempty"`         // 场馆名称
 	ProductImg       string `json:"product_img,omitempty"`        // 商品图片
 	OriginalAmount   int    `json:"original_amount,omitempty"`    // 订单原始金额
+	RefundFee        int    `json:"refund_fee,omitempty"`         // 退款手续费
+	RefundAmount     int    `json:"refund_amount,omitempty"`      // 退款金额
 }
 
 // 单时间节点预约数据

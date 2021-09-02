@@ -627,6 +627,9 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 	rsp.OrderId = orderId
 	rsp.OrderStatus = int32(svc.order.Order.Status)
 	rsp.OrderDescription = "订单需知"
+	rsp.RefundFee = svc.order.Order.RefundFee
+	rsp.RefundAmount = svc.order.Order.RefundAmount
+
 	// 是否可退款
 	//can, err := svc.CanRefund(svc.order.Order.Status, svc.order.Order.OrderType, svc.order.Order.PayTime,
 	//	svc.order.Order.PayOrderId, svc.order.Order.Extra)
