@@ -144,6 +144,7 @@ type UserKabawInfo struct {
 	IsVip           bool   `json:"is_vip"`         // 是否会员
 	HasExpire       bool   `json:"has_expire"`     // 会员是否过期 true 过期
 	VenueName       string `json:"venue_name"`     // 场馆名称
+	VipImage        string `json:"vip_image"`      // 会员图片
 }
 
 // 用户反馈请求参数

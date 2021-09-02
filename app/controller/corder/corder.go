@@ -340,8 +340,9 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		// 支付成功/申请退款时 需更新会员数据
 		if changeType == consts.PAY_NOTIFY || changeType == consts.APPLY_REFUND {
 			// 更新会员可用时长 及 过期时长
-			if err := svc.UpdateVipInfo(svc.order.Order.UserId, svc.order.OrderProduct.RelatedId, now, svc.order.OrderProduct.Count,
-				svc.order.OrderProduct.ExpireDuration, svc.order.OrderProduct.Duration, changeType); err != nil {
+			if err := svc.UpdateVipInfo(svc.order.Order.UserId, svc.order.OrderProduct.RelatedId, svc.order.OrderProduct.ProductType,
+				now, svc.order.OrderProduct.Count, svc.order.OrderProduct.ExpireDuration, svc.order.OrderProduct.Duration,
+				changeType); err != nil {
 				log.Log.Errorf("payNotify_trace: update vip info fail, orderId:%s, err:%s", orderId, err)
 				return err
 			}
@@ -505,7 +506,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 }
 
 // 更新会员信息
-func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, now, count, expireDuration, duration, notifyType int) error {
+func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, productType, now, count, expireDuration, duration, notifyType int) error {
 	ok, err := svc.venue.GetVenueVipInfo(userId, venueId)
 	if !ok || err != nil {
 		log.Log.Errorf("order_trace: get venue vip info fail, userId:%s, err:%s", userId, err)
@@ -528,7 +529,11 @@ func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, now, count, 
 		if int(svc.venue.Vip.EndTm) >= now {
 			svc.venue.Vip.Duration += int64(duration)
 			svc.venue.Vip.EndTm = svc.venue.Vip.EndTm + int64(expireDuration * count)
-			cols = "end_tm, duration, update_at"
+			// 当前购买的会员level更高
+			if svc.venue.Vip.VipType < productType {
+				svc.venue.Vip.VipType = productType
+			}
+			cols = "vip_type, end_tm, duration, update_at"
 		} else {
 			// 否则 为 重新购买
 			svc.venue.Vip.StartTm = int64(now)
@@ -536,7 +541,9 @@ func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, now, count, 
 			svc.venue.Vip.EndTm = int64(now + expireDuration * count)
 			// 可用时长
 			svc.venue.Vip.Duration = int64(duration)
-			cols = "start_tm, end_tm, duration, update_at"
+            // 会员类型
+			svc.venue.Vip.VipType = productType
+			cols = "vip_type, start_tm, end_tm, duration, update_at"
 		}
 
 	default:

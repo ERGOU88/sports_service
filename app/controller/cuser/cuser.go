@@ -391,8 +391,19 @@ func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
 	if ok {
 		// 表示已注册为会员
 		if svc.venue.Vip.StartTm > 0 {
-			kabaw.IsVip = true
+			ok, err := svc.venue.GetVenueProductByType(svc.venue.Vip.VipType)
+			if err != nil {
+				log.Log.Errorf("user_trace: get product by type fail,productType:%d, err:%s", svc.venue.Vip.VipType, err)
+			}
+
 			kabaw.VipName = fmt.Sprintf("%s%s", svc.venue.Venue.VenueName, "会员")
+			if ok {
+				kabaw.VipImage = svc.venue.Product.Image
+				kabaw.VipName = svc.venue.Product.ProductName
+			}
+
+			kabaw.IsVip = true
+
 			kabaw.StartTm = svc.venue.Vip.StartTm
 			kabaw.EndTm = svc.venue.Vip.EndTm
 			kabaw.RemainDuration = svc.venue.Vip.Duration

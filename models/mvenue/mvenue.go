@@ -85,6 +85,12 @@ func (m *VenueModel) GetVenueProductById(id string) (bool, error) {
 	return m.Engine.Where("id=?", id).Get(m.Product)
 }
 
+// 通过商品类型 获取 商品信息
+func (m *VenueModel) GetVenueProductByType(productType int) (bool, error) {
+	m.Product = new(models.VenueProductInfo)
+	return m.Engine.Where("product_type=?", productType).Get(m.Product)
+}
+
 // 通过id获取推荐信息配置
 func (m *VenueModel) GetRecommendInfoById(id string) (bool, error) {
 	m.Recommend = new(models.VenueRecommendConf)
