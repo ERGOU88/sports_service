@@ -726,8 +726,13 @@ func (svc *OrderModule) DeleteOrder(param *morder.ChangeOrder) int {
 		return errdef.ORDER_DELETE_FAIL
 	}
 
-	// 退款中 / 已支付的订单 / 已过期的订单 不可删除
-	if svc.order.Order.Status == consts.ORDER_TYPE_PAID ||
+	productType := fmt.Sprint(svc.order.Order.ProductType)
+	if len(productType) > 2 {
+		productType = productType[0:2]
+	}
+
+	// 退款中 / 已支付的订单[不包含 购买会员卡类订单] 会员卡类 类型区间为2300-2399 / 已过期的订单 不可删除
+	if svc.order.Order.Status == consts.ORDER_TYPE_PAID && productType != "23" ||
 		svc.order.Order.Status == consts.ORDER_TYPE_REFUND_WAIT ||
 		svc.order.Order.Status == consts.ORDER_TYPE_EXPIRE {
 		log.Log.Errorf("order_trace: order can't delete, orderId:%s", svc.order.Order.PayOrderId)
