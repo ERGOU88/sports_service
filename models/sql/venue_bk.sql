@@ -7,7 +7,7 @@
 #
 # Host: 192.168.5.12 (MySQL 5.7.34)
 # Database: venue
-# Generation Time: 2021-08-21 06:28:22 +0000
+# Generation Time: 2021-08-30 04:33:50 +0000
 # ************************************************************
 
 
@@ -21,8 +21,41 @@ SET NAMES utf8mb4;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
+# Dump of table venue_administrator
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_administrator`;
+
+CREATE TABLE `venue_administrator` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(255) DEFAULT '',
+  `job_number` varchar(255) DEFAULT '' COMMENT '工号',
+  `mobile` int(11) unsigned DEFAULT '0' COMMENT '手机号',
+  `name` varchar(255) DEFAULT '' COMMENT '用户名称',
+  `username` varchar(255) NOT NULL DEFAULT '' COMMENT '账号',
+  `password` varchar(255) NOT NULL DEFAULT '' COMMENT '密码',
+  `status` tinyint(1) unsigned DEFAULT '0' COMMENT '状态',
+  `roles` varchar(255) DEFAULT NULL COMMENT '角色',
+  `create_at` int(11) unsigned DEFAULT '0' COMMENT '创建时间',
+  `update_at` int(11) unsigned DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='管理员表';
+
+LOCK TABLES `venue_administrator` WRITE;
+/*!40000 ALTER TABLE `venue_administrator` DISABLE KEYS */;
+
+INSERT INTO `venue_administrator` (`id`, `user_id`, `job_number`, `mobile`, `name`, `username`, `password`, `status`, `roles`, `create_at`, `update_at`)
+VALUES
+	(1,'','',0,'admin','admin','$2a$10$nXQM7kynFWrueT9PP62Dp.8Z8AfGCTD.RzeqclzsW5TtF09TNhZvy',0,'ROLE_ADMIN',0,0);
+
+/*!40000 ALTER TABLE `venue_administrator` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
 # Dump of table venue_appointment_info
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_appointment_info`;
 
 CREATE TABLE `venue_appointment_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
@@ -77,6 +110,8 @@ UNLOCK TABLES;
 # Dump of table venue_appointment_record
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `venue_appointment_record`;
+
 CREATE TABLE `venue_appointment_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `user_id` varchar(60) NOT NULL COMMENT '用户id',
@@ -88,7 +123,7 @@ CREATE TABLE `venue_appointment_record` (
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `purchased_num` int(10) NOT NULL COMMENT '购买的数量',
-  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0 待支付 1 订单超时/未支付 2 已支付 3 已完成 4 已取消  5 退款中 6 已退款 7 退款中 8 软删除',
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '-1 软删除 0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 已过期 ',
   `seat_info` varchar(1000) NOT NULL DEFAULT '0' COMMENT '预约的座位信息 ',
   `deduction_tm` bigint(20) NOT NULL DEFAULT '0' COMMENT '抵扣会员时长',
   PRIMARY KEY (`id`),
@@ -99,6 +134,8 @@ CREATE TABLE `venue_appointment_record` (
 
 # Dump of table venue_appointment_stock
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_appointment_stock`;
 
 CREATE TABLE `venue_appointment_stock` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -118,6 +155,8 @@ CREATE TABLE `venue_appointment_stock` (
 
 # Dump of table venue_coach_detail
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_coach_detail`;
 
 CREATE TABLE `venue_coach_detail` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
@@ -149,11 +188,11 @@ LOCK TABLES `venue_coach_detail` WRITE;
 
 INSERT INTO `venue_coach_detail` (`id`, `title`, `name`, `address`, `designation`, `describe`, `areas_of_expertise`, `cover`, `avatar`, `price`, `event_price`, `event_start_time`, `event_end_time`, `sortorder`, `is_recommend`, `is_top`, `create_at`, `update_at`, `status`, `coach_type`, `course_id`)
 VALUES
-	(1,'鉴黄大师[1对1教学]','1对1教学 [燕过拔毛]','王者峡谷','国服第一鉴黄师','专业 专注 专一','擅长拍黄片','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png',10008,0,0,0,1,1,0,0,0,0,1,0),
-	(2,'鉴黄大师[大课]','叶秋2[大课老师]','王者峡谷','国服第一鉴黄师','专业 专注 专一','擅长拍黄片','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png',10008,0,0,0,1,1,0,0,0,0,2,1),
-	(3,'鉴黄大师2[大课]','叶秋3[大课老师]','王者峡谷','国服第一鉴黄师','专业 专注 专一','擅长拍黄片','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png',10008,0,0,0,1,1,0,0,0,0,2,1),
-	(4,'鉴黄大师3[大课]','叶秋4[大课老师]','王者峡谷','国服第一鉴黄师','专业 专注 专一','擅长拍黄片','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png',10008,0,0,0,1,1,0,0,0,0,2,1),
-	(5,'鉴黄大师[1对1教学]','叶秋叫兽[1对1]','王者峡谷','国服第一鉴黄师','专业 专注 专一','擅长拍黄片','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png',10008,0,0,0,1,1,0,0,0,0,1,0);
+	(1,'鉴黄大师[1对1教学]','1对1教学 [燕过拔毛]','王者峡谷','国服第一鉴黄师','专业 专注 专一','擅长拍黄片','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png',1,0,0,0,1,1,0,0,0,0,1,0),
+	(2,'鉴黄大师[大课]','叶秋2[大课老师]','王者峡谷','国服第一鉴黄师','专业 专注 专一','擅长拍黄片','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png',1,0,0,0,1,1,0,0,0,0,2,1),
+	(3,'鉴黄大师2[大课]','叶秋3[大课老师]','王者峡谷','国服第一鉴黄师','专业 专注 专一','擅长拍黄片','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png',1,0,0,0,1,1,0,0,0,0,2,1),
+	(4,'鉴黄大师3[大课]','叶秋4[大课老师]','王者峡谷','国服第一鉴黄师','专业 专注 专一','擅长拍黄片','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png',1,0,0,0,1,1,0,0,0,0,2,1),
+	(5,'鉴黄大师[1对1教学]','叶秋叫兽[1对1]','王者峡谷','国服第一鉴黄师','专业 专注 专一','擅长拍黄片','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/diy_ad_img.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png',1,0,0,0,1,1,0,0,0,0,1,0);
 
 /*!40000 ALTER TABLE `venue_coach_detail` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -161,6 +200,8 @@ UNLOCK TABLES;
 
 # Dump of table venue_coach_label_config
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_coach_label_config`;
 
 CREATE TABLE `venue_coach_label_config` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
@@ -186,6 +227,8 @@ UNLOCK TABLES;
 # Dump of table venue_coach_score
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `venue_coach_score`;
+
 CREATE TABLE `venue_coach_score` (
   `coach_id` bigint(20) NOT NULL COMMENT '私教id',
   `total_score` int(11) NOT NULL DEFAULT '0' COMMENT '1颗星1分',
@@ -205,6 +248,8 @@ CREATE TABLE `venue_coach_score` (
 
 # Dump of table venue_course_detail
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_course_detail`;
 
 CREATE TABLE `venue_course_detail` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '课程id',
@@ -245,8 +290,29 @@ VALUES
 UNLOCK TABLES;
 
 
+# Dump of table venue_entry_or_exit_records
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_entry_or_exit_records`;
+
+CREATE TABLE `venue_entry_or_exit_records` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `user_id` varchar(60) NOT NULL COMMENT '用户id',
+  `action_type` tinyint(1) NOT NULL COMMENT '动作类型 1 进场 2 出场',
+  `venue_name` varchar(60) NOT NULL COMMENT '场馆名称',
+  `venue_id` bigint(20) NOT NULL COMMENT '场馆ID',
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0 正常 1 废弃',
+  `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='场馆进出场记录表';
+
+
+
 # Dump of table venue_info
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_info`;
 
 CREATE TABLE `venue_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '场馆ID',
@@ -280,26 +346,29 @@ UNLOCK TABLES;
 # Dump of table venue_order_product_info
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `venue_order_product_info`;
+
 CREATE TABLE `venue_order_product_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `pay_order_id` varchar(150) NOT NULL COMMENT '订单号',
   `product_id` bigint(20) NOT NULL COMMENT '商品id',
-  `order_type` int(8) NOT NULL COMMENT '1001 场馆预约 2001 购买月卡 2002 购买季卡 2003 购买年卡 2004 体验券 3001 私教（教练）订单 3002 课程订单 4001 充值订单',
+  `product_type` int(8) NOT NULL COMMENT '1001 场馆预约 2001 购买月卡 2002 购买季卡 2003 购买年卡 2004 体验券 3001 私教（教练）订单 3002 课程订单 4001 充值订单',
   `count` int(11) NOT NULL COMMENT '购买数量',
-  `real_amount` int(11) NOT NULL COMMENT '真实价格（单位：分）',
-  `cur_amount` int(11) NOT NULL COMMENT '当前价格 (包含真实价格、 折扣价格（单位：分）',
+  `real_amount` int(11) NOT NULL COMMENT '[单个商品]真实价格（单位：分）',
+  `cur_amount` int(11) NOT NULL COMMENT '[单个商品]当前价格 (包含真实价格、 折扣价格（单位：分）',
   `discount_rate` int(11) NOT NULL DEFAULT '0' COMMENT '折扣率',
-  `discount_amount` int(11) NOT NULL DEFAULT '0' COMMENT '优惠的金额',
+  `discount_amount` int(11) NOT NULL DEFAULT '0' COMMENT '[单个商品]优惠的金额',
   `amount` int(11) NOT NULL COMMENT '商品总价',
   `receive_amount` int(11) NOT NULL DEFAULT '0' COMMENT '充值金额（钱包）',
-  `duration` int(11) NOT NULL DEFAULT '0' COMMENT '购买相关服务时长',
+  `duration` int(11) NOT NULL DEFAULT '0' COMMENT '购买相关服务总时长',
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
-  `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '0 待支付 1 订单超时/未支付 2 已支付 3 已完成 4 已取消  5 退款中 6 已退款 7 退款中 8 软删除',
+  `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 已过期',
   `related_id` bigint(20) NOT NULL DEFAULT '1' COMMENT '场馆id/私教课id/大课老师id',
   `deduction_tm` bigint(20) NOT NULL DEFAULT '0' COMMENT '抵扣会员时长',
   `deduction_amount` bigint(20) NOT NULL DEFAULT '0' COMMENT '抵扣的价格',
   `deduction_num` bigint(20) NOT NULL DEFAULT '0' COMMENT '抵扣的数量',
+  `expire_duration` int(11) NOT NULL DEFAULT '0' COMMENT '过期时长[单个商品]',
   PRIMARY KEY (`id`),
   KEY `pay_order_id` (`pay_order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单商品表';
@@ -309,14 +378,17 @@ CREATE TABLE `venue_order_product_info` (
 # Dump of table venue_pay_notify
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `venue_pay_notify`;
+
 CREATE TABLE `venue_pay_notify` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `notify_info` varchar(1000) NOT NULL DEFAULT '' COMMENT '回调通知信息',
   `transaction` varchar(200) NOT NULL DEFAULT '' COMMENT '第三方订单号',
-  `pay_type` tinyint(1) NOT NULL COMMENT '1 支付宝 2 微信 3 钱包 4 苹果内购',
+  `pay_type` tinyint(1) NOT NULL COMMENT '1 支付宝 2 微信 ',
   `pay_order_id` varchar(150) NOT NULL COMMENT '订单号',
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `notify_type` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 付款回调 2 退款回调',
   PRIMARY KEY (`id`),
   KEY `pay_order_id` (`pay_order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单回调信息';
@@ -326,14 +398,17 @@ CREATE TABLE `venue_pay_notify` (
 # Dump of table venue_pay_orders
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `venue_pay_orders`;
+
 CREATE TABLE `venue_pay_orders` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `user_id` varchar(60) NOT NULL COMMENT '用户id',
-  `amount` int(11) NOT NULL COMMENT '商品总价（分）',
-  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0 待支付 1 订单超时/未支付 2 已支付 3 已完成 4 已取消  5 退款中 6 已退款 7 退款失败 8 软删除',
+  `amount` int(11) NOT NULL COMMENT '商品总价[优惠后的金额]（分）',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT ' 0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 已过期',
   `extra` varchar(1000) NOT NULL DEFAULT '' COMMENT '记录订单相关扩展数据',
   `transaction` varchar(200) NOT NULL DEFAULT '' COMMENT '第三方订单号',
   `pay_type` tinyint(1) NOT NULL COMMENT '1 支付宝 2 微信 3 钱包 4 苹果内购',
+  `product_type` int(8) NOT NULL COMMENT '1001 场馆预约 2000 体验券 2001 购买月卡 2002 购买季卡 2003 购买年卡  3001 私教（教练）订单 3002 课程订单 4001 充值订单',
   `error_code` varchar(20) NOT NULL DEFAULT '' COMMENT '错误码',
   `pay_order_id` varchar(150) NOT NULL COMMENT '订单号',
   `order_type` int(8) NOT NULL COMMENT '下单方式：1001 APP下单，1002 前台购买，1003第三方推广渠道购买',
@@ -343,6 +418,12 @@ CREATE TABLE `venue_pay_orders` (
   `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
   `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `subject` varchar(150) NOT NULL DEFAULT '' COMMENT '商品名称',
+  `write_off_code` varchar(200) NOT NULL DEFAULT '' COMMENT '核销码',
+  `refund_amount` int(11) NOT NULL DEFAULT '0' COMMENT '退款金额（分）',
+  `is_delete` tinyint(2) NOT NULL DEFAULT '0' COMMENT '是否删除0正常 1删除',
+  `original_amount` int(11) NOT NULL COMMENT '订单原始金额（分）',
+  `admin_id` int(11) unsigned DEFAULT '0' COMMENT '操作原',
+  `refund_fee` int(11) NOT NULL DEFAULT '0' COMMENT '退款手续费（分）',
   PRIMARY KEY (`id`),
   KEY `pay_order_id` (`pay_order_id`),
   KEY `user_id` (`user_id`,`status`,`order_type`)
@@ -350,8 +431,47 @@ CREATE TABLE `venue_pay_orders` (
 
 
 
+# Dump of table venue_payment_channel
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_payment_channel`;
+
+CREATE TABLE `venue_payment_channel` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) DEFAULT NULL COMMENT '名称',
+  `icon` varchar(255) DEFAULT NULL COMMENT 'icon',
+  `background` varchar(255) DEFAULT NULL,
+  `status` tinyint(4) DEFAULT NULL COMMENT '状态 0 可用，1禁用',
+  `sort` tinyint(4) DEFAULT NULL COMMENT '排序',
+  `desc` varchar(255) DEFAULT NULL,
+  `rate` int(255) DEFAULT NULL,
+  `app_id` varchar(255) DEFAULT NULL,
+  `app_key` varchar(255) DEFAULT NULL,
+  `app_secret` varchar(255) DEFAULT NULL,
+  `public_key` text,
+  `private_key` text,
+  `create_at` int(11) DEFAULT NULL,
+  `update_at` int(11) DEFAULT NULL,
+  `pay_type` tinyint(2) DEFAULT NULL COMMENT '1 支付宝 2 微信',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+LOCK TABLES `venue_payment_channel` WRITE;
+/*!40000 ALTER TABLE `venue_payment_channel` DISABLE KEYS */;
+
+INSERT INTO `venue_payment_channel` (`id`, `title`, `icon`, `background`, `status`, `sort`, `desc`, `rate`, `app_id`, `app_key`, `app_secret`, `public_key`, `private_key`, `create_at`, `update_at`, `pay_type`)
+VALUES
+	(1,'支付宝',NULL,NULL,0,NULL,NULL,NULL,'2021002164657197',NULL,NULL,'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiSQ+YgGoDditE1XP4+RYUFwXySO3O3neZO9JQq/p+GfOMKFP7OYApj9P4w6BvjtEBnRd93PHVwEV2jG+U1CA6/W7cOFZV8sXgNFlUbMqZHjTdrvziPBHAWsUzfMxG6a8WxQ9pl0DOizyokUnbYc3v9HCZq3ZPcJvB9Aiq8fFq02A6DYrX5ZQW97vxCyzumiLIZFu61eDPvkvAwvqrrsn2+LckfKKN2DfcnpmoNnME5VzR3bZv9D5C4IaMeYoz8IyonVPgtnRA1Hth91bjnHqG94EsxQgB/cApgV4F7BXbZ5UbpcrAWCg2PxTy5lIK14iL5Y69StRhk02pxc0J+4mQwIDAQAB','MIIEpAIBAAKCAQEA29Ozn6SdfeqlCmsnNQ/rk6gvZr1jjkhDzOrYJXfOq/MGZOla3ymRSN8+6P0UV0o6QQDINNU/5ZtrJPtJzMOg7bQt8Z1ATidk/OhUjC9sTyBgwXxwjaikB73n9o/fgcgesz1ofkjDpZJeV76Cn5j4JENzaQP3xjvade3B307ReJOzEKVHjyyqfJ25DcGHqYEtdnbuYt9ijfaCfB0oEXJuUxUsIQQALzbfgTCVjdXKHjqCrRFKs1et8k12d0m2xoPTWf2YX72oFbRWqEZD13VhzL/Q2hU32/ENNXbHHrTZtTb3yFHw5Uj67pUmPzNhZFiHek0BkPVvKD89uErvIFpyWQIDAQABAoIBACoRo6iDmlhElX0e8IvpFg5V+2xQBkNudPs8Xk0dVoH1ql2Zgvh+Pf2SK7nu5Puniupxud7SiL3qNmEHbiIvthaHittYWrwaMetskvGZCcNC0QF2TRvvECUjJMc81WtC3w0yTVMNndOL5V4paVodri9ScT3BsqNPRQmYjKetr8zBLII6cpjRbT339RD7Z1FrNSKKQQWPGYH6JAd2sJR+hLHHylSvtpD2IVD3RJgVw11Ge9CKiDmCD6BkHIL5zPe3YErEWAscWsBnjF9sBdTLbkzlF83AIsDipS89dNF/WCCKejCj6A7Rl5kddu5jPSLfwCF6z0YJp7DCAzVZJXg1pgECgYEA9en/Krg9iHU5kP2d58OooHMz73srmtLhJiMINw7098r+1or309MqeSmlB4HGFUdl1D/zd5eQm3VJlixXSmlo5Ew+0xlalL2n+9fNJnbQjEieUFHKdPaBMRW7FQ7pD0UmaTWot1HxZeAt3rkNA0e6oxYPPtOjpswEP/nnvkS17mECgYEA5NfM6xdvB5aITe1uHsIn8KAoBVFuUZu9GgTZgKQgR/JW1QZ5Ba/DCRSK/gmQWbOQHhi6hyLqcUUNaQbuA/1T7ByNCCdk9Mr/zmehyh+BdYj12SQ8i3Af2H45l4xX3JDAXa9l+ba+HuaJ5W4FJcYiynGnG+uNgxNTsI+OckTxVvkCgYEAt0jWZDK5uhEU/NnqbSlJb30twlpdH6H5KYGGx/Kf5mgoFCOznu+Ogovlcnjo+EckwFOB1SrkHtoGJKWb0dxKz418bb5B4waQQ4aOYxK/US92v4qWiSKJG9qEe6eHUVhKzrOtsiSi9TlnNs9ZwY4erxrr9fmryc/Zgw1yCkAQEUECgYEA464hXzUtbmtCqeW0Tj315t4xczkVfXRprF1u2SJyS6K86a1K83FvprUdpKp3SAfzNz57NsByaMe/E+OlI6sDuEKfvqETPMpLwFwzCBpYf0wI7kWzRzgDNy4+tp0XPYd3HL7Jwq0iczQDtpTD4lVDgA+bp5ewb9zmwx/RJbeaNmECgYAaooellJxLAXT0HFsKWmIMn/ckQu+wXcg+sqFOkhKCOMXNnGiADWT5LcyEVcejWQAru3QsvTzPdundFbQR+0hSWDFiPITUopINLATDW0zvSUcbL27Z30HZUXd+LASmU/EC0I6rNbsTZ/nyImpfOul7v2T/BS+eVRjevDrFMGtoeQ==',NULL,NULL,1),
+	(2,'微信',NULL,NULL,0,NULL,NULL,NULL,'wxd693805bd4a2a39e','1610121931','UyPTFdVsJPPxMYzfXBztTKwsUusxSIFw','MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiSQ+YgGoDditE1XP4+RYUFwXySO3O3neZO9JQq/p+GfOMKFP7OYApj9P4w6BvjtEBnRd93PHVwEV2jG+U1CA6/W7cOFZV8sXgNFlUbMqZHjTdrvziPBHAWsUzfMxG6a8WxQ9pl0DOizyokUnbYc3v9HCZq3ZPcJvB9Aiq8fFq02A6DYrX5ZQW97vxCyzumiLIZFu61eDPvkvAwvqrrsn2+LckfKKN2DfcnpmoNnME5VzR3bZv9D5C4IaMeYoz8IyonVPgtnRA1Hth91bjnHqG94EsxQgB/cApgV4F7BXbZ5UbpcrAWCg2PxTy5lIK14iL5Y69StRhk02pxc0J+4mQwIDAQAB','MIIEpAIBAAKCAQEA29Ozn6SdfeqlCmsnNQ/rk6gvZr1jjkhDzOrYJXfOq/MGZOla3ymRSN8+6P0UV0o6QQDINNU/5ZtrJPtJzMOg7bQt8Z1ATidk/OhUjC9sTyBgwXxwjaikB73n9o/fgcgesz1ofkjDpZJeV76Cn5j4JENzaQP3xjvade3B307ReJOzEKVHjyyqfJ25DcGHqYEtdnbuYt9ijfaCfB0oEXJuUxUsIQQALzbfgTCVjdXKHjqCrRFKs1et8k12d0m2xoPTWf2YX72oFbRWqEZD13VhzL/Q2hU32/ENNXbHHrTZtTb3yFHw5Uj67pUmPzNhZFiHek0BkPVvKD89uErvIFpyWQIDAQABAoIBACoRo6iDmlhElX0e8IvpFg5V+2xQBkNudPs8Xk0dVoH1ql2Zgvh+Pf2SK7nu5Puniupxud7SiL3qNmEHbiIvthaHittYWrwaMetskvGZCcNC0QF2TRvvECUjJMc81WtC3w0yTVMNndOL5V4paVodri9ScT3BsqNPRQmYjKetr8zBLII6cpjRbT339RD7Z1FrNSKKQQWPGYH6JAd2sJR+hLHHylSvtpD2IVD3RJgVw11Ge9CKiDmCD6BkHIL5zPe3YErEWAscWsBnjF9sBdTLbkzlF83AIsDipS89dNF/WCCKejCj6A7Rl5kddu5jPSLfwCF6z0YJp7DCAzVZJXg1pgECgYEA9en/Krg9iHU5kP2d58OooHMz73srmtLhJiMINw7098r+1or309MqeSmlB4HGFUdl1D/zd5eQm3VJlixXSmlo5Ew+0xlalL2n+9fNJnbQjEieUFHKdPaBMRW7FQ7pD0UmaTWot1HxZeAt3rkNA0e6oxYPPtOjpswEP/nnvkS17mECgYEA5NfM6xdvB5aITe1uHsIn8KAoBVFuUZu9GgTZgKQgR/JW1QZ5Ba/DCRSK/gmQWbOQHhi6hyLqcUUNaQbuA/1T7ByNCCdk9Mr/zmehyh+BdYj12SQ8i3Af2H45l4xX3JDAXa9l+ba+HuaJ5W4FJcYiynGnG+uNgxNTsI+OckTxVvkCgYEAt0jWZDK5uhEU/NnqbSlJb30twlpdH6H5KYGGx/Kf5mgoFCOznu+Ogovlcnjo+EckwFOB1SrkHtoGJKWb0dxKz418bb5B4waQQ4aOYxK/US92v4qWiSKJG9qEe6eHUVhKzrOtsiSi9TlnNs9ZwY4erxrr9fmryc/Zgw1yCkAQEUECgYEA464hXzUtbmtCqeW0Tj315t4xczkVfXRprF1u2SJyS6K86a1K83FvprUdpKp3SAfzNz57NsByaMe/E+OlI6sDuEKfvqETPMpLwFwzCBpYf0wI7kWzRzgDNy4+tp0XPYd3HL7Jwq0iczQDtpTD4lVDgA+bp5ewb9zmwx/RJbeaNmECgYAaooellJxLAXT0HFsKWmIMn/ckQu+wXcg+sqFOkhKCOMXNnGiADWT5LcyEVcejWQAru3QsvTzPdundFbQR+0hSWDFiPITUopINLATDW0zvSUcbL27Z30HZUXd+LASmU/EC0I6rNbsTZ/nyImpfOul7v2T/BS+eVRjevDrFMGtoeQ==',NULL,NULL,2);
+
+/*!40000 ALTER TABLE `venue_payment_channel` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
 # Dump of table venue_personal_label_conf
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_personal_label_conf`;
 
 CREATE TABLE `venue_personal_label_conf` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增id',
@@ -380,10 +500,13 @@ UNLOCK TABLES;
 # Dump of table venue_product_info
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `venue_product_info`;
+
 CREATE TABLE `venue_product_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `product_name` varchar(128) NOT NULL COMMENT '商品名称',
-  `product_type` int(8) NOT NULL COMMENT '类型 2001 月卡 2002 季卡 2003 年卡 2004 体验券 3001 储值卡',
+  `product_type` int(8) NOT NULL COMMENT '类型 2000体验券 2001 月卡 2002 季卡 2003 年卡 3001 储值卡',
+  `product_code` varchar(255) DEFAULT NULL COMMENT '商品码',
   `real_amount` int(11) NOT NULL COMMENT '真实价格（单位：分）',
   `cur_amount` int(11) NOT NULL COMMENT '当前价格 (包含真实价格、 折扣价格（单位：分）',
   `discount_rate` int(11) NOT NULL DEFAULT '0' COMMENT '折扣率',
@@ -393,7 +516,7 @@ CREATE TABLE `venue_product_info` (
   `update_at` int(11) NOT NULL COMMENT '更新时间',
   `effective_duration` int(11) NOT NULL DEFAULT '0' COMMENT '可用时长（秒）',
   `expire_duration` int(11) NOT NULL DEFAULT '0' COMMENT '过期时长（秒）',
-  `icon` varchar(500) NOT NULL DEFAULT '' COMMENT '商品icon',
+  `icon` varchar(1000) NOT NULL DEFAULT '' COMMENT '商品icon',
   `image` varchar(1000) NOT NULL DEFAULT '' COMMENT '商品图片',
   `describe` varchar(1000) NOT NULL DEFAULT '' COMMENT '商品介绍',
   `title` varchar(300) NOT NULL DEFAULT '' COMMENT '简介',
@@ -404,13 +527,13 @@ CREATE TABLE `venue_product_info` (
 LOCK TABLES `venue_product_info` WRITE;
 /*!40000 ALTER TABLE `venue_product_info` DISABLE KEYS */;
 
-INSERT INTO `venue_product_info` (`id`, `product_name`, `product_type`, `real_amount`, `cur_amount`, `discount_rate`, `discount_amount`, `venue_id`, `create_at`, `update_at`, `effective_duration`, `expire_duration`, `icon`, `image`, `describe`, `title`, `instance_type`)
+INSERT INTO `venue_product_info` (`id`, `product_name`, `product_type`, `product_code`, `real_amount`, `cur_amount`, `discount_rate`, `discount_amount`, `venue_id`, `create_at`, `update_at`, `effective_duration`, `expire_duration`, `icon`, `image`, `describe`, `title`, `instance_type`)
 VALUES
-	(1,'x-fly月卡',2001,10000,9800,98,200,1,0,0,0,0,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','','月卡',1),
-	(2,'x-fly年卡',2003,50000,39800,0,0,1,0,0,0,0,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','','年卡',1),
-	(3,'x-fly季卡',2002,20000,19800,0,0,1,0,0,0,0,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','','季卡',1),
-	(4,'x-fly体验卡',2004,20000,19800,0,0,1,0,0,3600,0,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','','体验卡',1),
-	(5,'x-fly储值卡',4001,20000,19800,0,0,1,0,0,3600,0,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','','体验卡',1);
+	(1,'x-fly月卡',2001,NULL,10000,9800,98,200,1,0,0,3600,4000,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','','月卡',1),
+	(2,'x-fly年卡',2003,NULL,50000,39800,0,0,1,0,0,3600,4000,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','','年卡',1),
+	(3,'x-fly季卡',2002,NULL,20000,19800,0,0,1,0,0,3600,4000,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','','季卡',1),
+	(4,'x-fly体验卡',2000,NULL,20000,19800,0,0,1,0,0,3600,4000,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','','体验卡',1),
+	(5,'x-fly储值卡',4001,NULL,20000,19800,0,0,1,0,0,3600,4000,'https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/2b806baf6ff19d086bed3b72c444194ee3ab69e9777e9694c3688a6414cbb7d6.png','','体验卡',1);
 
 /*!40000 ALTER TABLE `venue_product_info` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -418,6 +541,8 @@ UNLOCK TABLES;
 
 # Dump of table venue_recharge_config
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_recharge_config`;
 
 CREATE TABLE `venue_recharge_config` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -436,6 +561,8 @@ CREATE TABLE `venue_recharge_config` (
 
 # Dump of table venue_recommend_conf
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_recommend_conf`;
 
 CREATE TABLE `venue_recommend_conf` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
@@ -459,8 +586,65 @@ VALUES
 UNLOCK TABLES;
 
 
+# Dump of table venue_refund_rules
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_refund_rules`;
+
+CREATE TABLE `venue_refund_rules` (
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `rule_order` tinyint(2) NOT NULL DEFAULT '0' COMMENT '规则校验顺序',
+  `rule_name` varchar(255) NOT NULL COMMENT '规则名称',
+  `rule_min_duration` int(11) NOT NULL DEFAULT '0' COMMENT '规则校验最小时长',
+  `rule_max_duration` int(11) NOT NULL DEFAULT '0' COMMENT '规则校验最大时长',
+  `fee_rate` int(5) NOT NULL DEFAULT '0' COMMENT '手续费比例 例如：1.55% 则 值为155 [乘以100存储]',
+  `minimum_charge` int(10) NOT NULL DEFAULT '0' COMMENT '最低收取手续费金额 单位[分]',
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0 正常 1 废弃',
+  `create_at` int(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_at` int(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `fee_rate_cn` varchar(255) NOT NULL DEFAULT '' COMMENT '手续费比例 中文 例如：票价5%',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='场馆退款规则[手续费]表';
+
+LOCK TABLES `venue_refund_rules` WRITE;
+/*!40000 ALTER TABLE `venue_refund_rules` DISABLE KEYS */;
+
+INSERT INTO `venue_refund_rules` (`id`, `rule_order`, `rule_name`, `rule_min_duration`, `rule_max_duration`, `fee_rate`, `minimum_charge`, `status`, `create_at`, `update_at`, `fee_rate_cn`)
+VALUES
+	(1,1,'小于24小时',0,86400,2000,100,0,0,0,'票价20%'),
+	(2,2,'24-48小时（不含）',86400,172800,1000,100,0,0,0,'票价10%'),
+	(3,3,'2天-5天（不含）',172800,432000,500,100,0,0,0,'票价5%'),
+	(4,4,'5天以上',432000,0,0,100,0,0,0,'无手续费');
+
+/*!40000 ALTER TABLE `venue_refund_rules` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table venue_user_cardbag
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_user_cardbag`;
+
+CREATE TABLE `venue_user_cardbag` (
+  `id` int(11) DEFAULT NULL,
+  `user_id` varchar(255) DEFAULT NULL COMMENT '用户ID',
+  `qr_code` varchar(255) DEFAULT NULL COMMENT 'ID卡号',
+  `card_type` tinyint(4) DEFAULT NULL COMMENT '卡类型:1、年卡、2半年卡、3季卡、4月卡、5、此卡',
+  `admin_id` int(11) unsigned DEFAULT '0' COMMENT '管理员ID',
+  `status` tinyint(4) unsigned DEFAULT '0' COMMENT '可用状态0可用、1禁用',
+  `create_at` int(11) unsigned DEFAULT '0' COMMENT '创建时间',
+  `duration` int(11) unsigned DEFAULT '0' COMMENT '可用时长',
+  `update_at` int(11) unsigned DEFAULT '0' COMMENT '修改时间',
+  `dt_start` int(11) unsigned DEFAULT '0' COMMENT '启用时间',
+  `dt_end` int(11) unsigned DEFAULT '0' COMMENT '过期时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
 # Dump of table venue_user_evaluate_record
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_user_evaluate_record`;
 
 CREATE TABLE `venue_user_evaluate_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
@@ -479,22 +663,12 @@ CREATE TABLE `venue_user_evaluate_record` (
   KEY `coach_id` (`coach_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户对私教评价记录';
 
-LOCK TABLES `venue_user_evaluate_record` WRITE;
-/*!40000 ALTER TABLE `venue_user_evaluate_record` DISABLE KEYS */;
-
-INSERT INTO `venue_user_evaluate_record` (`id`, `user_id`, `coach_id`, `star`, `order_id`, `order_type`, `content`, `label_info`, `status`, `create_at`, `update_at`)
-VALUES
-	(1,'10240220',1,3,'',1,'经老师悉心教导 ～ 已成为优秀的鉴黄师','[\"id\":1,\"name\":\"可可爱爱\"]',0,0,0),
-	(2,'10240220',1,1,'',1,'经老师悉心教导 ～ 已成为优秀的鉴黄师','[\"id\":1,\"name\":\"可可爱爱\"]',0,0,0),
-	(3,'10240220',1,4,'',1,'经老师悉心教导 ～ 已成为优秀的鉴黄师','[\"id\":1,\"name\":\"可可爱爱\"]',0,0,0),
-	(4,'10240220',1,5,'',1,'经老师悉心教导 ～ 已成为优秀的鉴黄师','[\"id\":1,\"name\":\"可可爱爱\"]',0,0,0);
-
-/*!40000 ALTER TABLE `venue_user_evaluate_record` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table venue_user_label
 # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `venue_user_label`;
 
 CREATE TABLE `venue_user_label` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
@@ -517,12 +691,14 @@ CREATE TABLE `venue_user_label` (
 # Dump of table venue_vip_info
 # ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `venue_vip_info`;
+
 CREATE TABLE `venue_vip_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `user_id` varchar(60) NOT NULL COMMENT '用户id',
-  `start_tm` bigint(20) NOT NULL COMMENT '会员开始时间戳',
   `level` int(2) NOT NULL DEFAULT '0' COMMENT '会员等级 预留字段',
   `venue_id` bigint(20) NOT NULL COMMENT '场馆id',
+  `start_tm` bigint(20) NOT NULL COMMENT '会员开始时间戳',
   `end_tm` bigint(20) NOT NULL COMMENT '会员结束时间戳',
   `create_at` int(11) NOT NULL DEFAULT '0',
   `update_at` int(11) NOT NULL DEFAULT '0',
