@@ -10,4 +10,5 @@ type VenueVipInfo struct {
 	Duration int64  `json:"duration" xorm:"not null comment('会员在场馆内可用时长') BIGINT(20)"`
 	CreateAt int    `json:"create_at" xorm:"not null default 0 INT(11)"`
 	UpdateAt int    `json:"update_at" xorm:"not null default 0 INT(11)"`
+	VipType  int    `json:"vip_type" xorm:"not null default 0 comment('会员类型 月卡/季卡/半年卡/年卡') INT(8)"`
 }
