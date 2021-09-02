@@ -461,7 +461,8 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 	for index, order := range list {
 		info := new(morder.OrderInfo)
 		info.OrderType = int32(order.ProductType)
-		info.CreatAt = time.Unix(int64(order.CreateAt), 0).Format(consts.FORMAT_TM)
+		cstSh, _ := time.LoadLocation("Asia/Shanghai")
+		info.CreatAt = time.Unix(int64(order.CreateAt), 0).In(cstSh).Format(consts.FORMAT_TM)
 		info.OrderStatus = int32(order.Status)
 		info.OrderId = order.PayOrderId
 		info.UserId = order.UserId
