@@ -248,22 +248,25 @@ func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo, refundNo string,
 // 订单处理流程 1 支付成功 2 退款流程 [用户申请退款 第三方回调成功时执行] 3 退款申请 4 取消订单
 func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64, changeType, refundAmount, refundFee int) error {
 	// tips: 不可直接更新状态 并发情况下会有问题
-	// 订单当前状态 及 需更新的状态
-	var curStatus, status int
+	// 订单当前状态, 需更新的状态, 快照记录需更新的状态
+	var curStatus, status, recordStatus int
 	switch changeType {
 	case consts.PAY_NOTIFY:
 		// 如果是支付成功回调 则订单当前状态应是 待支付 需更新状态为 已支付
 		curStatus = consts.ORDER_TYPE_WAIT
 		status = consts.ORDER_TYPE_PAID
+		recordStatus = 1
 		svc.order.Order.IsCallback = 1
 	case consts.REFUND_NOTIFY:
 		curStatus = consts.ORDER_TYPE_REFUND_WAIT
 		status = consts.ORDER_TYPE_REFUND_SUCCESS
+		recordStatus = 0
 		svc.order.Order.IsCallback = 1
 	case consts.APPLY_REFUND:
 		// 如果是申请退款 则订单当前状态 应是已付款 需更新状态为 退款中
 		curStatus = consts.ORDER_TYPE_PAID
 		status = consts.ORDER_TYPE_REFUND_WAIT
+		recordStatus = 0
 		// 如果退款金额和退款手续费均为0 则表示退款单金额为0 直接将退款状态置为成功
 		if refundFee == 0 && refundAmount == 0 {
 			status = consts.ORDER_TYPE_REFUND_SUCCESS
@@ -273,6 +276,7 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		// 如果是取消订单 则订单当前状态 应是待支付 需更新状态为 未支付
 		curStatus = consts.ORDER_TYPE_WAIT
 		status = consts.ORDER_TYPE_UNPAID
+		recordStatus = 0
 	}
 
 	now := int(time.Now().Unix())
@@ -316,7 +320,7 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		}
 
 		// 更新订单对应的预约流水状态
-		if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, status, curStatus); err != nil {
+		if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, recordStatus); err != nil {
 			log.Log.Errorf("order_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
 			return err
 		}
@@ -331,17 +335,17 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		}
 
 	case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_HALF_YEAR_CARD, consts.ORDER_TYPE_YEAR_CARD:
-		ok, err := svc.order.GetOrderProductsById(orderId)
+		ok, err := svc.order.GetCardRecordByOrderId(orderId)
 		if !ok || err != nil {
-			log.Log.Errorf("payNotify_trace: get order products by id fail, orderId:%s, err:%s", orderId, err)
-			return errors.New("get order product fail")
+			log.Log.Errorf("payNotify_trace: get card record by id fail, orderId:%s, err:%s", orderId, err)
+			return errors.New("get card record fail")
 		}
 
-		// 支付成功/申请退款时 需更新会员数据
-		if changeType == consts.PAY_NOTIFY || changeType == consts.APPLY_REFUND {
+		// 支付成功 需更新会员数据 [会员卡不可退款]
+		if changeType == consts.PAY_NOTIFY {
 			// 更新会员可用时长 及 过期时长
-			if err := svc.UpdateVipInfo(svc.order.Order.UserId, svc.order.OrderProduct.RelatedId, svc.order.OrderProduct.ProductType,
-				now, svc.order.OrderProduct.Count, svc.order.OrderProduct.ExpireDuration, svc.order.OrderProduct.Duration,
+			if err := svc.UpdateVipInfo(svc.order.Order.UserId, svc.order.CardRecord.VenueId, svc.order.CardRecord.ProductType,
+				now, svc.order.CardRecord.PurchasedNum, svc.order.CardRecord.ExpireDuration, svc.order.CardRecord.Duration,
 				changeType); err != nil {
 				log.Log.Errorf("payNotify_trace: update vip info fail, orderId:%s, err:%s", orderId, err)
 				return err
@@ -862,8 +866,8 @@ func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderI
 	now := time.Now().Unix()
 	switch orderType {
 	case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
-		// 获取预约流水
-		infos, err := svc.appointment.GetAppointmentRecordByOrderId(orderId, consts.ORDER_TYPE_PAID)
+		// 获取预约流水[可用状态]
+		infos, err := svc.appointment.GetAppointmentRecordByOrderId(orderId, 1)
 		if len(infos) == 0 || err != nil {
 			log.Log.Errorf("order_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
 			return false, 0, 0, errors.New("get record fail")
@@ -910,14 +914,13 @@ func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderI
 		}
 
 	case consts.ORDER_TYPE_EXPERIENCE_CARD:
-		// 获取订单商品
-		ok, err := svc.order.GetOrderProductsById(orderId)
+		ok, err := svc.order.GetCardRecordByOrderId(orderId)
 		if !ok || err != nil {
-			log.Log.Errorf("order_trace: get order product by id fail, orderId:%s, err:%s", orderId, err)
-			return false, 0, 0, errors.New("get order product fail")
+			log.Log.Errorf("order_trace: get vip card by id fail, orderId:%s, err:%s", orderId, err)
+			return false, 0, 0, errors.New("get vip card fail")
 		}
 
-		expireTm := payTime + svc.order.OrderProduct.ExpireDuration
+		expireTm := payTime + svc.order.CardRecord.ExpireDuration
 		// 次卡  订单完成时间 + 过期时长 <= 当前时间戳 表示已过期
 		if expireTm <= int(now) {
 			return false, 0, 0, nil

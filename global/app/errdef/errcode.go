@@ -209,6 +209,7 @@ const (
 	ORDER_USER_NOT_MATCH         = 18013
 	ORDER_PROCESS_FAIL           = 18014
 	ORDER_ADD_REFUND_RECORD_FAIL = 18015
+	ORDER_ADD_CARD_RECORD_FAIL   = 18016
 
 	// 大课相关错误 19001-20000
 	COURSE_NOT_EXISTS            = 19001
@@ -410,6 +411,7 @@ var MsgFlags = map[int]string{
 	ORDER_USER_NOT_MATCH:        "用户不配对",
 	ORDER_PROCESS_FAIL:          "订单处理失败",
 	ORDER_ADD_REFUND_RECORD_FAIL:"添加退款记录失败",
+	ORDER_ADD_CARD_RECORD_FAIL:  "添加会员卡记录失败",
 
 	COURSE_NOT_EXISTS:           "课程不存在",
 	COURSE_TYPE_FAIL:            "课程类型错误",

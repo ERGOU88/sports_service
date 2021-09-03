@@ -201,8 +201,16 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 	totalAmount := svc.venue.Product.CurAmount * param.Count
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
+
+	// 添加购买的会员卡记录
+	if err := svc.AddVipCardRecord(orderId, param.UserId, param.VenueId, now, param.Count); err != nil {
+		log.Log.Errorf("venue_trace: add card record fail, orderId:%s, err:%s", orderId, err)
+		svc.engine.Rollback()
+		return errdef.ORDER_ADD_CARD_RECORD_FAIL, nil
+	}
+
 	// 添加订单商品流水
-	if err := svc.AddOrderProduct(orderId, param.VenueId, now, param.Count); err != nil {
+	if err := svc.AddOrderProduct(orderId, now, param.Count); err != nil {
 		log.Log.Errorf("venue_trace: add order products fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.ORDER_PRODUCT_ADD_FAIL, nil
@@ -267,10 +275,33 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 	return errdef.SUCCESS, extra
 }
 
+// 添加购买会员卡记录
+func (svc *VenueModule) AddVipCardRecord(orderId, userId string, venueId int64, now, count int) error {
+	svc.order.CardRecord.ProductType = svc.venue.Product.ProductType
+	svc.order.CardRecord.VenueId = venueId
+	svc.order.CardRecord.PayOrderId = orderId
+	svc.order.CardRecord.UserId = userId
+	svc.order.CardRecord.SingleDuration = svc.venue.Product.EffectiveDuration
+	svc.order.CardRecord.ExpireDuration = svc.venue.Product.ExpireDuration
+	svc.order.CardRecord.Duration = svc.venue.Product.EffectiveDuration * count
+	svc.order.CardRecord.CreateAt = now
+	svc.order.CardRecord.UpdateAt = now
+	svc.order.CardRecord.PurchasedNum = count
+	affected, err := svc.order.AddVipCardRecord()
+	if err != nil {
+		return err
+	}
+
+	if affected != 1 {
+		return errors.New("add vip card record fail, affected not 1")
+	}
+
+	return nil
+}
+
 // 添加订单商品流水
-func (svc *VenueModule) AddOrderProduct(orderId string, venueId int64, now, count int) error {
+func (svc *VenueModule) AddOrderProduct(orderId string, now, count int) error {
 	svc.order.OrderProduct.ProductId = svc.venue.Product.Id
-	svc.order.OrderProduct.RelatedId = venueId
 	svc.order.OrderProduct.ProductType = svc.venue.Product.ProductType
 	svc.order.OrderProduct.Count = count
 	svc.order.OrderProduct.RealAmount = svc.venue.Product.RealAmount
@@ -278,12 +309,10 @@ func (svc *VenueModule) AddOrderProduct(orderId string, venueId int64, now, coun
 	svc.order.OrderProduct.DiscountRate = svc.venue.Product.DiscountRate
 	svc.order.OrderProduct.DiscountAmount = svc.venue.Product.DiscountAmount
 	svc.order.OrderProduct.Amount = svc.venue.Product.CurAmount * count
-	svc.order.OrderProduct.SingleDuration = svc.venue.Product.EffectiveDuration
 	svc.order.OrderProduct.CreateAt = now
 	svc.order.OrderProduct.UpdateAt = now
 	svc.order.OrderProduct.PayOrderId = orderId
-	svc.order.OrderProduct.ExpireDuration = svc.venue.Product.ExpireDuration
-	svc.order.OrderProduct.Duration = svc.venue.Product.EffectiveDuration * count
+	svc.order.OrderProduct.SnapshotId = svc.order.CardRecord.Id
 
 	affected, err := svc.order.AddOrderProduct()
 	if err != nil {

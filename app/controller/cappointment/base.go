@@ -299,23 +299,19 @@ func (svc *base) QueryStockInfo(appointmentType int, relatedId int64, date, time
 	return svc.appointment.GetStockInfo(appointmentType, relatedId, date, timeNode)
 }
 
-func (svc *base) SetOrderProductInfo(orderId string, now, count int, relatedId int64) *models.VenueOrderProductInfo {
+func (svc *base) SetOrderProductInfo(orderId string, now, count int) *models.VenueOrderProductInfo {
 	return &models.VenueOrderProductInfo{
 		ProductId:   consts.ORDER_TYPE_INTERIM_CARD,
 		ProductType: svc.Extra.OrderType,
-		SingleDuration: svc.appointment.AppointmentInfo.Duration,
 		Count:       count,
 		RealAmount:  svc.appointment.AppointmentInfo.RealAmount,
 		CurAmount:   svc.appointment.AppointmentInfo.CurAmount,
 		DiscountRate: svc.appointment.AppointmentInfo.DiscountRate,
 		DiscountAmount: svc.appointment.AppointmentInfo.DiscountAmount,
 		Amount: svc.appointment.AppointmentInfo.CurAmount * count,
-		Duration: svc.appointment.AppointmentInfo.Duration * count,
 		CreateAt: now,
 		UpdateAt: now,
-		RelatedId: relatedId,
 		PayOrderId: orderId,
-		CoachId: svc.Extra.CoachId,
 	}
 }
 
@@ -333,6 +329,8 @@ func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, cou
 		PurchasedNum: count,
 		SeatInfo: info,
 		CoachId: svc.Extra.CoachId,
+		SingleDuration: svc.appointment.AppointmentInfo.Duration,
+		Duration: svc.appointment.AppointmentInfo.Duration * count,
 	}
 }
 
@@ -379,9 +377,9 @@ func (svc *base) UpdateStock(date string, count, now int) (int64, error) {
 func (svc *base) AddAppointmentRecord() error {
 	var rlst []*models.VenueAppointmentRecord
 	for _, val := range svc.recordMp {
-		// 实付金额为0 表示使用时长抵扣 或 活动免费 直接置为成功
+		// 实付金额为0 表示使用时长抵扣 或 活动免费 直接置为可用
 		if svc.order.Order.Amount == 0 {
-			val.Status = consts.ORDER_TYPE_PAID
+			val.Status = 1
 		}
 
 		rlst = append(rlst, val)
@@ -404,11 +402,12 @@ func (svc *base) AddAppointmentRecord() error {
 func (svc *base) AddOrderProducts() error {
 	var olst []*models.VenueOrderProductInfo
 	for _, val := range svc.orderMp {
-		// 实付金额为0 表示使用时长抵扣 或 活动免费 直接置为成功
+		// 实付金额为0 表示使用时长抵扣 或 活动免费 直接置为可用
 		if svc.order.Order.Amount == 0 {
 			val.Status = consts.ORDER_TYPE_PAID
 		}
 
+		val.SnapshotId = svc.recordMp[val.Id].Id
 		olst = append(olst, val)
 	}
 
@@ -638,7 +637,7 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 		svc.Extra.OriginalAmount += item.Count * svc.appointment.AppointmentInfo.RealAmount
 		// 购买总数量
 		svc.Extra.Count += item.Count
-		svc.orderMp[item.Id] = svc.SetOrderProductInfo(orderId, now, item.Count, relatedId)
+		svc.orderMp[item.Id] = svc.SetOrderProductInfo(orderId, now, item.Count)
 		svc.recordMp[item.Id] = svc.SetAppointmentRecordInfo(userId, date, orderId, now, item.Count, item.SeatInfos, relatedId)
 
 		ok, err := svc.appointment.HasExistsStockInfo(svc.appointment.AppointmentInfo.AppointmentType,
