@@ -312,8 +312,8 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		//	return err
 		//}
 		// 申请退款 / 取消订单 需归还库存 及 抵扣的会员时长
-		if changeType == consts.APPLY_REFUND || status == consts.CANCEL_ORDER {
-			if err := svc.UpdateAppointmentInfo(orderId, now, curStatus); err != nil {
+		if changeType == consts.APPLY_REFUND || changeType == consts.CANCEL_ORDER {
+			if err := svc.UpdateAppointmentInfo(orderId, now); err != nil {
 				log.Log.Errorf("payNotify_trace: update appointment info fail, err:%s, orderId:%s", err, orderId)
 				return err
 			}
@@ -366,9 +366,9 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 }
 
 // 更新预约信息
-func (svc *OrderModule) UpdateAppointmentInfo(orderId string, now, curStatus int) error {
+func (svc *OrderModule) UpdateAppointmentInfo(orderId string, now int) error {
 	// 获取订单对应的预约流水
-	list, err := svc.appointment.GetAppointmentRecordByOrderId(orderId, curStatus)
+	list, err := svc.appointment.GetAppointmentRecordByOrderId(orderId)
 	if err != nil {
 		log.Log.Errorf("order_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
 		return err
@@ -867,7 +867,7 @@ func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderI
 	switch orderType {
 	case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
 		// 获取预约流水[可用状态]
-		infos, err := svc.appointment.GetAppointmentRecordByOrderId(orderId, 1)
+		infos, err := svc.appointment.GetAppointmentRecordByOrderId(orderId)
 		if len(infos) == 0 || err != nil {
 			log.Log.Errorf("order_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
 			return false, 0, 0, errors.New("get record fail")

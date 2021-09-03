@@ -154,7 +154,7 @@ func orderTimeOut(orderId string) error {
 func updateAppointmentInfo(session *xorm.Session, orderId string, now int) error {
 	// 获取订单对应的预约流水
 	amodel := mappointment.NewAppointmentModel(session)
-	list, err := amodel.GetAppointmentRecordByOrderId(orderId, consts.ORDER_TYPE_WAIT)
+	list, err := amodel.GetAppointmentRecordByOrderId(orderId)
 	if err != nil {
 		log.Log.Errorf("orderJob_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
 		session.Rollback()

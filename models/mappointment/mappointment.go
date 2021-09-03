@@ -420,10 +420,10 @@ func (m *AppointmentModel) AddLabels(labels []*models.VenueUserLabel) (int64, er
 	return m.Engine.InsertMulti(labels)
 }
 
-// 通过订单id获取预约流水
-func (m *AppointmentModel) GetAppointmentRecordByOrderId(orderId string, status int) ([]*models.VenueAppointmentRecord, error) {
+// 通过订单id获取预约流水 status 1 可用 0 不可用
+func (m *AppointmentModel) GetAppointmentRecordByOrderId(orderId string) ([]*models.VenueAppointmentRecord, error) {
 	var list []*models.VenueAppointmentRecord
-	if err := m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Find(&list); err != nil {
+	if err := m.Engine.Where("pay_order_id=?", orderId).Find(&list); err != nil {
 		return nil, err
 	}
 
