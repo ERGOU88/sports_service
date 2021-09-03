@@ -11,6 +11,7 @@ type VenueCardRecord struct {
 	SingleDuration int    `json:"single_duration" xorm:"not null default 0 comment('单个时长') INT(11)"`
 	ExpireDuration int    `json:"expire_duration" xorm:"not null default 0 comment('过期时长[单个商品]') INT(11)"`
 	Duration       int    `json:"duration" xorm:"not null default 0 comment('购买总时长') INT(11)"`
+	VenueId        int64  `json:"venue_id" xorm:"not null comment('场馆id') BIGINT(20)"`
 	CreateAt       int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt       int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
 }
