@@ -330,7 +330,7 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 			}
 		}
 
-	case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_YEAR_CARD:
+	case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_HALF_YEAR_CARD, consts.ORDER_TYPE_YEAR_CARD:
 		ok, err := svc.order.GetOrderProductsById(orderId)
 		if !ok || err != nil {
 			log.Log.Errorf("payNotify_trace: get order products by id fail, orderId:%s, err:%s", orderId, err)
@@ -852,7 +852,7 @@ func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderI
 
 	// 只有预约场馆/次卡/私教/课程可申请退款 同时需要判断 订单是否过期
 	if orderType == consts.ORDER_TYPE_YEAR_CARD || orderType == consts.ORDER_TYPE_MONTH_CARD ||
-		orderType == consts.ORDER_TYPE_SEANSON_CARD {
+		orderType == consts.ORDER_TYPE_SEANSON_CARD || orderType == consts.ORDER_TYPE_HALF_YEAR_CARD {
 		return false, 0, 0, errors.New("invalid order type")
 	}
 
