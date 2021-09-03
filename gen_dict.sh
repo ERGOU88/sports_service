@@ -1,2 +1,2 @@
 #!/bin/bash
-./models/sql/dataDictionary -c "root:a3202381@tcp(127.0.0.1:3306)/fpv2?charset=utf8mb4"
+./models/sql/dataDictionary -c "root:bluetrans888@tcp(192.168.5.12:3306)/sports_service2?charset=utf8mb4"
