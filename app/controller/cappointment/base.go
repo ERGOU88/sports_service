@@ -391,6 +391,8 @@ func (svc *base) AddAppointmentRecord() error {
 		}
 	}
 
+	log.Log.Infof("extraInfo:%+v", svc.recordMp)
+
 	return nil
 }
 
