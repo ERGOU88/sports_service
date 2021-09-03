@@ -670,7 +670,7 @@ func (svc *OrderModule) OrderRefund(param *morder.ChangeOrder, executeType int) 
 	}
 
 	// 是否可退款
-	can, refundFee, ruleId, err := svc.CanRefund(svc.order.Order.Amount, svc.order.Order.Status, svc.order.Order.OrderType, svc.order.Order.PayTime,
+	can, refundFee, ruleId, err := svc.CanRefund(svc.order.Order.Amount, svc.order.Order.Status, svc.order.Order.ProductType, svc.order.Order.PayTime,
 		svc.order.Order.PayOrderId, svc.order.Order.Extra)
 	if err != nil {
 		log.Log.Errorf("order_trace: refund fail, orderId:%s, can:%v, err:%s", svc.order.Order.PayOrderId, can, err)
@@ -1087,7 +1087,7 @@ func (svc *OrderModule) CheckOrderExpire() error {
 
 		svc.order.Order = order
 		// 预约场馆/次卡 查看订单是否可退款 可退款表示未过期
-		can, _, _, err := svc.CanRefund(order.Amount, order.Status, order.OrderType, order.PayTime, order.PayOrderId, order.Extra)
+		can, _, _, err := svc.CanRefund(order.Amount, order.Status, order.ProductType, order.PayTime, order.PayOrderId, order.Extra)
 		// 可以退款 表示未过期 或 出现错误 不处理
 		if can || err != nil {
 			log.Log.Errorf("order_trace: canRefund err:%s", err)
