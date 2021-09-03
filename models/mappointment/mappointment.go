@@ -356,7 +356,7 @@ func (m *AppointmentModel) AddMultiAppointmentRecord(list []*models.VenueAppoint
 }
 
 // 添加预约记录
-func (m *AppointmentModel) AddAppointmentRecord(mp map[string]*models.VenueAppointmentRecord) (int64, error) {
+func (m *AppointmentModel) AddAppointmentRecord(mp map[string]interface{}) (int64, error) {
 	return m.Engine.Insert(mp)
 }
 
