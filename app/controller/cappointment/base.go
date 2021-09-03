@@ -381,7 +381,7 @@ func (svc *base) AddAppointmentRecord() error {
 			val.Status = 1
 		}
 
-		affected, err := svc.appointment.AddAppointmentRecord(val)
+		affected, err := svc.appointment.AddAppointmentRecord(svc.recordMp[val.Id])
 		if err != nil {
 			return err
 		}
