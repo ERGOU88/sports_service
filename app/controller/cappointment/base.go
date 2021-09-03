@@ -22,9 +22,9 @@ type base struct {
 	DateId      int
 	Extra       *mappointment.OrderResp
 	// 预约流水map
-	recordMp    map[int64]*models.VenueAppointmentRecord
+	recordMp    map[string]*models.VenueAppointmentRecord
 	// 订单商品流水map
-	orderMp     map[int64]*models.VenueOrderProductInfo
+	orderMp     map[string]*models.VenueOrderProductInfo
 }
 
 func New(socket *xorm.Session) *base {
@@ -33,8 +33,8 @@ func New(socket *xorm.Session) *base {
 		appointment: mappointment.NewAppointmentModel(socket),
 		order: morder.NewOrderModel(socket),
 		Extra:  &mappointment.OrderResp{TimeNodeInfo: make([]*mappointment.TimeNodeInfo, 0)},
-		recordMp: make(map[int64]*models.VenueAppointmentRecord),
-		orderMp: make(map[int64]*models.VenueOrderProductInfo),
+		recordMp: make(map[string]*models.VenueAppointmentRecord),
+		orderMp: make(map[string]*models.VenueOrderProductInfo),
 	}
 }
 
@@ -380,15 +380,15 @@ func (svc *base) AddAppointmentRecord() error {
 		if svc.order.Order.Amount == 0 {
 			val.Status = 1
 		}
+	}
 
-		affected, err := svc.appointment.AddAppointmentRecord(svc.recordMp[val.Id])
-		if err != nil {
-			return err
-		}
+	affected, err := svc.appointment.AddAppointmentRecord(svc.recordMp)
+	if err != nil {
+		return err
+	}
 
-		if affected != 1 {
-			return errors.New("add record fail, count not match~")
-		}
+	if affected != int64(len(svc.recordMp)) {
+		return errors.New("add record fail, count not match~")
 	}
 
 	log.Log.Infof("extraInfo:%+v", svc.recordMp)
@@ -405,7 +405,7 @@ func (svc *base) AddOrderProducts() error {
 			val.Status = consts.ORDER_TYPE_PAID
 		}
 
-		val.SnapshotId = svc.recordMp[val.Id].Id
+		val.SnapshotId = svc.recordMp[fmt.Sprint(val.Id)].Id
 		olst = append(olst, val)
 	}
 
@@ -635,8 +635,8 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 		svc.Extra.OriginalAmount += item.Count * svc.appointment.AppointmentInfo.RealAmount
 		// 购买总数量
 		svc.Extra.Count += item.Count
-		svc.orderMp[item.Id] = svc.SetOrderProductInfo(orderId, now, item.Count)
-		svc.recordMp[item.Id] = svc.SetAppointmentRecordInfo(userId, date, orderId, now, item.Count, item.SeatInfos, relatedId)
+		svc.orderMp[fmt.Sprint(item.Id)] = svc.SetOrderProductInfo(orderId, now, item.Count)
+		svc.recordMp[fmt.Sprint(item.Id)] = svc.SetAppointmentRecordInfo(userId, date, orderId, now, item.Count, item.SeatInfos, relatedId)
 
 		ok, err := svc.appointment.HasExistsStockInfo(svc.appointment.AppointmentInfo.AppointmentType,
 			svc.appointment.AppointmentInfo.RelatedId, date, svc.appointment.AppointmentInfo.TimeNode)
