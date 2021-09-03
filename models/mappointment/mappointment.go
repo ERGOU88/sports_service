@@ -355,6 +355,11 @@ func (m *AppointmentModel) AddMultiAppointmentRecord(list []*models.VenueAppoint
 	return m.Engine.InsertMulti(list)
 }
 
+// 添加预约记录
+func (m *AppointmentModel) AddAppointmentRecord(record *models.VenueAppointmentRecord) (int64, error) {
+	return m.Engine.InsertOne(record)
+}
+
 const (
 	GET_VENUE_USER_LABELS = "SELECT distinct(label_name),label_id FROM venue_user_label WHERE date=? AND time_node=? " +
 		"AND status=0 AND venue_id=? LIMIT 3"

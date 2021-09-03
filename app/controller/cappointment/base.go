@@ -375,24 +375,20 @@ func (svc *base) UpdateStock(date string, count, now int) (int64, error) {
 
 // 添加预约流水
 func (svc *base) AddAppointmentRecord() error {
-	var rlst []*models.VenueAppointmentRecord
 	for _, val := range svc.recordMp {
 		// 实付金额为0 表示使用时长抵扣 或 活动免费 直接置为可用
 		if svc.order.Order.Amount == 0 {
 			val.Status = 1
 		}
 
-		rlst = append(rlst, val)
-	}
+		affected, err := svc.appointment.AddAppointmentRecord(val)
+		if err != nil {
+			return err
+		}
 
-	// 添加预约记录流水
-	affected, err := svc.appointment.AddMultiAppointmentRecord(rlst)
-	if err != nil {
-		return err
-	}
-
-	if affected != int64(len(rlst)) {
-		return errors.New("add record fail, count not match~")
+		if affected != 1 {
+			return errors.New("add record fail, count not match~")
+		}
 	}
 
 	return nil
