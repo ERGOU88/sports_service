@@ -10,7 +10,7 @@ type VenueAppointmentRecord struct {
 	AppointmentType int    `json:"appointment_type" xorm:"not null default 0 comment('0 场馆预约 1 私教预约 2 大课预约') TINYINT(1)"`
 	TimeNode        string `json:"time_node" xorm:"not null default '' comment('时间节点 例如 10:00-12:00') VARCHAR(128)"`
 	Date            string `json:"date" xorm:"not null default ' ' comment('预约日期') VARCHAR(30)"`
-	PayOrderId      string `json:"pay_order_id" xorm:"not null comment('订单号') VARCHAR(150)"`
+	PayOrderId      string `json:"pay_order_id" xorm:"not null default '' comment('订单号') VARCHAR(150)"`
 	PurchasedNum    int    `json:"purchased_num" xorm:"not null comment('购买的数量') INT(10)"`
 	Status          int    `json:"status" xorm:"not null default 0 comment('0 不可用 1 可用') TINYINT(1)"`
 	SeatInfo        string `json:"seat_info" xorm:"not null default '' comment('预约的座位信息 ') VARCHAR(1000)"`
