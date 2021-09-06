@@ -22,4 +22,5 @@ type VenueCoachDetail struct {
 	Status           int    `json:"status" xorm:"not null default 0 comment('0 正常 1 废弃') TINYINT(1)"`
 	CoachType        int    `json:"coach_type" xorm:"not null default 0 comment('1 私教课老师 2 大课老师') TINYINT(1)"`
 	CourseId         int64  `json:"course_id" xorm:"not null default 0 comment('课程id [大课老师才会关联]') BIGINT(20)"`
+	VenueId          int64  `json:"venue_id" xorm:"not null default 0 comment('场馆id') BIGINT(20)"`
 }

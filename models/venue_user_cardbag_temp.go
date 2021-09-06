@@ -12,4 +12,5 @@ type VenueUserCardbagTemp struct {
 	Status   int `json:"status" xorm:"comment('状态0正常,1禁用') INT(11)"`
 	CreateAt int `json:"create_at" xorm:"INT(11)"`
 	UpdateAt int `json:"update_at" xorm:"INT(11)"`
+	AdminId  int `json:"admin_id" xorm:"INT(11)"`
 }

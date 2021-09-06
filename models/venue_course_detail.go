@@ -21,4 +21,5 @@ type VenueCourseDetail struct {
 	CourseType     int    `json:"course_type" xorm:"not null default 0 comment('1 私教课 2 大课') TINYINT(1)"`
 	PeriodNum      int    `json:"period_num" xorm:"not null comment('总课时数') INT(6)"`
 	Name           string `json:"name" xorm:"not null default '' comment('课程名称') VARCHAR(521)"`
+	VenueId        int64  `json:"venue_id" xorm:"not null default 0 comment('场馆id') BIGINT(20)"`
 }

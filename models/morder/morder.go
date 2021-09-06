@@ -57,6 +57,7 @@ type OrderModel struct {
 	Record         *models.VenueAppointmentRecord
 	Notify         *models.VenuePayNotify
 	RefundRecord   *models.VenueRefundRecord
+	CardRecord     *models.VenueCardRecord
 }
 
 func NewOrderModel(engine *xorm.Session) *OrderModel {
@@ -67,7 +68,19 @@ func NewOrderModel(engine *xorm.Session) *OrderModel {
 		Record: new(models.VenueAppointmentRecord),
 		Notify: new(models.VenuePayNotify),
 		RefundRecord: new(models.VenueRefundRecord),
+		CardRecord: new(models.VenueCardRecord),
 	}
+}
+
+// 通过订单id获取可用的卡类商品记录
+func (m *OrderModel) GetCardRecordByOrderId(orderId string) (bool, error) {
+	m.CardRecord = new(models.VenueCardRecord)
+	return m.Engine.Where("pay_order_id=? AND status=1", orderId).Get(m.CardRecord)
+}
+
+// 添加会员卡购买记录
+func (m *OrderModel) AddVipCardRecord() (int64, error) {
+	return m.Engine.InsertOne(m.CardRecord)
 }
 
 // 添加订单
@@ -103,7 +116,7 @@ func (m *OrderModel) UpdateOrderStatus(orderId string, status int) (int64, error
 		"status", "is_callback", "pay_time", "transaction", "refund_amount", "refund_fee").Update(m.Order)
 }
 
-// 通过订单id 获取订单流水信息
+// 通过订单id 获取订单流水信息 [会员卡类商品]
 func (m *OrderModel) GetOrderProductsById(orderId string) (bool, error) {
 	m.OrderProduct = new(models.VenueOrderProductInfo)
 	return m.Engine.Where("pay_order_id=?", orderId).Get(m.OrderProduct)
