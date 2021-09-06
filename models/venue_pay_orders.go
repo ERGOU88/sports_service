@@ -24,4 +24,5 @@ type VenuePayOrders struct {
 	OriginalAmount int    `json:"original_amount" xorm:"not null comment('订单原始金额（分）') INT(11)"`
 	AdminId        int    `json:"admin_id" xorm:"default 0 comment('操作原') INT(11)"`
 	RefundFee      int    `json:"refund_fee" xorm:"not null default 0 comment('退款手续费（分）') INT(11)"`
+	VenueId        int64  `json:"venue_id" xorm:"not null default 0 comment('场馆id') BIGINT(20)"`
 }
