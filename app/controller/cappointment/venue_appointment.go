@@ -344,6 +344,11 @@ func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*mo
 		return nil
 	}
 
+	// 查看会员是否过期 已过期会员无法抵扣
+	if vip.EndTm < time.Now().Unix() {
+		return nil
+	}
+
 	// 如果是会员 且 会员时长 > 0
 	// 开始走抵扣流程 预约的时间节点[多个] 按价格从高至低 开始抵扣 每个时间节点最多只可抵扣一次
 	for key, val := range list {
