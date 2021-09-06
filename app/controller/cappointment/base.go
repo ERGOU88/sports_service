@@ -303,6 +303,7 @@ func (svc *base) SetOrderProductInfo(orderId string, now, count int, productId i
 	return &models.VenueOrderProductInfo{
 		ProductId:   productId,
 		ProductType: svc.Extra.OrderType,
+		ProductCategory: consts.PRODUCT_CATEGORY_APPOINTMENT,
 		Count:       count,
 		RealAmount:  svc.appointment.AppointmentInfo.RealAmount,
 		CurAmount:   svc.appointment.AppointmentInfo.CurAmount,

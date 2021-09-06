@@ -304,6 +304,7 @@ func (svc *VenueModule) AddOrderProduct(orderId string, now, count int) error {
 	svc.order.OrderProduct.ProductId = svc.venue.Product.Id
 	svc.order.OrderProduct.ProductType = svc.venue.Product.ProductType
 	svc.order.OrderProduct.Count = count
+	svc.order.OrderProduct.ProductCategory = consts.PRODUCT_CATEGORY_CARD
 	svc.order.OrderProduct.RealAmount = svc.venue.Product.RealAmount
 	svc.order.OrderProduct.CurAmount = svc.venue.Product.CurAmount
 	svc.order.OrderProduct.DiscountRate = svc.venue.Product.DiscountRate
