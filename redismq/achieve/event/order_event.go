@@ -170,11 +170,11 @@ func orderTimeOut(appointmentType int, orderId string) error {
 	}
 
 	// 更新订单对应的预约流水状态
-	if err := amodel.UpdateAppointmentRecordStatus(orderId, now, 0); err != nil {
-		log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
-		session.Rollback()
-		return err
-	}
+	//if err := amodel.UpdateAppointmentRecordStatus(orderId, now, 0); err != nil {
+	//	log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
+	//	session.Rollback()
+	//	return err
+	//}
 
 	// 更新标签状态[废弃]
 	amodel.Labels.Status = 1

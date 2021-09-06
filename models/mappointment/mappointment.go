@@ -312,11 +312,18 @@ func (m *AppointmentModel) RevertStockNum(timeNode, date string, count, now, app
 // 获取成功预约的记录[包含已付款和支付中及已完成]
 func (m *AppointmentModel) GetAppointmentRecord() ([]*models.VenueAppointmentRecord, error) {
 	var list []*models.VenueAppointmentRecord
-	sql := "SELECT * FROM venue_appointment_record WHERE status in(0, 2, 3) AND appointment_type=? AND related_id=? AND time_node=? " +
-		"AND date=? ORDER BY id ASC"
-	if err := m.Engine.SQL(sql, m.Record.AppointmentType, m.Record.RelatedId, m.Record.TimeNode, m.Record.Date).Find(&list); err != nil {
+	sql := "SELECT var.* FROM venue_appointment_record AS var LEFT JOIN venue_order_product_info AS vop " +
+		"ON var.id=vop.`snapshot_id`  WHERE var.related_id=? AND var.appointment_type=? " +
+		"AND var.time_node=? AND var.date=? AND  vop.status in (0, 2, 3)"
+	if err := m.Engine.SQL(sql, m.Record.RelatedId, m.Record.AppointmentType,  m.Record.TimeNode, m.Record.Date).Find(&list); err != nil {
 		return nil, err
 	}
+
+	//sql := "SELECT * FROM venue_appointment_record WHERE status in(0, 2, 3) AND appointment_type=? AND related_id=? AND time_node=? " +
+	//	"AND date=? ORDER BY id ASC"
+	//if err := m.Engine.SQL(sql, m.Record.AppointmentType, m.Record.RelatedId, m.Record.TimeNode, m.Record.Date).Find(&list); err != nil {
+	//	return nil, err
+	//}
 
 	return list, nil
 }
@@ -430,15 +437,15 @@ func (m *AppointmentModel) GetAppointmentRecordByOrderId(orderId string) ([]*mod
 	return list, nil
 }
 
-const (
-	UPDATE_RECORD_STATUS = "UPDATE `venue_appointment_record` SET `update_at`=?, `status`=? " +
-		"WHERE `pay_order_id`=?"
-)
-// 更新预约记录状态
-func (m *AppointmentModel) UpdateAppointmentRecordStatus(orderId string, now, status int) error {
-	if _, err := m.Engine.Exec(UPDATE_RECORD_STATUS, now, status, orderId); err != nil {
-		return err
-	}
-
-	return nil
-}
+//const (
+//	UPDATE_RECORD_STATUS = "UPDATE `venue_appointment_record` SET `update_at`=?, `status`=? " +
+//		"WHERE `pay_order_id`=?"
+//)
+// 更新预约记录状态 todo：废弃
+//func (m *AppointmentModel) UpdateAppointmentRecordStatus(orderId string, now, status int) error {
+//	if _, err := m.Engine.Exec(UPDATE_RECORD_STATUS, now, status, orderId); err != nil {
+//		return err
+//	}
+//
+//	return nil
+//}

@@ -249,24 +249,21 @@ func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo, refundNo string,
 func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64, changeType, refundAmount, refundFee int) error {
 	// tips: 不可直接更新状态 并发情况下会有问题
 	// 订单当前状态, 需更新的状态, 快照记录需更新的状态
-	var curStatus, status, recordStatus int
+	var curStatus, status int
 	switch changeType {
 	case consts.PAY_NOTIFY:
 		// 如果是支付成功回调 则订单当前状态应是 待支付 需更新状态为 已支付
 		curStatus = consts.ORDER_TYPE_WAIT
 		status = consts.ORDER_TYPE_PAID
-		recordStatus = 1
 		svc.order.Order.IsCallback = 1
 	case consts.REFUND_NOTIFY:
 		curStatus = consts.ORDER_TYPE_REFUND_WAIT
 		status = consts.ORDER_TYPE_REFUND_SUCCESS
-		recordStatus = 0
 		svc.order.Order.IsCallback = 1
 	case consts.APPLY_REFUND:
 		// 如果是申请退款 则订单当前状态 应是已付款 需更新状态为 退款中
 		curStatus = consts.ORDER_TYPE_PAID
 		status = consts.ORDER_TYPE_REFUND_WAIT
-		recordStatus = 0
 		// 如果退款金额和退款手续费均为0 则表示退款单金额为0 直接将退款状态置为成功
 		if refundFee == 0 && refundAmount == 0 {
 			status = consts.ORDER_TYPE_REFUND_SUCCESS
@@ -276,7 +273,6 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		// 如果是取消订单 则订单当前状态 应是待支付 需更新状态为 未支付
 		curStatus = consts.ORDER_TYPE_WAIT
 		status = consts.ORDER_TYPE_UNPAID
-		recordStatus = 0
 	}
 
 	now := int(time.Now().Unix())
@@ -320,10 +316,10 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		}
 
 		// 更新订单对应的预约流水状态
-		if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, recordStatus); err != nil {
-			log.Log.Errorf("order_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
-			return err
-		}
+		//if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, recordStatus); err != nil {
+		//	log.Log.Errorf("order_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
+		//	return err
+		//}
 
 		if svc.order.Order.ProductType == consts.ORDER_TYPE_APPOINTMENT_VENUE {
 			// 更新标签状态[废弃]

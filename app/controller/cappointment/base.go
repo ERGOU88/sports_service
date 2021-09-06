@@ -377,9 +377,9 @@ func (svc *base) UpdateStock(date string, count, now int) (int64, error) {
 func (svc *base) AddAppointmentRecord() error {
 	for _, val := range svc.recordMp {
 		// 实付金额为0 表示使用时长抵扣 或 活动免费 直接置为可用
-		if svc.order.Order.Amount == 0 {
-			val.Status = 1
-		}
+		//if svc.order.Order.Amount == 0 {
+		//	val.Status = 1
+		//}
 
 		affected, err := svc.appointment.AddAppointmentRecord(val)
 		if err != nil {

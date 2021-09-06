@@ -12,7 +12,6 @@ type VenueAppointmentRecord struct {
 	Date            string `json:"date" xorm:"not null default ' ' comment('预约日期') VARCHAR(30)"`
 	PayOrderId      string `json:"pay_order_id" xorm:"not null default '' comment('订单号') VARCHAR(150)"`
 	PurchasedNum    int    `json:"purchased_num" xorm:"not null comment('购买的数量') INT(10)"`
-	Status          int    `json:"status" xorm:"not null default 0 comment('0 不可用 1 可用') TINYINT(1)"`
 	SeatInfo        string `json:"seat_info" xorm:"not null default '' comment('预约的座位信息 ') VARCHAR(1000)"`
 	DeductionTm     int64  `json:"deduction_tm" xorm:"not null default 0 comment('抵扣会员时长') BIGINT(20)"`
 	DeductionAmount int64  `json:"deduction_amount" xorm:"not null default 0 comment('抵扣的价格') BIGINT(20)"`
