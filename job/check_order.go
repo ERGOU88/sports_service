@@ -22,7 +22,6 @@ func CheckOrder() {
 	defer ticker.Stop()
 
 	for {
-
 		select {
 		case <- ticker.C:
 			log.Log.Debugf("开始检测订单支付是否超时")
@@ -155,7 +154,7 @@ func orderTimeOut(orderId string) error {
 func updateAppointmentInfo(session *xorm.Session, orderId string, now int) error {
 	// 获取订单对应的预约流水
 	amodel := mappointment.NewAppointmentModel(session)
-	list, err := amodel.GetAppointmentRecordByOrderId(orderId, consts.ORDER_TYPE_WAIT)
+	list, err := amodel.GetAppointmentRecordByOrderId(orderId)
 	if err != nil {
 		log.Log.Errorf("orderJob_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
 		session.Rollback()
@@ -173,10 +172,10 @@ func updateAppointmentInfo(session *xorm.Session, orderId string, now int) error
 	}
 
 	// 更新订单对应的预约流水状态
-	if err := amodel.UpdateAppointmentRecordStatus(orderId, now, consts.ORDER_TYPE_UNPAID, consts.ORDER_TYPE_WAIT); err != nil {
-		log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
-		return err
-	}
+	//if err := amodel.UpdateAppointmentRecordStatus(orderId, now, 0); err != nil {
+	//	log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
+	//	return err
+	//}
 
 	// 更新标签状态[废弃]
 	amodel.Labels.Status = 1

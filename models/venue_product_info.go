@@ -19,4 +19,5 @@ type VenueProductInfo struct {
 	Describe          string `json:"describe" xorm:"not null default '' comment('商品介绍') VARCHAR(1000)"`
 	Title             string `json:"title" xorm:"not null default '' comment('简介') VARCHAR(300)"`
 	InstanceType      int    `json:"instance_type" xorm:"default 1 comment('实例类型，1: 体验卡；2: 线下食品') TINYINT(4)"`
+	ProductCategory   int    `json:"product_category" xorm:"not null default 0 comment('商品类别 1000 预约类 2000 卡类 5000 实物类') INT(8)"`
 }
