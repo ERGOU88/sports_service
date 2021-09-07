@@ -971,7 +971,7 @@ func (svc *OrderModule) GetCouponCodeInfo(userId, orderId string) (int, *morder.
 	resp.Code = svc.order.Order.WriteOffCode
 	resp.Count = extra.Count
 	resp.TotalAmount = svc.order.Order.Amount
-	resp.QrCodeInfo = util.GenSecret(util.MIX_MODE, 16)
+	resp.QrCodeInfo = fmt.Sprintf("O%s", util.GenSecret(util.MIX_MODE, 16))
 	expire := int64(rdskey.KEY_EXPIRE_MIN * 15)
 	resp.QrCodeExpireDuration = expire - 30
 	cstSh, _ := time.LoadLocation("Asia/Shanghai")

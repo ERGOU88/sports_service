@@ -382,7 +382,7 @@ func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
 	// 默认非会员
 	kabaw.StartTm = 0
 	kabaw.EndTm = 0
-	kabaw.QrCodeInfo = util.GenSecret(util.MIX_MODE, 20)
+	kabaw.QrCodeInfo = fmt.Sprintf("U%s", util.GenSecret(util.MIX_MODE, 18))
 	kabaw.RemainDuration = 0
 	kabaw.Tips = "对准闸机扫描口 高度5cm刷码入场"
 	kabaw.VenueName = svc.venue.Venue.VenueName
@@ -415,7 +415,7 @@ func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
 		}
 	}
 
-	if err := svc.order.SaveQrCodeInfo(util.GenSecret(util.MIX_MODE, 18), userId, rdskey.KEY_EXPIRE_MIN * 15); err != nil {
+	if err := svc.order.SaveQrCodeInfo(kabaw.QrCodeInfo, userId, rdskey.KEY_EXPIRE_MIN * 15); err != nil {
 		log.Log.Errorf("user_trace: save qrcode kabaw info fail, userId:%s, err:%s", userId, err)
 		return errdef.VENUE_VIP_INFO_FAIL, nil
 	}
