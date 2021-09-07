@@ -20,4 +20,8 @@ type VenueAppointmentRecord struct {
 	CoachId         int64  `json:"coach_id" xorm:"not null default 0 comment('教练id 包含 私教老师/大课老师') BIGINT(20)"`
 	CreateAt        int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt        int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
+	UnitPrice       int    `json:"unit_price" xorm:"not null default 0 comment('单位价格 [分] tips:[用于计费使用] 例：每十五分钟/10元 则该字段为1000') INT(11)"`
+	UnitDuration    int    `json:"unit_duration" xorm:"not null default 0 comment('单位时长 [秒] tips:[用于计费使用] 例：每十五分钟/10元 则该字段为900') INT(11)"`
+	StartTm         int    `json:"start_tm" xorm:"not null default 0 comment('预约开始时间') INT(11)"`
+	EndTm           int    `json:"end_tm" xorm:"not null default 0 comment('预约结束时间') INT(11)"`
 }
