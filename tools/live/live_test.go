@@ -8,9 +8,9 @@ import (
 // 获取推流地址
 func TestGenPushStream(t *testing.T) {
 	txTime := BuildTxTime(1000)
-	txSecret := BuildTxSecret(LIVE_PUSH_KEY,"123456", 1000)
+	txSecret := BuildTxSecret(LIVE_PUSH_KEY,"123", 1000)
 	stream := fmt.Sprintf("rtmp://%s/live/%s?txSecret=%s&txTime=%s", PUSH_STREAM_HOST,
-		"123456", txSecret, txTime)
+		"123", txSecret, txTime)
 	t.Logf("stream:%s", stream)
 }
 
