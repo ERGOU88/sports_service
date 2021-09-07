@@ -12,5 +12,5 @@ type ImInterface interface {
 		@param name 昵称
 		@param avatar 头像
 	*/
-	AddUser(userId, name, avatar string) (*ResponseAddUser, error) //ok
+	AddUser(userId, name, avatar string) (string, error) //ok
 }

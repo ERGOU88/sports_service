@@ -40,10 +40,10 @@ func NewImRealize() *imRealize {
 	return &imRealize{}
 }
 
-func (im *imRealize) AddUser(userId, name, avatar string) (*ResponseAddUser, error) {
+func (im *imRealize) AddUser(userId, name, avatar string) (string, error) {
 	sig, err := GenSig(EXPIRE_TM)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	url := GenRequestUrl(sig, addUserUrl)
@@ -55,17 +55,17 @@ func (im *imRealize) AddUser(userId, name, avatar string) (*ResponseAddUser, err
 
 	resp, err := HttpPostBody(url, param)
 	if err != nil {
-		return nil, fmt.Errorf("resp.Body:%s, Failed to get response data! error: %s", string(resp), err.Error())
+		return "", fmt.Errorf("resp.Body:%s, Failed to get response data! error: %s", string(resp), err.Error())
 	}
 
 	var response ResponseAddUser
 	if err := util.JsonFast.Unmarshal(resp, &response); err != nil {
-		return nil, fmt.Errorf("Failed to unmarshal! error: %s", err.Error())
+		return "", fmt.Errorf("Failed to unmarshal! error: %s", err.Error())
 	}
 
 	if response.ActionStatus != "OK" || response.ErrorCode != 0 {
-		return nil, errors.New(response.ErrorInfo)
+		return "", errors.New(response.ErrorInfo)
 	}
 
-	return &response, nil
+	return sig, nil
 }
