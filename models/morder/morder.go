@@ -72,10 +72,10 @@ func NewOrderModel(engine *xorm.Session) *OrderModel {
 	}
 }
 
-// 通过订单id获取可用的卡类商品记录
+// 通过订单id获取购买的卡类商品记录
 func (m *OrderModel) GetCardRecordByOrderId(orderId string) (bool, error) {
 	m.CardRecord = new(models.VenueCardRecord)
-	return m.Engine.Where("pay_order_id=? AND status=1", orderId).Get(m.CardRecord)
+	return m.Engine.Where("pay_order_id=?", orderId).Get(m.CardRecord)
 }
 
 // 添加会员卡购买记录
