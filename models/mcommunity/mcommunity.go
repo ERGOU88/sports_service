@@ -107,7 +107,7 @@ func (m *CommunityModel) GetCommunityTopics(sectionId, isHot string, offset, siz
 const (
 	QUERY_TOPIC_LIST = "SELECT ct.*, post_num FROM community_topic AS ct LEFT JOIN (SELECT count(1) as post_num, " +
 		"topic_id FROM posting_topic as pt WHERE pt.status=1 GROUP BY pt.`topic_id`) AS pt ON ct.id=pt.topic_id " +
-		"ORDER BY pt.post_num DESC LIMIT ?, ?"
+		"ORDER BY pt.post_num DESC, ct.sortorder DESC, ct.id DESC LIMIT ?, ?"
 )
 // 获取话题列表 [按话题下的帖子数量排序]
 func (m *CommunityModel) GetTopicListOrderByPostNum(offset, size int) ([]*CommunityTopicInfo, error) {
