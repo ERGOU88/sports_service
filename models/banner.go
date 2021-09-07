@@ -7,7 +7,7 @@ type Banner struct {
 	Explain   string `json:"explain" xorm:"not null default '' comment('说明') VARCHAR(255)"`
 	JumpUrl   string `json:"jump_url" xorm:"not null default '' comment('跳转地址') VARCHAR(512)"`
 	ShareUrl  string `json:"share_url" xorm:"not null default '' comment('分享地址') VARCHAR(255)"`
-	Type      int    `json:"type" xorm:"not null default 1 comment('1 首页 2 直播页 3 官网banner') INT(1)"`
+	Type      int    `json:"type" xorm:"not null default 1 comment('1 首页 2 赛事 3 官网banner') INT(1)"`
 	StartTime int    `json:"start_time" xorm:"not null default 0 comment('上架时间') INT(11)"`
 	EndTime   int    `json:"end_time" xorm:"not null default 0 comment('下架时间') INT(11)"`
 	Sortorder int    `json:"sortorder" xorm:"not null default 0 comment('排序权重') INT(11)"`
