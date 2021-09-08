@@ -18,6 +18,7 @@ import (
 	"sports_service/server/nsqlx"
 	"sports_service/server/rabbitmq"
 	"sports_service/server/redismq"
+	"sports_service/server/tools/im"
 	"sports_service/server/tools/nsq"
 	"sports_service/server/util"
 	"syscall"
@@ -145,6 +146,11 @@ func setupRedisMqConsumer() {
 
 func setupLabelList() {
 	go mlabel.InitLabelList()
+}
+
+// 初始化腾讯im
+func setupTencentIm() {
+	im.Init()
 }
 
 func init() {
