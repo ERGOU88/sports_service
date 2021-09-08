@@ -20,8 +20,8 @@ const (
 )
 
 // 生成签名
-func GenSig(expireTm int) (string, error) {
-	sig, err := tencentyun.GenUserSig(TX_IM_APP_ID, TX_IM_APP_KEY, TX_IDENTIFIER, expireTm)
+func GenSig(userId string, expireTm int) (string, error) {
+	sig, err := tencentyun.GenUserSig(TX_IM_APP_ID, TX_IM_APP_KEY, userId, expireTm)
 	if err != nil {
 		return "", err
 	}

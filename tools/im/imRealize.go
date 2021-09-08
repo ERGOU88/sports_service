@@ -42,7 +42,12 @@ func NewImRealize() *imRealize {
 }
 
 func (im *imRealize) AddUser(userId, name, avatar string) (string, error) {
-	sig, err := GenSig(EXPIRE_TM_DAY * 365)
+	sig, err := GenSig(TX_IDENTIFIER, EXPIRE_TM_DAY)
+	if err != nil {
+		return "", err
+	}
+
+	userSig, err := GenSig(userId, EXPIRE_TM_DAY * 365)
 	if err != nil {
 		return "", err
 	}
@@ -68,7 +73,7 @@ func (im *imRealize) AddUser(userId, name, avatar string) (string, error) {
 		return "", errors.New(response.ErrorInfo)
 	}
 
-	return sig, nil
+	return userSig, nil
 }
 
 // 创建群组
@@ -81,7 +86,7 @@ func (im *imRealize) CreateGroup(groupType, owner, name, introduction, notificat
 		return "", errors.New("invalid param")
 	}
 
-	sig, err := GenSig(EXPIRE_TM_DAY)
+	sig, err := GenSig(TX_IDENTIFIER, EXPIRE_TM_DAY)
 	if err != nil {
 		return "", err
 	}
