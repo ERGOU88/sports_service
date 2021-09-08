@@ -28,9 +28,9 @@ func Router(engine *gin.Engine) {
 		like.POST("/post", token.TokenAuth(), GiveLikeForPost)
 		// 帖子取消点赞
 		like.POST("/post/cancel", token.TokenAuth(), CancelLikeForPost)
-		// 帖子评论点赞
-		//like.POST("/comment/post", token.TokenAuth(), GiveLikeForPostComment)
-		// 帖子评论取消点赞
-		//like.POST("/comment/post/cancel", token.TokenAuth(), CancelLikeForPostComment)
+		// 资讯点赞
+		like.POST("/information", token.TokenAuth(), GiveLikeForInformation)
+        // 资讯取消点赞
+		like.POST("/information/cancel", token.TokenAuth(), CancelLikeForInformation)
 	}
 }

@@ -11,6 +11,7 @@ import (
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
 	"sports_service/server/models/mcomment"
+	"sports_service/server/models/minformation"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
@@ -31,6 +32,7 @@ type LikeModule struct {
 	attention  *mattention.AttentionModel
 	collect    *mcollect.CollectModel
 	post       *mposting.PostingModel
+	information *minformation.InformationModel
 }
 
 func New(c *gin.Context) LikeModule {
@@ -45,6 +47,7 @@ func New(c *gin.Context) LikeModule {
 		attention: mattention.NewAttentionModel(socket),
 		collect: mcollect.NewCollectModel(socket),
 		post: mposting.NewPostingModel(socket),
+		information: minformation.NewInformationModel(socket),
 		engine: socket,
 	}
 }
@@ -496,7 +499,7 @@ func (svc *LikeModule) CancelLikeForPost(userId string, postId int64) int {
 	if err != nil || post == nil  {
 		log.Log.Errorf("like_trace: cancel like post not found, postId:%d", postId)
 		svc.engine.Rollback()
-		return errdef.LIKE_VIDEO_NOT_EXISTS
+		return errdef.LIKE_POST_NOT_EXISTS
 	}
 
 	// 获取点赞的信息 判断是否已点赞 记录不存在 则 未点过赞
@@ -637,6 +640,133 @@ func (svc *LikeModule) CancelLikeForPostComment(userId string, commentId int64) 
 	}
 
 	now :=  int(time.Now().Unix())
+	info.Status = consts.NOT_GIVE_LIKE
+	info.CreateAt = now
+	// 更新状态 未点赞
+	if err := svc.like.UpdateLikeStatus(); err != nil {
+		log.Log.Errorf("like_trace: update like status err:%s", err)
+		svc.engine.Rollback()
+		return errdef.LIKE_CANCEL_FAIL
+	}
+
+	svc.engine.Commit()
+
+	return errdef.SUCCESS
+}
+
+
+// 点赞资讯
+func (svc *LikeModule) GiveLikeForInformation(userId string, newsId int64) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("like_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
+
+	// 查询用户是否存在
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
+		log.Log.Errorf("like_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
+		return errdef.USER_NOT_EXISTS
+	}
+
+	// 查找资讯是否存在
+	ok, err := svc.information.GetInformationById(fmt.Sprint(newsId))
+	if !ok || err != nil {
+		svc.engine.Rollback()
+		return errdef.LIKE_INFORMATION_NOT_EXISTS
+	}
+
+	// 获取点赞的资讯信息
+	info := svc.like.GetLikeInfo(userId, newsId, consts.LIKE_TYPE_INFORMATION)
+	// 是否已点赞
+	// 已点赞
+	if info != nil && info.Status == consts.ALREADY_GIVE_LIKE {
+		log.Log.Errorf("like_trace: already give like, userId:%s, postId:%d", userId, newsId)
+		svc.engine.Rollback()
+		return errdef.LIKE_ALREADY_EXISTS
+	}
+
+	now :=  int(time.Now().Unix())
+	// 更新资讯点赞总计 +1
+	if err := svc.information.UpdateInformationLikeNum(newsId, now, consts.CONFIRM_OPERATE); err != nil {
+		log.Log.Errorf("like_trace: update post like num err:%s", err)
+		svc.engine.Rollback()
+		return errdef.LIKE_POST_FAIL
+	}
+
+	// 未点赞
+	// 记录存在 且 状态为 未点赞 更新状态为 已点赞
+	if info != nil && info.Status == consts.NOT_GIVE_LIKE {
+		info.Status = consts.ALREADY_GIVE_LIKE
+		info.CreateAt = now
+		if err := svc.like.UpdateLikeStatus(); err != nil {
+			log.Log.Errorf("like_trace: update like status err:%s", err)
+			svc.engine.Rollback()
+			return errdef.LIKE_INFORMATION_FAIL
+		}
+
+	} else {
+		// 添加点赞记录
+		if err := svc.like.AddGiveLikeByType(userId, svc.information.Information.UserId, newsId, consts.ALREADY_GIVE_LIKE, consts.LIKE_TYPE_INFORMATION); err != nil {
+			log.Log.Errorf("like_trace: add like information record err:%s", err)
+			svc.engine.Rollback()
+			return errdef.LIKE_INFORMATION_FAIL
+		}
+	}
+
+	svc.engine.Commit()
+
+	return errdef.SUCCESS
+}
+
+// 取消点赞（资讯）
+func (svc *LikeModule) CancelLikeForInformation(userId string, newsId int64) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("like_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
+
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("like_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
+		return errdef.USER_NOT_EXISTS
+	}
+
+	// 查找帖子是否存在
+	ok, err := svc.information.GetInformationById(fmt.Sprint(newsId))
+	if !ok || err != nil {
+		log.Log.Errorf("like_trace: cancel like information not found, newsId:%d", newsId)
+		svc.engine.Rollback()
+		return errdef.LIKE_INFORMATION_NOT_EXISTS
+	}
+
+	// 获取点赞的信息 判断是否已点赞 记录不存在 则 未点过赞
+	info := svc.like.GetLikeInfo(userId, newsId, consts.LIKE_TYPE_INFORMATION)
+	if info == nil {
+		log.Log.Errorf("like_trace: record not found, not give like, userId:%s, postId:%d", userId, newsId)
+		svc.engine.Rollback()
+		return errdef.LIKE_RECORD_NOT_EXISTS
+	}
+
+	// 状态 ！= 已点赞 提示重复操作
+	if info.Status != consts.ALREADY_GIVE_LIKE {
+		log.Log.Errorf("like_trace: already cancel like, userId:%s, postId:%d", userId, newsId)
+		svc.engine.Rollback()
+		return errdef.LIKE_REPEAT_CANCEL
+	}
+
+	now :=  int(time.Now().Unix())
+	// 更新资讯点赞总计 -1
+	if err := svc.information.UpdateInformationLikeNum(newsId, now, consts.CANCEL_OPERATE); err != nil {
+		log.Log.Errorf("like_trace: update information like num err:%s", err)
+		svc.engine.Rollback()
+		return errdef.LIKE_CANCEL_FAIL
+	}
+
 	info.Status = consts.NOT_GIVE_LIKE
 	info.CreateAt = now
 	// 更新状态 未点赞

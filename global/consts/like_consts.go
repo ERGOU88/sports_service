@@ -14,3 +14,11 @@ const (
 	ALREADY_GIVE_LIKE  = 1
 	NOT_GIVE_LIKE      = 0
 )
+
+
+const (
+	// 资讯点赞
+	LIKE_TYPE_INFORMATION         = 5
+	// 资讯评论点赞
+	LIKE_TYPE_INFORMATION_COMMENT = 6
+)
