@@ -13,5 +13,7 @@ func Router(engine *gin.Engine) {
 	{
 		// 获取资讯列表
 		information.GET("/list", InformationList)
+		// 获取资讯详情
+		information.GET("/detail", InformationDetail)
 	}
 }

@@ -12,6 +12,8 @@ type VideoLive struct {
 	PlayTime       int    `json:"play_time" xorm:"not null default 0 comment('开播时间') INT(11)"`
 	EndTime        int    `json:"end_time" xorm:"not null default 0 comment('结束时间') INT(11)"`
 	Status         int    `json:"status" xorm:"default 0 comment('状态 0未直播 1直播中 2异常') TINYINT(1)"`
+	Title          string `json:"title" xorm:"not null default '' comment('标题') VARCHAR(255)"`
+	HighLights     string `json:"high_lights" xorm:"not null default '' comment('亮点') VARCHAR(255)"`
 	Describe       string `json:"describe" xorm:"not null default '' comment('描述') VARCHAR(512)"`
 	Tags           string `json:"tags" xorm:"not null default '' comment('直播标签') VARCHAR(512)"`
 	CreateAt       int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`

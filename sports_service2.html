@@ -24,7 +24,7 @@
     数据库名：sports_service2
    </div>
    <div class="styletab">
-    表名：venue_appointment_record（预约流水记录（私教/场馆/课程 快照））
+    表名：fpv_contest_info（fpv赛事信息表）
    </div>
    <div align="left"></div>
    <div>
@@ -56,83 +56,11 @@
            <td>是</td>
            <td></td>
            <td></td>
-           <td align="left">id</td>
+           <td align="left">赛事id</td>
           </tr>
           <tr>
            <td>2</td>
-           <td>user_id</td>
-           <td>varchar</td>
-           <td>60</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td align="left">用户id</td>
-          </tr>
-          <tr>
-           <td>3</td>
-           <td>use_user_id</td>
-           <td>varchar</td>
-           <td>60</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td>是</td>
-           <td></td>
-           <td align="left">使用者UserID</td>
-          </tr>
-          <tr>
-           <td>4</td>
-           <td>related_id</td>
-           <td>bigint</td>
-           <td>20</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td align="left">关联id 私教课程/场馆/大课</td>
-          </tr>
-          <tr>
-           <td>5</td>
-           <td>is_write_off</td>
-           <td>tinyint</td>
-           <td>1</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td>0</td>
-           <td align="left">是否核销 0 未核销 1 已核销</td>
-          </tr>
-          <tr>
-           <td>6</td>
-           <td>duration</td>
-           <td>int</td>
-           <td>11</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td>0</td>
-           <td align="left">购买相关服务总时长</td>
-          </tr>
-          <tr>
-           <td>7</td>
-           <td>appointment_type</td>
-           <td>tinyint</td>
-           <td>1</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td>0</td>
-           <td align="left">0 场馆预约 1 私教预约 2 大课预约</td>
-          </tr>
-          <tr>
-           <td>8</td>
-           <td>time_node</td>
+           <td>contest_name</td>
            <td>varchar</td>
            <td>128</td>
            <td></td>
@@ -140,107 +68,35 @@
            <td></td>
            <td></td>
            <td></td>
-           <td align="left">时间节点 例如 10:00-12:00</td>
+           <td align="left">赛事名称 例如：x-fly fpv大赛s1</td>
           </tr>
           <tr>
-           <td>9</td>
-           <td>date</td>
+           <td>3</td>
+           <td>organizer</td>
            <td>varchar</td>
-           <td>30</td>
+           <td>255</td>
            <td></td>
            <td></td>
            <td></td>
            <td></td>
-           <td> </td>
-           <td align="left">预约日期</td>
+           <td></td>
+           <td align="left">举报方</td>
           </tr>
           <tr>
-           <td>10</td>
-           <td>pay_order_id</td>
-           <td>varchar</td>
-           <td>150</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td align="left">订单号</td>
-          </tr>
-          <tr>
-           <td>11</td>
-           <td>purchased_num</td>
-           <td>int</td>
-           <td>10</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td align="left">购买的数量</td>
-          </tr>
-          <tr>
-           <td>12</td>
+           <td>4</td>
            <td>status</td>
            <td>tinyint</td>
-           <td>1</td>
+           <td>2</td>
            <td></td>
            <td></td>
            <td></td>
            <td></td>
            <td>0</td>
-           <td align="left">0 不可用 1 可用</td>
+           <td align="left">赛事状态 0 未开始 1 已开始 2 已结束</td>
           </tr>
           <tr>
-           <td>13</td>
-           <td>seat_info</td>
-           <td>varchar</td>
-           <td>1000</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td align="left">预约的座位信息 </td>
-          </tr>
-          <tr>
-           <td>14</td>
-           <td>deduction_tm</td>
-           <td>bigint</td>
-           <td>20</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td>0</td>
-           <td align="left">抵扣会员时长</td>
-          </tr>
-          <tr>
-           <td>15</td>
-           <td>deduction_amount</td>
-           <td>bigint</td>
-           <td>20</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td>0</td>
-           <td align="left">抵扣的价格</td>
-          </tr>
-          <tr>
-           <td>16</td>
-           <td>deduction_num</td>
-           <td>bigint</td>
-           <td>20</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td>0</td>
-           <td align="left">抵扣的数量</td>
-          </tr>
-          <tr>
-           <td>17</td>
-           <td>single_duration</td>
+           <td>5</td>
+           <td>start_tm</td>
            <td>int</td>
            <td>11</td>
            <td></td>
@@ -248,22 +104,34 @@
            <td></td>
            <td></td>
            <td>0</td>
-           <td align="left">单个时长</td>
+           <td align="left">赛事开始时间</td>
           </tr>
           <tr>
-           <td>18</td>
-           <td>coach_id</td>
-           <td>bigint</td>
-           <td>20</td>
+           <td>6</td>
+           <td>end_tm</td>
+           <td>int</td>
+           <td>11</td>
            <td></td>
            <td></td>
            <td></td>
            <td></td>
            <td>0</td>
-           <td align="left">教练id 包含 私教老师/大课老师</td>
+           <td align="left">赛事结束时间</td>
           </tr>
           <tr>
-           <td>19</td>
+           <td>7</td>
+           <td>sign_up_num</td>
+           <td>int</td>
+           <td>8</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">可报名人数 0 表示没有限制</td>
+          </tr>
+          <tr>
+           <td>8</td>
            <td>create_at</td>
            <td>int</td>
            <td>11</td>
@@ -275,7 +143,7 @@
            <td align="left">创建时间</td>
           </tr>
           <tr>
-           <td>20</td>
+           <td>9</td>
            <td>update_at</td>
            <td>int</td>
            <td>11</td>
@@ -284,7 +152,7 @@
            <td></td>
            <td></td>
            <td>0</td>
-           <td align="left">更新时间</td>
+           <td align="left">修改时间</td>
           </tr>
          </tbody>
         </table></td>
@@ -293,7 +161,7 @@
     </table>
    </div>
    <div class="styletab">
-    表名：venue_card_record（购买会员卡流水记录（次卡/月卡/季卡/半年卡/年卡 快照））
+    表名：fpv_contest_player_information（fpv赛事选手信息表）
    </div>
    <div align="left"></div>
    <div>
@@ -325,7 +193,1701 @@
            <td>是</td>
            <td></td>
            <td></td>
-           <td align="left">id</td>
+           <td align="left">自增id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>name</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">选手名称 例如：pdd</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>photo</td>
+           <td>varchar</td>
+           <td>512</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">选手照片</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>country</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">国家</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>province</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">省份</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>city</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">城市</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>age</td>
+           <td>int</td>
+           <td>3</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">年龄</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>hobby</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">爱好</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>contest_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">参加的赛事id</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">0 正常 1 废弃</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：fpv_contest_player_point_ranking（赛事选手积分排行表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">自增id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>contest_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">所属赛事id</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>schedule_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">赛程id</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>player_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">选手id</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>total_points</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">总积分</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>best_score</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">最佳成绩 (暂定 * 1000存储)</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">0 正常 1 隐藏</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">修改时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：fpv_contest_player_point_record（赛事选手积分纪录明细表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">自增id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>contest_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">所属赛事id</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>schedule_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">赛程id</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>player_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">选手id</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>ranking</td>
+           <td>int</td>
+           <td>8</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">排名</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>receive_points</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">获取积分数</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">0 正常 1 废弃</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">修改时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：fpv_contest_point_rules（fpv赛事积分规则表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">规则id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>contest_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">所属赛事id</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>schedule_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">所属赛程id</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>points</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">可得积分数</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>rule_order</td>
+           <td>tinyint</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">积分规则校验顺序</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>minimum_rank</td>
+           <td>int</td>
+           <td>8</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">最小排名 包含 例： 第1 可得10分 则该字段为 1</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>maximum_rank</td>
+           <td>int</td>
+           <td>8</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">最大排名 0 表示不校验  不包含 例：第1 可得10分 则该字段为 2</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>rule_description</td>
+           <td>varchar</td>
+           <td>512</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">积分规则说明 例：1-100名可得10积分</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">0表示正常 1表示废弃</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">修改时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：fpv_contest_schedule（fpv赛程表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">赛程id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>contest_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">所属赛事id</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>schedule_name</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">赛程名称 例如：测试赛、资格赛、32强赛、16强赛等</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>order</td>
+           <td>int</td>
+           <td>8</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">赛程顺序 1 表示最先开始</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>rounds_num</td>
+           <td>int</td>
+           <td>8</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">轮数 当前赛事规则下 进行几轮角逐 </td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>can_compete_num</td>
+           <td>int</td>
+           <td>8</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">可参与的选手人数</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>promotion_number</td>
+           <td>int</td>
+           <td>8</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">当前轮次可晋级的人数 0表示 非晋级竞赛</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>total_group_num</td>
+           <td>int</td>
+           <td>6</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>1</td>
+           <td align="left">分组数 默认为1组  [分几组竞技]</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>group_player_num</td>
+           <td>int</td>
+           <td>8</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">分组竞技选手数 例如：4人一组 则 设为4</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">0表示正常 1表示废弃</td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>schedule_description</td>
+           <td>varchar</td>
+           <td>1024</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">赛程说明 例： 32强赛：32人参赛，4人一组 分8组角逐16强</td>
+          </tr>
+          <tr>
+           <td>12</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>13</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">修改时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：fpv_contest_schedule_detail（fpv赛程详情表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">自增id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>schedule_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">赛程id</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>rounds</td>
+           <td>int</td>
+           <td>8</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">轮次 第几轮</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>group_num</td>
+           <td>int</td>
+           <td>6</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>1</td>
+           <td align="left">第几组</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>group_name</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">组名 例如A组</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>player_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">选手id</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>begin_tm</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">开始时间</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>end_tm</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">结束时间</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">0 正常 1 废弃</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>score</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">比赛成绩 (暂定 * 1000存储)</td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>is_win</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">是否胜出 1 胜出</td>
+          </tr>
+          <tr>
+           <td>12</td>
+           <td>num_in_group</td>
+           <td>int</td>
+           <td>3</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">分组内编号</td>
+          </tr>
+          <tr>
+           <td>13</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>14</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">修改时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：information（资讯）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">资讯id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>live_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">关联直播（video_live)ID </td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>cover</td>
+           <td>varchar</td>
+           <td>256</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">封面</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>title</td>
+           <td>mediumtext</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">标题</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>content</td>
+           <td>mediumtext</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">内容</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>jump_url</td>
+           <td>varchar</td>
+           <td>500</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">跳转地址</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>sortorder</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">排序权重</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">官方账号 用户id</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">0 正常 1 隐藏</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：information_comment（资讯评论表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">评论id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">评论人userId</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>news_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">资讯id</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>parent_comment_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">父评论id</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>parent_comment_user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">父评论的用户id</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>reply_comment_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">被回复的评论id</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>reply_comment_user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">被回复的评论用户id</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>comment_level</td>
+           <td>tinyint</td>
+           <td>4</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>1</td>
+           <td align="left">评论等级[ 1 一级评论 默认 ，2 二级评论]</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>content</td>
+           <td>varchar</td>
+           <td>1000</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">评论的内容</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>1</td>
+           <td align="left">状态 (1 有效，0 逻辑删除)</td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>is_top</td>
+           <td>tinyint</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">置顶状态[ 1 置顶，0 不置顶 默认 ]</td>
+          </tr>
+          <tr>
+           <td>12</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：information_statistic（资讯统计）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>news_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">资讯id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>fabulous_num</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">点赞数</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>browse_num</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">浏览数</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>share_num</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">分享/转发数</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>reward_num</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">打赏的游币数</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>comment_num</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">评论数</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>collect_num</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">收藏数</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">修改时间</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>heat_num</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">热度 点赞数+ 浏览数 + 评论数</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：video_live（视频直播表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">主键</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">主播id</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>room_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">房间id</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>cover</td>
+           <td>varchar</td>
+           <td>512</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">直播封面</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>rtmp_addr</td>
+           <td>varchar</td>
+           <td>512</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">rtmp地址[拉流]</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>flv_addr</td>
+           <td>varchar</td>
+           <td>512</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">flv地址[拉流]</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>hls_addr</td>
+           <td>varchar</td>
+           <td>512</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">hls地址[拉流]</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>push_stream_addr</td>
+           <td>varchar</td>
+           <td>512</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">推流地址</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>play_time</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">开播时间</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>end_time</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">结束时间</td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td>0</td>
+           <td align="left">状态 0未直播 1直播中 2异常</td>
+          </tr>
+          <tr>
+           <td>12</td>
+           <td>title</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">标题</td>
+          </tr>
+          <tr>
+           <td>13</td>
+           <td>high_lights</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">亮点</td>
+          </tr>
+          <tr>
+           <td>14</td>
+           <td>describe</td>
+           <td>varchar</td>
+           <td>512</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">描述</td>
+          </tr>
+          <tr>
+           <td>15</td>
+           <td>tags</td>
+           <td>varchar</td>
+           <td>512</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">直播标签</td>
+          </tr>
+          <tr>
+           <td>16</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>17</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">更新时间</td>
+          </tr>
+          <tr>
+           <td>18</td>
+           <td>duration</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td>0</td>
+           <td align="left">时长（秒）</td>
+          </tr>
+          <tr>
+           <td>19</td>
+           <td>live_type</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">直播类型（0：管理员[sys_user]，1：用户[user]）</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：video_live_replay（视频直播回放）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">主键id</td>
           </tr>
           <tr>
            <td>2</td>
@@ -341,55 +1903,31 @@
           </tr>
           <tr>
            <td>3</td>
-           <td>use_user_id</td>
-           <td>varchar</td>
-           <td>60</td>
+           <td>live_id</td>
+           <td>bigint</td>
+           <td>20</td>
            <td></td>
            <td></td>
            <td></td>
-           <td>是</td>
            <td></td>
-           <td align="left">使用者UserID</td>
+           <td>0</td>
+           <td align="left">关联直播（video_live)ID </td>
           </tr>
           <tr>
            <td>4</td>
-           <td>product_type</td>
-           <td>int</td>
-           <td>8</td>
+           <td>history_addr</td>
+           <td>varchar</td>
+           <td>512</td>
            <td></td>
            <td></td>
            <td></td>
            <td></td>
            <td></td>
-           <td align="left">2101 临时卡 2201 次卡 2311 月卡 2321 季卡 2331 半年卡 2341 年卡</td>
+           <td align="left">回放地址</td>
           </tr>
           <tr>
            <td>5</td>
-           <td>pay_order_id</td>
-           <td>varchar</td>
-           <td>150</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td align="left">订单号</td>
-          </tr>
-          <tr>
-           <td>6</td>
-           <td>purchased_num</td>
-           <td>int</td>
-           <td>10</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td align="left">购买的数量</td>
-          </tr>
-          <tr>
-           <td>7</td>
-           <td>status</td>
+           <td>labeltype</td>
            <td>tinyint</td>
            <td>1</td>
            <td></td>
@@ -397,34 +1935,70 @@
            <td></td>
            <td></td>
            <td>0</td>
-           <td align="left">0 不可用 1 可用</td>
+           <td align="left">0 下架 1上架</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>is_del</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">0 正常  1 删除</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>intro</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">描述</td>
           </tr>
           <tr>
            <td>8</td>
-           <td>single_duration</td>
-           <td>int</td>
-           <td>11</td>
+           <td>play_num</td>
+           <td>bigint</td>
+           <td>20</td>
            <td></td>
            <td></td>
            <td></td>
            <td></td>
            <td>0</td>
-           <td align="left">单个时长</td>
+           <td align="left">播放次数</td>
           </tr>
           <tr>
            <td>9</td>
-           <td>expire_duration</td>
-           <td>int</td>
-           <td>11</td>
+           <td>is_transcode</td>
+           <td>tinyint</td>
+           <td>2</td>
            <td></td>
            <td></td>
            <td></td>
            <td></td>
            <td>0</td>
-           <td align="left">过期时长[单个商品]</td>
+           <td align="left">是否转码,0-未申请，1-已申请</td>
           </tr>
           <tr>
            <td>10</td>
+           <td>task_id</td>
+           <td>varchar</td>
+           <td>64</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">回放转码任务ID</td>
+          </tr>
+          <tr>
+           <td>11</td>
            <td>duration</td>
            <td>int</td>
            <td>11</td>
@@ -433,88 +2007,11 @@
            <td></td>
            <td></td>
            <td>0</td>
-           <td align="left">购买总时长</td>
-          </tr>
-          <tr>
-           <td>11</td>
-           <td>create_at</td>
-           <td>int</td>
-           <td>11</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td>0</td>
-           <td align="left">创建时间</td>
+           <td align="left">时长（秒）</td>
           </tr>
           <tr>
            <td>12</td>
-           <td>update_at</td>
-           <td>int</td>
-           <td>11</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td>0</td>
-           <td align="left">更新时间</td>
-          </tr>
-         </tbody>
-        </table></td>
-      </tr>
-     </tbody>
-    </table>
-   </div>
-   <div class="styletab">
-    表名：venue_order_product_info（订单商品表）
-   </div>
-   <div align="left"></div>
-   <div>
-    <table border="0" cellpadding="5" cellspacing="0" width="90%">
-     <tbody>
-      <tr>
-       <td bgcolor="#F5F9FF">
-        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
-         <tbody>
-          <tr bgcolor="#E3EFFF">
-           <td>序号</td>
-           <td>列名</td>
-           <td>数据类型</td>
-           <td>长度</td>
-           <td>小数位</td>
-           <td>是否主键</td>
-           <td>是否自增</td>
-           <td>允许空</td>
-           <td>默认值</td>
-           <td>说明</td>
-          </tr>
-          <tr>
-           <td>1</td>
-           <td>id</td>
-           <td>bigint</td>
-           <td>20</td>
-           <td></td>
-           <td>是</td>
-           <td>是</td>
-           <td></td>
-           <td></td>
-           <td align="left">自增ID</td>
-          </tr>
-          <tr>
-           <td>2</td>
-           <td>pay_order_id</td>
-           <td>varchar</td>
-           <td>150</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td align="left">订单号</td>
-          </tr>
-          <tr>
-           <td>3</td>
-           <td>snapshot_id</td>
+           <td>size</td>
            <td>bigint</td>
            <td>20</td>
            <td></td>
@@ -522,118 +2019,46 @@
            <td></td>
            <td></td>
            <td>0</td>
-           <td align="left">商品快照id</td>
-          </tr>
-          <tr>
-           <td>4</td>
-           <td>product_id</td>
-           <td>bigint</td>
-           <td>20</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td align="left">商品id</td>
-          </tr>
-          <tr>
-           <td>5</td>
-           <td>product_type</td>
-           <td>int</td>
-           <td>8</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td align="left">1001 场馆预约 2101 临时卡 2201 次卡 2311 月卡 2321 季卡 2331 半年卡 2341 年卡 3001 私教（教练）订单 3002 课程订单 4001 充值订单  5101 线下实体商品</td>
-          </tr>
-          <tr>
-           <td>6</td>
-           <td>count</td>
-           <td>int</td>
-           <td>11</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td align="left">购买数量</td>
-          </tr>
-          <tr>
-           <td>7</td>
-           <td>real_amount</td>
-           <td>int</td>
-           <td>11</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td align="left">[单个商品]定价（单位：分）</td>
-          </tr>
-          <tr>
-           <td>8</td>
-           <td>cur_amount</td>
-           <td>int</td>
-           <td>11</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td align="left">[单个商品]当前价格 [售价](包含真实价格、 折扣价格（单位：分）</td>
-          </tr>
-          <tr>
-           <td>9</td>
-           <td>discount_rate</td>
-           <td>int</td>
-           <td>11</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td>0</td>
-           <td align="left">折扣率</td>
-          </tr>
-          <tr>
-           <td>10</td>
-           <td>discount_amount</td>
-           <td>int</td>
-           <td>11</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td>0</td>
-           <td align="left">[单个商品]优惠的金额</td>
-          </tr>
-          <tr>
-           <td>11</td>
-           <td>amount</td>
-           <td>int</td>
-           <td>11</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td align="left">商品总价</td>
-          </tr>
-          <tr>
-           <td>12</td>
-           <td>create_at</td>
-           <td>int</td>
-           <td>11</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td>0</td>
-           <td align="left">创建时间</td>
+           <td align="left">视频大小（字节数）</td>
           </tr>
           <tr>
            <td>13</td>
+           <td>play_info</td>
+           <td>mediumtext</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">转码数据</td>
+          </tr>
+          <tr>
+           <td>14</td>
+           <td>cover</td>
+           <td>varchar</td>
+           <td>512</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">回放封面</td>
+          </tr>
+          <tr>
+           <td>15</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left"></td>
+          </tr>
+          <tr>
+           <td>16</td>
            <td>update_at</td>
            <td>int</td>
            <td>11</td>
@@ -642,19 +2067,7 @@
            <td></td>
            <td></td>
            <td>0</td>
-           <td align="left">更新时间</td>
-          </tr>
-          <tr>
-           <td>14</td>
-           <td>status</td>
-           <td>tinyint</td>
-           <td>2</td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td>0</td>
-           <td align="left">0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 已过期</td>
+           <td align="left"></td>
           </tr>
          </tbody>
         </table></td>

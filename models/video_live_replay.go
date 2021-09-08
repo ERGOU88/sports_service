@@ -9,11 +9,12 @@ type VideoLiveReplay struct {
 	IsDel       int    `json:"is_del" xorm:"not null default 0 comment('0 正常  1 删除') TINYINT(1)"`
 	Intro       string `json:"intro" xorm:"not null default '' comment('描述') VARCHAR(255)"`
 	PlayNum     int64  `json:"play_num" xorm:"not null default 0 comment('播放次数') BIGINT(20)"`
-	CreateAt    int    `json:"create_at" xorm:"not null default 0 INT(11)"`
-	UpdateAt    int    `json:"update_at" xorm:"not null default 0 INT(11)"`
 	IsTranscode int    `json:"is_transcode" xorm:"not null default 0 comment('是否转码,0-未申请，1-已申请') TINYINT(2)"`
-	CodeContent string `json:"code_content" xorm:"not null default '' comment('回放转码内容，json格式') VARCHAR(1024)"`
 	TaskId      string `json:"task_id" xorm:"not null default '' comment('回放转码任务ID') VARCHAR(64)"`
 	Duration    int    `json:"duration" xorm:"not null default 0 comment('时长（秒）') INT(11)"`
+	Size        int64  `json:"size" xorm:"not null default 0 comment('视频大小（字节数）') BIGINT(20)"`
+	PlayInfo    string `json:"play_info" xorm:"not null comment('转码数据') MEDIUMTEXT"`
 	Cover       string `json:"cover" xorm:"not null default '' comment('回放封面') VARCHAR(512)"`
+	CreateAt    int    `json:"create_at" xorm:"not null default 0 INT(11)"`
+	UpdateAt    int    `json:"update_at" xorm:"not null default 0 INT(11)"`
 }

@@ -10,5 +10,5 @@ type Information struct {
 	Sortorder int    `json:"sortorder" xorm:"not null default 0 comment('排序权重') INT(11)"`
 	CreateAt  int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UserId    string `json:"user_id" xorm:"not null comment('官方账号 用户id') VARCHAR(60)"`
-	Status    int    `json:"status" xorm:"not null default 0 comment('0 隐藏 1 展示') TINYINT(1)"`
+	Status    int    `json:"status" xorm:"not null default 0 comment('0 正常 1 隐藏') TINYINT(1)"`
 }
