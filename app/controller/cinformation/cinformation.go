@@ -52,6 +52,7 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 		return errdef.SUCCESS, []*minformation.InformationResp{}
 	}
 
+	now := int(time.Now().Unix())
 	resp := make([]*minformation.InformationResp, len(list))
 	for index, information := range list {
 		info := &minformation.InformationResp{
@@ -59,7 +60,7 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 			Cover: information.Cover,
 			Title: information.Title,
 			CreateAt: information.CreateAt,
-			JumpUrl: information.JumpUrl,
+			//JumpUrl: information.JumpUrl,
 			UserId: information.UserId,
 		}
 
@@ -71,6 +72,17 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 		ok, err := svc.information.GetInformationStatistic(fmt.Sprint(info.Id))
 		if !ok && err != nil {
 			log.Log.Error("information_trace: get information statistic fail, id:%d, err:%s", info.Id, err)
+		}
+
+		if !ok && err == nil {
+			svc.information.Statistic.NewsId = info.Id
+			svc.information.Statistic.CreateAt = now
+			svc.information.Statistic.UpdateAt = now
+			// 初始化视频统计数据
+			if _, err = svc.information.AddInformationStatistic(); err != nil {
+				log.Log.Errorf("information_trace: add statistic id:%d, err:%s", info.Id, err)
+				return errdef.INFORMATION_LIST_FAIL, []*minformation.InformationResp{}
+			}
 		}
 
 		if ok {
@@ -87,7 +99,7 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 // 获取资讯详情
 func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *minformation.InformationResp) {
 	if id == "" {
-		return errdef.INFORMATION_NOT_EXISTS, nil
+		return errdef.INVALID_PARAMS, nil
 	}
 
 	ok, err := svc.information.GetInformationById(id)
@@ -100,8 +112,9 @@ func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *min
 		Cover: svc.information.Information.Cover,
 		Title: svc.information.Information.Title,
 		CreateAt: svc.information.Information.CreateAt,
-		JumpUrl: svc.information.Information.JumpUrl,
+		//JumpUrl: svc.information.Information.JumpUrl,
 		UserId: svc.information.Information.UserId,
+		Content: svc.information.Information.Content,
 	}
 
 	if user := svc.user.FindUserByUserid(resp.UserId); user != nil {

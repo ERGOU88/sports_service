@@ -317,11 +317,12 @@ func (m *VideoModel) DelVideoStatistic(videoId string) error {
 }
 
 const (
-	UPDATE_VIDEO_LIKE_NUM  = "UPDATE `video_statistic` SET `fabulous_num` = `fabulous_num` + ?, `update_at`=? WHERE `video_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
+	UPDATE_VIDEO_LIKE_NUM  = "UPDATE `video_statistic` SET `fabulous_num` = `fabulous_num` + ?, " +
+		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `video_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
 )
 // 更新视频点赞数
 func (m *VideoModel) UpdateVideoLikeNum(videoId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_VIDEO_LIKE_NUM, num, now, videoId, num); err != nil {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_LIKE_NUM, num, num, now, videoId, num); err != nil {
 		return err
 	}
 
@@ -341,11 +342,12 @@ func (m *VideoModel) UpdateVideoCollectNum(videoId int64, now, num int) error {
 }
 
 const (
-	UPDATE_VIDEO_COMMENT_NUM = "UPDATE `video_statistic` SET `comment_num` = `comment_num` + ?, `update_at`=? WHERE `video_id`=? AND `comment_num` + ? >= 0 LIMIT 1"
+	UPDATE_VIDEO_COMMENT_NUM = "UPDATE `video_statistic` SET `comment_num` = `comment_num` + ?, " +
+		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `video_id`=? AND `comment_num` + ? >= 0 LIMIT 1"
 )
 // 更新视频评论数
 func (m *VideoModel) UpdateVideoCommentNum(videoId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_VIDEO_COMMENT_NUM, num, now, videoId, num); err != nil {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_COMMENT_NUM, num, num, now, videoId, num); err != nil {
 		return err
 	}
 
@@ -353,11 +355,12 @@ func (m *VideoModel) UpdateVideoCommentNum(videoId int64, now, num int) error {
 }
 
 const (
-	UPDATE_VIDEO_BROWSE_NUM  = "UPDATE `video_statistic` SET `browse_num` = `browse_num` + ?, `update_at`=? WHERE `video_id`=? AND `browse_num` + ? >= 0 LIMIT 1"
+	UPDATE_VIDEO_BROWSE_NUM  = "UPDATE `video_statistic` SET `browse_num` = `browse_num` + ?, " +
+		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `video_id`=? AND `browse_num` + ? >= 0 LIMIT 1"
 )
 // 更新视频浏览数
 func (m *VideoModel) UpdateVideoBrowseNum(videoId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_VIDEO_BROWSE_NUM, num, now, videoId, num); err != nil {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_BROWSE_NUM, num, num, now, videoId, num); err != nil {
 		return err
 	}
 
