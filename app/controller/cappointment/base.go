@@ -316,7 +316,8 @@ func (svc *base) SetOrderProductInfo(orderId string, now, count int, productId i
 	}
 }
 
-func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, count int, seatInfo []*mappointment.SeatInfo, relatedId int64) *models.VenueAppointmentRecord {
+func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, count int, seatInfo []*mappointment.SeatInfo,
+	relatedId, startTm, endTm int64) *models.VenueAppointmentRecord {
 	info, _ := util.JsonFast.MarshalToString(seatInfo)
 	return &models.VenueAppointmentRecord{
 		UserId: userId,
@@ -332,6 +333,10 @@ func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, cou
 		CoachId: svc.Extra.CoachId,
 		SingleDuration: svc.appointment.AppointmentInfo.Duration,
 		Duration: svc.appointment.AppointmentInfo.Duration * count,
+		UnitDuration: svc.appointment.AppointmentInfo.UnitDuration,
+		UnitPrice: svc.appointment.AppointmentInfo.UnitPrice,
+		StartTm: int(startTm),
+		EndTm: int(endTm),
 	}
 }
 
@@ -517,17 +522,6 @@ func (svc *base) SetLatestInventoryResp(date string, count int, isEnough bool) (
 			// 可购数量 = 总库存 - 已购买
 			info.Count = svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum
 		}
-
-		// 剩余库存 = 总库存 - 冻结库存 + 当前购买
-		//stockNum := svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum + count
-		//// 剩余库存 >= 当前购买数量
-		//if stockNum >= count {
-		//	// 可购数量 = 当前购买数量
-		//	info.Count = count
-		//} else {
-		//	// 可购数量 = 总库存 - 已购买
-		//	info.Count = svc.appointment.Stock.QuotaNum - svc.appointment.Stock.PurchasedNum
-		//}
 	}
 
 	return info, nil
@@ -635,7 +629,7 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 		// 购买总数量
 		svc.Extra.Count += item.Count
 		svc.orderMp[item.Id] = svc.SetOrderProductInfo(orderId, now, item.Count, item.Id)
-		svc.recordMp[item.Id] = svc.SetAppointmentRecordInfo(userId, date, orderId, now, item.Count, item.SeatInfos, relatedId)
+		//svc.recordMp[item.Id] = svc.SetAppointmentRecordInfo(userId, date, orderId, now, item.Count, item.SeatInfos, relatedId)
 
 		ok, err := svc.appointment.HasExistsStockInfo(svc.appointment.AppointmentInfo.AppointmentType,
 			svc.appointment.AppointmentInfo.RelatedId, date, svc.appointment.AppointmentInfo.TimeNode)
@@ -691,6 +685,9 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 			return err
 		}
 
+		// 设置预约快照信息
+		svc.recordMp[item.Id] = svc.SetAppointmentRecordInfo(userId, date, orderId, now, item.Count, item.SeatInfos,
+			relatedId, resp.StartTm, resp.EndTm)
 		svc.Extra.TimeNodeInfo = append(svc.Extra.TimeNodeInfo, resp)
 
 		// 是否遍历完所有预约节点

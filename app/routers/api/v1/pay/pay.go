@@ -162,9 +162,12 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
+	rsp := new(wxCli.NotifyResponse)
+	rsp.ReturnCode = gopay.SUCCESS
+	rsp.ReturnMsg = "OK"
 	if order.Status != consts.ORDER_TYPE_WAIT {
 		log.Log.Error("wxNotify_trace: order already pay, orderId:%s, err:%s", orderId, err)
-		c.String(http.StatusOK, "SUCCESS")
+		c.String(http.StatusOK, rsp.ToXmlString())
 		return
 	}
 
@@ -188,10 +191,6 @@ func WechatNotify(c *gin.Context) {
 		c.String(http.StatusInternalServerError, "fail")
 		return
 	}
-
-	rsp := new(wxCli.NotifyResponse)
-	rsp.ReturnCode = gopay.SUCCESS
-	rsp.ReturnMsg = "OK"
 
 	c.String(http.StatusOK, rsp.ToXmlString())
 }
@@ -233,9 +232,12 @@ func WechatRefundNotify(c *gin.Context) {
 		return
 	}
 
+	rsp := new(wxCli.NotifyResponse)
+	rsp.ReturnCode = gopay.SUCCESS
+	rsp.ReturnMsg = "OK"
 	if order.Status != consts.ORDER_TYPE_REFUND_WAIT {
 		log.Log.Error("wxNotify_trace: order status fail, orderId:%s, status:%d, err:%s", orderId, order.Status, err)
-		c.String(http.StatusOK, "SUCCESS")
+		c.String(http.StatusOK, rsp.ToXmlString())
 		return
 	}
 
@@ -272,10 +274,6 @@ func WechatRefundNotify(c *gin.Context) {
 		c.String(http.StatusInternalServerError, "fail")
 		return
 	}
-
-	rsp := new(wxCli.NotifyResponse)
-	rsp.ReturnCode = gopay.SUCCESS
-	rsp.ReturnMsg = "OK"
 
 	c.String(http.StatusOK, rsp.ToXmlString())
 }

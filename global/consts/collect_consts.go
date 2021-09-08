@@ -8,6 +8,7 @@ const (
 
 // 收藏记录 0为视频 1为帖子
 const (
-	TYPE_VIDEO = 0
-	TYPE_POST  = 1
+	TYPE_VIDEO       = 0
+	TYPE_POST        = 1
+	TYPE_INFORMATION = 2
 )
