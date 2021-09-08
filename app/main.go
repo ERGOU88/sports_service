@@ -181,6 +181,8 @@ func init() {
 	setupRedisMqConsumer()
 	// 初始化视频标签配置列表 [load到内存]
 	setupLabelList()
+	// 初始化腾讯im
+	setupTencentIm()
 	// register signals handler
 	setupSignal()
 	// 本地运行时 不执行定时任务
