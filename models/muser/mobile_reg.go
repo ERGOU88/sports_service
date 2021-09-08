@@ -44,6 +44,15 @@ func (r *mobileRegister) Register(u *UserModel, platform int, mobileNum, clientI
 	}
 
 	r.newUser(u, phone, platform, clientIp)
+	// 腾讯云im导入用户
+	ch := r.tcyAddUser(u.User)
+	result, ok := <- ch
+	if !ok || result.err != nil {
+		log.Log.Error("read  chan = %v, err = %+v", ok, result.err)
+		return errors.New("register im user fail")
+	}
+
+	u.SetTencentImInfo(u.User.UserId, result.sig)
 
 	return nil
 }

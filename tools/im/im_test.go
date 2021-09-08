@@ -5,13 +5,15 @@ import (
 )
 
 
-// 文本检测
 func TestGenSign(t *testing.T) {
-	sig, err := GenSig(86400)
-	if err != nil {
-		return
-	}
+	im := NewImRealize()
+	sig, err := im.AddUser("123456", "robot1", "https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/123.jpeg")
+	t.Logf("sig:%s, err:%s", sig, err)
+}
 
-	url := GenRequestUrl(sig, "/v4/im_open_login_svc/account_import")
-	t.Logf("url:%s", url)
+func TestCreateGroup(t *testing.T) {
+	im := NewImRealize()
+	groupId, err := im.CreateGroup("AVChatRoom", "", "test", "test",
+		"test", "test")
+	t.Logf("groupId:%s, err:%s", groupId, err)
 }

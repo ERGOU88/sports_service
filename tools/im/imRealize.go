@@ -25,15 +25,16 @@ type (
 		ActionStatus string `json:"ActionStatus"`    // OK 表示处理成功，FAIL 表示失败
 		ErrorCode int `json:"ErrorCode"`
 		ErrorInfo string `json:"ErrorInfo"`          // 0表示成功，非0表示失败
+		GroupId   string `json:"GroupId"`            // 群id
 	}
 
-	ResponseAddUser struct {
+	Response struct {
 		BaseResponse
 	}
 )
 
 const (
-	EXPIRE_TM = 86400
+	EXPIRE_TM_DAY = 86400
 )
 
 func NewImRealize() *imRealize {
@@ -41,7 +42,7 @@ func NewImRealize() *imRealize {
 }
 
 func (im *imRealize) AddUser(userId, name, avatar string) (string, error) {
-	sig, err := GenSig(EXPIRE_TM)
+	sig, err := GenSig(EXPIRE_TM_DAY * 365)
 	if err != nil {
 		return "", err
 	}
@@ -58,7 +59,7 @@ func (im *imRealize) AddUser(userId, name, avatar string) (string, error) {
 		return "", fmt.Errorf("resp.Body:%s, Failed to get response data! error: %s", string(resp), err.Error())
 	}
 
-	var response ResponseAddUser
+	var response Response
 	if err := util.JsonFast.Unmarshal(resp, &response); err != nil {
 		return "", fmt.Errorf("Failed to unmarshal! error: %s", err.Error())
 	}
@@ -68,4 +69,46 @@ func (im *imRealize) AddUser(userId, name, avatar string) (string, error) {
 	}
 
 	return sig, nil
+}
+
+// 创建群组
+// Private	支持，同新版本中的 Work（好友工作群）
+// Public	支持
+// ChatRoom	支持，同新版本中的 Meeting（临时会议群）
+// AVChatRoom	支持
+func (im *imRealize) CreateGroup(groupType, owner, name, introduction, notification, faceUrl string) (string, error) {
+	if groupType == "" || name == "" {
+		return "", errors.New("invalid param")
+	}
+
+	sig, err := GenSig(EXPIRE_TM_DAY)
+	if err != nil {
+		return "", err
+	}
+
+	url := GenRequestUrl(sig, createGroupUrl)
+	param := map[string]interface{}{
+		"Owner_Account": owner,
+		"Type": groupType,
+		"FaceUrl": faceUrl,
+		"Name": name,
+		"Introduction": introduction,
+		"Notification": notification,
+	}
+
+	resp, err := HttpPostBody(url, param)
+	if err != nil {
+		return "", fmt.Errorf("resp.Body:%s, Failed to get response data! error: %s", string(resp), err.Error())
+	}
+
+	var response Response
+	if err := util.JsonFast.Unmarshal(resp, &response); err != nil {
+		return "", fmt.Errorf("Failed to unmarshal! error: %s", err.Error())
+	}
+
+	if response.ActionStatus != "OK" || response.ErrorCode != 0 {
+		return "", errors.New(response.ErrorInfo)
+	}
+
+	return response.GroupId, nil
 }

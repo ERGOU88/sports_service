@@ -4,6 +4,7 @@ type VideoLive struct {
 	Id             int64  `json:"id" xorm:"pk autoincr comment('主键') BIGINT(20)"`
 	UserId         string `json:"user_id" xorm:"not null default '' comment('主播id') VARCHAR(60)"`
 	RoomId         string `json:"room_id" xorm:"not null default '' comment('房间id') index VARCHAR(60)"`
+	GroupId        string `json:"group_id" xorm:"not null default '' comment('im群组id') VARCHAR(60)"`
 	Cover          string `json:"cover" xorm:"not null default '' comment('直播封面') VARCHAR(512)"`
 	RtmpAddr       string `json:"rtmp_addr" xorm:"not null default '' comment('rtmp地址[拉流]') VARCHAR(512)"`
 	FlvAddr        string `json:"flv_addr" xorm:"not null default '' comment('flv地址[拉流]') VARCHAR(512)"`

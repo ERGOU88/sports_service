@@ -80,11 +80,11 @@ func (svc *UserModule) WeiboLoginOrReg(params *muser.WeiboLoginParams) (int, str
 		return errdef.USER_GET_INFO_FAIL, "", nil
 	}
 
-  // 登陆的时候 检查用户状态
-  if !svc.CheckUserStatus(user.Status) {
-    log.Log.Errorf("user_trace: forbid status, userId:%s", user.UserId)
-    return errdef.USER_FORBID_STATUS, "", nil
-  }
+	// 登陆的时候 检查用户状态
+	if !svc.CheckUserStatus(user.Status) {
+		log.Log.Errorf("user_trace: forbid status, userId:%s", user.UserId)
+		return errdef.USER_FORBID_STATUS, "", nil
+	}
 
 	// 用户已注册过, 则直接从redis中获取token并返回
 	token, err := svc.user.GetUserToken(user.UserId)
