@@ -48,7 +48,7 @@ func (r *mobileRegister) Register(u *UserModel, platform int, mobileNum, clientI
 	ch := r.tcyAddUser(u.User)
 	result, ok := <- ch
 	if !ok || result.err != nil {
-		log.Log.Error("read  chan = %v, err = %+v", ok, result.err)
+		log.Log.Error("reg_trace: read  chan = %v, err = %+v", ok, result.err)
 		return errors.New("register im user fail")
 	}
 
