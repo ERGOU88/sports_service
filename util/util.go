@@ -1,12 +1,15 @@
 package util
 
 import (
+	"bytes"
 	"crypto/md5"
 	"errors"
 	"fmt"
 	"github.com/json-iterator/go"
 	"github.com/rs/xid"
 	"github.com/zheng-ji/goSnowFlake"
+	"golang.org/x/net/html"
+	"io"
 	"log"
 	"math"
 	"math/rand"
@@ -430,5 +433,38 @@ func ToStruct(m map[string]interface{}, u interface{}) error {
 	}
 
 	return nil
+}
+
+func GetHtmlNode(content string) (*html.Node, error) {
+	doc, err := html.Parse(strings.NewReader(content))
+	if err != nil {
+		return nil, err
+	}
+
+	var b *html.Node
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "body" {
+			b = n
+		}
+
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			f(c)
+		}
+	}
+
+	f(doc)
+	if b != nil {
+		return b, nil
+	}
+
+	return nil, errors.New("Missing <body> in the node tree")
+}
+
+func RenderNode(n *html.Node) string {
+	var buf bytes.Buffer
+	w := io.Writer(&buf)
+	html.Render(w, n)
+	return buf.String()
 }
 

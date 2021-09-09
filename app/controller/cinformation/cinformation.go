@@ -1,6 +1,7 @@
 package cinformation
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
@@ -12,7 +13,7 @@ import (
 	"sports_service/server/models/minformation"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
-	"fmt"
+	"sports_service/server/util"
 	"time"
 )
 
@@ -107,6 +108,12 @@ func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *min
 		return errdef.INFORMATION_NOT_EXISTS, nil
 	}
 
+	node, err := util.GetHtmlNode(svc.information.Information.Content)
+	if err != nil {
+		log.Log.Errorf("information_trace: get body content fail, id:%s, err:%s", id, err)
+		return errdef.INFORMATION_DETAIL_FAIL, nil
+	}
+
 	resp := &minformation.InformationResp{
 		Id: svc.information.Information.Id,
 		Cover: svc.information.Information.Cover,
@@ -114,7 +121,7 @@ func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *min
 		CreateAt: svc.information.Information.CreateAt,
 		//JumpUrl: svc.information.Information.JumpUrl,
 		UserId: svc.information.Information.UserId,
-		Content: svc.information.Information.Content,
+		Content: util.RenderNode(node),
 	}
 
 	if user := svc.user.FindUserByUserid(resp.UserId); user != nil {
@@ -186,3 +193,22 @@ func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *min
 
 	return errdef.SUCCESS, resp
 }
+
+//func (svc *InformationModule) GetBodyContent(content string) (string, error) {
+//	type body struct {
+//		Content string `xml:",innerxml"`
+//	}
+//
+//	type html struct {
+//		Body body `xml:"body"`
+//	}
+//
+//	h := html{}
+//	err := xml.NewDecoder(bytes.NewBuffer([]byte(content))).Decode(&h)
+//	if err != nil {
+//		fmt.Println("error", err)
+//		return "", err
+//	}
+//
+//	return h.Body.Content, nil
+//}
