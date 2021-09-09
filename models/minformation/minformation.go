@@ -27,7 +27,8 @@ type InformationResp struct {
 	IsAttention int    `json:"is_attention"`            // 是否关注 1 关注 0 未关注
 	BrowseNum   int    `json:"browse_num"`               // 浏览数
 	IsLike      int    `json:"is_like"`                  // 是否点赞 1 点赞 0 未点赞
-	IsCollect   int    `json:"is_collect"`               // 是否收藏 1 收藏 0 未收藏
+	ShareNum    int    `json:"share_num"`                // 分享数
+	//IsCollect   int    `json:"is_collect"`               // 是否收藏 1 收藏 0 未收藏
 }
 
 func NewInformationModel(engine *xorm.Session) *InformationModel {

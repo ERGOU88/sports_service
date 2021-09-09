@@ -320,6 +320,23 @@ func (m *CommentModel) GetInformationReplyList(composeId, commentId string, offs
 	return list
 }
 
+// 根据评论点赞数排序 获取资讯评论列表（1级评论）
+func (m *CommentModel) GetInformationCommentListByLike(composeId string, zanType, offset, size int) []*CommentList {
+	sql := "SELECT ic.*, like_num FROM information_comment AS ic LEFT JOIN " +
+		"(SELECT tu.type_id, count(id) as like_num FROM thumbs_up AS tu " +
+		"WHERE tu.zan_type=? AND tu.status=1 GROUP BY tu.type_id) AS tu " +
+		"ON ic.id = tu.type_id  WHERE ic.news_id=? AND ic.comment_level = 1 " +
+		"GROUP BY ic.Id ORDER BY like_num DESC, ic.id DESC LIMIT ?, ?"
+
+	var list []*CommentList
+	if err := m.Engine.SQL(sql, zanType, composeId, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("comment_trace: get information comment list by like err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
 // 根据评论点赞数排序 获取视频评论列表（1级评论）
 func (m *CommentModel) GetVideoCommentListByLike(composeId string, zanType, offset, size int) []*CommentList {
 	sql := "SELECT vc.*, count(tu.Id) AS like_num FROM video_comment AS vc " +

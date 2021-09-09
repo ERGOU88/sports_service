@@ -1263,6 +1263,9 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 	case consts.TYPE_POST_COMMENT:
 		// 获取帖子评论(按点赞数排序)
 		comments = svc.comment.GetPostCommentListByLike(composeId, zanType, offset, size)
+	case consts.TYPE_INFORMATION_COMMENT:
+		// 获取资讯评论(按点赞数排序)
+		comments = svc.comment.GetInformationCommentListByLike(composeId, zanType, offset, size)
 	}
 
 	if len(comments) == 0 {
@@ -1295,6 +1298,13 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 			item.ReplyNum = svc.comment.GetTotalReplyByPostComment(fmt.Sprint(item.Id))
 			// 获取每个评论下的回复列表 (默认取三条)
 			item.ReplyList = svc.comment.GetPostReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
+		}
+
+		if item.NewsId > 0 {
+			// 资讯评论总回复数
+			item.ReplyNum = svc.comment.GetTotalReplyByInformationComment(fmt.Sprint(item.Id))
+			// 获取每个评论下的回复列表 (默认取三条)
+			item.ReplyList = svc.comment.GetInformationReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
 		}
 
 		// 如果总回复数 > 3 条

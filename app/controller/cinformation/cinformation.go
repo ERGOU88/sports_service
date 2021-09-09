@@ -89,6 +89,7 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 		if ok {
 			info.FabulousNum = svc.information.Statistic.FabulousNum
 			info.CommentNum = svc.information.Statistic.CommentNum
+			info.ShareNum = svc.information.Statistic.ShareNum
 		}
 
 		resp[index] = info
@@ -138,6 +139,7 @@ func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *min
 		resp.FabulousNum = svc.information.Statistic.FabulousNum
 		resp.CommentNum = svc.information.Statistic.CommentNum
 		resp.BrowseNum = svc.information.Statistic.BrowseNum
+		resp.ShareNum = svc.information.Statistic.ShareNum
 	}
 
 	now := int(time.Now().Unix())
@@ -182,13 +184,8 @@ func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *min
 	}
 
 	// 获取点赞的信息
-	if likeInfo := svc.like.GetLikeInfo(userId, resp.Id, consts.TYPE_INFORMATION); likeInfo != nil {
+	if likeInfo := svc.like.GetLikeInfo(userId, resp.Id, consts.LIKE_TYPE_INFORMATION); likeInfo != nil {
 		resp.IsLike = likeInfo.Status
-	}
-
-	// 获取收藏的信息
-	if collectInfo := svc.collect.GetCollectInfo(userId, resp.Id, consts.TYPE_INFORMATION); collectInfo != nil {
-		resp.IsCollect = collectInfo.Status
 	}
 
 	return errdef.SUCCESS, resp
