@@ -290,6 +290,36 @@ func (m *CommentModel) GetPostCommentList(composeId string, offset, size int) []
 	return list
 }
 
+// 获取资讯评论列表(1级评论)
+func (m *CommentModel) GetInformationCommentList(composeId string, offset, size int) []*models.InformationComment {
+	var list []*models.InformationComment
+	if err := m.Engine.Where("news_id=? AND comment_level=1", composeId).
+		Desc("is_top").
+		Desc("id").
+		Limit(size, offset).
+		Find(&list); err != nil {
+		log.Log.Errorf("comment_trace: get comment list err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
+// 获取资讯评论下的回复列表
+func (m *CommentModel) GetInformationReplyList(composeId, commentId string, offset, size int) []*ReplyComment {
+	var list []*ReplyComment
+	if err := m.Engine.Table(&models.InformationComment{}).Where("news_id=? AND comment_level=2 AND parent_comment_id=?",
+		composeId, commentId).
+		Asc("id").
+		Limit(size, offset).
+		Find(&list); err != nil {
+		log.Log.Errorf("comment_trace: get reply list err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
 // 根据评论点赞数排序 获取视频评论列表（1级评论）
 func (m *CommentModel) GetVideoCommentListByLike(composeId string, zanType, offset, size int) []*CommentList {
 	sql := "SELECT vc.*, count(tu.Id) AS like_num FROM video_comment AS vc " +
@@ -323,9 +353,9 @@ func (m *CommentModel) GetPostCommentListByLike(composeId string, zanType, offse
 }
 
 // 获取视频评论下的回复列表
-func (m *CommentModel) GetVideoReplyList(videoId, commentId string, offset, size int) []*ReplyComment {
+func (m *CommentModel) GetVideoReplyList(composeId, commentId string, offset, size int) []*ReplyComment {
 	var list []*ReplyComment
-	if err := m.Engine.Table(&models.VideoComment{}).Where("video_id=? AND comment_level=2 AND parent_comment_id=?", videoId, commentId).
+	if err := m.Engine.Table(&models.VideoComment{}).Where("video_id=? AND comment_level=2 AND parent_comment_id=?", composeId, commentId).
 		Asc("id").
 		Limit(size, offset).
 		Find(&list); err != nil {
@@ -365,6 +395,18 @@ func (m *CommentModel) GetTotalReplyByVideoComment(commentId string) int64 {
 // 获取帖子评论总回复数
 func (m *CommentModel) GetTotalReplyByPostComment(commentId string) int64 {
 	total, err := m.Engine.Where("parent_comment_id=?", commentId).Count(&models.PostingComment{})
+	if err != nil {
+		log.Log.Errorf("comment_trace get total reply by post comment err:%s", err)
+		return 0
+	}
+
+	return total
+
+}
+
+// 获取资讯评论总回复数
+func (m *CommentModel) GetTotalReplyByInformationComment(commentId string) int64 {
+	total, err := m.Engine.Where("parent_comment_id=?", commentId).Count(&models.InformationComment{})
 	if err != nil {
 		log.Log.Errorf("comment_trace get total reply by post comment err:%s", err)
 		return 0
