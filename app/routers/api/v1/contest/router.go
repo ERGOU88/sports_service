@@ -13,5 +13,9 @@ func Router(engine *gin.Engine) {
 	{
 		// 获取赛事模块banner列表
 		contest.GET("/banner", BannerList)
+		// 获取赛事直播列表
+		contest.GET("/live/list", LiveList)
+		// 首页推荐直播
+		contest.GET("/recommend/live", RecommendLive)
 	}
 }
