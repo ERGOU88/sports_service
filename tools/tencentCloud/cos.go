@@ -1,14 +1,14 @@
 package tencentCloud
 
 import (
+	"context"
+	"fmt"
 	"github.com/tencentyun/cos-go-sdk-v5"
 	"github.com/tencentyun/cos-go-sdk-v5/debug"
 	sts "github.com/tencentyun/qcloud-cos-sts-sdk/go"
 	"net/http"
 	"net/url"
 	"time"
-	"context"
-	"fmt"
 	"errors"
 )
 
@@ -90,29 +90,28 @@ func (tc *TencentCloud) RecognitionImage(baseUrl, path string) (*cos.ImageRecogn
 	}
 
 	res, resp, err := c.CI.ImageRecognition(context.Background(), path, opt)
+	if err != nil {
+		return nil, err
+	}
+
 	if resp != nil {
 		if resp.StatusCode != 200 {
-			fmt.Printf("tencent_trace: request fail, resp:%+v", resp)
 			return nil, errors.New("http status not 200")
 		}
 	}
 
-	if err == nil {
-		return res, nil
-	}
+	//if cos.IsNotFoundError(err) {
+	//	fmt.Println("WARN: Resource is not existed")
+	//} else if e, ok := cos.IsCOSError(err); ok {
+	//	fmt.Printf("ERROR: Code: %v\n", e.Code)
+	//	fmt.Printf("ERROR: Message: %v\n", e.Message)
+	//	fmt.Printf("ERROR: Resource: %v\n", e.Resource)
+	//	fmt.Printf("ERROR: RequestId: %v\n", e.RequestID)
+	//	// ERROR
+	//} else {
+	//	fmt.Printf("ERROR: %v\n", err)
+	//	// ERROR
+	//}
 
-	if cos.IsNotFoundError(err) {
-		fmt.Println("WARN: Resource is not existed")
-	} else if e, ok := cos.IsCOSError(err); ok {
-		fmt.Printf("ERROR: Code: %v\n", e.Code)
-		fmt.Printf("ERROR: Message: %v\n", e.Message)
-		fmt.Printf("ERROR: Resource: %v\n", e.Resource)
-		fmt.Printf("ERROR: RequestId: %v\n", e.RequestID)
-		// ERROR
-	} else {
-		fmt.Printf("ERROR: %v\n", err)
-		// ERROR
-	}
-
-	return nil, err
+	return res, nil
 }
