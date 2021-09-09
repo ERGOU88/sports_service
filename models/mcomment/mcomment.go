@@ -31,6 +31,7 @@ type CommentList struct {
 	Status              int                 `json:"status" example:"0"`                          // 状态 1 有效 0 逻辑删除
 	VideoId             int64               `json:"video_id,omitempty" example:"1000000000"`     // 视频id
 	PostId              int64               `json:"post_id,omitempty"`                           // 帖子ID
+	NewsId              int64               `json:"news_id,omitempty"`                           // 资讯id
 	ReplyList           []*ReplyComment     `json:"reply_list"`                                  // 回复列表
 	LikeNum             int64               `json:"like_num" example:"100"`                      // 点赞数
 	IsAttention         int                 `json:"is_attention" example:"0"`                    // 是否关注
@@ -146,6 +147,15 @@ func (m *CommentModel) AddVideoComment() error {
 // 添加帖子评论
 func (m *CommentModel) AddPostComment() error {
 	if _, err := m.Engine.InsertOne(m.PostComment); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 添加资讯评论
+func (m *CommentModel) AddInformationComment() error {
+	if _, err := m.Engine.InsertOne(m.InformationComment); err != nil {
 		return err
 	}
 

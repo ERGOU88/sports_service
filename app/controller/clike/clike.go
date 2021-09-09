@@ -299,7 +299,7 @@ func (svc *LikeModule) GiveLikeForInformationComment(userId string, commentId in
 		return errdef.LIKE_COMMENT_NOT_EXISTS
 	}
 
-	if code := svc.GiveLike(userId, comment.UserId, commentId, consts.LIKE_TYPE_INFORMATION_COMMENT); code != errdef.SUCCESS {
+	if code := svc.GiveLike(userId, comment.UserId, commentId, consts.TYPE_INFORMATION_COMMENT); code != errdef.SUCCESS {
 		svc.engine.Rollback()
 		return code
 	}
@@ -684,7 +684,7 @@ func (svc *LikeModule) CancelLikeForInformationComment(userId string, commentId 
 		return errdef.LIKE_COMMENT_NOT_EXISTS
 	}
 
-	if code := svc.CancelLike(userId, commentId, consts.LIKE_TYPE_INFORMATION_COMMENT); code != errdef.SUCCESS {
+	if code := svc.CancelLike(userId, commentId, consts.TYPE_INFORMATION_COMMENT); code != errdef.SUCCESS {
 		svc.engine.Rollback()
 		return code
 	}

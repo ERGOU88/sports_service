@@ -12,6 +12,7 @@ import (
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
 	"sports_service/server/models/mcomment"
+	"sports_service/server/models/minformation"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
@@ -32,6 +33,7 @@ type CommentModule struct {
 	like        *mlike.LikeModel
 	attention   *mattention.AttentionModel
 	post        *mposting.PostingModel
+	information *minformation.InformationModel
 }
 
 func New(c *gin.Context) CommentModule {
@@ -45,6 +47,7 @@ func New(c *gin.Context) CommentModule {
 		like: mlike.NewLikeModel(socket),
 		attention: mattention.NewAttentionModel(socket),
 		post: mposting.NewPostingModel(socket),
+		information: minformation.NewInformationModel(socket),
 		engine: socket,
 	}
 }
@@ -204,6 +207,53 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		resp.Content = params.Content
 		resp.CreateAt = svc.comment.PostComment.CreateAt
 		resp.Status = svc.comment.PostComment.Status
+
+	case consts.COMMENT_TYPE_INFORMATION:
+		svc.comment.InformationComment.UserId = userId
+		svc.comment.InformationComment.Content = params.Content
+		svc.comment.InformationComment.CommentLevel = consts.COMMENT_PUBLISH
+		svc.comment.InformationComment.CreateAt = now
+		svc.comment.InformationComment.ParentCommentId = 0
+		svc.comment.InformationComment.NewsId = params.ComposeId
+		svc.comment.InformationComment.Status = 1
+		// 添加评论
+		if err := svc.comment.AddInformationComment(); err != nil {
+			log.Log.Errorf("comment_trace: add comment err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COMMENT_PUBLISH_FAIL, nil
+		}
+
+		// 查找资讯是否存在
+		ok, err := svc.information.GetInformationById(fmt.Sprint(params.ComposeId))
+		if !ok || err != nil {
+			log.Log.Errorf("comment_trace: information not found, postId:%d", params.ComposeId)
+			svc.engine.Rollback()
+			return errdef.INFORMATION_NOT_EXISTS, nil
+		}
+
+		// 更新帖子总计（帖子评论总数）
+		if err := svc.information.UpdateInformationCommentNum(params.ComposeId, now, 1); err != nil {
+			log.Log.Errorf("comment_trace: update information comment num err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COMMENT_PUBLISH_FAIL, nil
+		}
+
+		svc.comment.ReceiveAt.TopicType = consts.TYPE_INFORMATION_COMMENT
+		msgType = consts.INFORMATION_COMMENT_MSG
+		toUserId = svc.information.Information.UserId
+		commentId = svc.comment.InformationComment.Id
+		composeId = params.ComposeId
+
+		resp.Id = svc.comment.InformationComment.Id
+		resp.Avatar = user.Avatar
+		resp.UserName = user.NickName
+		resp.NewsId = params.ComposeId
+		resp.CommentLevel = svc.comment.InformationComment.CommentLevel
+		resp.UserId = user.UserId
+		resp.Content = params.Content
+		resp.CreateAt = svc.comment.InformationComment.CreateAt
+		resp.Status = svc.comment.InformationComment.Status
+
 	default:
 		log.Log.Errorf("comment_trace: invalid commentType:%d", params.CommentType)
 		return errdef.INVALID_PARAMS, nil
@@ -253,7 +303,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 
 	affected, err := svc.post.AddReceiveAtList(atList)
 	if err != nil || int(affected) != len(atList) {
-		log.Log.Errorf("post_trace: add receive at list fail, err:%s", err)
+		log.Log.Errorf("comment_trace: add receive at list fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.COMMENT_PUBLISH_FAIL, nil
 	}

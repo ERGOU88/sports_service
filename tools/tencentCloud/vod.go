@@ -158,7 +158,7 @@ func (tc *TencentCloud) TextModeration(content string) (bool, error) {
 	fmt.Printf("%s", response.ToJsonString())
 	// Label Normal：正常，Polity：涉政，Porn：色情，Illegal：违法，Abuse：谩骂，Terror：暴恐，Ad：广告，Custom：自定义关键词
 	// Suggestion Block：建议打击，Review：建议复审，Normal：建议通过。
-	if *response.Response.Label != "Normal" || *response.Response.Suggestion == "Block" {
+	if *response.Response.Suggestion == "Block" {
 		fmt.Printf("Content Not Pass, Label:%s, Suggestion:%s, Content:%s",
 			*response.Response.Label, *response.Response.Suggestion, content)
 		return false, errs.New("content not pass")
