@@ -439,7 +439,7 @@ func (m *PostingModel) GetPublishPostByUser(userId, status string, offset, size 
 	sql += "ORDER BY ps.`heat_num` DESC, p.is_top DESC, p.is_cream DESC, p.id DESC LIMIT ?, ?"
 
 	var list []*PostDetailInfo
-	if err := m.Engine.SQL(GET_PUBLISH_POST_BY_USER, userId, offset, size).Find(&list); err != nil {
+	if err := m.Engine.SQL(sql, userId, offset, size).Find(&list); err != nil {
 		return nil, err
 	}
 
