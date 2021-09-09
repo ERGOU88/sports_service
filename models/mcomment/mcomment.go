@@ -14,6 +14,8 @@ type CommentModel struct {
 	ReceiveAt    *models.ReceivedAt
 	Report       *models.CommentReport
 	PostComment  *models.PostingComment
+
+	InformationComment *models.InformationComment
 }
 
 // 评论列表 [视频/帖子]
@@ -128,6 +130,7 @@ func NewCommentModel(engine *xorm.Session) *CommentModel {
 		ReceiveAt:    new(models.ReceivedAt),
 		Report:       new(models.CommentReport),
 		PostComment:  new(models.PostingComment),
+		InformationComment: new(models.InformationComment),
 	}
 }
 
@@ -446,4 +449,21 @@ func (m *CommentModel) AddCommentReport() (int64, error) {
 // 更新评论/回复 信息
 func (m *CommentModel) UpdateCommentInfo(condition, cols string) (int64, error) {
 	return m.Engine.Where(condition).Cols(cols).Update(m.VideoComment)
+}
+
+// 通过id获取资讯评论
+func (m *CommentModel) GetInformationCommentById(commentId string) *models.InformationComment {
+	comment := new(models.InformationComment)
+	ok, err := m.Engine.Where("id=?", commentId).Get(comment)
+	if !ok || err != nil {
+		log.Log.Errorf("comment_trace: information comment not found, commentId:%s", commentId)
+		return nil
+	}
+
+	// 已逻辑删除
+	if comment.Status == 0 {
+		comment.Content = "原内容已删除"
+	}
+
+	return comment
 }

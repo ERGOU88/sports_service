@@ -20,9 +20,9 @@ func Router(engine *gin.Engine) {
 		like.GET("/video/list", LikeVideoList)
 		// 查看其他用户点赞的视频列表
 		like.GET("/other/list", OtherUserLikeVideoList)
-		// 视频/帖子 评论点赞
+		// 视频/帖子/资讯 评论点赞
 		like.POST("/comment", token.TokenAuth(), GiveLikeForVideoComment)
-		// 视频/帖子 评论取消点赞
+		// 视频/帖子/资讯 评论取消点赞
 		like.POST("/comment/cancel", token.TokenAuth(), CancelLikeForVideoComment)
         // 帖子点赞
 		like.POST("/post", token.TokenAuth(), GiveLikeForPost)

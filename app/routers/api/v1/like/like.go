@@ -185,7 +185,7 @@ func GiveLikeForVideoComment(c *gin.Context) {
 	}
 
 	svc := clike.New(c)
-	// 视频/帖子 评论点赞
+	// 视频/帖子/资讯 评论点赞
 	syscode := svc.GiveLikeForComment(userId.(string), param.ComposeId, param.CommentType)
 	reply.Response(http.StatusOK, syscode)
 }

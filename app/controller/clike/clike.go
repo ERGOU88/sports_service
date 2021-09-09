@@ -266,10 +266,47 @@ func (svc *LikeModule) GiveLikeForComment(userId string, commentId, commentType 
 	case consts.COMMENT_TYPE_POST:
 		return svc.GiveLikeForPostComment(userId, commentId)
 
+	case consts.COMMENT_TYPE_INFORMATION:
+		return svc.GiveLikeForInformationComment(userId, commentId)
+
 	default:
 		log.Log.Errorf("comment_trace: invalid commentType:%d", commentType)
 		return errdef.INVALID_PARAMS
 	}
+}
+
+// 点赞资讯评论
+func (svc *LikeModule) GiveLikeForInformationComment(userId string, commentId int64) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("like_trace: session begin err:%s", err)
+		return errdef.ERROR
+	}
+
+	// 查询用户是否存在
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
+		log.Log.Errorf("like_trace: user not found, userId:%s", userId)
+		svc.engine.Rollback()
+		return errdef.USER_NOT_EXISTS
+	}
+
+	// 查找评论是否存在
+	comment := svc.comment.GetInformationCommentById(fmt.Sprint(commentId))
+	if comment == nil {
+		log.Log.Errorf("like_trace: like comment not found, commentId:%d", commentId)
+		svc.engine.Rollback()
+		return errdef.LIKE_COMMENT_NOT_EXISTS
+	}
+
+	if code := svc.GiveLike(userId, comment.UserId, commentId, consts.LIKE_TYPE_INFORMATION_COMMENT); code != errdef.SUCCESS {
+		svc.engine.Rollback()
+		return code
+	}
+
+	svc.engine.Commit()
+
+	return errdef.SUCCESS
 }
 
 // 点赞视频评论
@@ -296,8 +333,23 @@ func (svc *LikeModule) GiveLikeForVideoComment(userId string, commentId int64) i
 		return errdef.LIKE_COMMENT_NOT_EXISTS
 	}
 
+	if code := svc.GiveLike(userId, comment.UserId, commentId, consts.TYPE_VIDEO_COMMENT); code != errdef.SUCCESS {
+		svc.engine.Rollback()
+		return code
+	}
+
+	svc.engine.Commit()
+
+	// 发送评论点赞推送
+	//event.PushEventMsg(config.Global.AmqpDsn, comment.UserId, user.NickName, "", comment.Content, consts.VIDEO_COMMENT_LIKE_MSG)
+	redismq.PushEventMsg(redismq.NewEvent(comment.UserId, fmt.Sprint(comment.VideoId), user.NickName, "", comment.Content, consts.VIDEO_COMMENT_LIKE_MSG))
+
+	return errdef.SUCCESS
+}
+
+func (svc *LikeModule) GiveLike(userId, toUserId string, commentId int64, commentType int) int {
 	// 获取点赞的评论信息
-	info := svc.like.GetLikeInfo(userId, commentId, consts.TYPE_VIDEO_COMMENT)
+	info := svc.like.GetLikeInfo(userId, commentId, commentType)
 	// 是否已点赞
 	// 已点赞
 	if info != nil && info.Status == consts.ALREADY_GIVE_LIKE {
@@ -314,26 +366,19 @@ func (svc *LikeModule) GiveLikeForVideoComment(userId string, commentId int64) i
 		info.CreateAt = now
 		if err := svc.like.UpdateLikeStatus(); err != nil {
 			log.Log.Errorf("like_trace: update like comment status err:%s", err)
-			svc.engine.Rollback()
 			return errdef.LIKE_COMMENT_FAIL
 		}
 
 	} else {
 		// 添加点赞记录
-		if err := svc.like.AddGiveLikeByType(userId, comment.UserId, commentId, consts.ALREADY_GIVE_LIKE, consts.TYPE_VIDEO_COMMENT); err != nil {
+		if err := svc.like.AddGiveLikeByType(userId, toUserId, commentId, consts.ALREADY_GIVE_LIKE, commentType); err != nil {
 			log.Log.Errorf("like_trace: add like comment record err:%s", err)
-			svc.engine.Rollback()
 			return errdef.LIKE_COMMENT_FAIL
 		}
 	}
 
-	svc.engine.Commit()
-
-	// 发送评论点赞推送
-	//event.PushEventMsg(config.Global.AmqpDsn, comment.UserId, user.NickName, "", comment.Content, consts.VIDEO_COMMENT_LIKE_MSG)
-	redismq.PushEventMsg(redismq.NewEvent(comment.UserId, fmt.Sprint(comment.VideoId), user.NickName, "", comment.Content, consts.VIDEO_COMMENT_LIKE_MSG))
-
 	return errdef.SUCCESS
+
 }
 
 // 取消点赞（包含视频评论、帖子评论）
@@ -345,6 +390,8 @@ func (svc *LikeModule) CancelLikeForComment(userId string, commentId, commentTyp
 	case consts.COMMENT_TYPE_POST:
 		return svc.CancelLikeForPostComment(userId, commentId)
 
+	case consts.COMMENT_TYPE_INFORMATION:
+		return svc.CancelLikeForInformationComment(userId, commentId)
 	default:
 		log.Log.Errorf("comment_trace: invalid commentType:%d", commentType)
 		return errdef.INVALID_PARAMS
@@ -373,18 +420,28 @@ func (svc *LikeModule) CancelLikeForVideoComment(userId string, commentId int64)
 		return errdef.LIKE_COMMENT_NOT_EXISTS
 	}
 
+	if code := svc.CancelLike(userId, commentId, consts.TYPE_VIDEO_COMMENT); code != errdef.SUCCESS {
+		svc.engine.Rollback()
+		return code
+	}
+
+	svc.engine.Commit()
+
+	return errdef.SUCCESS
+}
+
+// 评论取消点赞
+func (svc *LikeModule) CancelLike(userId string, commentId int64, commentType int) int {
 	// 获取点赞的信息 判断是否已点赞 记录不存在 则 未点过赞
-	info := svc.like.GetLikeInfo(userId, commentId, consts.TYPE_VIDEO_COMMENT)
+	info := svc.like.GetLikeInfo(userId, commentId, commentType)
 	if info == nil {
 		log.Log.Errorf("like_trace: record not found, not give like, userId:%s, commentId:%d", userId, commentId)
-		svc.engine.Rollback()
 		return errdef.LIKE_RECORD_NOT_EXISTS
 	}
 
 	// 状态 ！= 已点赞 提示重复操作
 	if info.Status != consts.ALREADY_GIVE_LIKE {
 		log.Log.Errorf("like_trace: already cancel like, userId:%s, commentId:%d", userId, commentId)
-		svc.engine.Rollback()
 		return errdef.LIKE_REPEAT_CANCEL
 	}
 
@@ -394,11 +451,8 @@ func (svc *LikeModule) CancelLikeForVideoComment(userId string, commentId int64)
 	// 更新状态 未点赞
 	if err := svc.like.UpdateLikeStatus(); err != nil {
 		log.Log.Errorf("like_trace: update like status err:%s", err)
-		svc.engine.Rollback()
 		return errdef.LIKE_CANCEL_FAIL
 	}
-
-	svc.engine.Commit()
 
 	return errdef.SUCCESS
 }
@@ -563,35 +617,9 @@ func (svc *LikeModule) GiveLikeForPostComment(userId string, commentId int64) in
 		return errdef.LIKE_COMMENT_NOT_EXISTS
 	}
 
-	// 获取点赞的评论信息
-	info := svc.like.GetLikeInfo(userId, commentId, consts.TYPE_POST_COMMENT)
-	// 是否已点赞
-	// 已点赞
-	if info != nil && info.Status == consts.ALREADY_GIVE_LIKE {
-		log.Log.Errorf("like_trace: already give like, userId:%s, commentId:%d", userId, commentId)
+	if code := svc.GiveLike(userId, comment.UserId, commentId, consts.TYPE_POST_COMMENT); code != errdef.SUCCESS {
 		svc.engine.Rollback()
-		return errdef.LIKE_ALREADY_EXISTS
-	}
-
-	now :=  int(time.Now().Unix())
-	// 未点赞
-	// 记录存在 且 状态为 未点赞 更新状态为 已点赞
-	if info != nil && info.Status == consts.NOT_GIVE_LIKE {
-		info.Status = consts.ALREADY_GIVE_LIKE
-		info.CreateAt = now
-		if err := svc.like.UpdateLikeStatus(); err != nil {
-			log.Log.Errorf("like_trace: update like comment status err:%s", err)
-			svc.engine.Rollback()
-			return errdef.LIKE_COMMENT_FAIL
-		}
-
-	} else {
-		// 添加点赞记录
-		if err := svc.like.AddGiveLikeByType(userId, comment.UserId, commentId, consts.ALREADY_GIVE_LIKE, consts.TYPE_POST_COMMENT); err != nil {
-			log.Log.Errorf("like_trace: add like comment record err:%s", err)
-			svc.engine.Rollback()
-			return errdef.LIKE_COMMENT_FAIL
-		}
+		return code
 	}
 
 	svc.engine.Commit()
@@ -624,29 +652,41 @@ func (svc *LikeModule) CancelLikeForPostComment(userId string, commentId int64) 
 		return errdef.LIKE_COMMENT_NOT_EXISTS
 	}
 
-	// 获取点赞的信息 判断是否已点赞 记录不存在 则 未点过赞
-	info := svc.like.GetLikeInfo(userId, commentId, consts.TYPE_POST_COMMENT)
-	if info == nil {
-		log.Log.Errorf("like_trace: record not found, not give like, userId:%s, commentId:%d", userId, commentId)
+	if code := svc.CancelLike(userId, commentId, consts.TYPE_POST_COMMENT); code != errdef.SUCCESS {
 		svc.engine.Rollback()
-		return errdef.LIKE_RECORD_NOT_EXISTS
+		return code
 	}
 
-	// 状态 ！= 已点赞 提示重复操作
-	if info.Status != consts.ALREADY_GIVE_LIKE {
-		log.Log.Errorf("like_trace: already cancel like, userId:%s, commentId:%d", userId, commentId)
-		svc.engine.Rollback()
-		return errdef.LIKE_REPEAT_CANCEL
+	svc.engine.Commit()
+
+	return errdef.SUCCESS
+}
+
+// 取消点赞（资讯评论）
+func (svc *LikeModule) CancelLikeForInformationComment(userId string, commentId int64) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("like_trace: session begin err:%s", err)
+		return errdef.ERROR
 	}
 
-	now :=  int(time.Now().Unix())
-	info.Status = consts.NOT_GIVE_LIKE
-	info.CreateAt = now
-	// 更新状态 未点赞
-	if err := svc.like.UpdateLikeStatus(); err != nil {
-		log.Log.Errorf("like_trace: update like status err:%s", err)
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("like_trace: user not found, userId:%s", userId)
 		svc.engine.Rollback()
-		return errdef.LIKE_CANCEL_FAIL
+		return errdef.USER_NOT_EXISTS
+	}
+
+	// 查找评论是否存在
+	if comment := svc.comment.GetInformationCommentById(fmt.Sprint(commentId)); comment == nil {
+		log.Log.Errorf("like_trace: cancel like comment not found, commentId:%d", commentId)
+		svc.engine.Rollback()
+		return errdef.LIKE_COMMENT_NOT_EXISTS
+	}
+
+	if code := svc.CancelLike(userId, commentId, consts.LIKE_TYPE_INFORMATION_COMMENT); code != errdef.SUCCESS {
+		svc.engine.Rollback()
+		return code
 	}
 
 	svc.engine.Commit()
