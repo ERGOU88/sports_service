@@ -358,10 +358,10 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 		return nil, errdef.POST_NOT_EXISTS
 	}
 
-	if fmt.Sprint(post.Status) != consts.POST_AUDIT_SUCCESS {
-		log.Log.Error("post_trace: post not audit, postId:%s", postId)
-		return nil, errdef.POST_NOT_EXISTS
-	}
+	//if fmt.Sprint(post.Status) != consts.POST_AUDIT_SUCCESS {
+	//	log.Log.Error("post_trace: post not audit, postId:%s", postId)
+	//	return nil, errdef.POST_NOT_EXISTS
+	//}
 
 	// todo: 完善返回数据
 	resp := new(mposting.PostDetailInfo)
