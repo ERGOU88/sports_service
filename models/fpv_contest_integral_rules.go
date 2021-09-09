@@ -1,9 +1,9 @@
 package models
 
 type FpvContestIntegralRules struct {
-	Id              int64  `json:"id" xorm:"pk autoincr comment('规则id') BIGINT(20)"`
-	ContestId       int64  `json:"contest_id" xorm:"not null comment('所属赛事id') index BIGINT(20)"`
-	ScheduleId      int64  `json:"schedule_id" xorm:"not null comment('所属赛程id') BIGINT(20)"`
+	Id              int    `json:"id" xorm:"not null pk autoincr comment('规则id') INT(11)"`
+	ContestId       int    `json:"contest_id" xorm:"not null comment('所属赛事id') index INT(11)"`
+	ScheduleId      int    `json:"schedule_id" xorm:"not null comment('所属赛程id') INT(11)"`
 	Integral        int    `json:"integral" xorm:"not null default 0 comment('可得积分数') INT(11)"`
 	RuleOrder       int    `json:"rule_order" xorm:"not null default 0 comment('积分规则校验顺序') TINYINT(2)"`
 	MinimumRank     int    `json:"minimum_rank" xorm:"not null comment('最小排名 包含 例： 第1 可得10分 则该字段为 1') INT(8)"`

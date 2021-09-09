@@ -9,6 +9,6 @@ type FpvContestPlayerInformation struct {
 	City      string `json:"city" xorm:"not null default '' comment('城市') VARCHAR(128)"`
 	Age       int    `json:"age" xorm:"not null default 0 comment('年龄') INT(3)"`
 	Hobby     string `json:"hobby" xorm:"not null default '' comment('爱好') VARCHAR(255)"`
-	ContestId int64  `json:"contest_id" xorm:"not null default 0 comment('参加的赛事id') index BIGINT(20)"`
+	ContestId int    `json:"contest_id" xorm:"not null default 0 comment('参加的赛事id') index INT(11)"`
 	Status    int    `json:"status" xorm:"not null default 0 comment('0 正常 1 废弃') TINYINT(1)"`
 }

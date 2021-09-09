@@ -2,7 +2,7 @@ package models
 
 type FpvContestScheduleDetail struct {
 	Id         int64  `json:"id" xorm:"pk autoincr comment('自增id') BIGINT(20)"`
-	ScheduleId int64  `json:"schedule_id" xorm:"not null comment('赛程id') index BIGINT(20)"`
+	ScheduleId int    `json:"schedule_id" xorm:"not null comment('赛程id') index INT(11)"`
 	Rounds     int    `json:"rounds" xorm:"not null comment('轮次 第几轮') INT(8)"`
 	GroupNum   int    `json:"group_num" xorm:"not null default 1 comment('第几组') INT(6)"`
 	GroupName  string `json:"group_name" xorm:"not null default '' comment('组名 例如A组') VARCHAR(128)"`

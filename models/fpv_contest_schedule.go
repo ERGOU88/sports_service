@@ -1,8 +1,8 @@
 package models
 
 type FpvContestSchedule struct {
-	Id                  int64  `json:"id" xorm:"pk autoincr comment('赛程id') BIGINT(20)"`
-	ContestId           int64  `json:"contest_id" xorm:"not null comment('所属赛事id') index BIGINT(20)"`
+	Id                  int    `json:"id" xorm:"not null pk autoincr comment('赛程id') INT(11)"`
+	ContestId           int    `json:"contest_id" xorm:"not null comment('所属赛事id') index INT(11)"`
 	ScheduleName        string `json:"schedule_name" xorm:"not null comment('赛程名称 例如：测试赛、资格赛、32强赛、16强赛等') VARCHAR(128)"`
 	Order               int    `json:"order" xorm:"not null default 0 comment('赛程顺序 1 表示最先开始') INT(8)"`
 	RoundsNum           int    `json:"rounds_num" xorm:"not null comment('轮数 当前赛事规则下 进行几轮角逐 ') INT(8)"`
