@@ -42,7 +42,7 @@ func New(c *gin.Context) InformationModule {
 }
 
 // 获取资讯列表
-func (svc *InformationModule) GetInformationList(page, size int) (int, []*minformation.InformationResp) {
+func (svc *InformationModule) GetInformationList(userId string, page, size int) (int, []*minformation.InformationResp) {
 	offset := (page - 1) * size
 	list, err := svc.information.GetInformationList(offset, size)
 	if err != nil {
@@ -68,6 +68,11 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 		if user := svc.user.FindUserByUserid(info.UserId); user != nil {
 			info.Avatar = user.Avatar
 			info.NickName = user.NickName
+		}
+
+		// 获取点赞的信息
+		if likeInfo := svc.like.GetLikeInfo(userId, info.Id, consts.LIKE_TYPE_INFORMATION); likeInfo != nil {
+			info.IsLike = likeInfo.Status
 		}
 
 		ok, err := svc.information.GetInformationStatistic(fmt.Sprint(info.Id))
