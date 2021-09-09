@@ -95,7 +95,7 @@ func (m *InformationModel) UpdateUserBrowseInformation(userId string,  composeTy
 }
 
 const (
-	UPDATE_INFORMATION_LIKE_NUM = "UPDATE `video_statistic` SET `fabulous_num` = `fabulous_num` + ?, " +
+	UPDATE_INFORMATION_LIKE_NUM = "UPDATE `information_statistic` SET `fabulous_num` = `fabulous_num` + ?, " +
 		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `news_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
 )
 // 更新资讯点赞数

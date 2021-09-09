@@ -731,9 +731,9 @@ func (svc *LikeModule) GiveLikeForInformation(userId string, newsId int64) int {
 	now :=  int(time.Now().Unix())
 	// 更新资讯点赞总计 +1
 	if err := svc.information.UpdateInformationLikeNum(newsId, now, consts.CONFIRM_OPERATE); err != nil {
-		log.Log.Errorf("like_trace: update post like num err:%s", err)
+		log.Log.Errorf("like_trace: update information like num err:%s", err)
 		svc.engine.Rollback()
-		return errdef.LIKE_POST_FAIL
+		return errdef.LIKE_INFORMATION_FAIL
 	}
 
 	// 未点赞

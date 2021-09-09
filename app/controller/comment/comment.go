@@ -813,6 +813,16 @@ func (svc *CommentModule) CheckComposeInfo(composeId string, commentType int) (i
 		}
 
 		zanType = consts.TYPE_POST_COMMENT
+
+	case consts.COMMENT_TYPE_INFORMATION:
+		ok, err := svc.information.GetInformationById(composeId)
+		if !ok || err != nil {
+			log.Log.Errorf("comment_trace: information not found, composeId:%s", composeId)
+			return errdef.INFORMATION_NOT_EXISTS, zanType
+		}
+
+		zanType = consts.TYPE_INFORMATION_COMMENT
+
 	default:
 		return errdef.INVALID_PARAMS, zanType
 	}
@@ -1421,10 +1431,24 @@ func (svc *CommentModule) GetCommentReplyList(userId, composeId, commentId strin
 		content = comment.Content
 
 		replyList = svc.comment.GetPostReplyList(composeId, commentId, offset, size)
+
+	case consts.COMMENT_TYPE_INFORMATION:
+		// 查询资讯评论是否存在
+		comment := svc.comment.GetInformationCommentById(commentId)
+		if comment == nil {
+			log.Log.Error("comment_trace: comment not found, commentId:%s", commentId)
+			return errdef.COMMENT_NOT_FOUND, []*mcomment.ReplyComment{}
+		}
+		content = comment.Content
+
+		replyList = svc.comment.GetInformationReplyList(composeId, commentId, offset, size)
+	default:
+		log.Log.Errorf("comment_trace: invalid comment type:%d", commentType)
+		return errdef.INVALID_PARAMS, []*mcomment.ReplyComment{}
 	}
 
 	if len(replyList) == 0 {
-		log.Log.Errorf("comment_trace: not found comment reply, commentId:%s", commentId)
+		log.Log.Errorf("comment_trace: comment reply is empty, commentId:%s", commentId)
 		return errdef.SUCCESS, []*mcomment.ReplyComment{}
 	}
 
