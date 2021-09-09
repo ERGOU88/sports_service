@@ -702,7 +702,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		resp.Id = svc.comment.InformationComment.Id
 		resp.Avatar = user.Avatar
 		resp.UserName = user.NickName
-		resp.VideoId = params.ComposeId
+		resp.NewsId = params.ComposeId
 		resp.CommentLevel = svc.comment.InformationComment.CommentLevel
 		resp.UserId = user.UserId
 		resp.Content = svc.comment.InformationComment.Content

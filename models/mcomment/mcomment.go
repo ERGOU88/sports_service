@@ -60,6 +60,7 @@ type ReplyComment struct {
 	Status               int                 `json:"status" example:"1"`                                 // 状态 1 有效 0 逻辑删除
 	VideoId              int64               `json:"video_id,omitempty" example:"1000000000"`            // 视频id
 	PostId               int64               `json:"post_id,omitempty" example:"1000000000"`             // 帖子id
+	NewsId               int64               `json:"news_id,omitempty"`                                  // 资讯id
 	LikeNum              int64               `json:"like_num" example:"100"`                             // 点赞数
 	IsAttention          int                 `json:"is_attention" example:"0"`                           // 是否关注
 	IsLike               int                 `json:"is_like" example:"0"`                                // 是否点赞
