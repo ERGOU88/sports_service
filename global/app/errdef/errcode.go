@@ -99,6 +99,8 @@ const (
 	LIKE_COMMENT_FAIL           = 5008
 	LIKE_POST_NOT_EXISTS        = 5009
 	LIKE_POST_FAIL              = 5010
+	LIKE_INFORMATION_NOT_EXISTS = 5011
+	LIKE_INFORMATION_FAIL       = 5012
 
 	// 通知相关错误码 6001-7000
 	NOTIFY_SETTING_FAIL         = 6001
@@ -220,6 +222,14 @@ const (
 	PAY_INVALID_TYPE             = 20001
 	PAY_ALI_PARAM_FAIL           = 20002
 	PAY_WX_PARAM_FAIL            = 20003
+
+	// 资讯相关错误 30001-40000
+	INFORMATION_LIST_FAIL        = 30001
+	INFORMATION_DETAIL_FAIL      = 30002
+	INFORMATION_NOT_EXISTS       = 30003
+
+	// 赛事相关错误码 40001-50000
+	CONTEST_GET_LIVE_FAIL        = 40001
 )
 
 var MsgFlags = map[int]string{
@@ -315,6 +325,8 @@ var MsgFlags = map[int]string{
 	LIKE_COMMENT_FAIL:           "评论点赞失败",
 	LIKE_POST_NOT_EXISTS:        "点赞的帖子不存在",
 	LIKE_POST_FAIL:              "帖子点赞失败",
+	LIKE_INFORMATION_NOT_EXISTS: "点赞的资讯不存在",
+	LIKE_INFORMATION_FAIL:       "资讯点赞失败",
 
 	NOTIFY_SETTING_FAIL:         "系统通知设置失败",
 
@@ -420,6 +432,11 @@ var MsgFlags = map[int]string{
 	PAY_INVALID_TYPE:            "无效的支付类型",
 	PAY_ALI_PARAM_FAIL:          "获取支付宝请求参数失败",
 	PAY_WX_PARAM_FAIL:           "获取微信请求参数失败",
+
+	INFORMATION_LIST_FAIL:       "资讯列表获取失败",
+	INFORMATION_DETAIL_FAIL:     "获取资讯详情失败",
+
+	CONTEST_GET_LIVE_FAIL:       "获取赛事直播失败",
 }
 
 func GetMsg(code int) string {

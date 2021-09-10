@@ -52,6 +52,7 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 		reg := muser.NewMobileRegister()
 		if err := reg.Register(svc.user, param.Platform, mobileNum, svc.context.ClientIP()); err != nil {
 			log.Log.Errorf("user_trace: register err:%s", err)
+			svc.engine.Rollback()
 			return errdef.USER_REGISTER_FAIL, "", nil
 		}
 

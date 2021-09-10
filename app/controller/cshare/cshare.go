@@ -10,6 +10,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mcommunity"
+	"sports_service/server/models/minformation"
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/mshare"
 	"sports_service/server/models/muser"
@@ -28,6 +29,7 @@ type ShareModule struct {
 	video       *mvideo.VideoModel
 	community   *mcommunity.CommunityModel
 	share       *mshare.ShareModel
+	information *minformation.InformationModel
 }
 
 func New(c *gin.Context) ShareModule {
@@ -40,6 +42,7 @@ func New(c *gin.Context) ShareModule {
 		video: mvideo.NewVideoModel(socket),
 		community: mcommunity.NewCommunityModel(socket),
 		share: mshare.NewShareModel(socket),
+		information: minformation.NewInformationModel(socket),
 		engine: socket,
 	}
 }
@@ -91,6 +94,21 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 				svc.engine.Rollback()
 				return errdef.SHARE_DATA_FAIL
 			}
+
+		case consts.SHARE_INFORMATION:
+			ok, err := svc.information.GetInformationById(fmt.Sprint(params.ComposeId))
+			if !ok || err != nil {
+				log.Log.Errorf("share_trace: information not found, postId:%s", params.ComposeId)
+				svc.engine.Rollback()
+				return errdef.INFORMATION_NOT_EXISTS
+			}
+
+			if err := svc.information.UpdateInformationShareNum(svc.information.Information.Id, now, 1); err != nil {
+				log.Log.Errorf("share_trace: update post share num fail, err:%s", err)
+				svc.engine.Rollback()
+				return errdef.SHARE_DATA_FAIL
+			}
+
 		}
 
 	// 分享到社区 则需发布一条新帖子

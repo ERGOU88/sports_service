@@ -32,7 +32,7 @@ func PublishPosting(c *gin.Context) {
 	}
 
 	if params.SectionId <= 0 {
-		// 默认为综合
+		// 默认为x友讨论区
 		params.SectionId = 1
 	}
 
@@ -64,10 +64,11 @@ func PostPublishList(c *gin.Context) {
 	userId := c.Query("user_id")
 
 	//userId := "13918242"
-
+	// status参数  状态 -1 查看所有 0 审核中 1 审核成功 2 审核失败 查看自己发布的则 status随意 查看其他用户 则status为1
+	status := c.DefaultQuery("status", "1")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	svc := cposting.New(c)
-	list := svc.GetPostPublishListByUser(userId, consts.POST_VIEW_ALL, page, size)
+	list := svc.GetPostPublishListByUser(userId, status, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 

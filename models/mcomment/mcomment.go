@@ -14,6 +14,8 @@ type CommentModel struct {
 	ReceiveAt    *models.ReceivedAt
 	Report       *models.CommentReport
 	PostComment  *models.PostingComment
+
+	InformationComment *models.InformationComment
 }
 
 // 评论列表 [视频/帖子]
@@ -29,6 +31,7 @@ type CommentList struct {
 	Status              int                 `json:"status" example:"0"`                          // 状态 1 有效 0 逻辑删除
 	VideoId             int64               `json:"video_id,omitempty" example:"1000000000"`     // 视频id
 	PostId              int64               `json:"post_id,omitempty"`                           // 帖子ID
+	NewsId              int64               `json:"news_id,omitempty"`                           // 资讯id
 	ReplyList           []*ReplyComment     `json:"reply_list"`                                  // 回复列表
 	LikeNum             int64               `json:"like_num" example:"100"`                      // 点赞数
 	IsAttention         int                 `json:"is_attention" example:"0"`                    // 是否关注
@@ -57,6 +60,7 @@ type ReplyComment struct {
 	Status               int                 `json:"status" example:"1"`                                 // 状态 1 有效 0 逻辑删除
 	VideoId              int64               `json:"video_id,omitempty" example:"1000000000"`            // 视频id
 	PostId               int64               `json:"post_id,omitempty" example:"1000000000"`             // 帖子id
+	NewsId               int64               `json:"news_id,omitempty"`                                  // 资讯id
 	LikeNum              int64               `json:"like_num" example:"100"`                             // 点赞数
 	IsAttention          int                 `json:"is_attention" example:"0"`                           // 是否关注
 	IsLike               int                 `json:"is_like" example:"0"`                                // 是否点赞
@@ -128,6 +132,7 @@ func NewCommentModel(engine *xorm.Session) *CommentModel {
 		ReceiveAt:    new(models.ReceivedAt),
 		Report:       new(models.CommentReport),
 		PostComment:  new(models.PostingComment),
+		InformationComment: new(models.InformationComment),
 	}
 }
 
@@ -143,6 +148,15 @@ func (m *CommentModel) AddVideoComment() error {
 // 添加帖子评论
 func (m *CommentModel) AddPostComment() error {
 	if _, err := m.Engine.InsertOne(m.PostComment); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 添加资讯评论
+func (m *CommentModel) AddInformationComment() error {
+	if _, err := m.Engine.InsertOne(m.InformationComment); err != nil {
 		return err
 	}
 
@@ -277,6 +291,53 @@ func (m *CommentModel) GetPostCommentList(composeId string, offset, size int) []
 	return list
 }
 
+// 获取资讯评论列表(1级评论)
+func (m *CommentModel) GetInformationCommentList(composeId string, offset, size int) []*models.InformationComment {
+	var list []*models.InformationComment
+	if err := m.Engine.Where("news_id=? AND comment_level=1", composeId).
+		Desc("is_top").
+		Desc("id").
+		Limit(size, offset).
+		Find(&list); err != nil {
+		log.Log.Errorf("comment_trace: get comment list err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
+// 获取资讯评论下的回复列表
+func (m *CommentModel) GetInformationReplyList(composeId, commentId string, offset, size int) []*ReplyComment {
+	var list []*ReplyComment
+	if err := m.Engine.Table(&models.InformationComment{}).Where("news_id=? AND comment_level=2 AND parent_comment_id=?",
+		composeId, commentId).
+		Asc("id").
+		Limit(size, offset).
+		Find(&list); err != nil {
+		log.Log.Errorf("comment_trace: get reply list err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
+// 根据评论点赞数排序 获取资讯评论列表（1级评论）
+func (m *CommentModel) GetInformationCommentListByLike(composeId string, zanType, offset, size int) []*CommentList {
+	sql := "SELECT ic.*, like_num FROM information_comment AS ic LEFT JOIN " +
+		"(SELECT tu.type_id, count(id) as like_num FROM thumbs_up AS tu " +
+		"WHERE tu.zan_type=? AND tu.status=1 GROUP BY tu.type_id) AS tu " +
+		"ON ic.id = tu.type_id  WHERE ic.news_id=? AND ic.comment_level = 1 " +
+		"GROUP BY ic.Id ORDER BY like_num DESC, ic.id DESC LIMIT ?, ?"
+
+	var list []*CommentList
+	if err := m.Engine.SQL(sql, zanType, composeId, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("comment_trace: get information comment list by like err:%s", err)
+		return nil
+	}
+
+	return list
+}
+
 // 根据评论点赞数排序 获取视频评论列表（1级评论）
 func (m *CommentModel) GetVideoCommentListByLike(composeId string, zanType, offset, size int) []*CommentList {
 	sql := "SELECT vc.*, count(tu.Id) AS like_num FROM video_comment AS vc " +
@@ -310,9 +371,9 @@ func (m *CommentModel) GetPostCommentListByLike(composeId string, zanType, offse
 }
 
 // 获取视频评论下的回复列表
-func (m *CommentModel) GetVideoReplyList(videoId, commentId string, offset, size int) []*ReplyComment {
+func (m *CommentModel) GetVideoReplyList(composeId, commentId string, offset, size int) []*ReplyComment {
 	var list []*ReplyComment
-	if err := m.Engine.Table(&models.VideoComment{}).Where("video_id=? AND comment_level=2 AND parent_comment_id=?", videoId, commentId).
+	if err := m.Engine.Table(&models.VideoComment{}).Where("video_id=? AND comment_level=2 AND parent_comment_id=?", composeId, commentId).
 		Asc("id").
 		Limit(size, offset).
 		Find(&list); err != nil {
@@ -352,6 +413,18 @@ func (m *CommentModel) GetTotalReplyByVideoComment(commentId string) int64 {
 // 获取帖子评论总回复数
 func (m *CommentModel) GetTotalReplyByPostComment(commentId string) int64 {
 	total, err := m.Engine.Where("parent_comment_id=?", commentId).Count(&models.PostingComment{})
+	if err != nil {
+		log.Log.Errorf("comment_trace get total reply by post comment err:%s", err)
+		return 0
+	}
+
+	return total
+
+}
+
+// 获取资讯评论总回复数
+func (m *CommentModel) GetTotalReplyByInformationComment(commentId string) int64 {
+	total, err := m.Engine.Where("parent_comment_id=?", commentId).Count(&models.InformationComment{})
 	if err != nil {
 		log.Log.Errorf("comment_trace get total reply by post comment err:%s", err)
 		return 0
@@ -446,4 +519,21 @@ func (m *CommentModel) AddCommentReport() (int64, error) {
 // 更新评论/回复 信息
 func (m *CommentModel) UpdateCommentInfo(condition, cols string) (int64, error) {
 	return m.Engine.Where(condition).Cols(cols).Update(m.VideoComment)
+}
+
+// 通过id获取资讯评论
+func (m *CommentModel) GetInformationCommentById(commentId string) *models.InformationComment {
+	comment := new(models.InformationComment)
+	ok, err := m.Engine.Where("id=?", commentId).Get(comment)
+	if !ok || err != nil {
+		log.Log.Errorf("comment_trace: information comment not found, commentId:%s", commentId)
+		return nil
+	}
+
+	// 已逻辑删除
+	if comment.Status == 0 {
+		comment.Content = "原内容已删除"
+	}
+
+	return comment
 }

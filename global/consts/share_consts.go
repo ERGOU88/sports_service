@@ -10,8 +10,9 @@ const (
 )
 
 // 分享的类型
-// 1 分享视频 2 分享帖子
+// 1 分享视频 2 分享帖子 3 分享资讯
 const (
-	SHARE_VIDEO   =  1
-	SHARE_POST    =  2
+	SHARE_VIDEO       =  1
+	SHARE_POST        =  2
+	SHARE_INFORMATION =  3
 )

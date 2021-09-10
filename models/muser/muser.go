@@ -532,6 +532,12 @@ func (u *UserModel) SetLastLoginTime(tm int64) {
 	u.User.LastLoginTime = int(tm)
 }
 
+// 设置腾讯云im信息
+func (u *UserModel) SetTencentImInfo(accid, token string) {
+	u.User.TxAccid = accid
+	u.User.TxToken = token
+}
+
 // 获取用户token
 func (m *UserModel) GetUserToken(uid string) (string, error) {
 	rds := dao.NewRedisDao()

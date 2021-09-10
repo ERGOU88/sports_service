@@ -432,14 +432,19 @@ func (m *PostingModel) GetPublishPostByUser(userId, status string, offset, size 
 	sql := "SELECT p.*, ps.* FROM `posting_info` AS p LEFT JOIN `posting_statistic` as ps " +
 	"ON p.id=ps.posting_id WHERE p.user_id=? AND p.video_id=0 "
 
-	if status == consts.POST_AUDIT_SUCCESS {
-		sql += "AND status=1 "
+	//if status == consts.POST_AUDIT_SUCCESS {
+	//	sql += "AND status=1 "
+	//}
+	if status != consts.POST_VIEW_ALL {
+		sql += fmt.Sprintf("AND p.`status` = %s ", status)
+	} else {
+		sql += "AND p.`status` != 3 "
 	}
 
 	sql += "ORDER BY ps.`heat_num` DESC, p.is_top DESC, p.is_cream DESC, p.id DESC LIMIT ?, ?"
 
 	var list []*PostDetailInfo
-	if err := m.Engine.SQL(GET_PUBLISH_POST_BY_USER, userId, offset, size).Find(&list); err != nil {
+	if err := m.Engine.SQL(sql, userId, offset, size).Find(&list); err != nil {
 		return nil, err
 	}
 

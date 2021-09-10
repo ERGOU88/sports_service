@@ -13,7 +13,9 @@ import (
 	"sports_service/server/app/routers/api/v1/collect"
 	"sports_service/server/app/routers/api/v1/comment"
 	"sports_service/server/app/routers/api/v1/community"
+	"sports_service/server/app/routers/api/v1/contest"
 	"sports_service/server/app/routers/api/v1/doc"
+	"sports_service/server/app/routers/api/v1/information"
 	"sports_service/server/app/routers/api/v1/like"
 	"sports_service/server/app/routers/api/v1/notify"
 	"sports_service/server/app/routers/api/v1/order"
@@ -90,4 +92,8 @@ func InitRouters(engine *gin.Engine) {
 	pay.Router(engine)
 	// 苹果相关
 	apple.Router(engine)
+	// 资讯模块
+	information.Router(engine)
+	// 赛事模块
+	contest.Router(engine)
 }

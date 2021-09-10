@@ -25,4 +25,7 @@ type User struct {
 	Country       int    `json:"country" xorm:"not null default 0 comment('国家') INT(3)"`
 	RegIp         string `json:"reg_ip" xorm:"default ' ' comment('注册ip') VARCHAR(30)"`
 	DeviceToken   string `json:"device_token" xorm:"not null default '' comment('设备token') VARCHAR(100)"`
+	AccountType   int    `json:"account_type" xorm:"not null default 0 comment('账号类型 0 普通用户 1 官方账号') TINYINT(2)"`
+	TxAccid       string `json:"tx_accid" xorm:"not null default '' comment('accid（腾讯im 唯一标识)') VARCHAR(60)"`
+	TxToken       string `json:"tx_token" xorm:"not null default '' comment('token（腾讯im）') VARCHAR(300)"`
 }
