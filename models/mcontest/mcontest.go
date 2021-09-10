@@ -89,6 +89,20 @@ type ScheduleDetailResp struct {
 	RoundThreeScore    string    `json:"round_three_score"`
 }
 
+type IntegralRanking struct {
+	PlayerId   int64  `json:"player_id"`
+	PlayerName string `json:"player_name"`
+	Photo      string `json:"photo"`
+	ContestId  int    `json:"contest_id"`
+
+	Ranking            int       `json:"ranking"`
+	TotalIntegral      int       `json:"integral,omitempty"`
+	BestScore          int       `json:"score,omitempty"`
+
+	TotalIntegralStr   string    `json:"total_integral"`
+	BestScoreStr       string    `json:"best_score"`
+}
+
 // 实例
 func NewContestModel(engine *xorm.Session) *ContestModel {
 	return &ContestModel{
@@ -150,7 +164,7 @@ func (m *ContestModel) GetScheduleDetail(contestId, scheduleId string) ([]*model
 }
 
 const (
-	GET_SCHEDULE_DETAIL_BY_SCORE = "SELECT p.id AS player_id, p.name AS player_name, cs.* FROM fpv_contest_player_information AS p " +
+	GET_SCHEDULE_DETAIL_BY_SCORE = "SELECT p.id AS player_id, p.name AS player_name, p.photo, cs.* FROM fpv_contest_player_information AS p " +
 		"LEFT JOIN fpv_contest_schedule_detail AS cs ON p.id = cs.player_id AND cs.contest_id=? AND cs.schedule_id=? " +
 		" WHERE p.status = 0 ORDER BY cs.score is null, cs.score ASC, p.id ASC"
 )
@@ -168,6 +182,23 @@ func (m *ContestModel) GetScheduleDetailByScore(contestId, scheduleId string) ([
 func (m *ContestModel) GetPlayerByContestId(contestId string) ([]*models.FpvContestPlayerInformation, error) {
 	var list []*models.FpvContestPlayerInformation
 	if err := m.Engine.Where("contest_id=? AND status=0", contestId).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+const (
+	GET_INTEGRAL_RANKING = "SELECT p.id AS player_id, p.name AS player_name, p.photo, rk.contest_id, " +
+		"rk.total_integral, rk.best_score FROM fpv_contest_player_information AS p " +
+		"LEFT JOIN fpv_contest_player_integral_ranking AS rk " +
+		"ON p.id = rk.player_id AND rk.contest_id=? " +
+		"WHERE p.status = 0 ORDER BY rk.total_integral DESC, p.id ASC LIMIT ?, ?"
+)
+// 通过赛事id 获取选手积分排行
+func (m *ContestModel) GetIntegralRankingByContestId(contestId string, offset, size int) ([]*IntegralRanking, error) {
+	var list []*IntegralRanking
+	if err := m.Engine.SQL(GET_INTEGRAL_RANKING, contestId, offset,size).Find(&list); err != nil {
 		return nil, err
 	}
 

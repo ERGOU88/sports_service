@@ -222,6 +222,24 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 
 
 // 获取赛事选手积分排行
-func (svc *ContestModule) GetIntegralRankingByContest() {
+func (svc *ContestModule) GetIntegralRanking(contestId string, page, size int) (int, []*mcontest.IntegralRanking) {
+	offset := (page - 1) * size
+	list, err := svc.contest.GetIntegralRankingByContestId(contestId, offset, size)
+	if err != nil {
+		return errdef.CONTEST_RANKING_FAIL, nil
+	}
 
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*mcontest.IntegralRanking{}
+	}
+
+	for index, item := range list {
+		item.Ranking = index
+		item.TotalIntegralStr = fmt.Sprintf("%.3f", float64(item.TotalIntegral) / 1000)
+		item.BestScoreStr = fmt.Sprintf("%.3f", float64(item.BestScore) / 1000)
+		item.TotalIntegral = 0
+		item.BestScore = 0
+	}
+
+	return errdef.SUCCESS, list
 }

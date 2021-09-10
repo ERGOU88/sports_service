@@ -52,3 +52,13 @@ func PromotionInfo(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
+
+func IntegralRanking(c *gin.Context) {
+	reply := errdef.New(c)
+	contestId := c.Query("contest_id")
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	svc := contest.New(c)
+	code, list := svc.GetIntegralRanking(contestId, page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
