@@ -5,6 +5,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mbanner"
@@ -12,6 +13,7 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/util"
 	"time"
+	"fmt"
 )
 
 type ContestModule struct {
@@ -44,11 +46,11 @@ func (svc *ContestModule) GetBanner() []*models.Banner {
 	return banners
 }
 
-// 获取直播列表 默认取两条最新的
-func (svc *ContestModule) GetLiveList(page, size int) (int, []*mcontest.ContestLiveInfo) {
+// 获取直播列表 默认取两条最新的 todo:暂时只有一个赛事
+func (svc *ContestModule) GetLiveList(status string, page, size int) (int, []*mcontest.ContestLiveInfo) {
 	offset := (page - 1) * size
 	now := time.Now().Unix()
-	list, err := svc.contest.GetLiveList(now, offset, size)
+	list, err := svc.contest.GetLiveList(now, offset, size, "1", status)
 	if err != nil {
 		return errdef.CONTEST_GET_LIVE_FAIL, nil
 	}
@@ -77,6 +79,8 @@ func (svc *ContestModule) GetLiveList(page, size int) (int, []*mcontest.ContestL
 			LiveType: item.LiveType,
 			Date: tm.Format("1月2日"),
 			Week: util.GetWeekCn(int(tm.Weekday())),
+			Status: item.Status,
+			HasReplay: 2,
 		}
 
 		user := svc.user.FindUserByUserid(item.UserId)
@@ -89,4 +93,47 @@ func (svc *ContestModule) GetLiveList(page, size int) (int, []*mcontest.ContestL
 	}
 
 	return errdef.SUCCESS, resp
+}
+
+// 获取赛程信息
+func (svc *ContestModule) GetScheduleInfo() (int, *mcontest.ContestInfo) {
+	if err := svc.GetContestInfo(); err != nil {
+		log.Log.Errorf("contest_trace: get contest info fail, err:%s", err)
+		return errdef.CONTEST_INFO_FAIL, nil
+	}
+
+	schedule, err := svc.contest.GetScheduleInfoByContestId(fmt.Sprint(svc.contest.Contest.Id))
+	if err != nil {
+		log.Log.Errorf("contest_trace: get schedule info fail, contestId:%d, err:%s", svc.contest.Contest.Id, err)
+		return errdef.CONTEST_SCHEDULE_FAIL, nil
+	}
+
+	if schedule == nil {
+		return errdef.SUCCESS, nil
+	}
+
+	resp := &mcontest.ContestInfo{ScheduleList: make([]*mcontest.ScheduleInfo, len(schedule))}
+	resp.ContestId = svc.contest.Contest.Id
+	resp.ContestName = svc.contest.Contest.ContestName
+	for index, item := range schedule {
+		info := &mcontest.ScheduleInfo{
+			ScheduleId: item.Id,
+			ScheduleName: item.ScheduleName,
+			Description: item.ScheduleDescription,
+		}
+
+		resp.ScheduleList[index] = info
+	}
+
+	return errdef.SUCCESS, resp
+}
+
+// 获取最新的一个赛事
+func (svc *ContestModule) GetContestInfo() error {
+	ok, err := svc.contest.GetContestInfo(time.Now().Unix())
+	if !ok || err != nil {
+		return err
+	}
+
+	return nil
 }
