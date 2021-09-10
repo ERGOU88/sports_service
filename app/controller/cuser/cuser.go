@@ -11,8 +11,8 @@ import (
 	"sports_service/server/models"
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
-  "sports_service/server/models/mconfigure"
-  "sports_service/server/models/mlike"
+	"sports_service/server/models/mconfigure"
+	"sports_service/server/models/mlike"
 	"sports_service/server/models/mnotify"
 	"sports_service/server/models/morder"
 	"sports_service/server/models/muser"
@@ -44,11 +44,11 @@ type UserModule struct {
 }
 
 func New(c *gin.Context) UserModule {
-    socket := dao.AppEngine.NewSession()
+	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 
-    venueSocket := dao.VenueEngine.NewSession()
-    defer venueSocket.Close()
+	venueSocket := dao.VenueEngine.NewSession()
+	defer venueSocket.Close()
 	return UserModule{
 		context: c,
 		user: muser.NewUserModel(socket),
@@ -91,11 +91,11 @@ func (svc *UserModule) GetUserInfoByUserid(userId string) (int, *muser.UserInfoR
 		Country: int32(info.Country),
 	}
 
-  // 查看国家是否存在
-  countryInfo := svc.GetWorldInfoById(int32(info.Country))
-  if countryInfo != nil {
-    resp.CountryName = countryInfo.Name
-  }
+	// 查看国家是否存在
+	countryInfo := svc.GetWorldInfoById(int32(info.Country))
+	if countryInfo != nil {
+		resp.CountryName = countryInfo.Name
+	}
 
 	return errdef.SUCCESS, resp
 }
@@ -160,18 +160,18 @@ func (svc *UserModule) EditUserInfo(userId string, params *muser.EditUserInfoPar
 	}
 
 	//if params.Avatar != 0 {
-  //  // 查看系统头像是否存在
-  //  avatarInfo := svc.GetDefaultAvatarById(params.Avatar)
-  //  if avatarInfo == nil {
-  //    log.Log.Errorf("user_trace: avatar not exists, avatar id:%d", params.Avatar)
-  //    return errdef.USER_AVATAR_NOT_EXISTS
-  //  }
-  //
-  //}
+	//  // 查看系统头像是否存在
+	//  avatarInfo := svc.GetDefaultAvatarById(params.Avatar)
+	//  if avatarInfo == nil {
+	//    log.Log.Errorf("user_trace: avatar not exists, avatar id:%d", params.Avatar)
+	//    return errdef.USER_AVATAR_NOT_EXISTS
+	//  }
+	//
+	//}
 
-  if params.Avatar != "" {
-    info.Avatar = params.Avatar
-  }
+	if params.Avatar != "" {
+		info.Avatar = params.Avatar
+	}
 
 	// 查看国家是否存在
 	countryInfo := svc.GetWorldInfoById(params.CountryId)
@@ -205,14 +205,14 @@ func (svc *UserModule) RecordUserFeedback(userId string, param *muser.FeedbackPa
 	}
 
 	if param.Describe != "" {
-    client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
-    // 检测反馈的内容
-    isPass, err := client.TextModeration(param.Describe)
-    if !isPass {
-      log.Log.Errorf("user_trace: validate feedback describe err: %s，pass: %v", err, isPass)
-      return errdef.USER_INVALID_FEEDBACK
-    }
-  }
+		client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+		// 检测反馈的内容
+		isPass, err := client.TextModeration(param.Describe)
+		if !isPass {
+			log.Log.Errorf("user_trace: validate feedback describe err: %s，pass: %v", err, isPass)
+			return errdef.USER_INVALID_FEEDBACK
+		}
+	}
 
 	if err := svc.user.RecordUserFeedback(userId, param, int(time.Now().Unix())); err != nil {
 		log.Log.Errorf("user_trace: record user feedback err:%s", err)
@@ -247,19 +247,19 @@ func (svc *UserModule) GetUserZoneInfo(userId, toUserId string) (int, *muser.Use
 		Country: int32(info.Country),
 	}
 
-  // 查看国家是否存在
-  countryInfo := svc.GetWorldInfoById(int32(info.Country))
-  if countryInfo != nil {
-    resp.CountryName = countryInfo.Name
-  }
+	// 查看国家是否存在
+	countryInfo := svc.GetWorldInfoById(int32(info.Country))
+	if countryInfo != nil {
+		resp.CountryName = countryInfo.Name
+	}
 
-  if userId != toUserId {
-    // 当前用户 是否关注 被查看人
-    attentionInfo := svc.attention.GetAttentionInfo(userId, toUserId)
-    if attentionInfo != nil {
-      resp.IsAttention = int32(attentionInfo.Status)
-    }
-  }
+	if userId != toUserId {
+		// 当前用户 是否关注 被查看人
+		attentionInfo := svc.attention.GetAttentionInfo(userId, toUserId)
+		if attentionInfo != nil {
+			resp.IsAttention = int32(attentionInfo.Status)
+		}
+	}
 
 	zoneRes := &muser.UserZoneInfoResp{
 		// 被点赞总数
@@ -281,39 +281,39 @@ func (svc *UserModule) GetUserZoneInfo(userId, toUserId string) (int, *muser.Use
 
 // 绑定设备token
 func (svc *UserModule) BindDeviceToken(userId string, param *muser.BindDeviceTokenParam) int {
-  user := svc.user.FindUserByUserid(userId)
-  if user == nil {
-    log.Log.Errorf("user_trace: user not found, userId:%s", userId)
-    return errdef.USER_NOT_EXISTS
-  }
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
+		log.Log.Errorf("user_trace: user not found, userId:%s", userId)
+		return errdef.USER_NOT_EXISTS
+	}
 
-  // 一致 则不做操作
-  if strings.Compare(user.DeviceToken, param.DeviceToken) == 0 {
-    return errdef.SUCCESS
-  }
+	// 一致 则不做操作
+	if strings.Compare(user.DeviceToken, param.DeviceToken) == 0 {
+		return errdef.SUCCESS
+	}
 
-  svc.user.SetDeviceToken(param.DeviceToken)
-  svc.user.SetDeviceType(param.Platform)
-  // 条件
-  condition := fmt.Sprintf("id=%d", user.Id)
-  // 字段
-  cols := "device_token, device_type"
-  if _, err := svc.user.UpdateUserInfos(condition, cols); err != nil {
-    log.Log.Errorf("user_trace: bind device token fail, userId:%s", userId)
-    return errdef.USER_BIND_DEVICE_TOKEN
-  }
+	svc.user.SetDeviceToken(param.DeviceToken)
+	svc.user.SetDeviceType(param.Platform)
+	// 条件
+	condition := fmt.Sprintf("id=%d", user.Id)
+	// 字段
+	cols := "device_token, device_type"
+	if _, err := svc.user.UpdateUserInfos(condition, cols); err != nil {
+		log.Log.Errorf("user_trace: bind device token fail, userId:%s", userId)
+		return errdef.USER_BIND_DEVICE_TOKEN
+	}
 
-  return errdef.SUCCESS
+	return errdef.SUCCESS
 }
 
 // 获取世界信息（暂时只有国家）
 func (svc *UserModule) GetWorldInfo() []*models.WorldMap {
 	list := svc.user.GetWorldInfo()
 	if len(list) == 0 {
-	  return []*models.WorldMap{}
-  }
+		return []*models.WorldMap{}
+	}
 
-  return list
+	return list
 }
 
 // 通过id获取世界信息（暂时只有国家）
@@ -325,10 +325,10 @@ func (svc *UserModule) GetWorldInfoById(id int32) *models.WorldMap {
 func (svc *UserModule) GetDefaultAvatarList() []*models.DefaultAvatar {
 	list := svc.user.GetSystemAvatarList()
 	if len(list) == 0 {
-	  return []*models.DefaultAvatar{}
-  }
+		return []*models.DefaultAvatar{}
+	}
 
-  return list
+	return list
 }
 
 // 通过id获取系统默认头像
@@ -422,6 +422,3 @@ func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
 
 	return errdef.SUCCESS, kabaw
 }
-
-// 保存卡包二维码信息
-

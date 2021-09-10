@@ -353,6 +353,8 @@ github.com/tencentyun/cos-go-sdk-v5 v0.7.11 h1:G1QB/FPuDuhyfhreW1RWYD7Bb47FOiCDY
 github.com/tencentyun/cos-go-sdk-v5 v0.7.11/go.mod h1:wQBO5HdAkLjj2q6XQiIfDSP8DXDNrppDRw2Kp/1BODA=
 github.com/tencentyun/qcloud-cos-sts-sdk v0.0.0-20201001014220-f25178b7257d h1:LTu76lYJieM5FIjtNp/IhKcfeBoXYOne5CFfxKVjrmc=
 github.com/tencentyun/qcloud-cos-sts-sdk v0.0.0-20201001014220-f25178b7257d/go.mod h1:b18KQa4IxHbxeseW1GcZox53d7J0z39VNONTxvvlkXw=
+github.com/tencentyun/tls-sig-api-v2-golang v1.2.0 h1:N6hWlyY5HWa9QoezVVIIXi5TDZSyX+UvA8pn/tcezS4=
+github.com/tencentyun/tls-sig-api-v2-golang v1.2.0/go.mod h1:D/i1nQrP1hSXxxz+SAmjaprAwH3EhYaktJG6BObWnFE=
 github.com/tencentyun/vod-go-sdk v1.0.0 h1:vHGfJKg2ks/+yOCncT1CSga3p9AS30q0kUp3GngPqzE=
 github.com/tencentyun/vod-go-sdk v1.0.0/go.mod h1:vY2DlB+uw9BDW3oBrGtPmvkruDH3dmtgSp9vSH+ijQ0=
 github.com/tidwall/gjson v1.6.1 h1:LRbvNuNuvAiISWg6gxLEFuCe72UKy5hDqhxW/8183ws=

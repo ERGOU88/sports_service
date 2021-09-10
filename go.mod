@@ -12,7 +12,7 @@ require (
 	github.com/elazarl/goproxy v0.0.0-20200809112317-0581fc3aee2d // indirect
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/garyburd/redigo v1.6.2
-	github.com/gin-contrib/gzip v0.0.3
+	github.com/gin-contrib/gzip v0.0.3 // indirect
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-pay/gopay v1.5.55
 	github.com/go-sql-driver/mysql v1.5.0
@@ -39,6 +39,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go v1.0.30
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.11
 	github.com/tencentyun/qcloud-cos-sts-sdk v0.0.0-20201001014220-f25178b7257d
+	github.com/tencentyun/tls-sig-api-v2-golang v1.2.0
 	github.com/tencentyun/vod-go-sdk v1.0.0
 	github.com/tidwall/gjson v1.6.1
 	github.com/zheng-ji/goSnowFlake v0.0.0-20180906112711-fc763800eec9

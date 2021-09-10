@@ -18,6 +18,8 @@ import (
 	"sports_service/server/nsqlx"
 	"sports_service/server/rabbitmq"
 	"sports_service/server/redismq"
+	"sports_service/server/tools/im"
+	"sports_service/server/tools/live"
 	"sports_service/server/tools/nsq"
 	"sports_service/server/util"
 	"syscall"
@@ -147,6 +149,12 @@ func setupLabelList() {
 	go mlabel.InitLabelList()
 }
 
+// 初始化腾讯im
+func setupTencentService() {
+	im.Init()
+	live.Init()
+}
+
 func init() {
 	// 配置
 	if err := setupConfig(); err != nil {
@@ -175,6 +183,8 @@ func init() {
 	setupRedisMqConsumer()
 	// 初始化视频标签配置列表 [load到内存]
 	setupLabelList()
+	// 初始化腾讯服务 im、live
+	setupTencentService()
 	// register signals handler
 	setupSignal()
 	// 本地运行时 不执行定时任务

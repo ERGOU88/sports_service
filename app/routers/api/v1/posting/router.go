@@ -32,7 +32,7 @@ func PublishPosting(c *gin.Context) {
 	}
 
 	if params.SectionId <= 0 {
-		// 默认为综合
+		// 默认为x友讨论区
 		params.SectionId = 1
 	}
 

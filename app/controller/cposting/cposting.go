@@ -197,7 +197,7 @@ func (svc *PostingModule) ReviewPostInfo(postId int64, userId string, params *mp
 	// 检测帖子内容
 	isOk, err := client.TextModeration(params.Describe)
 	if !isOk || err != nil {
-		log.Log.Errorf("post_trace: validate content err: %s，pass: %v", err, isPass)
+		log.Log.Errorf("post_trace: validate content err: %s，pass: %v", err, isOk)
 	}
 
 	num := 0

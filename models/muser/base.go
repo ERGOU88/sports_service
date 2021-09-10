@@ -4,6 +4,8 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
+	"sports_service/server/models"
+	"sports_service/server/tools/im"
 	"sports_service/server/util"
 	"github.com/gin-gonic/gin"
 	"sports_service/server/global/rdskey"
@@ -61,6 +63,30 @@ func (m *base) IncrNickNameNum() (int64, error) {
 	return rds.INCR(rdskey.USER_NICKNAME_INCR)
 }
 
+type tcyAddResult struct {
+	sig   string
+	err   error
+}
+
+// 注册腾讯云im用户，返回sig
+func (m *base) tcyAddUser(u *models.User) chan tcyAddResult {
+	ch := make(chan tcyAddResult, 1)
+	go func() {
+		t1 := time.Now()
+		sig, err := im.Im.AddUser(u.UserId, u.NickName, u.Avatar)
+		if err != nil {
+			ch <- tcyAddResult{"", err}
+		}
+
+		if err == nil && sig != "" {
+			ch <- tcyAddResult{sig, err}
+		}
+
+		log.Log.Debug("register tencent cloud user: %dms", time.Now().Sub(t1)/time.Millisecond)
+	}()
+
+	return ch
+}
 
 // 注册
 func (m *base) Register(u *UserModel, s *SocialModel, c *gin.Context, unionId, avatar, nickName string, socialType, gender int) error {
@@ -78,8 +104,19 @@ func (m *base) Register(u *UserModel, s *SocialModel, c *gin.Context, unionId, a
 
 	rds:=dao.NewRedisDao()
 	rds.EXPIRE64(key, rdskey.KEY_EXPIRE_MIN)
-	m.newUser(u, c, avatar, nickName, gender)
+	m.newUser(u, c, avatar, nickName, gender, socialType)
 	m.newSocialAccount(s, socialType, u.User.UserId, unionId)
+
+	// 腾讯云im导入用户
+	ch := m.tcyAddUser(u.User)
+	result, ok := <- ch
+	if !ok || result.err != nil {
+		log.Log.Error("read  chan = %v, err = %+v", ok, result.err)
+		return errors.New("register im user fail")
+	}
+
+	u.SetTencentImInfo(u.User.UserId, result.sig)
+
 	return nil
 }
 
@@ -93,10 +130,10 @@ func (m *base) newSocialAccount(s *SocialModel, socialType int, userid, unionid 
 }
 
 // 设置用户信息
-func (m *base) newUser(u *UserModel, c *gin.Context, avatar, nickName string, gender int) {
+func (m *base) newUser(u *UserModel, c *gin.Context, avatar, nickName string, gender, socialType int) {
 	now := time.Now().Unix()
 	m.setDefaultInfo(u, avatar, gender)
-	u.SetUserType(consts.TYPE_WECHAT)
+	u.SetUserType(socialType)
 	u.SetDeviceType(m.getDeviceType(c))
 	u.SetNickName(m.getNickName(nickName))
 	u.SetLastLoginTime(now)

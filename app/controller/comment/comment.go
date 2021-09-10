@@ -12,6 +12,7 @@ import (
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
 	"sports_service/server/models/mcomment"
+	"sports_service/server/models/minformation"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
@@ -32,6 +33,7 @@ type CommentModule struct {
 	like        *mlike.LikeModel
 	attention   *mattention.AttentionModel
 	post        *mposting.PostingModel
+	information *minformation.InformationModel
 }
 
 func New(c *gin.Context) CommentModule {
@@ -45,6 +47,7 @@ func New(c *gin.Context) CommentModule {
 		like: mlike.NewLikeModel(socket),
 		attention: mattention.NewAttentionModel(socket),
 		post: mposting.NewPostingModel(socket),
+		information: minformation.NewInformationModel(socket),
 		engine: socket,
 	}
 }
@@ -204,6 +207,53 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		resp.Content = params.Content
 		resp.CreateAt = svc.comment.PostComment.CreateAt
 		resp.Status = svc.comment.PostComment.Status
+
+	case consts.COMMENT_TYPE_INFORMATION:
+		svc.comment.InformationComment.UserId = userId
+		svc.comment.InformationComment.Content = params.Content
+		svc.comment.InformationComment.CommentLevel = consts.COMMENT_PUBLISH
+		svc.comment.InformationComment.CreateAt = now
+		svc.comment.InformationComment.ParentCommentId = 0
+		svc.comment.InformationComment.NewsId = params.ComposeId
+		svc.comment.InformationComment.Status = 1
+		// 添加评论
+		if err := svc.comment.AddInformationComment(); err != nil {
+			log.Log.Errorf("comment_trace: add comment err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COMMENT_PUBLISH_FAIL, nil
+		}
+
+		// 查找资讯是否存在
+		ok, err := svc.information.GetInformationById(fmt.Sprint(params.ComposeId))
+		if !ok || err != nil {
+			log.Log.Errorf("comment_trace: information not found, postId:%d", params.ComposeId)
+			svc.engine.Rollback()
+			return errdef.INFORMATION_NOT_EXISTS, nil
+		}
+
+		// 更新帖子总计（帖子评论总数）
+		if err := svc.information.UpdateInformationCommentNum(params.ComposeId, now, 1); err != nil {
+			log.Log.Errorf("comment_trace: update information comment num err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COMMENT_PUBLISH_FAIL, nil
+		}
+
+		svc.comment.ReceiveAt.TopicType = consts.TYPE_INFORMATION_COMMENT
+		msgType = consts.INFORMATION_COMMENT_MSG
+		toUserId = svc.information.Information.UserId
+		commentId = svc.comment.InformationComment.Id
+		composeId = params.ComposeId
+
+		resp.Id = svc.comment.InformationComment.Id
+		resp.Avatar = user.Avatar
+		resp.UserName = user.NickName
+		resp.NewsId = params.ComposeId
+		resp.CommentLevel = svc.comment.InformationComment.CommentLevel
+		resp.UserId = user.UserId
+		resp.Content = params.Content
+		resp.CreateAt = svc.comment.InformationComment.CreateAt
+		resp.Status = svc.comment.InformationComment.Status
+
 	default:
 		log.Log.Errorf("comment_trace: invalid commentType:%d", params.CommentType)
 		return errdef.INVALID_PARAMS, nil
@@ -253,7 +303,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 
 	affected, err := svc.post.AddReceiveAtList(atList)
 	if err != nil || int(affected) != len(atList) {
-		log.Log.Errorf("post_trace: add receive at list fail, err:%s", err)
+		log.Log.Errorf("comment_trace: add receive at list fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.COMMENT_PUBLISH_FAIL, nil
 	}
@@ -369,8 +419,13 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyCommentParams) (int, *mcomment.ReplyComment) {
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
-		log.Log.Errorf("video_trace: session begin err:%s", err)
+		log.Log.Errorf("comment_trace: session begin err:%s", err)
 		return errdef.ERROR, nil
+	}
+
+	if params.CommentType <= 0 {
+		log.Log.Errorf("comment_trace: invalid comment type:%d", params.CommentType)
+		return errdef.INVALID_PARAMS, nil
 	}
 
 	// 最少10字符 最多1000字符
@@ -402,11 +457,6 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 	//if strings.Compare(userId, replyInfo.UserId) != -1 {
 	//
 	//}
-
-	if params.CommentType <= 0 {
-		// 默认为视频回复
-		params.CommentType = consts.COMMENT_TYPE_VIDEO
-	}
 
 	var (
 		cover, toUserId, content string
@@ -558,7 +608,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			return errdef.COMMENT_REPLY_FAIL, nil
 		}
 
-		// 更新视频总计（帖子评论总数）
+		// 更新总计（帖子评论总数）
 		if err := svc.post.UpdatePostCommentNum(replyInfo.PostId, now, 1); err != nil {
 			log.Log.Errorf("comment_trace: update post comment num err:%s", err)
 			svc.engine.Rollback()
@@ -592,6 +642,83 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		}
 
 		atType = consts.TYPE_POST_COMMENT
+
+	case consts.COMMENT_TYPE_INFORMATION:
+		// 查询被回复的评论是否存在
+		replyInfo := svc.comment.GetInformationCommentById(fmt.Sprint(params.ReplyId))
+		if replyInfo == nil {
+			log.Log.Error("comment_trace: reply comment not found, commentId:%s", params.ReplyId)
+			svc.engine.Rollback()
+			return errdef.COMMENT_NOT_FOUND, nil
+		}
+
+		ok, err := svc.information.GetInformationById(fmt.Sprint(replyInfo.NewsId))
+		if !ok || err != nil {
+			log.Log.Errorf("comment_trace: information not found, postId:%d", replyInfo.NewsId)
+			svc.engine.Rollback()
+			return errdef.INFORMATION_NOT_EXISTS, nil
+		}
+
+		svc.comment.InformationComment.UserId = userId
+		svc.comment.InformationComment.Content = params.Content
+		svc.comment.InformationComment.CreateAt = now
+		svc.comment.InformationComment.NewsId = replyInfo.NewsId
+		svc.comment.InformationComment.CommentLevel = consts.COMMENT_REPLY
+		svc.comment.InformationComment.Status = 1
+
+		svc.comment.InformationComment.ReplyCommentUserId = replyInfo.UserId
+		svc.comment.InformationComment.ReplyCommentId = replyInfo.Id
+		svc.comment.InformationComment.ParentCommentUserId = replyInfo.ParentCommentUserId
+		svc.comment.InformationComment.ParentCommentId = replyInfo.ParentCommentId
+
+		isAt := 1
+		// 1级评论 parentid为0 如果被回复的评论 parentid 为0，说明当前回复的是1级评论 否则 回复的为2级评论
+		if replyInfo.ParentCommentId == 0 {
+			svc.comment.InformationComment.ParentCommentId = replyInfo.Id
+			svc.comment.InformationComment.ParentCommentUserId = replyInfo.UserId
+			isAt = 0
+		}
+
+		if err := svc.comment.AddInformationComment(); err != nil {
+			log.Log.Errorf("comment_trace: add information reply err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COMMENT_REPLY_FAIL, nil
+		}
+
+		// 更新总计（资讯评论总数）
+		if err := svc.information.UpdateInformationCommentNum(replyInfo.NewsId, now, 1); err != nil {
+			log.Log.Errorf("comment_trace: update information comment num err:%s", err)
+			svc.engine.Rollback()
+			return errdef.COMMENT_PUBLISH_FAIL, nil
+		}
+
+		svc.comment.ReceiveAt.TopicType = consts.TYPE_INFORMATION_COMMENT
+		msgType = consts.INFORMATION_REPLY_MSG
+		toUserId = replyInfo.UserId
+		content = replyInfo.Content
+		commentId = svc.comment.InformationComment.Id
+		composeId = replyInfo.NewsId
+
+		resp.Id = svc.comment.InformationComment.Id
+		resp.Avatar = user.Avatar
+		resp.UserName = user.NickName
+		resp.NewsId = params.ComposeId
+		resp.CommentLevel = svc.comment.InformationComment.CommentLevel
+		resp.UserId = user.UserId
+		resp.Content = svc.comment.InformationComment.Content
+		resp.CreateAt = svc.comment.InformationComment.CreateAt
+		resp.Status = svc.comment.InformationComment.Status
+		resp.IsAt = isAt
+		resp.ReplyContent = replyInfo.Content
+		resp.ReplyCommentUserId = replyInfo.UserId
+		resp.ReplyCommentId = replyInfo.Id
+
+		if uinfo := svc.user.FindUserByUserid(replyInfo.UserId); uinfo != nil {
+			resp.ReplyCommentAvatar = uinfo.Avatar
+			resp.ReplyCommentUserName = uinfo.NickName
+		}
+
+		atType = consts.TYPE_INFORMATION_COMMENT
 
 	default:
 		log.Log.Errorf("comment_trace: invalid commentType:%d", params.CommentType)
@@ -686,6 +813,16 @@ func (svc *CommentModule) CheckComposeInfo(composeId string, commentType int) (i
 		}
 
 		zanType = consts.TYPE_POST_COMMENT
+
+	case consts.COMMENT_TYPE_INFORMATION:
+		ok, err := svc.information.GetInformationById(composeId)
+		if !ok || err != nil {
+			log.Log.Errorf("comment_trace: information not found, composeId:%s", composeId)
+			return errdef.INFORMATION_NOT_EXISTS, zanType
+		}
+
+		zanType = consts.TYPE_INFORMATION_COMMENT
+
 	default:
 		return errdef.INVALID_PARAMS, zanType
 	}
@@ -709,14 +846,146 @@ func (svc *CommentModule) GetComments(userId, composeId, sortType string, commen
 	var list []*mcomment.CommentList
 	offset := (page - 1) * size
 
-	if commentType == consts.COMMENT_TYPE_POST {
-		list = svc.GetPostCommentList(userId, composeId, offset, size, zanType)
-	} else {
+	switch commentType {
+	case consts.COMMENT_TYPE_VIDEO:
 		list = svc.GetVideoCommentList(userId, composeId, offset, size, zanType)
+	case consts.COMMENT_TYPE_POST:
+		list = svc.GetPostCommentList(userId, composeId, offset, size, zanType)
+	case consts.COMMENT_TYPE_INFORMATION:
+		list = svc.GetInformationCommentList(userId, composeId, offset, size, zanType)
+	default:
+		log.Log.Errorf("comment_trace: invalid comment type:%d", commentType)
+		return errdef.INVALID_PARAMS, []*mcomment.CommentList{}
 	}
 
-
 	return errdef.SUCCESS, list
+}
+
+// 获取资讯评论列表
+func (svc *CommentModule) GetInformationCommentList(userId, composeId string, offset, size, zanType int) []*mcomment.CommentList {
+	// 获取评论
+	comments := svc.comment.GetInformationCommentList(composeId, offset, size)
+	if len(comments) == 0 {
+		log.Log.Errorf("comment_trace: no comments, composeId:%s", composeId)
+		return []*mcomment.CommentList{}
+	}
+
+	list := make([]*mcomment.CommentList, len(comments))
+	// contents 存储 评论id——>评论的内容
+	contents := make(map[int64]string, 0)
+	// userInfo 存储 用户id——>头像、昵称
+	//userInfo := make(map[string]*tmpUser, 0)
+	for index, item := range comments {
+		comment := new(mcomment.CommentList)
+		comment.Id = item.Id
+		comment.Status = item.Status
+		comment.NewsId = item.NewsId
+		comment.UserId = item.UserId
+		comment.CreateAt = item.CreateAt
+		comment.IsTop = item.IsTop
+		comment.Content = item.Content
+		// 已被逻辑删除
+		if comment.Status == 0 {
+			comment.Content = "原内容已删除"
+		}
+
+		comment.CommentLevel = item.CommentLevel
+		// 总回复数
+		comment.ReplyNum = svc.comment.GetTotalReplyByInformationComment(fmt.Sprint(comment.Id))
+		// 评论点赞数
+		comment.LikeNum = svc.like.GetLikeNumByType(item.Id, consts.TYPE_INFORMATION_COMMENT)
+
+		// 如果总回复数 > 3 条
+		if comment.ReplyNum > 3 {
+			// 1 客户端展示查看更多
+			comment.HasMore = 1
+		}
+
+		//comment.Avatar = item.Avatar
+		//comment.UserName = item.UserName
+		//user := new(tmpUser)
+		//user.NickName = item.UserName
+		//user.Avatar = item.Avatar
+		//userInfo[item.UserId] = user
+		// todo: 用户信息需使用最新数据
+		user := svc.user.FindUserByUserid(comment.UserId)
+		if user != nil {
+			comment.Avatar = user.Avatar
+			comment.UserName = user.NickName
+		}
+
+		contents[item.Id] = item.Content
+
+		// 获取每个评论下的回复列表 (默认取三条)
+		comment.ReplyList = svc.comment.GetInformationReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
+		for _, reply := range comment.ReplyList {
+			//user := new(tmpUser)
+			//user.NickName = reply.UserName
+			//user.Avatar = reply.Avatar
+			//userInfo[reply.UserId] = user
+			user = svc.user.FindUserByUserid(reply.UserId)
+			if user != nil {
+				reply.Avatar = user.Avatar
+				reply.UserName = user.NickName
+			}
+
+			contents[reply.Id] = reply.Content
+			// 评论点赞数
+			reply.LikeNum = svc.like.GetLikeNumByType(reply.Id, zanType)
+
+			// todo: 被回复的用户名、用户头像使用最新数据
+			user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
+			if user != nil {
+				reply.ReplyCommentAvatar = user.Avatar
+				reply.ReplyCommentUserName = user.NickName
+			}
+
+			// 如果回复的是1级评论 不展示@内容 否则展示   0 不是@消息 1是
+			if reply.ParentCommentId != reply.ReplyCommentId || reply.ReplyCommentId != item.Id {
+				reply.IsAt = 1
+			}
+
+			// 默认回复的是1级评论
+			reply.ReplyContent = comment.Content
+			// 被回复的内容
+			content, ok := contents[reply.ReplyCommentId]
+			if ok {
+				reply.ReplyContent = content
+			}
+
+			if reply.Status == 0 {
+				reply.ReplyContent = "原内容已删除"
+			}
+
+			if userId != "" {
+				// 是否关注
+				if attention := svc.attention.GetAttentionInfo(userId, reply.UserId); attention != nil {
+					reply.IsAttention = attention.Status
+				}
+			}
+		}
+
+		if userId != "" {
+			// 是否关注
+			if attention := svc.attention.GetAttentionInfo(userId, item.UserId); attention != nil {
+				comment.IsAttention = attention.Status
+			}
+
+			// 获取点赞的信息
+			if likeInfo := svc.like.GetLikeInfo(userId, comment.Id, zanType); likeInfo != nil {
+				comment.IsLike = likeInfo.Status
+			}
+		}
+
+		if len(comment.ReplyList) == 0 {
+			comment.ReplyList = []*mcomment.ReplyComment{}
+		}
+
+		list[index] = comment
+
+	}
+
+	return list
 }
 
 // 获取帖子评论列表
@@ -994,6 +1263,9 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 	case consts.TYPE_POST_COMMENT:
 		// 获取帖子评论(按点赞数排序)
 		comments = svc.comment.GetPostCommentListByLike(composeId, zanType, offset, size)
+	case consts.TYPE_INFORMATION_COMMENT:
+		// 获取资讯评论(按点赞数排序)
+		comments = svc.comment.GetInformationCommentListByLike(composeId, zanType, offset, size)
 	}
 
 	if len(comments) == 0 {
@@ -1026,6 +1298,13 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 			item.ReplyNum = svc.comment.GetTotalReplyByPostComment(fmt.Sprint(item.Id))
 			// 获取每个评论下的回复列表 (默认取三条)
 			item.ReplyList = svc.comment.GetPostReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
+		}
+
+		if item.NewsId > 0 {
+			// 资讯评论总回复数
+			item.ReplyNum = svc.comment.GetTotalReplyByInformationComment(fmt.Sprint(item.Id))
+			// 获取每个评论下的回复列表 (默认取三条)
+			item.ReplyList = svc.comment.GetInformationReplyList(composeId, fmt.Sprint(item.Id), 0, 3)
 		}
 
 		// 如果总回复数 > 3 条
@@ -1162,10 +1441,24 @@ func (svc *CommentModule) GetCommentReplyList(userId, composeId, commentId strin
 		content = comment.Content
 
 		replyList = svc.comment.GetPostReplyList(composeId, commentId, offset, size)
+
+	case consts.COMMENT_TYPE_INFORMATION:
+		// 查询资讯评论是否存在
+		comment := svc.comment.GetInformationCommentById(commentId)
+		if comment == nil {
+			log.Log.Error("comment_trace: comment not found, commentId:%s", commentId)
+			return errdef.COMMENT_NOT_FOUND, []*mcomment.ReplyComment{}
+		}
+		content = comment.Content
+
+		replyList = svc.comment.GetInformationReplyList(composeId, commentId, offset, size)
+	default:
+		log.Log.Errorf("comment_trace: invalid comment type:%d", commentType)
+		return errdef.INVALID_PARAMS, []*mcomment.ReplyComment{}
 	}
 
 	if len(replyList) == 0 {
-		log.Log.Errorf("comment_trace: not found comment reply, commentId:%s", commentId)
+		log.Log.Errorf("comment_trace: comment reply is empty, commentId:%s", commentId)
 		return errdef.SUCCESS, []*mcomment.ReplyComment{}
 	}
 

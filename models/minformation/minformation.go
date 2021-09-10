@@ -16,17 +16,19 @@ type InformationResp struct {
 	Id          int64  `json:"id"`
 	Cover       string `json:"cover"`
 	Title       string `json:"title"`
-	JumpUrl     string `json:"jump_url"`
+	Content     string `json:"content"`
+	//JumpUrl     string `json:"jump_url"`
 	CreateAt    int    `json:"create_at"`
 	UserId      string `json:"user_id"`
 	Avatar      string `json:"avatar"`
 	NickName    string `json:"nick_name"`
 	CommentNum  int    `json:"comment_num"`
 	FabulousNum int    `json:"fabulous_num"`
-	IsAttention int    `json:"is_attention,omitempty"`   // 是否关注 1 关注 2 未关注
+	IsAttention int    `json:"is_attention"`            // 是否关注 1 关注 0 未关注
 	BrowseNum   int    `json:"browse_num"`               // 浏览数
-	IsLike      int    `json:"is_like"`                  // 是否点赞 1 点赞 2 未点赞
-	IsCollect   int    `json:"is_collect"`               // 是否收藏 1 收藏 2 未收藏
+	IsLike      int    `json:"is_like"`                  // 是否点赞 1 点赞 0 未点赞
+	ShareNum    int    `json:"share_num"`                // 分享数
+	//IsCollect   int    `json:"is_collect"`               // 是否收藏 1 收藏 0 未收藏
 }
 
 func NewInformationModel(engine *xorm.Session) *InformationModel {
@@ -40,11 +42,16 @@ func NewInformationModel(engine *xorm.Session) *InformationModel {
 // 获取资讯列表
 func (m *InformationModel) GetInformationList(offset, size int) ([]*models.Information, error) {
 	var list []*models.Information
-	if err := m.Engine.Where("status=0").Limit(offset, size).Find(&list); err != nil {
+	if err := m.Engine.Where("status=0").Limit(size, offset).Find(&list); err != nil {
 		return nil, err
 	}
 
 	return list, nil
+}
+
+// 资讯统计初始化
+func (m *InformationModel) AddInformationStatistic() (int64, error) {
+	return m.Engine.InsertOne(m.Statistic)
 }
 
 // 获取资讯统计数据
@@ -89,11 +96,12 @@ func (m *InformationModel) UpdateUserBrowseInformation(userId string,  composeTy
 }
 
 const (
-	UPDATE_INFORMATION_LIKE_NUM = "UPDATE `video_statistic` SET `fabulous_num` = `fabulous_num` + ?, `update_at`=? WHERE `news_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
+	UPDATE_INFORMATION_LIKE_NUM = "UPDATE `information_statistic` SET `fabulous_num` = `fabulous_num` + ?, " +
+		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `news_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
 )
 // 更新资讯点赞数
 func (m *InformationModel) UpdateInformationLikeNum(newsId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_INFORMATION_LIKE_NUM, num, now, newsId, num); err != nil {
+	if _, err := m.Engine.Exec(UPDATE_INFORMATION_LIKE_NUM, num, num, now, newsId, num); err != nil {
 		return err
 	}
 
@@ -113,11 +121,12 @@ func (m *InformationModel) UpdateInformationCollectNum(newsId int64, now, num in
 }
 
 const (
-	UPDATE_INFORMATION_COMMENT_NUM = "UPDATE `information_statistic` SET `comment_num` = `comment_num` + ?, `update_at`=? WHERE `news_id`=? AND `comment_num` + ? >= 0 LIMIT 1"
+	UPDATE_INFORMATION_COMMENT_NUM = "UPDATE `information_statistic` SET `comment_num` = `comment_num` + ?, " +
+		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `news_id`=? AND `comment_num` + ? >= 0 LIMIT 1"
 )
 // 更新资讯评论数
 func (m *InformationModel) UpdateInformationCommentNum(newsId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_INFORMATION_COMMENT_NUM, num, now, newsId, num); err != nil {
+	if _, err := m.Engine.Exec(UPDATE_INFORMATION_COMMENT_NUM, num, num, now, newsId, num); err != nil {
 		return err
 	}
 
@@ -125,11 +134,12 @@ func (m *InformationModel) UpdateInformationCommentNum(newsId int64, now, num in
 }
 
 const (
-	UPDATE_INFORMATION_BROWSE_NUM = "UPDATE `information_statistic` SET `browse_num` = `browse_num` + ?, `update_at`=? WHERE `news_id`=? AND `browse_num` + ? >= 0 LIMIT 1"
+	UPDATE_INFORMATION_BROWSE_NUM = "UPDATE `information_statistic` SET `browse_num` = `browse_num` + ?, `heat_num` = `heat_num` + ?," +
+		" `update_at`=? WHERE `news_id`=? AND `browse_num` + ? >= 0 LIMIT 1"
 )
 // 更新资讯浏览数
 func (m *InformationModel) UpdateInformationBrowseNum(newsId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_INFORMATION_BROWSE_NUM, num, now, newsId, num); err != nil {
+	if _, err := m.Engine.Exec(UPDATE_INFORMATION_BROWSE_NUM, num, num, now, newsId, num); err != nil {
 		return err
 	}
 

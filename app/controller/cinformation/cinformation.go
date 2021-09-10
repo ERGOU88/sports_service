@@ -1,6 +1,7 @@
 package cinformation
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
@@ -12,7 +13,7 @@ import (
 	"sports_service/server/models/minformation"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
-	"fmt"
+	"sports_service/server/util"
 	"time"
 )
 
@@ -41,7 +42,7 @@ func New(c *gin.Context) InformationModule {
 }
 
 // 获取资讯列表
-func (svc *InformationModule) GetInformationList(page, size int) (int, []*minformation.InformationResp) {
+func (svc *InformationModule) GetInformationList(userId string, page, size int) (int, []*minformation.InformationResp) {
 	offset := (page - 1) * size
 	list, err := svc.information.GetInformationList(offset, size)
 	if err != nil {
@@ -52,6 +53,7 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 		return errdef.SUCCESS, []*minformation.InformationResp{}
 	}
 
+	now := int(time.Now().Unix())
 	resp := make([]*minformation.InformationResp, len(list))
 	for index, information := range list {
 		info := &minformation.InformationResp{
@@ -59,7 +61,7 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 			Cover: information.Cover,
 			Title: information.Title,
 			CreateAt: information.CreateAt,
-			JumpUrl: information.JumpUrl,
+			//JumpUrl: information.JumpUrl,
 			UserId: information.UserId,
 		}
 
@@ -68,14 +70,31 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 			info.NickName = user.NickName
 		}
 
+		// 获取点赞的信息
+		if likeInfo := svc.like.GetLikeInfo(userId, info.Id, consts.LIKE_TYPE_INFORMATION); likeInfo != nil {
+			info.IsLike = likeInfo.Status
+		}
+
 		ok, err := svc.information.GetInformationStatistic(fmt.Sprint(info.Id))
 		if !ok && err != nil {
 			log.Log.Error("information_trace: get information statistic fail, id:%d, err:%s", info.Id, err)
 		}
 
+		if !ok && err == nil {
+			svc.information.Statistic.NewsId = info.Id
+			svc.information.Statistic.CreateAt = now
+			svc.information.Statistic.UpdateAt = now
+			// 初始化视频统计数据
+			if _, err = svc.information.AddInformationStatistic(); err != nil {
+				log.Log.Errorf("information_trace: add statistic id:%d, err:%s", info.Id, err)
+				return errdef.INFORMATION_LIST_FAIL, []*minformation.InformationResp{}
+			}
+		}
+
 		if ok {
 			info.FabulousNum = svc.information.Statistic.FabulousNum
 			info.CommentNum = svc.information.Statistic.CommentNum
+			info.ShareNum = svc.information.Statistic.ShareNum
 		}
 
 		resp[index] = info
@@ -87,7 +106,7 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 // 获取资讯详情
 func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *minformation.InformationResp) {
 	if id == "" {
-		return errdef.INFORMATION_NOT_EXISTS, nil
+		return errdef.INVALID_PARAMS, nil
 	}
 
 	ok, err := svc.information.GetInformationById(id)
@@ -95,13 +114,20 @@ func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *min
 		return errdef.INFORMATION_NOT_EXISTS, nil
 	}
 
+	node, err := util.GetHtmlNode(svc.information.Information.Content)
+	if err != nil {
+		log.Log.Errorf("information_trace: get body content fail, id:%s, err:%s", id, err)
+		return errdef.INFORMATION_DETAIL_FAIL, nil
+	}
+
 	resp := &minformation.InformationResp{
 		Id: svc.information.Information.Id,
 		Cover: svc.information.Information.Cover,
 		Title: svc.information.Information.Title,
 		CreateAt: svc.information.Information.CreateAt,
-		JumpUrl: svc.information.Information.JumpUrl,
+		//JumpUrl: svc.information.Information.JumpUrl,
 		UserId: svc.information.Information.UserId,
+		Content: util.RenderNode(node),
 	}
 
 	if user := svc.user.FindUserByUserid(resp.UserId); user != nil {
@@ -118,6 +144,7 @@ func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *min
 		resp.FabulousNum = svc.information.Statistic.FabulousNum
 		resp.CommentNum = svc.information.Statistic.CommentNum
 		resp.BrowseNum = svc.information.Statistic.BrowseNum
+		resp.ShareNum = svc.information.Statistic.ShareNum
 	}
 
 	now := int(time.Now().Unix())
@@ -162,14 +189,28 @@ func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *min
 	}
 
 	// 获取点赞的信息
-	if likeInfo := svc.like.GetLikeInfo(userId, resp.Id, consts.TYPE_INFORMATION); likeInfo != nil {
+	if likeInfo := svc.like.GetLikeInfo(userId, resp.Id, consts.LIKE_TYPE_INFORMATION); likeInfo != nil {
 		resp.IsLike = likeInfo.Status
-	}
-
-	// 获取收藏的信息
-	if collectInfo := svc.collect.GetCollectInfo(userId, resp.Id, consts.TYPE_INFORMATION); collectInfo != nil {
-		resp.IsCollect = collectInfo.Status
 	}
 
 	return errdef.SUCCESS, resp
 }
+
+//func (svc *InformationModule) GetBodyContent(content string) (string, error) {
+//	type body struct {
+//		Content string `xml:",innerxml"`
+//	}
+//
+//	type html struct {
+//		Body body `xml:"body"`
+//	}
+//
+//	h := html{}
+//	err := xml.NewDecoder(bytes.NewBuffer([]byte(content))).Decode(&h)
+//	if err != nil {
+//		fmt.Println("error", err)
+//		return "", err
+//	}
+//
+//	return h.Body.Content, nil
+//}

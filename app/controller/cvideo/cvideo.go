@@ -773,6 +773,7 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDet
 	resp.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 	resp.IsRecommend = video.IsRecommend
 	resp.IsTop = video.IsTop
+	resp.Size = video.Size
 	resp.VideoDuration = video.VideoDuration
 	resp.VideoWidth = video.VideoWidth
 	resp.VideoHeight = video.VideoHeight

@@ -11,8 +11,9 @@ import (
 func InformationList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	userId := c.Query("user_id")
 	svc := cinformation.New(c)
-	code, list := svc.GetInformationList(page, size)
+	code, list := svc.GetInformationList(userId, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }

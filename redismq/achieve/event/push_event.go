@@ -124,6 +124,9 @@ func handleEvent(event protocol.Event) error {
 
 	log.Log.Infof("redisMq_trace: event:%+v", event)
 	setting := nmodel.GetUserNotifySetting(event.UserId)
+	if setting == nil {
+		return nil
+	}
 
 	var pushSet int
 	switch event.EventType {
