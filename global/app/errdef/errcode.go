@@ -232,6 +232,8 @@ const (
 	CONTEST_GET_LIVE_FAIL        = 40001
 	CONTEST_INFO_FAIL            = 40002
 	CONTEST_SCHEDULE_FAIL        = 40003
+	CONTEST_PROMOTION_INFO_FAIL  = 40004
+	CONTEST_PLAYER_INFO_FAIL     = 40005
 )
 
 var MsgFlags = map[int]string{
@@ -441,6 +443,8 @@ var MsgFlags = map[int]string{
 	CONTEST_GET_LIVE_FAIL:       "获取赛事直播失败",
 	CONTEST_INFO_FAIL:           "获取赛事信息失败",
 	CONTEST_SCHEDULE_FAIL:       "获取赛程信息失败",
+	CONTEST_PROMOTION_INFO_FAIL: "获取赛程晋级信息失败",
+	CONTEST_PLAYER_INFO_FAIL:    "获取选手信息失败",
 }
 
 func GetMsg(code int) string {

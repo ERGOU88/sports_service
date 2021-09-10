@@ -41,3 +41,14 @@ func ScheduleInfo(c *gin.Context) {
 	reply.Data["detail"] = detail
 	reply.Response(http.StatusOK, code)
 }
+
+// 晋级信息
+func PromotionInfo(c *gin.Context) {
+	reply := errdef.New(c)
+	contestId := c.Query("contest_id")
+	scheduleId := c.Query("schedule_id")
+	svc := contest.New(c)
+	code, list := svc.GetPromotionInfo(contestId, scheduleId)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}

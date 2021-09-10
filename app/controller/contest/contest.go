@@ -137,3 +137,91 @@ func (svc *ContestModule) GetContestInfo() error {
 
 	return nil
 }
+
+// 获取赛程晋级信息
+func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, interface{}) {
+	ok, err := svc.contest.GetScheduleInfoById(scheduleId)
+	if !ok || err != nil {
+		return errdef.CONTEST_SCHEDULE_FAIL, nil
+	}
+
+	list, err := svc.contest.GetScheduleDetailByScore(contestId, scheduleId)
+	if err != nil {
+		log.Log.Errorf("contest_trace: get promotion info fail, scheduleId:%s, err", scheduleId, err)
+		return errdef.CONTEST_PROMOTION_INFO_FAIL, nil
+	}
+
+	switch svc.contest.Schedule.ShowType {
+	// 列表展示
+	case 1:
+		mp := make(map[int64]*mcontest.ScheduleDetailResp)
+		ranking := 0
+		for _, item := range list {
+			// key 选手id
+			if _, ok :=  mp[item.PlayerId]; !ok {
+				detail := &mcontest.ScheduleDetailResp{}
+				detail.PlayerId = item.PlayerId
+				detail.PlayerName = item.PlayerName
+				detail.ContestId = item.ContestId
+				detail.ScheduleId = item.ScheduleId
+				//detail.IsWin = item.IsWin
+				detail.Photo = item.Photo
+				detail.BestScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+				if item.Rounds == 1 {
+					detail.RoundOneScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+				}
+
+				if item.Rounds == 2 {
+					detail.RoundTwoScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+				}
+
+				if item.Rounds == 3 {
+					detail.RoundThreeScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+				}
+
+				detail.Ranking = ranking
+				ranking++
+				mp[item.PlayerId] = detail
+			} else {
+				if item.Rounds == 1 {
+					mp[item.PlayerId].RoundOneScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+				}
+
+				if item.Rounds == 2 {
+					mp[item.PlayerId].RoundTwoScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+				}
+
+				if item.Rounds == 3 {
+					mp[item.PlayerId].RoundThreeScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+				}
+			}
+		}
+
+		// 防止数组越界
+		if ranking > len(mp) {
+			return errdef.CONTEST_PROMOTION_INFO_FAIL, nil
+		}
+
+		log.Log.Errorf("##########:len(map)", len(mp))
+		resp := make([]*mcontest.ScheduleDetailResp, len(mp))
+		for _, val := range mp {
+			log.Log.Infof("#######val:%+v", val)
+			resp[val.Ranking] = val
+		}
+
+		return errdef.SUCCESS, resp
+
+	// 分组展示
+	case 2:
+
+
+	}
+
+	return errdef.ERROR, nil
+}
+
+
+// 获取赛事选手积分排行
+func (svc *ContestModule) GetIntegralRankingByContest() {
+
+}

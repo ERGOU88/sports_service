@@ -14,4 +14,5 @@ type FpvContestSchedule struct {
 	ScheduleDescription string `json:"schedule_description" xorm:"not null default '' comment('赛程说明 例： 32强赛：32人参赛，4人一组 分8组角逐16强') VARCHAR(1024)"`
 	CreateAt            int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt            int    `json:"update_at" xorm:"not null default 0 comment('修改时间') INT(11)"`
+	ShowType            int    `json:"show_type" xorm:"not null default 0 comment('1 列表展示 2 分组展示') TINYINT(1)"`
 }
