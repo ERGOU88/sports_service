@@ -38,14 +38,12 @@ func (svc *LiveModule) PushOrDisconnectStreamCallback(params *mcontest.StreamCal
 
 	now := int(time.Now().Unix())
 	var cols string
+	svc.contest.VideoLive.Status = params.Status
+	svc.contest.VideoLive.UpdateAt = now
 	switch params.Status {
 	case 1:
-		svc.contest.VideoLive.Status = params.Status
-		svc.contest.VideoLive.UpdateAt = now
 		cols = "status, update_at"
 	case 2:
-		svc.contest.VideoLive.Status = params.Status
-		svc.contest.VideoLive.UpdateAt = now
 		duration, err := strconv.Atoi(params.PushDuration)
 		if err != nil {
 			log.Log.Errorf("live_trace: strconv.Atoi fail, duration:%s", params.PushDuration)

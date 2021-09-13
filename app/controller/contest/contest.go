@@ -233,6 +233,7 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 				detail.GroupName = item.GroupName
 				detail.ContestId = item.ContestId
 				detail.Index = index
+				detail.BeginTm = time.Unix(int64(item.BeginTm), 0).Format(consts.FORMAT_DATE_STR)
 				mp[item.GroupNum] = detail
 				index++
 			}

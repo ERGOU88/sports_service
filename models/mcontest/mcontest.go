@@ -47,6 +47,8 @@ type ScheduleDetail struct {
 	IsWin      int    `json:"is_win"`
 	NumInGroup int    `json:"num_in_group"`
 	ContestId  int    `json:"contest_id"`
+	BeginTm    int    `json:"begin_tm"`
+	EndTm      int    `json:"end_tm"`
 }
 
 
@@ -74,6 +76,8 @@ type ScheduleGroupDetailResp struct {
 	ContestId  int    `json:"contest_id"`
 	ScheduleId int    `json:"schedule_id"`
 	Index      int    `json:"index"`
+	BeginTm    string `json:"begin_tm"`
+	//EndTm      string `json:"end_tm"`
 
 	Player     []PlayerInfoResp  `json:"player"`
 	Winner     []PlayerInfoResp  `json:"winner"`
