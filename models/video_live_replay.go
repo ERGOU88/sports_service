@@ -7,7 +7,7 @@ type VideoLiveReplay struct {
 	HistoryAddr string `json:"history_addr" xorm:"not null default '' comment('回放地址') VARCHAR(512)"`
 	Labeltype   int    `json:"labeltype" xorm:"not null default 0 comment('0 下架 1上架') TINYINT(1)"`
 	IsDel       int    `json:"is_del" xorm:"not null default 0 comment('0 正常  1 删除') TINYINT(1)"`
-	Intro       string `json:"intro" xorm:"not null default '' comment('描述') VARCHAR(255)"`
+	Title       string `json:"title" xorm:"not null default '' comment('标题') VARCHAR(255)"`
 	PlayNum     int64  `json:"play_num" xorm:"not null default 0 comment('播放次数') BIGINT(20)"`
 	IsTranscode int    `json:"is_transcode" xorm:"not null default 0 comment('是否转码,0-未申请，1-已申请') TINYINT(2)"`
 	TaskId      string `json:"task_id" xorm:"not null default '' comment('回放转码任务ID') VARCHAR(64)"`
@@ -17,4 +17,5 @@ type VideoLiveReplay struct {
 	Cover       string `json:"cover" xorm:"not null default '' comment('回放封面') VARCHAR(512)"`
 	CreateAt    int    `json:"create_at" xorm:"not null default 0 INT(11)"`
 	UpdateAt    int    `json:"update_at" xorm:"not null default 0 INT(11)"`
+	Describe    string `json:"describe" xorm:"not null default '' comment('描述') VARCHAR(512)"`
 }

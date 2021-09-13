@@ -6,7 +6,7 @@ type FpvContestPlayerIntegralRecord struct {
 	ScheduleId      int   `json:"schedule_id" xorm:"not null comment('赛程id') index(contest_player_schedule) INT(11)"`
 	PlayerId        int64 `json:"player_id" xorm:"not null comment('选手id') index(contest_player_schedule) BIGINT(20)"`
 	Ranking         int   `json:"ranking" xorm:"not null default 0 comment('排名') INT(8)"`
-	ReceiveIntegral int   `json:"receive_integral" xorm:"not null default 0 comment('获取积分数') INT(11)"`
+	ReceiveIntegral int   `json:"receive_integral" xorm:"not null default 0 comment('获取积分数（暂定 *1000存储）') INT(11)"`
 	Status          int   `json:"status" xorm:"not null default 0 comment('0 正常 1 废弃') TINYINT(1)"`
 	CreateAt        int   `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt        int   `json:"update_at" xorm:"not null default 0 comment('修改时间') INT(11)"`

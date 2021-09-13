@@ -1004,13 +1004,25 @@ func newUploadEvent(event *v20180717.EventContent) error {
   vmodel.Videos.VideoAddr = pubInfo.VideoAddr
   // 转为毫秒
   vmodel.Videos.VideoDuration = int(*event.FileUploadEvent.MetaData.VideoDuration * 1000)
+  if vmodel.Videos.VideoDuration == 0 {
+    vmodel.Videos.VideoDuration = pubInfo.VideoDuration
+  }
   //vmodel.Videos.UpdateAt = int(now)
   vmodel.Videos.UpdateAt = int(now)
   vmodel.Videos.UserType = consts.PUBLISH_VIDEO_BY_USER
   vmodel.Videos.VideoWidth = *event.FileUploadEvent.MetaData.Width
   vmodel.Videos.VideoHeight = *event.FileUploadEvent.MetaData.Height
+  if vmodel.Videos.VideoWidth == 0 || vmodel.Videos.VideoHeight == 0 {
+    vmodel.Videos.VideoWidth = pubInfo.VideoWidth
+    vmodel.Videos.VideoHeight = pubInfo.VideoHeight
+  }
+
   // 单位：字节
   vmodel.Videos.Size = *event.FileUploadEvent.MetaData.Size
+  if vmodel.Videos.Size == 0 {
+    vmodel.Videos.Size = pubInfo.Size
+  }
+
   fileId, _ := strconv.Atoi(*event.FileUploadEvent.FileId)
   //vmodel.Videos.FileId = int64(fileId)
   //vmodel.Videos.Size = pubInfo.Size
