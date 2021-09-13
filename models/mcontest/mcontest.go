@@ -9,35 +9,12 @@ import (
 type ContestModel struct {
 	Engine          *xorm.Session
 	VideoLive       *models.VideoLive
+	VideoLiveReplay *models.VideoLiveReplay
 	Schedule        *models.FpvContestSchedule
 	Contest         *models.FpvContestInfo
 	IntegralRanking *models.FpvContestPlayerIntegralRanking
 	PlayerInfo      *models.FpvContestPlayerInformation
 	ScheduleDetail  *models.FpvContestScheduleDetail
-}
-
-// 赛事直播信息
-type ContestLiveInfo struct {
-	Id             int64  `json:"id"`
-	UserId         string `json:"user_id"`
-	RoomId         string `json:"room_id"`
-	GroupId        string `json:"group_id"`
-	Cover          string `json:"cover"`
-	RtmpAddr       string `json:"rtmp_addr"`
-	FlvAddr        string `json:"flv_addr"`
-	HlsAddr        string `json:"hls_addr"`
-	PlayTime       int    `json:"play_time"`
-	Title          string `json:"title"`
-	HighLights     string `json:"high_lights"`
-	Describe       string `json:"describe"`
-	Tags           string `json:"tags"`
-	LiveType       int    `json:"live_type"`
-	NickName       string `json:"nick_name"`
-	Avatar         string `json:"avatar"`
-	Date           string `json:"date"`
-	Week           string `json:"week"`
-	Status         int    `json:"int"`           // 状态 0未直播 1直播中 2 已结束
-	HasReplay      int    `json:"has_replay"`    // 是否有回放 1 有 2 无
 }
 
 // 赛事信息[包含赛程]
@@ -132,27 +109,13 @@ func NewContestModel(engine *xorm.Session) *ContestModel {
 	return &ContestModel{
 		Engine: engine,
 		VideoLive: new(models.VideoLive),
+		VideoLiveReplay: new(models.VideoLiveReplay),
 		Schedule: new(models.FpvContestSchedule),
 		Contest: new(models.FpvContestInfo),
 		IntegralRanking: new(models.FpvContestPlayerIntegralRanking),
 		PlayerInfo: new(models.FpvContestPlayerInformation),
 		ScheduleDetail: new(models.FpvContestScheduleDetail),
 	}
-}
-
-// 获取直播列表
-func (m *ContestModel) GetLiveList(now int64, offset, size int, contestId, status string) ([]*models.VideoLive, error){
-	var list []*models.VideoLive
-	m.Engine.Where("play_time >= ? AND contest_id=?", now, contestId)
-	if status == "1" {
-		m.Engine.Where("status=1")
-	}
-
-	if err := m.Engine.Asc("play_time").Limit(size, offset).Find(&list); err != nil {
-		return []*models.VideoLive{}, err
-	}
-
-	return list, nil
 }
 
 // 通过赛事id获取赛程信息

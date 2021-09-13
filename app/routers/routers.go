@@ -17,6 +17,7 @@ import (
 	"sports_service/server/app/routers/api/v1/doc"
 	"sports_service/server/app/routers/api/v1/information"
 	"sports_service/server/app/routers/api/v1/like"
+	"sports_service/server/app/routers/api/v1/live"
 	"sports_service/server/app/routers/api/v1/notify"
 	"sports_service/server/app/routers/api/v1/order"
 	"sports_service/server/app/routers/api/v1/pay"
@@ -96,4 +97,6 @@ func InitRouters(engine *gin.Engine) {
 	information.Router(engine)
 	// 赛事模块
 	contest.Router(engine)
+	// 直播模块
+	live.Router(engine)
 }
