@@ -11,7 +11,6 @@ import (
 	"sports_service/server/models/mbanner"
 	"sports_service/server/models/mcontest"
 	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
 	"sports_service/server/util"
 	"time"
 	"fmt"
