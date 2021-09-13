@@ -46,7 +46,7 @@ func (svc *ContestModule) GetBanner() []*models.Banner {
 	return banners
 }
 
-// 获取直播列表 默认取两条最新的 todo:暂时只有一个赛事
+// 获取推荐的直播列表 默认取三条最新的 todo:暂时只有一个赛事
 func (svc *ContestModule) GetLiveList(status string, page, size int) (int, []*mcontest.ContestLiveInfo) {
 	if err := svc.GetContestInfo(); err != nil {
 		log.Log.Errorf("contest_trace: get contest info fail, err:%s", err)
@@ -64,10 +64,29 @@ func (svc *ContestModule) GetLiveList(status string, page, size int) (int, []*mc
 		return errdef.SUCCESS, []*mcontest.ContestLiveInfo{}
 	}
 
-	resp := make([]*mcontest.ContestLiveInfo, len(list))
-	for index, item := range list {
+	mp := make(map[string]*mcontest.ContestLiveInfo)
+	index := 0
+	for _, item := range list {
+		var detail *mcontest.ContestLiveInfo
 		tm := time.Unix(int64(item.PlayTime), 0)
-		live := &mcontest.ContestLiveInfo{
+		date := tm.Format("1月2日")
+		if _, ok := mp[date]; !ok {
+			detail = &mcontest.ContestLiveInfo{
+				Date: date,
+				Week: util.GetWeekCn(int(tm.Weekday())),
+				Index: index,
+				LiveInfo: make([]*mcontest.LiveInfo, 0),
+			}
+
+			if time.Now().Format("1月2日") == date {
+				detail.IsToday = true
+			}
+
+			mp[date] = detail
+			index++
+		}
+
+		live := &mcontest.LiveInfo{
 			Id: item.Id,
 			UserId: item.UserId,
 			RoomId: item.RoomId,
@@ -82,10 +101,17 @@ func (svc *ContestModule) GetLiveList(status string, page, size int) (int, []*mc
 			Describe: item.Describe,
 			Tags: item.Tags,
 			LiveType: item.LiveType,
-			Date: tm.Format("1月2日"),
-			Week: util.GetWeekCn(int(tm.Weekday())),
 			Status: item.Status,
+			// 默认无回放
 			HasReplay: 2,
+		}
+
+
+		// 如果直播已结束
+		if item.Status == consts.LIVE_STATUS_END {
+			live.HasReplay = 1
+			// 获取回放数据
+			svc.GetLiveReplayInfo(item.Id, live)
 		}
 
 		user := svc.user.FindUserByUserid(item.UserId)
@@ -94,10 +120,47 @@ func (svc *ContestModule) GetLiveList(status string, page, size int) (int, []*mc
 			live.Avatar = user.Avatar
 		}
 
-		resp[index] = live
+		mp[date].LiveInfo = append(mp[date].LiveInfo, live)
+	}
+
+	resp := make([]*mcontest.ContestLiveInfo, len(mp))
+	for _, val := range mp {
+		resp[val.Index] = val
 	}
 
 	return errdef.SUCCESS, resp
+}
+
+// 获取直播回放信息
+func (svc *ContestModule) GetLiveReplayInfo(id int64, live *mcontest.LiveInfo) {
+	ok, err := svc.contest.GetVideoLiveReply(fmt.Sprint(id))
+	if !ok || err != nil {
+		log.Log.Errorf("contest_trace: get video live reply fail, liveId:%d, ok:%v, err:%s", id, ok, err)
+	}
+
+	// 存在回放数据
+	if ok {
+		live.HasReplay = 1
+		replay := &mcontest.LiveReplayInfo{
+			Id: svc.contest.VideoLiveReplay.Id,
+			Size: svc.contest.VideoLiveReplay.Size,
+			LiveId: svc.contest.VideoLiveReplay.LiveId,
+			Describe: svc.contest.VideoLiveReplay.Describe,
+			Duration: svc.contest.VideoLiveReplay.Duration,
+			CreateAt: svc.contest.VideoLiveReplay.CreateAt,
+			HistoryAddr: svc.contest.VideoLiveReplay.HistoryAddr,
+			Title: svc.contest.VideoLiveReplay.Title,
+			PlayNum: svc.contest.VideoLiveReplay.PlayNum,
+		}
+
+		if svc.contest.VideoLiveReplay.PlayInfo != "" {
+			if err = util.JsonFast.UnmarshalFromString(svc.contest.VideoLiveReplay.PlayInfo, &replay.PlayInfo); err != nil {
+				log.Log.Errorf("contest_trace: unmarshal playInfo fail, id:%d, err:%s", svc.contest.VideoLiveReplay.Id, err)
+			}
+		}
+
+		live.LiveReplayInfo = replay
+	}
 }
 
 // 获取赛程信息

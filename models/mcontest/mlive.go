@@ -40,6 +40,15 @@ type StreamCallbackInfo struct {
 
 // 赛事直播信息
 type ContestLiveInfo struct {
+	Date           string `json:"date"`
+	Week           string `json:"week"`
+	Index          int    `json:"index"`
+	IsToday        bool   `json:"is_today"`
+
+	LiveInfo       []*LiveInfo `json:"live_info"`
+}
+
+type LiveInfo struct {
 	Id             int64  `json:"id"`
 	UserId         string `json:"user_id"`
 	RoomId         string `json:"room_id"`
@@ -56,21 +65,46 @@ type ContestLiveInfo struct {
 	LiveType       int    `json:"live_type"`
 	NickName       string `json:"nick_name"`
 	Avatar         string `json:"avatar"`
-	Date           string `json:"date"`
-	Week           string `json:"week"`
-	Status         int    `json:"int"`           // 状态 0未直播 1直播中 2 已结束
+	Status         int    `json:"status"`        // 状态 0未直播 1直播中 2 已结束
 	HasReplay      int    `json:"has_replay"`    // 是否有回放 1 有 2 无
+
+	LiveReplayInfo     *LiveReplayInfo `json:"live_replay_info"`   // 直播回放信息
+}
+
+// 直播回放信息
+type LiveReplayInfo struct {
+	Id          int64  `json:"id"`
+	UserId      string `json:"user_id"`
+	LiveId      int64  `json:"live_id"`
+	HistoryAddr string `json:"history_addr"`
+	Title       string `json:"title"`
+	PlayNum     int64  `json:"play_num"`
+	Duration    int    `json:"duration"`
+	Size        int64  `json:"size"`
+	Cover       string `json:"cover"`
+	CreateAt    int    `json:"create_at"`
+	Describe    string `json:"describe"`
+
+	PlayInfo    []*PlayInfo `json:"play_info"`
+}
+
+// 转码信息
+type PlayInfo struct {
+	Type     string   `json:"type" example:"1 流畅（FLU） 2 标清（SD）3 高清（HD）4 全高清（FHD）5 2K 6 4K"`    // 1 流畅（FLU） 2 标清（SD）3 高清（HD）4 全高清（FHD）5 2K 6 4K
+	Url      string   `json:"url" example:"对应类型的视频地址"`
+	Size     int64    `json:"size" example:"1000000000"`
+	Duration int64    `json:"duration" example:"1000000000"`
 }
 
 // 获取直播列表
 func (m *ContestModel) GetLiveList(now int64, offset, size int, contestId, status string) ([]*models.VideoLive, error){
 	var list []*models.VideoLive
-	m.Engine.Where("play_time >= ? AND contest_id=?", now, contestId)
+	m.Engine.Where("contest_id=?", contestId)
 	if status == "1" {
-		m.Engine.Where("status=1")
+		m.Engine.Where("play_time>= ? AND status=1", now)
 	}
 
-	if err := m.Engine.Asc("play_time").Limit(size, offset).Find(&list); err != nil {
+	if err := m.Engine.Desc("play_time").Limit(size, offset).Find(&list); err != nil {
 		return []*models.VideoLive{}, err
 	}
 
@@ -91,4 +125,10 @@ func (m *ContestModel) UpdateLiveInfo(cols string) (int64, error) {
 // 添加直播回放
 func (m *ContestModel) AddVideoLiveReply() (int64, error) {
 	return m.Engine.InsertOne(m.VideoLiveReplay)
+}
+
+// 获取直播回放[已上架未删除]
+func (m *ContestModel) GetVideoLiveReply(liveId string) (bool, error) {
+	m.VideoLiveReplay = new(models.VideoLiveReplay)
+	return m.Engine.Where("live_id=? AND labeltype=1 AND is_del=0", liveId).Get(m.VideoLiveReplay)
 }
