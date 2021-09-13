@@ -1,6 +1,7 @@
 package consts
 
 const (
+	TX_APP_ID           = 1253904687
 	// 点播
 	VOD_API_DOMAIN      = "vod.tencentcloudapi.com"
 	// 文本内容检测

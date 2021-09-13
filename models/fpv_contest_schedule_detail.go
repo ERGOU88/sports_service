@@ -15,4 +15,5 @@ type FpvContestScheduleDetail struct {
 	NumInGroup int    `json:"num_in_group" xorm:"not null default 0 comment('分组内编号') INT(3)"`
 	CreateAt   int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt   int    `json:"update_at" xorm:"not null default 0 comment('修改时间') INT(11)"`
+	ContestId  int    `json:"contest_id" xorm:"not null comment('赛事id') INT(11)"`
 }

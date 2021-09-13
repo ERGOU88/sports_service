@@ -20,7 +20,7 @@ func LiveList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	svc := contest.New(c)
-	code, list := svc.GetLiveList(page, size)
+	code, list := svc.GetLiveList("", page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
@@ -29,7 +29,36 @@ func LiveList(c *gin.Context) {
 func RecommendLive(c *gin.Context) {
 	reply := errdef.New(c)
 	svc := contest.New(c)
-	code, list := svc.GetLiveList(1, 2)
+	code, list := svc.GetLiveList("1",1, 2)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
+
+func ScheduleInfo(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := contest.New(c)
+	code, detail := svc.GetScheduleInfo()
+	reply.Data["detail"] = detail
+	reply.Response(http.StatusOK, code)
+}
+
+// 晋级信息
+func PromotionInfo(c *gin.Context) {
+	reply := errdef.New(c)
+	contestId := c.Query("contest_id")
+	scheduleId := c.Query("schedule_id")
+	svc := contest.New(c)
+	code, list := svc.GetPromotionInfo(contestId, scheduleId)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
+
+func IntegralRanking(c *gin.Context) {
+	reply := errdef.New(c)
+	contestId := c.Query("contest_id")
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	svc := contest.New(c)
+	code, list := svc.GetIntegralRanking(contestId, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }

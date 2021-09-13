@@ -2,6 +2,7 @@ package errdef
 
 const (
 	PAY_SUCCESS        = 1
+	CALLBACK_SUCCESS   = 0
 	SUCCESS            = 200
 	ERROR              = 500
 	INVALID_PARAMS     = 400
@@ -230,6 +231,11 @@ const (
 
 	// 赛事相关错误码 40001-50000
 	CONTEST_GET_LIVE_FAIL        = 40001
+	CONTEST_INFO_FAIL            = 40002
+	CONTEST_SCHEDULE_FAIL        = 40003
+	CONTEST_PROMOTION_INFO_FAIL  = 40004
+	CONTEST_PLAYER_INFO_FAIL     = 40005
+	CONTEST_RANKING_FAIL         = 40006
 )
 
 var MsgFlags = map[int]string{
@@ -437,6 +443,11 @@ var MsgFlags = map[int]string{
 	INFORMATION_DETAIL_FAIL:     "获取资讯详情失败",
 
 	CONTEST_GET_LIVE_FAIL:       "获取赛事直播失败",
+	CONTEST_INFO_FAIL:           "获取赛事信息失败",
+	CONTEST_SCHEDULE_FAIL:       "获取赛程信息失败",
+	CONTEST_PROMOTION_INFO_FAIL: "获取赛程晋级信息失败",
+	CONTEST_PLAYER_INFO_FAIL:    "获取选手信息失败",
+	CONTEST_RANKING_FAIL:        "获取选手积分排行失败",
 }
 
 func GetMsg(code int) string {

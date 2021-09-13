@@ -26,6 +26,7 @@ const (
 	PULL_STREAM_HOST = "livepull.bluetrans.cn"
 	LIVE_PUSH_KEY    = "21a40af5285c5cf9e9d6e1bb84cb3d56"
 	LIVE_PULL_KEY    = "uVf1BiIOSh0KQsbH"
+	LIVE_CALLBACK_KEY= "V0pQFDIdq4D5IBsQoS56QbSdkeDNlPmL"
 )
 
 func NewLiveRealize() *liveRealize {

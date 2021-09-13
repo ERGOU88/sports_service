@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"strconv"
 	"time"
+	"fmt"
 )
 
 // 生成txTime
@@ -20,6 +21,11 @@ func BuildTxSecret(key, roomId string, expireTm int64) string {
 	txTime := BuildTxTime(expireTm)
 	secretStr := key + streamName + txTime
 	return Md5(secretStr)
+}
+
+// 生成回调签名
+func BuildCallbackSign(t int) string {
+	return Md5(fmt.Sprintf("%s%d", LIVE_CALLBACK_KEY, t))
 }
 
 func Md5(str string) string {
