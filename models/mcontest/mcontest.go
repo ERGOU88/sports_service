@@ -53,6 +53,7 @@ type ScheduleInfo struct {
 	ScheduleId     int       `json:"schedule_id"`
 	ScheduleName   string    `json:"schedule_name"`
 	Description    string    `json:"description"`
+	ShowType       int       `json:"show_type"`
 }
 
 // 赛程详情
@@ -72,8 +73,8 @@ type ScheduleDetail struct {
 }
 
 
-// 赛程详情返回数据
-type ScheduleDetailResp struct {
+// 赛程列表详情返回数据
+type ScheduleListDetailResp struct {
 	Id         int64  `json:"id,omitempty"`
 	ScheduleId int    `json:"schedule_id"`
 	PlayerId   int64  `json:"player_id"`
@@ -87,6 +88,29 @@ type ScheduleDetailResp struct {
 	RoundOneScore      string    `json:"round_one_score"`
 	RoundTwoScore      string    `json:"round_two_score"`
 	RoundThreeScore    string    `json:"round_three_score"`
+}
+
+// 赛程分组详情返回数据
+type ScheduleGroupDetailResp struct {
+	GroupNum   int    `json:"group_num"`
+	GroupName  string `json:"group_name"`
+	ContestId  int    `json:"contest_id"`
+	ScheduleId int    `json:"schedule_id"`
+	Index      int    `json:"index"`
+
+	Player     []PlayerInfoResp  `json:"player"`
+	Winner     []PlayerInfoResp  `json:"winner"`
+}
+
+// 赛程分组详情返回数据
+type PlayerInfoResp struct {
+	Id         int64  `json:"id,omitempty"`
+	PlayerId   int64  `json:"player_id"`
+	PlayerName string `json:"player_name"`
+	Photo      string `json:"photo"`
+	IsWin      int    `json:"is_win"`
+	Score      string `json:"score"`
+	NumInGroup int    `json:"num_in_group"`
 }
 
 type IntegralRanking struct {
@@ -167,11 +191,20 @@ const (
 	GET_SCHEDULE_DETAIL_BY_SCORE = "SELECT p.id AS player_id, p.name AS player_name, p.photo, cs.* FROM fpv_contest_player_information AS p " +
 		"LEFT JOIN fpv_contest_schedule_detail AS cs ON p.id = cs.player_id AND cs.contest_id=? AND cs.schedule_id=? " +
 		" WHERE p.status = 0 ORDER BY cs.score is null, cs.score ASC, p.id ASC"
+
+	GET_SCHEDULE_DETAIL_BY_GROUP = "SELECT cs.*, p.id AS player_id, p.name AS player_name, p.photo FROM " +
+		"fpv_contest_schedule_detail AS cs LEFT JOIN fpv_contest_player_information AS p " +
+		"ON cs.player_id=p.id WHERE cs.contest_id=? AND cs.schedule_id=? ORDER BY group_num ASC, score ASC"
 )
 // 获取赛程信息[成绩正序]
-func (m *ContestModel) GetScheduleDetailByScore(contestId, scheduleId string) ([]*ScheduleDetail, error) {
+func (m *ContestModel) GetScheduleDetailInfo(showType int, contestId, scheduleId string) ([]*ScheduleDetail, error) {
+	sql := GET_SCHEDULE_DETAIL_BY_SCORE
+	if showType == 2 {
+		sql = GET_SCHEDULE_DETAIL_BY_GROUP
+	}
+
 	var list []*ScheduleDetail
-	if err := m.Engine.SQL(GET_SCHEDULE_DETAIL_BY_SCORE, contestId, scheduleId).Find(&list); err != nil {
+	if err := m.Engine.SQL(sql, contestId, scheduleId).Find(&list); err != nil {
 		return nil, err
 	}
 

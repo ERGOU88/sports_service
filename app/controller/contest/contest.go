@@ -120,6 +120,7 @@ func (svc *ContestModule) GetScheduleInfo() (int, *mcontest.ContestInfo) {
 			ScheduleId: item.Id,
 			ScheduleName: item.ScheduleName,
 			Description: item.ScheduleDescription,
+			ShowType: item.ShowType,
 		}
 
 		resp.ScheduleList[index] = info
@@ -145,21 +146,21 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 		return errdef.CONTEST_SCHEDULE_FAIL, nil
 	}
 
-	list, err := svc.contest.GetScheduleDetailByScore(contestId, scheduleId)
-	if err != nil {
-		log.Log.Errorf("contest_trace: get promotion info fail, scheduleId:%s, err", scheduleId, err)
-		return errdef.CONTEST_PROMOTION_INFO_FAIL, nil
-	}
-
 	switch svc.contest.Schedule.ShowType {
 	// 列表展示
 	case 1:
-		mp := make(map[int64]*mcontest.ScheduleDetailResp)
+		list, err := svc.contest.GetScheduleDetailInfo(1, contestId, scheduleId)
+		if err != nil {
+			log.Log.Errorf("contest_trace: get promotion info fail, scheduleId:%s, err", scheduleId, err)
+			return errdef.CONTEST_PROMOTION_INFO_FAIL, nil
+		}
+
+		mp := make(map[int64]*mcontest.ScheduleListDetailResp)
 		ranking := 0
 		for _, item := range list {
 			// key 选手id
 			if _, ok :=  mp[item.PlayerId]; !ok {
-				detail := &mcontest.ScheduleDetailResp{}
+				detail := &mcontest.ScheduleListDetailResp{}
 				detail.PlayerId = item.PlayerId
 				detail.PlayerName = item.PlayerName
 				detail.ContestId = item.ContestId
@@ -203,7 +204,7 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 		}
 
 		log.Log.Errorf("##########:len(map)", len(mp))
-		resp := make([]*mcontest.ScheduleDetailResp, len(mp))
+		resp := make([]*mcontest.ScheduleListDetailResp, len(mp))
 		for _, val := range mp {
 			log.Log.Infof("#######val:%+v", val)
 			resp[val.Ranking] = val
@@ -213,7 +214,52 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 
 	// 分组展示
 	case 2:
+		list, err := svc.contest.GetScheduleDetailInfo(2, contestId, scheduleId)
+		if err != nil {
+			log.Log.Errorf("contest_trace: get promotion info fail, scheduleId:%s, err", scheduleId, err)
+			return errdef.CONTEST_PROMOTION_INFO_FAIL, nil
+		}
 
+		index := 0
+		mp := make(map[int]*mcontest.ScheduleGroupDetailResp, 0)
+		for _, item := range list {
+			var detail *mcontest.ScheduleGroupDetailResp
+			// key 分组id
+			if _, ok :=  mp[item.GroupNum]; !ok {
+				detail = &mcontest.ScheduleGroupDetailResp{Player:  make([]mcontest.PlayerInfoResp, 0),
+					Winner: make([]mcontest.PlayerInfoResp, 0)}
+				detail.GroupNum = item.GroupNum
+				detail.ScheduleId = item.ScheduleId
+				detail.GroupName = item.GroupName
+				detail.ContestId = item.ContestId
+				detail.Index = index
+				mp[item.GroupNum] = detail
+				index++
+			}
+
+			player := mcontest.PlayerInfoResp{
+				Id: item.Id,
+				PlayerId: item.PlayerId,
+				PlayerName: item.PlayerName,
+				Photo: item.Photo,
+				IsWin: item.IsWin,
+				Score: fmt.Sprintf("%.3f", float64(item.Score)/1000),
+				NumInGroup: item.NumInGroup,
+			}
+
+			mp[item.GroupNum].Player = append(mp[item.GroupNum].Player, player)
+			// 1 表示胜出
+			if item.IsWin == 1 {
+				mp[item.GroupNum].Winner = append(mp[item.GroupNum].Winner, player)
+			}
+		}
+
+		resp := make([]*mcontest.ScheduleGroupDetailResp, len(mp))
+		for _, val := range mp {
+			resp[val.Index] = val
+		}
+
+		return errdef.SUCCESS, resp
 
 	}
 
@@ -234,7 +280,7 @@ func (svc *ContestModule) GetIntegralRanking(contestId string, page, size int) (
 	}
 
 	for index, item := range list {
-		item.Ranking = index
+		item.Ranking = offset + index
 		item.TotalIntegralStr = fmt.Sprintf("%.3f", float64(item.TotalIntegral) / 1000)
 		item.BestScoreStr = fmt.Sprintf("%.3f", float64(item.BestScore) / 1000)
 		item.TotalIntegral = 0
