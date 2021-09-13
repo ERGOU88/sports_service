@@ -212,8 +212,8 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 
 		return errdef.SUCCESS, resp
 
-	// 分组展示
-	case 2:
+	// 分组竞技/总决赛 展现形式
+	case 2,3:
 		list, err := svc.contest.GetScheduleDetailInfo(2, contestId, scheduleId)
 		if err != nil {
 			log.Log.Errorf("contest_trace: get promotion info fail, scheduleId:%s, err", scheduleId, err)
