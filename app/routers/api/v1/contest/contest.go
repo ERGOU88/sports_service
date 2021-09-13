@@ -25,11 +25,11 @@ func LiveList(c *gin.Context) {
 	reply.Response(http.StatusOK, code)
 }
 
-// 首页推荐默认取两条
+// 首页推荐默认取三条
 func RecommendLive(c *gin.Context) {
 	reply := errdef.New(c)
 	svc := contest.New(c)
-	code, list := svc.GetLiveList("1",1, 2)
+	code, list := svc.GetLiveList("1",1, 3)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }

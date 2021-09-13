@@ -48,9 +48,14 @@ func (svc *ContestModule) GetBanner() []*models.Banner {
 
 // 获取直播列表 默认取两条最新的 todo:暂时只有一个赛事
 func (svc *ContestModule) GetLiveList(status string, page, size int) (int, []*mcontest.ContestLiveInfo) {
+	if err := svc.GetContestInfo(); err != nil {
+		log.Log.Errorf("contest_trace: get contest info fail, err:%s", err)
+		return errdef.CONTEST_INFO_FAIL, nil
+	}
+
 	offset := (page - 1) * size
 	now := time.Now().Unix()
-	list, err := svc.contest.GetLiveList(now, offset, size, "1", status)
+	list, err := svc.contest.GetLiveList(now, offset, size, fmt.Sprint(svc.contest.Contest.Id), status)
 	if err != nil {
 		return errdef.CONTEST_GET_LIVE_FAIL, nil
 	}
