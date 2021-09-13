@@ -11,6 +11,7 @@ import (
 	"sports_service/server/models/mbanner"
 	"sports_service/server/models/mcontest"
 	"sports_service/server/models/muser"
+	"sports_service/server/models/mvideo"
 	"sports_service/server/util"
 	"time"
 	"fmt"
@@ -157,6 +158,10 @@ func (svc *ContestModule) GetLiveReplayInfo(id int64, live *mcontest.LiveInfo) {
 			if err = util.JsonFast.UnmarshalFromString(svc.contest.VideoLiveReplay.PlayInfo, &replay.PlayInfo); err != nil {
 				log.Log.Errorf("contest_trace: unmarshal playInfo fail, id:%d, err:%s", svc.contest.VideoLiveReplay.Id, err)
 			}
+		}
+
+		if replay.PlayInfo == nil {
+			replay.PlayInfo = []*mcontest.PlayInfo{}
 		}
 
 		live.LiveReplayInfo = replay
