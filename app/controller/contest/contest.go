@@ -154,6 +154,17 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 	return errdef.SUCCESS, resp, pullUpTm, pullDownTm
 }
 
+// 获取直播数量
+func (svc *ContestModule) GetLiveCount() int64 {
+	count, err := svc.contest.GetVideoLiveCount()
+	if err != nil {
+		log.Log.Errorf("contest_trace: get live count fail, err:%s", err)
+		return 0
+	}
+
+	return count
+}
+
 // 获取直播回放信息
 func (svc *ContestModule) GetLiveReplayInfo(id int64, live *mcontest.LiveInfo) {
 	ok, err := svc.contest.GetVideoLiveReply(fmt.Sprint(id))

@@ -35,6 +35,7 @@ func RecommendLive(c *gin.Context) {
 	svc := contest.New(c)
 	code, list, _, _ := svc.GetLiveList("1", "", "",  1, 3)
 	reply.Data["list"] = list
+	reply.Data["count"] = svc.GetLiveCount()
 	reply.Response(http.StatusOK, code)
 }
 
