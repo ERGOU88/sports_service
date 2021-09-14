@@ -46,23 +46,61 @@ func (svc *ContestModule) GetBanner() []*models.Banner {
 	return banners
 }
 
-// 获取直播列表 默认取两条最新的 todo:暂时只有一个赛事
-func (svc *ContestModule) GetLiveList(status string, page, size int) (int, []*mcontest.ContestLiveInfo) {
+// 获取推荐的直播列表 默认取2条同一天内最新的未开播/直播中的数据 todo:暂时只有一个赛事
+// pullType 拉取类型  1 上拉加载 历史赛事数据  默认下拉加载  2 下拉加载 今天及未来赛事数据 [通过开播时间作为查询条件进行拉取]
+// queryType 1 首页列表 [查询最近同一天内的 未开播/直播中的数据]
+func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size int) (int, []*mcontest.ContestLiveInfo, int, int) {
+	if err := svc.GetContestInfo(); err != nil {
+		log.Log.Errorf("contest_trace: get contest info fail, err:%s", err)
+		return errdef.CONTEST_INFO_FAIL, nil, 0, 0
+	}
+
 	offset := (page - 1) * size
-	now := time.Now().Unix()
-	list, err := svc.contest.GetLiveList(now, offset, size, "1", status)
+	limitTm := ts
+	if queryType == "1" {
+		limitTm = fmt.Sprint(time.Now().Unix())
+	}
+
+	list, err := svc.contest.GetLiveList(offset, size, fmt.Sprint(svc.contest.Contest.Id), limitTm, queryType, pullType)
 	if err != nil {
-		return errdef.CONTEST_GET_LIVE_FAIL, nil
+		return errdef.CONTEST_GET_LIVE_FAIL, nil, 0, 0
 	}
 
 	if len(list) == 0 {
-		return errdef.SUCCESS, []*mcontest.ContestLiveInfo{}
+		return errdef.SUCCESS, []*mcontest.ContestLiveInfo{}, 0, 0
 	}
 
-	resp := make([]*mcontest.ContestLiveInfo, len(list))
-	for index, item := range list {
+
+	mp := make(map[string]*mcontest.ContestLiveInfo)
+	var (
+		pullUpTm, pullDownTm, index int
+	)
+	for _, item := range list {
+		var detail *mcontest.ContestLiveInfo
 		tm := time.Unix(int64(item.PlayTime), 0)
-		live := &mcontest.ContestLiveInfo{
+		date := tm.Format("1月2日")
+		if _, ok := mp[date]; !ok {
+			// queryType 为 1  只取最近同一天内的赛事
+			if index == 1 && queryType == "1" {
+				continue
+			}
+
+			detail = &mcontest.ContestLiveInfo{
+				Date: date,
+				Week: util.GetWeekCn(int(tm.Weekday())),
+				Index: index,
+				LiveInfo: make([]*mcontest.LiveInfo, 0),
+			}
+
+			if time.Now().Format("1月2日") == date {
+				detail.IsToday = true
+			}
+
+			mp[date] = detail
+			index++
+		}
+
+		live := &mcontest.LiveInfo{
 			Id: item.Id,
 			UserId: item.UserId,
 			RoomId: item.RoomId,
@@ -77,10 +115,26 @@ func (svc *ContestModule) GetLiveList(status string, page, size int) (int, []*mc
 			Describe: item.Describe,
 			Tags: item.Tags,
 			LiveType: item.LiveType,
-			Date: tm.Format("1月2日"),
-			Week: util.GetWeekCn(int(tm.Weekday())),
 			Status: item.Status,
+			// 默认无回放
 			HasReplay: 2,
+		}
+
+		// 上拉加载 使用最小时间 拉取历史数据
+		if pullUpTm == 0 || item.PlayTime < pullUpTm {
+			pullUpTm = item.PlayTime
+		}
+
+		// 下拉加载 使用最大时间 拉取未来数据
+ 		if pullDownTm == 0 || item.PlayTime > pullDownTm {
+			pullDownTm = item.PlayTime
+		}
+
+		// 如果直播已结束
+		if item.Status == consts.LIVE_STATUS_END {
+			live.HasReplay = 1
+			// 获取回放数据
+			svc.GetLiveReplayInfo(item.Id, live)
 		}
 
 		user := svc.user.FindUserByUserid(item.UserId)
@@ -89,10 +143,62 @@ func (svc *ContestModule) GetLiveList(status string, page, size int) (int, []*mc
 			live.Avatar = user.Avatar
 		}
 
-		resp[index] = live
+		mp[date].LiveInfo = append(mp[date].LiveInfo, live)
 	}
 
-	return errdef.SUCCESS, resp
+	resp := make([]*mcontest.ContestLiveInfo, len(mp))
+	for _, val := range mp {
+		resp[val.Index] = val
+	}
+
+	return errdef.SUCCESS, resp, pullUpTm, pullDownTm
+}
+
+// 获取直播数量
+func (svc *ContestModule) GetLiveCount() int64 {
+	count, err := svc.contest.GetVideoLiveCount()
+	if err != nil {
+		log.Log.Errorf("contest_trace: get live count fail, err:%s", err)
+		return 0
+	}
+
+	return count
+}
+
+// 获取直播回放信息
+func (svc *ContestModule) GetLiveReplayInfo(id int64, live *mcontest.LiveInfo) {
+	ok, err := svc.contest.GetVideoLiveReply(fmt.Sprint(id))
+	if !ok || err != nil {
+		log.Log.Errorf("contest_trace: get video live reply fail, liveId:%d, ok:%v, err:%s", id, ok, err)
+	}
+
+	// 存在回放数据
+	if ok {
+		live.HasReplay = 1
+		replay := &mcontest.LiveReplayInfo{
+			Id: svc.contest.VideoLiveReplay.Id,
+			Size: svc.contest.VideoLiveReplay.Size,
+			LiveId: svc.contest.VideoLiveReplay.LiveId,
+			Describe: svc.contest.VideoLiveReplay.Describe,
+			Duration: svc.contest.VideoLiveReplay.Duration,
+			CreateAt: svc.contest.VideoLiveReplay.CreateAt,
+			HistoryAddr: svc.contest.VideoLiveReplay.HistoryAddr,
+			Title: svc.contest.VideoLiveReplay.Title,
+			PlayNum: svc.contest.VideoLiveReplay.PlayNum,
+		}
+
+		if svc.contest.VideoLiveReplay.PlayInfo != "" {
+			if err = util.JsonFast.UnmarshalFromString(svc.contest.VideoLiveReplay.PlayInfo, &replay.PlayInfo); err != nil {
+				log.Log.Errorf("contest_trace: unmarshal playInfo fail, id:%d, err:%s", svc.contest.VideoLiveReplay.Id, err)
+			}
+		}
+
+		if len(replay.PlayInfo) == 0 {
+			replay.PlayInfo = []*mcontest.PlayInfo{}
+		}
+
+		live.LiveReplayInfo = replay
+	}
 }
 
 // 获取赛程信息
@@ -102,7 +208,7 @@ func (svc *ContestModule) GetScheduleInfo() (int, *mcontest.ContestInfo) {
 		return errdef.CONTEST_INFO_FAIL, nil
 	}
 
-	schedule, err := svc.contest.GetScheduleInfoByContestId(fmt.Sprint(svc.contest.Contest.Id))
+	schedule, err := svc.contest.GetScheduleInfoByContestId(time.Now().Unix(), fmt.Sprint(svc.contest.Contest.Id))
 	if err != nil {
 		log.Log.Errorf("contest_trace: get schedule info fail, contestId:%d, err:%s", svc.contest.Contest.Id, err)
 		return errdef.CONTEST_SCHEDULE_FAIL, nil
@@ -212,8 +318,8 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 
 		return errdef.SUCCESS, resp
 
-	// 分组展示
-	case 2:
+	// 分组竞技/总决赛 展现形式
+	case 2,3:
 		list, err := svc.contest.GetScheduleDetailInfo(2, contestId, scheduleId)
 		if err != nil {
 			log.Log.Errorf("contest_trace: get promotion info fail, scheduleId:%s, err", scheduleId, err)
@@ -233,6 +339,7 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 				detail.GroupName = item.GroupName
 				detail.ContestId = item.ContestId
 				detail.Index = index
+				detail.BeginTm = time.Unix(int64(item.BeginTm), 0).Format(consts.FORMAT_DATE_STR)
 				mp[item.GroupNum] = detail
 				index++
 			}

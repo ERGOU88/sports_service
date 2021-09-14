@@ -533,8 +533,11 @@ func transCodeCompleteEvent(event *v20180717.EventContent, video *models.Videos)
       playInfo.Url = *info.TranscodeTask.Output.Url
       playInfo.Size = *info.TranscodeTask.Output.Size
       playInfo.Duration = int64(*info.TranscodeTask.Output.Duration * 1000)
-
       list = append(list, playInfo)
+
+      if video.VideoDuration == 0 {
+        video.VideoDuration = int(*info.TranscodeTask.Output.Duration * 1000)
+      }
 
     case "AdaptiveDynamicStreaming":
       if *info.AdaptiveDynamicStreamingTask.ErrCode != 0 {
@@ -559,6 +562,11 @@ func transCodeCompleteEvent(event *v20180717.EventContent, video *models.Videos)
       playInfo.Size = *event.ProcedureStateChangeEvent.MetaData.Size
 
       list = append(list, playInfo)
+
+      if video.VideoDuration == 0 {
+        video.VideoDuration = int(*event.ProcedureStateChangeEvent.MetaData.Duration * 1000)
+      }
+
     }
   }
 

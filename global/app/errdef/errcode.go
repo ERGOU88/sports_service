@@ -35,6 +35,9 @@ const (
 	USER_PACKAGE_NOT_EXISTS = 1022
 	USER_LATEST_PACKAGE_FAIL= 1023
 	USER_FORBID_STATUS      = 1024
+	USER_GEN_IM_SIGN_FAIL   = 1025
+	USER_UPDATE_IM_SIGN_FAIL= 1026
+	USER_ADD_GUEST_FAIL     = 1027
 
 	WX_USER_INFO_FAIL       = 1101
 	WX_ACCESS_TOKEN_FAIL    = 1102
@@ -270,6 +273,9 @@ var MsgFlags = map[int]string{
 	USER_PACKAGE_NOT_EXISTS: "当前版本对应的下载包不存在",
 	USER_LATEST_PACKAGE_FAIL:"获取最新包失败",
 	USER_FORBID_STATUS:      "您的账号已被封禁",
+	USER_GEN_IM_SIGN_FAIL:   "生成im签名失败",
+	USER_UPDATE_IM_SIGN_FAIL:"更新im签名失败",
+	USER_ADD_GUEST_FAIL:     "添加游客失败",
 
 	WX_USER_INFO_FAIL:    "获取微信用户信息失败",
 	WX_ACCESS_TOKEN_FAIL: "获取微信授权token失败",

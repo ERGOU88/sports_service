@@ -224,8 +224,8 @@ func (svc *PostingModule) ReviewPostInfo(postId int64, userId string, params *mp
 			continue
 		}
 
-		// 涉黄、涉暴恐、涉政都未命中则返回通过
-		if res.PornInfo.HitFlag == 0 && res.PoliticsInfo.HitFlag == 0 && res.TerroristInfo.HitFlag == 0 {
+		// 涉黄、涉暴恐、涉政都未命中则返回通过  hitFlag 是否命中该审核分类，0表示未命中，1表示命中，2表示疑似
+		if res.PornInfo.HitFlag != 1 && res.PoliticsInfo.HitFlag != 1 && res.TerroristInfo.HitFlag != 1 {
 			num++
 		}
 

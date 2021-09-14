@@ -47,6 +47,8 @@ type ScheduleDetail struct {
 	IsWin      int    `json:"is_win"`
 	NumInGroup int    `json:"num_in_group"`
 	ContestId  int    `json:"contest_id"`
+	BeginTm    int    `json:"begin_tm"`
+	EndTm      int    `json:"end_tm"`
 }
 
 
@@ -74,6 +76,8 @@ type ScheduleGroupDetailResp struct {
 	ContestId  int    `json:"contest_id"`
 	ScheduleId int    `json:"schedule_id"`
 	Index      int    `json:"index"`
+	BeginTm    string `json:"begin_tm"`
+	//EndTm      string `json:"end_tm"`
 
 	Player     []PlayerInfoResp  `json:"player"`
 	Winner     []PlayerInfoResp  `json:"winner"`
@@ -118,10 +122,11 @@ func NewContestModel(engine *xorm.Session) *ContestModel {
 	}
 }
 
-// 通过赛事id获取赛程信息
-func (m *ContestModel) GetScheduleInfoByContestId(contestId string) ([]*models.FpvContestSchedule, error) {
+// 通过赛事id获取正在进行的赛程信息
+func (m *ContestModel) GetScheduleInfoByContestId(now int64, contestId string) ([]*models.FpvContestSchedule, error) {
 	var list []*models.FpvContestSchedule
-	if err := m.Engine.Where("contest_id=? AND status=0", contestId).Asc("order").Find(&list); err != nil {
+	if err := m.Engine.Where("contest_id=? AND status=0 AND start_tm <= ? AND end_tm >= ?", contestId, now, now).
+		Asc("order").Find(&list); err != nil {
 		return nil, err
 	}
 
