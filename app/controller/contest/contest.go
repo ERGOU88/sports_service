@@ -46,7 +46,7 @@ func (svc *ContestModule) GetBanner() []*models.Banner {
 	return banners
 }
 
-// 获取推荐的直播列表 默认取三条最新的 todo:暂时只有一个赛事
+// 获取推荐的直播列表 默认取2条同一天内最新的未开播/直播中的数据 todo:暂时只有一个赛事
 // pullType 拉取类型  1 上拉加载 历史赛事数据  默认下拉加载  2 下拉加载 今天及未来赛事数据 [通过开播时间作为查询条件进行拉取]
 // queryType 1 首页列表 [查询最近同一天内的 未开播/直播中的数据]
 func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size int) (int, []*mcontest.ContestLiveInfo, int, int) {
