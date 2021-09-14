@@ -459,3 +459,13 @@ func UserKabaw(c *gin.Context) {
 
 	reply.Response(http.StatusOK, code)
 }
+
+// 更新腾讯im签名
+func TencentImSign(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+	svc := cuser.New(c)
+	code, sign := svc.UpdateTencentImSign(userId.(string))
+	reply.Data["sign"] = sign
+	reply.Response(http.StatusOK, code)
+}

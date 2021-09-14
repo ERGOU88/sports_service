@@ -19,6 +19,7 @@ import (
 	"sports_service/server/models/mvenue"
 	"sports_service/server/models/mvideo"
 	"sports_service/server/models/sms"
+	"sports_service/server/tools/im"
 	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"strings"
@@ -421,4 +422,31 @@ func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
 	}
 
 	return errdef.SUCCESS, kabaw
+}
+
+// 更新用户的腾讯im签名
+func (svc *UserModule) UpdateTencentImSign(userId string) (int, string) {
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
+		log.Log.Errorf("user_trace: user not found, userId:%s", userId)
+		return errdef.USER_NOT_EXISTS, ""
+	}
+
+	sig, err := im.GenSig(userId, 3600 * 24 * 31)
+	if err != nil {
+		return errdef.USER_GEN_IM_SIGN_FAIL, ""
+	}
+
+	svc.user.User.TxAccid = userId
+	svc.user.User.TxToken = sig
+	// 条件
+	condition := fmt.Sprintf("id=%d", user.Id)
+	// 字段
+	cols := "tx_accid, tx_token"
+	if _, err := svc.user.UpdateUserInfos(condition, cols); err != nil {
+		log.Log.Errorf("user_trace: update user im sign fail, userId:%s, err:%s", userId, err)
+		return errdef.USER_UPDATE_IM_SIGN_FAIL, ""
+	}
+
+	return errdef.SUCCESS, sig
 }
