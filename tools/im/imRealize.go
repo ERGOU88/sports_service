@@ -47,7 +47,7 @@ func (im *imRealize) AddUser(userId, name, avatar string) (string, error) {
 		return "", err
 	}
 
-	userSig, err := GenSig(userId, EXPIRE_TM_DAY * 365)
+	userSig, err := GenSig(userId, EXPIRE_TM_DAY * 90)
 	if err != nil {
 		return "", err
 	}

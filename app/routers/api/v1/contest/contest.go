@@ -19,18 +19,23 @@ func BannerList(c *gin.Context) {
 func LiveList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	ts := c.Query("ts")
+	pullType := c.DefaultQuery("pull_type", "2")
 	svc := contest.New(c)
-	code, list := svc.GetLiveList("", page, size)
+	code, list, pullUpTm, pullDownTm := svc.GetLiveList("", pullType, ts, page, size)
 	reply.Data["list"] = list
+	reply.Data["pull_up_tm"] = pullUpTm
+	reply.Data["pull_down_tm"] = pullDownTm
 	reply.Response(http.StatusOK, code)
 }
 
-// 首页推荐默认取两条
+// 首页推荐默认取2条
 func RecommendLive(c *gin.Context) {
 	reply := errdef.New(c)
 	svc := contest.New(c)
-	code, list := svc.GetLiveList("1",1, 2)
+	code, list, _, _ := svc.GetLiveList("1", "", "",  1, 2)
 	reply.Data["list"] = list
+	reply.Data["count"] = svc.GetLiveCount()
 	reply.Response(http.StatusOK, code)
 }
 

@@ -22,5 +22,6 @@ const (
   FORMAT_DATE     = "2006-01-02"
   FORMAT_TM       = "2006-01-02 15:04:05"
   FORMAT_WX_TM    = "20060102150405"
+  FORMAT_DATE_STR = "01月02日 15:04"
 )
 

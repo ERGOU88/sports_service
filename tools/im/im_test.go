@@ -12,7 +12,7 @@ import (
 //}
 
 func TestGenSig(t *testing.T) {
-	sig, err := GenSig("10479123", EXPIRE_TM_DAY * 365)
+	sig, err := GenSig("123", EXPIRE_TM_DAY * 365)
 	t.Logf("sig:%s, err:%s", sig, err)
 }
 
