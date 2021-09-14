@@ -208,7 +208,7 @@ func (svc *ContestModule) GetScheduleInfo() (int, *mcontest.ContestInfo) {
 		return errdef.CONTEST_INFO_FAIL, nil
 	}
 
-	schedule, err := svc.contest.GetScheduleInfoByContestId(fmt.Sprint(svc.contest.Contest.Id))
+	schedule, err := svc.contest.GetScheduleInfoByContestId(time.Now().Unix(), fmt.Sprint(svc.contest.Contest.Id))
 	if err != nil {
 		log.Log.Errorf("contest_trace: get schedule info fail, contestId:%d, err:%s", svc.contest.Contest.Id, err)
 		return errdef.CONTEST_SCHEDULE_FAIL, nil

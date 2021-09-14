@@ -122,10 +122,11 @@ func NewContestModel(engine *xorm.Session) *ContestModel {
 	}
 }
 
-// 通过赛事id获取赛程信息
-func (m *ContestModel) GetScheduleInfoByContestId(contestId string) ([]*models.FpvContestSchedule, error) {
+// 通过赛事id获取正在进行的赛程信息
+func (m *ContestModel) GetScheduleInfoByContestId(now int64, contestId string) ([]*models.FpvContestSchedule, error) {
 	var list []*models.FpvContestSchedule
-	if err := m.Engine.Where("contest_id=? AND status=0", contestId).Asc("order").Find(&list); err != nil {
+	if err := m.Engine.Where("contest_id=? AND status=0 AND start_tm >= ? AND end_tm <= ?", contestId, now, now).
+		Asc("order").Find(&list); err != nil {
 		return nil, err
 	}
 
