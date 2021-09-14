@@ -450,3 +450,25 @@ func (svc *UserModule) UpdateTencentImSign(userId string) (int, string) {
 
 	return errdef.SUCCESS, sig
 }
+
+// 腾讯im 添加游客
+func (svc *UserModule) AddGuestByTencentIm() (int, map[string]string) {
+	mp := make(map[string]string, 0)
+
+	userId := fmt.Sprint(util.GetSnowId())
+	avatar := consts.DEFAULT_AVATAR
+	nickName := fmt.Sprintf("游客%d", util.GenerateRandnum(10000, 99999))
+
+	sign, err := im.Im.AddUser(userId, nickName, avatar)
+	if err != nil {
+		log.Log.Errorf("user_trace: register im user fail, err:%s", err)
+		return errdef.USER_ADD_GUEST_FAIL, nil
+	}
+
+	mp["user_id"] = userId
+	mp["avatar"] = avatar
+	mp["nick_name"] = nickName
+	mp["sign"] = sign
+
+	return errdef.SUCCESS, mp
+}

@@ -40,6 +40,8 @@ func Router(engine *gin.Engine) {
 		user.GET("/kabaw", sign.CheckSign(), token.TokenAuth(), UserKabaw)
 		// 更新腾讯im用户签名
 		user.POST("/im/sign", sign.CheckSign(), token.TokenAuth(), TencentImSign)
+		// 腾讯im添加游客
+		user.GET("/im/add/guest", sign.CheckSign(), TencentImAddGuest)
 	}
 
 }

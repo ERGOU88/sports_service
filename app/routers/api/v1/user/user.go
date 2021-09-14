@@ -469,3 +469,12 @@ func TencentImSign(c *gin.Context) {
 	reply.Data["sign"] = sign
 	reply.Response(http.StatusOK, code)
 }
+
+// 添加游客[腾讯im]
+func TencentImAddGuest(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cuser.New(c)
+	code, info := svc.AddGuestByTencentIm()
+	reply.Data["detail"] = info
+	reply.Response(http.StatusOK, code)
+}
