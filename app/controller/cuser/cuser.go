@@ -457,7 +457,7 @@ func (svc *UserModule) AddGuestByTencentIm() (int, map[string]string) {
 
 	userId := fmt.Sprint(util.GetSnowId())
 	avatar := consts.DEFAULT_AVATAR
-	nickName := fmt.Sprintf("游客%d", util.GenerateRandnum(10000, 99999))
+	nickName := fmt.Sprintf("游客%d", util.GenerateRandnum(100000, 999999))
 
 	sign, err := im.Im.AddUser(userId, nickName, avatar)
 	if err != nil {
