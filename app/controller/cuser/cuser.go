@@ -453,8 +453,6 @@ func (svc *UserModule) UpdateTencentImSign(userId string) (int, string) {
 
 // 腾讯im 添加游客
 func (svc *UserModule) AddGuestByTencentIm() (int, map[string]string) {
-	mp := make(map[string]string, 0)
-
 	userId := fmt.Sprint(util.GetSnowId())
 	avatar := consts.DEFAULT_AVATAR
 	nickName := fmt.Sprintf("游客%d", util.GenerateRandnum(100000, 999999))
@@ -465,6 +463,7 @@ func (svc *UserModule) AddGuestByTencentIm() (int, map[string]string) {
 		return errdef.USER_ADD_GUEST_FAIL, nil
 	}
 
+	mp := make(map[string]string, 0)
 	mp["user_id"] = userId
 	mp["avatar"] = avatar
 	mp["nick_name"] = nickName
