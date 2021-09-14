@@ -19,9 +19,13 @@ func BannerList(c *gin.Context) {
 func LiveList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	ts := c.Query("ts")
+	pullType := c.Query("pull_type")
 	svc := contest.New(c)
-	code, list := svc.GetLiveList("", page, size)
+	code, list, pullUpTm, pullDownTm := svc.GetLiveList("", pullType, ts, page, size)
 	reply.Data["list"] = list
+	reply.Data["pull_up_tm"] = pullUpTm
+	reply.Data["pull_down_tm"] = pullDownTm
 	reply.Response(http.StatusOK, code)
 }
 
@@ -29,7 +33,7 @@ func LiveList(c *gin.Context) {
 func RecommendLive(c *gin.Context) {
 	reply := errdef.New(c)
 	svc := contest.New(c)
-	code, list := svc.GetLiveList("1",1, 3)
+	code, list, _, _ := svc.GetLiveList("1", "", "",  1, 3)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }

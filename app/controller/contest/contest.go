@@ -47,32 +47,41 @@ func (svc *ContestModule) GetBanner() []*models.Banner {
 }
 
 // 获取推荐的直播列表 默认取三条最新的 todo:暂时只有一个赛事
-func (svc *ContestModule) GetLiveList(status string, page, size int) (int, []*mcontest.ContestLiveInfo) {
+// pullType 拉取类型 1 下拉加载 今天及未来赛事数据 2 上拉加载 历史赛事数据  默认下拉加载 [通过开播时间作为查询条件进行拉取]
+// queryType 1 首页列表 [查询最近同一天内的 未开播/直播中的数据]
+func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size int) (int, []*mcontest.ContestLiveInfo, int, int) {
 	if err := svc.GetContestInfo(); err != nil {
 		log.Log.Errorf("contest_trace: get contest info fail, err:%s", err)
-		return errdef.CONTEST_INFO_FAIL, nil
+		return errdef.CONTEST_INFO_FAIL, nil, 0, 0
 	}
 
 	offset := (page - 1) * size
-	now := time.Now().Unix()
-	list, err := svc.contest.GetLiveList(now, offset, size, fmt.Sprint(svc.contest.Contest.Id), status)
+	limitTm := ts
+	if queryType == "1" {
+		limitTm = fmt.Sprint(time.Now().Unix())
+	}
+
+	list, err := svc.contest.GetLiveList(offset, size, fmt.Sprint(svc.contest.Contest.Id), limitTm, queryType, pullType)
 	if err != nil {
-		return errdef.CONTEST_GET_LIVE_FAIL, nil
+		return errdef.CONTEST_GET_LIVE_FAIL, nil, 0, 0
 	}
 
 	if len(list) == 0 {
-		return errdef.SUCCESS, []*mcontest.ContestLiveInfo{}
+		return errdef.SUCCESS, []*mcontest.ContestLiveInfo{}, 0, 0
 	}
 
+
 	mp := make(map[string]*mcontest.ContestLiveInfo)
-	index := 0
+	var (
+		pullUpTm, pullDownTm, index int
+	)
 	for _, item := range list {
 		var detail *mcontest.ContestLiveInfo
 		tm := time.Unix(int64(item.PlayTime), 0)
 		date := tm.Format("1月2日")
 		if _, ok := mp[date]; !ok {
-			// 首页推荐只取最近同一天内正在直播的赛事
-			if index == 1 && status == "1" {
+			// queryType 为 1 / ts为空 只取最近同一天内的赛事
+			if index == 1 && (queryType == "1" || ts == "") {
 				continue
 			}
 
@@ -111,6 +120,15 @@ func (svc *ContestModule) GetLiveList(status string, page, size int) (int, []*mc
 			HasReplay: 2,
 		}
 
+		// 上拉加载 使用最小开播时间
+		if pullUpTm == 0 || item.PlayTime < pullUpTm {
+			pullUpTm = item.PlayTime
+		}
+
+		// 下拉加载 使用最大开播时间
+		if pullDownTm == 0 || item.PlayTime > pullDownTm {
+			pullDownTm = item.PlayTime
+		}
 
 		// 如果直播已结束
 		if item.Status == consts.LIVE_STATUS_END {
@@ -133,7 +151,7 @@ func (svc *ContestModule) GetLiveList(status string, page, size int) (int, []*mc
 		resp[val.Index] = val
 	}
 
-	return errdef.SUCCESS, resp
+	return errdef.SUCCESS, resp, pullUpTm, pullDownTm
 }
 
 // 获取直播回放信息
