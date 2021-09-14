@@ -80,8 +80,8 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 		tm := time.Unix(int64(item.PlayTime), 0)
 		date := tm.Format("1月2日")
 		if _, ok := mp[date]; !ok {
-			// queryType 为 1 / ts为空 只取最近同一天内的赛事
-			if index == 1 && (queryType == "1" || ts == "") {
+			// queryType 为 1  只取最近同一天内的赛事
+			if index == 1 && queryType == "1" {
 				continue
 			}
 
