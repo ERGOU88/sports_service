@@ -15,4 +15,6 @@ type FpvContestSchedule struct {
 	CreateAt            int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt            int    `json:"update_at" xorm:"not null default 0 comment('修改时间') INT(11)"`
 	ShowType            int    `json:"show_type" xorm:"not null default 0 comment('1 列表展示 2 分组展示 3 总决赛展示') TINYINT(1)"`
+	StartTm             int    `json:"start_tm" xorm:"not null default 0 comment('开始时间') INT(11)"`
+	EndTm               int    `json:"end_tm" xorm:"not null default 0 comment('结束时间') INT(11)"`
 }
