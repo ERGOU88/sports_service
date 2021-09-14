@@ -101,10 +101,12 @@ func (m *ContestModel) GetLiveList(now int64, offset, size int, contestId, statu
 	var list []*models.VideoLive
 	m.Engine.Where("contest_id=?", contestId)
 	if status == "1" {
-		m.Engine.Where("play_time>= ? AND status=1", now)
+		m.Engine.Where("play_time>= ? AND status=1", now).Asc("play_time")
+	} else {
+		m.Engine.Desc("play_time")
 	}
 
-	if err := m.Engine.Desc("play_time").Limit(size, offset).Find(&list); err != nil {
+	if err := m.Engine.Limit(size, offset).Find(&list); err != nil {
 		return []*models.VideoLive{}, err
 	}
 

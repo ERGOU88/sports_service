@@ -71,6 +71,11 @@ func (svc *ContestModule) GetLiveList(status string, page, size int) (int, []*mc
 		tm := time.Unix(int64(item.PlayTime), 0)
 		date := tm.Format("1月2日")
 		if _, ok := mp[date]; !ok {
+			// 首页推荐只取最近同一天内正在直播的赛事
+			if index == 1 && status == "1" {
+				continue
+			}
+
 			detail = &mcontest.ContestLiveInfo{
 				Date: date,
 				Week: util.GetWeekCn(int(tm.Weekday())),
@@ -159,7 +164,7 @@ func (svc *ContestModule) GetLiveReplayInfo(id int64, live *mcontest.LiveInfo) {
 			}
 		}
 
-		if replay.PlayInfo == nil {
+		if len(replay.PlayInfo) == 0 {
 			replay.PlayInfo = []*mcontest.PlayInfo{}
 		}
 
