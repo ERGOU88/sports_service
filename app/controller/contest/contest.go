@@ -9,6 +9,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mbanner"
+	"sports_service/server/models/mcommunity"
 	"sports_service/server/models/mcontest"
 	"sports_service/server/models/muser"
 	"sports_service/server/util"
@@ -22,6 +23,7 @@ type ContestModule struct {
 	user        *muser.UserModel
 	banner      *mbanner.BannerModel
 	contest     *mcontest.ContestModel
+	community   *mcommunity.CommunityModel
 }
 
 func New(c *gin.Context) ContestModule {
@@ -32,6 +34,7 @@ func New(c *gin.Context) ContestModule {
 		user: muser.NewUserModel(socket),
 		banner: mbanner.NewBannerMolde(socket),
 		contest: mcontest.NewContestModel(socket),
+		community: mcommunity.NewCommunityModel(socket),
 		engine: socket,
 	}
 }
@@ -395,4 +398,15 @@ func (svc *ContestModule) GetIntegralRanking(contestId string, page, size int) (
 	}
 
 	return errdef.SUCCESS, list
+}
+
+// 获取赛事的社区板块
+func (svc *ContestModule) GetContestSection() (int, int) {
+	ok, err := svc.community.GetSectionByName("赛事")
+	if !ok || err != nil {
+		log.Log.Errorf("contest_trace: get section by name fail, err:%s", err)
+		return errdef.ERROR, 0
+	}
+
+	return errdef.SUCCESS, svc.community.CommunitySection.Id
 }

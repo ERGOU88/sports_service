@@ -23,5 +23,7 @@ func Router(engine *gin.Engine) {
 		contest.GET("/schedule/promotion/info", PromotionInfo)
 		// 赛事积分排行
 		contest.GET("/integral/ranking", IntegralRanking)
+		// 赛事的社区板块
+		contest.GET("/section", GetContestSection)
 	}
 }

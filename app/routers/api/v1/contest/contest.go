@@ -67,3 +67,11 @@ func IntegralRanking(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
+
+func GetContestSection(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := contest.New(c)
+	code, sectionId := svc.GetContestSection()
+	reply.Data["section_id"] = sectionId
+	reply.Response(http.StatusOK, code)
+}
