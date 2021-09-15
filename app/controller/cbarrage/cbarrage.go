@@ -1,19 +1,20 @@
 package cbarrage
 
 import (
-  "fmt"
-  "github.com/gin-gonic/gin"
-  "github.com/go-xorm/xorm"
-  "sports_service/server/dao"
-  "sports_service/server/global/app/errdef"
-  "sports_service/server/global/app/log"
-  "sports_service/server/global/consts"
-  "sports_service/server/models"
-  "sports_service/server/models/mbarrage"
-  "sports_service/server/models/muser"
-  "sports_service/server/models/mvideo"
-  "sports_service/server/tools/tencentCloud"
-  "time"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/go-xorm/xorm"
+	"sports_service/server/dao"
+	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
+	"sports_service/server/models"
+	"sports_service/server/models/mbarrage"
+	"sports_service/server/models/mcontest"
+	"sports_service/server/models/muser"
+	"sports_service/server/models/mvideo"
+	"sports_service/server/tools/tencentCloud"
+	"time"
 )
 
 type BarrageModule struct {
@@ -22,22 +23,24 @@ type BarrageModule struct {
 	user       *muser.UserModel
 	video      *mvideo.VideoModel
 	barrage    *mbarrage.BarrageModel
+	contest    *mcontest.ContestModel
 }
 
 func New(c *gin.Context) BarrageModule {
-  socket := dao.AppEngine.NewSession()
+    socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return BarrageModule{
 		context: c,
 		user: muser.NewUserModel(socket),
 		video: mvideo.NewVideoModel(socket),
 		barrage: mbarrage.NewBarrageModel(socket),
+		contest: mcontest.NewContestModel(socket),
 		engine: socket,
 	}
 }
 
-// 发送视频弹幕(记录到数据库 并发布到nsq) todo：nsq替换为kafka, 发布的内容 需通过敏感词过滤
-func (svc *BarrageModule) SendVideoBarrage(userId string, params *mbarrage.SendBarrageParams) int {
+// 发送弹幕
+func (svc *BarrageModule) SendBarrage(userId string, params *mbarrage.SendBarrageParams) int {
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测弹幕内容
 	isPass, err := client.TextModeration(params.Content)
@@ -46,16 +49,73 @@ func (svc *BarrageModule) SendVideoBarrage(userId string, params *mbarrage.SendB
 		return errdef.BARRAGE_INVALID_CONTENT
 	}
 
+	// 查询用户是否存在
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		log.Log.Errorf("barrage_trace: user not found, userId:%s", userId)
+		return errdef.USER_NOT_EXISTS
+	}
+
+	var code int
+	switch params.BarrageType {
+	case 0:
+		code = svc.SendVideoBarrage(userId, params)
+	case 1:
+		code = svc.SendLiveBarrage(userId, params)
+	default:
+		return errdef.INVALID_PARAMS
+	}
+
+	return code
+}
+
+// 发送直播/直播回放弹幕
+func (svc *BarrageModule) SendLiveBarrage(userId string, params *mbarrage.SendBarrageParams) int {
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("barrage_trace: session begin err:%s", err)
 		return errdef.ERROR
 	}
-	// 查询用户是否存在
-	if user := svc.user.FindUserByUserid(userId); user == nil {
-		log.Log.Errorf("barrage_trace: user not found, userId:%s", userId)
+
+	// 查询直播是否存在
+	ok, err := svc.contest.GetLiveInfoById(fmt.Sprint(params.VideoId))
+	if !ok || err != nil {
+		log.Log.Errorf("barrage_trace: LIVE not found, liveId:%s", params.VideoId)
 		svc.engine.Rollback()
-		return errdef.USER_NOT_EXISTS
+		return errdef.CONTEST_GET_LIVE_FAIL
+	}
+
+	now := int(time.Now().Unix())
+	svc.barrage.Barrage.VideoId = params.VideoId
+	svc.barrage.Barrage.SendTime = int64(now)
+	svc.barrage.Barrage.UserId = userId
+	svc.barrage.Barrage.Content = params.Content
+	svc.barrage.Barrage.BarrageType = 1
+	svc.barrage.Barrage.VideoCurDuration = params.VideoCurDuration
+	if svc.contest.VideoLive.StartTm > 0 && params.VideoCurDuration == 0 {
+		svc.barrage.Barrage.VideoCurDuration = now - svc.contest.VideoLive.StartTm
+	}
+	// 可选参数
+	svc.barrage.Barrage.Color = params.Color
+	svc.barrage.Barrage.Font = params.Font
+	svc.barrage.Barrage.Location = params.Location
+	// 存储到mysql
+	if err := svc.barrage.RecordVideoBarrage(); err != nil {
+		log.Log.Errorf("barrage_trace: record live barrage fail, liveId:%d, err:%s", svc.contest.VideoLive.Id, err)
+		svc.engine.Rollback()
+		return errdef.BARRAGE_LIVE_SEND_FAIL
+	}
+
+	svc.engine.Commit()
+
+	return errdef.SUCCESS
+}
+
+// 发送视频弹幕(记录到数据库 并发布到nsq) todo：nsq替换为kafka, 发布的内容 需通过敏感词过滤
+func (svc *BarrageModule) SendVideoBarrage(userId string, params *mbarrage.SendBarrageParams) int {
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("barrage_trace: session begin err:%s", err)
+		return errdef.ERROR
 	}
 
 	// 查询视频是否存在
@@ -117,17 +177,32 @@ func (svc *BarrageModule) SendVideoBarrage(userId string, params *mbarrage.SendB
 }
 
 // 获取视频弹幕列表
-func (svc *BarrageModule) GetVideoBarrageList(videoId, minDuration, maxDuration string) (int, []*models.VideoBarrage) {
-	// 查询视频是否存在
-	if video := svc.video.FindVideoById(videoId); video == nil {
-		log.Log.Errorf("barrage_trace: video not found, videoId:%s", videoId)
-		return errdef.VIDEO_NOT_EXISTS, nil
+func (svc *BarrageModule) GetVideoBarrageList(videoId, barrageType, minDuration, maxDuration string) (int, []*models.VideoBarrage) {
+	if videoId == "" {
+		log.Log.Errorf("barrage_trace: invalid id, id:%s", videoId)
+		return errdef.INVALID_PARAMS, nil
+	}
+	switch barrageType {
+	case "0":
+		// 查询视频是否存在
+		if video := svc.video.FindVideoById(videoId); video == nil {
+			log.Log.Errorf("barrage_trace: video not found, videoId:%s", videoId)
+			return errdef.VIDEO_NOT_EXISTS, nil
+		}
+	case "1":
+		ok, err := svc.contest.GetLiveInfoById(videoId)
+		if !ok || err != nil {
+			log.Log.Errorf("barrage_trace: live not found, liveId:%s", videoId)
+			return errdef.CONTEST_GET_LIVE_FAIL, nil
+		}
+	default:
+		return errdef.INVALID_PARAMS, nil
 	}
 
-  list := svc.barrage.GetBarrageByDuration(videoId, minDuration, maxDuration, 0, 1000)
-  if list == nil {
-    list = []*models.VideoBarrage{}
-  }
+	list := svc.barrage.GetBarrageByDuration(videoId, barrageType, minDuration, maxDuration, 0, 1000)
+	if list == nil {
+		list = []*models.VideoBarrage{}
+	}
 
 	return errdef.SUCCESS, list
 }

@@ -45,7 +45,7 @@ func SendBarrage(c *gin.Context) {
 
 	svc := cbarrage.New(c)
 	// 发送弹幕
-	syscode := svc.SendVideoBarrage(userId.(string), params)
+	syscode := svc.SendBarrage(userId.(string), params)
 	reply.Response(http.StatusOK, syscode)
 }
 
@@ -71,11 +71,14 @@ func VideoBarrage(c *gin.Context) {
 	reply := errdef.New(c)
 	minDuration := c.Query("min_duration")
 	maxDuration := c.Query("max_duration")
+	// 视频id/直播id
 	videoId := c.Query("video_id")
+	// 0 视频弹幕 1 直播/直播回放弹幕
+	barrageType := c.DefaultQuery("barrage_type", "0")
 
 	svc := cbarrage.New(c)
-	// 获取视频弹幕列表
-	syscode, list := svc.GetVideoBarrageList(videoId, minDuration, maxDuration)
+	// 获取视频/直播/直播回放 弹幕列表
+	syscode, list := svc.GetVideoBarrageList(videoId, barrageType, minDuration, maxDuration)
 	if syscode != errdef.SUCCESS {
 	  reply.Response(http.StatusOK, errdef.BARRAGE_VIDEO_LIST_FAIL)
 	  return

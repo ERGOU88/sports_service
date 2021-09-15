@@ -132,6 +132,7 @@ const (
 	BARRAGE_VIDEO_SEND_FAIL     = 9001
 	BARRAGE_INVALID_CONTENT     = 9002
 	BARRAGE_VIDEO_LIST_FAIL     = 9003
+	BARRAGE_LIVE_SEND_FAIL      = 9004
 
 	// 搜索相关错误码 10001 - 11000
 	SEARCH_CLEAN_HISTORY_FAIL   = 10001
@@ -363,6 +364,7 @@ var MsgFlags = map[int]string{
 	BARRAGE_VIDEO_SEND_FAIL:     "发送视频弹幕失败",
 	BARRAGE_INVALID_CONTENT:     "弹幕内容含有违规文字",
 	BARRAGE_VIDEO_LIST_FAIL:     "视频弹幕获取失败",
+	BARRAGE_LIVE_SEND_FAIL:      "发送直播弹幕失败",
 
 	SEARCH_CLEAN_HISTORY_FAIL:   "清空搜索记录失败",
 

@@ -146,3 +146,9 @@ func (m *ContestModel) GetVideoLiveReply(liveId string) (bool, error) {
 func (m *ContestModel) GetVideoLiveCount() (int64, error) {
 	return m.Engine.Count(&models.VideoLive{})
 }
+
+// 通过直播id获取直播信息
+func (m *ContestModel) GetLiveInfoById(liveId string) (bool, error) {
+	m.VideoLive = new(models.VideoLive)
+	return m.Engine.Where("id=?", liveId).Get(m.VideoLive)
+}
