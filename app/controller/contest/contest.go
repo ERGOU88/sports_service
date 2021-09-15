@@ -124,13 +124,13 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 			HasReplay: 2,
 		}
 
-		// 上拉加载 使用最大时间 拉取未来数据
-		if pullUpTm == 0 || item.PlayTime > pullUpTm {
+		// 上拉加载 使用最小时间 拉取历史数据
+		if pullUpTm == 0 || item.PlayTime < pullUpTm {
 			pullUpTm = item.PlayTime
 		}
 
-		// 下拉加载 使用最小时间 拉取历史数据
- 		if pullDownTm == 0 || item.PlayTime < pullDownTm {
+		// 下拉加载 使用最大时间 拉取未来数据
+ 		if pullDownTm == 0 ||  item.PlayTime > pullDownTm {
 			pullDownTm = item.PlayTime
 		}
 
