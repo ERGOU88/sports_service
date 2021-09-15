@@ -23,5 +23,5 @@ type VideoLive struct {
 	LiveType       int    `json:"live_type" xorm:"not null default 0 comment('直播类型（0：管理员[sys_user]，1：用户[user]）') TINYINT(1)"`
 	ContestId      int    `json:"contest_id" xorm:"not null default 0 comment('赛事id') INT(11)"`
 	ScheduleId     int    `json:"schedule_id" xorm:"not null default 0 comment('赛程id') INT(11)"`
-	StartTm        int    `json:"start_tm" xorm:"not null default 0 comment('真实开播时间') INT(11)"`
+	StartTime      int    `json:"start_time" xorm:"not null default 0 comment('真实开播时间') INT(11)"`
 }
