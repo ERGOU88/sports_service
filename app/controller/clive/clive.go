@@ -108,10 +108,6 @@ func (svc *LiveModule) GenCallbackSign(t int) string {
 
 // 校验回调参数信息
 func (svc *LiveModule) ValidateParamInfo(params *mcontest.StreamCallbackInfo ) int {
-	if params.Errcode != 0 || params.Errmsg != "ok" {
-		return errdef.INVALID_PARAMS
-	}
-
 	sign := svc.GenCallbackSign(params.T)
 	if sign != params.Sign {
 		log.Log.Errorf("live_trace: sign not match, sign:%s, param sign:%s", sign, params.Sign)
