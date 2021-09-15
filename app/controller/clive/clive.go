@@ -89,6 +89,7 @@ func (svc *LiveModule) TranscribeStreamCallback(param *mcontest.StreamCallbackIn
 	svc.contest.VideoLiveReplay.Title = svc.contest.VideoLive.Title
 	svc.contest.VideoLiveReplay.Describe = svc.contest.VideoLive.Describe
 	svc.contest.VideoLiveReplay.LiveId = svc.contest.VideoLive.Id
+	svc.contest.VideoLiveReplay.FileId = param.FileID
 	// 添加直播回放
 	affected, err := svc.contest.AddVideoLiveReply()
 	if affected != 1 || err != nil {
