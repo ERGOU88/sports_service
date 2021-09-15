@@ -125,7 +125,7 @@ func (svc *LiveModule) ValidateParamInfo(params *mcontest.StreamCallbackInfo ) i
 		return errdef.INVALID_PARAMS
 	}
 
-	if params.App != live.PULL_STREAM_HOST {
+	if params.App != live.PUSH_STREAM_HOST {
 		log.Log.Errorf("live_trace: invalid push stream host, host:%s, param host:%s", live.PUSH_STREAM_HOST, params.App)
 		return errdef.INVALID_PARAMS
 	}
