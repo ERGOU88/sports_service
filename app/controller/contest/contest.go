@@ -411,3 +411,50 @@ func (svc *ContestModule) GetContestSection() (int, int) {
 
 	return errdef.SUCCESS, svc.community.CommunitySection.Id
 }
+
+// 获取赛程直播 选手竞赛数据
+func (svc *ContestModule) GetLiveScheduleData(liveId string, page, size int) (int, []*mcontest.LiveSchedulePlayerData) {
+	if liveId == "" {
+		return errdef.INVALID_PARAMS, nil
+	}
+
+	offset := (page - 1) * size
+	list, err := svc.contest.GetLiveSchedulePlayerData(liveId, offset, size)
+	if err != nil {
+		log.Log.Errorf("contest_trace: get live schedule player data fail, err:%s", err)
+		return errdef.CONTEST_LIVE_SCHEDULE_DATA, nil
+	}
+
+	if list == nil {
+		return errdef.SUCCESS, []*mcontest.LiveSchedulePlayerData{}
+	}
+
+	resp := make([]*mcontest.LiveSchedulePlayerData, len(list))
+	for index, item := range list {
+		info := &mcontest.LiveSchedulePlayerData{
+			Id: item.Id,
+			ContestId: item.ContestId,
+			ScheduleId: item.ScheduleId,
+			PlayerId: item.PlayerId,
+			LiveId: item.LiveId,
+			RoundsNum: item.RoundsNum,
+			Ranking: index+1,
+			IntervalDuration: fmt.Sprintf("%.3f", float64(item.IntervalDuration)/1000),
+			TopSpeed: fmt.Sprintf("%.3f", float64(item.IntervalDuration)/1000),
+			ReceiveIntegral: fmt.Sprintf("%.3f", float64(item.ReceiveIntegral)/1000),
+		}
+
+		ok, err := svc.contest.GetPlayerInfoById(fmt.Sprint(info.PlayerId))
+		if !ok || err != nil {
+			log.Log.Errorf("contest_trace: get player info by id fail, playerId:%d, err:%s", info.PlayerId, err)
+			continue
+		}
+
+		info.PlayerName = svc.contest.PlayerInfo.Name
+		info.Photo = svc.contest.PlayerInfo.Photo
+
+		resp[index] = info
+	}
+
+	return errdef.SUCCESS, resp
+}

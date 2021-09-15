@@ -75,3 +75,14 @@ func GetContestSection(c *gin.Context) {
 	reply.Data["section_id"] = sectionId
 	reply.Response(http.StatusOK, code)
 }
+
+func LiveScheduleData(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := contest.New(c)
+	liveId := c.Query("live_id")
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	code, list := svc.GetLiveScheduleData(liveId, page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
+
