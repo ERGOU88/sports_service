@@ -20,7 +20,7 @@ func LiveList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	ts := c.Query("ts")
-	pullType := c.DefaultQuery("pull_type", "2")
+	pullType := c.DefaultQuery("pull_type", "1")
 	svc := contest.New(c)
 	code, list, pullUpTm, pullDownTm := svc.GetLiveList("", pullType, ts, page, size)
 	reply.Data["list"] = list
@@ -67,3 +67,22 @@ func IntegralRanking(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
+
+func GetContestSection(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := contest.New(c)
+	code, sectionId := svc.GetContestSection()
+	reply.Data["section_id"] = sectionId
+	reply.Response(http.StatusOK, code)
+}
+
+func LiveScheduleData(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := contest.New(c)
+	liveId := c.Query("live_id")
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	code, list := svc.GetLiveScheduleData(liveId, page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
+

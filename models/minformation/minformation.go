@@ -40,9 +40,9 @@ func NewInformationModel(engine *xorm.Session) *InformationModel {
 }
 
 // 获取资讯列表
-func (m *InformationModel) GetInformationList(offset, size int) ([]*models.Information, error) {
+func (m *InformationModel) GetInformationList(condition string, offset, size int) ([]*models.Information, error) {
 	var list []*models.Information
-	if err := m.Engine.Where("status=0").Limit(size, offset).Find(&list); err != nil {
+	if err := m.Engine.Where(condition).Limit(size, offset).OrderBy("sortorder DESC, id DESC").Find(&list); err != nil {
 		return nil, err
 	}
 

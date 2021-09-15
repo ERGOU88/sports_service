@@ -42,14 +42,24 @@ func (svc *LiveModule) PushOrDisconnectStreamCallback(params *mcontest.StreamCal
 	svc.contest.VideoLive.UpdateAt = now
 	switch params.Status {
 	case 1:
-		cols = "status, update_at"
+		log.Log.Errorf("live_trace: push stream, roomId:%s, startTm:%d", params.StreamID, params.EventTime)
+		// 已记录过开播时长
+		if svc.contest.VideoLive.StartTm > 0 {
+			return errdef.SUCCESS
+		}
+
+		svc.contest.VideoLive.StartTm = params.EventTime
+		cols = "start_tm, status, update_at"
 	case 2:
+		log.Log.Errorf("live_trace: disconnect stream, roomId:%s, startTm:%d", params.StreamID, params.EventTime)
 		duration, err := strconv.Atoi(params.PushDuration)
 		if err != nil {
 			log.Log.Errorf("live_trace: strconv.Atoi fail, duration:%s", params.PushDuration)
 		}
+
 		svc.contest.VideoLive.Duration += int64(duration)
-		cols = "status, update_at, duration"
+		svc.contest.VideoLive.EndTime = params.EventTime
+		cols = "end_tm, status, update_at, duration"
 	}
 
 	affected, err := svc.contest.UpdateLiveInfo(cols)

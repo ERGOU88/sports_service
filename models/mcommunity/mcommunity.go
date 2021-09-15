@@ -49,6 +49,11 @@ func (m *CommunityModel) GetSectionInfo(id string) (*models.CommunitySection, er
 	return m.CommunitySection, nil
 }
 
+// 通过名称获取板块
+func (m *CommunityModel) GetSectionByName(name string) (bool, error) {
+	return m.Engine.Where("section_name=? AND status=1", name).Get(m.CommunitySection)
+}
+
 // 通过id获取社区话题信息
 func (m *CommunityModel) GetTopicInfo(id string) (*models.CommunityTopic, error) {
 	m.CommunityTopic = new(models.CommunityTopic)

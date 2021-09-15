@@ -12,7 +12,7 @@ func Router(engine *gin.Engine) {
 	barrage := api.Group("/barrage")
 	barrage.Use(sign.CheckSign())
 	{
-		// 发送弹幕
+		// 发送视频/直播/直播回放 弹幕
 		barrage.POST("/send", token.TokenAuth(), SendBarrage)
 		// 获取视频弹幕内容（按时长区间获取）
 		barrage.GET("/video/list", VideoBarrage)
