@@ -9,6 +9,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mbanner"
+	"sports_service/server/models/mcommunity"
 	"sports_service/server/models/mcontest"
 	"sports_service/server/models/muser"
 	"sports_service/server/util"
@@ -22,6 +23,7 @@ type ContestModule struct {
 	user        *muser.UserModel
 	banner      *mbanner.BannerModel
 	contest     *mcontest.ContestModel
+	community   *mcommunity.CommunityModel
 }
 
 func New(c *gin.Context) ContestModule {
@@ -32,6 +34,7 @@ func New(c *gin.Context) ContestModule {
 		user: muser.NewUserModel(socket),
 		banner: mbanner.NewBannerMolde(socket),
 		contest: mcontest.NewContestModel(socket),
+		community: mcommunity.NewCommunityModel(socket),
 		engine: socket,
 	}
 }
@@ -47,7 +50,7 @@ func (svc *ContestModule) GetBanner() []*models.Banner {
 }
 
 // 获取推荐的直播列表 默认取2条同一天内最新的未开播/直播中的数据 todo:暂时只有一个赛事
-// pullType 拉取类型  1 上拉加载 历史赛事数据  默认下拉加载  2 下拉加载 今天及未来赛事数据 [通过开播时间作为查询条件进行拉取]
+// pullType 拉取类型  1 上拉加载 今天及未来赛事数据 [通过开播时间作为查询条件进行拉取] 2 下拉加载 历史赛事数据 [通过开播时间作为查询条件进行拉取] 默认上拉加载
 // queryType 1 首页列表 [查询最近同一天内的 未开播/直播中的数据]
 func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size int) (int, []*mcontest.ContestLiveInfo, int, int) {
 	if err := svc.GetContestInfo(); err != nil {
@@ -57,10 +60,11 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 
 	offset := (page - 1) * size
 	limitTm := ts
-	if queryType == "1" {
+	if queryType == "1" || pullType == "1" {
 		limitTm = fmt.Sprint(time.Now().Unix())
 	}
 
+	log.Log.Errorf("limitTm:%d", limitTm)
 	list, err := svc.contest.GetLiveList(offset, size, fmt.Sprint(svc.contest.Contest.Id), limitTm, queryType, pullType)
 	if err != nil {
 		return errdef.CONTEST_GET_LIVE_FAIL, nil, 0, 0
@@ -120,13 +124,13 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 			HasReplay: 2,
 		}
 
-		// 上拉加载 使用最小时间 拉取历史数据
-		if pullUpTm == 0 || item.PlayTime < pullUpTm {
+		// 上拉加载 使用最大时间 拉取未来数据
+		if pullUpTm == 0 || item.PlayTime > pullUpTm {
 			pullUpTm = item.PlayTime
 		}
 
-		// 下拉加载 使用最大时间 拉取未来数据
- 		if pullDownTm == 0 || item.PlayTime > pullDownTm {
+		// 下拉加载 使用最小时间 拉取历史数据
+ 		if pullDownTm == 0 ||  item.PlayTime < pullDownTm {
 			pullDownTm = item.PlayTime
 		}
 
@@ -395,4 +399,62 @@ func (svc *ContestModule) GetIntegralRanking(contestId string, page, size int) (
 	}
 
 	return errdef.SUCCESS, list
+}
+
+// 获取赛事的社区板块
+func (svc *ContestModule) GetContestSection() (int, int) {
+	ok, err := svc.community.GetSectionByName("赛事")
+	if !ok || err != nil {
+		log.Log.Errorf("contest_trace: get section by name fail, err:%s", err)
+		return errdef.ERROR, 0
+	}
+
+	return errdef.SUCCESS, svc.community.CommunitySection.Id
+}
+
+// 获取赛程直播 选手竞赛数据
+func (svc *ContestModule) GetLiveScheduleData(liveId string, page, size int) (int, []*mcontest.LiveSchedulePlayerData) {
+	if liveId == "" {
+		return errdef.INVALID_PARAMS, nil
+	}
+
+	offset := (page - 1) * size
+	list, err := svc.contest.GetLiveSchedulePlayerData(liveId, offset, size)
+	if err != nil {
+		log.Log.Errorf("contest_trace: get live schedule player data fail, err:%s", err)
+		return errdef.CONTEST_LIVE_SCHEDULE_DATA, nil
+	}
+
+	if list == nil {
+		return errdef.SUCCESS, []*mcontest.LiveSchedulePlayerData{}
+	}
+
+	resp := make([]*mcontest.LiveSchedulePlayerData, len(list))
+	for index, item := range list {
+		info := &mcontest.LiveSchedulePlayerData{
+			Id: item.Id,
+			ContestId: item.ContestId,
+			ScheduleId: item.ScheduleId,
+			PlayerId: item.PlayerId,
+			LiveId: item.LiveId,
+			RoundsNum: item.RoundsNum,
+			Ranking: index+1,
+			IntervalDuration: fmt.Sprintf("%.3f", float64(item.IntervalDuration)/1000),
+			TopSpeed: fmt.Sprintf("%.3f", float64(item.IntervalDuration)/1000),
+			ReceiveIntegral: fmt.Sprintf("%.3f", float64(item.ReceiveIntegral)/1000),
+		}
+
+		ok, err := svc.contest.GetPlayerInfoById(fmt.Sprint(info.PlayerId))
+		if !ok || err != nil {
+			log.Log.Errorf("contest_trace: get player info by id fail, playerId:%d, err:%s", info.PlayerId, err)
+			continue
+		}
+
+		info.PlayerName = svc.contest.PlayerInfo.Name
+		info.Photo = svc.contest.PlayerInfo.Photo
+
+		resp[index] = info
+	}
+
+	return errdef.SUCCESS, resp
 }

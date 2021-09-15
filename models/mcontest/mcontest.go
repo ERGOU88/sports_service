@@ -7,14 +7,15 @@ import (
 
 // 赛事
 type ContestModel struct {
-	Engine          *xorm.Session
-	VideoLive       *models.VideoLive
-	VideoLiveReplay *models.VideoLiveReplay
-	Schedule        *models.FpvContestSchedule
-	Contest         *models.FpvContestInfo
-	IntegralRanking *models.FpvContestPlayerIntegralRanking
-	PlayerInfo      *models.FpvContestPlayerInformation
-	ScheduleDetail  *models.FpvContestScheduleDetail
+	Engine              *xorm.Session
+	VideoLive           *models.VideoLive
+	VideoLiveReplay     *models.VideoLiveReplay
+	Schedule            *models.FpvContestSchedule
+	Contest             *models.FpvContestInfo
+	IntegralRanking     *models.FpvContestPlayerIntegralRanking
+	PlayerInfo          *models.FpvContestPlayerInformation
+	ScheduleDetail      *models.FpvContestScheduleDetail
+	ScheduleLiveData    *models.FpvContestScheduleLiveData
 }
 
 // 赛事信息[包含赛程]
@@ -108,6 +109,22 @@ type IntegralRanking struct {
 	BestScoreStr       string    `json:"best_score"`
 }
 
+// 赛程直播 选手竞赛数据
+type LiveSchedulePlayerData struct {
+	Id               int64    `json:"id"`
+	ContestId        int      `json:"contest_id"`
+	ScheduleId       int      `json:"schedule_id"`
+	PlayerId         int64    `json:"player_id"`
+	PlayerName       string   `json:"player_name"`
+	Photo            string   `json:"photo"`
+	LiveId           int64    `json:"live_id"`
+	RoundsNum        int      `json:"rounds_num"`
+	IntervalDuration string   `json:"interval_duration"`
+	TopSpeed         string   `json:"top_speed"`
+	ReceiveIntegral  string   `json:"receive_integral"`
+	Ranking          int      `json:"ranking"`
+}
+
 // 实例
 func NewContestModel(engine *xorm.Session) *ContestModel {
 	return &ContestModel{
@@ -119,6 +136,7 @@ func NewContestModel(engine *xorm.Session) *ContestModel {
 		IntegralRanking: new(models.FpvContestPlayerIntegralRanking),
 		PlayerInfo: new(models.FpvContestPlayerInformation),
 		ScheduleDetail: new(models.FpvContestScheduleDetail),
+		ScheduleLiveData: new(models.FpvContestScheduleLiveData),
 	}
 }
 
@@ -204,4 +222,25 @@ func (m *ContestModel) GetIntegralRankingByContestId(contestId string, offset, s
 	}
 
 	return list, nil
+}
+
+const (
+	GET_LIVE_SCHEDULE_PLAYER_DATA = "SELECT * FROM fpv_contest_schedule_live_data WHERE status=0 AND live_id=? " +
+		"AND rounds_num=(select max(rounds_num) from fpv_contest_schedule_live_data) ORDER BY receive_integral DESC" +
+		" LIMIT ?, ?"
+)
+// 赛程直播 选手竞赛数据
+func (m *ContestModel) GetLiveSchedulePlayerData(liveId string, offset, size int) ([]*models.FpvContestScheduleLiveData, error) {
+	var list []*models.FpvContestScheduleLiveData
+	if err := m.Engine.SQL(GET_LIVE_SCHEDULE_PLAYER_DATA, liveId, offset, size).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 通过id 获取选手信息
+func (m *ContestModel) GetPlayerInfoById(playerId string) (bool, error) {
+	m.PlayerInfo = new(models.FpvContestPlayerInformation)
+	return m.Engine.Where("id=?", playerId).Get(m.PlayerInfo)
 }

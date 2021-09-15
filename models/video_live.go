@@ -10,7 +10,7 @@ type VideoLive struct {
 	FlvAddr        string `json:"flv_addr" xorm:"not null default '' comment('flv地址[拉流]') VARCHAR(512)"`
 	HlsAddr        string `json:"hls_addr" xorm:"not null default '' comment('hls地址[拉流]') VARCHAR(512)"`
 	PushStreamAddr string `json:"push_stream_addr" xorm:"not null default '' comment('推流地址') VARCHAR(512)"`
-	PlayTime       int    `json:"play_time" xorm:"not null default 0 comment('开播时间') INT(11)"`
+	PlayTime       int    `json:"play_time" xorm:"not null default 0 comment('后台设置的赛事开播时间') INT(11)"`
 	EndTime        int    `json:"end_time" xorm:"not null default 0 comment('结束时间') INT(11)"`
 	Status         int    `json:"status" xorm:"default 0 comment('状态 0未直播 1直播中 2 已结束') TINYINT(1)"`
 	Title          string `json:"title" xorm:"not null default '' comment('标题') VARCHAR(255)"`
@@ -23,4 +23,5 @@ type VideoLive struct {
 	LiveType       int    `json:"live_type" xorm:"not null default 0 comment('直播类型（0：管理员[sys_user]，1：用户[user]）') TINYINT(1)"`
 	ContestId      int    `json:"contest_id" xorm:"not null default 0 comment('赛事id') INT(11)"`
 	ScheduleId     int    `json:"schedule_id" xorm:"not null default 0 comment('赛程id') INT(11)"`
+	StartTm        int    `json:"start_tm" xorm:"not null default 0 comment('真实开播时间') INT(11)"`
 }

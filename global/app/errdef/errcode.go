@@ -132,6 +132,7 @@ const (
 	BARRAGE_VIDEO_SEND_FAIL     = 9001
 	BARRAGE_INVALID_CONTENT     = 9002
 	BARRAGE_VIDEO_LIST_FAIL     = 9003
+	BARRAGE_LIVE_SEND_FAIL      = 9004
 
 	// 搜索相关错误码 10001 - 11000
 	SEARCH_CLEAN_HISTORY_FAIL   = 10001
@@ -239,6 +240,7 @@ const (
 	CONTEST_PROMOTION_INFO_FAIL  = 40004
 	CONTEST_PLAYER_INFO_FAIL     = 40005
 	CONTEST_RANKING_FAIL         = 40006
+	CONTEST_LIVE_SCHEDULE_DATA   = 40007
 )
 
 var MsgFlags = map[int]string{
@@ -362,6 +364,7 @@ var MsgFlags = map[int]string{
 	BARRAGE_VIDEO_SEND_FAIL:     "发送视频弹幕失败",
 	BARRAGE_INVALID_CONTENT:     "弹幕内容含有违规文字",
 	BARRAGE_VIDEO_LIST_FAIL:     "视频弹幕获取失败",
+	BARRAGE_LIVE_SEND_FAIL:      "发送直播弹幕失败",
 
 	SEARCH_CLEAN_HISTORY_FAIL:   "清空搜索记录失败",
 
@@ -454,6 +457,7 @@ var MsgFlags = map[int]string{
 	CONTEST_PROMOTION_INFO_FAIL: "获取赛程晋级信息失败",
 	CONTEST_PLAYER_INFO_FAIL:    "获取选手信息失败",
 	CONTEST_RANKING_FAIL:        "获取选手积分排行失败",
+	CONTEST_LIVE_SCHEDULE_DATA:  "获取赛程直播选手数据失败",
 }
 
 func GetMsg(code int) string {

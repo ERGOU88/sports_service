@@ -17,8 +17,9 @@ type SendBarrageParams struct {
 	Content          string `binding:"required" json:"content"`
 	Font             string `json:"font"`
 	Location         int    `json:"location"`
-	VideoCurDuration int    `binding:"required" json:"video_cur_duration"`
-	VideoId          int64  `binding:"required" json:"video_id"`
+	VideoCurDuration int    `json:"video_cur_duration"`
+	VideoId          int64  `binding:"required" json:"video_id"`  // 视频id/直播id
+	BarrageType      int64  `json:"barrage_type"`                  // 0首页视频弹幕 1直播/回放视频弹幕
 }
 
 // 实栗
@@ -40,10 +41,10 @@ func (m *BarrageModel) RecordVideoBarrage() error {
 }
 
 // 根据视频时长区间获取弹幕 todo:限制下 最多取最新的1000条 根据取的时间区间大小做调整
-func (m *BarrageModel) GetBarrageByDuration(videoId, minDuration, maxDuration string, offset, limit int) []*models.VideoBarrage {
+func (m *BarrageModel) GetBarrageByDuration(videoId, barrageType, minDuration, maxDuration string, offset, limit int) []*models.VideoBarrage {
 	var list []*models.VideoBarrage
-	if err := m.Engine.Where(" video_id =? AND video_cur_duration >= ? AND video_cur_duration <= ?", videoId,
-		minDuration, maxDuration).Desc("id").Limit(limit, offset).Find(&list); err != nil {
+	if err := m.Engine.Where(" video_id =? AND barrage_type=? AND video_cur_duration >= ? AND video_cur_duration <= ?", videoId,
+		barrageType, minDuration, maxDuration).Desc("id").Limit(limit, offset).Find(&list); err != nil {
 		return []*models.VideoBarrage{}
 	}
 
