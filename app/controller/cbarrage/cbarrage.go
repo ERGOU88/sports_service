@@ -91,8 +91,8 @@ func (svc *BarrageModule) SendLiveBarrage(userId string, params *mbarrage.SendBa
 	svc.barrage.Barrage.Content = params.Content
 	svc.barrage.Barrage.BarrageType = 1
 	svc.barrage.Barrage.VideoCurDuration = params.VideoCurDuration
-	if svc.contest.VideoLive.StartTm > 0 && params.VideoCurDuration == 0 {
-		svc.barrage.Barrage.VideoCurDuration = now - svc.contest.VideoLive.StartTm
+	if svc.contest.VideoLive.StartTime > 0 && params.VideoCurDuration == 0 {
+		svc.barrage.Barrage.VideoCurDuration = now - svc.contest.VideoLive.StartTime
 	}
 	// 可选参数
 	svc.barrage.Barrage.Color = params.Color
