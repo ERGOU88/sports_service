@@ -98,7 +98,7 @@ type PlayInfo struct {
 
 // 获取直播列表
 // queryType 1 首页 [只看最近同一天内的 未开播/直播中的数据] 2 赛程 [最近同一天内 所有状态的直播数据]
-// pullType 拉取类型 默认上拉加载 1 上拉加载 历史赛事数据 2 下拉加载 今天及未来赛事数据
+// pullType 拉取类型 1 上拉加载 今天及未来赛事数据 [通过开播时间作为查询条件进行拉取] 2 下拉加载 历史赛事数据 [通过开播时间作为查询条件进行拉取] 默认上拉加载
 func (m *ContestModel) GetLiveList(offset, size int, contestId, tm, queryType, pullType string) ([]*models.VideoLive, error){
 	var list []*models.VideoLive
 	m.Engine.Where("contest_id=?", contestId)
@@ -108,9 +108,9 @@ func (m *ContestModel) GetLiveList(offset, size int, contestId, tm, queryType, p
 
 	switch pullType {
 	case "1":
-		m.Engine.Where("play_time < ?", tm).Desc("play_time")
-	case "2":
 		m.Engine.Where("play_time > ?", tm).Asc("play_time")
+	case "2":
+		m.Engine.Where("play_time < ?", tm).Desc("play_time")
 	}
 
 	if err := m.Engine.Limit(size, offset).Find(&list); err != nil {

@@ -20,7 +20,7 @@ func LiveList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	ts := c.Query("ts")
-	pullType := c.DefaultQuery("pull_type", "2")
+	pullType := c.DefaultQuery("pull_type", "1")
 	svc := contest.New(c)
 	code, list, pullUpTm, pullDownTm := svc.GetLiveList("", pullType, ts, page, size)
 	reply.Data["list"] = list

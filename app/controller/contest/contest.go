@@ -50,7 +50,7 @@ func (svc *ContestModule) GetBanner() []*models.Banner {
 }
 
 // 获取推荐的直播列表 默认取2条同一天内最新的未开播/直播中的数据 todo:暂时只有一个赛事
-// pullType 拉取类型  1 上拉加载 历史赛事数据  默认下拉加载  2 下拉加载 今天及未来赛事数据 [通过开播时间作为查询条件进行拉取]
+// pullType 拉取类型  1 上拉加载 今天及未来赛事数据 [通过开播时间作为查询条件进行拉取] 2 下拉加载 历史赛事数据 [通过开播时间作为查询条件进行拉取] 默认上拉加载
 // queryType 1 首页列表 [查询最近同一天内的 未开播/直播中的数据]
 func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size int) (int, []*mcontest.ContestLiveInfo, int, int) {
 	if err := svc.GetContestInfo(); err != nil {
@@ -60,10 +60,11 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 
 	offset := (page - 1) * size
 	limitTm := ts
-	if queryType == "1" {
+	if queryType == "1" || pullType == "1" {
 		limitTm = fmt.Sprint(time.Now().Unix())
 	}
 
+	log.Log.Errorf("limitTm:%d", limitTm)
 	list, err := svc.contest.GetLiveList(offset, size, fmt.Sprint(svc.contest.Contest.Id), limitTm, queryType, pullType)
 	if err != nil {
 		return errdef.CONTEST_GET_LIVE_FAIL, nil, 0, 0
@@ -123,13 +124,13 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 			HasReplay: 2,
 		}
 
-		// 上拉加载 使用最小时间 拉取历史数据
-		if pullUpTm == 0 || item.PlayTime < pullUpTm {
+		// 上拉加载 使用最大时间 拉取未来数据
+		if pullUpTm == 0 || item.PlayTime > pullUpTm {
 			pullUpTm = item.PlayTime
 		}
 
-		// 下拉加载 使用最大时间 拉取未来数据
- 		if pullDownTm == 0 || item.PlayTime > pullDownTm {
+		// 下拉加载 使用最小时间 拉取历史数据
+ 		if pullDownTm == 0 || item.PlayTime < pullDownTm {
 			pullDownTm = item.PlayTime
 		}
 
