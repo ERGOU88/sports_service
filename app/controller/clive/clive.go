@@ -44,11 +44,9 @@ func (svc *LiveModule) PushOrDisconnectStreamCallback(params *mcontest.StreamCal
 	case 1:
 		log.Log.Errorf("live_trace: push stream, roomId:%s, startTm:%d", params.StreamID, params.EventTime)
 		// 已记录过开播时长
-		if svc.contest.VideoLive.StartTime > 0 {
-			return errdef.SUCCESS
+		if svc.contest.VideoLive.StartTime == 0 {
+			svc.contest.VideoLive.StartTime = params.EventTime
 		}
-
-		svc.contest.VideoLive.StartTime = params.EventTime
 		cols = "start_time, status, update_at"
 	case 2:
 		log.Log.Errorf("live_trace: disconnect stream, roomId:%s, startTm:%d", params.StreamID, params.EventTime)
