@@ -19,7 +19,7 @@ type VideoLive struct {
 	Tags           string `json:"tags" xorm:"not null default '' comment('直播标签') VARCHAR(512)"`
 	CreateAt       int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt       int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
-	Duration       int64  `json:"duration" xorm:"default 0 comment('时长（秒）') BIGINT(20)"`
+	Duration       int64  `json:"duration" xorm:"default 0 comment('时长（毫秒）') BIGINT(20)"`
 	LiveType       int    `json:"live_type" xorm:"not null default 0 comment('直播类型（0：管理员[sys_user]，1：用户[user]）') TINYINT(1)"`
 	ContestId      int    `json:"contest_id" xorm:"not null default 0 comment('赛事id') INT(11)"`
 	ScheduleId     int    `json:"schedule_id" xorm:"not null default 0 comment('赛程id') INT(11)"`
