@@ -156,7 +156,7 @@ func (m *ContestModel) GetLiveInfoByCondition(condition string) (bool, error) {
 // 通过腾讯云文件id 获取直播回放
 func (m *ContestModel) GetVideoLiveReplyByFileId(fileId string) (bool, error) {
 	m.VideoLiveReplay = new(models.VideoLiveReplay)
-	return m.Engine.Where("file_id", fileId).Get(m.VideoLiveReplay)
+	return m.Engine.Where("file_id=?", fileId).Get(m.VideoLiveReplay)
 }
 
 // 更新直播回放数据
