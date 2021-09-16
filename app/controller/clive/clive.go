@@ -76,6 +76,13 @@ func (svc *LiveModule) TranscribeStreamCallback(param *mcontest.StreamCallbackIn
 		return code
 	}
 
+	// 回放是否已存在
+	ok, err := svc.contest.GetVideoLiveReplyByFileId(param.FileID)
+	if ok && err == nil {
+		log.Log.Errorf("live_trace: live replay exists, fileId:%s", param.FileID)
+		return errdef.SUCCESS
+	}
+
 	now := int(time.Now().Unix())
 	svc.contest.VideoLiveReplay.UserId = svc.contest.VideoLive.UserId
 	svc.contest.VideoLiveReplay.UpdateAt = now

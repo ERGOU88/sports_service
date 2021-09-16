@@ -147,8 +147,24 @@ func (m *ContestModel) GetVideoLiveCount() (int64, error) {
 	return m.Engine.Count(&models.VideoLive{})
 }
 
-// 通过直播id获取直播信息
-func (m *ContestModel) GetLiveInfoById(liveId string) (bool, error) {
+// 获取直播信息
+func (m *ContestModel) GetLiveInfoByCondition(condition string) (bool, error) {
 	m.VideoLive = new(models.VideoLive)
-	return m.Engine.Where("id=?", liveId).Get(m.VideoLive)
+	return m.Engine.Where(condition).Get(m.VideoLive)
+}
+
+// 通过腾讯云文件id 获取直播回放
+func (m *ContestModel) GetVideoLiveReplyByFileId(fileId string) (bool, error) {
+	m.VideoLiveReplay = new(models.VideoLiveReplay)
+	return m.Engine.Where("file_id", fileId).Get(m.VideoLiveReplay)
+}
+
+// 更新直播回放数据
+func (m *ContestModel) UpdateVideoLiveReplayInfo(condition, cols string) error {
+	if _, err := m.Engine.Where(condition).Cols(cols).
+		Update(m.VideoLiveReplay); err != nil {
+		return err
+	}
+
+	return nil
 }
