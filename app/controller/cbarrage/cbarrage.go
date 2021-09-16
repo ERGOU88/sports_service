@@ -77,7 +77,7 @@ func (svc *BarrageModule) SendLiveBarrage(userId string, params *mbarrage.SendBa
 	}
 
 	// 查询直播是否存在
-	ok, err := svc.contest.GetLiveInfoById(fmt.Sprint(params.VideoId))
+	ok, err := svc.contest.GetLiveInfoByCondition(fmt.Sprintf("id=%d", params.VideoId))
 	if !ok || err != nil {
 		log.Log.Errorf("barrage_trace: LIVE not found, liveId:%s", params.VideoId)
 		svc.engine.Rollback()
@@ -190,7 +190,7 @@ func (svc *BarrageModule) GetVideoBarrageList(videoId, barrageType, minDuration,
 			return errdef.VIDEO_NOT_EXISTS, nil
 		}
 	case "1":
-		ok, err := svc.contest.GetLiveInfoById(videoId)
+		ok, err := svc.contest.GetLiveInfoByCondition(fmt.Sprintf("id=%s", videoId))
 		if !ok || err != nil {
 			log.Log.Errorf("barrage_trace: live not found, liveId:%s", videoId)
 			return errdef.CONTEST_GET_LIVE_FAIL, nil
