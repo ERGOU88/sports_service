@@ -2,6 +2,7 @@ package job
 
 import (
   "errors"
+  "fmt"
   "github.com/garyburd/redigo/redis"
   "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod/v20180717"
   "sports_service/server/app/config"
@@ -9,6 +10,7 @@ import (
   "sports_service/server/global/app/log"
   "sports_service/server/global/consts"
   "sports_service/server/models"
+  "sports_service/server/models/mcontest"
   "sports_service/server/models/mlabel"
   "sports_service/server/models/mposting"
   "sports_service/server/models/muser"
@@ -18,7 +20,6 @@ import (
   "strconv"
   "strings"
   "time"
-  "fmt"
 )
 
 // 主动拉取事件（腾讯云）
@@ -93,53 +94,103 @@ func procedureStateChangedEvent(event *v20180717.EventContent) error {
   }
 
   client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
+  cmodel := mcontest.NewContestModel(session)
   vmodel := mvideo.NewVideoModel(session)
-  video := vmodel.GetVideoByFileId(*event.ProcedureStateChangeEvent.FileId)
-  if video == nil {
-   log.Log.Errorf("job_trace: video not found, fileId:%s", *event.ProcedureStateChangeEvent.FileId)
-   session.Rollback()
-   // 确认事件回调
-   //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-   //  log.Log.Errorf("job_trace: confirm events err:%s", err)
-   //}
+  // 先查看直播回放文件是否存在 （直播录制完毕后 同时会执行点播事件流[转码]）
+  ok, err := cmodel.GetVideoLiveReplyByFileId(*event.ProcedureStateChangeEvent.FileId)
+  if ok && err == nil {
+    // 存在直播回放
+    if b := util.MapExist(mp, "MediaProcessResultSet"); b {
+      log.Log.Debugf("transcode event:%+v", *event.ProcedureStateChangeEvent)
+      playInfo, duration, err := transCodeCompleteEvent(event)
+      if err != nil {
+        session.Rollback()
+        log.Log.Errorf("job_trace: transCode fail, err:%s", err)
+        return err
+      }
 
-   return errors.New("video not found")
-  }
+      if cmodel.VideoLiveReplay.Duration == 0 {
+        cmodel.VideoLiveReplay.Duration = duration
+      }
 
-  if b := util.MapExist(mp, "MediaProcessResultSet"); b {
-    log.Log.Debugf("transcode event:%+v", *event.ProcedureStateChangeEvent)
-    if err := transCodeCompleteEvent(event, video); err != nil {
+      if playInfo != "" {
+        cmodel.VideoLiveReplay.PlayInfo = playInfo
+      }
+
+      condition := fmt.Sprintf("file_id=%s", *event.ProcedureStateChangeEvent.FileId)
+      cols := "duration, play_info"
+      if err := cmodel.UpdateVideoLiveReplayInfo(condition, cols); err != nil {
+        log.Log.Errorf("job_trace: update video live replay info fail, fileId:%s, err:%s",
+          *event.ProcedureStateChangeEvent.FileId, err)
+        session.Rollback()
+        return err
+      }
+    }
+
+  } else {
+    video := vmodel.GetVideoByFileId(*event.ProcedureStateChangeEvent.FileId)
+    if video == nil {
+      log.Log.Errorf("job_trace: video not found, fileId:%s", *event.ProcedureStateChangeEvent.FileId)
       session.Rollback()
-      log.Log.Errorf("job_trace: transCode fail, err:%s", err)
-      return err
+      // 确认事件回调
+      //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
+      //  log.Log.Errorf("job_trace: confirm events err:%s", err)
+      //}
+
+      return errors.New("video not found")
+    }
+
+    if b := util.MapExist(mp, "MediaProcessResultSet"); b {
+      log.Log.Debugf("transcode event:%+v", *event.ProcedureStateChangeEvent)
+      playInfo, duration, err := transCodeCompleteEvent(event)
+      if err != nil {
+        session.Rollback()
+        log.Log.Errorf("job_trace: transCode fail, err:%s", err)
+        return err
+      }
+
+      if video.VideoDuration == 0 {
+        video.VideoDuration = duration
+      }
+
+      if playInfo != "" {
+        video.PlayInfo = playInfo
+      }
+
+      if err := vmodel.UpdateVideoPlayInfo(fmt.Sprint(video.VideoId)); err != nil {
+        log.Log.Errorf("job_trace: update video play info fail, videoId:%d, err:%s", video.VideoId, err)
+        session.Rollback()
+        return errors.New("job_trace: update video play info fail")
+      }
+    }
+
+    if b := util.MapExist(mp, "AiContentReviewResultSet"); b {
+      log.Log.Debugf("ai review event:%+v", *event.ProcedureStateChangeEvent)
+      if err := aiContentReviewEvent(event, vmodel); err != nil {
+        log.Log.Errorf("job_trace: ai review fail, err:%s", err)
+        session.Rollback()
+        return err
+      }
+    }
+
+    if err := vmodel.UpdateVideoPlayInfo(fmt.Sprint(video.VideoId)); err != nil {
+      log.Log.Errorf("job_trace: update video info fail, err:%s", err)
+      session.Rollback()
+      return errors.New("job_trace: update video info fail")
+    }
+
+    // 如果是社区发布的视频 且 视频状态不是审核中 需要修改关联的帖子状态
+    if video.PubType == 2 && vmodel.Videos.Status != 0 {
+      pmodel := mposting.NewPostingModel(session)
+      pmodel.Posting.Status = video.Status
+      if err := pmodel.UpdatePostStatus(video.UserId, fmt.Sprint(video.VideoId)); err != nil {
+        log.Log.Errorf("job_trace: update post status fail, err:%s", err)
+        session.Rollback()
+        return err
+      }
     }
   }
 
-  if b := util.MapExist(mp, "AiContentReviewResultSet"); b {
-    log.Log.Debugf("ai review event:%+v", *event.ProcedureStateChangeEvent)
-    if err := aiContentReviewEvent(event, vmodel); err != nil {
-      log.Log.Errorf("job_trace: ai review fail, err:%s", err)
-      session.Rollback()
-      return err
-    }
-  }
-
-  if err := vmodel.UpdateVideoPlayInfo(fmt.Sprint(video.VideoId)); err != nil {
-    log.Log.Errorf("job_trace: update video info fail, err:%s", err)
-    session.Rollback()
-    return errors.New("job_trace: update video info fail")
-  }
-
-  // 如果是社区发布的视频 且 视频状态不是审核中 需要修改关联的帖子状态
-  if video.PubType == 2 && vmodel.Videos.Status != 0 {
-    pmodel := mposting.NewPostingModel(session)
-    pmodel.Posting.Status = video.Status
-    if err := pmodel.UpdatePostStatus(video.UserId, fmt.Sprint(video.VideoId)); err != nil {
-      log.Log.Errorf("job_trace: update post status fail, err:%s", err)
-      session.Rollback()
-      return err
-    }
-  }
 
   now := time.Now().Unix()
   // 记录事件回调信息
@@ -454,7 +505,7 @@ func fileDeletedEvent(event *v20180717.EventContent) error {
 
 
 // 视频转码事件
-func transCodeCompleteEvent(event *v20180717.EventContent, video *models.Videos) error {
+func transCodeCompleteEvent(event *v20180717.EventContent) (string, int, error) {
   //session := dao.AppEngine.NewSession()
   //defer session.Close()
   //if err := session.Begin(); err != nil {
@@ -478,9 +529,10 @@ func transCodeCompleteEvent(event *v20180717.EventContent, video *models.Videos)
 
 
   if len(event.ProcedureStateChangeEvent.MediaProcessResultSet) <= 0 {
-    return errors.New("MediaProcessResultSet Not Exists")
+    return "", 0, errors.New("MediaProcessResultSet Not Exists")
   }
 
+  var duration int
   list := make([]*mvideo.PlayInfo, 0)
   for _, info := range event.ProcedureStateChangeEvent.MediaProcessResultSet {
     log.Log.Debugf("info:%+v", *info)
@@ -535,9 +587,11 @@ func transCodeCompleteEvent(event *v20180717.EventContent, video *models.Videos)
       playInfo.Duration = int64(*info.TranscodeTask.Output.Duration * 1000)
       list = append(list, playInfo)
 
-      if video.VideoDuration == 0 {
-        video.VideoDuration = int(*info.TranscodeTask.Output.Duration * 1000)
-      }
+      //if video.VideoDuration == 0 {
+      //  video.VideoDuration = int(*info.TranscodeTask.Output.Duration * 1000)
+      //}
+
+      duration = int(*info.TranscodeTask.Output.Duration * 1000)
 
     case "AdaptiveDynamicStreaming":
       if *info.AdaptiveDynamicStreamingTask.ErrCode != 0 {
@@ -563,9 +617,10 @@ func transCodeCompleteEvent(event *v20180717.EventContent, video *models.Videos)
 
       list = append(list, playInfo)
 
-      if video.VideoDuration == 0 {
-        video.VideoDuration = int(*event.ProcedureStateChangeEvent.MetaData.Duration * 1000)
-      }
+      //if video.VideoDuration == 0 {
+      //  video.VideoDuration = int(*event.ProcedureStateChangeEvent.MetaData.Duration * 1000)
+      //}
+      duration = int(*event.ProcedureStateChangeEvent.MetaData.Duration * 1000)
 
     }
   }
@@ -573,39 +628,16 @@ func transCodeCompleteEvent(event *v20180717.EventContent, video *models.Videos)
   playBts, err := util.JsonFast.Marshal(list)
   if err != nil {
     log.Log.Errorf("job_trace: jsonFast err:%s", err)
-    return err
+    return "", duration, err
   }
 
-  video.PlayInfo = string(playBts)
+  //video.PlayInfo = string(playBts)
   //if err := vmodel.UpdateVideoPlayInfo(fmt.Sprint(video.VideoId)); err != nil {
   //
   //  return errors.New("job_trace: update video play info fail")
   //}
 
-  //now := time.Now().Unix()
-  //// 记录事件回调信息
-  //fileId, _ := strconv.Atoi(*event.ProcedureStateChangeEvent.FileId)
-  //vmodel.Events.FileId = int64(fileId)
-  //vmodel.Events.UpdateAt = int(now)
-  //vmodel.Events.EventType = consts.EVENT_PROCEDURE_STATE_CHANGED_TYPE
-  //bts, _ := util.JsonFast.Marshal(event)
-  //vmodel.Events.Event = string(bts)
-  //affected, err := vmodel.RecordTencentEvent()
-  //if err != nil || affected != 1 {
-  //  log.Log.Errorf("job_trace: record tencent transcode complete event err:%s, affected:%d", err, affected)
-  //  session.Rollback()
-  //  return errors.New("record tencent complete event fail")
-  //}
-  //
-  //// 确认事件回调
-  //if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-  //  log.Log.Errorf("job_trace: confirm events err:%s", err)
-  //  session.Rollback()
-  //  return errors.New("confirm event fail")
-  //}
-
-  //session.Commit()
-  return nil
+  return string(playBts), duration, nil
 }
 
 // 上传事件

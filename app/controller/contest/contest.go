@@ -67,6 +67,7 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 	log.Log.Errorf("limitTm:%d", limitTm)
 	list, err := svc.contest.GetLiveList(offset, size, fmt.Sprint(svc.contest.Contest.Id), limitTm, queryType, pullType)
 	if err != nil {
+		log.Log.Errorf("contest_trace: get live list fail, err:%s", err)
 		return errdef.CONTEST_GET_LIVE_FAIL, nil, 0, 0
 	}
 

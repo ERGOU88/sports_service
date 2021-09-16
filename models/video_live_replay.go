@@ -18,4 +18,5 @@ type VideoLiveReplay struct {
 	CreateAt    int    `json:"create_at" xorm:"not null default 0 INT(11)"`
 	UpdateAt    int    `json:"update_at" xorm:"not null default 0 INT(11)"`
 	Describe    string `json:"describe" xorm:"not null default '' comment('描述') VARCHAR(512)"`
+	FileId      string `json:"file_id" xorm:"not null default '' comment('腾讯云文件id') VARCHAR(64)"`
 }
