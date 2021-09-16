@@ -11,6 +11,7 @@ import (
 	"sports_service/server/global/consts"
 	"strconv"
 	"time"
+	"fmt"
 )
 
 type LiveModule struct {
@@ -70,14 +71,16 @@ func (svc *LiveModule) PushOrDisconnectStreamCallback(params *mcontest.StreamCal
 }
 
 // 录制回调
+// tips: 当前版本 只生成一个完整的录制文件 [腾讯云直播已设置续录等待时长 1800s] 所以暂无多个切片 后续如有相关需求 应增加视频合成
+// 腾讯云 视频合成文档：https://cloud.tencent.com/document/product/266/35286
 func (svc *LiveModule) TranscribeStreamCallback(param *mcontest.StreamCallbackInfo) int {
 	log.Log.Infof("live_trace: transcribe callbackInfo:%+v", param)
 	if code := svc.ValidateParamInfo(param); code != errdef.SUCCESS {
 		return code
 	}
 
-	// 回放是否已存在
-	ok, err := svc.contest.GetVideoLiveReplyByFileId(param.FileID)
+	// 直播回放是否已存在 [通过直播id获取]
+	ok, err := svc.contest.GetVideoLiveReply(fmt.Sprint(svc.contest.VideoLive.Id))
 	if ok && err == nil {
 		log.Log.Errorf("live_trace: live replay exists, fileId:%s", param.FileID)
 		return errdef.SUCCESS
