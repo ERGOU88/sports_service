@@ -26,4 +26,5 @@ type Videos struct {
 	Subarea       int    `json:"subarea" xorm:"not null default 0 comment('视频所属分区') INT(11)"`
 	Album         int64  `json:"album" xorm:"not null default 0 comment('视频所属专辑') BIGINT(20)"`
 	AiStatus      int    `json:"ai_status" xorm:"not null default 0 comment('AI审核状态（0：未使用AI审核，1：AI审核通过 2：AI审核不通过 3：AI建议复审') TINYINT(1)"`
+	SectionId     int    `json:"section_id" xorm:"not null default 0 comment('视频所属推荐板块id') INT(11)"`
 }

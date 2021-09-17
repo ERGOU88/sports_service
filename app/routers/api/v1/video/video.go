@@ -650,3 +650,24 @@ func VideoAlbumList(c *gin.Context) {
 	reply.Response(http.StatusOK, code)
 
 }
+
+func HomePageSectionInfo(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cvideo.New(c)
+	sectionType := c.DefaultQuery("section_type", "0")
+	code, list := svc.GetHomepageSectionInfo(sectionType)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
+
+func SectionRecommendInfo(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cvideo.New(c)
+	userId := c.Query("user_id")
+	sectionId := c.Query("section_id")
+	page, size := util.PageInfo(c.Query("page"), c.Query("type"))
+
+	code, list := svc.GetRecommendInfoBySection(userId, sectionId, page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}

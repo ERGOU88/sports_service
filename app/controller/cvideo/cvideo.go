@@ -13,10 +13,12 @@ import (
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mbanner"
 	"sports_service/server/models/mcollect"
+	"sports_service/server/models/minformation"
 	"sports_service/server/models/mlabel"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/mnotify"
 	"sports_service/server/models/mposting"
+	"sports_service/server/models/msection"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	cloud "sports_service/server/tools/tencentCloud"
@@ -39,6 +41,8 @@ type VideoModule struct {
 	label        *mlabel.LabelModel
 	notify       *mnotify.NotifyModel
 	post         *mposting.PostingModel
+	section      *msection.SectionModel
+	information  *minformation.InformationModel
 }
 
 func New(c *gin.Context) VideoModule {
@@ -55,6 +59,8 @@ func New(c *gin.Context) VideoModule {
 		label: mlabel.NewLabelModel(socket),
 		notify: mnotify.NewNotifyModel(socket),
 		post: mposting.NewPostingModel(socket),
+		section: msection.NewSectionModel(socket),
+		information: minformation.NewInformationModel(socket),
 		engine: socket,
 	}
 }
@@ -567,8 +573,13 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 
 		video.Avatar = userInfo.Avatar
 		video.Nickname = userInfo.NickName
+
 		// 获取统计标签
-		video.StatisticsTab = svc.GetStatisticTab(video.VideoId)
+		info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
+		if info != nil {
+			video.StatisticsTab = svc.GetStatisticTab(info)
+		}
+
 		// 用户未登录
 		if userId == "" {
 			log.Log.Error("video_trace: no login")
@@ -599,14 +610,14 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 }
 
 // 获取统计标签
-func (svc *VideoModule) GetStatisticTab(videoId int64) string {
+func (svc *VideoModule) GetStatisticTab(info *models.VideoStatistic) string {
 	var statisticsTab string
 	// 获取视频相关统计数据
 	// 1个点赞:2分 1个收藏:5分 1个弹幕:10分  1个评论:10分  四项中，哪个分数最高，显示哪个
-	info := svc.video.GetVideoStatistic(fmt.Sprint(videoId))
-	if info == nil {
-		return ""
-	}
+	//info := svc.video.GetVideoStatistic(fmt.Sprint(videoId))
+	//if info == nil {
+	//	return ""
+	//}
 	mp := util.NewIntMap(4)
 	// key 统计相关分数  val 统计类型 0 点赞 1 收藏 2 弹幕 3 评论
 	mp.Insert(info.FabulousNum * 2, 0)
@@ -716,7 +727,10 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 		video.Nickname = userInfo.NickName
 		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		// 获取统计标签
-		video.StatisticsTab = svc.GetStatisticTab(video.VideoId)
+		info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
+		if info != nil {
+			video.StatisticsTab = svc.GetStatisticTab(info)
+		}
 
 		if userId == "" {
 			log.Log.Error("video_trace: user no login")
@@ -1291,6 +1305,98 @@ func (svc *VideoModule) GetVideoAlbumByUserId(userId string, page, size int) (in
 
 	if list == nil {
 		return errdef.SUCCESS, []*mvideo.VideoAlbumInfo{}
+	}
+
+	return errdef.SUCCESS, list
+}
+
+// 获取视频首页板块信息
+func (svc *VideoModule) GetHomepageSectionInfo(sectionType string) (int, []*models.RecommendInfoSection) {
+	list, err := svc.section.GetRecommendSectionByType(sectionType)
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+
+	if list == nil {
+		return errdef.SUCCESS, []*models.RecommendInfoSection{}
+	}
+
+	return errdef.SUCCESS, list
+}
+
+// 通过板块获取推荐的内容 [目前只有视频首页]
+func (svc *VideoModule) GetRecommendInfoBySection(userId, sectionId string, page, size int) (int, []*msection.SectionRecommendInfo) {
+	ok, err := svc.section.GetSectionById(sectionId)
+	if !ok || err != nil {
+		log.Log.Errorf("video_trace: get section info by id fail, id:%s, err:%s", sectionId, err)
+		return errdef.INVALID_PARAMS, nil
+	}
+
+	offset := (page - 1) * size
+	list, err := svc.section.GetRecommendInfoBySectionId(sectionId, offset, size)
+	if err != nil {
+		log.Log.Errorf("video_trace: get recommend info by section fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+
+	if list == nil {
+		return errdef.SUCCESS, []*msection.SectionRecommendInfo{}
+	}
+
+	for _, item := range list {
+		user := svc.user.FindUserByUserid(item.UserId)
+		if user != nil {
+			item.Nickname = user.NickName
+			item.Avatar = user.Avatar
+		}
+
+		var likeType int
+		switch item.ContentType {
+		case 1:
+			item.Labels = svc.video.GetVideoLabels(fmt.Sprint(item.Id))
+			if item.Labels == nil {
+				item.Labels = []*models.VideoLabels{}
+			}
+
+			if statistic := svc.video.GetVideoStatistic(fmt.Sprint(item.Id)); statistic != nil {
+				item.ShareNum = statistic.ShareNum
+				item.CommentNum = statistic.CommentNum
+				item.FabulousNum = statistic.FabulousNum
+			}
+
+			// 获取统计标签
+			info := svc.video.GetVideoStatistic(fmt.Sprint(item.Id))
+			if info != nil {
+				item.StatisticsTab = svc.GetStatisticTab(info)
+			}
+
+			likeType = consts.TYPE_VIDEOS
+
+		case 2:
+			ok, err := svc.information.GetInformationById(fmt.Sprint(item.Id))
+			if ok && err == nil {
+				item.ShareNum = svc.information.Statistic.ShareNum
+				item.CommentNum = svc.information.Statistic.CommentNum
+				item.FabulousNum = svc.information.Statistic.FabulousNum
+			}
+
+			likeType = consts.LIKE_TYPE_INFORMATION
+		}
+
+		if userId == "" {
+			continue
+		}
+
+		// 获取点赞的信息
+		if likeInfo := svc.like.GetLikeInfo(userId, item.Id, likeType); likeInfo != nil {
+			item.IsLike = likeInfo.Status
+		}
+
+		// 是否关注
+		if attentionInfo := svc.attention.GetAttentionInfo(userId, item.UserId); attentionInfo != nil {
+			item.IsAttention = attentionInfo.Status
+		}
+
 	}
 
 	return errdef.SUCCESS, list
