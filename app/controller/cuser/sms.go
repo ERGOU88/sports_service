@@ -12,6 +12,7 @@ import (
 	"sports_service/server/util"
 	"strings"
 	"time"
+	"fmt"
 )
 
 var (
@@ -107,6 +108,10 @@ func (svc *UserModule) SendSmsCode(params *sms.SendSmsCodeParams) int {
 
 // 短信验证码登陆
 func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string, *models.User) {
+	if len(params.MobileNum) == 11 && params.MobileNum[0:8] == "18888888" {
+		return svc.RegisterOfficialAccount(params)
+	}
+
 	// 校验手机号合法性
 	if b := svc.user.CheckCellPhoneNumber(params.MobileNum); !b {
 		log.Log.Errorf("sms_trace: invalid mobile num %v", params.MobileNum)
@@ -182,6 +187,53 @@ func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string
 	}
 
 	return errdef.SUCCESS, token, user
+}
+
+// todo: 临时注册官方账号 用于app内容填充 后续剔除
+func (svc *UserModule) RegisterOfficialAccount(params *sms.SmsCodeLoginParams) (int, string, *models.User) {
+	if params.Code != fmt.Sprintf("0110%s", params.MobileNum[9:11]) {
+		return errdef.SMS_CODE_NOT_MATCH, "", nil
+	}
+
+	// 开启事务
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("user_trace: session begin err:%s", err)
+		return errdef.ERROR, "", nil
+	}
+
+	// 注册
+	reg := muser.NewMobileRegister()
+	svc.user.User.AccountType = 1
+	if err := reg.Register(svc.user, params.Platform, params.MobileNum, svc.context.ClientIP()); err != nil {
+		log.Log.Errorf("user_trace: register err:%s", err)
+		svc.engine.Rollback()
+		return errdef.USER_REGISTER_FAIL, "", nil
+	}
+
+	// 添加用户
+	if err := svc.user.AddUser(); err != nil {
+		log.Log.Errorf("reg_trace: add user info err:%s", err)
+		svc.engine.Rollback()
+		return errdef.USER_ADD_INFO_FAIL, "", nil
+	}
+
+	// 添加用户初始化通知设置
+	if err := svc.notify.AddUserNotifySetting(svc.user.User.UserId, int(time.Now().Unix())); err != nil {
+		log.Log.Errorf("user_trace: add user notify setting err:%s", err)
+		svc.engine.Rollback()
+		return errdef.USER_ADD_NOTIFY_SET_FAIL, "", nil
+	}
+
+	svc.engine.Commit()
+
+	// 生成token
+	token := svc.user.GenUserToken(svc.user.User.UserId, util.Md5String(svc.user.User.Password))
+	// 保存到redis
+	if err := svc.user.SaveUserToken(svc.user.User.UserId, token); err != nil {
+		log.Log.Errorf("user_trace: save user token err:%s", err)
+	}
+
+	return errdef.SUCCESS, token, svc.user.User
 }
 
 // 检查用户状态
