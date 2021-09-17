@@ -11,7 +11,7 @@ type ILive interface {
 		@param roomId 房间id
 	    @param expireTm 过期时长 [秒]
 	*/
-	GenPushStream(roomId string, expireTm int64) string //ok
+	GenPushStream(roomId string, expireTm int64) (string, string) //ok
 
 	/*
 	    云直播  生成拉流地址
