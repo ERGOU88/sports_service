@@ -920,10 +920,6 @@ func newUploadEvent(event *v20180717.EventContent) error {
   // 如果 透传参数里的mode 与 当前运行环境不匹配
   if source.Mode != config.Global.Mode {
     log.Log.Errorf("job_trace: mode not match, fileId:%s", *event.FileUploadEvent.FileId)
-    // 确认事件回调
-    if err := client.ConfirmEvents([]string{*event.EventHandle}); err != nil {
-      log.Log.Errorf("job_trace: confirm events err:%s, fileId:%s", err, *event.FileUploadEvent.FileId)
-    }
     session.Rollback()
     return errors.New("mode not match")
   }
