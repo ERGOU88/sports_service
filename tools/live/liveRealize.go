@@ -33,11 +33,12 @@ func NewLiveRealize() *liveRealize {
 	return &liveRealize{}
 }
 
-func (live *liveRealize) GenPushStream(roomId string, expireTm int64) string {
+func (live *liveRealize) GenPushStream(roomId string, expireTm int64) (string, string) {
 	txTime := BuildTxTime(expireTm)
 	txSecret := BuildTxSecret(LIVE_PUSH_KEY, roomId, expireTm)
-	stream := fmt.Sprintf("rtmp://%s/live/%s?txSecret=%s&txTime=%s", PUSH_STREAM_HOST, roomId, txSecret, txTime)
-	return stream
+	streamUrl := fmt.Sprintf("rtmp://%s/live/", PUSH_STREAM_HOST)
+	streamKey := fmt.Sprintf("%s?txSecret=%s&txTime=%s", roomId, txSecret, txTime)
+	return streamUrl, streamKey
 }
 
 type PullStreamInfo struct {

@@ -13,18 +13,18 @@ func init() {
 
 // 添加关注
 func TestAddAttention(t *testing.T) {
- c, _ := gin.CreateTestContext(httptest.NewRecorder())
- svc := New(c)
- syscode := svc.AddAttention("202009101933004667", "202010101545291936")
- t.Logf("syscode:%d", syscode)
+  c, _ := gin.CreateTestContext(httptest.NewRecorder())
+  svc := New(c)
+  syscode := svc.AddAttention("202009101933004667", "202010101545291936")
+  t.Logf("syscode:%d", syscode)
 }
 
 func BenchmarkAddAttention(b *testing.B) {
- for i := 0; i < b.N; i++{
-   c, _ := gin.CreateTestContext(httptest.NewRecorder())
-   svc := New(c)
-   svc.AddAttention("202009101933004667", "202010101545291936")
- }
+  for i := 0; i < b.N; i++{
+    c, _ := gin.CreateTestContext(httptest.NewRecorder())
+    svc := New(c)
+    svc.AddAttention("202009101933004667", "202010101545291936")
+  }
 }
 
 // 关注的用户列表
