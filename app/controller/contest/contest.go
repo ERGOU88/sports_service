@@ -12,6 +12,7 @@ import (
 	"sports_service/server/models/mcommunity"
 	"sports_service/server/models/mcontest"
 	"sports_service/server/models/muser"
+	"sports_service/server/models/mvideo"
 	"sports_service/server/util"
 	"time"
 	"fmt"
@@ -24,6 +25,7 @@ type ContestModule struct {
 	banner      *mbanner.BannerModel
 	contest     *mcontest.ContestModel
 	community   *mcommunity.CommunityModel
+	video       *mvideo.VideoModel
 }
 
 func New(c *gin.Context) ContestModule {
@@ -35,6 +37,7 @@ func New(c *gin.Context) ContestModule {
 		banner: mbanner.NewBannerMolde(socket),
 		contest: mcontest.NewContestModel(socket),
 		community: mcommunity.NewCommunityModel(socket),
+		video: mvideo.NewVideoModel(socket),
 		engine: socket,
 	}
 }
@@ -187,7 +190,7 @@ func (svc *ContestModule) GetLiveReplayInfo(id int64, live *mcontest.LiveInfo) {
 			Describe: svc.contest.VideoLiveReplay.Describe,
 			Duration: svc.contest.VideoLiveReplay.Duration,
 			CreateAt: svc.contest.VideoLiveReplay.CreateAt,
-			HistoryAddr: svc.contest.VideoLiveReplay.HistoryAddr,
+			HistoryAddr: svc.video.AntiStealingLink(svc.contest.VideoLiveReplay.HistoryAddr),
 			Title: svc.contest.VideoLiveReplay.Title,
 			PlayNum: svc.contest.VideoLiveReplay.PlayNum,
 		}
@@ -200,6 +203,11 @@ func (svc *ContestModule) GetLiveReplayInfo(id int64, live *mcontest.LiveInfo) {
 
 		if len(replay.PlayInfo) == 0 {
 			replay.PlayInfo = []*mcontest.PlayInfo{}
+		} else {
+			for _, v := range replay.PlayInfo {
+				// 添加防盗链
+				v.Url = svc.video.AntiStealingLink(v.Url)
+			}
 		}
 
 		live.LiveReplayInfo = replay
