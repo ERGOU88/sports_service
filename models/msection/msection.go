@@ -60,7 +60,7 @@ func (m *SectionModel) GetSectionById(id string) (bool, error) {
 const (
 	GET_RECOMMEND_INFO_BY_SECTION_ID = "SELECT v.video_id as id, v.size, v.describe, v.cover, v.video_addr as video_addr, " +
 		"v.create_at, 1 as content_type, v.`title`, v.`video_duration`,v.user_id FROM videos as v " +
-		"WHERE status=1 AND pub_type=3 AND section_id=? UNION ALL SELECT i.id as id, 0, '', i.cover, '', " +
+		"WHERE status=1 AND pub_type=3 AND section_id=? UNION ALL SELECT i.id as id, 0, i.describe, i.cover, '', " +
 		"i.create_at, 2 as content_type, i.title, 0, i.user_id FROM information as i " +
 		"WHERE status=0 AND pub_type=2 AND related_id=? ORDER BY create_at DESC LIMIT ?, ?"
 )
