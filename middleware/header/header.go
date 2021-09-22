@@ -2,6 +2,7 @@ package header
 
 import (
   "github.com/gin-gonic/gin"
+    "net/http"
 )
 
 // 跨域处理
@@ -12,7 +13,7 @@ func Cors(c *gin.Context) {
     // 允许请求带有验证信息
     c.Header("Access-Control-Allow-Credentials", "true")
     c.Header("Access-Control-Allow-Headers", "Cookie, Authorization, x-requested-with, origin, Content-Type, auth")
-    //if c.Request.Method == "OPTIONS" {
-    //  c.AbortWithStatus(http.StatusNoContent)
-    //}
+    if c.Request.Method == "OPTIONS" {
+        c.AbortWithStatus(http.StatusOK)
+    }
 }
