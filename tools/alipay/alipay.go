@@ -34,9 +34,9 @@ type AliPayClient struct {
 // appId：应用ID
 // privateKey：应用私钥，支持PKCS1和PKCS8
 // isProd：是否是正式环境
-func NewAliPay(isProd bool) *AliPayClient {
+func NewAliPay(isProd bool, appId, privateKey string) *AliPayClient {
 	ali := &AliPayClient{}
-	ali.Client = alipay.NewClient(ALIPAY_APP_ID, ALIPAY_APP_PRIVATE_KEY, isProd)
+	ali.Client = alipay.NewClient(appId, privateKey, isProd)
 	// 配置公共参数
 	ali.Client.SetCharset("utf-8").
 		SetSignType(alipay.RSA2).

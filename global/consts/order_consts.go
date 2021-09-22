@@ -54,6 +54,7 @@ const (
     PLT_TYPE_IOS     = 1002
 )
 
+// 支付方式 1 支付宝 2 微信
 const (
     ALIPAY  = 1
     WEICHAT = 2
