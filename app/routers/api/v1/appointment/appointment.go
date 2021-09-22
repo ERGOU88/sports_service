@@ -27,6 +27,12 @@ func AppointmentDate(c *gin.Context) {
 		return
 	}
 
+	courseId, err := strconv.Atoi(c.Query("course_id"))
+	if err != nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
 	factory := &cappointment.AppointmentFactory{}
 	i = factory.Create(queryType, c)
 	if i == nil {
@@ -34,7 +40,7 @@ func AppointmentDate(c *gin.Context) {
 		return
 	}
 
-	syscode, list := cappointment.GetAppointmentDate(i, relatedId)
+	syscode, list := cappointment.GetAppointmentDate(i, queryType, relatedId, courseId)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)
 }

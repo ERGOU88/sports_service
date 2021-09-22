@@ -2,7 +2,7 @@ package models
 
 type VenueCoachDetail struct {
 	Id               int64  `json:"id" xorm:"pk autoincr comment('主键id') BIGINT(20)"`
-	Title            string `json:"title" xorm:"comment('抬头') MEDIUMTEXT"`
+	Title            string `json:"title" xorm:"comment('教练职称') MEDIUMTEXT"`
 	Name             string `json:"name" xorm:"not null default '' comment('私教名称') VARCHAR(60)"`
 	Address          string `json:"address" xorm:"not null comment('私教地点') VARCHAR(128)"`
 	Designation      string `json:"designation" xorm:"not null default '' comment('认证称号') VARCHAR(60)"`

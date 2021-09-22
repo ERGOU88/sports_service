@@ -47,6 +47,10 @@ type CourseInfo struct {
 	Icon           string `json:"icon"`
 	CourseType     int    `json:"course_type"`
 	PeriodNum      int    `json:"period_num"`
+	VenueId        int    `json:"venue_id"`
+
+	CostDescription    string       `json:"cost_description"`     // 费用说明
+	Instructions       string       `json:"instructions"`         // 购买须知
 }
 
 // 评价列表返回数据

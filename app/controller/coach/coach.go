@@ -96,23 +96,9 @@ func (svc *CoachModule) GetCoachDetail(coachId string) (int, *mcoach.CoachDetail
 	}
 
 	if len(courses) > 0 {
-		res.Courses = make([]*mcoach.CourseInfo, len(courses))
-		for key, val := range courses {
-			course := &mcoach.CourseInfo{
-				Id: val.Id,
-				CourseType: val.CourseType,
-				PeriodNum: val.PeriodNum,
-				Price: val.Price,
-				PromotionPic: val.PromotionPic,
-				Icon: val.Icon,
-				Title: val.Title,
-				Describe: val.Describe,
-				CoachId: val.CoachId,
-				ClassPeriod: val.ClassPeriod,
-			}
-
-			res.Courses[key] = course
-		}
+		res.Courses = courses
+	} else {
+		res.Courses = make([]*mcoach.CourseInfo, 0)
 	}
 
 

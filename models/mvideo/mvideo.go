@@ -108,6 +108,8 @@ type RecommendVideoInfo struct {
 	Status        int32                 `json:"status"  example:"1"`                   // 审核状态
 	CreateAt      int                   `json:"create_at" example:"1600000000"`        // 视频创建时间
 	FabulousNum   int                   `json:"fabulous_num" example:"10"`             // 点赞数
+	CommentNum    int                   `json:"comment_num" example:"10"`              // 评论数
+	ShareNum      int                   `json:"share_num" example:"10"`               // 分享数
 	StatisticsTab string                `json:"statistics_tab"`                        // 统计标签 1个点赞  2分 1个收藏  5分 1个弹幕  10分  1个评论  10分  四项中，哪个分数最高，显示哪个
 	BrowseNum     int                   `json:"browse_num" example:"10"`              // 浏览数（播放数）
 	UserId        string                `json:"user_id" example:"发布视频的用户id"`      // 发布视频的用户id
@@ -118,6 +120,7 @@ type RecommendVideoInfo struct {
 	Size          int                   `json:"size"`                                 // 视频总字节数
 	SubareaInfo   *models.VideoSubarea  `json:"subarea_info"`                         // 视频分区信息
 	Subarea       int                   `json:"subarea_id"`                           // 视频分区id
+	Labels        []*models.VideoLabels `json:"labels"`                               // 视频标签
 }
 
 type VideoDetailInfo struct {
@@ -260,9 +263,15 @@ type VideoInfoBySubarea struct {
 
 	BarrageNum    int                   `json:"barrage_num" example:"10"`              // 弹幕数
 	BrowseNum     int                   `json:"browse_num" example:"10"`               // 浏览数（播放数）
+	FabulousNum   int                   `json:"fabulous_num" example:"10"`             // 点赞数
+	CommentNum    int                   `json:"comment_num" example:"10"`              // 评论数
+	CollectNum    int                   `json:"collect_num" example:"10"`              // 收藏数
+	ShareNum      int                   `json:"share_num" example:"10"`                // 分享数
 	UserId        string                `json:"user_id" example:"发布视频的用户id"`       // 发布视频的用户id
 	Avatar        string                `json:"avatar" example:"头像"`                  // 头像
 	Nickname      string                `json:"nick_name"  example:"昵称"`              // 昵称
+	Labels        []*models.VideoLabels `json:"labels"`                               // 视频标签
+	StatisticsTab string                `json:"statistics_tab"`                       // 统计标签
 }
 
 // 实栗
@@ -955,9 +964,9 @@ func (m *VideoModel) UpdateVideoInfo() (int64, error) {
 }
 
 const (
-	QUERY_VIDEO_LIST_BY_SUBAREA = "SELECT v.*, s.barrage_num,s.browse_num FROM `videos` as v LEFT JOIN video_statistic " +
-		"as s ON v.video_id=s.video_id WHERE v.status = 1 AND v.subarea=? ORDER BY v.video_id DESC, v.is_top DESC, " +
-		"v.is_recommend DESC LIMIT ?, ?"
+	QUERY_VIDEO_LIST_BY_SUBAREA = "SELECT v.*, s.barrage_num,s.browse_num,s.fabulous_num, s.share_num, s.comment_num" +
+		" FROM `videos` as v LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status = 1 AND " +
+		"v.subarea=? ORDER BY v.video_id DESC, v.is_top DESC, v.is_recommend DESC LIMIT ?, ?"
 )
 // 获取分区下的视频列表
 func (m *VideoModel) GetVideoListBySubarea(subarea string, offset, size int) ([]*VideoInfoBySubarea, error){

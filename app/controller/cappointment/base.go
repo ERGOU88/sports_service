@@ -57,19 +57,25 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 		svc.appointment.AppointmentInfo.CurAmount = 0
 		svc.appointment.AppointmentInfo.TimeNode = ""
 
-		if err := svc.appointment.GetMinPriceByWeek(); err != nil {
+		if err := svc.appointment.GetVenueMinPriceByWeek(); err != nil {
 			log.Log.Errorf("venue_trace: get min price fail, err:%s", err)
 		}
 
 		info.MinPrice = svc.appointment.AppointmentInfo.CurAmount
 		info.PriceCn = fmt.Sprintf("¥%.2f", float64(info.MinPrice)/100)
 
+		condition, err := svc.GetQueryCondition()
+		if err != nil {
+			log.Log.Errorf("venue_trace: get query condition fail, err:%s", err)
+			return nil
+		}
+
 		// 预约大课的时间节点选项 过期的节点会在服务端直接过滤掉 所以日期配置展示最低价格时 也应排除过期的节点
 		if appointmentType == consts.APPOINTMENT_COURSE && v.Id == 1 {
 			date := svc.GetDateById(v.Id, consts.FORMAT_DATE)
 			svc.SetWeek(v.Week)
 			svc.SetAppointmentType(appointmentType)
-			list, err := svc.GetAppointmentOptions()
+			list, err := svc.GetAppointmentOptions(condition)
 			if len(list) > 0 && err == nil {
 				for _, opts := range list {
 					_, _, hasExpire := svc.TimeNodeHasExpire(date, opts.TimeNode)
@@ -85,7 +91,7 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 			}
 		}
 
-		total, err := svc.appointment.GetTotalNodeByWeek()
+		total, err := svc.appointment.GetTotalNodeByWeek(condition)
 		if err != nil {
 			log.Log.Errorf("venue_trace: get total node by week fail, err:%s", err)
 		}
@@ -114,6 +120,29 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 	return dateInfo
 }
 
+// 获取查询条件
+func (svc *base) GetQueryCondition() (string, error) {
+	var condition string
+	switch svc.appointment.AppointmentInfo.AppointmentType {
+	case consts.APPOINTMENT_VENUE:
+		condition = fmt.Sprintf("venue_id=%d AND week_num=%d AND appointment_type=%d AND status=0",
+			svc.appointment.AppointmentInfo.VenueId, svc.appointment.AppointmentInfo.WeekNum,
+			svc.appointment.AppointmentInfo.AppointmentType)
+	case consts.APPOINTMENT_COACH:
+		condition = fmt.Sprintf("course_id=%d AND coach_id=%d AND week_num=%d AND appointment_type=%d AND status=0",
+			svc.appointment.AppointmentInfo.CourseId, svc.appointment.AppointmentInfo.CoachId, svc.appointment.AppointmentInfo.WeekNum,
+			svc.appointment.AppointmentInfo.AppointmentType)
+	case consts.APPOINTMENT_COURSE:
+		condition = fmt.Sprintf("course_id=%d AND week_num=%d AND appointment_type=%d AND status=0",
+			svc.appointment.AppointmentInfo.CourseId, svc.appointment.AppointmentInfo.WeekNum,
+			svc.appointment.AppointmentInfo.AppointmentType)
+	default:
+		return "", errors.New("invalid appointmentType")
+	}
+
+	return condition, nil
+}
+
 // 获取预约的日期信息（从当天开始推算）
 // days 天数
 func (svc *base) GetAppointmentDate(days int) []util.DateInfo {
@@ -127,9 +156,27 @@ func (svc *base) GetAppointmentDate(days int) []util.DateInfo {
 	return dateInfo
 }
 
-// 预约 场馆/私教 选项
-func (svc *base) GetAppointmentOptions() ([]*models.VenueAppointmentInfo, error) {
-	list, err := svc.appointment.GetOptionsByWeek()
+// 预约 场馆/私教/大课 选项
+func (svc *base) GetAppointmentOptions(condition string) ([]*models.VenueAppointmentInfo, error) {
+	//var condition string
+	//switch svc.appointment.AppointmentInfo.AppointmentType {
+	//case consts.APPOINTMENT_VENUE:
+	//	condition = fmt.Sprintf("venue_id=%d AND week_num=%d AND appointment_type=%d AND status=0",
+	//		svc.appointment.AppointmentInfo.VenueId, svc.appointment.AppointmentInfo.WeekNum,
+	//		svc.appointment.AppointmentInfo.AppointmentType)
+	//case consts.APPOINTMENT_COACH:
+	//	condition = fmt.Sprintf("course_id=%d AND coach_id=%d AND week_num=%d AND appointment_type=%d AND status=0",
+	//		svc.appointment.AppointmentInfo.CourseId, svc.appointment.AppointmentInfo.CoachId, svc.appointment.AppointmentInfo.WeekNum,
+	//		svc.appointment.AppointmentInfo.AppointmentType)
+	//case consts.APPOINTMENT_COURSE:
+	//	condition = fmt.Sprintf("course_id=%d AND week_num=%d AND appointment_type=%d AND status=0",
+	//		svc.appointment.AppointmentInfo.CourseId, svc.appointment.AppointmentInfo.WeekNum,
+	//		svc.appointment.AppointmentInfo.AppointmentType)
+	//default:
+	//	return nil, errors.New("invalid appointmentType")
+	//}
+	//
+	list, err := svc.appointment.GetOptionsByWeek(condition)
 	if err != nil {
 		return nil, err
 	}
@@ -145,16 +192,36 @@ func (svc *base) SetWeek(week int) {
 	svc.appointment.AppointmentInfo.WeekNum = week
 }
 
-func (svc *base) SetRelatedId(relatedId int) {
-	svc.appointment.AppointmentInfo.RelatedId = int64(relatedId)
+func (svc *base) SetVenueId(venueId int) {
+	svc.appointment.AppointmentInfo.VenueId = int64(venueId)
+}
+
+func (svc *base) SetCoachId(coachId int) {
+	svc.appointment.AppointmentInfo.CoachId = int64(coachId)
+}
+
+func (svc *base) SetCourseId(courseId int) {
+	svc.appointment.AppointmentInfo.CourseId = int64(courseId)
 }
 
 func (svc *base) SetAppointmentType(appointmentType int) {
 	svc.appointment.AppointmentInfo.AppointmentType = appointmentType
 }
 
-func (svc *base) SetStockRelatedId(relatedId int64) {
-	svc.appointment.Stock.RelatedId = relatedId
+//func (svc *base) SetStockRelatedId(relatedId int64) {
+//	svc.appointment.Stock.RelatedId = relatedId
+//}
+
+func (svc *base) SetStockCoachId(coachId int64) {
+	svc.appointment.Stock.CoachId = coachId
+}
+
+func (svc *base) SetStockCourseId(courseId int64) {
+	svc.appointment.Stock.CourseId = courseId
+}
+
+func (svc *base) SetStockVenueId(venueId int64) {
+	svc.appointment.Stock.VenueId = venueId
 }
 
 func (svc *base) SetStockDate(date string) {
@@ -259,7 +326,8 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		}
 	}
 
-	ok, err := svc.QueryStockInfo(item.AppointmentType, item.RelatedId, date, item.TimeNode)
+	svc.appointment.AppointmentInfo = item
+	ok, err := svc.QueryStockInfo(date)
 	if err != nil {
 		log.Log.Errorf("venue_trace: get purchase num fail, err:%s", err)
 	}
@@ -291,12 +359,17 @@ func (svc *base) GetAppointmentConfByIds(ids []interface{}) ([]*models.VenueAppo
 }
 
 // 预约类型、关联ID、日期、时间节点查询库存信息
-func (svc *base) QueryStockInfo(appointmentType int, relatedId int64, date, timeNode string) (bool, error) {
+func (svc *base) QueryStockInfo(date string) (bool, error) {
 	//svc.SetAppointmentType(appointmentType)
 	//svc.SetStockRelatedId(relatedId)
 	//svc.SetStockDate(date)
 	//svc.SetStockTimeNode(timeNode)
-	return svc.appointment.GetStockInfo(appointmentType, relatedId, date, timeNode)
+	condition, err := svc.GetQueryStockCondition(date)
+	if err != nil {
+		return false, err
+	}
+
+	return svc.appointment.GetStockInfo(condition)
 }
 
 func (svc *base) SetOrderProductInfo(orderId string, now, count int, productId int64) *models.VenueOrderProductInfo {
@@ -349,7 +422,9 @@ func (svc *base) AddStock(date string, now, count int) (bool, error) {
 		QuotaNum:        svc.appointment.AppointmentInfo.QuotaNum,
 		PurchasedNum:    count,
 		AppointmentType: svc.appointment.AppointmentInfo.AppointmentType,
-		RelatedId:       svc.appointment.AppointmentInfo.RelatedId,
+		VenueId:         svc.appointment.AppointmentInfo.VenueId,
+		CourseId:        svc.appointment.AppointmentInfo.CourseId,
+		CoachId:         svc.appointment.AppointmentInfo.CoachId,
 		CreateAt:        now,
 		UpdateAt:        now,
 	}
@@ -373,10 +448,20 @@ func (svc *base) AddStock(date string, now, count int) (bool, error) {
 
 // 更新库存
 func (svc *base) UpdateStock(date string, count, now int) (int64, error) {
-	// 更新库存
-	return svc.appointment.UpdateStockInfo(svc.appointment.AppointmentInfo.TimeNode, date,
-		svc.appointment.AppointmentInfo.QuotaNum, count, now, svc.appointment.AppointmentInfo.AppointmentType,
-		int(svc.appointment.AppointmentInfo.RelatedId))
+	switch svc.appointment.AppointmentInfo.AppointmentType {
+	case consts.APPOINTMENT_VENUE:
+		// 更新库存
+		return svc.appointment.UpdateVenueStockInfo(svc.appointment.AppointmentInfo.TimeNode, date,
+			svc.appointment.AppointmentInfo.QuotaNum, count, now, svc.appointment.AppointmentInfo.AppointmentType,
+			int(svc.appointment.AppointmentInfo.VenueId))
+	case consts.APPOINTMENT_COACH, consts.APPOINTMENT_COURSE:
+		return svc.appointment.UpdateCourseStockInfo(svc.appointment.AppointmentInfo.TimeNode, date,
+			svc.appointment.AppointmentInfo.QuotaNum, count, now, svc.appointment.AppointmentInfo.AppointmentType,
+			int(svc.appointment.AppointmentInfo.VenueId), int(svc.appointment.AppointmentInfo.CoachId),
+			int(svc.appointment.AppointmentInfo.CourseId))
+	}
+
+	return 0, errors.New("invalid appointmentType")
 }
 
 // 添加预约流水
@@ -505,8 +590,7 @@ func (svc *base) SetLatestInventoryResp(date string, count int, isEnough bool) (
 	}
 
 	// 查看最新的库存 并返回 tips：读快照无问题 购买时保证数据一致性即可
-	ok, err := svc.QueryStockInfo(svc.appointment.AppointmentInfo.AppointmentType,
-		svc.appointment.AppointmentInfo.RelatedId, date, svc.appointment.AppointmentInfo.TimeNode)
+	ok, err := svc.QueryStockInfo(date)
 	if !ok || err != nil {
 		log.Log.Errorf("venue_trace: get stock info fail, err:%s", err)
 		//return nil, errors.New("get stock info fail")
@@ -631,8 +715,13 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 		svc.orderMp[item.Id] = svc.SetOrderProductInfo(orderId, now, item.Count, item.Id)
 		//svc.recordMp[item.Id] = svc.SetAppointmentRecordInfo(userId, date, orderId, now, item.Count, item.SeatInfos, relatedId)
 
-		ok, err := svc.appointment.HasExistsStockInfo(svc.appointment.AppointmentInfo.AppointmentType,
-			svc.appointment.AppointmentInfo.RelatedId, date, svc.appointment.AppointmentInfo.TimeNode)
+		condition, err := svc.GetQueryStockCondition(date)
+		if err != nil {
+			log.Log.Errorf("venue_trace: get query stock condition fail, err:%s", err)
+			return err
+		}
+
+		ok, err := svc.appointment.HasExistsStockInfo(condition)
 		if err != nil {
 			log.Log.Errorf("venue_trace: query stock info fail, err:%s", err)
 			return err
@@ -702,6 +791,24 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 	//}
 
 	return nil
+}
+
+func (svc *base) GetQueryStockCondition(date string) (string, error) {
+	var condition string
+	switch svc.appointment.AppointmentInfo.AppointmentType {
+	case consts.APPOINTMENT_VENUE:
+		condition = fmt.Sprintf("appointment_type=%d AND venue_id=%d AND date=%s AND time_node=%s",
+			svc.appointment.AppointmentInfo.AppointmentType, svc.appointment.AppointmentInfo.VenueId, date,
+			svc.appointment.AppointmentInfo.TimeNode)
+	case consts.APPOINTMENT_COACH,consts.APPOINTMENT_COURSE:
+		condition = fmt.Sprintf("venue_id=%d AND appointment_type=%d AND course_id=%d AND coach_id=%d AND date=%s AND time_node=%s",
+			svc.appointment.AppointmentInfo.VenueId, svc.appointment.AppointmentInfo.AppointmentType, svc.appointment.AppointmentInfo.CourseId,
+			svc.appointment.AppointmentInfo.CoachId, date, svc.appointment.AppointmentInfo.TimeNode)
+	default:
+		return "", errors.New("invalid appointmentType")
+	}
+
+	return condition, nil
 }
 
 // labelType 0 表示用户添加 1 表示系统添加

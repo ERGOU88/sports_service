@@ -43,9 +43,9 @@ func NewCoach(c *gin.Context) *CoachAppointmentModule {
 
 // 私教课程选项
 func (svc *CoachAppointmentModule) Options(relatedId int64) (int, interface{}) {
-	svc.course.Course.CoachId = relatedId
-	svc.course.Course.CourseType = 1
-	list, err := svc.course.GetCourseList()
+	//svc.course.Course.CoachId = relatedId
+	//svc.course.Course.CourseType = 1
+	list, err := svc.course.GetCourseByCoachId(fmt.Sprint(relatedId))
 	if err != nil {
 		return errdef.ERROR, nil
 	}
@@ -105,24 +105,24 @@ func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentR
 		return errdef.COURSE_NOT_EXISTS, nil
 	}
 
-	if svc.course.Course.CoachId != params.CoachId {
-		log.Log.Error("venue_trace: coach id not match, coachId:%d, curCoachId:%d",
-		svc.course.Course.CoachId, params.CoachId)
-		svc.engine.Rollback()
-		return errdef.COACH_ID_NOT_MATCH, nil
-	}
+	//if svc.course.Course.CoachId != params.CoachId {
+	//	log.Log.Error("venue_trace: coach id not match, coachId:%d, curCoachId:%d",
+	//	svc.course.Course.CoachId, params.CoachId)
+	//	svc.engine.Rollback()
+	//	return errdef.COACH_ID_NOT_MATCH, nil
+	//}
 
-	ok, err = svc.coach.GetCoachInfoById(fmt.Sprint(svc.course.Course.CoachId))
-	if !ok || err != nil {
-		log.Log.Errorf("venue_trace: get coach by id fail, err:%s", err)
-		svc.engine.Rollback()
-		return errdef.COACH_NOT_EXISTS, nil
-	}
+	//ok, err = svc.coach.GetCoachInfoById(fmt.Sprint(svc.course.Course.CoachId))
+	//if !ok || err != nil {
+	//	log.Log.Errorf("venue_trace: get coach by id fail, err:%s", err)
+	//	svc.engine.Rollback()
+	//	return errdef.COACH_NOT_EXISTS, nil
+	//}
 
-	if svc.coach.Coach.CoachType != 1 {
-		log.Log.Errorf("venue_trace: coach type fail, coachType:%d", svc.coach.Coach.CoachType)
-		return errdef.COACH_TYPE_FAIL, nil
-	}
+	//if svc.coach.Coach.CoachType != 1 {
+	//	log.Log.Errorf("venue_trace: coach type fail, coachType:%d", svc.coach.Coach.CoachType)
+	//	return errdef.COACH_TYPE_FAIL, nil
+	//}
 
 	svc.Extra.CoachId = svc.coach.Coach.Id
 	svc.Extra.CoachName = svc.coach.Coach.Name
@@ -204,7 +204,13 @@ func (svc *CoachAppointmentModule) AppointmentOptions() (int, interface{}) {
 		return errdef.ERROR, nil
 	}
 
-	list, err := svc.GetAppointmentOptions()
+	condition, err := svc.GetQueryCondition()
+	if err != nil {
+		log.Log.Errorf("venue_trace: get query condition fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+
+	list, err := svc.GetAppointmentOptions(condition)
 	if err != nil {
 		log.Log.Errorf("venue_trace: get options fail, err:%s", err)
 		return errdef.ERROR, nil
@@ -234,7 +240,7 @@ func (svc *CoachAppointmentModule) AppointmentDetail() (int, interface{}) {
 
 // 预约私教课程日期配置
 func (svc *CoachAppointmentModule) AppointmentDate() (int, interface{}) {
-	return errdef.SUCCESS, svc.AppointmentDateInfo(6, 1)
+	return errdef.SUCCESS, svc.AppointmentDateInfo(6, consts.APPOINTMENT_COACH)
 }
 
 

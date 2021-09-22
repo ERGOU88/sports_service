@@ -200,7 +200,13 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 		return errdef.ERROR, nil
 	}
 
-	list, err := svc.GetAppointmentOptions()
+	condition, err := svc.GetQueryCondition()
+	if err != nil {
+		log.Log.Errorf("venue_trace: get query condition fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+
+	list, err := svc.GetAppointmentOptions(condition)
 	if err != nil {
 		log.Log.Errorf("venue_trace: get options fail, err:%s", err)
 		return errdef.ERROR, nil
@@ -285,8 +291,6 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 					log.Log.Errorf("venue_trace: unmarshal seat info fail, err:%s", err)
 				}
 
-
-
 				//uinfo := &mappointment.SeatInfo{
 				//	UserId: val.UserId,
 				//}
@@ -325,7 +329,7 @@ func (svc *VenueAppointmentModule) AppointmentDetail() (int, interface{}) {
 
 // 场馆预约日期配置
 func (svc *VenueAppointmentModule) AppointmentDate() (int, interface{}) {
-	return errdef.SUCCESS, svc.AppointmentDateInfo(6, 0)
+	return errdef.SUCCESS, svc.AppointmentDateInfo(6, consts.APPOINTMENT_VENUE)
 }
 
 // 会员抵扣流程
