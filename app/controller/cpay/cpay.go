@@ -58,7 +58,7 @@ func (svc *PayModule) AppPay(param *morder.PayReqParam) (int, interface{}) {
 		return errdef.ORDER_NOT_EXISTS, nil
 	}
 
-	ok, err = svc.pay.GetPaymentChannel(svc.order.Order.PayType)
+	ok, err = svc.pay.GetPaymentChannel(param.PayType)
 	if !ok || err != nil {
 		log.Log.Errorf("pay_trace: get payment channel fail, orderId:%s, ok:%v, err:%s", svc.order.Order.PayOrderId,
 			ok, err)
