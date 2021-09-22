@@ -13,7 +13,6 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models/morder"
-	"sports_service/server/tools/alipay"
 	"sports_service/server/tools/wechat"
 	"sports_service/server/util"
 	"strconv"
@@ -73,15 +72,12 @@ func AliPayNotify(c *gin.Context) {
 	sign, _ = url.PathUnescape(sign)
 	log.Log.Debug("aliNotify_trace: msg:%s, sign:%v", msg, sign)
 
-	cli := alipay.NewAliPay(true)
-	ok, err := cli.VerifyData(msg, "RSA2", sign)
-	if !ok || err != nil {
-		log.Log.Errorf("aliNotify_trace: verify data fail, err:%s", err)
+	svc := corder.New(c)
+	if b := svc.VerifySign(consts.ALIPAY, msg, sign, nil); !b {
 		c.String(http.StatusBadRequest, "fail")
 		return
 	}
 
-	svc := corder.New(c)
 	if code := svc.AliPayNotify(params, string(body)); code != errdef.SUCCESS {
 		c.String(http.StatusInternalServerError, "fail")
 		return
@@ -129,10 +125,8 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-	cli := wechat.NewWechatPay(true)
-	ok, err := cli.VerifySign(bm)
-	if !ok || err != nil {
-		log.Log.Error("wxNotify_trace: sign not match, err:%s", err)
+	svc := corder.New(c)
+	if b := svc.VerifySign(consts.WEICHAT, "", "", bm); !b {
 		c.String(http.StatusBadRequest, "fail")
 		return
 	}
@@ -154,7 +148,7 @@ func WechatNotify(c *gin.Context) {
 	}
 
 	orderId := bm["out_trade_no"].(string)
-	svc := corder.New(c)
+
 	order, err := svc.GetOrder(orderId)
 	if order == nil || err != nil {
 		log.Log.Error("wxNotify_trace: order not found, orderId:%s, err:%s", orderId, err)

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-pay/gopay"
 	alipayCli "github.com/go-pay/gopay/alipay"
 	wxCli "github.com/go-pay/gopay/wechat"
 	"github.com/go-xorm/xorm"
@@ -18,6 +19,7 @@ import (
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/mcoach"
 	"sports_service/server/models/morder"
+	"sports_service/server/models/mpay"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
 	"sports_service/server/tools/alipay"
@@ -36,6 +38,7 @@ type OrderModule struct {
 	user        *muser.UserModel
 	venue       *mvenue.VenueModel
 	coach       *mcoach.CoachModel
+	pay         *mpay.PayModel
 }
 
 func New(c *gin.Context) OrderModule {
@@ -51,6 +54,7 @@ func New(c *gin.Context) OrderModule {
 		user: muser.NewUserModel(appSocket),
 		venue: mvenue.NewVenueModel(socket),
 		coach: mcoach.NewCoachModel(socket),
+		pay: mpay.NewPayModel(socket),
 		engine: socket,
 	}
 }
@@ -775,15 +779,60 @@ func (svc *OrderModule) DeleteOrder(param *morder.ChangeOrder) int {
 	return errdef.SUCCESS
 }
 
+// 校验签名
+func (svc *OrderModule) VerifySign(payType int, body, sign string, bm gopay.BodyMap) bool {
+	ok, err := svc.GetPaymentChannel(payType)
+	if !ok || err != nil {
+		log.Log.Errorf("notify_trace: get payment channel fail, ok:%v, err:%s", ok, err)
+		return false
+	}
+
+	switch payType {
+	case consts.ALIPAY:
+		cli := alipay.NewAliPay(true, svc.pay.PayChannel.AppId, svc.pay.PayChannel.PrivateKey)
+		ok, err := cli.VerifyData(body, "RSA2", sign)
+		if !ok || err != nil {
+			log.Log.Errorf("notify_trace: verify ali data fail, err:%s", err)
+			return false
+		}
+
+	case consts.WEICHAT:
+		cli := wechat.NewWechatPay(true, svc.pay.PayChannel.AppId, svc.pay.PayChannel.AppKey, svc.pay.PayChannel.AppSecret)
+		ok, err := cli.VerifySign(bm)
+		if !ok || err != nil {
+			log.Log.Error("notify_trace: wx sign not match, err:%s", err)
+			return false
+		}
+
+	default:
+		log.Log.Errorf("notify_trace: unsupported payType:%d", payType)
+		return false
+	}
+
+	return true
+}
+
+// 获取支付渠道配置
+func (svc *OrderModule) GetPaymentChannel(payType int) (bool, error) {
+	return svc.pay.GetPaymentChannel(payType)
+}
+
 // 交易退款 todo:计算手续费
 func (svc *OrderModule) TradeRefund(refundAmount int, outRequestNo string) (string, error) {
+	ok, err := svc.GetPaymentChannel(svc.order.Order.PayType)
+	if !ok || err != nil {
+		log.Log.Errorf("order_trace: get payment channel fail, orderId:%s, ok:%v, err:%s", svc.order.Order.PayOrderId,
+			ok, err)
+		return "", errors.New("channel not found")
+	}
+
 	var body string
 	switch svc.order.Order.PayType {
 	case consts.ALIPAY:
 		// 支付宝
-		resp, err := svc.AliRefund(refundAmount, outRequestNo)
+		resp, err := svc.AliRefund(refundAmount, svc.pay.PayChannel.AppId, svc.pay.PayChannel.PrivateKey, outRequestNo)
 		if err != nil {
-			log.Log.Errorf("pay_trace: alipay refund fail, orderId:%s, payType:%d", svc.order.Order.PayOrderId,
+			log.Log.Errorf("order_trace: alipay refund fail, orderId:%s, payType:%d", svc.order.Order.PayOrderId,
 				svc.order.Order.PayType)
 			return "", err
 		}
@@ -793,9 +842,10 @@ func (svc *OrderModule) TradeRefund(refundAmount int, outRequestNo string) (stri
 
 	case consts.WEICHAT:
 		// 微信
-		resp, err := svc.WechatRefund(refundAmount, outRequestNo)
+		resp, err := svc.WechatRefund(refundAmount, svc.pay.PayChannel.AppId, svc.pay.PayChannel.AppKey,
+			svc.pay.PayChannel.AppSecret, outRequestNo)
 		if err != nil {
-			log.Log.Errorf("pay_trace: get wechatPay param fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
+			log.Log.Errorf("order_trace: get wechatPay param fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
 			return "", err
 		}
 
@@ -812,8 +862,8 @@ func (svc *OrderModule) TradeRefund(refundAmount int, outRequestNo string) (stri
 }
 
 // 支付宝退款
-func (svc *OrderModule) AliRefund(refundAmount int, outRequestNo string) (*alipayCli.TradeRefundResponse, error) {
-	client := alipay.NewAliPay(true)
+func (svc *OrderModule) AliRefund(refundAmount int, appId, privateKey, outRequestNo string) (*alipayCli.TradeRefundResponse, error) {
+	client := alipay.NewAliPay(true, appId, privateKey)
 	client.OutRequestNo = outRequestNo
 	client.OutTradeNo = svc.order.Order.PayOrderId
 	client.RefundAmount = fmt.Sprintf("%.2f", float64(refundAmount)/100)
@@ -827,8 +877,8 @@ func (svc *OrderModule) AliRefund(refundAmount int, outRequestNo string) (*alipa
 }
 
 // 微信退款
-func (svc *OrderModule) WechatRefund(refundAmount int, outRequestNo string) (*wxCli.RefundResponse, error) {
-	client := wechat.NewWechatPay(true)
+func (svc *OrderModule) WechatRefund(refundAmount int, appId, merchantId, secret, outRequestNo string) (*wxCli.RefundResponse, error) {
+	client := wechat.NewWechatPay(true, appId, merchantId, secret)
 	client.OutTradeNo = svc.order.Order.PayOrderId
 	client.TotalAmount = svc.order.Order.Amount
 	client.RefundAmount = refundAmount

@@ -219,6 +219,7 @@ const (
 	PAY_INVALID_TYPE             = 20001
 	PAY_ALI_PARAM_FAIL           = 20002
 	PAY_WX_PARAM_FAIL            = 20003
+	PAY_CHANNEL_NOT_EXISTS       = 20004
 )
 
 var MsgFlags = map[int]string{
@@ -418,6 +419,7 @@ var MsgFlags = map[int]string{
 	PAY_INVALID_TYPE:            "无效的支付类型",
 	PAY_ALI_PARAM_FAIL:          "获取支付宝请求参数失败",
 	PAY_WX_PARAM_FAIL:           "获取微信请求参数失败",
+	PAY_CHANNEL_NOT_EXISTS:      "支付渠道不存在",
 }
 
 func GetMsg(code int) string {
