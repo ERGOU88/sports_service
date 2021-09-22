@@ -58,5 +58,10 @@ func Router(engine *gin.Engine) {
 		video.GET("/subarea/list", VideoListBySubarea)
 		// 获取用户创建的视频专辑列表
 		video.GET("/album/list", token.TokenAuth(), VideoAlbumList)
+		// 首页板块信息
+		video.GET("/homepage/section/info", HomePageSectionInfo)
+		// 首页板块推荐的内容
+		video.GET("/homepage/section/recommend", SectionRecommendInfo)
+
 	}
 }

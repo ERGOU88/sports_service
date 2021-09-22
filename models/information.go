@@ -12,4 +12,5 @@ type Information struct {
 	Status    int    `json:"status" xorm:"not null default 0 comment('0 正常 1 隐藏') TINYINT(1)"`
 	UserId    string `json:"user_id" xorm:"not null default '' comment('官方账号 用户id') VARCHAR(60)"`
 	PubType   int    `json:"pub_type" xorm:"not null default 1 comment('后台发布类型 1. 发布至赛事模块 2. 发布至视频首页板块') TINYINT(2)"`
+	Describe  string `json:"describe" xorm:"comment('描述 视频+资讯混排使用') MEDIUMTEXT"`
 }

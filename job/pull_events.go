@@ -140,6 +140,15 @@ func procedureStateChangedEvent(event *v20180717.EventContent) error {
       return errors.New("video not found")
     }
 
+    if b := util.MapExist(mp, "AiContentReviewResultSet"); b {
+      log.Log.Debugf("ai review event:%+v", *event.ProcedureStateChangeEvent)
+      if err := aiContentReviewEvent(event, vmodel); err != nil {
+        log.Log.Errorf("job_trace: ai review fail, err:%s", err)
+        session.Rollback()
+        return err
+      }
+    }
+
     if b := util.MapExist(mp, "MediaProcessResultSet"); b {
       log.Log.Debugf("transcode event:%+v", *event.ProcedureStateChangeEvent)
       playInfo, duration, err := transCodeCompleteEvent(event)
@@ -161,15 +170,6 @@ func procedureStateChangedEvent(event *v20180717.EventContent) error {
         log.Log.Errorf("job_trace: update video play info fail, videoId:%d, err:%s", video.VideoId, err)
         session.Rollback()
         return errors.New("job_trace: update video play info fail")
-      }
-    }
-
-    if b := util.MapExist(mp, "AiContentReviewResultSet"); b {
-      log.Log.Debugf("ai review event:%+v", *event.ProcedureStateChangeEvent)
-      if err := aiContentReviewEvent(event, vmodel); err != nil {
-        log.Log.Errorf("job_trace: ai review fail, err:%s", err)
-        session.Rollback()
-        return err
       }
     }
 
