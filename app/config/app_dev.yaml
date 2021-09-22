@@ -41,7 +41,7 @@ wechatAppid: wx9306bf43be47830b
 wechatSecret: 3af44d06170ecdab4b49d1c70268c71f
 nsqAddr: 127.0.0.1:4150
 amqpDsn: amqp://admin:admin@127.0.0.1:5672
-staticDomain: http://fpv-web-qa.youzu.com
+staticDomain: https://fpv-web-qa.bluetrans.cn
 ## 微信支付 回调地址
 wechatNotifyUrl: http://fpv-app-api-qa.bluetrans.cn/api/v1/pay/wechat/notify
 ## 微信退款回调地址

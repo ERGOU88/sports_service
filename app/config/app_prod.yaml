@@ -35,7 +35,7 @@ redis:
         maxActive: 128
 redisPassword: o6DPVfuCAUwOgrNM
 amqpDsn: amqp://admin:admin@127.0.0.1:5672
-staticDomain: http://fpv-web.youzu.com
+staticDomain: https://fpv-web.bluetrans.cn
 ## 微信支付 回调地址
 wechatNotifyUrl: https://fpv-app-api.bluetrans.cn/api/v1/pay/wechat/notify
 ## 微信退款回调地址
