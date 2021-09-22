@@ -36,9 +36,9 @@ type WechatPayClient struct {
 // mchId：商户ID
 // apiKey：API秘钥值
 // isProd：是否是正式环境
-func NewWechatPay(isProd bool) *WechatPayClient {
+func NewWechatPay(isProd bool, appId, merchantId, secret string) *WechatPayClient {
 	wx := &WechatPayClient{}
-	wx.Client = wechat.NewClient(WECHAT_APP_ID, MERCHANT_ID, WECHAT_SECRET, isProd)
+	wx.Client = wechat.NewClient(appId, merchantId, secret, isProd)
 	// 设置国家
 	wx.Client.SetCountry(wechat.China)
 	return wx

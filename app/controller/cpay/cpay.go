@@ -10,6 +10,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/morder"
 	"fmt"
+	"sports_service/server/models/mpay"
 	"sports_service/server/models/muser"
 	"sports_service/server/tools/alipay"
 	"sports_service/server/tools/wechat"
@@ -21,6 +22,7 @@ type PayModule struct {
 	engine      *xorm.Session
 	order       *morder.OrderModel
 	user        *muser.UserModel
+	pay         *mpay.PayModel
 }
 
 func New(c *gin.Context) PayModule {
@@ -32,6 +34,7 @@ func New(c *gin.Context) PayModule {
 		context: c,
 		order: morder.NewOrderModel(venueSocket),
 		user: muser.NewUserModel(appSocket),
+		pay: mpay.NewPayModel(venueSocket),
 		engine: venueSocket,
 	}
 }
@@ -55,10 +58,17 @@ func (svc *PayModule) AppPay(param *morder.PayReqParam) (int, interface{}) {
 		return errdef.ORDER_NOT_EXISTS, nil
 	}
 
+	ok, err = svc.pay.GetPaymentChannel(svc.order.Order.PayType)
+	if !ok || err != nil {
+		log.Log.Errorf("pay_trace: get payment channel fail, orderId:%s, ok:%v, err:%s", svc.order.Order.PayOrderId,
+			ok, err)
+		return errdef.PAY_CHANNEL_NOT_EXISTS, nil
+	}
+
 	switch param.PayType {
 	case consts.ALIPAY:
 		// 支付宝
-		payParam, err := svc.AliPay()
+		payParam, err := svc.AliPay(svc.pay.PayChannel.AppId, svc.pay.PayChannel.PrivateKey)
 		if err != nil {
 			log.Log.Errorf("pay_trace: get alipay param fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
 			return errdef.PAY_ALI_PARAM_FAIL, nil
@@ -76,7 +86,7 @@ func (svc *PayModule) AppPay(param *morder.PayReqParam) (int, interface{}) {
 
 	case consts.WEICHAT:
 		// 微信
-		mp, err := svc.WechatPay()
+		mp, err := svc.WechatPay(svc.pay.PayChannel.AppId, svc.pay.PayChannel.AppKey, svc.pay.PayChannel.AppSecret)
 		if err != nil {
 			log.Log.Errorf("pay_trace: get wechatPay param fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
 			return errdef.PAY_WX_PARAM_FAIL, nil
@@ -104,9 +114,9 @@ func (svc *PayModule) UpdateOrderPayType(payType int, orderId string) (int64, er
 	return svc.order.UpdateOrderInfo(cols)
 }
 
-func (svc *PayModule) AliPay() (string, error) {
+func (svc *PayModule) AliPay(appId, privateKey string) (string, error) {
 	cstSh, _ := time.LoadLocation("Asia/Shanghai")
-	client := alipay.NewAliPay(true)
+	client := alipay.NewAliPay(true, appId, privateKey)
 	client.OutTradeNo = svc.order.Order.PayOrderId
 	client.TotalAmount = fmt.Sprintf("%.2f", float64(svc.order.Order.Amount)/100)
 	client.Subject = svc.order.Order.Subject
@@ -119,9 +129,9 @@ func (svc *PayModule) AliPay() (string, error) {
 	return payParam, nil
 }
 
-func (svc *PayModule) WechatPay() (map[string]interface{}, error) {
+func (svc *PayModule) WechatPay(appId, merchantId, secret string) (map[string]interface{}, error) {
 	cstSh, _ := time.LoadLocation("Asia/Shanghai")
-	client := wechat.NewWechatPay(true)
+	client := wechat.NewWechatPay(true, appId, merchantId, secret)
 	client.OutTradeNo = svc.order.Order.PayOrderId
 	client.TotalAmount = svc.order.Order.Amount
 	client.Subject = svc.order.Order.Subject
