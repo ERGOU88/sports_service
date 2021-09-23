@@ -126,10 +126,16 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 	//	svc.engine.Rollback()
 	//	return errdef.COURSE_ID_NOT_MATCH, nil
 	//}
+	ok, err = svc.venue.GetVenueInfoById(fmt.Sprint(svc.course.Course.VenueId))
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get venue info by id fail, venueId:%d, err:%s", svc.course.Course.VenueId, err)
+		svc.engine.Rollback()
+		return errdef.VENUE_NOT_EXISTS, nil
+	}
 
 	svc.Extra.CoachId = svc.coach.Coach.Id
 	svc.Extra.CoachName = svc.coach.Coach.Name
-	svc.Extra.Address = svc.coach.Coach.Address
+	svc.Extra.Address = svc.venue.Venue.Address
 	svc.Extra.CourseId = svc.course.Course.Id
 	svc.Extra.CourseName = svc.course.Course.Title
 	svc.Extra.ProductImg = svc.course.Course.PromotionPic
@@ -241,13 +247,18 @@ func (svc *CourseAppointmentModule) AppointmentOptions() (int, interface{}) {
 		if ok {
 			info.Name = svc.coach.Coach.Name
 			info.Avatar = svc.coach.Coach.Avatar
-			info.Address = svc.coach.Coach.Address
+		}
+
+		ok, err = svc.venue.GetVenueInfoById(fmt.Sprint(svc.course.Course.VenueId))
+		if !ok || err != nil {
+			log.Log.Errorf("venue_trace: get venue info by id fail, venueId:%d, err:%s", svc.course.Course.VenueId, err)
+		} else {
+			info.Address = svc.venue.Venue.Address
 		}
 
 
 		res = append(res, info)
 	}
-
 
 	return errdef.SUCCESS, res
 }

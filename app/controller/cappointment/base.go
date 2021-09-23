@@ -10,6 +10,7 @@ import (
 	"sports_service/server/models"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/morder"
+	"sports_service/server/models/mvenue"
 	"sports_service/server/util"
 	"strings"
 	"time"
@@ -25,6 +26,7 @@ type base struct {
 	recordMp    map[int64]*models.VenueAppointmentRecord
 	// 订单商品流水map
 	orderMp     map[int64]*models.VenueOrderProductInfo
+	venue       *mvenue.VenueModel
 }
 
 func New(socket *xorm.Session) *base {
@@ -35,6 +37,7 @@ func New(socket *xorm.Session) *base {
 		Extra:  &mappointment.OrderResp{TimeNodeInfo: make([]*mappointment.TimeNodeInfo, 0)},
 		recordMp: make(map[int64]*models.VenueAppointmentRecord),
 		orderMp: make(map[int64]*models.VenueOrderProductInfo),
+		venue:   mvenue.NewVenueModel(socket),
 	}
 }
 
@@ -398,6 +401,7 @@ func (svc *base) SetOrderProductInfo(orderId string, now, count int, productId i
 		CurAmount:   svc.appointment.AppointmentInfo.CurAmount,
 		DiscountRate: svc.appointment.AppointmentInfo.DiscountRate,
 		DiscountAmount: svc.appointment.AppointmentInfo.DiscountAmount,
+		VenueId: svc.appointment.AppointmentInfo.VenueId,
 		Amount: svc.appointment.AppointmentInfo.CurAmount * count,
 		CreateAt: now,
 		UpdateAt: now,
@@ -545,6 +549,8 @@ func (svc *base) AddOrder(orderId, userId, subject string, now, productType int)
 	svc.order.Order.Subject = subject
 	svc.order.Order.ProductType = productType
 	svc.order.Order.WriteOffCode = svc.Extra.WriteOffCode
+	// todo: 暂时只有一个场馆
+	svc.order.Order.VenueId = 1
 	// 实付金额为0 表示使用时长抵扣 或 活动免费  订单直接置为成功
 	if svc.order.Order.Amount == 0 {
 		svc.order.Order.Status = consts.ORDER_TYPE_PAID

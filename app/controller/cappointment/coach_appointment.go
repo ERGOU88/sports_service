@@ -12,7 +12,6 @@ import (
 	"sports_service/server/models/mcoach"
 	"sports_service/server/models/mcourse"
 	"sports_service/server/models/muser"
-	"sports_service/server/models/mvenue"
 	"sports_service/server/util"
 	"time"
 )
@@ -23,7 +22,6 @@ type CoachAppointmentModule struct {
 	user        *muser.UserModel
 	course      *mcourse.CourseModel
 	coach       *mcoach.CoachModel
-	venue       *mvenue.VenueModel
 	*base
 }
 
@@ -38,7 +36,6 @@ func NewCoach(c *gin.Context) *CoachAppointmentModule {
 		user:    muser.NewUserModel(appSocket),
 		course:  mcourse.NewCourseModel(venueSocket),
 		coach:   mcoach.NewCoachModel(venueSocket),
-		venue:   mvenue.NewVenueModel(venueSocket),
 		engine:  venueSocket,
 		base:    New(venueSocket),
 	}
