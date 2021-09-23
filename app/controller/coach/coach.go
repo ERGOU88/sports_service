@@ -83,7 +83,6 @@ func (svc *CoachModule) GetCoachDetail(coachId string) (int, *mcoach.CoachDetail
 		Id: svc.coach.Coach.Id,
 		Title: svc.coach.Coach.Title,
 		Name: svc.coach.Coach.Name,
-		Address: svc.coach.Coach.Address,
 		Designation: svc.coach.Coach.Designation,
 		Describe: svc.coach.Coach.Describe,
 		AreasOfExpertise: svc.coach.Coach.AreasOfExpertise,
