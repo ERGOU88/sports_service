@@ -38,14 +38,15 @@ func UserAppointment(i IAppointment, param *mappointment.AppointmentReq) (int, i
 	return i.Appointment(param)
 }
 
-func GetAppointmentTimeOptions(i IAppointment, week, queryType, relatedId, id int) (int, interface{}) {
+func GetAppointmentTimeOptions(i IAppointment, week, queryType, relatedId, id, coachId int) (int, interface{}) {
 	i.SetWeek(week)
 	i.SetAppointmentType(queryType)
 	switch queryType {
 	case consts.APPOINTMENT_VENUE:
 		i.SetVenueId(relatedId)
 	case consts.APPOINTMENT_COACH:
-		i.SetCoachId(relatedId)
+		i.SetCoachId(coachId)
+		i.SetCourseId(relatedId)
 	case consts.APPOINTMENT_COURSE:
 		i.SetCourseId(relatedId)
 	}
@@ -59,13 +60,13 @@ func GetAppointmentDetail(i IAppointment) (int, interface{}) {
 }
 
 // 预约日期
-func GetAppointmentDate(i IAppointment, queryType, relatedId, courseId int) (int, interface{}) {
+func GetAppointmentDate(i IAppointment, queryType, relatedId, coachId int) (int, interface{}) {
 	switch queryType {
 	case consts.APPOINTMENT_VENUE:
 		i.SetVenueId(relatedId)
 	case consts.APPOINTMENT_COACH:
-		i.SetCoachId(relatedId)
-		i.SetCourseId(courseId)
+		i.SetCoachId(coachId)
+		i.SetCourseId(relatedId)
 	case consts.APPOINTMENT_COURSE:
 		i.SetCourseId(relatedId)
 	}

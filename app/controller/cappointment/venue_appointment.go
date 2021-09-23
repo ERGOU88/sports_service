@@ -361,7 +361,7 @@ func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*mo
 		}
 
 		// 是否足够抵扣
-		affected, err := svc.appointment.UpdateVenueVipInfo(val.Duration * -1, userId)
+		affected, err := svc.appointment.UpdateVenueVipInfo(val.Duration * -1, val.VenueId, userId)
 		if err != nil {
 			log.Log.Errorf("venue_trace: update vip duration fail, err:%s", err)
 			return err

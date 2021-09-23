@@ -377,7 +377,7 @@ func (svc *OrderModule) UpdateAppointmentInfo(orderId string, now int) error {
 	for _, record := range list {
 		// 归还对应节点的冻结库存
 		affected, err := svc.appointment.RevertStockNum(record.TimeNode, record.Date, record.PurchasedNum*-1, now,
-			record.AppointmentType, int(record.RelatedId))
+			record.AppointmentType, int(record.VenueId))
 		if affected != 1 || err != nil {
 			log.Log.Errorf("order_trace: update stock info fail, orderId:%s, err:%s, affected:%d, id:%d", orderId, err, affected, record.Id)
 			return errors.New("update stock info fail")
@@ -385,7 +385,7 @@ func (svc *OrderModule) UpdateAppointmentInfo(orderId string, now int) error {
 
 		// 归还抵扣的会员时长
 		if record.DeductionTm > 0 {
-			affected, err := svc.appointment.UpdateVenueVipInfo(int(record.DeductionTm), record.UserId)
+			affected, err := svc.appointment.UpdateVenueVipInfo(int(record.DeductionTm), record.VenueId, record.UserId)
 			if affected != 1 || err != nil {
 				log.Log.Errorf("order_trace: revert vip duration fail, orderId:%s, err:%s", record.PayOrderId, err)
 				return err

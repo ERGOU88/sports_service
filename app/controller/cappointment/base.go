@@ -57,7 +57,7 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 		svc.appointment.AppointmentInfo.CurAmount = 0
 		svc.appointment.AppointmentInfo.TimeNode = ""
 
-		if err := svc.appointment.GetVenueMinPriceByWeek(); err != nil {
+		if err := svc.GetMinPriceByWeek(appointmentType); err != nil {
 			log.Log.Errorf("venue_trace: get min price fail, err:%s", err)
 		}
 
@@ -77,6 +77,7 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 			svc.SetAppointmentType(appointmentType)
 			list, err := svc.GetAppointmentOptions(condition)
 			if len(list) > 0 && err == nil {
+
 				for _, opts := range list {
 					_, _, hasExpire := svc.TimeNodeHasExpire(date, opts.TimeNode)
 					// 已过期
@@ -84,8 +85,10 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 						info.MinPrice = 0
 						info.PriceCn = "¥0"
 					} else {
-						info.MinPrice = opts.CurAmount
-						info.PriceCn = fmt.Sprintf("¥%.2f", float64(info.MinPrice)/100)
+						if info.MinPrice < opts.CurAmount {
+							info.MinPrice = opts.CurAmount
+							info.PriceCn = fmt.Sprintf("¥%.2f", float64(info.MinPrice)/100)
+						}
 					}
 				}
 			}
@@ -118,6 +121,19 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 	}
 
 	return dateInfo
+}
+
+// 根据预约类型 获取最低价格
+func (svc *base) GetMinPriceByWeek(appointmentType int) error {
+	switch appointmentType {
+	case consts.APPOINTMENT_VENUE:
+		return svc.appointment.GetVenueMinPriceByWeek()
+	case consts.APPOINTMENT_COACH, consts.APPOINTMENT_COURSE:
+		return svc.appointment.GetCourseMinPriceByWeek()
+
+	}
+
+	return errors.New("unsupported appointment type")
 }
 
 // 获取查询条件
@@ -390,11 +406,12 @@ func (svc *base) SetOrderProductInfo(orderId string, now, count int, productId i
 }
 
 func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, count int, seatInfo []*mappointment.SeatInfo,
-	relatedId, startTm, endTm int64) *models.VenueAppointmentRecord {
+	startTm, endTm int64) *models.VenueAppointmentRecord {
 	info, _ := util.JsonFast.MarshalToString(seatInfo)
 	return &models.VenueAppointmentRecord{
 		UserId: userId,
-		RelatedId: relatedId,
+		VenueId: svc.appointment.AppointmentInfo.VenueId,
+		CourseId: svc.appointment.AppointmentInfo.CourseId,
 		AppointmentType: svc.appointment.AppointmentInfo.AppointmentType,
 		TimeNode: svc.appointment.AppointmentInfo.TimeNode,
 		Date: date,
@@ -776,7 +793,7 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 
 		// 设置预约快照信息
 		svc.recordMp[item.Id] = svc.SetAppointmentRecordInfo(userId, date, orderId, now, item.Count, item.SeatInfos,
-			relatedId, resp.StartTm, resp.EndTm)
+			resp.StartTm, resp.EndTm)
 		svc.Extra.TimeNodeInfo = append(svc.Extra.TimeNodeInfo, resp)
 
 		// 是否遍历完所有预约节点

@@ -36,7 +36,7 @@ func TestAddStock(t *testing.T) {
 		QuotaNum: 5,
 		PurchasedNum: 2,
 		AppointmentType: 0,
-		RelatedId: 1,
+		VenueId: 1,
 		CreateAt: now,
 		UpdateAt: now,
 	}

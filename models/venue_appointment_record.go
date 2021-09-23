@@ -24,4 +24,6 @@ type VenueAppointmentRecord struct {
 	UnitDuration    int    `json:"unit_duration" xorm:"not null default 0 comment('单位时长 [秒] tips:[用于计费使用] 例：每十五分钟/10元 则该字段为900') INT(11)"`
 	StartTm         int    `json:"start_tm" xorm:"not null default 0 comment('预约开始时间') INT(11)"`
 	EndTm           int    `json:"end_tm" xorm:"not null default 0 comment('预约结束时间') INT(11)"`
+	VenueId         int64  `json:"venue_id" xorm:"not null default 0 comment('场馆id') BIGINT(20)"`
+	CourseId        int64  `json:"course_id" xorm:"not null default 0 comment('课程id') BIGINT(20)"`
 }
