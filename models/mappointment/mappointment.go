@@ -214,13 +214,28 @@ func (m *AppointmentModel) GetVenueMinPriceByWeek() error {
 }
 
 const (
-	QUERY_COURSE_MIN_PRICE = "SELECT min(cur_amount) as cur_amount, time_node FROM venue_appointment_info WHERE week_num=? " +
+	QUERY_COACH_COURSE_MIN_PRICE = "SELECT min(cur_amount) as cur_amount, time_node FROM venue_appointment_info WHERE week_num=? " +
 		"AND course_id=? AND coach_id=? AND appointment_type=? AND status=0"
 )
-// 根据星期 课程id 老师id 获取私教课/大课 最低价格
+// 根据星期 课程id 老师id 获取私教课 最低价格
+func (m *AppointmentModel) GetCoachCourseMinPriceByWeek() error {
+	ok, err := m.Engine.SQL(QUERY_COACH_COURSE_MIN_PRICE, m.AppointmentInfo.WeekNum, m.AppointmentInfo.CourseId,
+		m.AppointmentInfo.CoachId, m.AppointmentInfo.AppointmentType).Get(m.AppointmentInfo)
+	if !ok || err != nil {
+		return err
+	}
+
+	return nil
+}
+
+const (
+	QUERY_COURSE_MIN_PRICE = "SELECT min(cur_amount) as cur_amount, time_node FROM venue_appointment_info WHERE week_num=? " +
+		"AND course_id=? AND appointment_type=? AND status=0"
+)
+// 根据星期 大课id 获取大课 最低价格
 func (m *AppointmentModel) GetCourseMinPriceByWeek() error {
 	ok, err := m.Engine.SQL(QUERY_COURSE_MIN_PRICE, m.AppointmentInfo.WeekNum, m.AppointmentInfo.CourseId,
-		m.AppointmentInfo.CoachId, m.AppointmentInfo.AppointmentType).Get(m.AppointmentInfo)
+		m.AppointmentInfo.AppointmentType).Get(m.AppointmentInfo)
 	if !ok || err != nil {
 		return err
 	}

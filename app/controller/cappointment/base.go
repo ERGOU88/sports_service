@@ -85,7 +85,7 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 						info.MinPrice = 0
 						info.PriceCn = "¥0"
 					} else {
-						if info.MinPrice < opts.CurAmount {
+						if info.MinPrice > opts.CurAmount {
 							info.MinPrice = opts.CurAmount
 							info.PriceCn = fmt.Sprintf("¥%.2f", float64(info.MinPrice)/100)
 						}
@@ -128,9 +128,10 @@ func (svc *base) GetMinPriceByWeek(appointmentType int) error {
 	switch appointmentType {
 	case consts.APPOINTMENT_VENUE:
 		return svc.appointment.GetVenueMinPriceByWeek()
-	case consts.APPOINTMENT_COACH, consts.APPOINTMENT_COURSE:
+	case consts.APPOINTMENT_COACH:
+		return svc.appointment.GetCoachCourseMinPriceByWeek()
+	case consts.APPOINTMENT_COURSE:
 		return svc.appointment.GetCourseMinPriceByWeek()
-
 	}
 
 	return errors.New("unsupported appointment type")
@@ -750,7 +751,7 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 		item.IsEnough = true
 		if !ok {
 			b, err = svc.AddStock(date, now, item.Count)
-			log.Log.Errorf("id:%d, b:%v, err:%s", svc.appointment.AppointmentInfo.Id, b, err)
+			log.Log.Errorf("venue_trace: id:%d, b:%v, err:%s", svc.appointment.AppointmentInfo.Id, b, err)
 			// false 表示存在错误 但不是唯一索引约束错误
 			if !b && err != nil {
 				log.Log.Errorf("venue_trace: add stock fail, err:%s", err)
