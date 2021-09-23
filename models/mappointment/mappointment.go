@@ -340,6 +340,28 @@ func (m *AppointmentModel) RevertStockNum(timeNode, date string, count, now, app
 	return affected, nil
 }
 
+const (
+	REVERT_COURSE_STOCK_NUM = "UPDATE `venue_appointment_stock` SET `purchased_num`= `purchased_num`+ ?, `update_at`=? " +
+		"WHERE date=? AND time_node=? AND appointment_type=? AND venue_id=? AND course_id=? AND coach_id=? " +
+		"AND `quota_num` >= `purchased_num`+ ? AND `purchased_num` + ? >= 0 LIMIT 1"
+)
+// 恢复课程冻结的库存 [包含私教课及大课]
+func (m *AppointmentModel) RevertCourseStockNum(timeNode, date string, count, now, appointmentType, venueId, courseId,
+	coachId int) (int64, error) {
+	res, err := m.Engine.Exec(REVERT_COURSE_STOCK_NUM, count, now, date, timeNode, appointmentType, venueId, courseId,
+		coachId, count, count)
+	if err != nil {
+		return 0, err
+	}
+
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return affected, nil
+}
+
 // 获取成功预约的记录[包含已付款和支付中及已完成]
 func (m *AppointmentModel) GetAppointmentRecord() ([]*models.VenueAppointmentRecord, error) {
 	var list []*models.VenueAppointmentRecord
