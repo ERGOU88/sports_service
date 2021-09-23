@@ -12,4 +12,5 @@ type VenueAdministrator struct {
 	Roles     string `json:"roles" xorm:"comment('角色') VARCHAR(255)"`
 	CreateAt  int    `json:"create_at" xorm:"default 0 comment('创建时间') INT(11)"`
 	UpdateAt  int    `json:"update_at" xorm:"default 0 comment('更新时间') INT(11)"`
+	VenueId   int64  `json:"venue_id" xorm:"default 1 comment('场馆ID') BIGINT(20)"`
 }
