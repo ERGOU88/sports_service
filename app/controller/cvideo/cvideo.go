@@ -1288,6 +1288,7 @@ func (svc *VideoModule) GetVideoListBySubarea(subareaId string, page, size int) 
 	}
 
 	for _, item := range list {
+		item.VideoAddr = svc.video.AntiStealingLink(item.VideoAddr)
 		item.Labels = svc.video.GetVideoLabels(fmt.Sprint(item.VideoId))
 		if item.Labels == nil {
 			item.Labels = []*models.VideoLabels{}
@@ -1387,6 +1388,8 @@ func (svc *VideoModule) GetRecommendInfoBySection(userId, sectionId string, page
 				item.CommentNum = info.CommentNum
 				item.FabulousNum = info.FabulousNum
 			}
+
+			item.VideoAddr = svc.video.AntiStealingLink(item.VideoAddr)
 
 			likeType = consts.TYPE_VIDEOS
 
