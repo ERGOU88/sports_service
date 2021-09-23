@@ -10,6 +10,6 @@ type VenueAppointmentStock struct {
 	CreateAt        int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt        int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
 	VenueId         int64  `json:"venue_id" xorm:"not null default 0 comment('场馆id') unique(date) BIGINT(20)"`
-	CoachId         int64  `json:"coach_id" xorm:"not null default 0 comment('老师id') BIGINT(20)"`
-	CourseId        int64  `json:"course_id" xorm:"not null default 0 comment('课程id') BIGINT(20)"`
+	CoachId         int64  `json:"coach_id" xorm:"not null default 0 comment('老师id') unique(date) BIGINT(20)"`
+	CourseId        int64  `json:"course_id" xorm:"not null default 0 comment('课程id') unique(date) BIGINT(20)"`
 }

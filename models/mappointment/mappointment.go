@@ -267,7 +267,7 @@ func (m *AppointmentModel) GetAppointmentConfByIds(ids []interface{}) ([]*models
 // 通过场馆id、私教id、课程id、星期 及 预约类型 获取可预约选项
 func (m *AppointmentModel) GetOptionsByWeek(condition string) ([]*models.VenueAppointmentInfo, error) {
 	var list []*models.VenueAppointmentInfo
-	if err := m.Engine.Where(condition).Asc("id").Find(&list); err != nil {
+	if err := m.Engine.Where(condition).Asc("start_node").Find(&list); err != nil {
 		return nil, err
 	}
 
