@@ -383,7 +383,7 @@ func (m *AppointmentModel) GetAppointmentRecord() ([]*models.VenueAppointmentRec
 	sql := "SELECT var.* FROM venue_appointment_record AS var LEFT JOIN venue_order_product_info AS vop " +
 		"ON var.id=vop.`snapshot_id`  WHERE var.venue_id=? AND var.appointment_type=? " +
 		"AND var.time_node=? AND var.date=? AND  vop.status in (0, 2, 3)"
-	if err := m.Engine.SQL(sql, m.Record.RelatedId, m.Record.AppointmentType,  m.Record.TimeNode, m.Record.Date).Find(&list); err != nil {
+	if err := m.Engine.SQL(sql, m.Record.VenueId, m.Record.AppointmentType,  m.Record.TimeNode, m.Record.Date).Find(&list); err != nil {
 		return nil, err
 	}
 

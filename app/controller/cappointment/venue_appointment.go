@@ -224,7 +224,7 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 			continue
 		}
 
-		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.RelatedId))
+		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.VenueId))
 		if err != nil {
 			log.Log.Errorf("venue_trace: get venue info by id fail, err:%s", err)
 		}
@@ -235,7 +235,7 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 
 		svc.appointment.Labels.TimeNode = item.TimeNode
 		svc.appointment.Labels.Date = date
-		svc.appointment.Labels.VenueId = item.RelatedId
+		svc.appointment.Labels.VenueId = item.VenueId
 		labels, err := svc.appointment.GetVenueUserLabels()
 		if err != nil {
 			log.Log.Errorf("venue_trace: get venue user lables fail, err:%s", err)
@@ -254,7 +254,7 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 
 		svc.appointment.Record.AppointmentType = 0
 		svc.appointment.Record.TimeNode = item.TimeNode
-		svc.appointment.Record.RelatedId = item.RelatedId
+		svc.appointment.Record.VenueId = item.VenueId
 		svc.appointment.Record.Date = date
 		records, err := svc.appointment.GetAppointmentRecord()
 		if err != nil {

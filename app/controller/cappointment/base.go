@@ -312,7 +312,6 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 	}
 
 	info := &mappointment.OptionsInfo{
-		RelatedId: item.RelatedId,
 		CurAmount: item.CurAmount,
 		TimeNode: item.TimeNode,
 		DurationCn: util.ResolveTime(item.Duration),
@@ -329,6 +328,13 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		EndTm: end,
 		Date: fmt.Sprintf("%s %s", date, item.TimeNode),
 		CoachId: item.CoachId,
+	}
+
+	switch info.AppointmentType {
+	case consts.APPOINTMENT_VENUE:
+		info.RelatedId = item.VenueId
+	case consts.APPOINTMENT_COACH, consts.APPOINTMENT_COURSE:
+		info.RelatedId = item.CourseId
 	}
 
 	// 售价 < 定价 表示有优惠

@@ -161,7 +161,7 @@ func orderTimeOut(appointmentType int, orderId string) error {
 	for _, record := range list {
 		// 归还对应节点的冻结库存
 		affected, err = amodel.RevertStockNum(record.TimeNode, record.Date,  record.PurchasedNum * -1, now,
-			record.AppointmentType, int(record.RelatedId))
+			record.AppointmentType, int(record.VenueId))
 		if affected != 1 || err != nil {
 			log.Log.Errorf("redisMq_trace: update stock info fail, orderId:%s, err:%s, affected:%d, id:%d", orderId, err, affected, record.Id)
 			session.Rollback()

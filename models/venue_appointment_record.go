@@ -4,7 +4,6 @@ type VenueAppointmentRecord struct {
 	Id              int64  `json:"id" xorm:"pk autoincr comment('id') BIGINT(20)"`
 	UserId          string `json:"user_id" xorm:"not null comment('用户id') VARCHAR(60)"`
 	UseUserId       string `json:"use_user_id" xorm:"default '' comment('使用者UserID') VARCHAR(60)"`
-	RelatedId       int64  `json:"related_id" xorm:"not null comment('关联id 私教课程/场馆/大课') index BIGINT(20)"`
 	IsWriteOff      int    `json:"is_write_off" xorm:"not null default 0 comment('是否核销 0 未核销 1 已核销') TINYINT(1)"`
 	Duration        int    `json:"duration" xorm:"not null default 0 comment('购买相关服务总时长') INT(11)"`
 	AppointmentType int    `json:"appointment_type" xorm:"not null default 0 comment('0 场馆预约 1 私教预约 2 大课预约') TINYINT(1)"`
