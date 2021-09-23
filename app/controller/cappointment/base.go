@@ -77,8 +77,9 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 			svc.SetAppointmentType(appointmentType)
 			list, err := svc.GetAppointmentOptions(condition)
 			if len(list) > 0 && err == nil {
-
 				for _, opts := range list {
+					info.MinPrice = opts.CurAmount
+					info.PriceCn = fmt.Sprintf("¥%.2f", float64(info.MinPrice)/100)
 					_, _, hasExpire := svc.TimeNodeHasExpire(date, opts.TimeNode)
 					// 已过期
 					if hasExpire {
