@@ -4,7 +4,6 @@ type VenueCoachDetail struct {
 	Id               int64  `json:"id" xorm:"pk autoincr comment('主键id') BIGINT(20)"`
 	Title            string `json:"title" xorm:"comment('教练职称') MEDIUMTEXT"`
 	Name             string `json:"name" xorm:"not null default '' comment('私教名称') VARCHAR(60)"`
-	Address          string `json:"address" xorm:"not null comment('私教地点') VARCHAR(128)"`
 	Designation      string `json:"designation" xorm:"not null default '' comment('认证称号') VARCHAR(60)"`
 	Describe         string `json:"describe" xorm:"comment('描述') MEDIUMTEXT"`
 	AreasOfExpertise string `json:"areas_of_expertise" xorm:"not null default '' comment('擅长领域') VARCHAR(512)"`
