@@ -6,7 +6,7 @@ type Videos struct {
 	Describe      string `json:"describe" xorm:"comment('视频描述') MEDIUMTEXT"`
 	Cover         string `json:"cover" xorm:"not null default '' comment('视频封面') VARCHAR(521)"`
 	VideoAddr     string `json:"video_addr" xorm:"not null default '' comment('视频地址') VARCHAR(521)"`
-	UserId        string `json:"user_id" xorm:"not null comment('用户id') index VARCHAR(60)"`
+	UserId        string `json:"user_id" xorm:"not null default '' comment('用户id') index VARCHAR(60)"`
 	UserType      int    `json:"user_type" xorm:"not null default 0 comment('添加用户类型（0：管理员[sys_user]，1：用户[user]）') TINYINT(1)"`
 	Sortorder     int    `json:"sortorder" xorm:"not null default 1 comment('排序') INT(11)"`
 	Status        int    `json:"status" xorm:"not null default 0 comment('审核状态（0：审核中，1：审核通过 2：审核不通过 3：逻辑删除）') TINYINT(1)"`

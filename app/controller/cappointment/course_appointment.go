@@ -43,8 +43,8 @@ func NewCourse(c *gin.Context) *CourseAppointmentModule {
 
 // 大课选项
 func (svc *CourseAppointmentModule) Options(relatedId int64) (int, interface{}) {
-	svc.course.Course.CoachId = 0
-	svc.course.Course.CourseType = 2
+	//svc.course.Course.CoachId = 0
+	//svc.course.Course.CourseType = 2
 	list, err := svc.course.GetCourseList()
 	if err != nil {
 		log.Log.Errorf("")
@@ -63,8 +63,8 @@ func (svc *CourseAppointmentModule) Options(relatedId int64) (int, interface{}) 
 			Title: item.Title,
 			Avatar: item.PromotionPic,
 			Describe: item.Describe,
-			CostDescription: "费用须知",
-			Instructions: "购买说明",
+			CostDescription: item.CostDescription,
+			Instructions: item.Instructions,
 		}
 
 		res[index] = info
@@ -111,12 +111,6 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 		return errdef.COURSE_NOT_EXISTS, nil
 	}
 
-	if svc.course.Course.CourseType != 2 {
-		log.Log.Errorf("venue_trace: course type fail, courseType:%d", svc.course.Course.CourseType)
-		svc.engine.Rollback()
-		return errdef.COURSE_TYPE_FAIL, nil
-	}
-
 	// 获取老师信息
 	ok, err = svc.coach.GetCoachInfoById(fmt.Sprint(params.CoachId))
 	if !ok || err != nil {
@@ -132,10 +126,16 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 	//	svc.engine.Rollback()
 	//	return errdef.COURSE_ID_NOT_MATCH, nil
 	//}
+	ok, err = svc.venue.GetVenueInfoById(fmt.Sprint(svc.course.Course.VenueId))
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get venue info by id fail, venueId:%d, err:%s", svc.course.Course.VenueId, err)
+		svc.engine.Rollback()
+		return errdef.VENUE_NOT_EXISTS, nil
+	}
 
 	svc.Extra.CoachId = svc.coach.Coach.Id
 	svc.Extra.CoachName = svc.coach.Coach.Name
-	svc.Extra.Address = svc.coach.Coach.Address
+	svc.Extra.Address = svc.venue.Venue.Address
 	svc.Extra.CourseId = svc.course.Course.Id
 	svc.Extra.CourseName = svc.course.Course.Title
 	svc.Extra.ProductImg = svc.course.Course.PromotionPic
@@ -216,7 +216,13 @@ func (svc *CourseAppointmentModule) AppointmentOptions() (int, interface{}) {
 		return errdef.ERROR, nil
 	}
 
-	list, err := svc.GetAppointmentOptions()
+	condition, err := svc.GetQueryCondition()
+	if err != nil {
+		log.Log.Errorf("venue_trace: get query condition fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+
+	list, err := svc.GetAppointmentOptions(condition)
 	if err != nil {
 		log.Log.Errorf("venue_trace: get options fail, err:%s", err)
 		return errdef.ERROR, nil
@@ -241,13 +247,18 @@ func (svc *CourseAppointmentModule) AppointmentOptions() (int, interface{}) {
 		if ok {
 			info.Name = svc.coach.Coach.Name
 			info.Avatar = svc.coach.Coach.Avatar
-			info.Address = svc.coach.Coach.Address
+		}
+
+		ok, err = svc.venue.GetVenueInfoById(fmt.Sprint(svc.coach.Coach.VenueId))
+		if !ok || err != nil {
+			log.Log.Errorf("venue_trace: get venue info by id fail, venueId:%d, err:%s", svc.course.Course.VenueId, err)
+		} else {
+			info.Address = svc.venue.Venue.Address
 		}
 
 
 		res = append(res, info)
 	}
-
 
 	return errdef.SUCCESS, res
 }
@@ -258,7 +269,7 @@ func (svc *CourseAppointmentModule) AppointmentDetail() (int, interface{}) {
 
 // 预约大课日期配置
 func (svc *CourseAppointmentModule) AppointmentDate() (int, interface{}) {
-	return errdef.SUCCESS, svc.AppointmentDateInfo(6, 2)
+	return errdef.SUCCESS, svc.AppointmentDateInfo(6, consts.APPOINTMENT_COURSE)
 }
 
 

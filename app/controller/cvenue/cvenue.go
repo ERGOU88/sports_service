@@ -98,7 +98,6 @@ func (svc *VenueModule) GetHomePageInfo(venueId int64) (int, *VenueInfoRes, []*m
 		}
 	}
 
-
 	productInfo, err := svc.GetVenueProducts(venueId)
 	if err != nil {
 		log.Log.Errorf("venue_trace: get venue products fail, err:%s", err)
@@ -139,7 +138,7 @@ func (svc *VenueModule) GetVenueProducts(venueId int64) ([]*mvenue.VenueProduct,
 			ProductType: val.ProductType,
 			EffectiveDuration: val.EffectiveDuration,
 			Describe: val.Describe,
-			Title: val.Title,
+			Instructions: val.Instructions,
 			Image: val.Image,
 			RealAmount: val.RealAmount,
 			CurAmount: val.CurAmount,
@@ -234,7 +233,7 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 	}
 
 	// 添加订单
-	if err := svc.AddOrder(extra, orderId, param.UserId, svc.venue.Product.Title, now, svc.venue.Product.ProductType,
+	if err := svc.AddOrder(extra, orderId, param.UserId, svc.venue.Product.ProductName, now, svc.venue.Product.ProductType,
 		totalAmount, param.ChannelId); err != nil {
 		log.Log.Errorf("venue_trace: add order fail, err:%s", err)
 		svc.engine.Rollback()

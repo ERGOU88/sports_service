@@ -201,11 +201,41 @@ func NewAppointmentModel(engine *xorm.Session) *AppointmentModel {
 
 const (
 	QUERY_MIN_PRICE = "SELECT min(cur_amount) as cur_amount, time_node FROM venue_appointment_info WHERE week_num=? " +
-		"AND related_id=? AND appointment_type=? AND status=0"
+		"AND venue_id=? AND appointment_type=? AND status=0"
 )
-// 根据星期 及 预约类型 获取最低价格
-func (m *AppointmentModel) GetMinPriceByWeek() error {
-	ok, err := m.Engine.SQL(QUERY_MIN_PRICE, m.AppointmentInfo.WeekNum, m.AppointmentInfo.RelatedId, m.AppointmentInfo.AppointmentType).Get(m.AppointmentInfo)
+// 根据星期 获取场馆最低价格
+func (m *AppointmentModel) GetVenueMinPriceByWeek() error {
+	ok, err := m.Engine.SQL(QUERY_MIN_PRICE, m.AppointmentInfo.WeekNum, m.AppointmentInfo.VenueId, m.AppointmentInfo.AppointmentType).Get(m.AppointmentInfo)
+	if !ok || err != nil {
+		return err
+	}
+
+	return nil
+}
+
+const (
+	QUERY_COACH_COURSE_MIN_PRICE = "SELECT min(cur_amount) as cur_amount, time_node FROM venue_appointment_info WHERE week_num=? " +
+		"AND course_id=? AND coach_id=? AND appointment_type=? AND status=0"
+)
+// 根据星期 课程id 老师id 获取私教课 最低价格
+func (m *AppointmentModel) GetCoachCourseMinPriceByWeek() error {
+	ok, err := m.Engine.SQL(QUERY_COACH_COURSE_MIN_PRICE, m.AppointmentInfo.WeekNum, m.AppointmentInfo.CourseId,
+		m.AppointmentInfo.CoachId, m.AppointmentInfo.AppointmentType).Get(m.AppointmentInfo)
+	if !ok || err != nil {
+		return err
+	}
+
+	return nil
+}
+
+const (
+	QUERY_COURSE_MIN_PRICE = "SELECT min(cur_amount) as cur_amount, time_node FROM venue_appointment_info WHERE week_num=? " +
+		"AND course_id=? AND appointment_type=? AND status=0"
+)
+// 根据星期 大课id 获取大课 最低价格
+func (m *AppointmentModel) GetCourseMinPriceByWeek() error {
+	ok, err := m.Engine.SQL(QUERY_COURSE_MIN_PRICE, m.AppointmentInfo.WeekNum, m.AppointmentInfo.CourseId,
+		m.AppointmentInfo.AppointmentType).Get(m.AppointmentInfo)
 	if !ok || err != nil {
 		return err
 	}
@@ -214,10 +244,8 @@ func (m *AppointmentModel) GetMinPriceByWeek() error {
 }
 
 // 获取可预约的时间节点总数
-func (m *AppointmentModel) GetTotalNodeByWeek() (int64, error) {
-	return m.Engine.Where("week_num=? AND related_id=? AND appointment_type=? AND status=0",
-		m.AppointmentInfo.WeekNum, m.AppointmentInfo.RelatedId, m.AppointmentInfo.AppointmentType).
-		Count(&models.VenueAppointmentInfo{})
+func (m *AppointmentModel) GetTotalNodeByWeek(condition string) (int64, error) {
+	return m.Engine.Where(condition).Count(&models.VenueAppointmentInfo{})
 }
 
 // 通过id获取预约配置
@@ -236,11 +264,10 @@ func (m *AppointmentModel) GetAppointmentConfByIds(ids []interface{}) ([]*models
 	return list, nil
 }
 
-// 通过场馆id、课程id、星期 及 预约类型 获取可预约选项
-func (m *AppointmentModel) GetOptionsByWeek() ([]*models.VenueAppointmentInfo, error) {
+// 通过场馆id、私教id、课程id、星期 及 预约类型 获取可预约选项
+func (m *AppointmentModel) GetOptionsByWeek(condition string) ([]*models.VenueAppointmentInfo, error) {
 	var list []*models.VenueAppointmentInfo
-	if err := m.Engine.Where("related_id=? AND week_num=? AND appointment_type=? AND status=0", m.AppointmentInfo.RelatedId,
-		m.AppointmentInfo.WeekNum, m.AppointmentInfo.AppointmentType).Asc("id").Find(&list); err != nil {
+	if err := m.Engine.Where(condition).Asc("start_node").Find(&list); err != nil {
 		return nil, err
 	}
 
@@ -248,17 +275,15 @@ func (m *AppointmentModel) GetOptionsByWeek() ([]*models.VenueAppointmentInfo, e
 }
 
 // 查库存表 获取某时间点 场馆预约人数 包含已成功及已下单且订单未超时
-func (m *AppointmentModel) GetStockInfo(appointmentType int, relatedId int64, date, timeNode string) (bool, error) {
+func (m *AppointmentModel) GetStockInfo(condition string) (bool, error) {
 	m.Stock = new(models.VenueAppointmentStock)
-	return m.Engine.Where("appointment_type=? AND related_id=? AND date=? AND time_node=?", appointmentType,
-		relatedId, date, timeNode).Get(m.Stock)
+	return m.Engine.Where(condition).Get(m.Stock)
 }
 
 // 是否存在库存信息 todo: 前期并发不高 可以读取快照
-func (m *AppointmentModel) HasExistsStockInfo(appointmentType int, relatedId int64, date, timeNode string) (bool, error) {
+func (m *AppointmentModel) HasExistsStockInfo(condition string) (bool, error) {
 	m.Stock = new(models.VenueAppointmentStock)
-	return m.Engine.Where("appointment_type=? AND related_id=? AND date=? AND time_node=?", appointmentType,
-		relatedId, date, timeNode).Exist(m.Stock)
+	return m.Engine.Where(condition).Exist(m.Stock)
 }
 
 // 添加预约库存数据[多条]
@@ -273,11 +298,11 @@ func (m *AppointmentModel) AddStockInfo(stock *models.VenueAppointmentStock) (in
 
 const (
 	UPDATE_STOCK_INFO = "UPDATE `venue_appointment_stock` SET `quota_num`=?, `purchased_num`= `purchased_num`+ ?, `update_at`=? WHERE date=? AND " +
-		"time_node=? AND appointment_type=? AND related_id=? AND ? >= `purchased_num`+ ? AND `purchased_num` >= 0 LIMIT 1"
+		"time_node=? AND appointment_type=? AND venue_id=? AND ? >= `purchased_num`+ ? AND `purchased_num` >= 0 LIMIT 1"
 )
 // 需求：允许动态增加库存 需注意：不可动态减少
-func (m *AppointmentModel) UpdateStockInfo(timeNode, date string, quotaNum, count, now, appointmentType, relatedId int) (int64, error) {
-	res, err := m.Engine.Exec(UPDATE_STOCK_INFO, quotaNum, count, now, date, timeNode, appointmentType, relatedId, quotaNum, count)
+func (m *AppointmentModel) UpdateVenueStockInfo(timeNode, date string, quotaNum, count, now, appointmentType, venueId int) (int64, error) {
+	res, err := m.Engine.Exec(UPDATE_STOCK_INFO, quotaNum, count, now, date, timeNode, appointmentType, venueId, quotaNum, count)
 	if err != nil {
 		return 0, err
 	}
@@ -291,12 +316,55 @@ func (m *AppointmentModel) UpdateStockInfo(timeNode, date string, quotaNum, coun
 }
 
 const (
+	UPDATE_COURSE_STOCK_INFO = "UPDATE `venue_appointment_stock` SET `quota_num`=?, `purchased_num`= `purchased_num`+ ?, `update_at`=? WHERE date=? AND " +
+		"time_node=? AND appointment_type=? AND venue_id=? AND coach_id=? AND course_id=? AND ? >= `purchased_num`+ ? AND `purchased_num` >= 0 LIMIT 1"
+)
+// 需求：允许动态增加库存 需注意：不可动态减少
+// 课程库存 包含[私课、大课]
+func (m *AppointmentModel) UpdateCourseStockInfo(timeNode, date string, quotaNum, count, now, appointmentType, venueId, coachId, courseId int) (int64, error) {
+	res, err := m.Engine.Exec(UPDATE_COURSE_STOCK_INFO, quotaNum, count, now, date, timeNode, appointmentType, venueId, coachId, courseId, quotaNum, count)
+	if err != nil {
+		return 0, err
+	}
+
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return affected, nil
+}
+
+
+const (
 	REVERT_STOCK_NUM = "UPDATE `venue_appointment_stock` SET `purchased_num`= `purchased_num`+ ?, `update_at`=? WHERE date=? AND " +
-		"time_node=? AND appointment_type=? AND related_id=? AND `quota_num` >= `purchased_num`+ ? AND `purchased_num` + ? >= 0 LIMIT 1"
+		"time_node=? AND appointment_type=? AND venue_id=? AND `quota_num` >= `purchased_num`+ ? AND `purchased_num` + ? >= 0 LIMIT 1"
 )
 // 恢复冻结的库存
-func (m *AppointmentModel) RevertStockNum(timeNode, date string, count, now, appointmentType, relatedId int) (int64, error) {
-	res, err := m.Engine.Exec(REVERT_STOCK_NUM, count, now, date, timeNode, appointmentType, relatedId, count, count)
+func (m *AppointmentModel) RevertStockNum(timeNode, date string, count, now, appointmentType, venueId int) (int64, error) {
+	res, err := m.Engine.Exec(REVERT_STOCK_NUM, count, now, date, timeNode, appointmentType, venueId, count, count)
+	if err != nil {
+		return 0, err
+	}
+
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return affected, nil
+}
+
+const (
+	REVERT_COURSE_STOCK_NUM = "UPDATE `venue_appointment_stock` SET `purchased_num`= `purchased_num`+ ?, `update_at`=? " +
+		"WHERE date=? AND time_node=? AND appointment_type=? AND venue_id=? AND course_id=? AND coach_id=? " +
+		"AND `quota_num` >= `purchased_num`+ ? AND `purchased_num` + ? >= 0 LIMIT 1"
+)
+// 恢复课程冻结的库存 [包含私教课及大课]
+func (m *AppointmentModel) RevertCourseStockNum(timeNode, date string, count, now, appointmentType, venueId, courseId,
+	coachId int) (int64, error) {
+	res, err := m.Engine.Exec(REVERT_COURSE_STOCK_NUM, count, now, date, timeNode, appointmentType, venueId, courseId,
+		coachId, count, count)
 	if err != nil {
 		return 0, err
 	}
@@ -313,9 +381,9 @@ func (m *AppointmentModel) RevertStockNum(timeNode, date string, count, now, app
 func (m *AppointmentModel) GetAppointmentRecord() ([]*models.VenueAppointmentRecord, error) {
 	var list []*models.VenueAppointmentRecord
 	sql := "SELECT var.* FROM venue_appointment_record AS var LEFT JOIN venue_order_product_info AS vop " +
-		"ON var.id=vop.`snapshot_id`  WHERE var.related_id=? AND var.appointment_type=? " +
+		"ON var.id=vop.`snapshot_id`  WHERE var.venue_id=? AND var.appointment_type=? " +
 		"AND var.time_node=? AND var.date=? AND  vop.status in (0, 2, 3)"
-	if err := m.Engine.SQL(sql, m.Record.RelatedId, m.Record.AppointmentType,  m.Record.TimeNode, m.Record.Date).Find(&list); err != nil {
+	if err := m.Engine.SQL(sql, m.Record.VenueId, m.Record.AppointmentType,  m.Record.TimeNode, m.Record.Date).Find(&list); err != nil {
 		return nil, err
 	}
 
@@ -340,11 +408,11 @@ func (m *AppointmentModel) GetVenueVipInfo(userId string) (*models.VenueVipInfo,
 
 const (
 	UPDATE_VENUE_VIP_INFO = "UPDATE `venue_vip_info` SET `duration` = `duration` + ?, `update_at`=? WHERE `user_id`=? " +
-		"AND `duration` + ? >= 0 LIMIT 1"
+		"AND `venue_id`=? AND `duration` + ? >= 0 LIMIT 1"
 )
 // 更新场馆会员数据 duration < 0 减少 duration > 0 增加
-func (m *AppointmentModel) UpdateVenueVipInfo(duration int, userId string) (int64, error) {
-	res, err := m.Engine.Exec(UPDATE_VENUE_VIP_INFO, duration, time.Now().Unix(), userId, duration)
+func (m *AppointmentModel) UpdateVenueVipInfo(duration int, venueId int64, userId string) (int64, error) {
+	res, err := m.Engine.Exec(UPDATE_VENUE_VIP_INFO, duration, time.Now().Unix(), userId, venueId, duration)
 	if err != nil {
 		return 0, err
 	}

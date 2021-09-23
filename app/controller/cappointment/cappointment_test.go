@@ -36,7 +36,7 @@ func TestAddStock(t *testing.T) {
 		QuotaNum: 5,
 		PurchasedNum: 2,
 		AppointmentType: 0,
-		RelatedId: 1,
+		VenueId: 1,
 		CreateAt: now,
 		UpdateAt: now,
 	}
@@ -55,7 +55,7 @@ func TestAddStock(t *testing.T) {
 func TestUpdateStock(t *testing.T) {
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 	svc := NewVenue(c)
-	affected, err := svc.appointment.UpdateStockInfo("18:00-19:00", "2021-08-10", 1, 1,
+	affected, err := svc.appointment.UpdateVenueStockInfo("18:00-19:00", "2021-08-10", 1, 1,
 		0, 1)
 	var myerr *mysql.MySQLError
 	t.Logf("affected:%d, err:%s, bool:%v", affected, err, errors.As(err, &myerr))

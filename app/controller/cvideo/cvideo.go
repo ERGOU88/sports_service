@@ -578,6 +578,14 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 		info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
 		if info != nil {
 			video.StatisticsTab = svc.GetStatisticTab(info)
+			video.ShareNum = info.ShareNum
+			video.CommentNum = info.CommentNum
+			video.FabulousNum = info.FabulousNum
+		}
+
+		video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
+		if video.Labels == nil {
+			video.Labels = []*models.VideoLabels{}
 		}
 
 		// 用户未登录
@@ -730,6 +738,9 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 		info := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
 		if info != nil {
 			video.StatisticsTab = svc.GetStatisticTab(info)
+			video.ShareNum = info.ShareNum
+			video.CommentNum = info.CommentNum
+			video.FabulousNum = info.FabulousNum
 		}
 
 		if userId == "" {
@@ -1277,6 +1288,17 @@ func (svc *VideoModule) GetVideoListBySubarea(subareaId string, page, size int) 
 	}
 
 	for _, item := range list {
+		item.VideoAddr = svc.video.AntiStealingLink(item.VideoAddr)
+		item.Labels = svc.video.GetVideoLabels(fmt.Sprint(item.VideoId))
+		if item.Labels == nil {
+			item.Labels = []*models.VideoLabels{}
+		}
+
+		info := svc.video.GetVideoStatistic(fmt.Sprint(item.VideoId))
+		if info != nil {
+			item.StatisticsTab = svc.GetStatisticTab(info)
+		}
+
 		user := svc.user.FindUserByUserid(item.UserId)
 		if user != nil {
 			item.Avatar = user.Avatar
@@ -1358,22 +1380,21 @@ func (svc *VideoModule) GetRecommendInfoBySection(userId, sectionId string, page
 				item.Labels = []*models.VideoLabels{}
 			}
 
-			if statistic := svc.video.GetVideoStatistic(fmt.Sprint(item.Id)); statistic != nil {
-				item.ShareNum = statistic.ShareNum
-				item.CommentNum = statistic.CommentNum
-				item.FabulousNum = statistic.FabulousNum
-			}
-
 			// 获取统计标签
 			info := svc.video.GetVideoStatistic(fmt.Sprint(item.Id))
 			if info != nil {
 				item.StatisticsTab = svc.GetStatisticTab(info)
+				item.ShareNum = info.ShareNum
+				item.CommentNum = info.CommentNum
+				item.FabulousNum = info.FabulousNum
 			}
+
+			item.VideoAddr = svc.video.AntiStealingLink(item.VideoAddr)
 
 			likeType = consts.TYPE_VIDEOS
 
 		case 2:
-			ok, err := svc.information.GetInformationById(fmt.Sprint(item.Id))
+			ok, err := svc.information.GetInformationStatistic(fmt.Sprint(item.Id))
 			if ok && err == nil {
 				item.ShareNum = svc.information.Statistic.ShareNum
 				item.CommentNum = svc.information.Statistic.CommentNum

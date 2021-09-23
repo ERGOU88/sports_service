@@ -1,6 +1,7 @@
 package cappointment
 
 import (
+	"sports_service/server/global/consts"
 	"sports_service/server/models/mappointment"
 )
 
@@ -17,8 +18,12 @@ type IAppointment interface {
 	AppointmentDate() (int, interface{})
 	// 设置星期
 	SetWeek(week int)
-	// 设置关联id
-	SetRelatedId(relatedId int)
+	// 设置场馆id
+	SetVenueId(venueId int)
+	// 设置教练id
+	SetCoachId(coachId int)
+	// 设置课程id
+	SetCourseId(courseId int)
 	// 设置预约类型
 	SetAppointmentType(appointmentType int)
 	// 设置日期id
@@ -33,10 +38,19 @@ func UserAppointment(i IAppointment, param *mappointment.AppointmentReq) (int, i
 	return i.Appointment(param)
 }
 
-func GetAppointmentTimeOptions(i IAppointment, week, queryType, relatedId, id int) (int, interface{}) {
+func GetAppointmentTimeOptions(i IAppointment, week, queryType, relatedId, id, coachId int) (int, interface{}) {
 	i.SetWeek(week)
 	i.SetAppointmentType(queryType)
-	i.SetRelatedId(relatedId)
+	switch queryType {
+	case consts.APPOINTMENT_VENUE:
+		i.SetVenueId(relatedId)
+	case consts.APPOINTMENT_COACH:
+		i.SetCoachId(coachId)
+		i.SetCourseId(relatedId)
+	case consts.APPOINTMENT_COURSE:
+		i.SetCourseId(relatedId)
+	}
+
 	i.SetDateId(id)
 	return i.AppointmentOptions()
 }
@@ -46,8 +60,17 @@ func GetAppointmentDetail(i IAppointment) (int, interface{}) {
 }
 
 // 预约日期
-func GetAppointmentDate(i IAppointment, relatedId int) (int, interface{}) {
-	i.SetRelatedId(relatedId)
+func GetAppointmentDate(i IAppointment, queryType, relatedId, coachId int) (int, interface{}) {
+	switch queryType {
+	case consts.APPOINTMENT_VENUE:
+		i.SetVenueId(relatedId)
+	case consts.APPOINTMENT_COACH:
+		i.SetCoachId(coachId)
+		i.SetCourseId(relatedId)
+	case consts.APPOINTMENT_COURSE:
+		i.SetCourseId(relatedId)
+	}
+
 	return i.AppointmentDate()
 }
 

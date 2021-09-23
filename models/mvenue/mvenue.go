@@ -40,6 +40,7 @@ type VenueProduct struct {
 	Image             string `json:"image"`                // 商品图片
 	Describe          string `json:"describe"`             // 商品介绍
 	Title             string `json:"title"`                // 商品简介
+	Instructions      string `json:"instructions"`         // 购买须知
 }
 
 func NewVenueModel(engine *xorm.Session) *VenueModel {
@@ -72,7 +73,7 @@ func (m *VenueModel) GetVenueList() ([]*models.VenueInfo, error) {
 // 通过场馆id 获取线上场馆商品列表
 func (m *VenueModel) GetVenueProducts() ([]*models.VenueProductInfo, error) {
 	var list []*models.VenueProductInfo
-	if err := m.Engine.Where("venue_id=? AND instance_type=1", m.Venue.Id).Asc("product_type").Find(&list); err != nil {
+	if err := m.Engine.Where("venue_id=? AND product_category=2000", m.Venue.Id).Asc("product_type").Find(&list); err != nil {
 		return nil, err
 	}
 

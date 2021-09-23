@@ -200,7 +200,13 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 		return errdef.ERROR, nil
 	}
 
-	list, err := svc.GetAppointmentOptions()
+	condition, err := svc.GetQueryCondition()
+	if err != nil {
+		log.Log.Errorf("venue_trace: get query condition fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+
+	list, err := svc.GetAppointmentOptions(condition)
 	if err != nil {
 		log.Log.Errorf("venue_trace: get options fail, err:%s", err)
 		return errdef.ERROR, nil
@@ -218,7 +224,7 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 			continue
 		}
 
-		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.RelatedId))
+		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.VenueId))
 		if err != nil {
 			log.Log.Errorf("venue_trace: get venue info by id fail, err:%s", err)
 		}
@@ -229,7 +235,7 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 
 		svc.appointment.Labels.TimeNode = item.TimeNode
 		svc.appointment.Labels.Date = date
-		svc.appointment.Labels.VenueId = item.RelatedId
+		svc.appointment.Labels.VenueId = item.VenueId
 		labels, err := svc.appointment.GetVenueUserLabels()
 		if err != nil {
 			log.Log.Errorf("venue_trace: get venue user lables fail, err:%s", err)
@@ -248,7 +254,7 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 
 		svc.appointment.Record.AppointmentType = 0
 		svc.appointment.Record.TimeNode = item.TimeNode
-		svc.appointment.Record.RelatedId = item.RelatedId
+		svc.appointment.Record.VenueId = item.VenueId
 		svc.appointment.Record.Date = date
 		records, err := svc.appointment.GetAppointmentRecord()
 		if err != nil {
@@ -284,8 +290,6 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 				} else {
 					log.Log.Errorf("venue_trace: unmarshal seat info fail, err:%s", err)
 				}
-
-
 
 				//uinfo := &mappointment.SeatInfo{
 				//	UserId: val.UserId,
@@ -325,7 +329,7 @@ func (svc *VenueAppointmentModule) AppointmentDetail() (int, interface{}) {
 
 // 场馆预约日期配置
 func (svc *VenueAppointmentModule) AppointmentDate() (int, interface{}) {
-	return errdef.SUCCESS, svc.AppointmentDateInfo(6, 0)
+	return errdef.SUCCESS, svc.AppointmentDateInfo(6, consts.APPOINTMENT_VENUE)
 }
 
 // 会员抵扣流程
@@ -357,7 +361,7 @@ func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*mo
 		}
 
 		// 是否足够抵扣
-		affected, err := svc.appointment.UpdateVenueVipInfo(val.Duration * -1, userId)
+		affected, err := svc.appointment.UpdateVenueVipInfo(val.Duration * -1, val.VenueId, userId)
 		if err != nil {
 			log.Log.Errorf("venue_trace: update vip duration fail, err:%s", err)
 			return err

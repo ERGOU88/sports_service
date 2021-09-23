@@ -89,7 +89,7 @@ func (svc *InformationModule) GetInformationList(userId, liveId string, page, si
 			svc.information.Statistic.NewsId = info.Id
 			svc.information.Statistic.CreateAt = now
 			svc.information.Statistic.UpdateAt = now
-			// 初始化视频统计数据
+			// 初始化资讯统计数据
 			if _, err = svc.information.AddInformationStatistic(); err != nil {
 				log.Log.Errorf("information_trace: add statistic id:%d, err:%s", info.Id, err)
 				return errdef.INFORMATION_LIST_FAIL, []*minformation.InformationResp{}

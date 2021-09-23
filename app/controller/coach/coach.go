@@ -13,6 +13,7 @@ import (
 	"sports_service/server/models/mcourse"
 	"sports_service/server/models/morder"
 	"sports_service/server/models/muser"
+	"sports_service/server/models/mvenue"
 	"sports_service/server/util"
 	"time"
 )
@@ -24,6 +25,7 @@ type CoachModule struct {
 	course      *mcourse.CourseModel
 	user        *muser.UserModel
 	order       *morder.OrderModel
+	venue       *mvenue.VenueModel
 }
 
 func New(c *gin.Context) *CoachModule {
@@ -38,6 +40,7 @@ func New(c *gin.Context) *CoachModule {
 		course:  mcourse.NewCourseModel(venueSocket),
 		user:    muser.NewUserModel(appSocket),
 		order:   morder.NewOrderModel(venueSocket),
+		venue:   mvenue.NewVenueModel(venueSocket),
 		engine:  venueSocket,
 	}
 }
@@ -45,8 +48,6 @@ func New(c *gin.Context) *CoachModule {
 // 获取私教列表
 func (svc *CoachModule) GetCoachList(page, size int) (int, []*mcoach.CoachInfo) {
 	offset := (page - 1) * size
-	svc.coach.Coach.CourseId = 0
-	svc.coach.Coach.CoachType = 1
 	list, err := svc.coach.GetCoachList(offset, size)
 	if err != nil {
 		return errdef.ERROR, nil
@@ -82,12 +83,18 @@ func (svc *CoachModule) GetCoachDetail(coachId string) (int, *mcoach.CoachDetail
 		Id: svc.coach.Coach.Id,
 		Title: svc.coach.Coach.Title,
 		Name: svc.coach.Coach.Name,
-		Address: svc.coach.Coach.Address,
 		Designation: svc.coach.Coach.Designation,
 		Describe: svc.coach.Coach.Describe,
 		AreasOfExpertise: svc.coach.Coach.AreasOfExpertise,
 		Cover: svc.coach.Coach.Cover,
 		Avatar: svc.coach.Coach.Avatar,
+	}
+
+	ok, err = svc.venue.GetVenueInfoById(fmt.Sprint(svc.course.Course.VenueId))
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get venue info by id fail, venueId:%d, err:%s", svc.course.Course.VenueId, err)
+	} else {
+		res.Address = svc.venue.Venue.Address
 	}
 
 	courses, err := svc.course.GetCourseByCoachId(coachId)
@@ -96,23 +103,9 @@ func (svc *CoachModule) GetCoachDetail(coachId string) (int, *mcoach.CoachDetail
 	}
 
 	if len(courses) > 0 {
-		res.Courses = make([]*mcoach.CourseInfo, len(courses))
-		for key, val := range courses {
-			course := &mcoach.CourseInfo{
-				Id: val.Id,
-				CourseType: val.CourseType,
-				PeriodNum: val.PeriodNum,
-				Price: val.Price,
-				PromotionPic: val.PromotionPic,
-				Icon: val.Icon,
-				Title: val.Title,
-				Describe: val.Describe,
-				CoachId: val.CoachId,
-				ClassPeriod: val.ClassPeriod,
-			}
-
-			res.Courses[key] = course
-		}
+		res.Courses = courses
+	} else {
+		res.Courses = make([]*mcoach.CourseInfo, 0)
 	}
 
 
@@ -202,15 +195,17 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 		return errdef.COACH_NOT_EXISTS
 	}
 
-	if svc.coach.Coach.CoachType != 1 {
-		log.Log.Errorf("coach_trace: invalid coach type, coachId:%d", param.CoachId)
-		svc.engine.Rollback()
-		return errdef.COACH_NOT_EXISTS
-	}
-
 	ok, err = svc.order.GetOrder(param.OrderId)
 	if !ok || err != nil {
 		log.Log.Errorf("coach_trace: coach order not found, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.COACH_ORDER_NOT_EXISTS
+	}
+
+	// 如果订单类型 不是 预约私教
+	if svc.order.Order.ProductType != consts.ORDER_TYPE_APPOINTMENT_COACH {
+		log.Log.Errorf("coach_trace: invalid order product type, orderId:%s, productType:%d",
+			svc.order.Order.PayOrderId, svc.order.Order.ProductType)
 		svc.engine.Rollback()
 		return errdef.COACH_ORDER_NOT_EXISTS
 	}
