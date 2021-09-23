@@ -1391,7 +1391,7 @@ func (svc *VideoModule) GetRecommendInfoBySection(userId, sectionId string, page
 			likeType = consts.TYPE_VIDEOS
 
 		case 2:
-			ok, err := svc.information.GetInformationById(fmt.Sprint(item.Id))
+			ok, err := svc.information.GetInformationStatistic(fmt.Sprint(item.Id))
 			if ok && err == nil {
 				item.ShareNum = svc.information.Statistic.ShareNum
 				item.CommentNum = svc.information.Statistic.CommentNum
