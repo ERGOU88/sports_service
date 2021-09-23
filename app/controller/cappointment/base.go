@@ -825,6 +825,7 @@ func (svc *base) GetQueryStockCondition(date string) (string, error) {
 		return "", errors.New("invalid appointmentType")
 	}
 
+	log.Log.Infof("venue_trace: condition:%s", condition)
 	return condition, nil
 }
 

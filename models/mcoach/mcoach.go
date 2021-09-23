@@ -100,11 +100,16 @@ func (m *CoachModel) GetCoachInfoById(id string) (bool, error) {
 	return m.Engine.Where("id=?", id).Get(m.Coach)
 }
 
+const (
+	GET_COACH_LIST = "SELECT va.coach_id, vc.* FROM venue_appointment_info " +
+		"AS va LEFT JOIN venue_coach_detail AS vc ON va.coach_id=vc.id WHERE va.appointment_type=1 GROUP BY " +
+		"va.coach_id ORDER BY va.id DESC LIMIT ?, ?"
+)
 // 通过课程id、私教类型 获取老师列表
 func (m *CoachModel) GetCoachList(offset, size int) ([]*models.VenueCoachDetail, error) {
 	var list []*models.VenueCoachDetail
-	if err := m.Engine.Where("status=0 AND course_id=? AND coach_type=?", m.Coach.CourseId, m.Coach.CoachType).Limit(size, offset).Find(&list); err != nil {
-		return nil, err
+	if err := m.Engine.SQL(GET_COACH_LIST, offset, size).Find(&list); err != nil {
+		return nil , err
 	}
 
 	return list, nil
