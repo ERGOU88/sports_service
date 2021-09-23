@@ -249,7 +249,7 @@ func (svc *CourseAppointmentModule) AppointmentOptions() (int, interface{}) {
 			info.Avatar = svc.coach.Coach.Avatar
 		}
 
-		ok, err = svc.venue.GetVenueInfoById(fmt.Sprint(svc.course.Course.VenueId))
+		ok, err = svc.venue.GetVenueInfoById(fmt.Sprint(svc.coach.Coach.VenueId))
 		if !ok || err != nil {
 			log.Log.Errorf("venue_trace: get venue info by id fail, venueId:%d, err:%s", svc.course.Course.VenueId, err)
 		} else {
