@@ -12,6 +12,7 @@ import (
 	"sports_service/server/models/mcoach"
 	"sports_service/server/models/mcourse"
 	"sports_service/server/models/muser"
+	"sports_service/server/models/mvenue"
 	"sports_service/server/util"
 	"time"
 )
@@ -22,6 +23,7 @@ type CoachAppointmentModule struct {
 	user        *muser.UserModel
 	course      *mcourse.CourseModel
 	coach       *mcoach.CoachModel
+	venue       *mvenue.VenueModel
 	*base
 }
 
@@ -36,6 +38,7 @@ func NewCoach(c *gin.Context) *CoachAppointmentModule {
 		user:    muser.NewUserModel(appSocket),
 		course:  mcourse.NewCourseModel(venueSocket),
 		coach:   mcoach.NewCoachModel(venueSocket),
+		venue:   mvenue.NewVenueModel(venueSocket),
 		engine:  venueSocket,
 		base:    New(venueSocket),
 	}
@@ -124,9 +127,16 @@ func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentR
 	//	return errdef.COACH_TYPE_FAIL, nil
 	//}
 
+	ok, err = svc.venue.GetVenueInfoById(fmt.Sprint(svc.course.Course.VenueId))
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get venue info by id fail, venueId:%d, err:%s", svc.course.Course.VenueId, err)
+		svc.engine.Rollback()
+		return errdef.VENUE_NOT_EXISTS, nil
+	}
+
 	svc.Extra.CoachId = svc.coach.Coach.Id
 	svc.Extra.CoachName = svc.coach.Coach.Name
-	svc.Extra.Address = svc.coach.Coach.Address
+	svc.Extra.Address = svc.venue.Venue.Address
 	svc.Extra.CourseId = svc.course.Course.Id
 	svc.Extra.CourseName = svc.course.Course.Title
 	svc.Extra.ProductImg = svc.course.Course.PromotionPic
