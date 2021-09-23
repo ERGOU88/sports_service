@@ -814,11 +814,11 @@ func (svc *base) GetQueryStockCondition(date string) (string, error) {
 	var condition string
 	switch svc.appointment.AppointmentInfo.AppointmentType {
 	case consts.APPOINTMENT_VENUE:
-		condition = fmt.Sprintf("appointment_type=%d AND venue_id=%d AND date=%s AND time_node=%s",
+		condition = fmt.Sprintf("appointment_type=%d AND venue_id=%d AND date=%s AND time_node='%s'",
 			svc.appointment.AppointmentInfo.AppointmentType, svc.appointment.AppointmentInfo.VenueId, date,
 			svc.appointment.AppointmentInfo.TimeNode)
 	case consts.APPOINTMENT_COACH,consts.APPOINTMENT_COURSE:
-		condition = fmt.Sprintf("venue_id=%d AND appointment_type=%d AND course_id=%d AND coach_id=%d AND date=%s AND time_node=%s",
+		condition = fmt.Sprintf("venue_id=%d AND appointment_type=%d AND course_id=%d AND coach_id=%d AND date=%s AND time_node='%s'",
 			svc.appointment.AppointmentInfo.VenueId, svc.appointment.AppointmentInfo.AppointmentType, svc.appointment.AppointmentInfo.CourseId,
 			svc.appointment.AppointmentInfo.CoachId, date, svc.appointment.AppointmentInfo.TimeNode)
 	default:
