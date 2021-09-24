@@ -65,7 +65,7 @@ func (svc *PayModule) AppPay(param *morder.PayReqParam) (int, interface{}) {
 		return errdef.PAY_CHANNEL_NOT_EXISTS, nil
 	}
 
-	switch param.PayType {
+	switch svc.pay.PayChannel.Identifier {
 	case consts.ALIPAY:
 		// 支付宝
 		payParam, err := svc.AliPay(svc.pay.PayChannel.AppId, svc.pay.PayChannel.PrivateKey)
@@ -77,7 +77,7 @@ func (svc *PayModule) AppPay(param *morder.PayReqParam) (int, interface{}) {
 		info := make(map[string]interface{}, 0)
 		info["sign"] = payParam
 
-		if _, err = svc.UpdateOrderPayType(consts.ALIPAY, param.OrderId); err != nil {
+		if _, err = svc.UpdateOrderPayType(param.OrderId); err != nil {
 			log.Log.Errorf("pay_trace: update order payType by ali fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
 			return errdef.ORDER_UPDATE_FAIL, nil
 		}
@@ -92,7 +92,7 @@ func (svc *PayModule) AppPay(param *morder.PayReqParam) (int, interface{}) {
 			return errdef.PAY_WX_PARAM_FAIL, nil
 		}
 
-		if _, err = svc.UpdateOrderPayType(consts.WEICHAT, param.OrderId); err != nil {
+		if _, err = svc.UpdateOrderPayType(param.OrderId); err != nil {
 			log.Log.Errorf("pay_trace: update order payType by wx fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
 			return errdef.ORDER_UPDATE_FAIL, nil
 		}
@@ -107,10 +107,10 @@ func (svc *PayModule) AppPay(param *morder.PayReqParam) (int, interface{}) {
 }
 
 // 更新订单支付类型
-func (svc *PayModule) UpdateOrderPayType(payType int, orderId string) (int64, error) {
-	svc.order.Order.PayType = payType
+func (svc *PayModule) UpdateOrderPayType(orderId string) (int64, error) {
+	svc.order.Order.PayChannelId = svc.pay.PayChannel.Id
 	svc.order.Order.PayOrderId = orderId
-	cols := "pay_type"
+	cols := "pay_channel_id"
 	return svc.order.UpdateOrderInfo(cols)
 }
 

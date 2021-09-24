@@ -415,7 +415,7 @@ func (svc *OrderModule) RecordNotifyInfo(now, notifyType int, orderId, body, tra
 	svc.order.Notify.CreateAt = now
 	svc.order.Notify.UpdateAt = now
 	svc.order.Notify.NotifyType = notifyType
-	svc.order.Notify.PayType = svc.order.Order.PayType
+	svc.order.Notify.PayChannelId = svc.order.Order.PayChannelId
 	svc.order.Notify.PayOrderId = orderId
 	svc.order.Notify.NotifyInfo = body
 	svc.order.Notify.Transaction = tradeNo
@@ -717,7 +717,7 @@ func (svc *OrderModule) OrderRefund(param *morder.ChangeOrder, executeType int) 
 	// 可退款金额 > 0
 	if refundAmount > 0 {
 		outRequestNo := util.NewOrderId()
-		svc.order.RefundRecord.RefundWay = svc.order.Order.PayType
+		svc.order.RefundRecord.RefundChannelId = svc.order.Order.PayChannelId
 		svc.order.RefundRecord.RefundType = 1001
 		svc.order.RefundRecord.RefundAmount = refundAmount
 		svc.order.RefundRecord.RefundFee = refundFee
@@ -792,14 +792,14 @@ func (svc *OrderModule) DeleteOrder(param *morder.ChangeOrder) int {
 }
 
 // 校验签名
-func (svc *OrderModule) VerifySign(payType int, body, sign string, bm gopay.BodyMap) bool {
-	ok, err := svc.GetPaymentChannel(payType)
-	if !ok || err != nil {
-		log.Log.Errorf("notify_trace: get payment channel fail, ok:%v, err:%s", ok, err)
-		return false
-	}
+func (svc *OrderModule) VerifySign(payChannel, body, sign string, bm gopay.BodyMap) bool {
+	//ok, err := svc.GetPaymentChannel(payChannel)
+	//if !ok || err != nil {
+	//	log.Log.Errorf("notify_trace: get payment channel fail, ok:%v, err:%s", ok, err)
+	//	return false
+	//}
 
-	switch payType {
+	switch payChannel {
 	case consts.ALIPAY:
 		cli := alipay.NewAliPay(true, svc.pay.PayChannel.AppId, svc.pay.PayChannel.PrivateKey)
 		ok, err := cli.VerifyData(body, "RSA2", sign)
@@ -817,7 +817,7 @@ func (svc *OrderModule) VerifySign(payType int, body, sign string, bm gopay.Body
 		}
 
 	default:
-		log.Log.Errorf("notify_trace: unsupported payType:%d", payType)
+		log.Log.Errorf("notify_trace: unsupported payChannel:%d", payChannel)
 		return false
 	}
 
@@ -825,13 +825,13 @@ func (svc *OrderModule) VerifySign(payType int, body, sign string, bm gopay.Body
 }
 
 // 获取支付渠道配置
-func (svc *OrderModule) GetPaymentChannel(payType int) (bool, error) {
-	return svc.pay.GetPaymentChannel(payType)
+func (svc *OrderModule) GetPaymentChannel(payChannelId int) (bool, error) {
+	return svc.pay.GetPaymentChannel(payChannelId)
 }
 
 // 交易退款 todo:计算手续费
 func (svc *OrderModule) TradeRefund(refundAmount int, outRequestNo string) (string, error) {
-	ok, err := svc.GetPaymentChannel(svc.order.Order.PayType)
+	ok, err := svc.GetPaymentChannel(svc.order.Order.PayChannelId)
 	if !ok || err != nil {
 		log.Log.Errorf("order_trace: get payment channel fail, orderId:%s, ok:%v, err:%s", svc.order.Order.PayOrderId,
 			ok, err)
@@ -839,13 +839,13 @@ func (svc *OrderModule) TradeRefund(refundAmount int, outRequestNo string) (stri
 	}
 
 	var body string
-	switch svc.order.Order.PayType {
+	switch svc.pay.PayChannel.Identifier {
 	case consts.ALIPAY:
 		// 支付宝
 		resp, err := svc.AliRefund(refundAmount, svc.pay.PayChannel.AppId, svc.pay.PayChannel.PrivateKey, outRequestNo)
 		if err != nil {
-			log.Log.Errorf("order_trace: alipay refund fail, orderId:%s, payType:%d", svc.order.Order.PayOrderId,
-				svc.order.Order.PayType)
+			log.Log.Errorf("order_trace: alipay refund fail, orderId:%s, payChannelId:%d", svc.order.Order.PayOrderId,
+				svc.order.Order.PayChannelId)
 			return "", err
 		}
 
@@ -865,7 +865,7 @@ func (svc *OrderModule) TradeRefund(refundAmount int, outRequestNo string) (stri
 		body, _ = util.JsonFast.MarshalToString(resp)
 
 	default:
-		log.Log.Errorf("order_trace: unsupported payType:%d", svc.order.Order.PayType)
+		log.Log.Errorf("order_trace: unsupported pay channel id:%d", svc.order.Order.PayChannelId)
 		return "", errors.New("unsupported payType")
 	}
 
