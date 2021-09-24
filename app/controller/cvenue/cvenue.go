@@ -313,6 +313,7 @@ func (svc *VenueModule) AddOrderProduct(orderId string, now, count int) error {
 	svc.order.OrderProduct.UpdateAt = now
 	svc.order.OrderProduct.PayOrderId = orderId
 	svc.order.OrderProduct.SnapshotId = svc.order.CardRecord.Id
+	svc.order.OrderProduct.VenueId = svc.venue.Venue.Id
 
 	affected, err := svc.order.AddOrderProduct()
 	if err != nil {
