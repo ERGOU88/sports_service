@@ -341,6 +341,7 @@ func (svc *VenueModule) AddOrder(extra *mappointment.OrderResp, orderId, userId,
 	svc.order.Order.ChannelId = channel
 	svc.order.Order.Subject = subject
 	svc.order.Order.ProductType = productType
+	svc.order.Order.VenueId = svc.venue.Venue.Id
 	// 次卡需要核销
 	if productType == consts.ORDER_TYPE_EXPERIENCE_CARD {
 		svc.order.Order.WriteOffCode = fmt.Sprint(util.GetSnowId())
