@@ -168,7 +168,7 @@ func (m *OrderModel) GetRefundRules() ([]*models.VenueRefundRules, error) {
 	return list, nil
 }
 
-// 保存二维码数据
+// 保存二维码数据 todo:测试修改为1小时过期
 func (m *OrderModel) SaveQrCodeInfo(secret, orderId string, expireTm int64) error {
 	rds := dao.NewRedisDao()
 	return rds.SETEX(fmt.Sprintf(rdskey.QRCODE_INFO, secret), expireTm, orderId)
