@@ -3,6 +3,7 @@ package im
 import (
 	"errors"
 	"fmt"
+	"sports_service/server/app/config"
 	"sports_service/server/util"
 )
 
@@ -42,7 +43,7 @@ func NewImRealize() *imRealize {
 }
 
 func (im *imRealize) AddUser(userId, name, avatar string) (string, error) {
-	sig, err := GenSig(TX_IDENTIFIER, EXPIRE_TM_DAY)
+	sig, err := GenSig(config.Global.TencentImIdentifier, EXPIRE_TM_DAY)
 	if err != nil {
 		return "", err
 	}
@@ -86,7 +87,7 @@ func (im *imRealize) CreateGroup(groupType, owner, name, introduction, notificat
 		return "", errors.New("invalid param")
 	}
 
-	sig, err := GenSig(TX_IDENTIFIER, EXPIRE_TM_DAY)
+	sig, err := GenSig(config.Global.TencentImIdentifier, EXPIRE_TM_DAY)
 	if err != nil {
 		return "", err
 	}
