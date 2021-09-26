@@ -112,12 +112,12 @@ func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentR
 	//	return errdef.COACH_ID_NOT_MATCH, nil
 	//}
 
-	//ok, err = svc.coach.GetCoachInfoById(fmt.Sprint(svc.course.Course.CoachId))
-	//if !ok || err != nil {
-	//	log.Log.Errorf("venue_trace: get coach by id fail, err:%s", err)
-	//	svc.engine.Rollback()
-	//	return errdef.COACH_NOT_EXISTS, nil
-	//}
+	ok, err = svc.coach.GetCoachInfoById(fmt.Sprint(params.CoachId))
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get coach by id fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.COACH_NOT_EXISTS, nil
+	}
 
 	//if svc.coach.Coach.CoachType != 1 {
 	//	log.Log.Errorf("venue_trace: coach type fail, coachType:%d", svc.coach.Coach.CoachType)

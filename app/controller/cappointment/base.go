@@ -430,7 +430,7 @@ func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, cou
 		UpdateAt: now,
 		PurchasedNum: count,
 		SeatInfo: info,
-		CoachId: svc.Extra.CoachId,
+		CoachId: svc.appointment.AppointmentInfo.CoachId,
 		SingleDuration: svc.appointment.AppointmentInfo.Duration,
 		Duration: svc.appointment.AppointmentInfo.Duration * count,
 		UnitDuration: svc.appointment.AppointmentInfo.UnitDuration,

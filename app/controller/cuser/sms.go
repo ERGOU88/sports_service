@@ -123,15 +123,15 @@ func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string
 		return syscode, "", nil
 	}
 
-	// 开启事务
-	if err := svc.engine.Begin(); err != nil {
-		log.Log.Errorf("user_trace: session begin err:%s", err)
-		return errdef.ERROR, "", nil
-	}
-
 	// 根据手机号查询用户 不存在 注册用户 用户存在 为登陆
 	user := svc.user.FindUserByPhone(params.MobileNum)
 	if user == nil {
+		// 开启事务
+		if err := svc.engine.Begin(); err != nil {
+			log.Log.Errorf("user_trace: session begin err:%s", err)
+			return errdef.ERROR, "", nil
+		}
+
 		// 注册
 		reg := muser.NewMobileRegister()
 		if err := reg.Register(svc.user, params.Platform, params.MobileNum, svc.context.ClientIP()); err != nil {
@@ -169,11 +169,11 @@ func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string
 
 	}
 
-  // 登陆的时候 检查用户状态
+	// 登陆的时候 检查用户状态
 	if !svc.CheckUserStatus(svc.user.User.Status) {
-	  log.Log.Errorf("user_trace: forbid status, userId:%s", svc.user.User.UserId)
-	  return errdef.USER_FORBID_STATUS, "", nil
-  }
+		log.Log.Errorf("user_trace: forbid status, userId:%s", svc.user.User.UserId)
+		return errdef.USER_FORBID_STATUS, "", nil
+	}
 
 	// 用户已注册过, 则直接从redis中获取token并返回
 	token, err := svc.user.GetUserToken(svc.user.User.UserId)
@@ -195,12 +195,28 @@ func (svc *UserModule) RegisterOfficialAccount(params *sms.SmsCodeLoginParams) (
 		return errdef.SMS_CODE_NOT_MATCH, "", nil
 	}
 
+	// 根据手机号查询用户 不存在 注册用户 用户存在 为登陆
+	user := svc.user.FindUserByPhone(params.MobileNum)
+	if user != nil {
+		// 用户已注册过, 则直接从redis中获取token并返回
+		token, err := svc.user.GetUserToken(svc.user.User.UserId)
+		if err != nil && err == redis.ErrNil {
+			// redis 没有，重新生成token
+			token = svc.user.GenUserToken(svc.user.User.UserId, util.Md5String(svc.user.User.Password))
+			// 重新保存到redis
+			if err := svc.user.SaveUserToken(svc.user.User.UserId, token); err != nil {
+				log.Log.Errorf("user_trace: save user token err:%s", err)
+			}
+		}
+
+		return errdef.SUCCESS, token, user
+	}
+
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("user_trace: session begin err:%s", err)
 		return errdef.ERROR, "", nil
 	}
-
 	// 注册
 	reg := muser.NewMobileRegister()
 	svc.user.User.AccountType = 1

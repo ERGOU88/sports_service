@@ -416,7 +416,7 @@ func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
 		}
 	}
 
-	if err := svc.order.SaveQrCodeInfo(kabaw.QrCodeInfo, userId, rdskey.KEY_EXPIRE_MIN * 15); err != nil {
+	if err := svc.order.SaveQrCodeInfo(kabaw.QrCodeInfo, userId, rdskey.KEY_EXPIRE_MIN * 60); err != nil {
 		log.Log.Errorf("user_trace: save qrcode kabaw info fail, userId:%s, err:%s", userId, err)
 		return errdef.VENUE_VIP_INFO_FAIL, nil
 	}

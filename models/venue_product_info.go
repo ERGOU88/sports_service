@@ -2,7 +2,7 @@ package models
 
 type VenueProductInfo struct {
 	Id                int64  `json:"id" xorm:"pk autoincr comment('主键') BIGINT(20)"`
-	ProductCode       string `json:"product_code" xorm:"comment('商品码') VARCHAR(255)"`
+	ProductCode       string `json:"product_code" xorm:"default '' comment('商品码') index VARCHAR(255)"`
 	ProductName       string `json:"product_name" xorm:"not null comment('商品名称') VARCHAR(128)"`
 	ProductType       int    `json:"product_type" xorm:"not null comment('2101 临时卡 2201 次卡 2311 月卡 2321 季卡 2331 半年卡 2341 年卡 4001 储值卡') INT(8)"`
 	ProductCategory   int    `json:"product_category" xorm:"not null default 0 comment('商品类别 1000 预约类 2000 卡类 5000 实物类') INT(8)"`

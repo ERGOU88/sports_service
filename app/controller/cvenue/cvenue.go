@@ -313,6 +313,7 @@ func (svc *VenueModule) AddOrderProduct(orderId string, now, count int) error {
 	svc.order.OrderProduct.UpdateAt = now
 	svc.order.OrderProduct.PayOrderId = orderId
 	svc.order.OrderProduct.SnapshotId = svc.order.CardRecord.Id
+	svc.order.OrderProduct.VenueId = svc.venue.Venue.Id
 
 	affected, err := svc.order.AddOrderProduct()
 	if err != nil {
@@ -341,6 +342,8 @@ func (svc *VenueModule) AddOrder(extra *mappointment.OrderResp, orderId, userId,
 	svc.order.Order.ChannelId = channel
 	svc.order.Order.Subject = subject
 	svc.order.Order.ProductType = productType
+	svc.order.Order.VenueId = svc.venue.Venue.Id
+	svc.order.Order.OriginalAmount = extra.OriginalAmount
 	// 次卡需要核销
 	if productType == consts.ORDER_TYPE_EXPERIENCE_CARD {
 		svc.order.Order.WriteOffCode = fmt.Sprint(util.GetSnowId())
