@@ -16,5 +16,5 @@ type VenuePaymentChannel struct {
 	PrivateKey string `json:"private_key" xorm:"TEXT"`
 	CreateAt   int    `json:"create_at" xorm:"INT(11)"`
 	UpdateAt   int    `json:"update_at" xorm:"INT(11)"`
-	PayType    int    `json:"pay_type" xorm:"comment('1 支付宝 2 微信') TINYINT(2)"`
+	Identifier string `json:"identifier" xorm:"comment('支付渠道标识') VARCHAR(255)"`
 }

@@ -54,10 +54,10 @@ const (
     PLT_TYPE_IOS     = 1002
 )
 
-// 支付方式 1 支付宝 2 微信
+// 支付方式  支付宝 alipay 2 微信 weixin
 const (
-    ALIPAY  = 1
-    WEICHAT = 2
+    ALIPAY  = "alipay"
+    WEICHAT = "weixin"
 )
 
 

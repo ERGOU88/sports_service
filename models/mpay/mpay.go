@@ -17,8 +17,8 @@ func NewPayModel(engine *xorm.Session) *PayModel {
 	}
 }
 
-// 获取支付渠道配置 1 支付宝 2 微信
-func (m *PayModel) GetPaymentChannel(payType int) (bool, error) {
-	return m.Engine.Where("status=0 AND pay_type=?", payType).Get(m.PayChannel)
+// 通过id获取支付渠道配置
+func (m *PayModel) GetPaymentChannel(payChannelId int) (bool, error) {
+	return m.Engine.Where("status=0 AND id=?", payChannelId).Get(m.PayChannel)
 }
 

@@ -3,7 +3,7 @@ package models
 type User struct {
 	Id            int64  `json:"id" xorm:"pk autoincr comment('主键id') BIGINT(20)"`
 	NickName      string `json:"nick_name" xorm:"not null default '' comment('昵称') VARCHAR(45)"`
-	MobileNum     int64  `json:"mobile_num" xorm:"not null comment('手机号码') BIGINT(20)"`
+	MobileNum     int64  `json:"mobile_num" xorm:"not null comment('手机号码') unique BIGINT(20)"`
 	Password      string `json:"password" xorm:"not null comment('用户密码') VARCHAR(128)"`
 	UserId        string `json:"user_id" xorm:"not null comment('用户id') unique VARCHAR(60)"`
 	Gender        int    `json:"gender" xorm:"not null default 0 comment('性别 0人妖 1男性 2女性') TINYINT(1)"`
