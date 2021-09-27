@@ -380,10 +380,13 @@ func (m *AppointmentModel) RevertCourseStockNum(timeNode, date string, count, no
 // 获取成功预约的记录[包含已付款和支付中及已完成]
 func (m *AppointmentModel) GetAppointmentRecord() ([]*models.VenueAppointmentRecord, error) {
 	var list []*models.VenueAppointmentRecord
-	sql := "SELECT var.* FROM venue_appointment_record AS var LEFT JOIN venue_order_product_info AS vop " +
-		"ON var.id=vop.`snapshot_id`  WHERE var.venue_id=? AND var.appointment_type=? " +
-		"AND var.time_node=? AND var.date=? AND  vop.status in (0, 2, 3)"
-	if err := m.Engine.SQL(sql, m.Record.VenueId, m.Record.AppointmentType,  m.Record.TimeNode, m.Record.Date).Find(&list); err != nil {
+	//sql := "SELECT var.* FROM venue_appointment_record AS var LEFT JOIN venue_order_product_info AS vop " +
+	//	"ON var.id=vop.`snapshot_id`  WHERE var.venue_id=? AND var.appointment_type=? " +
+	//	"AND var.time_node=? AND var.date=? AND  vop.status in (0, 2, 3)"
+	sql := "SELECT var.*,vop.status FROM venue_appointment_record AS var LEFT JOIN venue_pay_orders AS vop " +
+		"ON var.pay_order_id=vop.`pay_order_id` WHERE var.venue_id=? AND var.appointment_type=? " +
+		"AND var.time_node=? AND var.date=? AND vop.status in(0, 2, 3)"
+	if err := m.Engine.SQL(sql, m.Record.VenueId, m.Record.AppointmentType, m.Record.TimeNode, m.Record.Date).Find(&list); err != nil {
 		return nil, err
 	}
 
@@ -495,7 +498,7 @@ func (m *AppointmentModel) AddLabels(labels []*models.VenueUserLabel) (int64, er
 	return m.Engine.InsertMulti(labels)
 }
 
-// 通过订单id获取预约流水 status 1 可用 0 不可用
+// 通过订单id获取预约流水
 func (m *AppointmentModel) GetAppointmentRecordByOrderId(orderId string) ([]*models.VenueAppointmentRecord, error) {
 	var list []*models.VenueAppointmentRecord
 	if err := m.Engine.Where("pay_order_id=?", orderId).Find(&list); err != nil {

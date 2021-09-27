@@ -16,4 +16,5 @@ type VenueInfo struct {
 	UpdateAt      int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
 	ServiceStatus int    `json:"service_status" xorm:"not null default 0 comment('0 正常营业 1 暂停营业') TINYINT(1)"`
 	PromotionPic  string `json:"promotion_pic" xorm:"default ' ' comment('场馆宣传图') VARCHAR(1000)"`
+	Instructions  string `json:"instructions" xorm:"default ' ' comment('场馆预约须知') VARCHAR(1000)"`
 }

@@ -54,7 +54,7 @@ func (svc *VenueAppointmentModule) Options(relatedId int64) (int, interface{}) {
 		info := &mappointment.Options{
 			Id: item.Id,
 			Name: item.VenueName,
-			Instructions: "预约须知",
+			Instructions: item.Instructions,
 		}
 
 		res[index] = info
@@ -274,19 +274,15 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 					continue
 				}
 
-				seatInfo := make([]*mappointment.SeatInfo, 0)
-				if err := util.JsonFast.UnmarshalFromString(val.SeatInfo, &seatInfo); err == nil {
-					for _, v := range seatInfo {
-						user := svc.user.FindUserByUserid(val.UserId)
-						if user != nil {
-							v.NickName = user.NickName
-							v.Avatar = user.Avatar
-						}
-
-						continue
+				seatInfo := &mappointment.SeatInfo{}
+				if err := util.JsonFast.UnmarshalFromString(val.SeatInfo, seatInfo); err == nil {
+					user := svc.user.FindUserByUserid(val.UserId)
+					if user != nil {
+						seatInfo.NickName = user.NickName
+						seatInfo.Avatar = user.Avatar
 					}
 
-					info.ReservedUsers = append(info.ReservedUsers, seatInfo...)
+					info.ReservedUsers = append(info.ReservedUsers, seatInfo)
 				} else {
 					log.Log.Errorf("venue_trace: unmarshal seat info fail, err:%s", err)
 				}
@@ -375,9 +371,9 @@ func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*mo
 		// 足够抵扣 则记录抵扣的记录
 		if affected == 1 {
 			// 抵扣一个 则 减去一个的售价
-			svc.recordMp[val.Id].DeductionNum = affected
-			svc.recordMp[val.Id].DeductionTm = int64(val.Duration)
-			svc.recordMp[val.Id].DeductionAmount = int64(val.CurAmount)
+			svc.recordMp[val.Id][key].DeductionNum = affected
+			svc.recordMp[val.Id][key].DeductionTm = int64(val.Duration)
+			svc.recordMp[val.Id][key].DeductionAmount = int64(val.CurAmount)
 			svc.Extra.TotalDeductionTm += val.Duration
 			// 订单总金额 = 商品总价 - 抵扣金额
 			svc.Extra.TotalAmount = svc.Extra.TotalAmount - val.CurAmount
@@ -385,7 +381,7 @@ func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*mo
 			// 当前节点付款金额 = 当前节点总价 - 当前抵扣金额
 			svc.orderMp[val.Id].Amount = svc.orderMp[val.Id].Amount - val.CurAmount
 			if len(svc.Extra.TimeNodeInfo) <= key {
-				svc.Extra.TimeNodeInfo[key].DeductionTm = svc.recordMp[val.Id].DeductionTm
+				svc.Extra.TimeNodeInfo[key].DeductionTm = svc.recordMp[val.Id][key].DeductionTm
 			}
 		}
 	}
