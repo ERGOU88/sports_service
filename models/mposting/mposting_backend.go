@@ -18,7 +18,7 @@ func (m *PostingModel) UpdateStatusByPost() error {
 
 const (
 	GET_POST_LIST = "SELECT p.*, ps.fabulous_num, ps.browse_num, ps.share_num, ps.comment_num, ps.heat_num FROM " +
-		"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.section_id=? AND p.is_top=0 " +
+		"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.is_top=0 " +
 		" ORDER BY p.is_cream DESC, p.is_top DESC, p.id DESC LIMIT ?, ?"
 )
 // 获取帖子列表 [管理后台]

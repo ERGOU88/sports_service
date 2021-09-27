@@ -7,6 +7,7 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/backend/errdef"
 	"sports_service/server/models/mposting"
+	"sports_service/server/util"
 )
 
 // 帖子审核
@@ -26,5 +27,10 @@ func AuditPost(c *gin.Context) {
 
 // 帖子列表 todo：展示数据待确认
 func PostList(c *gin.Context) {
-
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	svc := cpost.New(c)
+	code, list := svc.GetPostList(page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
 }

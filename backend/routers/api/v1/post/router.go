@@ -10,6 +10,6 @@ func Router(engine *gin.Engine) {
 		// 后台审核帖子
 		post.POST("/audit", AuditPost)
 		// 后台帖子列表
-		post.POST("/list", PostList)
+		post.GET("/list", PostList)
 	}
 }
