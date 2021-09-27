@@ -559,7 +559,6 @@ func (svc *base) AddOrder(orderId, userId, subject string, now, productType int)
 	svc.order.Order.ChannelId = svc.Extra.Channel
 	svc.order.Order.Subject = subject
 	svc.order.Order.ProductType = productType
-	svc.order.Order.WriteOffCode = svc.Extra.WriteOffCode
 	// todo: 暂时只有一个场馆
 	svc.order.Order.VenueId = 1
 	// 实付金额为0 表示使用时长抵扣 或 活动免费  订单直接置为成功
