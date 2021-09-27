@@ -54,6 +54,16 @@ appleLinkPath: /data/service/fpv-app-api/config
 certFilePath: /data/service/fpv-app-api/config/apiclient_cert.pem
 keyFilePath: /data/service/fpv-app-api/config/apiclient_key.pem
 pkcs12FilePath: /data/service/fpv-app-api/config/apiclient_cert.p12
+## 腾讯im SDKAppID
+#tencentImAppId: 1400570443
+## 腾讯im 密钥
+#tencentImSecret: a6380a7413ed7fdcfac951b9c5fde542c661864c596a4aa7bc1d15c87df5b1f7
+# 腾讯im SDKAppID
+tencentImAppId: 1400576334
+# 腾讯im 密钥
+tencentImSecret: 080789c06a28b355e1ec94b97ad61edc4eb887275e68fa0046f5659cead396e7
+# 腾讯im 管理员
+tencentImIdentifier: bluetrans
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
   path: ./log/app_server_%s.log

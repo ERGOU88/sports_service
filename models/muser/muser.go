@@ -19,6 +19,13 @@ type UserModel struct {
 	Engine  *xorm.Session
 }
 
+type TencentImUser struct {
+	UserId      string    `json:"user_id"`
+	NickName    string    `json:"nick_name"`
+	Avatar      string    `json:"avatar"`
+	Sign        string    `json:"sign"`
+}
+
 func NewUserModel(engine *xorm.Session) *UserModel {
 	return &UserModel{
 		User: new(models.User),
@@ -153,6 +160,11 @@ type FeedbackParam struct {
 	Describe string `json:"describe" example:"问题描述"`                              // 反馈内容
 	Problem  string `binding:"required" json:"problem" example:"遇到的问题"`           // 遇到的问题
 	Pics     string `json:"pics" example:"图片列表"`                                  // 图片（多张逗号分隔）
+}
+
+// 更新腾讯im签名参数
+type UpdateTencentImSign struct {
+	UserId    string   `json:"user_id"`    // 用户id
 }
 
 // 个人空间 用户信息请求参数

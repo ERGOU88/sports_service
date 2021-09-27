@@ -230,6 +230,7 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 		OrderType:      svc.venue.Product.ProductType,
 		VenueName:      svc.venue.Venue.VenueName,
 		ProductImg:     svc.venue.Product.Image,
+		OriginalAmount: svc.venue.Product.RealAmount * param.Count,
 	}
 
 	// 添加订单

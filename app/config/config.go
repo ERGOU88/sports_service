@@ -77,6 +77,9 @@ type Config struct {
 	CertFilePath string
 	KeyFilePath string
 	Pkcs12FilePath string
+	TencentImAppId int
+	TencentImSecret string
+	TencentImIdentifier string
 
 	Debug bool
 }
