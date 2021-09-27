@@ -630,9 +630,10 @@ func VideoListBySubarea(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	subareaId := c.Query("subarea_id")
+	userId := c.Query("user_id")
 
 	svc := cvideo.New(c)
-	syscode, list := svc.GetVideoListBySubarea(subareaId, page, size)
+	syscode, list := svc.GetVideoListBySubarea(subareaId, userId, page, size)
 	reply.Data["list"] = list
 
 	reply.Response(http.StatusOK, syscode)
