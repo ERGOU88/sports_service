@@ -15,7 +15,6 @@ type VenuePayOrders struct {
 	ChannelId      int    `json:"channel_id" xorm:"comment('购买渠道，1001 android ; 1002 ios') INT(10)"`
 	IsCallback     int    `json:"is_callback" xorm:"not null default 0 comment('是否接收到第三方回调 0 未接收到回调 1 已接收回调') TINYINT(1)"`
 	Subject        string `json:"subject" xorm:"not null default '' comment('商品名称') VARCHAR(150)"`
-	WriteOffCode   string `json:"write_off_code" xorm:"not null default '' comment('核销码') VARCHAR(200)"`
 	RefundAmount   int    `json:"refund_amount" xorm:"not null default 0 comment('退款金额（分）') INT(11)"`
 	IsDelete       int    `json:"is_delete" xorm:"not null default 0 comment('是否删除0正常 1删除') TINYINT(4)"`
 	OriginalAmount int    `json:"original_amount" xorm:"not null comment('订单原始金额（分）') INT(11)"`

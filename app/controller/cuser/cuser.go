@@ -384,7 +384,7 @@ func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
 	// 默认非会员
 	kabaw.StartTm = 0
 	kabaw.EndTm = 0
-	kabaw.QrCodeInfo = fmt.Sprintf("U%s", util.GenSecret(util.MIX_MODE, 18))
+	kabaw.QrCodeInfo = fmt.Sprintf("U%d", util.GetSnowId())
 	kabaw.RemainDuration = 0
 	kabaw.Tips = "对准闸机扫描口 高度5cm刷码入场"
 	kabaw.VenueName = svc.venue.Venue.VenueName

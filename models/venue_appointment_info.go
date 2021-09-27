@@ -10,7 +10,7 @@ type VenueAppointmentInfo struct {
 	Duration        int       `json:"duration" xorm:"not null default 0 comment('总时长（秒）') INT(8)"`
 	RealAmount      int       `json:"real_amount" xorm:"not null comment('真实价格（单位：分）') INT(11)"`
 	CurAmount       int       `json:"cur_amount" xorm:"not null comment('当前价格 (包含真实价格、 折扣价格（单位：分）') INT(11)"`
-	DiscountRate    int       `json:"discount_rate" xorm:"not null default 0 comment('折扣率') INT(11)"`
+	DiscountRate    int       `json:"discount_rate" xorm:"not null default 0 comment('折扣率 例如9.5折 则值为95') INT(11)"`
 	DiscountAmount  int       `json:"discount_amount" xorm:"not null default 0 comment('优惠的金额') INT(11)"`
 	Status          int       `json:"status" xorm:"not null default 0 comment('0 正常 1 不可用') TINYINT(1)"`
 	QuotaNum        int       `json:"quota_num" xorm:"not null default 0 comment('配额：可容纳人数/可预约人数 -1表示没有限制') INT(10)"`

@@ -1040,10 +1040,11 @@ func (svc *OrderModule) GetCouponCodeInfo(userId, orderId string) (int, *morder.
 	resp := &morder.CouponCodeInfo{}
 	resp.VenueName = extra.VenueName
 	resp.Subject = svc.order.Order.Subject
-	resp.Code = svc.order.Order.WriteOffCode
+	resp.Code = fmt.Sprintf("O%d", util.GetSnowId())
 	resp.Count = extra.Count
 	resp.TotalAmount = svc.order.Order.Amount
-	resp.QrCodeInfo = fmt.Sprintf("O%s", util.GenSecret(util.MIX_MODE, 16))
+	//resp.QrCodeInfo = fmt.Sprintf("O%s", util.GenSecret(util.MIX_MODE, 16))
+	resp.QrCodeInfo = resp.Code
 	expire := int64(rdskey.KEY_EXPIRE_MIN * 60)
 	resp.QrCodeExpireDuration = expire - 30
 	cstSh, _ := time.LoadLocation("Asia/Shanghai")
