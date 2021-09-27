@@ -1,6 +1,7 @@
 package cuser
 
 import (
+	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
@@ -424,15 +425,32 @@ func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
 	return errdef.SUCCESS, kabaw
 }
 
-// 更新用户的腾讯im签名
+// 更新游客的腾讯im签名
+func (svc *UserModule) UpdateTencentImSignByGuest() (int, string) {
+	code, info := svc.GetTencentImSignByGuest(2)
+	return code, info.Sign
+}
+
+// 更新用户/游客的腾讯im签名
 func (svc *UserModule) UpdateTencentImSign(userId string) (int, string) {
+	if userId == "" {
+		// 更新游客im签名
+		return svc.UpdateTencentImSignByGuest()
+	}
+
+	// 更新用户im签名
+	return svc.UpdateTencentImSignByUser(userId)
+}
+
+// 更新用户im签名
+func (svc *UserModule) UpdateTencentImSignByUser(userId string) (int, string) {
 	user := svc.user.FindUserByUserid(userId)
 	if user == nil {
 		log.Log.Errorf("user_trace: user not found, userId:%s", userId)
 		return errdef.USER_NOT_EXISTS, ""
 	}
 
-	sig, err := im.GenSig(userId, 3600 * 24 * 31)
+	sig, err := im.GenSig(userId, 3600 * 24 * 90)
 	if err != nil {
 		return errdef.USER_GEN_IM_SIGN_FAIL, ""
 	}
@@ -452,7 +470,7 @@ func (svc *UserModule) UpdateTencentImSign(userId string) (int, string) {
 }
 
 // 腾讯im 添加游客
-func (svc *UserModule) AddGuestByTencentIm() (int, map[string]string) {
+func (svc *UserModule) AddGuestByTencentIm() (int, *muser.TencentImUser) {
 	userId := fmt.Sprint(util.GetSnowId())
 	avatar := consts.DEFAULT_AVATAR
 	nickName := fmt.Sprintf("游客%d", util.GenerateRandnum(100000, 999999))
@@ -463,11 +481,128 @@ func (svc *UserModule) AddGuestByTencentIm() (int, map[string]string) {
 		return errdef.USER_ADD_GUEST_FAIL, nil
 	}
 
-	mp := make(map[string]string, 0)
-	mp["user_id"] = userId
-	mp["avatar"] = avatar
-	mp["nick_name"] = nickName
-	mp["sign"] = sign
+	info := &muser.TencentImUser{
+		UserId: userId,
+		Avatar: avatar,
+		NickName: nickName,
+		Sign: sign,
+	}
 
-	return errdef.SUCCESS, mp
+	svc.SaveGuestInfo(info)
+
+	return errdef.SUCCESS, info
+}
+
+// 保存游客信息 [腾讯im]
+func (svc *UserModule) SaveGuestInfo(info *muser.TencentImUser) {
+	str, _ := util.JsonFast.MarshalToString(info)
+	// 游客相关信息 保存到redis 便于复用
+	if err := svc.SaveGuestInfoByTencentIm(str); err != nil {
+		log.Log.Errorf("user_trace: save guest sign by tencent im fail, err:%s", err)
+	}
+}
+
+// 保存游客签名等[腾讯im]
+func (svc *UserModule) SaveGuestInfoByTencentIm(info string) error {
+	rds := dao.NewRedisDao()
+	return rds.Set(rdskey.USER_TENCENT_IM_GUEST_SIGN, info)
+}
+
+// 获取游客签名[腾讯im]
+func (svc *UserModule) GetGuestSignByTencentIm() (string, error) {
+	rds := dao.NewRedisDao()
+	return rds.Get(rdskey.USER_TENCENT_IM_GUEST_SIGN)
+}
+
+// 获取腾讯im签名 [游客]
+// action 1 获取 2 更新
+func (svc *UserModule) GetTencentImSignByGuest(action int) (int, *muser.TencentImUser) {
+	// 查看redis 游客信息是否存在
+	info, err := svc.GetGuestSignByTencentIm()
+	if err != nil && err != redis.ErrNil {
+		log.Log.Errorf("user_trace: get guest sign fail, err:%s", err)
+		return errdef.USER_GET_GUEST_SIGN_FAIL, nil
+	}
+
+	if info == "" || err == redis.ErrNil {
+		// 未获取到 添加
+		return svc.AddGuestByTencentIm()
+	}
+
+	imUser := &muser.TencentImUser{}
+	if err = util.JsonFast.UnmarshalFromString(info, imUser); err != nil {
+		log.Log.Errorf("user_trace: unmarshal im user fail, err:%s", err)
+		return errdef.USER_GET_GUEST_SIGN_FAIL, nil
+	}
+
+	// action == 2 签名过期 重新生成
+	if action == 2 {
+		sig, err := im.GenSig(imUser.UserId, 3600 * 24 * 90)
+		if err != nil {
+			return errdef.USER_GEN_IM_SIGN_FAIL, nil
+		}
+
+		imUser.Sign = sig
+		svc.SaveGuestInfo(imUser)
+	}
+
+	return errdef.SUCCESS, imUser
+}
+
+// 获取腾讯im签名
+func (svc *UserModule) GetTencentImSign(userId string) (int, *muser.TencentImUser) {
+	if userId == "" {
+		// 获取游客签名
+		return svc.GetTencentImSignByGuest(1)
+	}
+
+	// 获取用户签名
+	return svc.GetTencentImSignByUser(userId)
+}
+
+// 获取腾讯im签名[已注册用户]
+func (svc *UserModule) GetTencentImSignByUser(userId string) (int, *muser.TencentImUser) {
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
+		log.Log.Errorf("user_trace: user not found, userId:%s", userId)
+		return errdef.USER_NOT_EXISTS, nil
+	}
+
+	// 已导入
+	if user.TxAccid != "" && user.TxToken != "" {
+		info := &muser.TencentImUser{
+			NickName: user.NickName,
+			Avatar: user.Avatar,
+			UserId: user.TxAccid,
+			Sign: user.TxToken,
+		}
+
+		return errdef.SUCCESS, info
+	}
+
+	sign, err := im.Im.AddUser(user.UserId, user.NickName, user.Avatar)
+	if err != nil {
+		log.Log.Errorf("user_trace: register im user fail, userId:%s, err:%s", userId, err)
+		return errdef.USER_ADD_GUEST_FAIL, nil
+	}
+
+	svc.user.User.TxAccid = userId
+	svc.user.User.TxToken = sign
+	// 条件
+	condition := fmt.Sprintf("id=%d", user.Id)
+	// 字段
+	cols := "tx_accid, tx_token"
+	if _, err := svc.user.UpdateUserInfos(condition, cols); err != nil {
+		log.Log.Errorf("user_trace: update user im sign fail, userId:%s, err:%s", userId, err)
+		return errdef.USER_UPDATE_IM_SIGN_FAIL, nil
+	}
+
+	info := &muser.TencentImUser{
+		NickName: user.NickName,
+		Avatar: user.Avatar,
+		UserId: user.TxAccid,
+		Sign: user.TxToken,
+	}
+
+	return errdef.SUCCESS, info
 }

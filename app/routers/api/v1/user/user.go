@@ -461,11 +461,17 @@ func UserKabaw(c *gin.Context) {
 }
 
 // 更新腾讯im签名
-func TencentImSign(c *gin.Context) {
+func UpdateTencentImSign(c *gin.Context) {
 	reply := errdef.New(c)
-	userId, _ := c.Get(consts.USER_ID)
+	param := &muser.UpdateTencentImSign{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("user_trace: invalid param, param:%+v", param)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+
 	svc := cuser.New(c)
-	code, sign := svc.UpdateTencentImSign(userId.(string))
+	code, sign := svc.UpdateTencentImSign(param.UserId)
 	reply.Data["sign"] = sign
 	reply.Response(http.StatusOK, code)
 }
@@ -475,6 +481,26 @@ func TencentImAddGuest(c *gin.Context) {
 	reply := errdef.New(c)
 	svc := cuser.New(c)
 	code, info := svc.AddGuestByTencentIm()
+	reply.Data["detail"] = info
+	reply.Response(http.StatusOK, code)
+}
+
+// 腾讯im 添加用户
+func TencentImAddUser(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+	svc := cuser.New(c)
+	code, sign := svc.GetTencentImSignByUser(userId.(string))
+	reply.Data["sign"] = sign
+	reply.Response(http.StatusOK, code)
+}
+
+// 获取腾讯im签名
+func GetTencentImSign(c *gin.Context) {
+	reply := errdef.New(c)
+	userId := c.Query("user_id")
+	svc := cuser.New(c)
+	code, info := svc.GetTencentImSign(userId)
 	reply.Data["detail"] = info
 	reply.Response(http.StatusOK, code)
 }

@@ -108,14 +108,14 @@ func (m *base) Register(u *UserModel, s *SocialModel, c *gin.Context, unionId, a
 	m.newSocialAccount(s, socialType, u.User.UserId, unionId)
 
 	// 腾讯云im导入用户
-	ch := m.tcyAddUser(u.User)
-	result, ok := <- ch
-	if !ok || result.err != nil {
-		log.Log.Error("read  chan = %v, err = %+v", ok, result.err)
-		return errors.New("register im user fail")
-	}
-
-	u.SetTencentImInfo(u.User.UserId, result.sig)
+	//ch := m.tcyAddUser(u.User)
+	//result, ok := <- ch
+	//if !ok || result.err != nil {
+	//	log.Log.Error("read  chan = %v, err = %+v", ok, result.err)
+	//	return errors.New("register im user fail")
+	//}
+	//
+	//u.SetTencentImInfo(u.User.UserId, result.sig)
 
 	return nil
 }

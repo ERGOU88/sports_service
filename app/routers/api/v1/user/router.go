@@ -38,10 +38,14 @@ func Router(engine *gin.Engine) {
 		user.GET("/version/up", sign.CheckSign(), VersionUp)
 		// 用户卡包
 		user.GET("/kabaw", sign.CheckSign(), token.TokenAuth(), UserKabaw)
-		// 更新腾讯im用户签名
-		user.POST("/im/sign", sign.CheckSign(), token.TokenAuth(), TencentImSign)
+		// 更新腾讯im用户/游客 签名
+		user.POST("/im/sign", sign.CheckSign(), UpdateTencentImSign)
 		// 腾讯im添加游客
 		user.GET("/im/add/guest", sign.CheckSign(), TencentImAddGuest)
+		// 腾讯im添加用户
+		//user.GET("/im/add/user", sign.CheckSign(), token.TokenAuth(), TencentImAddUser)
+		// 获取腾讯im签名 [包含已注册用户/游客]
+		user.GET("/im/get/sign", sign.CheckSign(), GetTencentImSign)
 	}
 
 }
