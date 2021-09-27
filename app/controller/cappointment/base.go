@@ -418,7 +418,6 @@ func (svc *base) SetOrderProductInfo(orderId string, now, count int, productId i
 func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, count int, seatInfo []*mappointment.SeatInfo,
 	startTm, endTm, id int64) {
 	for i := 0; i < count; i++ {
-		info, _ := util.JsonFast.MarshalToString(seatInfo[i])
 		recordInfo := &models.VenueAppointmentRecord{
 			UserId: userId,
 			VenueId: svc.appointment.AppointmentInfo.VenueId,
@@ -430,14 +429,17 @@ func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, cou
 			CreateAt: now,
 			UpdateAt: now,
 			PurchasedNum: 1,
-			SeatInfo: info,
 			CoachId: svc.appointment.AppointmentInfo.CoachId,
 			SingleDuration: svc.appointment.AppointmentInfo.Duration,
-			//Duration: svc.appointment.AppointmentInfo.Duration * count,
 			UnitDuration: svc.appointment.AppointmentInfo.UnitDuration,
 			UnitPrice: svc.appointment.AppointmentInfo.UnitPrice,
 			StartTm: int(startTm),
 			EndTm: int(endTm),
+		}
+
+		if len(seatInfo) > 0 {
+			info, _ := util.JsonFast.MarshalToString(seatInfo[i])
+			recordInfo.SeatInfo = info
 		}
 
 		svc.recordMp[id][i] = recordInfo
