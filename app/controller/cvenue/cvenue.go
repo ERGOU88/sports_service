@@ -241,29 +241,6 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 		return errdef.ORDER_ADD_FAIL, nil
 	}
 
-	ok, err = svc.venue.GetVenueVipInfo(param.UserId, param.VenueId)
-	if err != nil {
-		log.Log.Errorf("venue_trace: get venue vip info fail, err:%s", err)
-		svc.engine.Rollback()
-		return errdef.VENUE_VIP_INFO_FAIL, nil
-	}
-
-	// 不存在 新增
-	if !ok {
-		svc.venue.Vip.UpdateAt = now
-		svc.venue.Vip.VenueId = param.VenueId
-		svc.venue.Vip.CreateAt = now
-		svc.venue.Vip.UserId = user.UserId
-		svc.venue.Vip.StartTm = 0
-		svc.venue.Vip.EndTm = 0
-		svc.venue.Vip.Duration = 0
-		if _, err := svc.venue.AddVenueVipInfo(); err != nil {
-			log.Log.Errorf("venue_trace: add vip info err:%s, orderId:%s", err, orderId)
-			svc.engine.Rollback()
-			return errdef.VENUE_ADD_VIP_FAIL, nil
-		}
-	}
-
 	// 记录需处理支付超时的订单
 	if _, err := svc.order.RecordOrderId(orderId); err != nil {
 		log.Log.Errorf("venue_trace: record orderId fail, err:%s", err)
@@ -346,9 +323,6 @@ func (svc *VenueModule) AddOrder(extra *mappointment.OrderResp, orderId, userId,
 	svc.order.Order.VenueId = svc.venue.Venue.Id
 	svc.order.Order.OriginalAmount = extra.OriginalAmount
 	// 次卡需要核销
-	if productType == consts.ORDER_TYPE_EXPERIENCE_CARD {
-		svc.order.Order.WriteOffCode = fmt.Sprint(util.GetSnowId())
-	}
 
 	affected, err := svc.order.AddOrder()
 	if err != nil {

@@ -539,7 +539,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 // 更新会员信息
 func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, productType, now, count, expireDuration, duration, notifyType int) error {
 	ok, err := svc.venue.GetVenueVipInfo(userId, venueId)
-	if !ok || err != nil {
+	if err != nil {
 		log.Log.Errorf("order_trace: get venue vip info fail, userId:%s, err:%s", userId, err)
 		return errors.New("vip not exists")
 	}
@@ -582,6 +582,16 @@ func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, productType,
 		return errors.New("unsupported notify type")
 	}
 
+	// 不存在 新增
+	if !ok {
+		svc.venue.Vip.VenueId = venueId
+		svc.venue.Vip.CreateAt = now
+		svc.venue.Vip.UserId = userId
+		if _, err := svc.venue.AddVenueVipInfo(); err != nil {
+			log.Log.Errorf("venue_trace: add vip info fail, userId:%s, err:%s", userId, err)
+			return errors.New("add vip info fail")
+		}
+	}
 
 	if _, err := svc.venue.UpdateVenueVipInfo(cols); err != nil {
 		log.Log.Errorf("order_trace: update venue vip info err:%s", err)
@@ -1030,10 +1040,11 @@ func (svc *OrderModule) GetCouponCodeInfo(userId, orderId string) (int, *morder.
 	resp := &morder.CouponCodeInfo{}
 	resp.VenueName = extra.VenueName
 	resp.Subject = svc.order.Order.Subject
-	resp.Code = svc.order.Order.WriteOffCode
+	resp.Code = fmt.Sprintf("O%d", util.GetSnowId())
 	resp.Count = extra.Count
 	resp.TotalAmount = svc.order.Order.Amount
-	resp.QrCodeInfo = fmt.Sprintf("O%s", util.GenSecret(util.MIX_MODE, 16))
+	//resp.QrCodeInfo = fmt.Sprintf("O%s", util.GenSecret(util.MIX_MODE, 16))
+	resp.QrCodeInfo = resp.Code
 	expire := int64(rdskey.KEY_EXPIRE_MIN * 60)
 	resp.QrCodeExpireDuration = expire - 30
 	cstSh, _ := time.LoadLocation("Asia/Shanghai")

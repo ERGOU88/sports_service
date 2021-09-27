@@ -272,6 +272,8 @@ type VideoInfoBySubarea struct {
 	Nickname      string                `json:"nick_name"  example:"昵称"`              // 昵称
 	Labels        []*models.VideoLabels `json:"labels"`                               // 视频标签
 	StatisticsTab string                `json:"statistics_tab"`                       // 统计标签
+	IsLike        int                   `json:"is_like" example:"1"`                  // 是否点赞
+	IsAttention   int                   `json:"is_attention"`                         // 是否关注
 }
 
 // 实栗

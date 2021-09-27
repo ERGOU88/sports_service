@@ -1275,7 +1275,7 @@ func (svc *VideoModule) AddVideoToAlbum(userId string, param *mvideo.AddVideoToA
 }
 
 // 获取分区下的视频列表
-func (svc *VideoModule) GetVideoListBySubarea(subareaId string, page, size int) (int, []*mvideo.VideoInfoBySubarea) {
+func (svc *VideoModule) GetVideoListBySubarea(subareaId, userId string, page, size int) (int, []*mvideo.VideoInfoBySubarea) {
 	offset := (page - 1) * size
 	list, err := svc.video.GetVideoListBySubarea(subareaId, offset, size)
 	if err != nil {
@@ -1304,6 +1304,21 @@ func (svc *VideoModule) GetVideoListBySubarea(subareaId string, page, size int) 
 			item.Avatar = user.Avatar
 			item.Nickname = user.NickName
 		}
+
+		if userId == "" {
+			continue
+		}
+
+		// 获取点赞的信息
+		if likeInfo := svc.like.GetLikeInfo(userId, item.VideoId, consts.TYPE_VIDEOS); likeInfo != nil {
+			item.IsLike = likeInfo.Status
+		}
+
+		// 是否关注
+		if attentionInfo := svc.attention.GetAttentionInfo(userId, item.UserId); attentionInfo != nil {
+			item.IsAttention = attentionInfo.Status
+		}
+
 	}
 
 	return errdef.SUCCESS, list

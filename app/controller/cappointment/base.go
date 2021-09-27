@@ -23,7 +23,7 @@ type base struct {
 	DateId      int
 	Extra       *mappointment.OrderResp
 	// 预约流水map
-	recordMp    map[int64]*models.VenueAppointmentRecord
+	recordMp    map[int64][]*models.VenueAppointmentRecord
 	// 订单商品流水map
 	orderMp     map[int64]*models.VenueOrderProductInfo
 	venue       *mvenue.VenueModel
@@ -35,7 +35,7 @@ func New(socket *xorm.Session) *base {
 		appointment: mappointment.NewAppointmentModel(socket),
 		order: morder.NewOrderModel(socket),
 		Extra:  &mappointment.OrderResp{TimeNodeInfo: make([]*mappointment.TimeNodeInfo, 0)},
-		recordMp: make(map[int64]*models.VenueAppointmentRecord),
+		recordMp: make(map[int64][]*models.VenueAppointmentRecord),
 		orderMp: make(map[int64]*models.VenueOrderProductInfo),
 		venue:   mvenue.NewVenueModel(socket),
 	}
@@ -318,7 +318,7 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		Duration: item.Duration,
 		RealAmount: item.RealAmount,
 		QuotaNum: item.QuotaNum,
-		RecommendType: item.RecommendType,
+		RecommendType: item.RecommendTag,
 		AppointmentType: item.AppointmentType,
 		WeekNum: item.WeekNum,
 		AmountCn: fmt.Sprintf("%.2f", float64(item.CurAmount)/100),
@@ -416,28 +416,35 @@ func (svc *base) SetOrderProductInfo(orderId string, now, count int, productId i
 }
 
 func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, count int, seatInfo []*mappointment.SeatInfo,
-	startTm, endTm int64) *models.VenueAppointmentRecord {
-	info, _ := util.JsonFast.MarshalToString(seatInfo)
-	return &models.VenueAppointmentRecord{
-		UserId: userId,
-		VenueId: svc.appointment.AppointmentInfo.VenueId,
-		CourseId: svc.appointment.AppointmentInfo.CourseId,
-		AppointmentType: svc.appointment.AppointmentInfo.AppointmentType,
-		TimeNode: svc.appointment.AppointmentInfo.TimeNode,
-		Date: date,
-		PayOrderId: orderId,
-		CreateAt: now,
-		UpdateAt: now,
-		PurchasedNum: count,
-		SeatInfo: info,
-		CoachId: svc.appointment.AppointmentInfo.CoachId,
-		SingleDuration: svc.appointment.AppointmentInfo.Duration,
-		Duration: svc.appointment.AppointmentInfo.Duration * count,
-		UnitDuration: svc.appointment.AppointmentInfo.UnitDuration,
-		UnitPrice: svc.appointment.AppointmentInfo.UnitPrice,
-		StartTm: int(startTm),
-		EndTm: int(endTm),
+	startTm, endTm, id int64) {
+	for i := 0; i < count; i++ {
+		recordInfo := &models.VenueAppointmentRecord{
+			UserId: userId,
+			VenueId: svc.appointment.AppointmentInfo.VenueId,
+			CourseId: svc.appointment.AppointmentInfo.CourseId,
+			AppointmentType: svc.appointment.AppointmentInfo.AppointmentType,
+			TimeNode: svc.appointment.AppointmentInfo.TimeNode,
+			Date: date,
+			PayOrderId: orderId,
+			CreateAt: now,
+			UpdateAt: now,
+			PurchasedNum: 1,
+			CoachId: svc.appointment.AppointmentInfo.CoachId,
+			SingleDuration: svc.appointment.AppointmentInfo.Duration,
+			UnitDuration: svc.appointment.AppointmentInfo.UnitDuration,
+			UnitPrice: svc.appointment.AppointmentInfo.UnitPrice,
+			StartTm: int(startTm),
+			EndTm: int(endTm),
+		}
+
+		if len(seatInfo) > 0 {
+			info, _ := util.JsonFast.MarshalToString(seatInfo[i])
+			recordInfo.SeatInfo = info
+		}
+
+		svc.recordMp[id][i] = recordInfo
 	}
+
 }
 
 // 添加库存
@@ -499,12 +506,12 @@ func (svc *base) AddAppointmentRecord() error {
 		//	val.Status = 1
 		//}
 
-		affected, err := svc.appointment.AddAppointmentRecord(val)
+		affected, err := svc.appointment.AddMultiAppointmentRecord(val)
 		if err != nil {
 			return err
 		}
 
-		if affected != 1 {
+		if affected != int64(len(val)) {
 			return errors.New("add record fail, count not match~")
 		}
 	}
@@ -521,7 +528,7 @@ func (svc *base) AddOrderProducts() error {
 			val.Status = consts.ORDER_TYPE_PAID
 		}
 
-		val.SnapshotId = svc.recordMp[val.ProductId].Id
+		//val.SnapshotId = svc.recordMp[val.ProductId].Id
 		olst = append(olst, val)
 	}
 
@@ -554,7 +561,6 @@ func (svc *base) AddOrder(orderId, userId, subject string, now, productType int)
 	svc.order.Order.ChannelId = svc.Extra.Channel
 	svc.order.Order.Subject = subject
 	svc.order.Order.ProductType = productType
-	svc.order.Order.WriteOffCode = svc.Extra.WriteOffCode
 	// todo: 暂时只有一个场馆
 	svc.order.Order.VenueId = 1
 	// 实付金额为0 表示使用时长抵扣 或 活动免费  订单直接置为成功
@@ -803,9 +809,13 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 			return err
 		}
 
-		// 设置预约快照信息
-		svc.recordMp[item.Id] = svc.SetAppointmentRecordInfo(userId, date, orderId, now, item.Count, item.SeatInfos,
-			resp.StartTm, resp.EndTm)
+		if _, ok := svc.recordMp[item.Id]; !ok {
+			svc.recordMp[item.Id] = make([]*models.VenueAppointmentRecord, item.Count)
+		}
+
+		// 设置预约快照信息 假设同一日期 同一节点买了3次 对应生成3条数据
+		svc.SetAppointmentRecordInfo(userId, date, orderId, now, item.Count, item.SeatInfos,
+			resp.StartTm, resp.EndTm, item.Id)
 		svc.Extra.TimeNodeInfo = append(svc.Extra.TimeNodeInfo, resp)
 
 		// 是否遍历完所有预约节点
