@@ -7,10 +7,15 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/backend/errdef"
 	"sports_service/server/global/consts"
+	"sports_service/server/models"
 	"sports_service/server/models/mattention"
+	"sports_service/server/models/mcommunity"
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
+	"sports_service/server/models/mvideo"
 	redismq "sports_service/server/redismq/event"
+	"sports_service/server/util"
+	"sports_service/server/global/backend/log"
 )
 
 type PostModule struct {
@@ -19,6 +24,8 @@ type PostModule struct {
 	post         *mposting.PostingModel
 	attention    *mattention.AttentionModel
 	user         *muser.UserModel
+	video        *mvideo.VideoModel
+	community    *mcommunity.CommunityModel
 }
 
 func New(c *gin.Context) PostModule {
@@ -29,6 +36,8 @@ func New(c *gin.Context) PostModule {
 		post: mposting.NewPostingModel(socket),
 		attention: mattention.NewAttentionModel(socket),
 		user: muser.NewUserModel(socket),
+		video: mvideo.NewVideoModel(socket),
+		community: mcommunity.NewCommunityModel(socket),
 		engine: socket,
 	}
 }
@@ -108,6 +117,116 @@ func (svc *PostModule) AudiPost(param *mposting.AudiPostParam) int {
 	return errdef.SUCCESS
 }
 
+// 管理后台获取帖子列表
+func (svc *PostModule) GetPostList(page, size int) (int, []*mposting.PostDetailInfo) {
+	offset := (page - 1) * size
+	list, err := svc.post.GetPostList(offset, size)
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*mposting.PostDetailInfo{}
+	}
+
+	for _, item := range list {
+		var err error
+		item.Topics, err = svc.post.GetPostTopic(fmt.Sprint(item.Id))
+		if item.Topics == nil || err != nil {
+			item.Topics = []*models.PostingTopic{}
+		}
+
+		user := svc.user.FindUserByUserid(item.UserId)
+		if user != nil {
+			item.Avatar = user.Avatar
+			item.Nickname = user.NickName
+		}
+
+		// 如果是转发的视频数据
+		if item.ContentType == consts.COMMUNITY_FORWARD_VIDEO {
+			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardVideo); err != nil {
+				log.Log.Errorf("post_trace: get forward video info err:%s", err)
+				//return errdef.COMMUNITY_POSTS_BY_TOPIC, []*mposting.PostDetailInfo{}
+			} else {
+				item.ForwardVideo.VideoAddr = svc.video.AntiStealingLink(item.ForwardVideo.VideoAddr)
+			}
+
+		}
+
+		// 如果是转发的帖子
+		if item.PostingType == consts.POST_TYPE_TEXT && item.ContentType == consts.COMMUNITY_FORWARD_POST {
+			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ForwardPost); err != nil {
+				log.Log.Errorf("post_trace: get forward post info err:%s", err)
+				//return errdef.COMMUNITY_POSTS_BY_TOPIC, []*mposting.PostDetailInfo{}
+			}
+
+			// 如果转发的是图文类型 需要展示图文
+			if item.ForwardPost.PostingType == consts.POST_TYPE_IMAGE {
+				if err := util.JsonFast.UnmarshalFromString(item.ForwardPost.Content, &item.ForwardPost.ImagesAddr); err != nil {
+					log.Log.Errorf("post_trace: get images by forward post fail, err:%s", err)
+				}
+			}
+
+		}
+
+		// 图文帖
+		if item.PostingType == consts.POST_TYPE_IMAGE {
+			if err = util.JsonFast.UnmarshalFromString(item.Content, &item.ImagesAddr); err != nil {
+				log.Log.Errorf("post_trace: get image info err:%s", err)
+				//return errdef.COMMUNITY_POSTS_BY_TOPIC, []*mposting.PostDetailInfo{}
+			}
+		}
+
+		// 如果视频+文 的帖子 且 为社区发布 查询关联的视频信息
+		if item.PostingType == consts.POST_TYPE_VIDEO && item.ContentType == consts.COMMUNITY_PUB_POST {
+			video := svc.video.FindVideoById(fmt.Sprint(item.VideoId))
+			if video == nil {
+				log.Log.Errorf("post_trace: get video info err:%s, videoId:%s", err, item.VideoId)
+			} else {
+				item.RelatedVideo = new(mposting.RelatedVideo)
+				item.RelatedVideo.VideoId = video.VideoId
+				item.RelatedVideo.UserId = video.UserId
+				item.RelatedVideo.CreateAt = video.CreateAt
+				item.RelatedVideo.Describe = video.Describe
+				item.RelatedVideo.Cover = video.Cover
+				item.RelatedVideo.Title = video.Title
+				item.RelatedVideo.VideoDuration = video.VideoDuration
+				item.RelatedVideo.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+				item.RelatedVideo.Size = video.Size
+
+				statistic := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
+				if statistic != nil {
+					item.RelatedVideo.FabulousNum = statistic.FabulousNum
+					item.RelatedVideo.CommentNum = statistic.CommentNum
+					item.RelatedVideo.ShareNum = statistic.ShareNum
+				}
+
+				if user != nil {
+					item.RelatedVideo.Nickname = user.NickName
+					item.RelatedVideo.Avatar = user.Avatar
+				}
+
+				subarea, err := svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))
+				if err != nil || subarea == nil {
+					log.Log.Errorf("post_trace: get subarea by id fail, err:%s", err)
+				} else {
+					item.RelatedVideo.Subarea = subarea
+				}
+
+			}
+		}
+
+		sectionInfo, err := svc.community.GetSectionInfo(fmt.Sprint(item.SectionId))
+		if err == nil {
+			item.SectionName = sectionInfo.SectionName
+		}
+
+		item.Content = ""
+
+	}
+
+	return errdef.SUCCESS, list
+}
 
 
 

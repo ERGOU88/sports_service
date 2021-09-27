@@ -15,3 +15,18 @@ func (m *PostingModel) UpdateStatusByPost() error {
 
 	return nil
 }
+
+const (
+	GET_POST_LIST = "SELECT p.*, ps.fabulous_num, ps.browse_num, ps.share_num, ps.comment_num, ps.heat_num FROM " +
+		"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.section_id=? AND p.is_top=0 " +
+		" ORDER BY p.is_cream DESC, p.is_top DESC, p.id DESC LIMIT ?, ?"
+)
+// 获取帖子列表 [管理后台]
+func (m *PostingModel) GetPostList(offset, size int) ([]*PostDetailInfo, error) {
+	var list []*PostDetailInfo
+	if err := m.Engine.SQL(GET_POST_LIST, offset, size).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}

@@ -11,7 +11,6 @@ type AddSubarea struct {
 
 type DelSubarea struct {
 	Id      int     `json:"id"`
-
 }
 
 func (m *VideoModel) AddSubArea() (int64, error) {
