@@ -509,7 +509,7 @@ func (svc *base) AddAppointmentRecord() error {
 			return err
 		}
 
-		if affected != 1 {
+		if affected != int64(len(val)) {
 			return errors.New("add record fail, count not match~")
 		}
 	}
