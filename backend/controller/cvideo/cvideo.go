@@ -5,6 +5,7 @@ import (
   "github.com/gin-gonic/gin"
   "github.com/go-xorm/xorm"
   "sports_service/server/dao"
+  "sports_service/server/global/backend/log"
   "sports_service/server/global/backend/errdef"
   "sports_service/server/global/consts"
   "sports_service/server/models"
@@ -294,5 +295,17 @@ func (svc *VideoModule) DelVideoLabel(labelId string) int {
   // 从内存中删除
   svc.label.DelLabelInfoByMem(labelId)
   svc.label.CleanLabelInfoByMem()
+  return errdef.SUCCESS
+}
+
+// 添加视频分区
+func (svc *VideoModule) AddVideoSubarea(param *mvideo.AddSubarea) int {
+  svc.video.Subarea.SubareaName = param.Name
+  svc.video.Subarea.Sortorder = param.SortOrder
+  if _, err := svc.video.AddSubArea(); err != nil {
+    log.Log.Errorf("")
+    return errdef.VIDEO_ADD_SUBAREA_FAIL
+  }
+
   return errdef.SUCCESS
 }

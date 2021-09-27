@@ -23,5 +23,7 @@ func Router(engine *gin.Engine) {
 		video.POST("/add/label", AddVideoLabel)
 		// 删除视频标签
 		video.POST("/del/label", DelVideoLabel)
+		// 添加分区
+		video.POST("/add/subarea", AddVideoSubarea)
 	}
 }

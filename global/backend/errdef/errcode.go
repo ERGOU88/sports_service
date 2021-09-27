@@ -22,6 +22,8 @@ const (
 	VIDEO_LABEL_NOT_EXISTS      = 10014
 	VIDEO_LABEL_DELETE_FAIL     = 10015
 	VIDEO_BARRAGE_DELETE_FAIL   = 10016
+	VIDEO_ADD_SUBAREA_FAIL      = 10017
+	VIDEO_DEL_SUBAREA_FAIL      = 10018
 
 	// 11001 - 12000 评论相关错误码
 	COMMENT_NOT_EXISTS          = 11001
@@ -100,6 +102,8 @@ var MsgFlags = map[int]string{
 	VIDEO_LABEL_NOT_EXISTS:      "视频标签不存在",
 	VIDEO_LABEL_DELETE_FAIL:     "视频标签删除失败",
 	VIDEO_BARRAGE_DELETE_FAIL:   "视频弹幕删除失败",
+	VIDEO_ADD_SUBAREA_FAIL:      "添加视频分区失败",
+	VIDEO_DEL_SUBAREA_FAIL:      "删除视频分区失败",
 
 	COMMENT_NOT_EXISTS:          "评论不存在",
 	COMMENT_DELETE_FAIL:         "删除评论失败",

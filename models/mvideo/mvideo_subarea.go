@@ -4,6 +4,24 @@ import (
 	"sports_service/server/models"
 )
 
+type AddSubarea struct {
+	Name      string    `json:"name"`
+	SortOrder int       `json:"sortorder"`
+}
+
+type DelSubarea struct {
+	Id      int     `json:"id"`
+
+}
+
+func (m *VideoModel) AddSubArea() (int64, error) {
+	return m.Engine.InsertOne(m.Subarea)
+}
+
+func (m *VideoModel) DelSubArea(id int) (int64, error) {
+	return m.Engine.Where("id=?", id).Delete(m.Subarea)
+}
+
 // 获取视频分区配置列表
 func (m *VideoModel) GetSubAreaList() ([]*models.VideoSubarea, error) {
 	var list []*models.VideoSubarea
