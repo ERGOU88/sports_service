@@ -117,6 +117,7 @@ type RecommendVideoInfo struct {
 	Nickname      string                `json:"nick_name"  example:"昵称"`             // 昵称
 	IsCollect     int                   `json:"is_collect" example:"1"`               // 是否收藏
 	IsLike        int                   `json:"is_like" example:"1"`                  // 是否点赞
+	IsAttention   int                   `json:"is_attention"`                         // 是否关注
 	Size          int                   `json:"size"`                                 // 视频总字节数
 	SubareaInfo   *models.VideoSubarea  `json:"subarea_info"`                         // 视频分区信息
 	Subarea       int                   `json:"subarea_id"`                           // 视频分区id
