@@ -18,14 +18,14 @@ type VenueAppointmentInfo struct {
 	AppointmentType int       `json:"appointment_type" xorm:"not null default 0 comment('0 场馆预约 1 私教课程预约 2 大课预约') TINYINT(1)"`
 	WeekNum         int       `json:"week_num" xorm:"not null comment('1 周一 2 周二 3 周三 4 周四 5 周五 6 周六 0 周日') TINYINT(1)"`
 	Sortorder       int       `json:"sortorder" xorm:"not null default 0 comment('排序权重 倒序') INT(11)"`
-	CreateAt        int       `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
-	UpdateAt        int       `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
 	CoachId         int64     `json:"coach_id" xorm:"not null default 0 comment('老师id') BIGINT(20)"`
+	CourseId        int64     `json:"course_id" xorm:"not null default 0 comment('课程id') BIGINT(20)"`
 	UnitDuration    int       `json:"unit_duration" xorm:"not null default 0 comment('单位时长 [秒] tips:[用于计费使用] 例：每十五分钟/10元 则该字段为900') INT(11)"`
 	UnitPrice       int       `json:"unit_price" xorm:"not null default 0 comment('单位价格 [分] tips:[用于计费使用] 例：每十五分钟/10元 则该字段为1000') INT(11)"`
 	StartNode       time.Time `json:"start_node" xorm:"not null default '00:00:00' comment('开始时间节点') TIME"`
 	EndNode         time.Time `json:"end_node" xorm:"not null default '00:00:00' comment('结束时间节点') TIME"`
 	PeriodNum       int       `json:"period_num" xorm:"not null default 0 comment('总课时数') INT(6)"`
 	VenueId         int64     `json:"venue_id" xorm:"not null comment('场馆id') BIGINT(20)"`
-	CourseId        int64     `json:"course_id" xorm:"not null default 0 comment('课程id') BIGINT(20)"`
+	CreateAt        int       `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
+	UpdateAt        int       `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
 }

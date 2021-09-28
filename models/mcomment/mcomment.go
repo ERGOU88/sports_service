@@ -98,7 +98,7 @@ type PublishCommentParams struct {
 type V2PubCommentParams struct {
 	ComposeId       int64        `binding:"required" json:"compose_id"`    // 作品id 视频/帖子id
 	Content         string       `binding:"required" json:"content"`       // 评论的内容
-	CommentType     int          `binding:"required" json:"comment_type"`  // 评论的类型 1视频 2帖子
+	CommentType     int          `binding:"required" json:"comment_type"`  // 评论的类型 1视频 2帖子 3资讯
 	AtInfo          []string     `json:"at_info"`                          // @信息 [用户uid]
 }
 
@@ -107,7 +107,7 @@ type ReplyCommentParams struct {
 	ComposeId        int64       `binding:"required" json:"compose_id"`    // 视频/帖子id
 	Content          string      `binding:"required" json:"content"`       // 评论的内容
 	ReplyId          int64       `binding:"required" json:"reply_id"`      // 被回复的评论id
-	CommentType      int         `json:"comment_type"`                     // 评论的类型 1视频 2帖子
+	CommentType      int         `json:"comment_type"`                     // 评论的类型 1视频 2帖子 3资讯
 	AtInfo           []string    `json:"at_info"`                          // @信息 [用户uid]
 }
 

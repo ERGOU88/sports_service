@@ -253,6 +253,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		resp.Content = params.Content
 		resp.CreateAt = svc.comment.InformationComment.CreateAt
 		resp.Status = svc.comment.InformationComment.Status
+		params.CommentType = consts.TYPE_INFORMATION_AT
 
 	default:
 		log.Log.Errorf("comment_trace: invalid commentType:%d", params.CommentType)
@@ -555,7 +556,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			resp.ReplyCommentUserName = uinfo.NickName
 		}
 
-		atType = consts.TYPE_VIDEO_COMMENT
+		atType = consts.TYPE_VIDEO
 
 	// 帖子回复
 	case consts.COMMENT_TYPE_POST:
@@ -641,7 +642,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			resp.ReplyCommentUserName = uinfo.NickName
 		}
 
-		atType = consts.TYPE_POST_COMMENT
+		atType = consts.TYPE_POST
 
 	case consts.COMMENT_TYPE_INFORMATION:
 		// 查询被回复的评论是否存在
@@ -718,7 +719,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			resp.ReplyCommentUserName = uinfo.NickName
 		}
 
-		atType = consts.TYPE_INFORMATION_COMMENT
+		atType = consts.TYPE_INFORMATION_AT
 
 	default:
 		log.Log.Errorf("comment_trace: invalid commentType:%d", params.CommentType)
