@@ -3,7 +3,6 @@ package models
 type VenueOrderProductInfo struct {
 	Id              int64  `json:"id" xorm:"pk autoincr comment('自增ID') BIGINT(20)"`
 	PayOrderId      string `json:"pay_order_id" xorm:"not null comment('订单号') index VARCHAR(150)"`
-	SnapshotId      int64  `json:"snapshot_id" xorm:"not null default 0 comment('商品快照id') BIGINT(20)"`
 	ProductId       int64  `json:"product_id" xorm:"not null comment('商品id') BIGINT(20)"`
 	ProductType     int    `json:"product_type" xorm:"not null comment('1001 场馆预约 2101 临时卡 2201 次卡 2311 月卡 2321 季卡 2331 半年卡 2341 年卡 3001 私教（教练）订单 3002 课程订单 4001 充值订单  5101 线下实体商品') INT(8)"`
 	Count           int    `json:"count" xorm:"not null comment('购买数量') INT(11)"`
@@ -18,4 +17,5 @@ type VenueOrderProductInfo struct {
 	ProductCategory int    `json:"product_category" xorm:"not null default 0 comment('商品类别 1000 预约类 2000 卡类 5000 实物类') INT(8)"`
 	VenueId         int64  `json:"venue_id" xorm:"not null default 0 comment('场馆id') BIGINT(20)"`
 	IsWriteOff      int    `json:"is_write_off" xorm:"not null default 0 comment('是否核销 0 未核销 1 已核销') TINYINT(1)"`
+	SnapshotId      int64  `json:"snapshot_id" xorm:"not null default 0 comment('商品快照id') BIGINT(20)"`
 }

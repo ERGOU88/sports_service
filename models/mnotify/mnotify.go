@@ -36,7 +36,7 @@ type ReceiveAtInfo struct {
 	VideoDuration int                   `json:"video_duration,omitempty" example:"1000"`        // 视频时长
 	VideoWidth    int64                 `json:"video_width,omitempty" example:"1000"`           // 视频宽
 	VideoHeight   int64                 `json:"video_height,omitempty" example:"1000"`          // 视频高
-	Status        int32                 `json:"status,omitempty" example:"1"`                   // 审核状态
+	Status        int32                 `json:"status,omitempty" example:"1"`                   // 审核状态 3 删除
 	CreateAt      int                   `json:"create_at,omitempty" example:"1600000000"`       // 视频创建时间
 	BarrageNum    int                   `json:"barrage_num,omitempty" example:"1000"`           // 弹幕数
 	BrowseNum     int                   `json:"browse_num,omitempty" example:"1000"`            // 浏览数（播放数）
@@ -58,6 +58,7 @@ type ReceiveAtInfo struct {
 
 	ReplyCommentId int64                `json:"reply_comment_id"`                      // 回复评论所用id
 	TotalLikeNum   int64                `json:"total_like_num"`                        // 总点赞数
+	IsDelete       bool                 `json:"is_delete"`                             // 主体内容是否已删除 true 已删除
 }
 
 // 首页通知

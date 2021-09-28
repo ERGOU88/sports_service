@@ -86,6 +86,11 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 			info.JumpVideoId = liked.TypeId
 			video := svc.video.FindVideoById(fmt.Sprint(liked.TypeId))
 			if video != nil {
+				info.Status = video.Status
+				if fmt.Sprint(info.Status) == consts.VIDEO_DELETE_STATUS {
+					info.IsDelete = true
+				}
+
 				info.ComposeId = video.VideoId
 				info.Describe = util.TrimHtml(video.Describe)
 				info.Title = util.TrimHtml(video.Title)
@@ -116,6 +121,10 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 				info.Title = post.Title
 				info.Describe = post.Describe
 				info.CreateAt = post.CreateAt
+				info.Status = post.Status
+				if fmt.Sprint(info.Status) == consts.POST_DELETE_STATUS {
+					info.IsDelete = true
+				}
 				// 图文帖
 				if post.PostingType == consts.POST_TYPE_IMAGE {
 					var images []string
@@ -139,6 +148,9 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 			// 获取评论信息
 			comment := svc.comment.GetVideoCommentById(fmt.Sprint(liked.TypeId))
 			if comment != nil {
+				if comment.Status == 0 {
+					info.IsDelete = true
+				}
 				// 被点赞的信息
 				info.Content = comment.Content
 				// 顶级评论id
@@ -151,6 +163,7 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 				// 获取评论对应的视频信息
 				video := svc.video.FindVideoById(fmt.Sprint(comment.VideoId))
 				if video != nil {
+					info.Status = video.Status
 					info.JumpVideoId = video.VideoId
 					//info.Title = video.Title
 					//info.Describe = video.Describe
@@ -179,6 +192,9 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 			// 获取帖子评论信息
 			comment := svc.comment.GetPostCommentById(fmt.Sprint(liked.TypeId))
 			if comment != nil {
+				if comment.Status == 0 {
+					info.IsDelete = true
+				}
 				// 被点赞的信息
 				info.Content = comment.Content
 				// 顶级评论id
@@ -190,6 +206,7 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 
 				post, err := svc.post.GetPostById(fmt.Sprint(comment.PostId))
 				if post != nil && err == nil {
+					info.Status = post.Status
 					info.JumpPostId = post.Id
 					info.Title = post.Title
 					info.Describe = post.Describe
@@ -524,6 +541,10 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			if comment != nil {
 				video := svc.video.FindVideoById(fmt.Sprint(comment.VideoId))
 				if video != nil {
+					if fmt.Sprint(video.Status) == consts.VIDEO_DELETE_STATUS {
+						info.IsDelete = true
+					}
+					info.Status = int32(video.Status)
 					info.ComposeId = video.VideoId
 					info.Title = video.Title
 					info.Describe = util.TrimHtml(video.Describe)
@@ -549,6 +570,11 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			if comment != nil {
 				post, err := svc.post.GetPostById(fmt.Sprint(comment.PostId))
 				if post != nil && err == nil {
+					if fmt.Sprint(post.Status) == consts.POST_DELETE_STATUS {
+						info.IsDelete = true
+					}
+
+					info.Status = int32(post.Status)
 					info.ComposeId = post.Id
 					info.Title = post.Title
 					info.Describe = post.Describe
@@ -585,6 +611,11 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			info.Type = receiveAt.TopicType
 			post, err := svc.post.GetPostById(fmt.Sprint(receiveAt.ComposeId))
 			if post != nil && err == nil {
+				if fmt.Sprint(post.Status) == consts.POST_DELETE_STATUS {
+					info.IsDelete = true
+				}
+
+				info.Status = int32(post.Status)
 				info.ComposeId = post.Id
 				info.Title = post.Title
 				info.Describe = post.Describe
@@ -623,6 +654,9 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			// 获取评论信息
 			comment := svc.comment.GetVideoCommentById(fmt.Sprint(receiveAt.ComposeId))
 			if comment != nil {
+				if comment.Status == 0 {
+					info.IsDelete = true
+				}
 				// 执行@的用户信息
 				if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
 					// 执行@的用户信息
@@ -715,6 +749,9 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			// 获取评论信息
 			comment := svc.comment.GetPostCommentById(fmt.Sprint(receiveAt.ComposeId))
 			if comment != nil {
+				if comment.Status == 0 {
+					info.IsDelete = true
+				}
 				// 执行@的用户信息
 				if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
 					// 执行@的用户信息
@@ -726,6 +763,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				// 获取评论对应的帖子信息
 				post, err := svc.post.GetPostById(fmt.Sprint(comment.PostId))
 				if post != nil && err == nil {
+					info.Status = int32(post.Status)
 					info.ComposeId = post.Id
 					info.Title = post.Title
 					info.Describe = post.Describe

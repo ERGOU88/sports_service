@@ -157,7 +157,6 @@ func updateAppointmentInfo(session *xorm.Session, orderId string, now int) error
 	list, err := amodel.GetAppointmentRecordByOrderId(orderId)
 	if err != nil {
 		log.Log.Errorf("orderJob_trace: get appointment record by orderId fail, orderId:%s, err:%s", orderId, err)
-		session.Rollback()
 		return err
 	}
 

@@ -88,6 +88,8 @@ type BeLikedInfo struct {
 	Type          int                   `json:"type"`                         // 类型 1 视频 2 帖子 3 视频评论 4 帖子评论
 	JumpVideoId   int64                 `json:"jump_video_id,omitempty"`      // 跳转所需视频id
 	JumpPostId    int64                 `json:"jump_post_id,omitempty"`       // 跳转所需帖子id
+	Status        int                   `json:"status"`                       // 状态 3 删除
+	IsDelete      bool                  `json:"is_delete"`                    // true已删除
 
 	ParentCommentId  int64              `json:"parent_comment_id,omitempty"`  // 父级评论id
 }

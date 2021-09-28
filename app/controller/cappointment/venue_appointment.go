@@ -162,18 +162,18 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 		return errdef.ORDER_ADD_FAIL, nil
 	}
 
-	// 添加预约记录流水
-	if err := svc.AddAppointmentRecord(); err != nil {
-		log.Log.Errorf("venue_trace: add appointment record fail, err:%s", err)
-		svc.engine.Rollback()
-		return errdef.APPOINTMENT_ADD_RECORD_FAIL, nil
-	}
-
 	// 添加订单商品流水
 	if err := svc.AddOrderProducts(); err != nil {
 		log.Log.Errorf("venue_trace: add order products fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.ORDER_PRODUCT_ADD_FAIL, nil
+	}
+
+	// 添加预约记录流水
+	if err := svc.AddAppointmentRecord(); err != nil {
+		log.Log.Errorf("venue_trace: add appointment record fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.APPOINTMENT_ADD_RECORD_FAIL, nil
 	}
 
 	// 记录需处理支付超时的订单
@@ -371,9 +371,9 @@ func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*mo
 		// 足够抵扣 则记录抵扣的记录
 		if affected == 1 {
 			// 抵扣一个 则 减去一个的售价
-			svc.recordMp[val.Id][key].DeductionNum = affected
-			svc.recordMp[val.Id][key].DeductionTm = int64(val.Duration)
-			svc.recordMp[val.Id][key].DeductionAmount = int64(val.CurAmount)
+			svc.recordMp[val.Id][0].DeductionNum = affected
+			svc.recordMp[val.Id][0].DeductionTm = int64(val.Duration)
+			svc.recordMp[val.Id][0].DeductionAmount = int64(val.CurAmount)
 			svc.Extra.TotalDeductionTm += val.Duration
 			// 订单总金额 = 商品总价 - 抵扣金额
 			svc.Extra.TotalAmount = svc.Extra.TotalAmount - val.CurAmount
@@ -381,7 +381,7 @@ func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*mo
 			// 当前节点付款金额 = 当前节点总价 - 当前抵扣金额
 			svc.orderMp[val.Id].Amount = svc.orderMp[val.Id].Amount - val.CurAmount
 			if len(svc.Extra.TimeNodeInfo) <= key {
-				svc.Extra.TimeNodeInfo[key].DeductionTm = svc.recordMp[val.Id][key].DeductionTm
+				svc.Extra.TimeNodeInfo[key].DeductionTm = svc.recordMp[val.Id][0].DeductionTm
 			}
 		}
 	}

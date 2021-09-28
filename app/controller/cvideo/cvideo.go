@@ -588,6 +588,15 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 			video.Labels = []*models.VideoLabels{}
 		}
 
+		// 获取分区信息
+		if video.Subarea > 0 {
+			var err error
+			video.SubareaInfo, err = svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))
+			if err != nil {
+				log.Log.Errorf("video_trace: get subarea info fail, err:%s, videoId:%d", err, video.VideoId)
+			}
+		}
+
 		// 用户未登录
 		if userId == "" {
 			log.Log.Error("video_trace: no login")
@@ -604,14 +613,11 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 			video.IsCollect = collectInfo.Status
 		}
 
-		// 获取分区信息
-		if video.Subarea > 0 {
-			var err error
-			video.SubareaInfo, err = svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))
-			if err != nil {
-				log.Log.Errorf("video_trace: get subarea info fail, err:%s, videoId:%d", err, video.VideoId)
-			}
+		// 是否关注
+		if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {
+			video.IsAttention = attentionInfo.Status
 		}
+
 	}
 
 	return minId, list
