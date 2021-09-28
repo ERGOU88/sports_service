@@ -13,6 +13,7 @@ import (
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
 	"sports_service/server/models/mcomment"
+	"sports_service/server/models/minformation"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/mnotify"
 	"sports_service/server/models/mposting"
@@ -35,6 +36,7 @@ type NotifyModule struct {
 	comment    *mcomment.CommentModel
 	attention  *mattention.AttentionModel
 	post       *mposting.PostingModel
+	information *minformation.InformationModel
 }
 
 func New(c *gin.Context) NotifyModule {
@@ -50,6 +52,7 @@ func New(c *gin.Context) NotifyModule {
 		comment: mcomment.NewCommentModel(socket),
 		attention: mattention.NewAttentionModel(socket),
 		post: mposting.NewPostingModel(socket),
+		information: minformation.NewInformationModel(socket),
 		engine: socket,
 	}
 }
@@ -225,6 +228,51 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 					}
 				}
 
+			}
+		case consts.LIKE_TYPE_INFORMATION:
+			info.Type = consts.LIKE_TYPE_INFORMATION
+			info.JumpPostId = liked.TypeId
+
+			ok, err := svc.information.GetInformationById(fmt.Sprint(liked.TypeId))
+			if ok && err == nil {
+				info.ComposeId = svc.information.Information.Id
+				info.Title = svc.information.Information.Title
+				info.CreateAt = svc.information.Information.CreateAt
+				info.Status = svc.information.Information.Status
+				info.Cover = svc.information.Information.Cover
+				if info.Status == 3 {
+					info.IsDelete = true
+				}
+			}
+
+		// 被点赞的资讯评论/回复
+		case consts.TYPE_INFORMATION_COMMENT:
+			info.Type = consts.TYPE_INFORMATION_COMMENT
+			info.ComposeId = liked.TypeId
+
+			// 获取资讯评论信息
+			comment := svc.comment.GetInformationCommentById(fmt.Sprint(liked.TypeId))
+			if comment != nil {
+				if comment.Status == 0 {
+					info.IsDelete = true
+				}
+				// 被点赞的信息
+				info.Content = comment.Content
+				// 顶级评论id
+				info.ParentCommentId = comment.ParentCommentId
+				if info.ParentCommentId == 0 {
+					// 当前评论即顶级评论
+					info.ParentCommentId = comment.Id
+				}
+
+				ok, err := svc.information.GetInformationById(fmt.Sprint(comment.NewsId))
+				if ok && err == nil {
+					info.Status = svc.information.Information.Status
+					info.JumpInformationId = svc.information.Information.Id
+					info.Title = svc.information.Information.Title
+					info.CreateAt = svc.information.Information.CreateAt
+					info.Cover = svc.information.Information.Cover
+				}
 			}
 		}
 
@@ -539,11 +587,19 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			// 获取评论信息
 			comment := svc.comment.GetVideoCommentById(fmt.Sprint(receiveAt.ComposeId))
 			if comment != nil {
+				info.CommentId = comment.Id
+				info.CommentType = comment.CommentLevel
+				info.Content = comment.Content
+				info.CreateAt = comment.CreateAt
+				if info.Status == 0 {
+					info.IsDelete = true
+				}
+
 				video := svc.video.FindVideoById(fmt.Sprint(comment.VideoId))
 				if video != nil {
-					if fmt.Sprint(video.Status) == consts.VIDEO_DELETE_STATUS {
-						info.IsDelete = true
-					}
+					//if fmt.Sprint(video.Status) == consts.VIDEO_DELETE_STATUS {
+					//	info.IsDelete = true
+					//}
 					info.Status = int32(video.Status)
 					info.ComposeId = video.VideoId
 					info.Title = video.Title
@@ -553,7 +609,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 					info.VideoDuration = video.VideoDuration
 					info.VideoWidth = video.VideoWidth
 					info.VideoHeight = video.VideoHeight
-					info.CreateAt = video.CreateAt
+					//info.CreateAt = video.CreateAt
 					// 视频统计数据
 					if statistic := svc.video.GetVideoStatistic(fmt.Sprint(receiveAt.ComposeId)); statistic != nil {
 						info.BarrageNum = statistic.BarrageNum
@@ -568,17 +624,22 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			info.Type = receiveAt.TopicType
 			comment := svc.comment.GetPostCommentById(fmt.Sprint(receiveAt.ComposeId))
 			if comment != nil {
+				info.Status = int32(comment.Status)
+				if info.Status == 0 {
+					info.IsDelete = true
+				}
+
+				info.CommentId = comment.Id
+				info.Content = comment.Content
+				info.CreateAt = comment.CreateAt
+				info.CommentType = comment.CommentLevel
 				post, err := svc.post.GetPostById(fmt.Sprint(comment.PostId))
 				if post != nil && err == nil {
-					if fmt.Sprint(post.Status) == consts.POST_DELETE_STATUS {
-						info.IsDelete = true
-					}
-
+					info.ComposeId = post.Id
 					info.Status = int32(post.Status)
 					info.ComposeId = post.Id
 					info.Title = post.Title
 					info.Describe = post.Describe
-					info.CreateAt = post.CreateAt
 
 					// 图文帖
 					if post.PostingType == consts.POST_TYPE_IMAGE {
@@ -831,6 +892,115 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 					if likeInfo := svc.like.GetLikeInfo(userId, comment.Id, consts.TYPE_POST_COMMENT); likeInfo != nil {
 						info.IsLike = likeInfo.Status
 					}
+				}
+
+				res[index] = info
+			}
+
+		// 资讯评论/回复 composeId 存储资讯评论/回复id
+		case consts.TYPE_INFORMATION_COMMENT:
+			info := new(mnotify.ReceiveAtInfo)
+			info.AtTime = receiveAt.UpdateAt
+			info.Type = consts.TYPE_INFORMATION_COMMENT
+			// 获取评论信息
+			comment := svc.comment.GetInformationCommentById(fmt.Sprint(receiveAt.ComposeId))
+			if comment != nil {
+				if comment.Status == 0 {
+					info.IsDelete = true
+				}
+				// 执行@的用户信息
+				if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
+					// 执行@的用户信息
+					info.UserId = user.UserId
+					info.Avatar = user.Avatar
+					info.Nickname = user.NickName
+				}
+
+				ok, err := svc.information.GetInformationById(fmt.Sprint(comment.NewsId))
+				if ok && err == nil {
+					info.ComposeId = svc.information.Information.Id
+					info.Title = svc.information.Information.Title
+					info.Cover = svc.information.Information.Cover
+					info.CreateAt = svc.information.Information.CreateAt
+					info.Status = int32(svc.information.Information.Status)
+				}
+
+				// 被@的用户信息
+				if user := svc.user.FindUserByUserid(receiveAt.ToUserId); user != nil {
+					info.ToUserId = user.UserId
+					info.ToUserAvatar = user.Avatar
+					info.ToUserName = user.NickName
+				}
+
+				// 默认1级评论
+				info.CommentType = 1
+				// 评论id（1级评论id）
+				info.CommentId = receiveAt.ComposeId
+				// 进行回复使用的id
+				info.ReplyCommentId = receiveAt.ComposeId
+				info.Content = comment.Content
+				// 获取当前评论 / 回复的被点赞数
+				info.TotalLikeNum = svc.like.GetLikeNumByType(receiveAt.ComposeId, consts.TYPE_INFORMATION_COMMENT)
+				// 如果父评论id为0 则表示 是1级评论 不为0 则表示是回复
+				if comment.ParentCommentId != 0 {
+					// 获取被回复的内容
+					beReply := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ReplyCommentId))
+					if beReply != nil {
+						info.CommentType = 2
+						info.Content = beReply.Content
+						info.Reply = comment.Content
+
+						// 被回复的不是1级评论 则@消息 为1
+						if beReply.CommentLevel != 1 {
+							info.IsAt = 1
+						} else {
+							// 1级评论id
+							info.CommentId = beReply.Id
+						}
+					}
+
+					// 获取最上级的评论内容
+					parent := svc.comment.GetInformationCommentById(fmt.Sprint(comment.ParentCommentId))
+					if parent != nil {
+						info.ParentComment = parent.Content
+						// 1级评论id
+						info.CommentId = parent.Id
+					}
+
+				}
+
+				if userId != "" {
+					// 获取点赞的信息
+					if likeInfo := svc.like.GetLikeInfo(userId, comment.Id, consts.TYPE_INFORMATION_COMMENT); likeInfo != nil {
+						info.IsLike = likeInfo.Status
+					}
+				}
+
+				res[index] = info
+
+			}
+
+		case consts.TYPE_INFORMATION_AT:
+			info := new(mnotify.ReceiveAtInfo)
+			info.AtTime = receiveAt.UpdateAt
+			info.Type = consts.TYPE_INFORMATION_AT
+			// 获取评论信息
+			comment := svc.comment.GetInformationCommentById(fmt.Sprint(receiveAt.ComposeId))
+			if comment != nil {
+				info.CommentId = comment.Id
+				info.Content = comment.Content
+				info.CommentType = comment.CommentLevel
+				info.CreateAt = comment.CreateAt
+				if comment.Status == 0 {
+					info.IsDelete = true
+				}
+
+				ok, err := svc.information.GetInformationById(fmt.Sprint(comment.NewsId))
+				if ok && err == nil {
+					info.Status = int32(svc.information.Information.Status)
+					info.ComposeId = svc.information.Information.Id
+					info.Title = svc.information.Information.Title
+					info.Cover = svc.information.Information.Cover
 				}
 
 				res[index] = info

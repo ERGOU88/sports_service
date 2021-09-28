@@ -64,7 +64,7 @@ type LikedUserInfo struct {
 
 // 被点赞的信息
 type BeLikedInfo struct {
-	ComposeId     int64                 `json:"compose_id"`                   // 作品id 视频id/评论id/帖子id
+	ComposeId     int64                 `json:"compose_id"`                   // 作品id 视频id/评论id/帖子id/资讯id
 	Title         string                `json:"title"`                        // 标题
 	Describe      string                `json:"describe"`                     // 描述
 	Cover         string                `json:"cover"`                        // 封面
@@ -92,6 +92,7 @@ type BeLikedInfo struct {
 	IsDelete      bool                  `json:"is_delete"`                    // true已删除
 
 	ParentCommentId  int64              `json:"parent_comment_id,omitempty"`  // 父级评论id
+	JumpInformationId int64             `json:"jump_information_id,omitempty"`// 跳转所需资讯id
 }
 
 // 被点赞的评论信息

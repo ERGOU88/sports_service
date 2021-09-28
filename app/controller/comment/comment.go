@@ -231,7 +231,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 			return errdef.INFORMATION_NOT_EXISTS, nil
 		}
 
-		// 更新帖子总计（帖子评论总数）
+		// 更新总计（资讯评论总数）
 		if err := svc.information.UpdateInformationCommentNum(params.ComposeId, now, 1); err != nil {
 			log.Log.Errorf("comment_trace: update information comment num err:%s", err)
 			svc.engine.Rollback()

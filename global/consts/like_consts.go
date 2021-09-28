@@ -6,6 +6,7 @@ package consts
 // 4 帖子评论点赞/帖子评论、回复
 // 5 发布帖子时内容带有 @用户
 // 6 资讯评论点赞/资讯评论、回复
+// 7 资讯评论、回复中@
 const (
 	TYPE_VIDEOS               = 1
 	TYPE_POSTS                = 2
@@ -13,6 +14,7 @@ const (
 	TYPE_POST_COMMENT         = 4
 	TYPE_PUBLISH_POST         = 5
 	TYPE_INFORMATION_COMMENT  = 6
+	TYPE_INFORMATION_AT       = 7
 )
 
 // 1 已点赞 0 未点赞
