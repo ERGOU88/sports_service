@@ -944,7 +944,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				// 如果父评论id为0 则表示 是1级评论 不为0 则表示是回复
 				if comment.ParentCommentId != 0 {
 					// 获取被回复的内容
-					beReply := svc.comment.GetVideoCommentById(fmt.Sprint(comment.ReplyCommentId))
+					beReply := svc.comment.GetInformationCommentById(fmt.Sprint(comment.ReplyCommentId))
 					if beReply != nil {
 						info.CommentType = 2
 						info.Content = beReply.Content
@@ -1001,6 +1001,21 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 					info.ComposeId = svc.information.Information.Id
 					info.Title = svc.information.Information.Title
 					info.Cover = svc.information.Information.Cover
+				}
+
+				// 执行@的用户信息
+				if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
+					// 执行@的用户信息
+					info.UserId = user.UserId
+					info.Avatar = user.Avatar
+					info.Nickname = user.NickName
+				}
+
+				// 被@的用户信息
+				if user := svc.user.FindUserByUserid(receiveAt.ToUserId); user != nil {
+					info.ToUserId = user.UserId
+					info.ToUserAvatar = user.Avatar
+					info.ToUserName = user.NickName
 				}
 
 				res[index] = info

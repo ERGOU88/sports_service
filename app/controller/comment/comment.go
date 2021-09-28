@@ -1608,12 +1608,28 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Co
 
 // 添加评论举报
 func (svc *CommentModule) AddCommentReport(params *mcomment.CommentReportParam) int {
-	// 查询评论是否存在
-	comment := svc.comment.GetVideoCommentById(fmt.Sprint(params.CommentId))
-	if comment == nil {
-		log.Log.Error("comment_trace: comment not found, commentId:%s", fmt.Sprint(params.CommentId))
-		return errdef.COMMENT_NOT_FOUND
+	switch params.CommentType {
+	case 1:
+		// 查询评论是否存在
+		comment := svc.comment.GetVideoCommentById(fmt.Sprint(params.CommentId))
+		if comment == nil {
+			log.Log.Error("comment_trace: comment not found, commentId:%s", fmt.Sprint(params.CommentId))
+			return errdef.COMMENT_NOT_FOUND
+		}
+	case 2:
+		comment := svc.comment.GetPostCommentById(fmt.Sprint(params.CommentId))
+		if comment == nil {
+			log.Log.Error("comment_trace: comment not found, commentId:%s", fmt.Sprint(params.CommentId))
+			return errdef.COMMENT_NOT_FOUND
+		}
+	case 3:
+		comment := svc.comment.GetInformationCommentById(fmt.Sprint(params.CommentId))
+		if comment == nil {
+			log.Log.Error("comment_trace: comment not found, commentId:%s", fmt.Sprint(params.CommentId))
+			return errdef.COMMENT_NOT_FOUND
+		}
 	}
+
 
 	svc.comment.Report.UserId = params.UserId
 	svc.comment.Report.CommentId = params.CommentId
