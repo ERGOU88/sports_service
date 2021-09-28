@@ -524,7 +524,7 @@ func (svc *base) AddAppointmentRecord() error {
 
 // 添加订单商品流水记录
 func (svc *base) AddOrderProducts() error {
-	var olst []*models.VenueOrderProductInfo
+	//var olst []*models.VenueOrderProductInfo
 	for _, val := range svc.orderMp {
 		// 实付金额为0 表示使用时长抵扣 或 活动免费 直接置为可用
 		if svc.order.Order.Amount == 0 {
@@ -532,18 +532,18 @@ func (svc *base) AddOrderProducts() error {
 		}
 
 		//val.SnapshotId = svc.recordMp[val.ProductId].Id
-		olst = append(olst, val)
+		//olst = append(olst, val)
+		// 添加订单商品流水
+		affected, err := svc.order.AddOrderProductByAppointment(val)
+		if err != nil {
+			return err
+		}
+
+		if affected != 1 {
+			return errors.New("add order product fail, count not match~")
+		}
 	}
 
-	// 添加订单商品流水
-	affected, err := svc.order.AddMultiOrderProduct(olst)
-	if err != nil {
-		return err
-	}
-
-	if affected != int64(len(olst)) {
-		return errors.New("add order product fail, count not match~")
-	}
 
 	return nil
 }

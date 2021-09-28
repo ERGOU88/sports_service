@@ -110,6 +110,11 @@ func (m *OrderModel) AddOrderProduct() (int64, error) {
 	return m.Engine.InsertOne(m.OrderProduct)
 }
 
+// 添加订单商品流水[预约类]
+func (m *OrderModel) AddOrderProductByAppointment(orderProduct *models.VenueOrderProductInfo) (int64, error) {
+	return m.Engine.InsertOne(orderProduct)
+}
+
 // 更新订单信息
 func (m *OrderModel) UpdateOrderStatus(orderId string, status int) (int64, error) {
 	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Cols("update_at",
