@@ -22,9 +22,9 @@ type base struct {
 	order       *morder.OrderModel
 	DateId      int
 	Extra       *mappointment.OrderResp
-	// 预约流水map
+	// 预约流水map key 预约时间配置id
 	recordMp    map[int64][]*models.VenueAppointmentRecord
-	// 订单商品流水map
+	// 订单商品流水map key 预约时间配置id
 	orderMp     map[int64]*models.VenueOrderProductInfo
 	venue       *mvenue.VenueModel
 }
@@ -500,18 +500,21 @@ func (svc *base) UpdateStock(date string, count, now int) (int64, error) {
 
 // 添加预约流水
 func (svc *base) AddAppointmentRecord() error {
-	for _, val := range svc.recordMp {
+	for key, list := range svc.recordMp {
 		// 实付金额为0 表示使用时长抵扣 或 活动免费 直接置为可用
 		//if svc.order.Order.Amount == 0 {
-		//	val.Status = 1
+		//	list.Status = 1
 		//}
+		for _, record := range list {
+			record.OrderProductId = svc.orderMp[key].Id
+		}
 
-		affected, err := svc.appointment.AddMultiAppointmentRecord(val)
+		affected, err := svc.appointment.AddMultiAppointmentRecord(list)
 		if err != nil {
 			return err
 		}
 
-		if affected != int64(len(val)) {
+		if affected != int64(len(list)) {
 			return errors.New("add record fail, count not match~")
 		}
 	}

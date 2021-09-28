@@ -162,18 +162,18 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 		return errdef.ORDER_ADD_FAIL, nil
 	}
 
-	// 添加预约记录流水
-	if err := svc.AddAppointmentRecord(); err != nil {
-		log.Log.Errorf("venue_trace: add appointment record fail, err:%s", err)
-		svc.engine.Rollback()
-		return errdef.APPOINTMENT_ADD_RECORD_FAIL, nil
-	}
-
 	// 添加订单商品流水
 	if err := svc.AddOrderProducts(); err != nil {
 		log.Log.Errorf("venue_trace: add order products fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.ORDER_PRODUCT_ADD_FAIL, nil
+	}
+
+	// 添加预约记录流水
+	if err := svc.AddAppointmentRecord(); err != nil {
+		log.Log.Errorf("venue_trace: add appointment record fail, err:%s", err)
+		svc.engine.Rollback()
+		return errdef.APPOINTMENT_ADD_RECORD_FAIL, nil
 	}
 
 	// 记录需处理支付超时的订单
