@@ -18,6 +18,5 @@ func Router(engine *gin.Engine) {
 		share.POST("/community", token.TokenAuth(), ShareWithCommunity)
 		// 获取分享链接
 		share.GET("/url", GetShareUrl)
-
 	}
 }
