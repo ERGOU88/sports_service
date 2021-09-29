@@ -26,5 +26,4 @@ func AuditPost(c *gin.Context) {
 
 // 帖子列表 todo：展示数据待确认
 func PostList(c *gin.Context) {
-
 }

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"sports_service/server/app/config"
+	"sports_service/server/global/app/log"
 )
 
 func AppleLink(c *gin.Context) {
@@ -19,6 +20,7 @@ func AppleLink(c *gin.Context) {
 	//c.File(config.ApplicationConfig.AppleLinkPath)
 	file, err := os.Open(config.Global.AppleLinkPath)
 	if err != nil {
+		log.Log.Errorf("apple_trace: open file fail, err:%s", err)
 		c.String(http.StatusInternalServerError, "")
 		return
 	}
@@ -26,6 +28,7 @@ func AppleLink(c *gin.Context) {
 
 	fileInfo, err := file.Stat()
 	if err != nil {
+		log.Log.Errorf("apple_trace: file stat fail, err:%s", err)
 		c.String(http.StatusInternalServerError, "")
 		return
 	}
@@ -33,6 +36,7 @@ func AppleLink(c *gin.Context) {
 	fileSize := fileInfo.Size()
 	buffer := make([]byte, fileSize)
 	if _, err := file.Read(buffer); err != nil {
+		log.Log.Errorf("apple_trace: read buffer fail, err:%s", err)
 		c.String(http.StatusInternalServerError, "")
 		return
 	}

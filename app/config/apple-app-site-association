@@ -4,7 +4,7 @@
         "details": [
             {
                 "appID": "NCZVK7QP39.com.bluetrans.fpv",
-                "paths": [ "*" ]
+                "paths": ["*","/qq_conn/101964013/*"]
             }
         ]
     }
