@@ -231,7 +231,7 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 			}
 		case consts.LIKE_TYPE_INFORMATION:
 			info.Type = consts.LIKE_TYPE_INFORMATION
-			info.JumpPostId = liked.TypeId
+			info.JumpInformationId = liked.TypeId
 
 			ok, err := svc.information.GetInformationById(fmt.Sprint(liked.TypeId))
 			if ok && err == nil {
