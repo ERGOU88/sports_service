@@ -6,6 +6,7 @@ import (
 	"sports_service/server/backend/controller/cpost"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/backend/errdef"
+	"sports_service/server/models/mcommunity"
 	"sports_service/server/models/mposting"
 	"sports_service/server/util"
 )
@@ -37,5 +38,60 @@ func PostList(c *gin.Context) {
 
 func AddSection(c *gin.Context) {
 	reply := errdef.New(c)
-	reply.Response(http.StatusOK, 200)
+	param := &mcommunity.AddSection{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cpost.New(c)
+	reply.Response(http.StatusOK, svc.AddSection(param))
+}
+
+func DelSection(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mcommunity.DelSection{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cpost.New(c)
+	reply.Response(http.StatusOK, svc.DelSection(param))
+}
+
+func AddTopic(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mcommunity.AddTopic{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cpost.New(c)
+	reply.Response(http.StatusOK, svc.AddTopic(param))
+}
+
+func DelTopic(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mcommunity.DelTopic{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cpost.New(c)
+	reply.Response(http.StatusOK, svc.DelTopic(param))
+}
+
+func PostSetting(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mposting.SettingParam{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cpost.New(c)
+	reply.Response(http.StatusOK, svc.PostSetting(param))
 }

@@ -17,3 +17,4 @@ func (m *PostingModel) GetApplyCreamRecord(postId string) (*models.PostingApplyC
 
 	return m.ApplyCream, nil
 }
+

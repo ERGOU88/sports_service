@@ -5,6 +5,12 @@ type AudiPostParam struct {
 	Status   int        `json:"status"`
 }
 
+type SettingParam struct {
+	SettingType   int   `json:"setting_type"` // 1 精华 2 置顶
+	ActionType    int   `json:"action_type"`  // 1 设置 0 取消
+	Id            int64 `json:"id"`           // 帖子id
+}
+
 // todo: 后台查询帖子审核列表时 需过滤掉发布的视频 以及 帖子审核通过时 需给up主的粉丝们发推送通知
 // 更新帖子审核状态 不包含关联视频的帖子
 func (m *PostingModel) UpdateStatusByPost() error {
@@ -29,4 +35,8 @@ func (m *PostingModel) GetPostList(offset, size int) ([]*PostDetailInfo, error) 
 	}
 
 	return list, nil
+}
+
+func (m *PostingModel) UpdatePostInfo(id int64, cols string) (int64, error) {
+	return m.Engine.Where("id=?", id).Cols(cols).Update(m.Posting)
 }

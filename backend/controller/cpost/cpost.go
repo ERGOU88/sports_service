@@ -16,6 +16,7 @@ import (
 	redismq "sports_service/server/redismq/event"
 	"sports_service/server/util"
 	"sports_service/server/global/backend/log"
+	"time"
 )
 
 type PostModule struct {
@@ -228,5 +229,71 @@ func (svc *PostModule) GetPostList(page, size int) (int, []*mposting.PostDetailI
 	return errdef.SUCCESS, list
 }
 
+func (svc *PostModule) AddSection(param *mcommunity.AddSection) int {
+	svc.community.CommunitySection.SectionName = param.SectionName
+	svc.community.CommunitySection.Sortorder = param.Sortorder
+	svc.community.CommunitySection.CreateAt = int(time.Now().Unix())
+	svc.community.CommunitySection.Status = 1
+	if _, err := svc.community.AddCommunitySection(); err != nil {
+		log.Log.Errorf("post_trace: add section fail, err:%s", err)
+		return errdef.POST_ADD_SECTION_FAIL
+	}
 
+	return errdef.SUCCESS
+}
 
+// 软删除 将板块隐藏
+func (svc *PostModule) DelSection(param *mcommunity.DelSection) int {
+	svc.community.CommunitySection.Status = 2
+	if _, err := svc.community.UpdateSectionStatus(param.Id); err != nil {
+		log.Log.Errorf("post_trace: del section fail, err:%s", err)
+		return errdef.POST_DEL_SECTION_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
+func (svc *PostModule) AddTopic(param *mcommunity.AddTopic) int {
+	svc.community.CommunityTopic.Status = 1
+	svc.community.CommunityTopic.Cover = param.Cover
+	svc.community.CommunityTopic.CreateAt = int(time.Now().Unix())
+	svc.community.CommunityTopic.Sortorder = param.Sortorder
+	svc.community.CommunityTopic.TopicName = param.Name
+	svc.community.CommunityTopic.Describe = param.Describe
+	if _, err := svc.community.AddTopic(); err != nil {
+		log.Log.Errorf("post_trace: add topic fail, err:%s", err)
+		return errdef.POST_ADD_TOPIC_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
+func (svc *PostModule) DelTopic(param *mcommunity.DelTopic) int {
+	svc.community.CommunityTopic.Status = 2
+	if _, err := svc.community.UpdateTopicStatus(param.Id); err != nil {
+		log.Log.Errorf("post_trace: update topic status fail, err:%s", err)
+		return errdef.POST_DEL_TOPIC_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
+// 帖子设置 置顶/精华
+func (svc *PostModule) PostSetting(param *mposting.SettingParam) int {
+	var cols string
+	switch param.SettingType {
+	case 1:
+		cols = "is_cream"
+		svc.post.Posting.IsCream = param.ActionType
+	case 2:
+		cols = "is_top"
+		svc.post.Posting.IsTop = param.ActionType
+	}
+
+	if _, err := svc.post.UpdatePostInfo(param.Id, cols); err != nil {
+		log.Log.Errorf("post_trace: update post info fail, err:%s", err)
+		return errdef.POST_SETTING_FAIL
+	}
+
+	return errdef.SUCCESS
+}
