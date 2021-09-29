@@ -1,6 +1,7 @@
 package umeng
 
 import (
+  "sports_service/server/app/config"
   "sports_service/server/global/consts"
   "sports_service/server/util"
   "time"
@@ -68,6 +69,10 @@ func (m *UmengModel) PushUnicastNotify(msgType, pf int32, deviceToken, title, co
   data.DeviceTokens = deviceToken
   //m.Data.Description = ""
   data.ProductionMode = false
+  if config.Global.Mode == string(consts.ModeProd) {
+    data.ProductionMode = true
+  }
+
   body := PushMessage{
     MsgId: fmt.Sprint(util.GetSnowId()),
     SendTime: time.Now().Unix(),
@@ -134,6 +139,9 @@ func (m *UmengModel) PushBroadcastNotifyByAndroid(title, content string, extra m
   data.Type = "broadcast"
   data.TimeStamp = time.Now().Unix()
   data.ProductionMode = false
+  if config.Global.Mode == string(consts.ModeProd) {
+    data.ProductionMode = true
+  }
 
   body := PushMessage{
     MsgId:    fmt.Sprint(util.GetSnowId()),
@@ -173,6 +181,10 @@ func (m *UmengModel) PushBroadcastNotifyByIos(title, content string, extra map[s
   data.Type = "broadcast"
   data.TimeStamp = time.Now().Unix()
   data.ProductionMode = false
+  if config.Global.Mode == string(consts.ModeProd) {
+    data.ProductionMode = true
+  }
+
   extras := make(map[string]string, 0)
   body := PushMessage{
     MsgId:    fmt.Sprint(util.GetSnowId()),
@@ -215,6 +227,10 @@ func (m *UmengModel) CancelNotify(taskId string, pf int) error {
   data := umeng.NewData(umeng.Platform(pf))
   data.TimeStamp = time.Now().Unix()
   data.TaskId = taskId
+  if config.Global.Mode == string(consts.ModeProd) {
+    data.ProductionMode = true
+  }
+
   resp := data.Cancel()
   if resp.Code != "SUCCESS" {
     return errors.New("cancel notify fail, error_msg" + resp.Data["error_msg"])
