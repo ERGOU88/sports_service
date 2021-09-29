@@ -231,7 +231,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 			return errdef.INFORMATION_NOT_EXISTS, nil
 		}
 
-		// 更新帖子总计（帖子评论总数）
+		// 更新总计（资讯评论总数）
 		if err := svc.information.UpdateInformationCommentNum(params.ComposeId, now, 1); err != nil {
 			log.Log.Errorf("comment_trace: update information comment num err:%s", err)
 			svc.engine.Rollback()
@@ -253,6 +253,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		resp.Content = params.Content
 		resp.CreateAt = svc.comment.InformationComment.CreateAt
 		resp.Status = svc.comment.InformationComment.Status
+		params.CommentType = consts.TYPE_INFORMATION_AT
 
 	default:
 		log.Log.Errorf("comment_trace: invalid commentType:%d", params.CommentType)
@@ -555,7 +556,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			resp.ReplyCommentUserName = uinfo.NickName
 		}
 
-		atType = consts.TYPE_VIDEO_COMMENT
+		atType = consts.TYPE_VIDEO
 
 	// 帖子回复
 	case consts.COMMENT_TYPE_POST:
@@ -641,7 +642,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			resp.ReplyCommentUserName = uinfo.NickName
 		}
 
-		atType = consts.TYPE_POST_COMMENT
+		atType = consts.TYPE_POST
 
 	case consts.COMMENT_TYPE_INFORMATION:
 		// 查询被回复的评论是否存在
@@ -718,7 +719,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			resp.ReplyCommentUserName = uinfo.NickName
 		}
 
-		atType = consts.TYPE_INFORMATION_COMMENT
+		atType = consts.TYPE_INFORMATION_AT
 
 	default:
 		log.Log.Errorf("comment_trace: invalid commentType:%d", params.CommentType)
@@ -1354,7 +1355,7 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 			}
 
 			// todo: 被回复的用户名、用户头像使用最新数据
-			user = svc.user.FindUserByUserid(reply.UserId)
+			user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
 			if user != nil {
 				reply.ReplyCommentAvatar = user.Avatar
 				reply.ReplyCommentUserName = user.NickName
@@ -1607,12 +1608,28 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Co
 
 // 添加评论举报
 func (svc *CommentModule) AddCommentReport(params *mcomment.CommentReportParam) int {
-	// 查询评论是否存在
-	comment := svc.comment.GetVideoCommentById(fmt.Sprint(params.CommentId))
-	if comment == nil {
-		log.Log.Error("comment_trace: comment not found, commentId:%s", fmt.Sprint(params.CommentId))
-		return errdef.COMMENT_NOT_FOUND
+	switch params.CommentType {
+	case 1:
+		// 查询评论是否存在
+		comment := svc.comment.GetVideoCommentById(fmt.Sprint(params.CommentId))
+		if comment == nil {
+			log.Log.Error("comment_trace: comment not found, commentId:%s", fmt.Sprint(params.CommentId))
+			return errdef.COMMENT_NOT_FOUND
+		}
+	case 2:
+		comment := svc.comment.GetPostCommentById(fmt.Sprint(params.CommentId))
+		if comment == nil {
+			log.Log.Error("comment_trace: comment not found, commentId:%s", fmt.Sprint(params.CommentId))
+			return errdef.COMMENT_NOT_FOUND
+		}
+	case 3:
+		comment := svc.comment.GetInformationCommentById(fmt.Sprint(params.CommentId))
+		if comment == nil {
+			log.Log.Error("comment_trace: comment not found, commentId:%s", fmt.Sprint(params.CommentId))
+			return errdef.COMMENT_NOT_FOUND
+		}
 	}
+
 
 	svc.comment.Report.UserId = params.UserId
 	svc.comment.Report.CommentId = params.CommentId

@@ -80,6 +80,7 @@ type Config struct {
 	TencentImAppId int
 	TencentImSecret string
 	TencentImIdentifier string
+	ShareUrl string
 
 	Debug bool
 }

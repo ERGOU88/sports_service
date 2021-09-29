@@ -56,3 +56,16 @@ func ShareWithCommunity(c *gin.Context) {
 	code := svc.ShareData(params)
 	reply.Response(http.StatusOK, code)
 }
+
+// 获取分享链接
+func GetShareUrl(c *gin.Context) {
+	reply := errdef.New(c)
+	userId := c.Query("user_id")
+	shareType := c.Query("share_type")
+	contentType := c.Query("content_type")
+	contentId := c.Query("content_id")
+	svc := cshare.New(c)
+	shareUrl := svc.GenShareUrl(userId, contentType, contentId, shareType)
+	reply.Data["share_url"] = shareUrl
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}

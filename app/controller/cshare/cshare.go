@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
+	"sports_service/server/app/config"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
@@ -363,3 +364,7 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 	return errdef.SUCCESS
 }
 
+// todo: 生成分享链接
+func (svc *ShareModule) GenShareUrl(userId, contentType, contentId, shareType string) string {
+	return config.Global.ShareUrl
+}
