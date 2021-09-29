@@ -44,9 +44,9 @@ func New(c *gin.Context) InformationModule {
 // 获取赛事首页资讯列表
 func (svc *InformationModule) GetInformationList(userId, liveId string, page, size int) (int, []*minformation.InformationResp) {
 	offset := (page - 1) * size
-	condition := "status=0 AND pub_type=1 AND related_id=0"
+	condition := "status=1 AND pub_type=1 AND related_id=0"
 	if liveId != "" {
-		condition = "status=0 AND pub_type=1 AND related_id=1"
+		condition = "status=1 AND pub_type=1 AND related_id=1"
 	}
 
 	list, err := svc.information.GetInformationList(condition, offset, size)
