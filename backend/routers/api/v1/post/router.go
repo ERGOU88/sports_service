@@ -11,5 +11,7 @@ func Router(engine *gin.Engine) {
 		post.POST("/audit", AuditPost)
 		// 后台帖子列表
 		post.GET("/list", PostList)
+		// 添加板块
+		post.POST("/add/section", AddSection)
 	}
 }

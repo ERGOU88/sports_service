@@ -34,3 +34,8 @@ func PostList(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
+
+func AddSection(c *gin.Context) {
+	reply := errdef.New(c)
+	reply.Response(http.StatusOK, 200)
+}
