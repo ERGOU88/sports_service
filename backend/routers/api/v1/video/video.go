@@ -115,3 +115,29 @@ func DelVideoLabel(c *gin.Context) {
 	reply.Response(http.StatusOK, syscode)
 }
 
+// 添加视频分区配置
+func AddVideoSubareaConf(c *gin.Context) {
+	reply := errdef.New(c)
+	param := new(mvideo.AddSubarea)
+	if err := c.Bind(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cvideo.New(c)
+	syscode := svc.AddVideoSubareaConf(param)
+	reply.Response(http.StatusOK, syscode)
+}
+
+func DelVideoSubareaConf(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mvideo.DelSubarea{}
+	if err := c.Bind(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cvideo.New(c)
+	syscode := svc.DelVideoSubareaConf(param.Id)
+	reply.Response(http.StatusOK, syscode)
+}
