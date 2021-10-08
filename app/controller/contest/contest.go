@@ -75,7 +75,21 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 	}
 
 	if len(list) == 0 {
-		return errdef.SUCCESS, []*mcontest.ContestLiveInfo{}, 0, 0
+		if page != 1 || pullType != "1" {
+			return errdef.SUCCESS, []*mcontest.ContestLiveInfo{}, 0, 0
+		}
+		// 如果是取今天及未来赛事数据 且是获取第一页数据
+		// 取历史数据
+		pullType = "2"
+		list, err = svc.contest.GetLiveList(offset, size, fmt.Sprint(svc.contest.Contest.Id), limitTm, queryType, pullType)
+		if err != nil {
+			log.Log.Errorf("contest_trace: get live list fail, err:%s", err)
+			return errdef.CONTEST_GET_LIVE_FAIL, nil, 0, 0
+		}
+
+		if len(list) == 0 {
+			return errdef.SUCCESS, []*mcontest.ContestLiveInfo{}, 0, 0
+		}
 	}
 
 
