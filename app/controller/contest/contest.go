@@ -3,6 +3,7 @@ package contest
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
+	"sort"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
@@ -56,6 +57,10 @@ func (svc *ContestModule) GetBanner() []*models.Banner {
 // pullType 拉取类型  1 上拉加载 今天及未来赛事数据 [通过开播时间作为查询条件进行拉取] 2 下拉加载 历史赛事数据 [通过开播时间作为查询条件进行拉取] 默认上拉加载
 // queryType 1 首页列表 [查询最近同一天内的 未开播/直播中的数据]
 func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size int) (int, []*mcontest.ContestLiveInfo, int, int) {
+	if page > 1 {
+		page = 1
+	}
+
 	if err := svc.GetContestInfo(); err != nil {
 		log.Log.Errorf("contest_trace: get contest info fail, err:%s", err)
 		return errdef.CONTEST_INFO_FAIL, nil, 0, 0
@@ -63,7 +68,7 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 
 	offset := (page - 1) * size
 	limitTm := ts
-	if queryType == "1" || pullType == "1" {
+	if queryType == "1" || limitTm == "" {
 		limitTm = fmt.Sprint(time.Now().Unix())
 	}
 
@@ -75,12 +80,13 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 	}
 
 	if len(list) == 0 {
-		if page != 1 || pullType != "1" {
+		if pullType != "1" || ts != "" {
 			return errdef.SUCCESS, []*mcontest.ContestLiveInfo{}, 0, 0
 		}
-		// 如果是取今天及未来赛事数据 且是获取第一页数据
+		// 如果是取今天及未来赛事数据
 		// 取历史数据
 		pullType = "2"
+		limitTm = fmt.Sprint(time.Now().Unix())
 		list, err = svc.contest.GetLiveList(offset, size, fmt.Sprint(svc.contest.Contest.Id), limitTm, queryType, pullType)
 		if err != nil {
 			log.Log.Errorf("contest_trace: get live list fail, err:%s", err)
@@ -171,6 +177,11 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 	resp := make([]*mcontest.ContestLiveInfo, len(mp))
 	for _, val := range mp {
 		resp[val.Index] = val
+	}
+
+	if pullType == "2" {
+		// 统一为正序返回
+		sort.Sort(SortContestLive(resp))
 	}
 
 	return errdef.SUCCESS, resp, pullUpTm, pullDownTm
