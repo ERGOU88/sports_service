@@ -435,6 +435,7 @@ func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, cou
 			UnitPrice: svc.appointment.AppointmentInfo.UnitPrice,
 			StartTm: int(startTm),
 			EndTm: int(endTm),
+			AppointmentId: svc.appointment.AppointmentInfo.Id,
 		}
 
 		if len(seatInfo) > 0 {
