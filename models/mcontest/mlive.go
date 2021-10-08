@@ -110,7 +110,7 @@ func (m *ContestModel) GetLiveList(offset, size int, contestId, tm, queryType, p
 	case "1":
 		m.Engine.Where("play_time > ?", tm).Asc("play_time")
 	case "2":
-		m.Engine.Where("play_time < ?", tm).Desc("play_time")
+		m.Engine.Where("play_time < ?", tm).Asc("play_time")
 	}
 
 	if err := m.Engine.Limit(size, offset).Find(&list); err != nil {
