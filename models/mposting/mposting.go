@@ -117,6 +117,8 @@ type PostDetailInfo struct {
 	VideoId       int64                  `json:"video_id"`                             // 关联的视频id
 	RelatedVideo  *RelatedVideo          `json:"related_video,omitempty"`              // 帖子关联的视频信息
 	StatusCn      string                 `json:"status_cn"`                            // 中文状态
+	SectionId     int                    `json:"section_id"`
+	SectionName   string                 `json:"section_name"`
 }
 
 type RelatedVideo struct {

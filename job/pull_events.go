@@ -166,17 +166,29 @@ func procedureStateChangedEvent(event *v20180717.EventContent) error {
         video.PlayInfo = playInfo
       }
 
-      if err := vmodel.UpdateVideoPlayInfo(fmt.Sprint(video.VideoId)); err != nil {
-        log.Log.Errorf("job_trace: update video play info fail, videoId:%d, err:%s", video.VideoId, err)
-        session.Rollback()
-        return errors.New("job_trace: update video play info fail")
-      }
+      //if err := vmodel.UpdateVideoPlayInfo(fmt.Sprint(video.VideoId)); err != nil {
+      //  log.Log.Errorf("job_trace: update video play info fail, videoId:%d, err:%s", video.VideoId, err)
+      //  session.Rollback()
+      //  return errors.New("job_trace: update video play info fail")
+      //}
     }
 
     if err := vmodel.UpdateVideoPlayInfo(fmt.Sprint(video.VideoId)); err != nil {
-      log.Log.Errorf("job_trace: update video info fail, err:%s", err)
+      log.Log.Errorf("job_trace: update video play info fail, videoId:%d, err:%s", video.VideoId, err)
       session.Rollback()
       return errors.New("job_trace: update video info fail")
+    }
+
+    if video.Status == 1 {
+      condition := fmt.Sprintf("video_id=%d", video.VideoId)
+      cols := fmt.Sprintf("status")
+      // 将视频标签置为可用
+      vmodel.Labels.Status = 1
+      if _, err := vmodel.UpdateVideoLabelInfo(condition, cols); err != nil {
+        log.Log.Errorf("job_trace: update video label status fail, videoId:%d, err:%s", video.VideoId, err)
+        session.Rollback()
+        return err
+      }
     }
 
     // 如果是社区发布的视频 且 视频状态不是审核中 需要修改关联的帖子状态
