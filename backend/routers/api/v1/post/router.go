@@ -21,5 +21,7 @@ func Router(engine *gin.Engine) {
 		post.POST("/del/topic", DelTopic)
 		// 帖子设置 置顶/精华
 		post.POST("/setting", PostSetting)
+		// 申精列表
+		post.GET("/apply/cream", ApplyCreamList)
 	}
 }

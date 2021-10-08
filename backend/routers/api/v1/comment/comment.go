@@ -68,3 +68,32 @@ func DelVideoBarrage(c *gin.Context) {
 
   reply.Response(http.StatusOK, errdef.SUCCESS)
 }
+
+// 获取帖子评论列表（后台）
+func PostCommentList(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	condition := c.Query("condition")
+	sortType := c.Query("sort_type")
+	queryId := c.Query("query_id")
+
+	svc := comment.New(c)
+	list, total := svc.GetPostComments(queryId, sortType, condition, page, size)
+	reply.Data["list"] = list
+	reply.Data["total"] = total
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+func InformationCommentList(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	condition := c.Query("condition")
+	sortType := c.Query("sort_type")
+	queryId := c.Query("query_id")
+
+	svc := comment.New(c)
+	list, total := svc.GetPostComments(queryId, sortType, condition, page, size)
+	reply.Data["list"] = list
+	reply.Data["total"] = total
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}

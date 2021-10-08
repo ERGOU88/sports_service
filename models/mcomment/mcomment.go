@@ -480,9 +480,148 @@ func (m *CommentModel) GetVideoCommentsBySort(userId, videoId, sortType, conditi
 	return list
 }
 
-// 获取评论总数
+// 帖子评论数据（后台展示）
+type PostingCommentInfo struct {
+	Id            int64                 `json:"id"`              // 评论id
+    PostId        int64                 `json:"post_id"`         // 帖子id
+	Status        int32                 `json:"status"`          // 评论状态 (1 有效 0 逻辑删除)
+	UserId        string                `json:"user_id"`         // 用户id
+	Content       string                `json:"content"`         // 评论/回复的内容
+	CreateAt      int                   `json:"create_at"`       // 用户评论的时间
+	CommentLevel  int                   `json:"comment_level"`   // 1 为评论 2 为回复
+	LikeNum       int64                 `json:"like_num"`        // 点赞数
+	ReplyNum      int64                 `json:"reply_num"`       // 当前评论的回复数
+}
+
+// 后台获取帖子评论列表（查询所有 或 用户id或帖子id进行查询 可通过 1 时间、 2 点赞数、 3 回复数排序 默认时间倒序）
+func (m *CommentModel) GetPostCommentsBySort(userId, postId, sortType, condition string, offset, size int) []*PostingCommentInfo {
+	sql := "SELECT pc.*, count(distinct(tu.Id)) AS like_num, count(pc2.id) AS reply_num FROM posting_comment AS pc " +
+		"LEFT JOIN thumbs_up AS tu ON pc.id = tu.type_id AND tu.zan_type=4 AND tu.status=1 " +
+		"LEFT JOIN posting_comment AS pc2 ON pc.id=pc2.reply_comment_id AND pc2.comment_level=2 " +
+		"WHERE pc.status=1 "
+
+	if userId != "" {
+		sql += fmt.Sprintf("AND pc.user_id=%s ", userId)
+	}
+
+	if postId != "" {
+		sql += fmt.Sprintf("AND pc.post_id=%s ", postId)
+	}
+
+	sql += "GROUP BY pc.id "
+
+	switch condition {
+	case consts.SORT_BY_TIME:
+		sql += "ORDER BY pc.create_at "
+	case consts.SORT_BY_LIKE:
+		sql += "ORDER BY like_num "
+	case consts.SORT_BY_REPLY:
+		sql += "ORDER BY reply_num "
+	default:
+		sql += "ORDER BY pc.create_at "
+	}
+
+	// 1 正序 默认倒序
+	if sortType == "1" {
+		sql += "ASC "
+	} else {
+		sql += "DESC "
+	}
+
+	sql += "LIMIT ?, ?"
+	var list []*PostingCommentInfo
+	if err := m.Engine.Table(&models.PostingComment{}).SQL(sql, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("comment_trace: get comment list by sort, err:%s", err)
+		return []*PostingCommentInfo{}
+	}
+
+	return list
+}
+
+// 资讯评论数据（后台展示）
+type InformationCommentInfo struct {
+	Id            int64                 `json:"id"`              // 评论id
+	NewsId        int64                 `json:"news_id"`         // 资讯id
+	Status        int32                 `json:"status"`          // 评论状态 (1 有效 0 逻辑删除)
+	UserId        string                `json:"user_id"`         // 用户id
+	Content       string                `json:"content"`         // 评论/回复的内容
+	CreateAt      int                   `json:"create_at"`       // 用户评论的时间
+	CommentLevel  int                   `json:"comment_level"`   // 1 为评论 2 为回复
+	LikeNum       int64                 `json:"like_num"`        // 点赞数
+	ReplyNum      int64                 `json:"reply_num"`       // 当前评论的回复数
+}
+
+// 后台获取资讯评论列表（查询所有 或 用户id或资讯id进行查询 可通过 1 时间、 2 点赞数、 3 回复数排序 默认时间倒序）
+func (m *CommentModel) GetInformationCommentsBySort(userId, postId, sortType, condition string, offset, size int) []*InformationCommentInfo {
+	sql := "SELECT ic.*, count(distinct(tu.Id)) AS like_num, count(ic2.id) AS reply_num FROM information_comment AS ic " +
+		"LEFT JOIN thumbs_up AS tu ON ic.id = tu.type_id AND tu.zan_type=5 AND tu.status=1 " +
+		"LEFT JOIN information_comment AS ic2 ON ic.id=ic2.reply_comment_id AND ic2.comment_level=2 " +
+		"WHERE ic.status=1 "
+
+	if userId != "" {
+		sql += fmt.Sprintf("AND ic.user_id=%s ", userId)
+	}
+
+	if postId != "" {
+		sql += fmt.Sprintf("AND ic.news_id=%s ", postId)
+	}
+
+	sql += "GROUP BY ic.id "
+
+	switch condition {
+	case consts.SORT_BY_TIME:
+		sql += "ORDER BY ic.create_at "
+	case consts.SORT_BY_LIKE:
+		sql += "ORDER BY like_num "
+	case consts.SORT_BY_REPLY:
+		sql += "ORDER BY reply_num "
+	default:
+		sql += "ORDER BY ic.create_at "
+	}
+
+	// 1 正序 默认倒序
+	if sortType == "1" {
+		sql += "ASC "
+	} else {
+		sql += "DESC "
+	}
+
+	sql += "LIMIT ?, ?"
+	var list []*InformationCommentInfo
+	if err := m.Engine.Table(&models.InformationComment{}).SQL(sql, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("comment_trace: get comment list by sort, err:%s", err)
+		return []*InformationCommentInfo{}
+	}
+
+	return list
+}
+
+
+// 获取视频评论总数
 func (m *CommentModel) GetVideoCommentTotal() int64 {
 	count, err := m.Engine.Where("status=1").Count(&models.VideoComment{})
+	if err != nil {
+		log.Log.Errorf("comment_trace: get total comments err:%s", err)
+		return 0
+	}
+
+	return count
+}
+
+// 获取帖子评论总数
+func (m *CommentModel) GetPostCommentTotal() int64 {
+	count, err := m.Engine.Where("status=1").Count(&models.PostingComment{})
+	if err != nil {
+		log.Log.Errorf("comment_trace: get total comments err:%s", err)
+		return 0
+	}
+
+	return count
+}
+
+// 获取资讯评论总数
+func (m *CommentModel) GetInformationCommentTotal() int64 {
+	count, err := m.Engine.Where("status=1").Count(&models.InformationComment{})
 	if err != nil {
 		log.Log.Errorf("comment_trace: get total comments err:%s", err)
 		return 0
@@ -504,6 +643,26 @@ func (m *CommentModel) GetCommentTotalByUserId(userId string) int64 {
 // 通过视频id 获取评论总数
 func (m *CommentModel) GetCommentTotalByVideoId(composeId string) int64 {
 	count, err := m.Engine.Where("status=1 AND video_id=?", composeId).Count(&models.VideoComment{})
+	if err != nil {
+		return 0
+	}
+
+	return count
+}
+
+// 通过帖子id 获取评论总数
+func (m *CommentModel) GetCommentTotalByPostId(composeId string) int64 {
+	count, err := m.Engine.Where("status=1 AND post_id=?", composeId).Count(&models.PostingComment{})
+	if err != nil {
+		return 0
+	}
+
+	return count
+}
+
+// 通过资讯id 获取评论总数
+func (m *CommentModel) GetCommentTotalByNewsId(composeId string) int64 {
+	count, err := m.Engine.Where("status=1 AND news_id=?", composeId).Count(&models.InformationComment{})
 	if err != nil {
 		return 0
 	}

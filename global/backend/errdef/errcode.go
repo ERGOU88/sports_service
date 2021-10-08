@@ -84,6 +84,11 @@ const (
 	POST_ADD_TOPIC_FAIL         = 16011
 	POST_DEL_TOPIC_FAIL         = 16012
 	POST_SETTING_FAIL           = 16013
+	POST_APPLY_CREAM_LIST_FAIL  = 16014
+
+	// 17001 - 18000 资讯相关错误码
+	INFORMATION_LIST_FAIL       = 17001
+	INFORMATION_DELETE_FAIL     = 17002
 )
 
 var MsgFlags = map[int]string{
@@ -163,6 +168,10 @@ var MsgFlags = map[int]string{
 	POST_ADD_TOPIC_FAIL:            "添加话题失败",
 	POST_DEL_TOPIC_FAIL:            "删除话题失败",
 	POST_SETTING_FAIL:              "帖子设置失败",
+	POST_APPLY_CREAM_LIST_FAIL:     "获取申精列表失败",
+
+	INFORMATION_LIST_FAIL:          "获取资讯列表失败",
+	INFORMATION_DELETE_FAIL:        "删除资讯失败",
 }
 
 func GetMsg(code int) string {
