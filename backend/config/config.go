@@ -60,6 +60,7 @@ type Config struct {
 	// mysql
 	Mysql struct {
 		Main MysqlType
+		Venue MysqlType
 	}
 
 	// redis连接

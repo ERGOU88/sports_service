@@ -114,6 +114,7 @@ type ReplyCommentParams struct {
 // 后台删除评论
 type DelCommentParam struct {
 	CommentId      string     `binding:"required" json:"comment_id"`       // 评论id
+	CommentType    int32      `json:"comment_type"`                        // 评论类型 0 视频 1 帖子 2 资讯
 }
 
 // 评论举报
@@ -675,9 +676,19 @@ func (m *CommentModel) AddCommentReport() (int64, error) {
 	return m.Engine.InsertOne(m.Report)
 }
 
-// 更新评论/回复 信息
-func (m *CommentModel) UpdateCommentInfo(condition, cols string) (int64, error) {
+// 更新视频评论/回复 信息
+func (m *CommentModel) UpdateVideoCommentInfo(condition, cols string) (int64, error) {
 	return m.Engine.Where(condition).Cols(cols).Update(m.VideoComment)
+}
+
+// 更新帖子评论/回复 信息
+func (m *CommentModel) UpdatePostCommentInfo(condition, cols string) (int64, error) {
+	return m.Engine.Where(condition).Cols(cols).Update(m.PostComment)
+}
+
+// 更新资讯评论/回复 信息
+func (m *CommentModel) UpdateInformationCommentInfo(condition, cols string) (int64, error) {
+	return m.Engine.Where(condition).Cols(cols).Update(m.InformationComment)
 }
 
 // 通过id获取资讯评论
