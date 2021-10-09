@@ -17,6 +17,8 @@ type InformationResp struct {
 	Cover       string `json:"cover"`
 	Title       string `json:"title"`
 	Content     string `json:"content"`
+	Describe    string `json:"describe,omitempty"`
+	PubType     int    `json:"pub_type,omitempty"`      // 1. 发布至赛事模块 2. 发布至视频首页板块',
 	//JumpUrl     string `json:"jump_url"`
 	CreateAt    int    `json:"create_at"`
 	UserId      string `json:"user_id"`
@@ -28,6 +30,7 @@ type InformationResp struct {
 	BrowseNum   int    `json:"browse_num"`               // 浏览数
 	IsLike      int    `json:"is_like"`                  // 是否点赞 1 点赞 0 未点赞
 	ShareNum    int    `json:"share_num"`                // 分享数
+	Status      int    `json:"status"`                   // 0：审核中，1：审核通过 2：审核不通过 3：逻辑删除
 	//IsCollect   int    `json:"is_collect"`               // 是否收藏 1 收藏 0 未收藏
 }
 

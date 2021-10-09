@@ -40,3 +40,21 @@ func (m *PostingModel) GetPostList(offset, size int) ([]*PostDetailInfo, error) 
 func (m *PostingModel) UpdatePostInfo(id int64, cols string) (int64, error) {
 	return m.Engine.Where("id=?", id).Cols(cols).Update(m.Posting)
 }
+
+const (
+	GET_APPLY_CREAM_LIST = " SELECT p.* FROM posting_apply_cream AS pac LEFT JOIN posting_info AS p ON pac.post_id=p.id " +
+		"WHERE pac.status=0 ORDER BY pac.id DESC LIMIT ?,?"
+)
+func (m *PostingModel) GetApplyCreamList(offset, size int) ([]*PostDetailInfo, error) {
+	var list []*PostDetailInfo
+	if err := m.Engine.SQL(GET_APPLY_CREAM_LIST, offset, size).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+// 更新申精状态
+func (m *PostingModel) UpdateApplyCreamStatus(id int64) (int64, error) {
+	return m.Engine.Where("id=?", id).Cols("status").Update(m.ApplyCream)
+}

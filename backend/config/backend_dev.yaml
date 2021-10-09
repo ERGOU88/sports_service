@@ -10,6 +10,14 @@ mysql:
       - root:bluetrans888@tcp(10.1.3.12:3306)/sports_service?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
+  venue:
+    master: root:bluetrans888@tcp(10.1.3.12:3306)/venue?charset=utf8mb4
+    slave:
+      - root:bluetrans888@tcp(10.1.3.12:3306)/venue?charset=utf8mb4
+      - root:bluetrans888@tcp(10.1.3.12:3306)/venue?charset=utf8mb4
+      - root:bluetrans888@tcp(10.1.3.12:3306)/venue?charset=utf8mb4
+    maxIdle: 128
+    maxActive: 128
 
 redis:
   main:

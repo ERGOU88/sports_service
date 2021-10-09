@@ -285,6 +285,15 @@ func (svc *PostModule) PostSetting(param *mposting.SettingParam) int {
 	case 1:
 		cols = "is_cream"
 		svc.post.Posting.IsCream = param.ActionType
+		svc.post.ApplyCream.Status = param.ActionType
+		if param.ActionType == 0 {
+			svc.post.ApplyCream.Status = 2
+		}
+
+		if _, err := svc.post.UpdateApplyCreamStatus(param.Id); err != nil {
+			log.Log.Errorf("post_trace: update apply cream status fail, err:%s", err)
+			return errdef.POST_SETTING_FAIL
+		}
 	case 2:
 		cols = "is_top"
 		svc.post.Posting.IsTop = param.ActionType
@@ -296,4 +305,28 @@ func (svc *PostModule) PostSetting(param *mposting.SettingParam) int {
 	}
 
 	return errdef.SUCCESS
+}
+
+// 申精列表
+func (svc *PostModule) GetApplyCreamList(page, size int) (int, []*mposting.PostDetailInfo) {
+	offset := (page - 1) * size
+	list, err := svc.post.GetApplyCreamList(offset, size)
+	if err != nil {
+		return errdef.POST_APPLY_CREAM_LIST_FAIL, nil
+	}
+
+	for _, item := range list {
+		item.Topics, err = svc.post.GetPostTopic(fmt.Sprint(item.Id))
+		if item.Topics == nil || err != nil {
+			item.Topics = []*models.PostingTopic{}
+		}
+
+		sectionInfo, err := svc.community.GetSectionInfo(fmt.Sprint(item.SectionId))
+		if err == nil {
+			item.SectionName = sectionInfo.SectionName
+		}
+
+	}
+
+	return errdef.SUCCESS, list
 }

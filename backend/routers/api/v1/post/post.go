@@ -95,3 +95,12 @@ func PostSetting(c *gin.Context) {
 	svc := cpost.New(c)
 	reply.Response(http.StatusOK, svc.PostSetting(param))
 }
+
+func ApplyCreamList(c *gin.Context) {
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	reply := errdef.New(c)
+	svc := cpost.New(c)
+	code, list := svc.GetApplyCreamList(page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}

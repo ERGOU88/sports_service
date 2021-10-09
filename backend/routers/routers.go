@@ -2,6 +2,8 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	"sports_service/server/backend/routers/api/v1/venue"
+	"sports_service/server/backend/routers/api/v1/information"
 	"sports_service/server/backend/routers/api/v1/comment"
 	"sports_service/server/backend/routers/api/v1/doc"
 	"sports_service/server/backend/routers/api/v1/post"
@@ -43,4 +45,8 @@ func InitRouters(engine *gin.Engine) {
 	notify.Router(engine)
 	// 帖子模块
 	post.Router(engine)
+	// 资讯模块
+	information.Router(engine)
+	// 场馆模块
+	venue.Router(engine)
 }
