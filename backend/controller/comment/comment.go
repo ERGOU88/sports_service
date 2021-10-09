@@ -9,6 +9,8 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mbarrage"
 	"sports_service/server/models/mcomment"
+	"sports_service/server/models/minformation"
+	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	"strconv"
@@ -21,6 +23,8 @@ type CommentModule struct {
 	video       *mvideo.VideoModel
 	barrage     *mbarrage.BarrageModel
 	user        *muser.UserModel
+	post        *mposting.PostingModel
+	information *minformation.InformationModel
 }
 
 func New(c *gin.Context) CommentModule {
@@ -32,6 +36,8 @@ func New(c *gin.Context) CommentModule {
 		video: mvideo.NewVideoModel(socket),
 		barrage: mbarrage.NewBarrageModel(socket),
 		user: muser.NewUserModel(socket),
+		post: mposting.NewPostingModel(socket),
+		information: minformation.NewInformationModel(socket),
 		engine: socket,
 	}
 }
@@ -95,7 +101,102 @@ func (svc *CommentModule) GetVideoComments(queryId, sortType, condition string, 
 
 // 获取视频评论总数
 func (svc *CommentModule) GetCommentTotal(commentType int) int64 {
-	return svc.comment.GetVideoCommentTotal()
+	switch commentType {
+	case consts.COMMENT_TYPE_VIDEO:
+		return svc.comment.GetVideoCommentTotal()
+	case consts.COMMENT_TYPE_POST:
+		return svc.comment.GetPostCommentTotal()
+	case consts.COMMENT_TYPE_INFORMATION:
+		return svc.comment.GetInformationCommentTotal()
+	}
+
+	return 0
+}
+
+// 获取后台帖子评论列表
+func (svc *CommentModule) GetPostComments(queryId, sortType, condition string, page, size int) ([]*mcomment.PostingCommentInfo, int64) {
+	var (
+		total          int64
+		userId, postId string
+	)
+	if queryId != "" {
+		if _, err := strconv.Atoi(queryId); err != nil {
+			return []*mcomment.PostingCommentInfo{}, total
+		}
+
+		// 查询用户是否存在
+		user := svc.user.FindUserByUserid(queryId)
+		if user != nil {
+			userId = user.UserId
+			total = svc.GetCommentTotalByUserId(userId)
+		}
+
+		// 查询视频是否存在
+		post, err := svc.post.GetPostById(queryId)
+		if post != nil && err == nil {
+			postId = fmt.Sprint(post.Id)
+			total = svc.GetCommentTotalByPostId(postId)
+		}
+
+		// 都不存在
+		if user == nil && post == nil  {
+			return []*mcomment.PostingCommentInfo{}, total
+		}
+
+	} else {
+		total = svc.GetCommentTotal(consts.COMMENT_TYPE_POST)
+	}
+
+	offset := (page - 1) * size
+	list := svc.comment.GetPostCommentsBySort(userId, postId, sortType, condition, offset, size)
+	if len(list) == 0 {
+		return []*mcomment.PostingCommentInfo{}, total
+	}
+
+	return list, total
+}
+
+// 获取后台资讯评论列表
+func (svc *CommentModule) GetInformationComments(queryId, sortType, condition string, page, size int) ([]*mcomment.InformationCommentInfo, int64) {
+	var (
+		total int64
+		userId, newsId string
+	)
+	if queryId != "" {
+		if _, err := strconv.Atoi(queryId); err != nil {
+			return []*mcomment.InformationCommentInfo{}, total
+		}
+
+		// 查询用户是否存在
+		user := svc.user.FindUserByUserid(queryId)
+		if user != nil {
+			userId = user.UserId
+			total = svc.GetCommentTotalByUserId(userId)
+		}
+
+		// 查询视频是否存在
+		ok, err := svc.information.GetInformationById(queryId)
+		if ok && err != nil {
+			newsId = fmt.Sprint(svc.information.Information.Id)
+			total = svc.GetCommentTotalByNewsId(newsId)
+		}
+
+		// 都不存在
+		if user == nil && svc.information.Information == nil  {
+			return []*mcomment.InformationCommentInfo{}, total
+		}
+
+	} else {
+		total = svc.GetCommentTotal(consts.COMMENT_TYPE_INFORMATION)
+	}
+
+	offset := (page - 1) * size
+	list := svc.comment.GetInformationCommentsBySort(userId, newsId, sortType, condition, offset, size)
+	if len(list) == 0 {
+		return []*mcomment.InformationCommentInfo{}, total
+	}
+
+	return list, total
 }
 
 // 通过用户id获取评论总数
@@ -108,7 +209,69 @@ func (svc *CommentModule) GetCommentTotalByVideoId(videoId string) int64 {
 	return svc.comment.GetCommentTotalByVideoId(videoId)
 }
 
-// 删除视频评论（物理删除）
+// 通过帖子id获取评论总数
+func (svc *CommentModule) GetCommentTotalByPostId(postId string) int64 {
+	return svc.comment.GetCommentTotalByVideoId(postId)
+}
+
+// 通过资讯id获取评论总数
+func (svc *CommentModule) GetCommentTotalByNewsId(newsId string) int64 {
+	return svc.comment.GetCommentTotalByNewsId(newsId)
+}
+
+// 删除评论
+func (svc *CommentModule) DelComment(param *mcomment.DelCommentParam) int {
+	switch param.CommentType {
+	case 0:
+		return svc.DelVideoComments(param)
+	case 1:
+		return svc.DelPostComments(param)
+	case 2:
+		return svc.DelInformationComments(param)
+	}
+
+	return errdef.INVALID_PARAMS
+}
+
+// 删除资讯评论
+func (svc *CommentModule) DelInformationComments(param *mcomment.DelCommentParam) int {
+	comment := svc.comment.GetInformationCommentById(param.CommentId)
+	if comment == nil {
+		return errdef.COMMENT_NOT_EXISTS
+	}
+
+	// 0 逻辑删除
+	comment.Status = 0
+	condition := fmt.Sprintf("id=%d", comment.Id)
+	cols := "status"
+	affected, err := svc.comment.UpdateInformationCommentInfo(condition, cols)
+	if affected != 1 || err != nil {
+		return errdef.COMMENT_DELETE_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
+// 删除帖子评论
+func (svc *CommentModule) DelPostComments(param *mcomment.DelCommentParam) int {
+	comment := svc.comment.GetPostCommentById(param.CommentId)
+	if comment == nil {
+		return errdef.COMMENT_NOT_EXISTS
+	}
+
+	// 0 逻辑删除
+	comment.Status = 0
+	condition := fmt.Sprintf("id=%d", comment.Id)
+	cols := "status"
+	affected, err := svc.comment.UpdatePostCommentInfo(condition, cols)
+	if affected != 1 || err != nil {
+		return errdef.COMMENT_DELETE_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
+// 删除视频评论（软删除）
 func (svc *CommentModule) DelVideoComments(param *mcomment.DelCommentParam) int {
 	comment := svc.comment.GetVideoCommentById(param.CommentId)
 	if comment == nil {
@@ -119,7 +282,7 @@ func (svc *CommentModule) DelVideoComments(param *mcomment.DelCommentParam) int 
 	comment.Status = 0
 	condition := fmt.Sprintf("id=%d", comment.Id)
 	cols := "status"
-	affected, err := svc.comment.UpdateCommentInfo(condition, cols)
+	affected, err := svc.comment.UpdateVideoCommentInfo(condition, cols)
 	if affected != 1 || err != nil {
 		return errdef.COMMENT_DELETE_FAIL
 	}
@@ -154,6 +317,29 @@ func (svc *CommentModule) recursionComments(ids *[]string, commentIds *[]string)
 	}
 }
 
+// 弹幕列表
+func (svc *CommentModule) GetBarrageList(barrageType string, page, size int) []*mbarrage.VideoBarrageInfo {
+	switch barrageType {
+	case "0":
+		return svc.GetVideoBarrageList(page, size)
+	case "1":
+		return svc.GetLiveBarrageList(page, size)
+	}
+
+	return []*mbarrage.VideoBarrageInfo{}
+}
+
+// 获取直播弹幕列表
+func (svc *CommentModule) GetLiveBarrageList(page, size int) []*mbarrage.VideoBarrageInfo {
+	offset := (page - 1) * size
+	list := svc.barrage.GetLiveBarrageList(offset, size)
+	if len(list) == 0 {
+		return []*mbarrage.VideoBarrageInfo{}
+	}
+
+	return list
+}
+
 // 获取视频弹幕列表
 func (svc *CommentModule) GetVideoBarrageList(page, size int) []*mbarrage.VideoBarrageInfo {
 	offset := (page - 1) * size
@@ -170,8 +356,8 @@ func (svc *CommentModule) GetVideoBarrageList(page, size int) []*mbarrage.VideoB
 }
 
 // 获取视频弹幕总数（管理后台）
-func (svc *CommentModule) GetVideoBarrageTotal() int64 {
-	return svc.barrage.GetVideoBarrageTotal()
+func (svc *CommentModule) GetVideoBarrageTotal(barrageType string) int64 {
+	return svc.barrage.GetVideoBarrageTotal(barrageType)
 }
 
 // 删除视频弹幕

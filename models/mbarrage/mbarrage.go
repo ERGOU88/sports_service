@@ -74,12 +74,13 @@ type VideoBarrageInfo struct {
   Location         int    `json:"location" example:"0"`
   SendTime         int64  `json:"send_time" example:"1600000000"`
   Title            string `json:"title" example:"标题"`
-  VideoAddr        string `json:"video_addr" example:"视频地址"`
+  VideoAddr        string `json:"video_addr,omitempty" example:"视频地址"`
 }
 
 // 后台分页获取 视频弹幕 列表
 func (m *BarrageModel) GetVideoBarrageList(offset, size int) []*VideoBarrageInfo {
-  sql := "SELECT vb.*, v.title, v.video_addr FROM video_barrage AS vb LEFT JOIN videos AS v ON vb.video_id=v.video_id GROUP BY vb.id LIMIT ?, ?"
+  sql := "SELECT vb.*, v.title, v.video_addr FROM video_barrage AS vb LEFT JOIN videos AS v ON vb.video_id=v.video_id " +
+  	"WHERE vb.barrage_type=0 GROUP BY vb.id LIMIT ?, ?"
   var list []*VideoBarrageInfo
   if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
       log.Log.Errorf("barrage_trace: get video barrage list by sort, err:%s", err)
@@ -89,9 +90,20 @@ func (m *BarrageModel) GetVideoBarrageList(offset, size int) []*VideoBarrageInfo
   return list
 }
 
+// 后台分页获取 直播弹幕 列表
+func (m *BarrageModel) GetLiveBarrageList(offset, size int) []*VideoBarrageInfo {
+	var list []*VideoBarrageInfo
+	if err := m.Engine.Where("barrage_type=1").Limit(size, offset).Find(&list); err != nil {
+		return []*VideoBarrageInfo{}
+	}
+
+	return list
+}
+
 // 后台删除弹幕请求参数
 type DelBarrageParam struct {
-  Id      string     `binding:"required" json:"id"`       // 弹幕id
+  Id           string     `binding:"required" json:"id"`       // 弹幕id
+  BarrageType  int32      `json:"barrage_type"`                // 弹幕类型
 }
 const (
   DELETE_VIDEO_BARRAGE = "DELETE FROM `video_barrage` WHERE `id`=?"
@@ -106,8 +118,8 @@ func (m *BarrageModel) DelVideoBarrage(id string) error {
 }
 
 // 获取弹幕总数
-func (m *BarrageModel) GetVideoBarrageTotal() int64 {
-  count, err := m.Engine.Where("barrage_type=0").Count(&models.VideoBarrage{})
+func (m *BarrageModel) GetVideoBarrageTotal(barrageType string) int64 {
+  count, err := m.Engine.Where("barrage_type=?", barrageType).Count(&models.VideoBarrage{})
   if err != nil {
     log.Log.Errorf("comment_trace: get total barrage err:%s", err)
     return 0

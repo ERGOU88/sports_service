@@ -200,6 +200,16 @@ func (m *PostingModel) GetPostById(id string) (*models.PostingInfo, error) {
 	return m.Posting, nil
 }
 
+// 获取用户总发布数 (审核通过的帖子)
+func (m *PostingModel) GetTotalPublish(userId string) int64 {
+	total, err := m.Engine.Where("user_id=? AND status=1", userId).Count(&models.PostingInfo{})
+	if err != nil {
+		return 0
+	}
+
+	return total
+}
+
 // 获取帖子所属话题 [1对多]
 func (m *PostingModel) GetPostTopic(postId string) ([]*models.PostingTopic, error) {
 	var list []*models.PostingTopic

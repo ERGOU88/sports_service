@@ -25,8 +25,8 @@ func VideoCommentList(c *gin.Context) {
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
-// 删除视频评论
-func DelVideoComments(c *gin.Context) {
+// 删除评论
+func DelComments(c *gin.Context) {
 	reply := errdef.New(c)
 	param := new(mcomment.DelCommentParam)
 	if err := c.BindJSON(param); err != nil {
@@ -35,23 +35,24 @@ func DelVideoComments(c *gin.Context) {
 	}
 
 	svc := comment.New(c)
-	syscode := svc.DelVideoComments(param)
+	syscode := svc.DelComment(param)
 	reply.Response(http.StatusOK, syscode)
 }
 
-// 视频弹幕列表
-func VideoBarrageList(c *gin.Context) {
+// 弹幕列表
+func BarrageList(c *gin.Context) {
   reply := errdef.New(c)
   page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+  barrageType := c.DefaultQuery("barrage_type", "0")
 
   svc := comment.New(c)
-  list := svc.GetVideoBarrageList(page, size)
+  list := svc.GetBarrageList(barrageType, page, size)
   reply.Data["list"] = list
-  reply.Data["total"] = svc.GetVideoBarrageTotal()
+  reply.Data["total"] = svc.GetVideoBarrageTotal(barrageType)
   reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
-// 删除视频弹幕
+// 删除视频/直播 弹幕
 func DelVideoBarrage(c *gin.Context) {
   reply := errdef.New(c)
   param := new(mbarrage.DelBarrageParam)
@@ -67,4 +68,33 @@ func DelVideoBarrage(c *gin.Context) {
   }
 
   reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// 获取帖子评论列表（后台）
+func PostCommentList(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	condition := c.Query("condition")
+	sortType := c.Query("sort_type")
+	queryId := c.Query("query_id")
+
+	svc := comment.New(c)
+	list, total := svc.GetPostComments(queryId, sortType, condition, page, size)
+	reply.Data["list"] = list
+	reply.Data["total"] = total
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+func InformationCommentList(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	condition := c.Query("condition")
+	sortType := c.Query("sort_type")
+	queryId := c.Query("query_id")
+
+	svc := comment.New(c)
+	list, total := svc.GetPostComments(queryId, sortType, condition, page, size)
+	reply.Data["list"] = list
+	reply.Data["total"] = total
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
