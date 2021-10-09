@@ -320,3 +320,17 @@ func (svc *VideoModule) DelVideoSubareaConf(id int) int {
 
   return errdef.SUCCESS
 }
+
+func (svc *VideoModule) GetVideoSubareaList() (int, []*models.VideoSubarea) {
+  list, err := svc.video.GetSubAreaList()
+  if err != nil {
+    log.Log.Errorf("video_trace: get video subarea fail, err:%s", err)
+    return errdef.ERROR, []*models.VideoSubarea{}
+  }
+
+  if list == nil {
+    return errdef.SUCCESS, []*models.VideoSubarea{}
+  }
+
+  return errdef.SUCCESS, list
+}

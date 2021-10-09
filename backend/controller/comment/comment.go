@@ -7,6 +7,7 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/backend/errdef"
 	"sports_service/server/global/consts"
+	"sports_service/server/models"
 	"sports_service/server/models/mbarrage"
 	"sports_service/server/models/mcomment"
 	"sports_service/server/models/minformation"
@@ -323,18 +324,41 @@ func (svc *CommentModule) GetBarrageList(barrageType string, page, size int) []*
 	case "0":
 		return svc.GetVideoBarrageList(page, size)
 	case "1":
-		return svc.GetLiveBarrageList(page, size)
+		list := svc.GetLiveBarrageList(page, size)
+		if len(list) == 0 {
+			return []*mbarrage.VideoBarrageInfo{}
+		}
+
+		res := make([]*mbarrage.VideoBarrageInfo, len(list))
+		for index, item := range list {
+			info := &mbarrage.VideoBarrageInfo{
+				Id: item.Id,
+				VideoId: item.VideoId,
+				VideoCurDuration: item.VideoCurDuration,
+				Content: item.Content,
+				UserId: item.UserId,
+				Color: item.Color,
+				Font: item.Font,
+				BarrageType: item.BarrageType,
+				Location: item.Location,
+				SendTime: item.SendTime,
+			}
+
+			res[index] = info
+		}
+
+		return res
 	}
 
 	return []*mbarrage.VideoBarrageInfo{}
 }
 
 // 获取直播弹幕列表
-func (svc *CommentModule) GetLiveBarrageList(page, size int) []*mbarrage.VideoBarrageInfo {
+func (svc *CommentModule) GetLiveBarrageList(page, size int) []*models.VideoBarrage {
 	offset := (page - 1) * size
 	list := svc.barrage.GetLiveBarrageList(offset, size)
 	if len(list) == 0 {
-		return []*mbarrage.VideoBarrageInfo{}
+		return []*models.VideoBarrage{}
 	}
 
 	return list

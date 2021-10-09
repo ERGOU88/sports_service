@@ -93,7 +93,7 @@ func InformationCommentList(c *gin.Context) {
 	queryId := c.Query("query_id")
 
 	svc := comment.New(c)
-	list, total := svc.GetPostComments(queryId, sortType, condition, page, size)
+	list, total := svc.GetInformationComments(queryId, sortType, condition, page, size)
 	reply.Data["list"] = list
 	reply.Data["total"] = total
 	reply.Response(http.StatusOK, errdef.SUCCESS)

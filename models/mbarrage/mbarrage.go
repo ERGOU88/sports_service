@@ -73,7 +73,7 @@ type VideoBarrageInfo struct {
   BarrageType      int    `json:"barrage_type" example:"0"`
   Location         int    `json:"location" example:"0"`
   SendTime         int64  `json:"send_time" example:"1600000000"`
-  Title            string `json:"title" example:"标题"`
+  Title            string `json:"title,omitempty" example:"标题"`
   VideoAddr        string `json:"video_addr,omitempty" example:"视频地址"`
 }
 
@@ -91,10 +91,10 @@ func (m *BarrageModel) GetVideoBarrageList(offset, size int) []*VideoBarrageInfo
 }
 
 // 后台分页获取 直播弹幕 列表
-func (m *BarrageModel) GetLiveBarrageList(offset, size int) []*VideoBarrageInfo {
-	var list []*VideoBarrageInfo
+func (m *BarrageModel) GetLiveBarrageList(offset, size int) []*models.VideoBarrage {
+	var list []*models.VideoBarrage
 	if err := m.Engine.Where("barrage_type=1").Limit(size, offset).Find(&list); err != nil {
-		return []*VideoBarrageInfo{}
+		return []*models.VideoBarrage{}
 	}
 
 	return list

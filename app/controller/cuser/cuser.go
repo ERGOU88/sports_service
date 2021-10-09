@@ -403,10 +403,11 @@ func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
 
 			kabaw.VipName = fmt.Sprintf("%s%s", svc.venue.Venue.VenueName, "会员")
 			if ok {
-				kabaw.VipImage = svc.venue.Product.Image
+				//kabaw.VipImage = svc.venue.Product.Image
 				kabaw.VipName = svc.venue.Product.ProductName
 			}
 
+			kabaw.VipImage = consts.VENUE_VIP_IMAGE
 			kabaw.IsVip = true
 
 			kabaw.StartTm = svc.venue.Vip.StartTm

@@ -41,7 +41,7 @@ func New(c *gin.Context) InformationModule {
 // 获取资讯列表
 func (svc *InformationModule) GetInformationList(page, size int) (int, []*minformation.InformationResp) {
 	offset := (page - 1) * size
-	condition := ""
+	condition := "status != 3"
 
 	list, err := svc.information.GetInformationList(condition, offset, size)
 	if err != nil {
