@@ -16,6 +16,7 @@ import (
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/mnotify"
 	"sports_service/server/models/morder"
+	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
 	"sports_service/server/models/mvideo"
@@ -43,6 +44,7 @@ type UserModule struct {
 	configure   *mconfigure.ConfigModel
 	venue       *mvenue.VenueModel
 	order       *morder.OrderModel
+	post        *mposting.PostingModel
 }
 
 func New(c *gin.Context) UserModule {
@@ -60,6 +62,7 @@ func New(c *gin.Context) UserModule {
 		like: mlike.NewLikeModel(socket),
 		collect: mcollect.NewCollectModel(socket),
 		video: mvideo.NewVideoModel(socket),
+		post: mposting.NewPostingModel(socket),
 		sms: sms.NewSmsModel(),
 		configure: mconfigure.NewConfigModel(socket),
 		venue: mvenue.NewVenueModel(venueSocket),
@@ -274,8 +277,8 @@ func (svc *UserModule) GetUserZoneInfo(userId, toUserId string) (int, *muser.Use
 		TotalCollect: svc.collect.GetUserTotalCollect(toUserId),
 		// 用户点赞的总数
 		TotalLikes: svc.like.GetUserTotalLikes(toUserId),
-		// 用户发布的视频总数（已审核）
-		TotalPublish: svc.video.GetTotalPublish(toUserId),
+		// 用户发布的作品总数（已审核的作品 视频+帖子）
+		TotalPublish: svc.video.GetTotalPublish(toUserId) + svc.post.GetTotalPublish(toUserId),
 	}
 
 	return errdef.SUCCESS, resp, zoneRes

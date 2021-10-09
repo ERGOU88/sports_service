@@ -16,6 +16,7 @@ import (
 	"sports_service/server/util"
 	"strconv"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -77,7 +78,7 @@ func (svc *VenueModule) GetHomePageInfo(venueId int64) (int, *VenueInfoRes, []*m
 		Telephone: venueInfo.Telephone,
 		BusinessHours: venueInfo.BusinessHours,
 		Services: venueInfo.Services,
-		Status: venueInfo.ServiceStatus,
+		Status: svc.IsOpen(time.Now().Format(consts.FORMAT_DATE), venueInfo.BusinessHours),
 	}
 
 	if err = util.JsonFast.UnmarshalFromString(venueInfo.VenueImages, &res.VenueImages); err != nil {
@@ -105,6 +106,26 @@ func (svc *VenueModule) GetHomePageInfo(venueId int64) (int, *VenueInfoRes, []*m
 	}
 
 	return errdef.SUCCESS, res, productInfo
+}
+
+// 是否营业 0 表示营业中
+func (svc *VenueModule) IsOpen(date, timeNode string) int {
+	nodes := strings.Split(timeNode, "-")
+	if len(nodes) == 2 {
+		now := time.Now().Unix()
+		// 场馆营业 开始时间 及 结束时间
+		start := fmt.Sprintf("%s %s", date, nodes[0])
+		end := fmt.Sprintf("%s %s", date, nodes[1])
+		ts := new(util.TimeS)
+		startTm := ts.GetTimeStrOrStamp(start, "YmdHi")
+		endTm := ts.GetTimeStrOrStamp(end, "YmdHi")
+		// 当前时间 > 开始时间 且 < 结束时间 营业中
+		if now > startTm.(int64) && now < endTm.(int64) {
+			return 0
+		}
+	}
+
+	return 1
 }
 
 // 获取场馆信息
