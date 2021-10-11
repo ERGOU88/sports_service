@@ -600,7 +600,7 @@ func transCodeCompleteEvent(event *v20180717.EventContent) (string, int, error) 
       list = append(list, playInfo)
 
       //if video.VideoDuration == 0 {
-      //  video.VideoDuration = int(*info.TranscodeTask.Output.Duration * 1000)
+      //  video.VideoDuration = int(*info.TranscodeTask.Output.Condition * 1000)
       //}
 
       duration = int(*info.TranscodeTask.Output.Duration * 1000)
@@ -630,7 +630,7 @@ func transCodeCompleteEvent(event *v20180717.EventContent) (string, int, error) 
       list = append(list, playInfo)
 
       //if video.VideoDuration == 0 {
-      //  video.VideoDuration = int(*event.ProcedureStateChangeEvent.MetaData.Duration * 1000)
+      //  video.VideoDuration = int(*event.ProcedureStateChangeEvent.MetaData.Condition * 1000)
       //}
       duration = int(*event.ProcedureStateChangeEvent.MetaData.Duration * 1000)
 

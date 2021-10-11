@@ -1,14 +1,14 @@
 package consts
 
-type Duration string
+type Condition string
 // 视频时长
 // 0 表示没有限制 1 表示 1～5分钟  2：5～10分钟 3：10～30分钟 4：30分钟以上
 const (
-	UNLIMITED_DURATION  Duration = "0"
-	ONE_TO_FIVE_MINUTES Duration = "1"
-	FIVE_TO_TEN_MINUTES Duration = "2"
-	TEN_TO_HALF_HOUR    Duration = "3"
-	MORE_THAN_HALF_HOUR Duration = "4"
+	UNLIMITED_DURATION  Condition = "0"
+	ONE_TO_FIVE_MINUTES Condition = "1"
+	FIVE_TO_TEN_MINUTES Condition = "2"
+	TEN_TO_HALF_HOUR    Condition = "3"
+	MORE_THAN_HALF_HOUR Condition = "4"
 )
 
 
