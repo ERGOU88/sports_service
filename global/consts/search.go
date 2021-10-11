@@ -30,8 +30,8 @@ const (
 
 // 综合搜索用户默认展示20条
 const (
-  DEFAULT_SEARCH_USER_PAGE = 1
-  DEFAULT_SEARCH_USER_SIZE = 20
+	DEFAULT_SEARCH_USER_PAGE = 1
+	DEFAULT_SEARCH_USER_SIZE = 20
 )
 
 // 综合搜索帖子默认展示3条
