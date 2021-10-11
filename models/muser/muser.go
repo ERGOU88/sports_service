@@ -575,3 +575,13 @@ func (m *UserModel) TokenValid(account, password, hashcode string) (b bool) {
 	return md == hashcode
 }
 
+// 添加活跃记录
+func (m *UserModel) AddActivityRecord(userId string, now int) (int64, error) {
+	record := &models.UserActivityRecord{
+		UserId: userId,
+		CreateAt: now,
+		UpdateAt: now,
+	}
+
+	return m.Engine.InsertOne(record)
+}

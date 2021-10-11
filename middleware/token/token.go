@@ -9,6 +9,8 @@ import (
 	"sports_service/server/models/muser"
 	"strings"
 	"sports_service/server/global/app/log"
+	"time"
+	"fmt"
 )
 
 // token校验
@@ -75,9 +77,27 @@ func TokenAuth() gin.HandlerFunc {
 			if err := model.SaveUserToken(userid, auth); err != nil {
 				log.Log.Errorf("token_trace: save user token err:%s", err)
 			}
+
+			// todo:
+			go RecordInfo(model, userid)
 		}
 
 		c.Set(consts.USER_ID, userid)
 		c.Next()
+	}
+}
+
+func RecordInfo(model *muser.UserModel, userid string) {
+	condition := fmt.Sprintf("user_id=%s", userid)
+	cols := "last_login_time, update_at"
+	now := int(time.Now().Unix())
+	model.User.LastLoginTime = now
+	model.User.UpdateAt = now
+	if _, err := model.UpdateUserInfos(condition, cols); err != nil {
+		log.Log.Errorf("token_trace: update login time fail, userId:%s, err:%s", userid, err)
+	}
+
+	if _, err := model.AddActivityRecord(userid, now); err != nil {
+		log.Log.Errorf("token_trace: record activity user fail, userId:%s, err:%s", userid, err)
 	}
 }
