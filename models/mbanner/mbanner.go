@@ -23,6 +23,7 @@ type AddBannerParams struct {
 	Title     string `json:"title"`
 	Type      int    `json:"type"`
 	JumpType  int    `json:"jump_type"`
+	VideoAddr string `json:"video_addr"`
 }
 
 // 后台更新banner请求参数

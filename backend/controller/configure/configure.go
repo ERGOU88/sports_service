@@ -58,6 +58,7 @@ func (svc *ConfigModule) AddBanner(params *mbanner.AddBannerParams) int {
 	svc.banner.Banners.EndTime = params.EndTime
 	svc.banner.Banners.Sortorder = params.Sortorder
 	svc.banner.Banners.Type = params.Type
+	svc.banner.Banners.VideoAddr = params.VideoAddr
 	// todo: 后台可选跳转形式
 	svc.banner.Banners.JumpType = params.JumpType
 	if err := svc.banner.AddBanner(); err != nil {
