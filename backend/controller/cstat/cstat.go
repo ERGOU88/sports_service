@@ -45,7 +45,7 @@ func New(c *gin.Context) StatModule {
 }
 
 // 管理后台首页统计数据
-func (svc *StatModule) GetHomePageInfo() (int, mstat.HomePageInfo) {
+func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, mstat.HomePageInfo) {
 	today := time.Now().Format(consts. FORMAT_DATE)
 	// 日活
 	dau, err := svc.stat.GetDAUByDate(today)
@@ -103,6 +103,7 @@ func (svc *StatModule) GetHomePageInfo() (int, mstat.HomePageInfo) {
 	}
 
 	minDate := time.Now().AddDate(0, 0, -100).Format(consts.FORMAT_DATE)
+	// 次日留存率
 	homepageInfo.NextDayRetentionRate, err = svc.stat.GetUserRetentionRate("", minDate, today)
 	if err != nil {
 		log.Log.Errorf("stat_trace: get user retentionRate fail, err:%s", err)
@@ -110,6 +111,42 @@ func (svc *StatModule) GetHomePageInfo() (int, mstat.HomePageInfo) {
 	}
 
 	minDate = time.Now().AddDate(0, 0, -100).Format(consts.FORMAT_DATE)
-	homepageInfo.RetentionRate, err = svc.stat.GetUserRetentionRate("1", minDate, today)
+	maxDate := today
+	if queryMinDate != "" && queryMaxDate != "" {
+		minDate = queryMinDate
+		maxDate = queryMaxDate
+	}
+
+	// 留存率详情
+	homepageInfo.RetentionRate, err = svc.stat.GetUserRetentionRate("1", minDate, maxDate)
 	return errdef.SUCCESS, homepageInfo
+}
+
+// 视频分区统计 [发布占比]
+func (svc *StatModule) GetVideoSubareaStat() (int, map[string]interface{}) {
+	//subareaStat, err := svc.stat.GetVideoSubareaStat()
+	//if err != nil {
+	//	log.Log.Errorf("stat_trace: get video subarea stat fail, err:%s", err)
+	//	return errdef.ERROR, nil
+	//}
+
+	//total, err := svc.stat.GetVideoTotal()
+	//if err != nil {
+	//	log.Log.Errorf("stat_trace: get video total fail, err:%s", err)
+	//	return errdef.ERROR, nil
+	//}
+
+	mp := make(map[string]interface{}, 0)
+	mp["title"] = "视频各板块发布数据"
+
+	//for _, item := range subareaStat {
+		//item.Rate = float64(item.Count) / float64(total)
+	//}
+
+	return errdef.SUCCESS, mp
+}
+
+// 帖子分区统计 [发布占比]
+func (svc *StatModule) GetPostSectionStat() {
+
 }

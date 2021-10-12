@@ -9,6 +9,8 @@ func Router(engine *gin.Engine) {
 	{
 		// 首页统计数据
 		stat.GET("/homepage", HomePageInfo)
+		// 生态数据
+		stat.GET("/ecological/info", EcologicalInfo)
 	}
 }
 

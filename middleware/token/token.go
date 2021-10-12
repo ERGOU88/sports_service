@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/garyburd/redigo/redis"
 	"net/http"
+	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/consts"
 	"sports_service/server/models/muser"
@@ -79,7 +80,7 @@ func TokenAuth() gin.HandlerFunc {
 			}
 
 			// todo:
-			go RecordInfo(model, userid)
+			go RecordInfo(userid)
 		}
 
 		c.Set(consts.USER_ID, userid)
@@ -87,17 +88,21 @@ func TokenAuth() gin.HandlerFunc {
 	}
 }
 
-func RecordInfo(model *muser.UserModel, userid string) {
-	condition := fmt.Sprintf("user_id=%s", userid)
-	cols := "last_login_time, update_at"
+func RecordInfo(userid string) {
+	session := dao.AppEngine.NewSession()
+	defer session.Close()
+	umodel := muser.NewUserModel(session)
+	condition := fmt.Sprintf("user_id='%s'", userid)
+	cols := "last_login_time"
 	now := int(time.Now().Unix())
-	model.User.LastLoginTime = now
-	model.User.UpdateAt = now
-	if _, err := model.UpdateUserInfos(condition, cols); err != nil {
+	umodel.User.LastLoginTime = now
+	if _, err := umodel.UpdateUserInfos(condition, cols); err != nil {
 		log.Log.Errorf("token_trace: update login time fail, userId:%s, err:%s", userid, err)
 	}
 
-	if _, err := model.AddActivityRecord(userid, now); err != nil {
+	if _, err := umodel.AddActivityRecord(userid, now); err != nil {
 		log.Log.Errorf("token_trace: record activity user fail, userId:%s, err:%s", userid, err)
 	}
+
+	return
 }

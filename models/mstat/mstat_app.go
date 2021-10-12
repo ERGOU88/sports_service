@@ -10,10 +10,12 @@ type StatModel struct {
 }
 
 type Stat struct {
-	Sum    int64   `json:"sum"`
-	Count  int64   `json:"count"`
-	Avg    int64   `json:"avg"`
-	Dt     string  `json:"dt"`
+	Sum     int64   `json:"sum"`
+	Count   int64   `json:"count"`
+	Avg     int64   `json:"avg"`
+	Dt      string  `json:"dt"`
+	Subarea int64   `json:"subarea,omitempty"`
+	Rate    string  `json:"rate,omitempty"`
 }
 
 // 管理后台首页统计数据
@@ -156,5 +158,23 @@ func (m *StatModel) GetUserRetentionRate(queryType, minDate, maxDate string) ([]
 	}
 
 	return rateList, nil
+}
+
+const (
+	GET_VIDEO_SUBAREA_STAT = "SELECT subarea, count(1) AS count FROM videos WHERE status=1 GROUP BY subarea"
+)
+// 视频分区统计 [发布占比]
+func (m *StatModel) GetVideoSubareaStat() ([]Stat, error) {
+	var stat []Stat
+	if err := m.Engine.SQL(GET_VIDEO_SUBAREA_STAT).Find(&stat); err != nil {
+		return stat, err
+	}
+
+	return stat, nil
+}
+
+// 获取视频总数 [已审核的视频]
+func (m *StatModel) GetVideoTotal() (int64, error) {
+	return m.Engine.Where("status=1").Count(&models.Videos{})
 }
 

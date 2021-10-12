@@ -10,8 +10,13 @@ import (
 func HomePageInfo(c *gin.Context) {
 	reply := errdef.New(c)
 	svc := cstat.New(c)
-	code, detail := svc.GetHomePageInfo()
+	minDate := c.Query("min_date")
+	maxDate := c.Query("max_date")
+	code, detail := svc.GetHomePageInfo(minDate, maxDate)
 	reply.Data["detail"] = detail
 	reply.Response(http.StatusOK, code)
+}
+
+func EcologicalInfo(c *gin.Context) {
 
 }
