@@ -3,6 +3,7 @@ package mstat
 import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/models"
+	"fmt"
 )
 
 type StatModel struct {
@@ -13,8 +14,9 @@ type Stat struct {
 	Sum     int64   `json:"sum"`
 	Count   int64   `json:"count"`
 	Avg     int64   `json:"avg"`
-	Dt      string  `json:"dt"`
-	Subarea int64   `json:"subarea,omitempty"`
+	Dt      string  `json:"dt,omitempty"`
+	Id      int64   `json:"id,omitempty"`
+	Name    string  `json:"name,omitempty"`
 	Rate    string  `json:"rate,omitempty"`
 }
 
@@ -161,11 +163,11 @@ func (m *StatModel) GetUserRetentionRate(queryType, minDate, maxDate string) ([]
 }
 
 const (
-	GET_VIDEO_SUBAREA_STAT = "SELECT subarea, count(1) AS count FROM videos WHERE status=1 GROUP BY subarea"
+	GET_VIDEO_SUBAREA_STAT = "SELECT subarea AS id, count(1) AS count FROM videos WHERE status=1 GROUP BY subarea"
 )
 // 视频分区统计 [发布占比]
-func (m *StatModel) GetVideoSubareaStat() ([]Stat, error) {
-	var stat []Stat
+func (m *StatModel) GetVideoSubareaStat() ([]*Stat, error) {
+	var stat []*Stat
 	if err := m.Engine.SQL(GET_VIDEO_SUBAREA_STAT).Find(&stat); err != nil {
 		return stat, err
 	}
@@ -178,3 +180,107 @@ func (m *StatModel) GetVideoTotal() (int64, error) {
 	return m.Engine.Where("status=1").Count(&models.Videos{})
 }
 
+const (
+	GET_POST_SECTION_STAT = "SELECT section_id AS id, count(1) AS count FROM posting_info WHERE status=1 GROUP BY section_id"
+)
+// 帖子板块统计 [发布占比]
+func (m *StatModel) GetPostSectionStat() ([]*Stat, error) {
+	var stat []*Stat
+	if err := m.Engine.SQL(GET_POST_SECTION_STAT).Find(&stat); err != nil {
+		return stat, err
+	}
+
+	return stat, nil
+}
+
+// 获取帖子总数 [已审核的帖子]
+func (m *StatModel) GetPostTotal() (int64, error) {
+	return m.Engine.Where("status=1").Count(&models.PostingInfo{})
+}
+
+// 视频各分区每日发布数据
+func (m *StatModel) PublishDataDailyByVideo(minDate, maxDate string) ([]*Stat, error) {
+	var stat []*Stat
+	sql := "SELECT count(1) AS count, date(from_unixtime(v.create_at)) AS dt, v.subarea AS id, vs.subarea_name AS `name` " +
+	"FROM videos AS v LEFT JOIN video_subarea AS vs ON v.subarea = vs.id WHERE date(from_unixtime(v.create_at)) >= ? AND" +
+	" date(from_unixtime(v.create_at)) <= ? AND v.status=1 GROUP BY id,dt"
+
+	if err := m.Engine.SQL(sql, minDate, maxDate).Find(&stat); err != nil {
+		return stat, err
+	}
+
+	return stat, nil
+}
+
+// 帖子各板块每日发布数据
+func (m *StatModel) PublishDataDailyByPost(minDate, maxDate string) ([]*Stat, error) {
+	var stat []*Stat
+	sql := "SELECT count(1) AS count, date(from_unixtime(p.create_at)) AS dt, p.section_id AS id, cs.section_name " +
+		"AS `name` FROM posting_info AS p LEFT JOIN community_section AS cs ON p.section_id=cs.id " +
+		"WHERE date(from_unixtime(p.create_at)) >= ? AND date(from_unixtime(p.create_at)) <= ? AND p.status=1 GROUP BY id,dt"
+
+	if err := m.Engine.SQL(sql, minDate, maxDate).Find(&stat); err != nil {
+		return stat, err
+	}
+
+	return stat, nil
+}
+
+// 获取帖子每日发布总数
+func (m *StatModel) GetTotalDailyPublishByPost(minDate, maxDate string) ([]*Stat, error) {
+	var stat []*Stat
+	sql := "SELECT count(1) AS count, date(from_unixtime(p.create_at)) AS dt FROM posting_info AS p "
+	if minDate != "" && maxDate != "" {
+		sql += fmt.Sprintf("WHERE date(from_unixtime(p.create_at)) >= %s AND date(from_unixtime(p.create_at) <= %s) AND p.status=1 ",
+			minDate, maxDate)
+	}
+
+	sql += "GROUP BY dt"
+	if err := m.Engine.SQL(sql).Find(&stat); err != nil {
+		return stat, err
+	}
+
+	return stat, nil
+}
+
+// 获取视频每日发布总数
+func (m *StatModel) GetTotalDailyPublishByVideo(minDate, maxDate string) ([]*Stat, error) {
+	var stat []*Stat
+	sql := "SELECT count(1) AS count, date(from_unixtime(v.create_at)) AS dt FROM videos AS v "
+	if minDate != "" && maxDate != "" {
+		sql += fmt.Sprintf("WHERE date(from_unixtime(v.create_at)) >= %s AND date(from_unixtime(v.create_at) <= %s) AND v.status=1 ",
+			minDate, maxDate)
+	}
+
+	sql += "GROUP BY dt"
+	if err := m.Engine.SQL(sql).Find(&stat); err != nil {
+		return stat, err
+	}
+
+	return stat, nil
+}
+
+// 通过日期获取发布帖子数
+func (m *StatModel) GetDailyPublishPostByDate(date string) int64 {
+	stat := &Stat{}
+	sql := "SELECT count(1) AS count FROM posting_info AS p WHERE date(from_unixtime(p.create_at))=? AND p.status=1 "
+	ok, err := m.Engine.SQL(sql, date).Get(stat)
+	if !ok || err != nil {
+		return 0
+	}
+
+	return stat.Count
+}
+
+
+// 通过日期获取发布视频数
+func (m *StatModel) GetDailyPublishVideoByDate(date string) int64 {
+	stat := &Stat{}
+	sql := "SELECT count(1) AS count FROM videos AS v WHERE date(from_unixtime(v.create_at))=? AND v.status=1"
+	ok, err := m.Engine.SQL(sql, date).Get(stat)
+	if !ok || err != nil {
+		return 0
+	}
+
+	return stat.Count
+}
