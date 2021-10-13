@@ -179,7 +179,7 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
-	payTime, _ := time.Parse("20060102150405", bm["time_end"].(string))
+	payTime, _ := time.ParseInLocation("20060102150405", bm["time_end"].(string), time.Local)
 	if err := svc.WechatPayNotify(orderId, string(body),  bm["transaction_id"].(string), "", payTime.Unix(), consts.PAY_NOTIFY); err != nil {
 		log.Log.Errorf("wxNotify_trace: order process fail, err:%s", err)
 		c.String(http.StatusInternalServerError, "fail")

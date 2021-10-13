@@ -89,7 +89,7 @@ func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 	}
 
 	status := strings.Trim(params.Get("trade_status"), " ")
-	payTime, _ := time.Parse("2006-01-02 15:04:05", params.Get("gmt_payment"))
+	payTime, _ := time.ParseInLocation("2006-01-02 15:04:05", params.Get("gmt_payment"), time.Local)
 	tradeNo := params.Get("trade_no")
 
 	switch status {

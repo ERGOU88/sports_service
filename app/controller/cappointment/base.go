@@ -694,7 +694,7 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 			return errors.New("invalid date")
 		}
 
-		tmInfo, err := time.Parse(consts.FORMAT_DATE, date)
+		tmInfo, err := time.ParseInLocation(consts.FORMAT_DATE, date, time.Local)
 		if err != nil {
 			log.Log.Errorf("venue_trace: time.Parse fail, err:%s", err)
 			return err
