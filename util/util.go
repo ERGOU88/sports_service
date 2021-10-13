@@ -235,7 +235,8 @@ func GetBetweenDates(start, end string) []DateInfo {
 		timeFormatTpl = timeFormatTpl[0:len(start)]
 	}
 
-	date, err := time.Parse(timeFormatTpl, start)
+	loc, _ := time.LoadLocation("Asia/Shanghai") //设置时区
+	date, err := time.ParseInLocation(timeFormatTpl, start, loc)
 	if err != nil {
 		// 时间解析，异常
 		return list
