@@ -9,4 +9,5 @@ type FpvContestPlayerIntegralRanking struct {
 	Status        int   `json:"status" xorm:"not null default 0 comment('0 正常 1 隐藏') TINYINT(1)"`
 	CreateAt      int   `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt      int   `json:"update_at" xorm:"not null default 0 comment('修改时间') INT(11)"`
+	Ranking       int   `json:"ranking" xorm:"comment('排名') INT(8)"`
 }
