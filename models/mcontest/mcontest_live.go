@@ -168,3 +168,28 @@ func (m *ContestModel) UpdateVideoLiveReplayInfo(condition, cols string) error {
 
 	return nil
 }
+
+// 添加赛事直播
+func (m *ContestModel) AddContestLive(live *models.VideoLive) (int64, error) {
+	return m.Engine.InsertOne(live)
+}
+
+// 更新赛事直播信息
+func (m *ContestModel) UpdateContestLive(live *models.VideoLive) (int64, error) {
+	return m.Engine.Update(live)
+}
+
+// 删除赛事直播
+func (m *ContestModel) DelContestLive(id string) (int64, error) {
+	return m.Engine.Where("id=?", id).Delete(&models.VideoLive{})
+}
+
+// 获取赛事直播列表
+func (m *ContestModel) GetContestLiveList(offset, size int) ([]*models.VideoLive, error) {
+	var list []*models.VideoLive
+	if err := m.Engine.Limit(size, offset).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}

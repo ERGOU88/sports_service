@@ -8,6 +8,9 @@ import (
 	"sports_service/server/models"
 	"sports_service/server/models/mcontest"
 	"sports_service/server/global/backend/log"
+	"sports_service/server/tools/im"
+	"sports_service/server/tools/live"
+	"sports_service/server/util"
 	"time"
 	"fmt"
 )
@@ -178,6 +181,71 @@ func (svc *ContestModule) GetIntegralRankingList(page, size int) (int, []*mconte
 		item.BestScoreStr = fmt.Sprintf("%.3f", float64(item.BestScore) / 1000)
 		item.TotalIntegral = 0
 		item.BestScore = 0
+	}
+
+	return errdef.SUCCESS, list
+}
+
+// 添加赛事直播
+func (svc *ContestModule) AddContestLive(info *models.VideoLive) int {
+	now := int(time.Now().Unix())
+	if info.PlayTime < now {
+		return errdef.INVALID_PARAMS
+	}
+	var err error
+	info.GroupId, err = im.Im.CreateGroup("AVChatRoom", "", info.Title, info.Describe, "",
+		"")
+	if err != nil {
+		log.Log.Errorf("contest_trace: create group fail, err:%s", err)
+		return errdef.ERROR
+	}
+
+	info.CreateAt = now
+	info.UpdateAt = now
+
+	duration := info.PlayTime - now
+	// todo: 过期时间待确认
+	expireTm := int64(duration + 86400 * 30)
+	roomId := fmt.Sprint(util.GetXID())
+	info.PushStreamUrl, info.PushStreamKey = live.Live.GenPushStream(roomId, expireTm)
+	streamInfo := live.Live.GenPullStream(roomId, expireTm)
+	info.RtmpAddr = streamInfo.RtmpAddr
+	info.HlsAddr = streamInfo.HlsAddr
+	info.FlvAddr = streamInfo.FlvAddr
+
+	if _, err := svc.contest.AddContestLive(info); err != nil {
+		return errdef.ERROR
+	}
+
+	return errdef.SUCCESS
+}
+
+func (svc *ContestModule) UpdateContestLive(live *models.VideoLive) int {
+	if _, err := svc.contest.UpdateContestLive(live); err != nil {
+		return errdef.ERROR
+	}
+
+	return errdef.SUCCESS
+}
+
+
+func (svc *ContestModule) DelContestLive(id string) int {
+	if _, err := svc.contest.DelContestLive(id); err != nil {
+		return errdef.ERROR
+	}
+
+	return errdef.SUCCESS
+}
+
+func (svc *ContestModule) GetContestLiveList(page, size int) (int, []*models.VideoLive) {
+	offset := (page - 1) * size
+	list, err := svc.contest.GetContestLiveList(offset, size)
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*models.VideoLive{}
 	}
 
 	return errdef.SUCCESS, list

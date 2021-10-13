@@ -26,5 +26,14 @@ func Router(engine *gin.Engine) {
 		contest.POST("/edit/integral/ranking", EditIntegralRanking)
 		// 赛事积分排行列表
 		contest.GET("/integral/ranking/list", IntegralRankingList)
+		// 添加赛事直播
+		contest.POST("/add/live", AddContestLive)
+		// 更新赛事直播
+		contest.POST("/update/live", UpdateContestLive)
+		// 删除赛事直播
+		contest.DELETE("/del/live", DelContestLive)
+		// 赛事直播列表
+		contest.GET("/live/list", ContestLiveList)
+
 	}
 }

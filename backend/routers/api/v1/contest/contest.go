@@ -123,3 +123,45 @@ func IntegralRankingList(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
+
+
+func AddContestLive(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &models.VideoLive{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := contest.New(c)
+	reply.Response(http.StatusOK, svc.AddContestLive(param))
+}
+
+func UpdateContestLive(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &models.VideoLive{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := contest.New(c)
+	reply.Response(http.StatusOK, svc.UpdateContestLive(param))
+}
+
+func DelContestLive(c *gin.Context) {
+	reply := errdef.New(c)
+	id := c.Query("id")
+
+	svc := contest.New(c)
+	reply.Response(http.StatusOK, svc.DelContestLive(id))
+}
+
+func ContestLiveList(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	svc := contest.New(c)
+	code, list := svc.GetContestLiveList(page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
