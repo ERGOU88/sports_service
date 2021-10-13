@@ -181,8 +181,11 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 				log.Log.Errorf("share_trace: get subarea by id fail, err:%s", err)
 			}
 
-			shareInfo.Nickname = user.NickName
-			shareInfo.Avatar = user.Avatar
+			up := svc.user.FindUserByUserid(video.UserId)
+			if up != nil {
+				shareInfo.Nickname = up.NickName
+				shareInfo.Avatar = up.Avatar
+			}
 
 			statistic := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
 			shareInfo.BarrageNum = statistic.BarrageNum
@@ -230,8 +233,11 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 				UserId: post.UserId,
 			}
 
-			shareInfo.Nickname = user.NickName
-			shareInfo.Avatar = user.Avatar
+			up := svc.user.FindUserByUserid(post.UserId)
+			if up != nil {
+				shareInfo.Nickname = up.NickName
+				shareInfo.Avatar = up.Avatar
+			}
 
 			statistic, err := svc.posting.GetPostStatistic(fmt.Sprint(post.Id))
 			if err == nil && statistic != nil {

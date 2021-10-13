@@ -358,6 +358,7 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 
 	// 分组竞技/总决赛 展现形式
 	case 2,3:
+		playerMp := make(map[int64]bool, 0)
 		list, err := svc.contest.GetScheduleDetailInfo(2, contestId, scheduleId)
 		if err != nil {
 			log.Log.Errorf("contest_trace: get promotion info fail, scheduleId:%s, err", scheduleId, err)
@@ -367,6 +368,12 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 		index := 0
 		mp := make(map[int]*mcontest.ScheduleGroupDetailResp, 0)
 		for _, item := range list {
+			if _, ok := playerMp[item.PlayerId]; ok {
+				continue
+			} else {
+				playerMp[item.PlayerId] = true
+			}
+
 			var detail *mcontest.ScheduleGroupDetailResp
 			// key 分组id
 			if _, ok :=  mp[item.GroupNum]; !ok {

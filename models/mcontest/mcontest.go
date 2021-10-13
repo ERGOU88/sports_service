@@ -96,6 +96,7 @@ type PlayerInfoResp struct {
 }
 
 type IntegralRanking struct {
+	Id         int    `json:"id"`
 	PlayerId   int64  `json:"player_id"`
 	PlayerName string `json:"player_name"`
 	Photo      string `json:"photo"`
@@ -176,7 +177,7 @@ func (m *ContestModel) GetScheduleDetail(contestId, scheduleId string) ([]*model
 const (
 	GET_SCHEDULE_DETAIL_BY_SCORE = "SELECT p.id AS player_id, p.name AS player_name, p.photo, cs.* FROM fpv_contest_player_information AS p " +
 		"LEFT JOIN fpv_contest_schedule_detail AS cs ON p.id = cs.player_id AND cs.contest_id=? AND cs.schedule_id=? " +
-		" WHERE p.status = 0 ORDER BY cs.score is null, cs.score ASC, p.id ASC"
+		" WHERE p.status = 0 ORDER BY cs.score is null, cs.score ASC, ISNULL(cs.ranking),cs.ranking ASC, p.id ASC"
 
 	GET_SCHEDULE_DETAIL_BY_GROUP = "SELECT cs.*, p.id AS player_id, p.name AS player_name, p.photo FROM " +
 		"fpv_contest_schedule_detail AS cs LEFT JOIN fpv_contest_player_information AS p " +
@@ -197,22 +198,12 @@ func (m *ContestModel) GetScheduleDetailInfo(showType int, contestId, scheduleId
 	return list, nil
 }
 
-// 获取赛事参赛选手列表
-func (m *ContestModel) GetPlayerByContestId(contestId string) ([]*models.FpvContestPlayerInformation, error) {
-	var list []*models.FpvContestPlayerInformation
-	if err := m.Engine.Where("contest_id=? AND status=0", contestId).Find(&list); err != nil {
-		return nil, err
-	}
-
-	return list, nil
-}
-
 const (
-	GET_INTEGRAL_RANKING = "SELECT p.id AS player_id, p.name AS player_name, p.photo, rk.contest_id, " +
+	GET_INTEGRAL_RANKING = "SELECT p.id AS player_id, p.name AS player_name, p.photo, rk.id,rk.contest_id, " +
 		"rk.total_integral, rk.best_score FROM fpv_contest_player_information AS p " +
 		"LEFT JOIN fpv_contest_player_integral_ranking AS rk " +
 		"ON p.id = rk.player_id AND rk.contest_id=? " +
-		"WHERE p.status = 0 ORDER BY rk.total_integral DESC, p.id ASC LIMIT ?, ?"
+		"WHERE p.status = 0 ORDER BY rk.total_integral DESC, ISNULL(rk.ranking),rk.ranking ASC, p.id ASC LIMIT ?, ?"
 )
 // 通过赛事id 获取选手积分排行
 func (m *ContestModel) GetIntegralRankingByContestId(contestId string, offset, size int) ([]*IntegralRanking, error) {
