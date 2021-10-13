@@ -2,6 +2,8 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	"sports_service/server/backend/routers/api/v1/contest"
+	"sports_service/server/backend/routers/api/v1/finance"
 	"sports_service/server/backend/routers/api/v1/venue"
 	"sports_service/server/backend/routers/api/v1/information"
 	"sports_service/server/backend/routers/api/v1/comment"
@@ -17,7 +19,7 @@ import (
 	"sports_service/server/backend/routers/api/v1/configure"
 	"sports_service/server/middleware"
 	"sports_service/server/global/backend/log"
-
+	"sports_service/server/backend/routers/api/v1/stat"
 )
 
 func InitRouters(engine *gin.Engine) {
@@ -49,4 +51,10 @@ func InitRouters(engine *gin.Engine) {
 	information.Router(engine)
 	// 场馆模块
 	venue.Router(engine)
+	// 统计模块
+	stat.Router(engine)
+	// 财务模块
+	finance.Router(engine)
+	// 赛事模块
+	contest.Router(engine)
 }

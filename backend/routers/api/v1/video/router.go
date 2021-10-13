@@ -27,5 +27,7 @@ func Router(engine *gin.Engine) {
 		video.POST("/add/subarea/conf", AddVideoSubareaConf)
 		// 删除分区配置
 		video.POST("/del/subarea/conf", DelVideoSubareaConf)
+		// 获取视频分区列表
+		video.GET("/subarea/list", VideoSubareaList)
 	}
 }

@@ -89,7 +89,7 @@ func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 	}
 
 	status := strings.Trim(params.Get("trade_status"), " ")
-	payTime, _ := time.Parse("2006-01-02 15:04:05", params.Get("gmt_payment"))
+	payTime, _ := time.ParseInLocation("2006-01-02 15:04:05", params.Get("gmt_payment"), time.Local)
 	tradeNo := params.Get("trade_no")
 
 	switch status {
@@ -551,7 +551,7 @@ func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, productType,
 	// 如果是申请退款 走退款流程
 	//case consts.APPLY_REFUND:
 	//	// 会员 需扣减可用时长  同时 扣减过期时长
-	//	svc.venue.Vip.Duration += int64(duration * -1)
+	//	svc.venue.Vip.Condition += int64(duration * -1)
 	//	svc.venue.Vip.EndTm = svc.venue.Vip.EndTm - int64(expireDuration * count)
 	//	cols = "end_tm, duration, update_at"
 	// 支付成功回调通知

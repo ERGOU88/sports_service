@@ -4,11 +4,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/garyburd/redigo/redis"
 	"net/http"
+	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/consts"
 	"sports_service/server/models/muser"
 	"strings"
 	"sports_service/server/global/app/log"
+	"time"
+	"fmt"
 )
 
 // token校验
@@ -75,9 +78,31 @@ func TokenAuth() gin.HandlerFunc {
 			if err := model.SaveUserToken(userid, auth); err != nil {
 				log.Log.Errorf("token_trace: save user token err:%s", err)
 			}
+
+			// todo:
+			go RecordInfo(userid)
 		}
 
 		c.Set(consts.USER_ID, userid)
 		c.Next()
 	}
+}
+
+func RecordInfo(userid string) {
+	session := dao.AppEngine.NewSession()
+	defer session.Close()
+	umodel := muser.NewUserModel(session)
+	condition := fmt.Sprintf("user_id='%s'", userid)
+	cols := "last_login_time"
+	now := int(time.Now().Unix())
+	umodel.User.LastLoginTime = now
+	if _, err := umodel.UpdateUserInfos(condition, cols); err != nil {
+		log.Log.Errorf("token_trace: update login time fail, userId:%s, err:%s", userid, err)
+	}
+
+	if _, err := umodel.AddActivityRecord(userid, now); err != nil {
+		log.Log.Errorf("token_trace: record activity user fail, userId:%s, err:%s", userid, err)
+	}
+
+	return
 }

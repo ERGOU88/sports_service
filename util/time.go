@@ -193,3 +193,11 @@ func MergeString (args ...string) string {
 
   return buffer.String()
 }
+
+// 获取两个时间相差的天数 0表示同一天
+func GetDiffDays(t1, t2 time.Time) int {
+  t1 = time.Date(t1.Year(), t1.Month(), t1.Day(), 0, 0, 0, 0, time.Local)
+  t2 = time.Date(t2.Year(), t2.Month(), t2.Day(), 0, 0, 0, 0, time.Local)
+
+  return int(t1.Sub(t2).Hours() / 24)
+}

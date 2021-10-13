@@ -141,3 +141,11 @@ func DelVideoSubareaConf(c *gin.Context) {
 	syscode := svc.DelVideoSubareaConf(param.Id)
 	reply.Response(http.StatusOK, syscode)
 }
+
+func VideoSubareaList(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cvideo.New(c)
+	code, list := svc.GetVideoSubareaList()
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}

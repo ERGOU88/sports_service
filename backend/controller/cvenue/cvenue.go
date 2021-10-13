@@ -33,6 +33,7 @@ type VenueInfoRes struct {
 	Latitude      float64  `json:"latitude"`
 	ImageNum      int      `json:"image_num"`
 	Instructions  string   `json:"instructions"`
+	PromotionPic  string   `json:"promotion_pic"`
 	ProductNum    int      `json:"product_num"`    // 商品数量
 	TotalSales    int64    `json:"total_sales"`    // 销售总额
 	OrderNum      int64    `json:"order_num"`      // 订单数量（成功订单）
@@ -72,6 +73,8 @@ func (svc *VenueModule) GetVenueList() (int, []*VenueInfoRes) {
 			Telephone: item.Telephone,
 			BusinessHours: item.BusinessHours,
 			Services: item.Services,
+			Instructions: item.Instructions,
+			PromotionPic: item.PromotionPic,
 		}
 
 		products, err := svc.venue.GetVenueAllProduct()
@@ -122,6 +125,8 @@ func (svc *VenueModule) GetVenueInfo(id string) (*VenueInfoRes, error) {
 		Telephone: svc.venue.Venue.Telephone,
 		BusinessHours: svc.venue.Venue.BusinessHours,
 		Services: svc.venue.Venue.Services,
+		Instructions: svc.venue.Venue.Instructions,
+		PromotionPic: svc.venue.Venue.PromotionPic,
 	}
 
 	if err = util.JsonFast.UnmarshalFromString(svc.venue.Venue.VenueImages, &info.VenueImages); err != nil {
