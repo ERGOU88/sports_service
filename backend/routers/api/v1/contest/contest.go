@@ -129,6 +129,7 @@ func AddContestLive(c *gin.Context) {
 	reply := errdef.New(c)
 	param := &models.VideoLive{}
 	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("contest_trace: invalid param, err:%s", err)
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}

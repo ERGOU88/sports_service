@@ -6,10 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"sports_service/server/backend/config"
 	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
+	"sports_service/server/global/backend/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/log/zap"
 	"sports_service/server/models/pprof"
+	"sports_service/server/tools/im"
+	"sports_service/server/tools/live"
 	"sports_service/server/util"
 	"sports_service/server/backend/routers"
 )
@@ -73,6 +75,12 @@ func setupSnowId() {
 	util.InitSnowId()
 }
 
+// 初始化腾讯im
+func setupTencentService() {
+	im.Init(config.Global.TencentImAppId, config.Global.TencentImSecret, config.Global.TencentImIdentifier)
+	live.Init()
+}
+
 func init() {
 	// 配置
 	if err := setupConfig(); err != nil {
@@ -91,6 +99,8 @@ func init() {
 	setupSnowId()
 	// 设置运行模式
 	setupRunMode()
+	// 初始化腾讯im、live
+	setupTencentService()
 }
 
 // @title 电竞社区平台（后台）

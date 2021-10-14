@@ -69,6 +69,10 @@ type Config struct {
 		Main RedisType
 	}
 
+	TencentImAppId int
+	TencentImSecret string
+	TencentImIdentifier string
+
 	Debug bool
 }
 

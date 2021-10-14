@@ -200,6 +200,12 @@ func (svc *ContestModule) AddContestLive(info *models.VideoLive) int {
 		return errdef.ERROR
 	}
 
+	// 最新赛事
+	ok, err := svc.contest.GetContestInfo(time.Now().Unix())
+	if ok && err == nil {
+		info.ContestId = svc.contest.Contest.Id
+	}
+
 	info.CreateAt = now
 	info.UpdateAt = now
 
@@ -207,6 +213,7 @@ func (svc *ContestModule) AddContestLive(info *models.VideoLive) int {
 	// todo: 过期时间待确认
 	expireTm := int64(duration + 86400 * 30)
 	roomId := fmt.Sprint(util.GetXID())
+	info.RoomId = roomId
 	info.PushStreamUrl, info.PushStreamKey = live.Live.GenPushStream(roomId, expireTm)
 	streamInfo := live.Live.GenPullStream(roomId, expireTm)
 	info.RtmpAddr = streamInfo.RtmpAddr

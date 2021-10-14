@@ -1,7 +1,7 @@
 package im
 
-func Init() ImInterface {
-	Im = NewImRealize()
+func Init(appId int, appKey, identifier string) ImInterface {
+	Im = NewImRealize(appId, appKey, identifier)
 	return Im
 }
 
@@ -24,4 +24,11 @@ type ImInterface interface {
 	    @param faceUrl 群头像 URL，最长100字节
 	*/
 	CreateGroup(groupType, owner, name, introduction, notification, faceUrl string) (string, error)
+
+	/*
+	    生成im签名
+	    @param userId   腾讯im userId
+	    @param expireTm 签名过期时间
+	*/
+	GenSig(userId string, expireTm int) (string, error)
 }
