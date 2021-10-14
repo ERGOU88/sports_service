@@ -198,7 +198,7 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 		contestId = svc.contest.Contest.Id
 	}
 
-	list, err := svc.contest.GetScheduleDetailInfo(1, fmt.Sprint(contestId), scheduleId)
+	list, err := svc.contest.GetScheduleDetailInfo(3, fmt.Sprint(contestId), scheduleId)
 	if err != nil {
 		log.Log.Errorf("contest_trace: get promotion info fail, scheduleId:%s, err", scheduleId, err)
 		return errdef.ERROR, nil
@@ -210,11 +210,12 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 		// key 选手id
 		if _, ok :=  mp[item.PlayerId]; !ok {
 			detail := &mcontest.ScheduleListDetailResp{}
+			detail.Id = item.Id
 			detail.PlayerId = item.PlayerId
 			detail.PlayerName = item.PlayerName
 			detail.ContestId = item.ContestId
 			detail.ScheduleId = item.ScheduleId
-			//detail.IsWin = item.IsWin
+			detail.IsWin = item.IsWin
 			detail.Photo = item.Photo
 			detail.BestScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
 			if item.Rounds == 1 {
