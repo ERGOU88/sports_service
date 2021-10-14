@@ -20,11 +20,24 @@ func Router(engine *gin.Engine) {
 		contest.GET("/group/list", ContestGroupList)
 		// 获取赛程信息
 		contest.GET("/schedule", ContestSchedule)
+		// 添加赛程详情
+		contest.GET("/add/schedule/detail", AddContestScheduleDetail)
+		// 赛程详情列表
+		contest.GET("/schedule/detail/list", ContestScheduleDetailList)
 		// 设置赛事积分排行
 		contest.POST("/set/integral/ranking", SetIntegralRanking)
 		// 编辑赛事积分排行
 		contest.POST("/edit/integral/ranking", EditIntegralRanking)
 		// 赛事积分排行列表
 		contest.GET("/integral/ranking/list", IntegralRankingList)
+		// 添加赛事直播
+		contest.POST("/add/live", AddContestLive)
+		// 更新赛事直播
+		contest.POST("/update/live", UpdateContestLive)
+		// 删除赛事直播
+		contest.DELETE("/del/live", DelContestLive)
+		// 赛事直播列表
+		contest.GET("/live/list", ContestLiveList)
+
 	}
 }

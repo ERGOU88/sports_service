@@ -151,7 +151,7 @@ func setupLabelList() {
 
 // 初始化腾讯im
 func setupTencentService() {
-	im.Init()
+	im.Init(config.Global.TencentImAppId, config.Global.TencentImSecret, config.Global.TencentImIdentifier)
 	live.Init()
 }
 

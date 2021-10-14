@@ -3,11 +3,15 @@ package im
 import (
 	"errors"
 	"fmt"
-	"sports_service/server/app/config"
+	"github.com/tencentyun/tls-sig-api-v2-golang/tencentyun"
 	"sports_service/server/util"
 )
 
-type imRealize struct {}
+type imRealize struct {
+	ImAppId     int
+	ImAppKey    string
+	Identifier  string
+}
 
 var Im ImInterface
 var (
@@ -38,22 +42,26 @@ const (
 	EXPIRE_TM_DAY = 86400
 )
 
-func NewImRealize() *imRealize {
-	return &imRealize{}
+func NewImRealize(appId int, appKey, identifier string) *imRealize {
+	return &imRealize{
+		ImAppId: appId,
+		ImAppKey: appKey,
+		Identifier: identifier,
+	}
 }
 
 func (im *imRealize) AddUser(userId, name, avatar string) (string, error) {
-	sig, err := GenSig(config.Global.TencentImIdentifier, EXPIRE_TM_DAY)
+	sig, err := im.GenSig(im.Identifier, EXPIRE_TM_DAY)
 	if err != nil {
 		return "", err
 	}
 
-	userSig, err := GenSig(userId, EXPIRE_TM_DAY * 90)
+	userSig, err := im.GenSig(userId, EXPIRE_TM_DAY * 90)
 	if err != nil {
 		return "", err
 	}
 
-	url := GenRequestUrl(sig, addUserUrl)
+	url := GenRequestUrl(im.ImAppId, im.Identifier, sig, addUserUrl)
 	param := map[string]interface{}{
 		"Identifier": userId,
 		"Nick": name,
@@ -87,12 +95,12 @@ func (im *imRealize) CreateGroup(groupType, owner, name, introduction, notificat
 		return "", errors.New("invalid param")
 	}
 
-	sig, err := GenSig(config.Global.TencentImIdentifier, EXPIRE_TM_DAY)
+	sig, err := im.GenSig(im.Identifier, EXPIRE_TM_DAY)
 	if err != nil {
 		return "", err
 	}
 
-	url := GenRequestUrl(sig, createGroupUrl)
+	url := GenRequestUrl(im.ImAppId, im.Identifier, sig, createGroupUrl)
 	param := map[string]interface{}{
 		"Owner_Account": owner,
 		"Type": groupType,
@@ -117,4 +125,14 @@ func (im *imRealize) CreateGroup(groupType, owner, name, introduction, notificat
 	}
 
 	return response.GroupId, nil
+}
+
+// 生成签名
+func (im *imRealize) GenSig(userId string, expireTm int) (string, error) {
+	sig, err := tencentyun.GenUserSig(im.ImAppId, im.ImAppKey, userId, expireTm)
+	if err != nil {
+		return "", err
+	}
+
+	return sig, nil
 }

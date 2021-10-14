@@ -455,7 +455,7 @@ func (svc *UserModule) UpdateTencentImSignByUser(userId string) (int, string) {
 		return errdef.USER_NOT_EXISTS, ""
 	}
 
-	sig, err := im.GenSig(userId, 3600 * 24 * 90)
+	sig, err := im.Im.GenSig(userId, 3600 * 24 * 90)
 	if err != nil {
 		return errdef.USER_GEN_IM_SIGN_FAIL, ""
 	}
@@ -542,7 +542,7 @@ func (svc *UserModule) GetTencentImSignByGuest(action int) (int, *muser.TencentI
 
 	// action == 2 签名过期 重新生成
 	if action == 2 {
-		sig, err := im.GenSig(imUser.UserId, 3600 * 24 * 90)
+		sig, err := im.Im.GenSig(imUser.UserId, 3600 * 24 * 90)
 		if err != nil {
 			return errdef.USER_GEN_IM_SIGN_FAIL, nil
 		}

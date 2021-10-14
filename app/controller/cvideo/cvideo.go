@@ -1340,7 +1340,8 @@ func (svc *VideoModule) GetVideoAlbumByUserId(userId string, page, size int) (in
 		return errdef.USER_NOT_EXISTS, []*mvideo.VideoAlbumInfo{}
 	}
 
-	list, err := svc.video.GetVideoAlbumListByUser(userId, page, size)
+	offset := (page - 1) * size
+	list, err := svc.video.GetVideoAlbumListByUser(userId, offset, size)
 	if err != nil {
 		log.Log.Errorf("video_trace: get video album list by user fail, err:%s, userId:%s", err, userId)
 		return errdef.SUCCESS, []*mvideo.VideoAlbumInfo{}

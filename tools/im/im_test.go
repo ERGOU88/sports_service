@@ -12,12 +12,13 @@ import (
 //}
 
 func TestGenSig(t *testing.T) {
-	sig, err := GenSig("123", EXPIRE_TM_DAY * 365)
+	im := NewImRealize(TX_IM_APP_ID, TX_IM_APP_KEY, TX_IDENTIFIER)
+	sig, err := im.GenSig("123", EXPIRE_TM_DAY * 365)
 	t.Logf("sig:%s, err:%s", sig, err)
 }
 
 func TestCreateGroup(t *testing.T) {
-	im := NewImRealize()
+	im := NewImRealize(TX_IM_APP_ID, TX_IM_APP_KEY, TX_IDENTIFIER)
 	groupId, err := im.CreateGroup("AVChatRoom", "", "test", "test",
 		"test", "test")
 	t.Logf("groupId:%s, err:%s", groupId, err)

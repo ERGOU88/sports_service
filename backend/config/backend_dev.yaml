@@ -37,9 +37,15 @@ redis:
 nsqAddr: 127.0.0.1:4150
 fileAddr: http://192.168.50.148:13002/upload/
 amqpDsn: amqp://admin:admin@127.0.0.1:5672
+# 腾讯im SDKAppID
+tencentImAppId: 1400576334
+# 腾讯im 密钥
+tencentImSecret: 080789c06a28b355e1ec94b97ad61edc4eb887275e68fa0046f5659cead396e7
+# 腾讯im 管理员
+tencentImIdentifier: bluetrans
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
-  path: /data/service/fpv-backend-api/log/backend_server_%s.log
+  path: ./log/backend_server_%s.log
   level: 0
   showColor: true
 

@@ -1,41 +1,39 @@
 package im
 
 import (
-	"github.com/parnurzeal/gorequest"
-	"github.com/tencentyun/tls-sig-api-v2-golang/tencentyun"
+	"errors"
 	"fmt"
+	"github.com/parnurzeal/gorequest"
 	"io/ioutil"
 	"log"
 	"net/url"
-	"sports_service/server/app/config"
 	"sports_service/server/util"
-	"errors"
 )
 
 const (
 	// 根据运行环境 走配置
-	//TX_IM_APP_ID    = 1400570443
-	//TX_IM_APP_KEY   = "a6380a7413ed7fdcfac951b9c5fde542c661864c596a4aa7bc1d15c87df5b1f7"
+	TX_IM_APP_ID    = 1400576334
+	TX_IM_APP_KEY   = "080789c06a28b355e1ec94b97ad61edc4eb887275e68fa0046f5659cead396e7"
 	// 控制台配置的管理员
-	//TX_IDENTIFIER   = "bluetrans"
+	TX_IDENTIFIER   = "bluetrans"
 	TX_IM_HOST      = "https://console.tim.qq.com"
 )
 
 // 生成签名
-func GenSig(userId string, expireTm int) (string, error) {
-	sig, err := tencentyun.GenUserSig(config.Global.TencentImAppId, config.Global.TencentImSecret, userId, expireTm)
-	if err != nil {
-		return "", err
-	}
-
-	return sig, nil
-}
+//func GenSig(userId string, expireTm int) (string, error) {
+//	sig, err := tencentyun.GenUserSig(config.Global.TencentImAppId, config.Global.TencentImSecret, userId, expireTm)
+//	if err != nil {
+//		return "", err
+//	}
+//
+//	return sig, nil
+//}
 
 // 生成请求url
-func GenRequestUrl(sig, uri string) string {
+func GenRequestUrl(appId int, identifier, sig, uri string) string {
 	values := url.Values{}
-	values.Add("sdkappid", fmt.Sprint(config.Global.TencentImAppId))
-	values.Add("identifier", config.Global.TencentImIdentifier)
+	values.Add("sdkappid", fmt.Sprint(appId))
+	values.Add("identifier", identifier)
 	values.Add("random", fmt.Sprint(util.GenerateRandnum(100000, 999999)))
 	values.Add("usersig", sig)
 	values.Add("contenttype", "json")
