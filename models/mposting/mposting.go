@@ -200,9 +200,9 @@ func (m *PostingModel) GetPostById(id string) (*models.PostingInfo, error) {
 	return m.Posting, nil
 }
 
-// 获取用户总发布数 (审核通过的帖子)
+// 获取用户总发布数 (审核通过的帖子 不包含转发的视频)
 func (m *PostingModel) GetTotalPublish(userId string) int64 {
-	total, err := m.Engine.Where("user_id=? AND status=1", userId).Count(&models.PostingInfo{})
+	total, err := m.Engine.Where("user_id=? AND status=1 AND video_id=0", userId).Count(&models.PostingInfo{})
 	if err != nil {
 		return 0
 	}
