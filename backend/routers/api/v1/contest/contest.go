@@ -7,6 +7,7 @@ import (
 	"sports_service/server/global/backend/errdef"
 	"sports_service/server/global/backend/log"
 	"sports_service/server/backend/controller/contest"
+	"sports_service/server/models/mcontest"
 	"sports_service/server/util"
 )
 
@@ -88,6 +89,24 @@ func ContestSchedule(c *gin.Context) {
 	code, list := svc.GetContestScheduleInfo()
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
+}
+
+func AddContestScheduleDetail(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mcontest.AddScheduleDetail{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("contest_trace: invalid param, param:%+v, err:%s", param, err)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := contest.New(c)
+	reply.Response(http.StatusOK, svc.AddContestScheduleDetail(param))
+}
+
+func ContestScheduleDetailList(c *gin.Context) {
+	//reply := errdef.New(c)
+
 }
 
 func SetIntegralRanking(c *gin.Context) {

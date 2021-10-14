@@ -129,6 +129,139 @@ func (svc *ContestModule) GetContestScheduleInfo() (int, []*models.FpvContestSch
 	return errdef.SUCCESS, list
 }
 
+// 添加赛程详情
+func (svc *ContestModule) AddContestScheduleDetail(param *mcontest.AddScheduleDetail) int {
+	// 最新赛事
+	ok, err := svc.contest.GetContestInfo(time.Now().Unix())
+	if ok && err == nil {
+		param.ContestId = svc.contest.Contest.Id
+	}
+
+	ok, err = svc.contest.GetScheduleInfoById(fmt.Sprint(param.ScheduleId))
+	if !ok || err != nil {
+		log.Log.Errorf("contest_trace: get schedule info by id fail, scheduleId:%d, err:%s", param.ScheduleId, err)
+		return errdef.ERROR
+	}
+
+	if svc.contest.Schedule.RoundsNum > 0 {
+		now := int(time.Now().Unix())
+		list := make([]*models.FpvContestScheduleDetail, svc.contest.Schedule.RoundsNum)
+		for round := 0; round < svc.contest.Schedule.RoundsNum; round++ {
+			detail := &models.FpvContestScheduleDetail{
+				Rounds: round+1,
+				ScheduleId: param.ScheduleId,
+				GroupNum: param.GroupNum,
+				GroupName: param.GroupName,
+				NumInGroup: param.NumInGroup,
+				PlayerId: param.PlayerId,
+				BeginTm: param.BeginTm,
+				EndTm: param.EndTm,
+				IsWin: param.IsWin,
+				CreateAt: now,
+				UpdateAt: now,
+				Ranking: param.Ranking,
+			}
+
+			if round == 0 {
+				detail.Score = param.RoundOneScore
+				detail.ReceiveIntegral = param.RoundOneIntegral
+			}
+
+			if round == 1 {
+				detail.Score = param.RoundTwoScore
+				detail.ReceiveIntegral = param.RoundTwoIntegral
+			}
+
+			if round == 2 {
+				detail.Score = param.RoundThreeScore
+			}
+
+			list[round] = detail
+		}
+
+		affected, err := svc.contest.AddContestScheduleDetail(list)
+		if int(affected) != svc.contest.Schedule.RoundsNum || err != nil {
+			log.Log.Errorf("contest_trace: add contest schedule detail fail, err:%s", err)
+			return errdef.ERROR
+		}
+	}
+
+	return errdef.SUCCESS
+}
+
+// 获取赛事赛程详情列表
+func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, []*mcontest.ScheduleListDetailResp) {
+	var contestId int
+	// 最新赛事
+	ok, err := svc.contest.GetContestInfo(time.Now().Unix())
+	if ok && err == nil {
+		contestId = svc.contest.Contest.Id
+	}
+
+	list, err := svc.contest.GetScheduleDetailInfo(1, fmt.Sprint(contestId), scheduleId)
+	if err != nil {
+		log.Log.Errorf("contest_trace: get promotion info fail, scheduleId:%s, err", scheduleId, err)
+		return errdef.ERROR, nil
+	}
+
+	mp := make(map[int64]*mcontest.ScheduleListDetailResp)
+	ranking := 0
+	for _, item := range list {
+		// key 选手id
+		if _, ok :=  mp[item.PlayerId]; !ok {
+			detail := &mcontest.ScheduleListDetailResp{}
+			detail.PlayerId = item.PlayerId
+			detail.PlayerName = item.PlayerName
+			detail.ContestId = item.ContestId
+			detail.ScheduleId = item.ScheduleId
+			//detail.IsWin = item.IsWin
+			detail.Photo = item.Photo
+			detail.BestScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+			if item.Rounds == 1 {
+				detail.RoundOneScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+			}
+
+			if item.Rounds == 2 {
+				detail.RoundTwoScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+			}
+
+			if item.Rounds == 3 {
+				detail.RoundThreeScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+			}
+
+			detail.Ranking = ranking
+			ranking++
+			mp[item.PlayerId] = detail
+		} else {
+			if item.Rounds == 1 {
+				mp[item.PlayerId].RoundOneScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+			}
+
+			if item.Rounds == 2 {
+				mp[item.PlayerId].RoundTwoScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+			}
+
+			if item.Rounds == 3 {
+				mp[item.PlayerId].RoundThreeScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+			}
+		}
+	}
+
+	// 防止数组越界
+	if ranking > len(mp) {
+		return errdef.ERROR, nil
+	}
+
+	log.Log.Errorf("##########:len(map)", len(mp))
+	resp := make([]*mcontest.ScheduleListDetailResp, len(mp))
+	for _, val := range mp {
+		log.Log.Infof("#######val:%+v", val)
+		resp[val.Ranking] = val
+	}
+
+	return errdef.SUCCESS, resp
+}
+
 // 设置赛事积分榜
 func (svc *ContestModule) SetIntegralRanking(info *models.FpvContestPlayerIntegralRanking) int {
 	// 最新赛事

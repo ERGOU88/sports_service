@@ -447,8 +447,8 @@ func (svc *OrderModule) GetOrderList(userId, status string, page, size int) (int
 		// 0 待支付
 		condition = fmt.Sprintf("order_type=1001 AND is_delete=0 AND status = 0 AND user_id=%s", userId)
 	case "1":
-		// 1 可使用
-		condition = fmt.Sprintf("order_type=1001 AND is_delete=0  AND status = 2 AND user_id=%s", userId)
+		// 1 可使用 (仅展示 1001 场馆预约 2201 次卡 3001 私教预约 3002 课程预约)
+		condition = fmt.Sprintf("order_type=1001 AND is_delete=0  AND status = 2 AND user_id=%s AND product_type in(1001,2201,3001,3002)", userId)
 	case "2":
 		// 2 退款/售后 包含[3 已完成 4 退款中 5 已退款 6 已过期]
 		condition = fmt.Sprintf("order_type=1001 AND is_delete=0 AND status >= 3 AND user_id=%s", userId)

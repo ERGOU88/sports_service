@@ -1,6 +1,28 @@
 package mcontest
 
-import "sports_service/server/models"
+import (
+	"sports_service/server/models"
+)
+
+// 添加赛程详情请求参数
+type AddScheduleDetail struct {
+	PlayerId         int64   `json:"player_id"`
+	PlayerName       string  `json:"player_name"`
+	GroupName        string  `json:"group_name"`
+	GroupNum         int     `json:"group_num"`
+	RoundOneScore    int     `json:"round_one_score"`
+	RoundTwoScore    int     `json:"round_two_score"`
+	RoundThreeScore  int     `json:"round_three_score"`
+	RoundOneIntegral int     `json:"round_one_integral"`
+	RoundTwoIntegral int     `json:"round_two_integral"`
+	Ranking          int     `json:"ranking"`
+	IsWin            int     `json:"is_win"`
+	NumInGroup       int     `json:"num_in_group"`
+	BeginTm          int     `json:"begin_tm"`
+	EndTm            int     `json:"end_tm"`
+	ScheduleId       int     `json:"schedule_id"`
+	ContestId        int     `json:"contest_id"`
+}
 
 // 添加选手信息
 func (m *ContestModel) AddPlayer(player *models.FpvContestPlayerInformation) (int64, error) {
@@ -71,4 +93,9 @@ func (m *ContestModel) SetIntegralRanking(info *models.FpvContestPlayerIntegralR
 // 更新赛事积分排行信息
 func (m *ContestModel) UpdateIntegralRanking(info *models.FpvContestPlayerIntegralRanking) (int64, error) {
 	return m.Engine.Update(info)
+}
+
+// 添加赛事详情
+func (m *ContestModel) AddContestScheduleDetail(list []*models.FpvContestScheduleDetail) (int64, error) {
+	return m.Engine.InsertMulti(list)
 }
