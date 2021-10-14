@@ -60,7 +60,7 @@ type ScheduleListDetailResp struct {
 	PlayerId   int64  `json:"player_id"`
 	PlayerName string `json:"player_name"`
 	Photo      string `json:"photo"`
-	//IsWin      int    `json:"is_win"`
+	IsWin      int    `json:"is_win"`
 	ContestId  int    `json:"contest_id"`
 	Ranking    int    `json:"ranking"`
 
@@ -182,12 +182,23 @@ const (
 	GET_SCHEDULE_DETAIL_BY_GROUP = "SELECT cs.*, p.id AS player_id, p.name AS player_name, p.photo FROM " +
 		"fpv_contest_schedule_detail AS cs LEFT JOIN fpv_contest_player_information AS p " +
 		"ON cs.player_id=p.id WHERE cs.contest_id=? AND cs.schedule_id=? ORDER BY group_num ASC, score ASC"
+
+	GET_SCHEDULE_DETAIL_BY_BACKEND = "SELECT p.id AS player_id, p.name AS player_name, p.photo, cs.* FROM " +
+		"fpv_contest_schedule_detail AS cs LEFT JOIN fpv_contest_player_information AS p ON p.id = cs.player_id " +
+		"AND cs.contest_id=? AND cs.schedule_id=? WHERE p.status = 0 ORDER BY cs.score is null, cs.score ASC, " +
+		"ISNULL(cs.ranking),cs.ranking ASC, p.id ASC"
+
+
 )
 // 获取赛程信息[成绩正序]
 func (m *ContestModel) GetScheduleDetailInfo(showType int, contestId, scheduleId string) ([]*ScheduleDetail, error) {
 	sql := GET_SCHEDULE_DETAIL_BY_SCORE
 	if showType == 2 {
 		sql = GET_SCHEDULE_DETAIL_BY_GROUP
+	}
+
+	if showType == 3 {
+		sql = GET_SCHEDULE_DETAIL_BY_BACKEND
 	}
 
 	var list []*ScheduleDetail
