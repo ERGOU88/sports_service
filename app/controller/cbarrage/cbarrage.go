@@ -43,10 +43,14 @@ func New(c *gin.Context) BarrageModule {
 func (svc *BarrageModule) SendBarrage(userId string, params *mbarrage.SendBarrageParams) int {
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测弹幕内容
-	isPass, err := client.TextModeration(params.Content)
-	if !isPass {
+	isPass, content, err := client.TextModeration(params.Content)
+	if err != nil {
 		log.Log.Errorf("barrage_trace: validate barrage content err: %s，pass: %v", err, isPass)
-		return errdef.BARRAGE_INVALID_CONTENT
+		return errdef.CLOUD_FILTER_FAIL
+	}
+
+	if !isPass {
+		params.Content = content
 	}
 
 	// 查询用户是否存在

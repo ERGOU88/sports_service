@@ -64,6 +64,19 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 		return errdef.POST_PARAMS_FAIL
 	}
 
+	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	// 检测帖子标题
+	isPass, content, err := client.TextModeration(params.Title)
+	if !isPass && err == nil {
+		params.Title = content
+	}
+
+	// 检测帖子内容
+	isOk, content, err := client.TextModeration(params.Describe)
+	if !isOk && err == nil {
+		params.Describe = content
+	}
+
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("post_trace: session begin err:%s", err)
@@ -188,18 +201,6 @@ func (svc *PostingModule) PublishPosting(userId string, params *mposting.PostPub
 // 审核帖子图片
 func (svc *PostingModule) ReviewPostInfo(postId int64, userId string, params *mposting.PostPublishParam) {
 	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
-	// 检测帖子标题
-	isPass, err := client.TextModeration(params.Title)
-	if !isPass || err != nil {
-		log.Log.Errorf("post_trace: validate title err: %s，pass: %v", err, isPass)
-	}
-
-	// 检测帖子内容
-	isOk, err := client.TextModeration(params.Describe)
-	if !isOk || err != nil {
-		log.Log.Errorf("post_trace: validate content err: %s，pass: %v", err, isOk)
-	}
-
 	num := 0
 	mp := make(map[int]*cos.ImageRecognitionResult, 0)
 	for index, imgUrl := range params.ImagesAddr {
@@ -244,8 +245,8 @@ func (svc *PostingModule) ReviewPostInfo(postId int64, userId string, params *mp
 		}
 	}
 
-	// 所有图片 及 标题、内容都通过审核 则 修改帖子状态为通过 相关数据也需修改状态
-	if num == len(params.ImagesAddr) && isPass && isOk {
+	// 所有图片通过审核 则 修改帖子状态为通过 相关数据也需修改状态
+	if num == len(params.ImagesAddr) {
 		now := int(time.Now().Unix())
 		svc.posting.Posting.Id = postId
 		svc.posting.Posting.Status = 1

@@ -6,17 +6,22 @@ import (
 )
 
 // 文本检测
-//func TestTextModeration(t *testing.T) {
-//	content := "尼玛"
-//	client := New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
-//	b, err := client.TextModeration(content)
-//	if err != nil {
-//		t.Errorf("text moderation err:%s", err)
-//		return
-//	}
-//
-//	t.Logf("text moderation pass:%v", b)
-//}
+func TestTextModeration(t *testing.T) {
+	content := "你好，尼玛"
+	client := New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
+	b, content, err := client.TextModeration(content)
+	if err != nil {
+		t.Errorf("text moderation err:%s", err)
+		return
+	}
+
+	if !b {
+		t.Logf("content:%s", content)
+
+	}
+
+	t.Logf("text moderation pass:%v", b)
+}
 
 // 生成签名
 //func TestGenerateSign(t *testing.T) {
@@ -62,8 +67,8 @@ import (
 //	t.Logf("mobileNum:%s, err:%s", mobileNum, err)
 //}
 
-func TestRecognitionImage(t *testing.T) {
-	client := New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, "")
-	res, err := client.RecognitionImage("https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/", "qweqweqwe.png")
-	t.Logf("res:%+v, err:%v", res, err)
-}
+//func TestRecognitionImage(t *testing.T) {
+//	client := New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, "")
+//	res, err := client.RecognitionImage("https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/fpv/", "qweqweqwe.png")
+//	t.Logf("res:%+v, err:%v", res, err)
+//}

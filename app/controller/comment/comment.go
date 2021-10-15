@@ -72,11 +72,21 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测评论内容
 	b := util.IsSpace([]rune(params.Content))
-	isPass, err := client.TextModeration(params.Content)
-	if !isPass || !b {
-		log.Log.Errorf("comment_trace: validate comment err: %s，pass: %v", err, isPass)
+	if !b {
+		log.Log.Errorf("comment_trace: validate comment fail, b: %v", b)
 		svc.engine.Rollback()
 		return errdef.COMMENT_INVALID_CONTENT, nil
+	}
+
+	isPass, content, err := client.TextModeration(params.Content)
+	if err != nil {
+		log.Log.Errorf("comment_trace: validate comment content err: %s，pass: %v", err, isPass)
+		svc.engine.Rollback()
+		return errdef.CLOUD_FILTER_FAIL, nil
+	}
+
+	if !isPass {
+		params.Content = content
 	}
 
 	// 查询用户是否存在
@@ -339,11 +349,21 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测评论内容
 	b := util.IsSpace([]rune(params.Content))
-	isPass, err := client.TextModeration(params.Content)
-	if !isPass || !b {
-		log.Log.Errorf("comment_trace: validate comment err: %s，pass: %v", err, isPass)
+	if !b {
+		log.Log.Errorf("comment_trace: validate comment fail,b: %v", b)
 		svc.engine.Rollback()
 		return errdef.COMMENT_INVALID_CONTENT, 0
+	}
+
+	isPass, content, err := client.TextModeration(params.Content)
+	if err != nil {
+		log.Log.Errorf("barrage_trace: validate barrage content err: %s，pass: %v", err, isPass)
+		svc.engine.Rollback()
+		return errdef.CLOUD_FILTER_FAIL, 0
+	}
+
+	if !isPass {
+		params.Content = content
 	}
 
 	// 查询用户是否存在
@@ -439,11 +459,15 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测评论内容
-	isPass, err := client.TextModeration(params.Content)
-	if !isPass {
+	isPass, filter, err := client.TextModeration(params.Content)
+	if err != nil {
 		log.Log.Errorf("comment_trace: validate reply content err: %s，pass: %v", err, isPass)
 		svc.engine.Rollback()
-		return errdef.COMMENT_INVALID_REPLY, nil
+		return errdef.CLOUD_FILTER_FAIL, nil
+	}
+
+	if !isPass {
+		params.Content = filter
 	}
 
 	// 查询用户是否存在

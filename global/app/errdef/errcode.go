@@ -142,6 +142,7 @@ const (
 
 	// 腾讯云相关错误码 11001 - 12000
 	CLOUD_COS_ACCESS_FAIL       = 11001
+	CLOUD_FILTER_FAIL           = 11002
 
 	// 帖子相关错误码 12001 - 13000
 	POST_INVALID_TITLE          = 12001
@@ -376,6 +377,7 @@ var MsgFlags = map[int]string{
 	SEARCH_CLEAN_HISTORY_FAIL:   "清空搜索记录失败",
 
 	CLOUD_COS_ACCESS_FAIL:       "通行证获取失败",
+	CLOUD_FILTER_FAIL:           "敏感词过滤失败",
 
 	POST_INVALID_TITLE:          "帖子标题含有违规文字",
 	POST_INVALID_CONTENT:        "帖子内容含有违规文字",

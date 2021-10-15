@@ -254,7 +254,7 @@ func (svc *VideoModule) GetVideoLabelList() []*mlabel.VideoLabel {
 func (svc *VideoModule) AddVideoLabel(param *mlabel.AddVideoLabelParam) int {
   client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
   // 检测热搜内容
-  isPass, err := client.TextModeration(param.LabelName)
+  isPass, _, err := client.TextModeration(param.LabelName)
   if !isPass || err != nil {
     return errdef.VIDEO_INVALID_LABEL_NAME
   }

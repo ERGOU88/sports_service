@@ -53,9 +53,18 @@ func (m *OrderModel) GetOrderCount() (int64, error) {
 // 获取订单列表
 func (m *OrderModel) GetOrderList(offset, size int) ([]*models.VenuePayOrders, error) {
 	var list []*models.VenuePayOrders
-	if err := m.Engine.Limit(size, offset).Find(&list); err != nil {
+	if err := m.Engine.Desc("id").Limit(size, offset).Find(&list); err != nil {
 		return nil, err
 	}
 
 	return list, nil
+}
+
+
+const (
+	GET_REFUND_RECORD_LIST = ""
+)
+// 获取退款列表
+func (m *OrderModel) GetRefundRecordList() {
+
 }

@@ -78,7 +78,7 @@ func (svc *NotifyModule) PushSystemNotify(param *umeng.SystemNotifyParams) int {
 
   client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
   // 检测推送内容
-  isPass, err := client.TextModeration(param.Content)
+  isPass, _, err := client.TextModeration(param.Content)
   if !isPass || err != nil {
     log.Log.Errorf("notify_trace: invalid send content, content:%s, err:%s", param.Content, err)
     return errdef.NOTIFY_INVALID_CONTENT
