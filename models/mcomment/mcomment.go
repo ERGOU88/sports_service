@@ -115,6 +115,7 @@ type ReplyCommentParams struct {
 type DelCommentParam struct {
 	CommentId      string     `binding:"required" json:"comment_id"`       // 评论id
 	CommentType    int32      `json:"comment_type"`                        // 评论类型 0 视频 1 帖子 2 资讯
+	UserId         string     `json:"user_id"`
 }
 
 // 评论举报

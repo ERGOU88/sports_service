@@ -242,3 +242,23 @@ func V2PublishComment(c *gin.Context) {
 
 	reply.Response(http.StatusOK, syscode)
 }
+
+func DelComment(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mcomment.DelCommentParam{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	userId, ok := c.Get(consts.USER_ID)
+	if !ok || userId == "" {
+		log.Log.Error("comment_trace: need login")
+		reply.Response(http.StatusOK, errdef.USER_NOT_EXISTS)
+		return
+	}
+
+	param.UserId = userId.(string)
+	svc := comment.New(c)
+	reply.Response(http.StatusOK, svc.DelComment(param))
+}

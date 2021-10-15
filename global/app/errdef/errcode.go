@@ -119,6 +119,8 @@ const (
 	COMMENT_INVALID_CONTENT     = 7006
 	COMMENT_INVALID_REPLY       = 7007
 	COMMENT_REPORT_FAIL         = 7008
+	COMMENT_DELETE_FAIL         = 7009
+	COMMENT_USER_NOT_MATCH      = 7010
 
 	// 短信验证码相关错误 8001-9000
 	SMS_CODE_INTERVAL_ERROR     = 8001
@@ -355,6 +357,8 @@ var MsgFlags = map[int]string{
 	COMMENT_INVALID_CONTENT: "评论中含有违规文字",
 	COMMENT_INVALID_REPLY:   "回复中含有违规文字",
 	COMMENT_REPORT_FAIL:     "举报评论失败",
+	COMMENT_DELETE_FAIL:     "删除评论失败",
+	COMMENT_USER_NOT_MATCH:  "用户不匹配",
 
 	SMS_CODE_INTERVAL_ERROR:     "一天内该手机获取验证码次数超限(最多10次)",
 	SMS_CODE_INTERVAL_SHORT:     "获取短信验证间隔时间过短(间隔60秒)",
