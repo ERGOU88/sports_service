@@ -105,8 +105,12 @@ func AddContestScheduleDetail(c *gin.Context) {
 }
 
 func ContestScheduleDetailList(c *gin.Context) {
-	//reply := errdef.New(c)
-
+	reply := errdef.New(c)
+	scheduleId := c.Query("schedule_id")
+	svc := contest.New(c)
+	code, list := svc.GetContestScheduleDetailList(scheduleId)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
 }
 
 func SetIntegralRanking(c *gin.Context) {

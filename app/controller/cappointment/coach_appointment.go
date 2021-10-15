@@ -135,7 +135,7 @@ func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentR
 	svc.Extra.CoachName = svc.coach.Coach.Name
 	svc.Extra.Address = svc.venue.Venue.Address
 	svc.Extra.CourseId = svc.course.Course.Id
-	svc.Extra.CourseName = svc.course.Course.Title
+	svc.Extra.CourseName = fmt.Sprintf("《%s》", svc.course.Course.Title)
 	svc.Extra.ProductImg = svc.course.Course.PromotionPic
 
 	orderId := util.NewOrderId()

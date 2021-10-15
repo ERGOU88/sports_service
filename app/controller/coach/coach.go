@@ -9,6 +9,7 @@ import (
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
+	"sports_service/server/models/mappointment"
 	"sports_service/server/models/mcoach"
 	"sports_service/server/models/mcourse"
 	"sports_service/server/models/morder"
@@ -188,13 +189,6 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 		return errdef.USER_NOT_EXISTS
 	}
 
-	ok, err := svc.coach.GetCoachInfoById(fmt.Sprint(param.CoachId))
-	if !ok || err != nil {
-		log.Log.Errorf("coach_trace: coach not found, coachId:%d", param.CoachId)
-		svc.engine.Rollback()
-		return errdef.COACH_NOT_EXISTS
-	}
-
 	ok, err = svc.order.GetOrder(param.OrderId)
 	if !ok || err != nil {
 		log.Log.Errorf("coach_trace: coach order not found, err:%s", err)
@@ -214,6 +208,20 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 		log.Log.Errorf("coach_trace: coach order not success, status:%d", svc.order.Order.Status)
 		svc.engine.Rollback()
 		return errdef.COACH_ORDER_NOT_SUCCESS
+	}
+
+	extra := mappointment.OrderResp{}
+	if err := util.JsonFast.UnmarshalFromString(svc.order.Order.Extra, &extra); err != nil {
+		log.Log.Errorf("coach_trace: unmarshal extra fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
+		svc.engine.Rollback()
+		return errdef.COACH_ORDER_NOT_EXISTS
+	}
+
+	ok, err := svc.coach.GetCoachInfoById(fmt.Sprint(extra.CoachId))
+	if !ok || err != nil {
+		log.Log.Errorf("coach_trace: coach not found, coachId:%d", param.CoachId)
+		svc.engine.Rollback()
+		return errdef.COACH_NOT_EXISTS
 	}
 
 	ok, err = svc.coach.HasEvaluateByUserId(userId, svc.order.Order.PayOrderId)
