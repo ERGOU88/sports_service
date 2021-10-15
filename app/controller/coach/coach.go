@@ -219,7 +219,7 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 
 	ok, err = svc.coach.GetCoachInfoById(fmt.Sprint(extra.CoachId))
 	if !ok || err != nil {
-		log.Log.Errorf("coach_trace: coach not found, coachId:%d", param.CoachId)
+		log.Log.Errorf("coach_trace: coach not found, coachId:%d", extra.CoachId)
 		svc.engine.Rollback()
 		return errdef.COACH_NOT_EXISTS
 	}
@@ -250,7 +250,7 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 	}
 
 	now := int(time.Now().Unix())
-	svc.coach.Evaluate.CoachId = param.CoachId
+	svc.coach.Evaluate.CoachId = extra.CoachId
 	svc.coach.Evaluate.UserId = userId
 	svc.coach.Evaluate.Star = param.Star
 	svc.coach.Evaluate.CreateAt = now
@@ -268,7 +268,7 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 	}
 
 	// 记录评价总计
-	if _, err := svc.coach.RecordCoachScoreInfo(param.CoachId, param.Star, now); err != nil {
+	if _, err := svc.coach.RecordCoachScoreInfo(extra.CoachId, param.Star, now); err != nil {
 		log.Log.Errorf("coach_trace: record coach score fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.COACH_PUB_EVALUATE_FAIL
