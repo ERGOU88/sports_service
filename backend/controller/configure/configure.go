@@ -150,7 +150,7 @@ func (svc *ConfigModule) GetHotSearch() []*models.HotSearch {
 func (svc *ConfigModule) AddHotSearch(params *mvideo.AddHotSearchParams) int {
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测热搜内容
-	isPass, err := client.TextModeration(params.HotSearch)
+	isPass, _, err := client.TextModeration(params.HotSearch)
 	if !isPass || err != nil {
 		return errdef.CONFIG_INVALID_HOT_SEARCH
 	}

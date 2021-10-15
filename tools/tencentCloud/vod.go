@@ -4,7 +4,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base64"
-	errs "errors"
 	"fmt"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors"
@@ -15,6 +14,7 @@ import (
 	"sports_service/server/app/config"
 	"sports_service/server/util"
 	"time"
+	"strings"
 )
 
 // 透传数据
@@ -123,9 +123,9 @@ func (tc *TencentCloud) ConfirmEvents(events []string) error {
 }
 
 // 文本内容检测
-func (tc *TencentCloud) TextModeration(content string) (bool, error) {
+func (tc *TencentCloud) TextModeration(content string) (bool, string, error) {
 	if content == "" {
-		return true, nil
+		return true, content, nil
 	}
 
 	credential := common.NewCredential(
@@ -146,12 +146,12 @@ func (tc *TencentCloud) TextModeration(content string) (bool, error) {
 	fmt.Println(err)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
 		fmt.Printf("An API error has returned: %s", err)
-		return false, err
+		return false, content, err
 	}
 	// 非SDK异常，直接失败。
 	if err != nil {
 		fmt.Printf("Request Pull Event error: %s", err)
-		return false, err
+		return false, content, err
 	}
 
 	// 打印返回的json字符串
@@ -161,10 +161,16 @@ func (tc *TencentCloud) TextModeration(content string) (bool, error) {
 	if *response.Response.Suggestion == "Block" {
 		fmt.Printf("Content Not Pass, Label:%s, Suggestion:%s, Content:%s",
 			*response.Response.Label, *response.Response.Suggestion, content)
-		return false, errs.New("content not pass")
+		if len(response.Response.Keywords) > 0 {
+			for _, str := range response.Response.Keywords {
+				content = strings.Replace(content, *str, "***", -1)
+			}
+		}
+
+		return false, content, nil
 	}
 
-	return true, nil
+	return true, content, nil
 }
 
 // taskId 任务id

@@ -123,19 +123,28 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 
 		client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 		// 检测帖子标题
-		isPass, err := client.TextModeration(params.Title)
-		if !isPass || err != nil {
+		isPass, content, err := client.TextModeration(params.Title)
+		if err != nil {
 			log.Log.Errorf("share_trace: validate title err: %s，pass: %v", err, isPass)
-			return errdef.POST_INVALID_TITLE
+			svc.engine.Rollback()
+			return errdef.CLOUD_FILTER_FAIL
+		}
+
+		if !isPass {
+			params.Title = content
 		}
 
 		// 检测帖子内容
-		isPass, err = client.TextModeration(params.Describe)
-		if !isPass || err != nil {
-			log.Log.Errorf("share_trace: validate content err: %s，pass: %v", err, isPass)
-			return errdef.POST_INVALID_CONTENT
+		isPass, content, err = client.TextModeration(params.Describe)
+		if err != nil {
+			log.Log.Errorf("share_trace: validate describe err:%s，pass: %v", err, isPass)
+			svc.engine.Rollback()
+			return errdef.CLOUD_FILTER_FAIL
 		}
 
+		if !isPass {
+			params.Describe = content
+		}
 
 		section, err := svc.community.GetSectionInfo(fmt.Sprint(params.SectionId))
 		if section == nil || err != nil {

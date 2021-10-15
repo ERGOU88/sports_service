@@ -38,8 +38,8 @@ func ValidateText(c *gin.Context) {
   }
 
   client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
-  isPass, err := client.TextModeration(param.Text)
-  if !isPass {
+  isPass, _,  err := client.TextModeration(param.Text)
+  if !isPass || err != nil {
   	log.Log.Errorf("cloud_trace: invalid param err: %s，pass: %v", err, isPass)
   	reply.Response(http.StatusOK, errdef.COMMENT_INVALID_CONTENT)
   	return

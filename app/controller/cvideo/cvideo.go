@@ -1116,7 +1116,7 @@ func (svc *VideoModule) CheckCustomLabel(userId string, params *mvideo.CustomLab
 
 	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测视频描述
-	isPass, err := client.TextModeration(params.CustomLabel)
+	isPass, _, err := client.TextModeration(params.CustomLabel)
 	if !isPass {
 		log.Log.Errorf("video_trace: validate custom label err: %s，pass: %v", err, isPass)
 		return errdef.VIDEO_INVALID_CUSTOM_LABEL
@@ -1233,7 +1233,7 @@ func (svc *VideoModule) CreateVideoAlbum(userId string, param *mvideo.CreateAlbu
 
 	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测视频专辑名称
-	isPass, err := client.TextModeration(param.AlbumName)
+	isPass, _, err := client.TextModeration(param.AlbumName)
 	if !isPass || err != nil {
 		log.Log.Errorf("video_trace: validate album name err: %s，pass: %v", err, isPass)
 		return errdef.VIDEO_INVALID_CUSTOM_LABEL, nil

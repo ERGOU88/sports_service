@@ -145,14 +145,14 @@ func (svc *UserModule) EditUserInfo(userId string, params *muser.EditUserInfoPar
 
 	client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	// 检测昵称
-	isPass, err := client.TextModeration(nickName)
+	isPass, _, err := client.TextModeration(nickName)
 	if !isPass {
 		log.Log.Errorf("user_trace: validate nick name err: %s，pass: %v", err, isPass)
 		return errdef.USER_INVALID_NAME
 	}
 
 	// 检测签名
-	isPass, err = client.TextModeration(params.Signature)
+	isPass, _, err = client.TextModeration(params.Signature)
 	if !isPass {
 		log.Log.Errorf("user_trace: validate signature err: %s，pass: %v", err, isPass)
 		return errdef.USER_INVALID_SIGNATURE
@@ -212,10 +212,14 @@ func (svc *UserModule) RecordUserFeedback(userId string, param *muser.FeedbackPa
 	if param.Describe != "" {
 		client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 		// 检测反馈的内容
-		isPass, err := client.TextModeration(param.Describe)
+		isPass, content, err := client.TextModeration(param.Describe)
+		if err != nil {
+			log.Log.Errorf("user_trace: validate content err: %s，pass: %v", err, isPass)
+			return errdef.CLOUD_FILTER_FAIL
+		}
+
 		if !isPass {
-			log.Log.Errorf("user_trace: validate feedback describe err: %s，pass: %v", err, isPass)
-			return errdef.USER_INVALID_FEEDBACK
+			param.Describe = content
 		}
 	}
 
