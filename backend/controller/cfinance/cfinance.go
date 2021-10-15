@@ -8,6 +8,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/morder"
+	"sports_service/server/models/mpay"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
 	"sports_service/server/util"
@@ -22,6 +23,7 @@ type FinanceModule struct {
 	user        *muser.UserModel
 	order       *morder.OrderModel
 	venue       *mvenue.VenueModel
+	pay         *mpay.PayModel
 }
 
 func New(c *gin.Context) FinanceModule {
@@ -35,6 +37,7 @@ func New(c *gin.Context) FinanceModule {
 		user: muser.NewUserModel(appSocket),
 		order: morder.NewOrderModel(venueSocket),
 		venue: mvenue.NewVenueModel(venueSocket),
+		pay: mpay.NewPayModel(venueSocket),
 		engine: venueSocket,
 	}
 }
@@ -52,7 +55,7 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 	}
 
 
-	var res []*morder.OrderRecord
+	res := make([]*morder.OrderRecord, len(list))
 	for index, item := range list {
 		info := &morder.OrderRecord{
 			Id:  item.Id,
@@ -60,6 +63,7 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 			OriginalAmount: fmt.Sprintf("%.2f", float64(item.OriginalAmount)/100),
 			CreateAt: time.Unix(int64(item.CreateAt), 0).Format(consts.FORMAT_TM),
 			Amount: fmt.Sprintf("%.2f", float64(item.Amount)/100),
+			Status: item.Status,
 		}
 
 		extra := mappointment.OrderResp{}
@@ -93,6 +97,13 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 			info.Detail = fmt.Sprintf("年卡 * %d", extra.Count)
 		}
 
+		ok, err = svc.pay.GetPaymentChannel(svc.order.Order.PayChannelId)
+		if ok && err == nil {
+			info.PayChannel = svc.pay.PayChannel.Title
+		}
 
+		res[index] = info
 	}
+
+	return errdef.SUCCESS, res
 }

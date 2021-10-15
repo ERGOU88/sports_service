@@ -19,7 +19,7 @@ type OrderRecord struct {
 	OriginalAmount  string    `json:"original_amount"`
 	Amount          string    `json:"amount"`
 	Detail          string    `json:"detail"`                // 订单详情 例如：月卡 * 3
-	Status          string    `json:"status"`
+	Status          int       `json:"status"`
 	PayChannel      string    `json:"pay_channel"`
 }
 
