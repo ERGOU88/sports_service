@@ -7,7 +7,7 @@ import (
 
 // 文本检测
 func TestTextModeration(t *testing.T) {
-	content := "你好，尼玛"
+	content := "你好 草尼玛"
 	client := New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
 	b, content, err := client.TextModeration(content)
 	if err != nil {
