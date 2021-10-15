@@ -23,5 +23,7 @@ func Router(engine *gin.Engine) {
 		comment.GET("/reply/list", sign.CheckSign(), ReplyList)
 		// 举报评论
 		comment.POST("/report", CommentReport)
+		// 删除评论
+		comment.POST("/del", sign.CheckSign(), token.TokenAuth(), DelComment)
 	}
 }

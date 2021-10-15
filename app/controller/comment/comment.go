@@ -1643,3 +1643,110 @@ func (svc *CommentModule) AddCommentReport(params *mcomment.CommentReportParam) 
 
 	return errdef.SUCCESS
 }
+
+// 删除评论
+func (svc *CommentModule) DelComment(param *mcomment.DelCommentParam) int {
+	switch param.CommentType {
+	case 0:
+		return svc.DelVideoComments(param)
+	case 1:
+		return svc.DelPostComments(param)
+	case 2:
+		return svc.DelInformationComments(param)
+	}
+
+	return errdef.INVALID_PARAMS
+}
+
+// 删除资讯评论
+func (svc *CommentModule) DelInformationComments(param *mcomment.DelCommentParam) int {
+	comment := svc.comment.GetInformationCommentById(param.CommentId)
+	if comment == nil {
+		return errdef.COMMENT_NOT_FOUND
+	}
+
+	// 查询用户是否存在
+	user := svc.user.FindUserByUserid(param.UserId)
+	if user == nil {
+		log.Log.Errorf("comment_trace: user not found, userId:%s", param.UserId)
+		return errdef.USER_NOT_EXISTS
+	}
+
+	if param.UserId != comment.UserId {
+		log.Log.Errorf("comment_trace: user not match, param.UserId:%s, comment.UserId:%s", param.UserId, comment.UserId)
+		return errdef.COMMENT_USER_NOT_MATCH
+	}
+
+	// 0 逻辑删除
+	comment.Status = 0
+	condition := fmt.Sprintf("id=%d", comment.Id)
+	cols := "status"
+	affected, err := svc.comment.UpdateInformationCommentInfo(condition, cols)
+	if affected != 1 || err != nil {
+		return errdef.COMMENT_DELETE_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
+// 删除帖子评论
+func (svc *CommentModule) DelPostComments(param *mcomment.DelCommentParam) int {
+	comment := svc.comment.GetPostCommentById(param.CommentId)
+	if comment == nil {
+		return errdef.COMMENT_NOT_FOUND
+	}
+
+	// 查询用户是否存在
+	user := svc.user.FindUserByUserid(param.UserId)
+	if user == nil {
+		log.Log.Errorf("comment_trace: user not found, userId:%s", param.UserId)
+		return errdef.USER_NOT_EXISTS
+	}
+
+	if param.UserId != comment.UserId {
+		log.Log.Errorf("comment_trace: user not match, param.UserId:%s, comment.UserId:%s", param.UserId, comment.UserId)
+		return errdef.COMMENT_USER_NOT_MATCH
+	}
+
+	// 0 逻辑删除
+	comment.Status = 0
+	condition := fmt.Sprintf("id=%d", comment.Id)
+	cols := "status"
+	affected, err := svc.comment.UpdatePostCommentInfo(condition, cols)
+	if affected != 1 || err != nil {
+		return errdef.COMMENT_DELETE_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
+// 删除视频评论（软删除）
+func (svc *CommentModule) DelVideoComments(param *mcomment.DelCommentParam) int {
+	comment := svc.comment.GetVideoCommentById(param.CommentId)
+	if comment == nil {
+		return errdef.COMMENT_NOT_FOUND
+	}
+
+	// 查询用户是否存在
+	user := svc.user.FindUserByUserid(param.UserId)
+	if user == nil {
+		log.Log.Errorf("comment_trace: user not found, userId:%s", param.UserId)
+		return errdef.USER_NOT_EXISTS
+	}
+
+	if param.UserId != comment.UserId {
+		log.Log.Errorf("comment_trace: user not match, param.UserId:%s, comment.UserId:%s", param.UserId, comment.UserId)
+		return errdef.COMMENT_USER_NOT_MATCH
+	}
+
+	// 0 逻辑删除
+	comment.Status = 0
+	condition := fmt.Sprintf("id=%d", comment.Id)
+	cols := "status"
+	affected, err := svc.comment.UpdateVideoCommentInfo(condition, cols)
+	if affected != 1 || err != nil {
+		return errdef.COMMENT_DELETE_FAIL
+	}
+
+	return errdef.SUCCESS
+}
