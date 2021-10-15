@@ -287,7 +287,7 @@ func (svc *CoachModule) GetCoachScore(coachId string) (totalNum int, score float
 		score = 0
 	} else {
 		totalNum =  svc.coach.CoachScore.TotalNum
-		score = float64(svc.coach.CoachScore.TotalScore) / float64(svc.coach.CoachScore.TotalNum)
+		score = util.TruncFloat(float64(svc.coach.CoachScore.TotalScore) / float64(svc.coach.CoachScore.TotalNum), 1)
 	}
 
 	return

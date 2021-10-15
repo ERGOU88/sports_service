@@ -469,3 +469,8 @@ func RenderNode(n *html.Node) string {
 	return buf.String()
 }
 
+// prec 代表小数位数
+func TruncFloat(f float64, prec int) float64 {
+	x := math.Pow10(prec)
+	return math.Trunc(f * x) / x
+}
