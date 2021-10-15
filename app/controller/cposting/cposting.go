@@ -299,7 +299,7 @@ func (svc *PostingModule) GetPostingType(params *mposting.PostPublishParam) (pos
 	//	return
 	//}
 
-	if params.Describe != "" && len(params.ImagesAddr) > 0 {
+	if params.Describe != "" && len(params.ImagesAddr) > 0 || len(params.ImagesAddr) > 0 {
 		// 图文
 		postType = consts.POST_TYPE_IMAGE
 		return
