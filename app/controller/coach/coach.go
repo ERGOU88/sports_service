@@ -189,7 +189,7 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 		return errdef.USER_NOT_EXISTS
 	}
 
-	ok, err = svc.order.GetOrder(param.OrderId)
+	ok, err := svc.order.GetOrder(param.OrderId)
 	if !ok || err != nil {
 		log.Log.Errorf("coach_trace: coach order not found, err:%s", err)
 		svc.engine.Rollback()
@@ -217,7 +217,7 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 		return errdef.COACH_ORDER_NOT_EXISTS
 	}
 
-	ok, err := svc.coach.GetCoachInfoById(fmt.Sprint(extra.CoachId))
+	ok, err = svc.coach.GetCoachInfoById(fmt.Sprint(extra.CoachId))
 	if !ok || err != nil {
 		log.Log.Errorf("coach_trace: coach not found, coachId:%d", param.CoachId)
 		svc.engine.Rollback()
