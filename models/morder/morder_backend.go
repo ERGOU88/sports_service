@@ -25,6 +25,12 @@ type OrderRecord struct {
 	PayChannel      string    `json:"pay_channel"`
 }
 
+// 财务模块 订单统计数据
+type OrderStat struct {
+	TopInfo        map[string]interface{}      `json:"top_info"`         // 顶部统计数据
+}
+
+
 // 获取场馆销售总额 已付款的
 func (m *OrderModel) GetTotalSalesByVenue(venueId string) (int64, error) {
 	return m.Engine.Where("venue_id=?", venueId).In("status", []int{2, 3, 4, 5, 6}).SumInt(m.Order, "amount")
@@ -124,8 +130,12 @@ func (m *OrderModel) GetRevenueFlow(minDate, maxDate, orderId string, offset, si
 
 // 获取总收入
 func (m *OrderModel) GetTotalRevenue(minDate, maxDate string) (int64, error) {
-	return m.Engine.Where("date(from_unixtime(create_at)) >= ? AND date(from_unixtime(create_at)) <= ?",
-		minDate, maxDate).In("status", []int{2, 3, 4, 5, 6}).SumInt(m.Order, "amount")
+	if minDate != "" && maxDate != "" {
+		m.Engine.Where("date(from_unixtime(create_at)) >= ? AND date(from_unixtime(create_at)) <= ?",
+			minDate, maxDate)
+	}
+
+	return m.Engine.In("status", []int{2, 3, 4, 5, 6}).SumInt(m.Order, "amount")
 }
 
 // 获取退款总金额
@@ -133,3 +143,44 @@ func (m *OrderModel) GetTotalRefund(minDate, maxDate string) (int64, error) {
 	return m.Engine.Where("date(from_unixtime(create_at)) >= ? AND date(from_unixtime(create_at)) <= ?",
 		minDate, maxDate).In("status", []int{4, 5}).SumInt(m.Order, "refund_amount")
 }
+
+// 通过日期新增会员用户数 / 总会员数
+func (m *OrderModel) GetVipUserCount(date string) (int64, error) {
+	if date != "" {
+		m.Engine.Where("date(from_unixtime(create_at))=?", date)
+	}
+
+	return m.Engine.Count(&models.VenueVipInfo{})
+}
+
+// 通过日期获取成功订单数[成功支付]
+func (m *OrderModel) GetOrderNum(minDate, maxDate string) (int64, error) {
+	return m.Engine.Where("date(from_unixtime(create_at)) >= ? AND date(from_unixtime(create_at)) <=?", minDate, maxDate).In("status", []int{2,3,4,5,6}).Count(m.Order)
+}
+
+// 通过日期获取场馆新增用户
+func (m *OrderModel) GetDailyNewUsers() {
+
+}
+
+const (
+	GET_VENUE_TOTAL_USER = "SELECT count(distinct o.user_id) AS count FROM venue_order_product_info AS vop " +
+		"LEFT JOIN venue_pay_orders AS o ON vop.pay_order_id=o.pay_order_id WHERE o.status in(2,3,4,5,6) " +
+		"AND vop.product_category in(1000,2000)"
+)
+// 获取所有场馆总用户数[会员/课程/私教/次卡]
+func (m *OrderModel) GetVenueTotalUser() int64 {
+	type stat struct {
+		Count   int64
+	}
+
+	tmp := stat{}
+	ok, err := m.Engine.SQL(GET_VENUE_TOTAL_USER).Get(&tmp)
+	if !ok || err != nil {
+		return 0
+	}
+
+	return tmp.Count
+}
+
+

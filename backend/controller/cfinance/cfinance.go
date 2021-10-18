@@ -274,3 +274,63 @@ func (svc *FinanceModule) GetTotalRevenue(minDate, maxDate string) int64 {
 
 	return total
 }
+
+// 财务统计
+func (svc *FinanceModule) HomePageStat(minDate, maxDate string) (int, *morder.OrderStat){
+	// 总销售额
+	totalSales, err := svc.order.GetTotalRevenue("", "")
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+
+	orderStat := &morder.OrderStat{
+		TopInfo: make(map[string]interface{}, 0),
+	}
+	orderStat.TopInfo["total_sales"] = totalSales
+
+	today := time.Now().Format(consts. FORMAT_DATE)
+	todaySales, err := svc.order.GetTotalRevenue(today, today)
+	if err != nil {
+		return errdef.ERROR, orderStat
+	}
+	orderStat.TopInfo["today_sales"] = todaySales
+
+
+	yesterday := time.Now().AddDate(0, 0, -1).Format(consts.FORMAT_DATE)
+	yesterdaySales, err := svc.order.GetTotalRevenue(yesterday, yesterday)
+	if err != nil {
+		return errdef.ERROR, orderStat
+	}
+	orderStat.TopInfo["yesterday_sales"] = yesterdaySales
+
+	if todaySales > 0 && yesterdaySales > 0 || todaySales == 0 && yesterdaySales > 0 {
+		orderStat.TopInfo["sales_rate"] = fmt.Sprintf("%.0f%s", (float64(todaySales)/float64(yesterdaySales)-1)*100, "%")
+	}
+
+	if todaySales > 0 && yesterdaySales == 0 || todaySales == 0 && yesterdaySales == 0 {
+		orderStat.TopInfo["sales_rate"] = "--%"
+	}
+
+	orderStat.TopInfo["total_user"] = svc.order.GetVenueTotalUser()
+	totalVip, err := svc.order.GetVipUserCount("")
+	if err != nil {
+		return errdef.ERROR, orderStat
+	}
+
+	orderStat.TopInfo["total_vip"] = totalVip
+
+	todayOrder, err := svc.order.GetOrderNum(today, today)
+	if err != nil {
+		return errdef.ERROR, orderStat
+	}
+	orderStat.TopInfo["today_order"] = todayOrder
+
+	week := time.Now().AddDate(0, 0, -6).Format(consts.FORMAT_DATE)
+	weekOrder, err := svc.order.GetOrderNum(week, today)
+	if err != nil {
+		return errdef.ERROR, orderStat
+	}
+	orderStat.TopInfo["week_order"] = weekOrder
+
+	return errdef.SUCCESS, orderStat
+}

@@ -37,3 +37,13 @@ func RevenueFlow(c *gin.Context) {
 	reply.Data["total_revenue"] = total
 	reply.Response(http.StatusOK, code)
 }
+
+func HomePageStat(c *gin.Context) {
+	reply := errdef.New(c)
+	minDate := c.Query("min_date")
+	maxDate := c.Query("max_date")
+	svc := cfinance.New(c)
+	code, stat := svc.HomePageStat(minDate, maxDate)
+	reply.Data["detail"] = stat
+	reply.Response(http.StatusOK, code)
+}
