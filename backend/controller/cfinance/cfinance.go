@@ -5,7 +5,9 @@ import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
+	"sports_service/server/models"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/morder"
 	"sports_service/server/models/mpay"
@@ -67,36 +69,17 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 		}
 
 		extra := mappointment.OrderResp{}
-		if err := util.JsonFast.UnmarshalFromString(item.Extra, &extra); err != nil {
-			continue
+		if err := util.JsonFast.UnmarshalFromString(item.Extra, &extra); err == nil {
+			info.MobileNum = extra.MobileNum
 		}
-
-		info.MobileNum = extra.MobileNum
 
 		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.Id))
 		if ok && err == nil {
 			info.VenueName = svc.venue.Venue.VenueName
 		}
 
-		switch item.ProductType {
-		case consts.ORDER_TYPE_APPOINTMENT_VENUE:
-			info.Detail = fmt.Sprintf("预约场馆 * %d", extra.Count)
-		case consts.ORDER_TYPE_APPOINTMENT_COACH:
-			info.Detail = fmt.Sprintf("预约私教 %s", extra.CoachName)
-		case consts.ORDER_TYPE_APPOINTMENT_COURSE:
-			info.Detail = fmt.Sprintf("预约课程 %s", extra.CourseName)
-		case consts.ORDER_TYPE_EXPERIENCE_CARD:
-			info.Detail = fmt.Sprintf("次卡 * %d", extra.Count)
-		case consts.ORDER_TYPE_MONTH_CARD:
-			info.Detail = fmt.Sprintf("月卡 * %d", extra.Count)
-		case consts.ORDER_TYPE_SEANSON_CARD:
-			info.Detail = fmt.Sprintf("季卡 * %d", extra.Count)
-		case consts.ORDER_TYPE_HALF_YEAR_CARD:
-			info.Detail = fmt.Sprintf("半年卡 * %d", extra.Count)
-		case consts.ORDER_TYPE_YEAR_CARD:
-			info.Detail = fmt.Sprintf("年卡 * %d", extra.Count)
-		}
-
+		productName := svc.GetProductName(item.ProductType)
+		info.Detail = fmt.Sprintf("%s * %d", productName, extra.Count)
 		ok, err = svc.pay.GetPaymentChannel(svc.order.Order.PayChannelId)
 		if ok && err == nil {
 			info.PayChannel = svc.pay.PayChannel.Title
@@ -106,4 +89,188 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 	}
 
 	return errdef.SUCCESS, res
+}
+
+// 获取退款流水列表
+func (svc *FinanceModule) GetRefundList(orderId string, page, size int) (int, []*morder.RefundInfo) {
+	offset := (page - 1) * size
+	if orderId != "" {
+		offset = 0
+		size = 1
+	}
+
+	list, err := svc.order.GetRefundRecordList(orderId, offset, size)
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*morder.RefundInfo{}
+	}
+
+	for _, item := range list {
+		info := &morder.RefundInfo{
+			Id:  item.Id,
+			PayOrderId: item.PayOrderId,
+			AmountCn: fmt.Sprintf("%.2f", float64(item.Amount)/100),
+			CreateAtCn: time.Unix(item.CreateAt, 0).Format(consts.FORMAT_TM),
+			RefundAmountCn: fmt.Sprintf("%.2f", float64(item.RefundAmount)/100),
+			Status: item.Status,
+			RefundFeeCn: fmt.Sprintf("%.2f", float64(item.RefundFee)/100),
+		}
+
+		extra := mappointment.OrderResp{}
+		if err := util.JsonFast.UnmarshalFromString(item.Extra, &extra); err == nil {
+			info.MobileNum = extra.MobileNum
+		}
+
+		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.Id))
+		if ok && err == nil {
+			info.VenueName = svc.venue.Venue.VenueName
+		}
+
+		info.Detail = svc.GetProductName(item.ProductType)
+
+		if info.OrderType == 1001 {
+			info.OrderTypeCn = "线上退单"
+		}
+
+		if info.OrderType == 1002 {
+			info.OrderTypeCn = "线下退单"
+		}
+
+		ok, err = svc.pay.GetPaymentChannel(svc.order.Order.PayChannelId)
+		if ok && err == nil {
+			info.RefundChannelCn = svc.pay.PayChannel.Title
+		}
+
+	}
+
+	return errdef.SUCCESS, list
+}
+
+// 获取订单收益流水[已成功/已付款]
+func (svc *FinanceModule) GetRevenueFlow(queryMinDate, queryMaxDate, orderId string, page, size int) (int, int64, []*morder.OrderRecord) {
+	minDate := time.Now().Format(consts. FORMAT_DATE)
+	maxDate := time.Now().Format(consts. FORMAT_DATE)
+	if queryMinDate != "" && queryMaxDate != "" {
+		minDate = queryMinDate
+		maxDate = queryMaxDate
+	}
+
+	offset := (page - 1) * size
+	list, err := svc.order.GetRevenueFlow(minDate, maxDate, orderId, offset, size)
+	if err != nil {
+		return errdef.ERROR, 0, []*morder.OrderRecord{}
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, 0, []*morder.OrderRecord{}
+	}
+
+	res := make([]*morder.OrderRecord, 0)
+	for _, item := range list {
+		statusCn, amountCn := svc.GetOrderStatusCn(item)
+		info := &morder.OrderRecord{
+			Id:    item.Id,
+			PayOrderId: item.PayOrderId,
+			CreateAt: time.Unix(int64(item.CreateAt), 0).Format(consts.FORMAT_TM),
+			Amount: amountCn,
+		    StatusCn: statusCn,
+		}
+
+		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.Id))
+		if ok && err == nil {
+			info.VenueName = svc.venue.Venue.VenueName
+		}
+
+		ok, err = svc.pay.GetPaymentChannel(svc.order.Order.PayChannelId)
+		if ok && err == nil {
+			info.PayChannel = svc.pay.PayChannel.Title
+		}
+
+		extra := mappointment.OrderResp{}
+		if err := util.JsonFast.UnmarshalFromString(item.Extra, &extra); err == nil {
+			info.MobileNum = extra.MobileNum
+		}
+
+		info.Detail = svc.GetProductName(item.ProductType)
+		res = append(res, info)
+
+		// 如果是退款流水 则应同时有一条购买流水
+		if info.Status == consts.ORDER_TYPE_REFUND_SUCCESS || item.Status == consts.ORDER_TYPE_REFUND_WAIT {
+			item.Status = consts.ORDER_TYPE_PAID
+			info.StatusCn, info.Amount = svc.GetOrderStatusCn(item)
+			res = append(res, info)
+		}
+	}
+
+	// 累计收入= 销售总金额 - 退款总金额
+	total := svc.GetTotalRevenue(minDate, maxDate) - svc.GetTotalRefund(minDate, maxDate)
+
+	return errdef.SUCCESS, total, res
+}
+
+func (svc *FinanceModule) GetOrderStatusCn(item *models.VenuePayOrders) (string, string) {
+	var statusCn, amountCn string
+	switch item.Status {
+	// 已支付/已完成/已过期 展示购买
+	case consts.ORDER_TYPE_PAID, consts.ORDER_TYPE_COMPLETED, consts.ORDER_TYPE_EXPIRE:
+		statusCn = "购买"
+		amountCn = fmt.Sprintf("%.2f", float64(item.Amount)/100)
+	// 退款中/已退款 展示退单
+	case consts.ORDER_TYPE_REFUND_WAIT, consts.ORDER_TYPE_REFUND_SUCCESS:
+		statusCn = "退单"
+		amountCn = fmt.Sprintf("%.2f", float64(item.RefundAmount)/100)
+	}
+
+	return statusCn, amountCn
+
+}
+
+func (svc *FinanceModule) GetProductName(productType int) string {
+	var productName string
+	switch productType {
+	case consts.ORDER_TYPE_APPOINTMENT_VENUE:
+		productName = "预约场馆"
+	case consts.ORDER_TYPE_APPOINTMENT_COACH:
+		productName = "预约私教"
+	case consts.ORDER_TYPE_APPOINTMENT_COURSE:
+		productName = "预约课程"
+	case consts.ORDER_TYPE_EXPERIENCE_CARD:
+		productName = "次卡"
+	case consts.ORDER_TYPE_MONTH_CARD:
+		productName = "月卡"
+	case consts.ORDER_TYPE_SEANSON_CARD:
+		productName = "季卡"
+	case consts.ORDER_TYPE_HALF_YEAR_CARD:
+		productName = "半年卡"
+	case consts.ORDER_TYPE_YEAR_CARD:
+		productName = "年卡"
+	default:
+	   productName = "实物商品"
+	}
+
+	return productName
+}
+
+// 获取退款总额
+func (svc *FinanceModule) GetTotalRefund(minDate, maxDate string) int64 {
+	total, err := svc.order.GetTotalRefund(minDate, maxDate)
+	if err != nil {
+		return 0
+	}
+
+	return total
+}
+
+// 获取总收益
+func (svc *FinanceModule) GetTotalRevenue(minDate, maxDate string) int64 {
+	total, err := svc.order.GetTotalRevenue(minDate, maxDate)
+	if err != nil {
+		log.Log.Errorf("finance_trace: get total revenue fail, err:%s", err)
+		return 0
+	}
+
+	return total
 }
