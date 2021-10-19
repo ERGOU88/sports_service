@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sports_service/server/global/consts"
+	"sports_service/server/models"
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/mvideo"
 	"strconv"
@@ -73,4 +74,16 @@ func UploadSign(c *gin.Context) {
 	reply.Data["task_id"] = taskId
 
 	reply.Response(http.StatusOK, syscode)
+}
+
+func PubInformation(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &models.Information{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cpub.New(c)
+	reply.Response(http.StatusOK, 	svc.PubInformation(param))
 }

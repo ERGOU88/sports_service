@@ -409,3 +409,23 @@ func (svc *PubModule) VerifyContentLen(postType int, content, title string) bool
 
 	return true
 }
+
+// 发布资讯
+func (svc *PubModule) PubInformation(param *models.Information) int {
+	now := int(time.Now().Unix())
+	param.CreateAt = now
+	if _, err := svc.information.AddInformation(param); err != nil {
+		return errdef.ERROR
+	}
+
+	svc.information.Statistic.NewsId = param.Id
+	svc.information.Statistic.CreateAt = now
+	svc.information.Statistic.UpdateAt = now
+	// 初始化资讯统计数据
+	if _, err := svc.information.AddInformationStatistic(); err != nil {
+		log.Log.Errorf("information_trace: add statistic id:%d, err:%s", param.Id, err)
+		return errdef.ERROR
+	}
+
+	return errdef.SUCCESS
+}

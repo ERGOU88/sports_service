@@ -52,6 +52,10 @@ func (m *InformationModel) GetInformationList(condition string, offset, size int
 	return list, nil
 }
 
+func (m *InformationModel) AddInformation(information *models.Information) (int64, error) {
+	return m.Engine.InsertOne(information)
+}
+
 // 资讯统计初始化
 func (m *InformationModel) AddInformationStatistic() (int64, error) {
 	return m.Engine.InsertOne(m.Statistic)
