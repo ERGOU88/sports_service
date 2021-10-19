@@ -434,7 +434,7 @@ func (svc *FinanceModule) GetChartStat(queryMinDate, queryMaxDate string) (int, 
 	var salesResultList []morder.ResultList
 	salesResultList = append(salesResultList, morder.ResultList{
 		Title: "销售总额",
-		List:  svc.ResultInfoByDate(salesByDate, days, 0, 1),
+		List:  svc.ResultInfoByDate(salesByDate, days, 0, 0),
 	}, morder.ResultList{
 		Title: "课程预约",
 		List:  svc.ResultInfoByDate(salesByProduct, days, consts.ORDER_TYPE_APPOINTMENT_COURSE, 1),
@@ -455,7 +455,7 @@ func (svc *FinanceModule) GetChartStat(queryMinDate, queryMaxDate string) (int, 
 	var payChannelResultList []morder.ResultList
 	payChannelResultList = append(payChannelResultList, morder.ResultList{
 		Title: "收款总额",
-		List: svc.ResultInfoByDate(salesByDate, days, 0, 2),
+		List: svc.ResultInfoByDate(salesByDate, days, 0, 0),
 	}, morder.ResultList{
 		Title: "支付宝支付",
 		List:  svc.ResultInfoByDate(salesByDate, days, 1, 2),
@@ -501,6 +501,10 @@ func (svc *FinanceModule) ResultInfoByDate(data []*morder.SalesDetail, days, con
 			}
 
 			switch queryType {
+			// 收款总额
+			case 0:
+				mapList[date] = v.TotalSales
+
 			// 通过商品类型查询
 			case 1:
 				// 卡类 包含 次卡/月卡/季卡/年卡
@@ -509,11 +513,10 @@ func (svc *FinanceModule) ResultInfoByDate(data []*morder.SalesDetail, days, con
 						mapList[date] = val.(int) + v.TotalSales
 						continue
 					}
-				}
 
-				if condition == v.ProductType {
 					mapList[date] = v.TotalSales
 				}
+
 			// 通过支付渠道查询
 			case 2:
 				switch condition {
