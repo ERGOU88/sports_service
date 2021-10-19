@@ -209,7 +209,7 @@ type Result struct {
 }
 
 // 获取销售明细
-func (m *OrderModel) GetSalesDetail(queryType int, minDate, maxDate string) ([]SalesDetail, error) {
+func (m *OrderModel) GetSalesDetail(queryType int, minDate, maxDate string) ([]*SalesDetail, error) {
 	sql := "SELECT count(1) AS count, avg(amount) AS avg, product_type,date(from_unixtime(create_at)) AS dt, sum(amount) AS total_sales, " +
 		"sum(if(pay_channel_id=1, amount, 0)) AS alipay, sum(if(pay_channel_id=2, amount, 0)) AS wxpay, " +
 		"sum(if(status=5, refund_amount, 0)) AS refund_amount, sum(if(status=5, 1, 0)) AS refund_count, " +
@@ -230,7 +230,7 @@ func (m *OrderModel) GetSalesDetail(queryType int, minDate, maxDate string) ([]S
 		sql += "GROUP BY dt,product_type"
 	}
 
-	var list []SalesDetail
+	var list []*SalesDetail
 	if err := m.Engine.SQL(sql).Find(&list); err != nil {
 		return nil, err
 	}
