@@ -507,13 +507,18 @@ func (svc *FinanceModule) ResultInfoByDate(data []*morder.SalesDetail, days, con
 
 			// 通过商品类型查询
 			case 1:
-				// 卡类 包含 次卡/月卡/季卡/年卡
+				// 卡类 包含 次卡/月卡/季卡/年卡 需叠加
 				if v.ProductType >=2000 && v.ProductType < 3000 && condition == 2000 {
 					if val, ok := mapList[date]; ok {
 						mapList[date] = val.(int) + v.TotalSales
 						continue
 					}
 
+					mapList[date] = v.TotalSales
+					continue
+				}
+
+				if v.ProductType == condition {
 					mapList[date] = v.TotalSales
 				}
 
