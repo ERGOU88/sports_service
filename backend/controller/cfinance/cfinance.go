@@ -491,7 +491,7 @@ func (svc *FinanceModule) GetRingRatio(current, before int64) string {
 }
 
 
-func (svc *FinanceModule) ResultInfoByDate(data []morder.SalesDetail, days, condition, queryType int) map[string]interface{} {
+func (svc *FinanceModule) ResultInfoByDate(data []*morder.SalesDetail, days, condition, queryType int) map[string]interface{} {
 	mapList := make(map[string]interface{})
 	for i := 0; i <= days; i++ {
 		date := time.Now().AddDate(0, 0, -i).Format("2006-01-02")
