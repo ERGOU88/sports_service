@@ -215,7 +215,8 @@ func (m *OrderModel) GetSalesDetail(queryType int, minDate, maxDate string) ([]*
 		"sum(if(status=5, refund_amount, 0)) AS refund_amount, sum(if(status=5, 1, 0)) AS refund_count, " +
 		"sum(if(pay_channel_id=3,amount,0)) AS cash FROM venue_pay_orders WHERE status in(2,3,4,5,6) "
 	if minDate != "" && maxDate != "" {
-		sql += fmt.Sprintf("AND date(FROM_UNIXTIME(create_at)) >= %s AND date(FROM_UNIXTIME(create_at)) <= %s ", minDate, maxDate)
+		sql += fmt.Sprintf("AND date(FROM_UNIXTIME(create_at)) >= '%s' AND date(FROM_UNIXTIME(create_at)) <= '%s'" +
+			" ", minDate, maxDate)
 	}
 
 	switch queryType {
