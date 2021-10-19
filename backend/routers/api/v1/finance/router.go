@@ -12,7 +12,9 @@ func Router(engine *gin.Engine) {
 		finance.GET("/refund/list", RefundList)
 		// 收益流水
 		finance.GET("/revenue/flow", RevenueFlow)
-		// 财务首页统计
-		finance.GET("/homepage/stat", HomePageStat)
+		// 财务首页 顶部栏统计
+		finance.GET("/top/stat", TopStat)
+		// 财务首页 图表统计
+		finance.GET("/chart/stat", ChartStat)
 	}
 }

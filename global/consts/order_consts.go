@@ -2,7 +2,8 @@ package consts
 
 
 const (
-    // 1001 场馆预约 2101临时卡 2201 次卡 2311 购买月卡 2321 购买季卡 2331 半年卡 2341 购买年卡 3001 私教（教练）订单 3002 课程订单 4001 充值订单
+    // 1001 场馆预约 2101 临时卡 2201 次卡 2311 购买月卡 2321 购买季卡 2331 半年卡 2341 购买年卡 3001 私教（教练）订单 3002 课程订单
+    // 4001 充值订单 5101 实体商品 5102 线下结算
     ORDER_TYPE_APPOINTMENT_VENUE  = 1001
     ORDER_TYPE_INTERIM_CARD       = 2101
     ORDER_TYPE_EXPERIENCE_CARD    = 2201
@@ -12,6 +13,8 @@ const (
     ORDER_TYPE_YEAR_CARD          = 2341
     ORDER_TYPE_APPOINTMENT_COACH  = 3001
     ORDER_TYPE_APPOINTMENT_COURSE = 3002
+    ORDER_TYPE_PHYSICAL_GOODS     = 5101
+    ORDER_TYPE_SETTLEMENT         = 5102
 )
 
 const (

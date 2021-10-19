@@ -145,9 +145,9 @@ func (m *OrderModel) GetTotalRefund(minDate, maxDate string) (int64, error) {
 }
 
 // 通过日期新增会员用户数 / 总会员数
-func (m *OrderModel) GetVipUserCount(date string) (int64, error) {
-	if date != "" {
-		m.Engine.Where("date(from_unixtime(create_at))=?", date)
+func (m *OrderModel) GetVipUserCount(minDate, maxDate string) (int64, error) {
+	if minDate != "" && maxDate != "" {
+		m.Engine.Where("date(from_unixtime(create_at))>=? AND date(from_unixtime(create_at))<=?", minDate, maxDate)
 	}
 
 	return m.Engine.Count(&models.VenueVipInfo{})
@@ -183,4 +183,57 @@ func (m *OrderModel) GetVenueTotalUser() int64 {
 	return tmp.Count
 }
 
+type SalesDetail struct {
+	Count          int64    `json:"count"`
+	Avg            float64  `json:"avg"`
+	ProductType    int      `json:"product_type"`
+	ProductName    string   `json:"product_name"`
+	Dt             string   `json:"dt"`
+	TotalSales     int      `json:"total_sales"`
+	Alipay         int      `json:"alipay"`
+	Wxpay          int      `json:"wxpay"`
+	Cash           int      `json:"cash"`
+	RefundAmount   int      `json:"refund_amount"`
+	RefundCount    int      `json:"refund_count"`
+}
 
+type ResultList struct {
+	Title string                 `json:"title"`
+	List  map[string]interface{} `json:"list"`
+}
+
+type Result struct {
+	Stat  float64          `json:"stat"`
+	Title string           `json:"title"`
+	List  []ResultList     `json:"list"`
+}
+
+// 获取销售明细
+func (m *OrderModel) GetSalesDetail(queryType int, minDate, maxDate string) ([]SalesDetail, error) {
+	sql := "SELECT count(1) AS count, avg(amount) AS avg, product_type,date(from_unixtime(create_at)) AS dt, sum(amount) AS total_sales, " +
+		"sum(if(pay_channel_id=1, amount, 0)) AS alipay, sum(if(pay_channel_id=2, amount, 0)) AS wxpay, " +
+		"sum(if(status=5, refund_amount, 0)) AS refund_amount, sum(if(status=5, 1, 0)) AS refund_count, " +
+		"sum(if(pay_channel_id=3,amount,0)) AS cash FROM venue_pay_orders WHERE status in(2,3,4,5,6) "
+	if minDate != "" && maxDate != "" {
+		sql += fmt.Sprintf("AND date(FROM_UNIXTIME(create_at)) >= %s AND date(FROM_UNIXTIME(create_at)) <= %s ", minDate, maxDate)
+	}
+
+	switch queryType {
+	// 根据商品分组
+	case 1:
+		sql += "GROUP BY product_type"
+	// 根据日期分组
+	case 2:
+		sql += "GROUP BY dt"
+	// 根据日期+商品分组
+	case 3:
+		sql += "GROUP BY dt,product_type"
+	}
+
+	var list []SalesDetail
+	if err := m.Engine.SQL(sql).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}

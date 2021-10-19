@@ -38,12 +38,18 @@ func RevenueFlow(c *gin.Context) {
 	reply.Response(http.StatusOK, code)
 }
 
-func HomePageStat(c *gin.Context) {
+func TopStat(c *gin.Context) {
 	reply := errdef.New(c)
-	minDate := c.Query("min_date")
-	maxDate := c.Query("max_date")
 	svc := cfinance.New(c)
-	code, stat := svc.HomePageStat(minDate, maxDate)
+	code, stat := svc.TopStat()
 	reply.Data["detail"] = stat
+	reply.Response(http.StatusOK, code)
+}
+
+func ChartStat(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cfinance.New(c)
+	code, detail := svc.GetChartStat(c.Query("min_date"), c.Query("max_date"))
+	reply.Data["detail"] = detail
 	reply.Response(http.StatusOK, code)
 }
