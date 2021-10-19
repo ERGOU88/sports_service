@@ -138,6 +138,7 @@ func (svc *CoachModule) GetEvaluateList(coachId string, page, size int) (int, []
 			CoachId: item.CoachId,
 			Star: item.Star,
 			Content: item.Content,
+			Avatar: consts.EVALUATE_DEFAULT_AVATAR,
 		}
 
 		//if user := svc.user.FindUserByUserid(item.UserId); user != nil {

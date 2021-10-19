@@ -80,3 +80,7 @@ const (
     PRODUCT_CATEGORY_CARD            = 2000
     PRODUCT_CATEGORY_MATERIAL_OBJECT = 5000
 )
+
+const (
+    EVALUATE_DEFAULT_AVATAR = "https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/default_avatar.png"
+)
