@@ -1,18 +1,20 @@
 package cfinance
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/backend/errdef"
+	"sports_service/server/global/backend/log"
 	"sports_service/server/global/consts"
+	"sports_service/server/models"
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/morder"
 	"sports_service/server/models/mpay"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
 	"sports_service/server/util"
-	"fmt"
 	"time"
 )
 
@@ -67,36 +69,17 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 		}
 
 		extra := mappointment.OrderResp{}
-		if err := util.JsonFast.UnmarshalFromString(item.Extra, &extra); err != nil {
-			continue
+		if err := util.JsonFast.UnmarshalFromString(item.Extra, &extra); err == nil {
+			info.MobileNum = extra.MobileNum
 		}
-
-		info.MobileNum = extra.MobileNum
 
 		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.Id))
 		if ok && err == nil {
 			info.VenueName = svc.venue.Venue.VenueName
 		}
 
-		switch item.ProductType {
-		case consts.ORDER_TYPE_APPOINTMENT_VENUE:
-			info.Detail = fmt.Sprintf("预约场馆 * %d", extra.Count)
-		case consts.ORDER_TYPE_APPOINTMENT_COACH:
-			info.Detail = fmt.Sprintf("预约私教 %s", extra.CoachName)
-		case consts.ORDER_TYPE_APPOINTMENT_COURSE:
-			info.Detail = fmt.Sprintf("预约课程 %s", extra.CourseName)
-		case consts.ORDER_TYPE_EXPERIENCE_CARD:
-			info.Detail = fmt.Sprintf("次卡 * %d", extra.Count)
-		case consts.ORDER_TYPE_MONTH_CARD:
-			info.Detail = fmt.Sprintf("月卡 * %d", extra.Count)
-		case consts.ORDER_TYPE_SEANSON_CARD:
-			info.Detail = fmt.Sprintf("季卡 * %d", extra.Count)
-		case consts.ORDER_TYPE_HALF_YEAR_CARD:
-			info.Detail = fmt.Sprintf("半年卡 * %d", extra.Count)
-		case consts.ORDER_TYPE_YEAR_CARD:
-			info.Detail = fmt.Sprintf("年卡 * %d", extra.Count)
-		}
-
+		productName := svc.GetProductName(item.ProductType)
+		info.Detail = fmt.Sprintf("%s * %d", productName, extra.Count)
 		ok, err = svc.pay.GetPaymentChannel(svc.order.Order.PayChannelId)
 		if ok && err == nil {
 			info.PayChannel = svc.pay.PayChannel.Title
@@ -106,4 +89,456 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 	}
 
 	return errdef.SUCCESS, res
+}
+
+// 获取退款流水列表
+func (svc *FinanceModule) GetRefundList(orderId string, page, size int) (int, []*morder.RefundInfo) {
+	offset := (page - 1) * size
+	if orderId != "" {
+		offset = 0
+		size = 1
+	}
+
+	list, err := svc.order.GetRefundRecordList(orderId, offset, size)
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*morder.RefundInfo{}
+	}
+
+	for _, item := range list {
+		info := &morder.RefundInfo{
+			Id:  item.Id,
+			PayOrderId: item.PayOrderId,
+			AmountCn: fmt.Sprintf("%.2f", float64(item.Amount)/100),
+			CreateAtCn: time.Unix(item.CreateAt, 0).Format(consts.FORMAT_TM),
+			RefundAmountCn: fmt.Sprintf("%.2f", float64(item.RefundAmount)/100),
+			Status: item.Status,
+			RefundFeeCn: fmt.Sprintf("%.2f", float64(item.RefundFee)/100),
+		}
+
+		extra := mappointment.OrderResp{}
+		if err := util.JsonFast.UnmarshalFromString(item.Extra, &extra); err == nil {
+			info.MobileNum = extra.MobileNum
+		}
+
+		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.Id))
+		if ok && err == nil {
+			info.VenueName = svc.venue.Venue.VenueName
+		}
+
+		info.Detail = svc.GetProductName(item.ProductType)
+
+		if info.OrderType == 1001 {
+			info.OrderTypeCn = "线上退单"
+		}
+
+		if info.OrderType == 1002 {
+			info.OrderTypeCn = "线下退单"
+		}
+
+		ok, err = svc.pay.GetPaymentChannel(svc.order.Order.PayChannelId)
+		if ok && err == nil {
+			info.RefundChannelCn = svc.pay.PayChannel.Title
+		}
+
+	}
+
+	return errdef.SUCCESS, list
+}
+
+// 获取订单收益流水[已成功/已付款]
+func (svc *FinanceModule) GetRevenueFlow(queryMinDate, queryMaxDate, orderId string, page, size int) (int, int64, []*morder.OrderRecord) {
+	minDate := time.Now().Format(consts. FORMAT_DATE)
+	maxDate := time.Now().Format(consts. FORMAT_DATE)
+	if queryMinDate != "" && queryMaxDate != "" {
+		minDate = queryMinDate
+		maxDate = queryMaxDate
+	}
+
+	offset := (page - 1) * size
+	list, err := svc.order.GetRevenueFlow(minDate, maxDate, orderId, offset, size)
+	if err != nil {
+		return errdef.ERROR, 0, []*morder.OrderRecord{}
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, 0, []*morder.OrderRecord{}
+	}
+
+	res := make([]*morder.OrderRecord, 0)
+	for _, item := range list {
+		statusCn, amountCn := svc.GetOrderStatusCn(item)
+		info := &morder.OrderRecord{
+			Id:    item.Id,
+			PayOrderId: item.PayOrderId,
+			CreateAt: time.Unix(int64(item.CreateAt), 0).Format(consts.FORMAT_TM),
+			Amount: amountCn,
+		    StatusCn: statusCn,
+		}
+
+		if item.ProductType == 5102 {
+			statusCn = "结算"
+		}
+
+		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.Id))
+		if ok && err == nil {
+			info.VenueName = svc.venue.Venue.VenueName
+		}
+
+		ok, err = svc.pay.GetPaymentChannel(svc.order.Order.PayChannelId)
+		if ok && err == nil {
+			info.PayChannel = svc.pay.PayChannel.Title
+		}
+
+		extra := mappointment.OrderResp{}
+		if err := util.JsonFast.UnmarshalFromString(item.Extra, &extra); err == nil {
+			info.MobileNum = extra.MobileNum
+		}
+
+		info.Detail = svc.GetProductName(item.ProductType)
+		res = append(res, info)
+
+		// 如果是退款流水 则应同时有一条购买流水
+		if info.Status == consts.ORDER_TYPE_REFUND_SUCCESS || item.Status == consts.ORDER_TYPE_REFUND_WAIT {
+			item.Status = consts.ORDER_TYPE_PAID
+			info.StatusCn, info.Amount = svc.GetOrderStatusCn(item)
+			res = append(res, info)
+		}
+	}
+
+	// 累计收入= 销售总金额 - 退款总金额
+	total := svc.GetTotalRevenue(minDate, maxDate) - svc.GetTotalRefund(minDate, maxDate)
+
+	return errdef.SUCCESS, total, res
+}
+
+func (svc *FinanceModule) GetOrderStatusCn(item *models.VenuePayOrders) (string, string) {
+	var statusCn, amountCn string
+	switch item.Status {
+	// 已支付/已完成/已过期 展示购买
+	case consts.ORDER_TYPE_PAID, consts.ORDER_TYPE_COMPLETED, consts.ORDER_TYPE_EXPIRE:
+		statusCn = "购买"
+		amountCn = fmt.Sprintf("%.2f", float64(item.Amount)/100)
+	// 退款中/已退款 展示退单
+	case consts.ORDER_TYPE_REFUND_WAIT, consts.ORDER_TYPE_REFUND_SUCCESS:
+		statusCn = "退单"
+		amountCn = fmt.Sprintf("%.2f", float64(item.RefundAmount)/100)
+	}
+
+	return statusCn, amountCn
+
+}
+
+func (svc *FinanceModule) GetProductName(productType int) string {
+	var productName string
+	switch productType {
+	case consts.ORDER_TYPE_APPOINTMENT_VENUE:
+		productName = "预约场馆"
+	case consts.ORDER_TYPE_APPOINTMENT_COACH:
+		productName = "预约私教"
+	case consts.ORDER_TYPE_APPOINTMENT_COURSE:
+		productName = "预约课程"
+	case consts.ORDER_TYPE_EXPERIENCE_CARD:
+		productName = "次卡"
+	case consts.ORDER_TYPE_MONTH_CARD:
+		productName = "月卡"
+	case consts.ORDER_TYPE_SEANSON_CARD:
+		productName = "季卡"
+	case consts.ORDER_TYPE_HALF_YEAR_CARD:
+		productName = "半年卡"
+	case consts.ORDER_TYPE_YEAR_CARD:
+		productName = "年卡"
+	case consts.ORDER_TYPE_SETTLEMENT:
+		productName = "线下结算"
+	default:
+	   productName = "实物商品"
+	}
+
+	return productName
+}
+
+// 获取退款总额
+func (svc *FinanceModule) GetTotalRefund(minDate, maxDate string) int64 {
+	total, err := svc.order.GetTotalRefund(minDate, maxDate)
+	if err != nil {
+		return 0
+	}
+
+	return total
+}
+
+// 获取总收益
+func (svc *FinanceModule) GetTotalRevenue(minDate, maxDate string) int64 {
+	total, err := svc.order.GetTotalRevenue(minDate, maxDate)
+	if err != nil {
+		log.Log.Errorf("finance_trace: get total revenue fail, err:%s", err)
+		return 0
+	}
+
+	return total
+}
+
+// 财务首页 顶部统计
+func (svc *FinanceModule) TopStat() (int, *morder.OrderStat){
+	// 总销售额
+	totalSales, err := svc.order.GetTotalRevenue("", "")
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+
+	orderStat := &morder.OrderStat{
+		TopInfo: make(map[string]interface{}, 0),
+	}
+	orderStat.TopInfo["total_sales"] = totalSales
+
+	today := time.Now().Format(consts. FORMAT_DATE)
+	todaySales, err := svc.order.GetTotalRevenue(today, today)
+	if err != nil {
+		return errdef.ERROR, orderStat
+	}
+	orderStat.TopInfo["today_sales"] = todaySales
+
+
+	yesterday := time.Now().AddDate(0, 0, -1).Format(consts.FORMAT_DATE)
+	yesterdaySales, err := svc.order.GetTotalRevenue(yesterday, yesterday)
+	if err != nil {
+		return errdef.ERROR, orderStat
+	}
+	orderStat.TopInfo["yesterday_sales"] = yesterdaySales
+
+	orderStat.TopInfo["sales_rate"] = svc.GetRingRatio(todaySales, yesterdaySales)
+
+	orderStat.TopInfo["total_user"] = svc.order.GetVenueTotalUser()
+	totalVip, err := svc.order.GetVipUserCount("", "")
+	if err != nil {
+		return errdef.ERROR, orderStat
+	}
+
+	orderStat.TopInfo["total_vip"] = totalVip
+	todayVip, err := svc.order.GetVipUserCount(today, today)
+	if err != nil {
+		return errdef.ERROR, orderStat
+	}
+	orderStat.TopInfo["today_vip"] = todayVip
+
+	yesterdayVip, err := svc.order.GetVipUserCount(yesterday, yesterday)
+	if err != nil {
+		return errdef.ERROR, orderStat
+	}
+	orderStat.TopInfo["yesterday_vip"] = yesterdayVip
+	orderStat.TopInfo["vip_rate"] = svc.GetRingRatio(todayVip, yesterdayVip)
+
+	todayOrder, err := svc.order.GetOrderNum(today, today)
+	if err != nil {
+		return errdef.ERROR, orderStat
+	}
+	orderStat.TopInfo["today_order"] = todayOrder
+
+	yesterdayOrder, err := svc.order.GetOrderNum(yesterday, yesterday)
+	if err != nil {
+		return errdef.ERROR, orderStat
+	}
+	orderStat.TopInfo["yesterday_order"] = yesterdayOrder
+	orderStat.TopInfo["order_rate"] = svc.GetRingRatio(todayOrder, yesterdayOrder)
+
+
+	week := time.Now().AddDate(0, 0, -6).Format(consts.FORMAT_DATE)
+	weekOrder, err := svc.order.GetOrderNum(week, today)
+	if err != nil {
+		return errdef.ERROR, orderStat
+	}
+	orderStat.TopInfo["week_order"] = weekOrder
+
+	return errdef.SUCCESS, orderStat
+}
+
+// 获取图表统计数据
+func (svc *FinanceModule) GetChartStat(queryMinDate, queryMaxDate string) (int, map[string]interface{}) {
+	days := 6
+	minDate := time.Now().AddDate(0, 0, -days).Format(consts. FORMAT_DATE)
+	maxDate := time.Now().Format(consts. FORMAT_DATE)
+	if queryMinDate != "" && queryMaxDate != "" {
+		minDate = queryMinDate
+		maxDate = queryMaxDate
+		min, err := time.Parse(consts.FORMAT_DATE, queryMinDate)
+		if err != nil {
+			log.Log.Errorf("finance_trace: time.Parse fail, err:%s", err)
+			return errdef.ERROR, nil
+		}
+
+		max, err := time.Parse(consts.FORMAT_DATE, queryMaxDate)
+		if err != nil {
+			log.Log.Errorf("finance_trace: time.Parse fail, err:%s", err)
+			return errdef.ERROR, nil
+		}
+
+		days = util.GetDiffDays(max, min)
+	}
+
+	// 商品分组
+	list, err := svc.order.GetSalesDetail(1, minDate, maxDate)
+	if err != nil {
+		log.Log.Errorf("finance_trace: get sales detail fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+
+	if len(list) > 0 {
+		for _, item := range list {
+			item.ProductName = svc.GetProductName(item.ProductType)
+		}
+
+	}
+
+	// 合计
+	totalInfo, err := svc.order.GetSalesDetail(0, minDate, maxDate)
+	if err != nil {
+		log.Log.Errorf("finance_trace: get sales detail fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+
+	if len(totalInfo) > 0 {
+		for _, item := range totalInfo {
+			item.ProductType = 0
+			item.ProductName = "合计"
+		}
+	}
+
+	// 销售明细
+	list = append(list, totalInfo...)
+	result := make(map[string]interface{}, 0)
+	result["sales_detail"] = list
+
+	// 日期 + 商品分组
+	salesByProduct, err := svc.order.GetSalesDetail(3, minDate, maxDate)
+	if err != nil {
+		log.Log.Errorf("finance_trace: get sales detail fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+
+	// n天的销量总额 日期分组
+	salesByDate, err := svc.order.GetSalesDetail(2, minDate, maxDate)
+	if err != nil {
+		log.Log.Errorf("finance_trace: get sales detail fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+	if len(salesByDate) > 0 {
+		for _, item := range salesByDate {
+			item.ProductType = 0
+			item.ProductName = "合计"
+		}
+	}
+
+	var salesResultList []morder.ResultList
+	salesResultList = append(salesResultList, morder.ResultList{
+		Title: "销售总额",
+		List:  svc.ResultInfoByDate(salesByDate, days, 0, 1),
+	}, morder.ResultList{
+		Title: "课程预约",
+		List:  svc.ResultInfoByDate(salesByProduct, days, consts.ORDER_TYPE_APPOINTMENT_COURSE, 1),
+	}, morder.ResultList{
+		Title: "私教预约",
+		List:  svc.ResultInfoByDate(salesByProduct, days, consts.ORDER_TYPE_APPOINTMENT_COACH, 1),
+	},morder.ResultList{
+		Title: "实体商品",
+		List:  svc.ResultInfoByDate(salesByProduct, days, consts.ORDER_TYPE_PHYSICAL_GOODS, 1),
+	},morder.ResultList{
+		Title: "卡类商品[次卡/月卡/季卡/半年卡/年卡]",
+		List:  svc.ResultInfoByDate(salesByProduct, days, 2000, 1),
+	})
+
+	result["sales_result_list"] = salesResultList
+
+
+	var payChannelResultList []morder.ResultList
+	payChannelResultList = append(payChannelResultList, morder.ResultList{
+		Title: "收款总额",
+		List: svc.ResultInfoByDate(salesByDate, days, 0, 2),
+	}, morder.ResultList{
+		Title: "支付宝支付",
+		List:  svc.ResultInfoByDate(salesByDate, days, 1, 2),
+	}, morder.ResultList{
+		Title: "微信支付",
+		List:  svc.ResultInfoByDate(salesByDate, days, 2, 2),
+	}, morder.ResultList{
+		Title: "现金支付",
+		List:  svc.ResultInfoByDate(salesByDate, days, 3, 2),
+	})
+	result["pay_result_list"] = payChannelResultList
+
+	var orderResultList []morder.ResultList
+	orderResultList = append(orderResultList, morder.ResultList{
+		Title: "订单均价",
+		List: svc.ResultInfoByDate(salesByDate, days, 0, 3),
+	})
+
+	return errdef.SUCCESS, result
+}
+
+// 获取环比
+func (svc *FinanceModule) GetRingRatio(current, before int64) string {
+	if current > 0 && before> 0 || current == 0 && before > 0 {
+		return fmt.Sprintf("%.0f%s", (float64(current)/float64(before)-1)*100, "%")
+	}
+
+	if current > 0 && before == 0 || current == 0 && before == 0 {
+		 return "--%"
+	}
+
+	return ""
+}
+
+
+func (svc *FinanceModule) ResultInfoByDate(data []morder.SalesDetail, days, condition, queryType int) map[string]interface{} {
+	mapList := make(map[string]interface{})
+	for i := 0; i <= days; i++ {
+		date := time.Now().AddDate(0, 0, -i).Format("2006-01-02")
+		for _, v := range data {
+			if v.Dt != date {
+				continue
+			}
+
+			switch queryType {
+			// 通过商品类型查询
+			case 1:
+				// 卡类 包含 次卡/月卡/季卡/年卡
+				if v.ProductType >=2000 && v.ProductType < 3000 && condition == 2000 {
+					if val, ok := mapList[date]; ok {
+						mapList[date] = val.(int) + v.TotalSales
+						continue
+					}
+				}
+
+				if condition == v.ProductType {
+					mapList[date] = v.TotalSales
+				}
+			// 通过支付渠道查询
+			case 2:
+				switch condition {
+				case 0:
+					mapList[date] = v.TotalSales
+				// 支付宝
+				case 1:
+					mapList[date] = v.Alipay
+				// 微信
+				case 2:
+					mapList[date] = v.Wxpay
+				// 现金
+				case 3:
+					mapList[date] = v.Cash
+				}
+			// 订单均价
+			case 3:
+				mapList[date] = fmt.Sprintf("%.2f", v.Avg)
+			}
+		}
+
+		if _, ok := mapList[date]; !ok {
+			mapList[date] = 0
+		}
+	}
+
+	return mapList
 }
