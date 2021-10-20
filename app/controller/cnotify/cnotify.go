@@ -715,9 +715,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			// 获取评论信息
 			comment := svc.comment.GetVideoCommentById(fmt.Sprint(receiveAt.ComposeId))
 			if comment != nil {
-				if comment.Status == 0 {
-					info.IsDelete = true
-				}
+
 				// 执行@的用户信息
 				if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
 					// 执行@的用户信息
@@ -738,6 +736,9 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 					info.VideoHeight = video.VideoHeight
 					info.CreateAt = video.CreateAt
 					info.Status = int32(video.Status)
+					if video.Status == 3 {
+						info.IsDelete = true
+					}
 				}
 
 				// 视频统计数据
@@ -770,6 +771,9 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 						info.CommentType = 2
 						info.Content = beReply.Content
 						info.Reply = comment.Content
+						if beReply.Status == 0 {
+							info.IsDelete = true
+						}
 
 						// 被回复的不是1级评论 则@消息 为1
 						if beReply.CommentLevel != 1 {
@@ -829,6 +833,9 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 					info.Title = post.Title
 					info.Describe = post.Describe
 					info.CreateAt = post.CreateAt
+					if post.Status == 3 {
+						info.IsDelete = true
+					}
 					// 图文帖
 					if post.PostingType == consts.POST_TYPE_IMAGE {
 						var images []string
@@ -868,6 +875,10 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 						info.Content = beReply.Content
 						info.Reply = comment.Content
 
+						if beReply.Status == 0 {
+							info.IsDelete = true
+						}
+
 						// 被回复的不是1级评论 则@消息 为1
 						if beReply.CommentLevel != 1 {
 							info.IsAt = 1
@@ -905,9 +916,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			// 获取评论信息
 			comment := svc.comment.GetInformationCommentById(fmt.Sprint(receiveAt.ComposeId))
 			if comment != nil {
-				if comment.Status == 0 {
-					info.IsDelete = true
-				}
+
 				// 执行@的用户信息
 				if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
 					// 执行@的用户信息
@@ -923,6 +932,9 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 					info.Cover = svc.information.Information.Cover
 					info.CreateAt = svc.information.Information.CreateAt
 					info.Status = int32(svc.information.Information.Status)
+					if svc.information.Information.Status == 3 {
+						info.IsDelete = true
+					}
 				}
 
 				// 被@的用户信息
@@ -949,6 +961,10 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 						info.CommentType = 2
 						info.Content = beReply.Content
 						info.Reply = comment.Content
+
+						if beReply.Status == 0 {
+							info.IsDelete = true
+						}
 
 						// 被回复的不是1级评论 则@消息 为1
 						if beReply.CommentLevel != 1 {
