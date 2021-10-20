@@ -80,7 +80,7 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 
 		productName := svc.GetProductName(item.ProductType)
 		info.Detail = fmt.Sprintf("%s * %d", productName, extra.Count)
-		ok, err = svc.pay.GetPaymentChannel(svc.order.Order.PayChannelId)
+		ok, err = svc.pay.GetPaymentChannel(item.PayChannelId)
 		if ok && err == nil {
 			info.PayChannel = svc.pay.PayChannel.Title
 		}
@@ -139,7 +139,7 @@ func (svc *FinanceModule) GetRefundList(orderId string, page, size int) (int, []
 			info.OrderTypeCn = "线下退单"
 		}
 
-		ok, err = svc.pay.GetPaymentChannel(svc.order.Order.PayChannelId)
+		ok, err = svc.pay.GetPaymentChannel(item.RefundChannelId)
 		if ok && err == nil {
 			info.RefundChannelCn = svc.pay.PayChannel.Title
 		}
@@ -150,7 +150,7 @@ func (svc *FinanceModule) GetRefundList(orderId string, page, size int) (int, []
 }
 
 // 获取订单收益流水[已成功/已付款]
-func (svc *FinanceModule) GetRevenueFlow(queryMinDate, queryMaxDate, orderId string, page, size int) (int, int64, []*morder.OrderRecord) {
+func (svc *FinanceModule) GetRevenueFlow(queryMinDate, queryMaxDate, orderId string, page, size int) (int, int64, []morder.OrderRecord) {
 	minDate := time.Now().Format(consts. FORMAT_DATE)
 	maxDate := time.Now().Format(consts. FORMAT_DATE)
 	if queryMinDate != "" && queryMaxDate != "" {
@@ -161,22 +161,23 @@ func (svc *FinanceModule) GetRevenueFlow(queryMinDate, queryMaxDate, orderId str
 	offset := (page - 1) * size
 	list, err := svc.order.GetRevenueFlow(minDate, maxDate, orderId, offset, size)
 	if err != nil {
-		return errdef.ERROR, 0, []*morder.OrderRecord{}
+		return errdef.ERROR, 0, []morder.OrderRecord{}
 	}
 
 	if len(list) == 0 {
-		return errdef.SUCCESS, 0, []*morder.OrderRecord{}
+		return errdef.SUCCESS, 0, []morder.OrderRecord{}
 	}
 
-	res := make([]*morder.OrderRecord, 0)
+	res := make([]morder.OrderRecord, 0)
 	for _, item := range list {
 		statusCn, amountCn := svc.GetOrderStatusCn(item)
-		info := &morder.OrderRecord{
+		info := morder.OrderRecord{
 			Id:    item.Id,
 			PayOrderId: item.PayOrderId,
 			CreateAt: time.Unix(int64(item.CreateAt), 0).Format(consts.FORMAT_TM),
 			Amount: amountCn,
 		    StatusCn: statusCn,
+		    Status: item.Status,
 		}
 
 		if item.ProductType == 5102 {
@@ -188,7 +189,7 @@ func (svc *FinanceModule) GetRevenueFlow(queryMinDate, queryMaxDate, orderId str
 			info.VenueName = svc.venue.Venue.VenueName
 		}
 
-		ok, err = svc.pay.GetPaymentChannel(svc.order.Order.PayChannelId)
+		ok, err = svc.pay.GetPaymentChannel(item.PayChannelId)
 		if ok && err == nil {
 			info.PayChannel = svc.pay.PayChannel.Title
 		}
@@ -202,8 +203,9 @@ func (svc *FinanceModule) GetRevenueFlow(queryMinDate, queryMaxDate, orderId str
 		res = append(res, info)
 
 		// 如果是退款流水 则应同时有一条购买流水
-		if info.Status == consts.ORDER_TYPE_REFUND_SUCCESS || item.Status == consts.ORDER_TYPE_REFUND_WAIT {
+		if item.Status == consts.ORDER_TYPE_REFUND_SUCCESS || item.Status == consts.ORDER_TYPE_REFUND_WAIT {
 			item.Status = consts.ORDER_TYPE_PAID
+			info.Status = consts.ORDER_TYPE_PAID
 			info.StatusCn, info.Amount = svc.GetOrderStatusCn(item)
 			res = append(res, info)
 		}
