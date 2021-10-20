@@ -603,25 +603,33 @@ func (svc *PostingModule) DeletePublishPost(userId, postId string) int {
 
 
 	// 物理删除发布的帖子、帖子所属话题、帖子统计数据
-	if err := svc.posting.DelPublishPostById(postId); err != nil {
+	//if err := svc.posting.DelPublishPostById(postId); err != nil {
+	//	log.Log.Errorf("post_trace: delete publish post by id err:%s", err)
+	//	svc.engine.Rollback()
+	//	return errdef.POST_DELETE_PUBLISH_FAIL
+	//}
+
+	post.Status = 3
+	post.UpdateAt = int(time.Now().Unix())
+	if _, err := svc.posting.UpdatePostInfo(post.Id, "status, update_at"); err != nil {
 		log.Log.Errorf("post_trace: delete publish post by id err:%s", err)
 		svc.engine.Rollback()
 		return errdef.POST_DELETE_PUBLISH_FAIL
 	}
 
 	// 删除帖子所属话题
-	if err := svc.posting.DelPostTopics(postId); err != nil {
-		log.Log.Errorf("post_trace: delete post topics err:%s", err)
-		svc.engine.Rollback()
-		return errdef.POST_DELETE_TOPIC_FAIL
-	}
+	//if err := svc.posting.DelPostTopics(postId); err != nil {
+	//	log.Log.Errorf("post_trace: delete post topics err:%s", err)
+	//	svc.engine.Rollback()
+	//	return errdef.POST_DELETE_TOPIC_FAIL
+	//}
 
 	// 删除帖子统计数据
-	if err := svc.posting.DelPostStatistic(postId); err != nil {
-		log.Log.Errorf("post_trace: delete post statistic err:%s", err)
-		svc.engine.Rollback()
-		return errdef.POST_DELETE_STATISTIC_FAIL
-	}
+	//if err := svc.posting.DelPostStatistic(postId); err != nil {
+	//	log.Log.Errorf("post_trace: delete post statistic err:%s", err)
+	//	svc.engine.Rollback()
+	//	return errdef.POST_DELETE_STATISTIC_FAIL
+	//}
 
 	svc.engine.Commit()
 	return errdef.SUCCESS
