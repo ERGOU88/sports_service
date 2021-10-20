@@ -85,5 +85,5 @@ func PubInformation(c *gin.Context) {
 	}
 
 	svc := cpub.New(c)
-	reply.Response(http.StatusOK, 	svc.PubInformation(param))
+	reply.Response(http.StatusOK, svc.PubInformation(param))
 }

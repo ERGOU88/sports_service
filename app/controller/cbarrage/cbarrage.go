@@ -10,6 +10,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mbarrage"
+	"sports_service/server/models/mconfigure"
 	"sports_service/server/models/mcontest"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
@@ -24,6 +25,7 @@ type BarrageModule struct {
 	video      *mvideo.VideoModel
 	barrage    *mbarrage.BarrageModel
 	contest    *mcontest.ContestModel
+	config     *mconfigure.ConfigModel
 }
 
 func New(c *gin.Context) BarrageModule {
@@ -35,6 +37,7 @@ func New(c *gin.Context) BarrageModule {
 		video: mvideo.NewVideoModel(socket),
 		barrage: mbarrage.NewBarrageModel(socket),
 		contest: mcontest.NewContestModel(socket),
+		config: mconfigure.NewConfigModel(socket),
 		engine: socket,
 	}
 }
@@ -147,8 +150,9 @@ func (svc *BarrageModule) SendVideoBarrage(userId string, params *mbarrage.SendB
 		return errdef.BARRAGE_VIDEO_SEND_FAIL
 	}
 
+	score := svc.config.GetActionScore(int(consts.WORK_TYPE_VIDEO), consts.ACTION_TYPE_BARRAGE)
 	// 更新视频弹幕总计 +1
-	if err := svc.video.UpdateVideoBarrageNum(video.VideoId, int(now), consts.CONFIRM_OPERATE); err != nil {
+	if err := svc.video.UpdateVideoBarrageNum(video.VideoId, int(now), consts.CONFIRM_OPERATE, score); err != nil {
 		log.Log.Errorf("barrage_trace: update video barrage num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.BARRAGE_VIDEO_SEND_FAIL

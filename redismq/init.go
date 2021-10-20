@@ -7,5 +7,6 @@ import (
 func InitRedisMq() {
 	event.LoopPopStatEvent()
 	//go event.LoopPopOrderEvent()
+	event.LoopPopTopEvent()
 	event.InitSignal()
 }

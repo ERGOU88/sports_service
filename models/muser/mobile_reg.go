@@ -61,7 +61,7 @@ func (r *mobileRegister) Register(u *UserModel, platform int, mobileNum, clientI
 func (r *mobileRegister) newUser(u *UserModel, phone int64, platform int, clientIp string) *UserModel {
 	now := time.Now().Unix()
 	// 8位uid
-	u.SetUid(r.getUserID())
+	u.SetUid(u.GetUserID())
 	u.SetNickName(r.newDefaultNickName(phone))
 	u.SetPhone(phone)
 	u.SetAvatar(r.defaultAvatar())

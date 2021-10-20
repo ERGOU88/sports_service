@@ -10,9 +10,11 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
+	"sports_service/server/models/mconfigure"
 	"sports_service/server/models/minformation"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
+	redismq "sports_service/server/redismq/event"
 	"sports_service/server/util"
 	"time"
 )
@@ -25,6 +27,7 @@ type InformationModule struct {
 	attention   *mattention.AttentionModel
 	like        *mlike.LikeModel
 	collect     *mcollect.CollectModel
+	config      *mconfigure.ConfigModel
 }
 
 func New(c *gin.Context) InformationModule {
@@ -37,6 +40,7 @@ func New(c *gin.Context) InformationModule {
 		attention: mattention.NewAttentionModel(socket),
 		like: mlike.NewLikeModel(socket),
 		collect: mcollect.NewCollectModel(socket),
+		config: mconfigure.NewConfigModel(socket),
 		engine: socket,
 	}
 }
@@ -153,8 +157,9 @@ func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *min
 	}
 
 	now := int(time.Now().Unix())
+	score := svc.config.GetActionScore(int(consts.WORK_TYPE_INFO), consts.ACTION_TYPE_BROWSE)
 	// 增加资讯浏览总数
-	if err := svc.information.UpdateInformationBrowseNum(resp.Id, now, 1); err != nil {
+	if err := svc.information.UpdateInformationBrowseNum(resp.Id, now, 1, score); err != nil {
 		log.Log.Errorf("information_trace: update video browse num err:%s", err)
 	}
 
@@ -197,6 +202,10 @@ func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *min
 	if likeInfo := svc.like.GetLikeInfo(userId, resp.Id, consts.LIKE_TYPE_INFORMATION); likeInfo != nil {
 		resp.IsLike = likeInfo.Status
 	}
+
+	// 资讯置顶事件
+	redismq.PushTopEventMsg(redismq.NewTopEvent(svc.information.Information.UserId,
+		fmt.Sprint(svc.information.Information.Id), consts.EVENT_SET_TOP_INFO))
 
 	return errdef.SUCCESS, resp
 }

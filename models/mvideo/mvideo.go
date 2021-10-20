@@ -334,8 +334,8 @@ const (
 		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `video_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
 )
 // 更新视频点赞数
-func (m *VideoModel) UpdateVideoLikeNum(videoId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_VIDEO_LIKE_NUM, num, num, now, videoId, num); err != nil {
+func (m *VideoModel) UpdateVideoLikeNum(videoId int64, now, num, score int) error {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_LIKE_NUM, num, score, now, videoId, num); err != nil {
 		return err
 	}
 
@@ -343,11 +343,12 @@ func (m *VideoModel) UpdateVideoLikeNum(videoId int64, now, num int) error {
 }
 
 const (
-	UPDATE_VIDEO_COLLECT_NUM  = "UPDATE `video_statistic` SET `collect_num` = `collect_num` + ?, `update_at`=? WHERE `video_id`=? AND `collect_num` + ? >= 0 LIMIT 1"
+	UPDATE_VIDEO_COLLECT_NUM  = "UPDATE `video_statistic` SET `collect_num` = `collect_num` + ?, `heat_num` = `heat_num` + ?, " +
+		" `update_at`=? WHERE `video_id`=? AND `collect_num` + ? >= 0 LIMIT 1"
 )
 // 更新视频收藏数
-func (m *VideoModel) UpdateVideoCollectNum(videoId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_VIDEO_COLLECT_NUM, num, now, videoId, num); err != nil {
+func (m *VideoModel) UpdateVideoCollectNum(videoId int64, now, num, score int) error {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_COLLECT_NUM, num, score, now, videoId, num); err != nil {
 		return err
 	}
 
@@ -359,8 +360,8 @@ const (
 		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `video_id`=? AND `comment_num` + ? >= 0 LIMIT 1"
 )
 // 更新视频评论数
-func (m *VideoModel) UpdateVideoCommentNum(videoId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_VIDEO_COMMENT_NUM, num, num, now, videoId, num); err != nil {
+func (m *VideoModel) UpdateVideoCommentNum(videoId int64, now, num, score int) error {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_COMMENT_NUM, num, score, now, videoId, num); err != nil {
 		return err
 	}
 
@@ -372,8 +373,8 @@ const (
 		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `video_id`=? AND `browse_num` + ? >= 0 LIMIT 1"
 )
 // 更新视频浏览数
-func (m *VideoModel) UpdateVideoBrowseNum(videoId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_VIDEO_BROWSE_NUM, num, num, now, videoId, num); err != nil {
+func (m *VideoModel) UpdateVideoBrowseNum(videoId int64, now, num, score int) error {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_BROWSE_NUM, num, score, now, videoId, num); err != nil {
 		return err
 	}
 
@@ -381,11 +382,12 @@ func (m *VideoModel) UpdateVideoBrowseNum(videoId int64, now, num int) error {
 }
 
 const (
-	UPDATE_VIDEO_SHARE_NUM  = "UPDATE `video_statistic` SET `share_num` = `share_num` + ?, `update_at`=? WHERE `video_id`=? AND `share_num` + ? >= 0 LIMIT 1"
+	UPDATE_VIDEO_SHARE_NUM  = "UPDATE `video_statistic` SET `share_num` = `share_num` + ?, `heat_num` = `heat_num` + ?," +
+		" `update_at`=? WHERE `video_id`=? AND `share_num` + ? >= 0 LIMIT 1"
 )
 // 更新视频分享数
-func (m *VideoModel) UpdateVideoShareNum(videoId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_VIDEO_SHARE_NUM, num, now, videoId, num); err != nil {
+func (m *VideoModel) UpdateVideoShareNum(videoId int64, now, num, score int) error {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_SHARE_NUM, num, score, now, videoId, num); err != nil {
 		return err
 	}
 
@@ -398,11 +400,12 @@ func (m *VideoModel) UpdateVideoYcoinNum() {
 }
 
 const (
-	UPDATE_VIDEO_BARRAGE_NUM  = "UPDATE `video_statistic` SET `barrage_num` = `barrage_num` + ?, `update_at`=? WHERE `video_id`=? AND `barrage_num` + ? >= 0 LIMIT 1"
+	UPDATE_VIDEO_BARRAGE_NUM  = "UPDATE `video_statistic` SET `barrage_num` = `barrage_num` + ?, `heat_num` = `heat_num` + ?," +
+		" `update_at`=? WHERE `video_id`=? AND `barrage_num` + ? >= 0 LIMIT 1"
 )
 // 更新视频弹幕数
-func (m *VideoModel) UpdateVideoBarrageNum(videoId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_VIDEO_BARRAGE_NUM, num, now, videoId, num); err != nil {
+func (m *VideoModel) UpdateVideoBarrageNum(videoId int64, now, num, score int) error {
+	if _, err := m.Engine.Exec(UPDATE_VIDEO_BARRAGE_NUM, num, score, now, videoId, num); err != nil {
 		return err
 	}
 

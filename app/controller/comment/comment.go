@@ -12,6 +12,7 @@ import (
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
 	"sports_service/server/models/mcomment"
+	"sports_service/server/models/mconfigure"
 	"sports_service/server/models/minformation"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/mposting"
@@ -34,6 +35,7 @@ type CommentModule struct {
 	attention   *mattention.AttentionModel
 	post        *mposting.PostingModel
 	information *minformation.InformationModel
+	config      *mconfigure.ConfigModel
 }
 
 func New(c *gin.Context) CommentModule {
@@ -48,6 +50,7 @@ func New(c *gin.Context) CommentModule {
 		attention: mattention.NewAttentionModel(socket),
 		post: mposting.NewPostingModel(socket),
 		information: minformation.NewInformationModel(socket),
+		config: mconfigure.NewConfigModel(socket),
 		engine: socket,
 	}
 }
@@ -139,8 +142,9 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 			return errdef.VIDEO_NOT_EXISTS, nil
 		}
 
+		score := svc.config.GetActionScore(int(consts.WORK_TYPE_VIDEO), consts.ACTION_TYPE_COMMENT)
 		// 更新视频总计（视频评论总数）
-		if err := svc.video.UpdateVideoCommentNum(params.ComposeId, now, 1); err != nil {
+		if err := svc.video.UpdateVideoCommentNum(params.ComposeId, now, 1, score); err != nil {
 			log.Log.Errorf("comment_trace: update video comment num err:%s", err)
 			svc.engine.Rollback()
 			return errdef.COMMENT_PUBLISH_FAIL, nil
@@ -162,6 +166,8 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		resp.Content = svc.comment.VideoComment.Content
 		resp.CreateAt = svc.comment.VideoComment.CreateAt
 		resp.Status = svc.comment.VideoComment.Status
+		// 视频置顶事件
+		redismq.PushTopEventMsg(redismq.NewTopEvent(video.UserId, fmt.Sprint(video.VideoId), consts.EVENT_SET_TOP_VIDEO))
 
 	// 帖子评论
 	case consts.COMMENT_TYPE_POST:
@@ -195,8 +201,9 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 			return errdef.POST_NOT_EXISTS, nil
 		}
 
+		score := svc.config.GetActionScore(int(consts.WORK_TYPE_POST), consts.ACTION_TYPE_COMMENT)
 		// 更新帖子总计（帖子评论总数）
-		if err := svc.post.UpdatePostCommentNum(params.ComposeId, now, 1); err != nil {
+		if err := svc.post.UpdatePostCommentNum(params.ComposeId, now, 1, score); err != nil {
 			log.Log.Errorf("comment_trace: update post comment num err:%s", err)
 			svc.engine.Rollback()
 			return errdef.COMMENT_PUBLISH_FAIL, nil
@@ -217,6 +224,8 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		resp.Content = params.Content
 		resp.CreateAt = svc.comment.PostComment.CreateAt
 		resp.Status = svc.comment.PostComment.Status
+		// 帖子置顶事件
+		redismq.PushTopEventMsg(redismq.NewTopEvent(post.UserId, fmt.Sprint(post.Id), consts.EVENT_SET_TOP_POST))
 
 	case consts.COMMENT_TYPE_INFORMATION:
 		svc.comment.InformationComment.UserId = userId
@@ -241,8 +250,9 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 			return errdef.INFORMATION_NOT_EXISTS, nil
 		}
 
+		score := svc.config.GetActionScore(int(consts.WORK_TYPE_INFO), consts.ACTION_TYPE_COMMENT)
 		// 更新总计（资讯评论总数）
-		if err := svc.information.UpdateInformationCommentNum(params.ComposeId, now, 1); err != nil {
+		if err := svc.information.UpdateInformationCommentNum(params.ComposeId, now, 1, score); err != nil {
 			log.Log.Errorf("comment_trace: update information comment num err:%s", err)
 			svc.engine.Rollback()
 			return errdef.COMMENT_PUBLISH_FAIL, nil
@@ -264,6 +274,9 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		resp.CreateAt = svc.comment.InformationComment.CreateAt
 		resp.Status = svc.comment.InformationComment.Status
 		params.CommentType = consts.TYPE_INFORMATION_AT
+		// 资讯置顶事件
+		redismq.PushTopEventMsg(redismq.NewTopEvent(svc.information.Information.UserId,
+			fmt.Sprint(svc.information.Information.Id), consts.EVENT_SET_TOP_INFO))
 
 	default:
 		log.Log.Errorf("comment_trace: invalid commentType:%d", params.CommentType)
@@ -420,8 +433,9 @@ func (svc *CommentModule) PublishComment(userId string, params *mcomment.Publish
 		return errdef.COMMENT_PUBLISH_FAIL, 0
 	}
 
+	score := svc.config.GetActionScore(int(consts.WORK_TYPE_VIDEO), consts.ACTION_TYPE_COMMENT)
 	// 更新视频总计（视频评论总数）
-	if err := svc.video.UpdateVideoCommentNum(video.VideoId, int(now), 1); err != nil {
+	if err := svc.video.UpdateVideoCommentNum(video.VideoId, int(now), 1, score); err != nil {
 		log.Log.Errorf("comment_trace: update video comment num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.COMMENT_PUBLISH_FAIL, 0
@@ -546,8 +560,9 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			return errdef.COMMENT_REPLY_FAIL, nil
 		}
 
+		score := svc.config.GetActionScore(int(consts.WORK_TYPE_VIDEO), consts.ACTION_TYPE_COMMENT)
 		// 更新视频总计（视频评论总数）
-		if err := svc.video.UpdateVideoCommentNum(replyInfo.VideoId, now, 1); err != nil {
+		if err := svc.video.UpdateVideoCommentNum(replyInfo.VideoId, now, 1, score); err != nil {
 			log.Log.Errorf("comment_trace: update video comment num err:%s", err)
 			svc.engine.Rollback()
 			return errdef.COMMENT_PUBLISH_FAIL, nil
@@ -581,6 +596,8 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		}
 
 		atType = consts.TYPE_VIDEO
+		// 视频置顶事件
+		redismq.PushTopEventMsg(redismq.NewTopEvent(video.UserId, fmt.Sprint(video.VideoId), consts.EVENT_SET_TOP_VIDEO))
 
 	// 帖子回复
 	case consts.COMMENT_TYPE_POST:
@@ -633,8 +650,9 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			return errdef.COMMENT_REPLY_FAIL, nil
 		}
 
+		score := svc.config.GetActionScore(int(consts.WORK_TYPE_POST), consts.ACTION_TYPE_COMMENT)
 		// 更新总计（帖子评论总数）
-		if err := svc.post.UpdatePostCommentNum(replyInfo.PostId, now, 1); err != nil {
+		if err := svc.post.UpdatePostCommentNum(replyInfo.PostId, now, 1, score); err != nil {
 			log.Log.Errorf("comment_trace: update post comment num err:%s", err)
 			svc.engine.Rollback()
 			return errdef.COMMENT_PUBLISH_FAIL, nil
@@ -667,6 +685,9 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		}
 
 		atType = consts.TYPE_POST
+		// 帖子置顶事件
+		redismq.PushTopEventMsg(redismq.NewTopEvent(post.UserId, fmt.Sprint(post.Id), consts.EVENT_SET_TOP_POST))
+
 
 	case consts.COMMENT_TYPE_INFORMATION:
 		// 查询被回复的评论是否存在
@@ -710,8 +731,9 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			return errdef.COMMENT_REPLY_FAIL, nil
 		}
 
+		score := svc.config.GetActionScore(int(consts.WORK_TYPE_INFO), consts.ACTION_TYPE_COMMENT)
 		// 更新总计（资讯评论总数）
-		if err := svc.information.UpdateInformationCommentNum(replyInfo.NewsId, now, 1); err != nil {
+		if err := svc.information.UpdateInformationCommentNum(replyInfo.NewsId, now, 1, score); err != nil {
 			log.Log.Errorf("comment_trace: update information comment num err:%s", err)
 			svc.engine.Rollback()
 			return errdef.COMMENT_PUBLISH_FAIL, nil
@@ -744,6 +766,9 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		}
 
 		atType = consts.TYPE_INFORMATION_AT
+		// 资讯置顶事件
+		redismq.PushTopEventMsg(redismq.NewTopEvent(svc.information.Information.UserId,
+			fmt.Sprint(svc.information.Information.Id), consts.EVENT_SET_TOP_INFO))
 
 	default:
 		log.Log.Errorf("comment_trace: invalid commentType:%d", params.CommentType)

@@ -14,6 +14,7 @@ import (
 	"sports_service/server/models"
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcommunity"
+	"sports_service/server/models/mconfigure"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
@@ -33,6 +34,7 @@ type PostingModule struct {
 	community   *mcommunity.CommunityModel
 	attention   *mattention.AttentionModel
 	like        *mlike.LikeModel
+	config      *mconfigure.ConfigModel
 }
 
 func New(c *gin.Context) PostingModule {
@@ -46,6 +48,7 @@ func New(c *gin.Context) PostingModule {
 		community: mcommunity.NewCommunityModel(socket),
 		attention: mattention.NewAttentionModel(socket),
 		like: mlike.NewLikeModel(socket),
+		config: mconfigure.NewConfigModel(socket),
 		engine: socket,
 	}
 }
@@ -381,8 +384,9 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 	}
 
 	now := int(time.Now().Unix())
+	score := svc.config.GetActionScore(int(consts.WORK_TYPE_POST), consts.ACTION_TYPE_BROWSE)
 	// 增加帖子浏览总数
-	if err := svc.posting.UpdatePostBrowseNum(post.Id, now, 1); err != nil {
+	if err := svc.posting.UpdatePostBrowseNum(post.Id, now, 1, score); err != nil {
 		log.Log.Errorf("post_trace: update post browse num err:%s", err)
 	}
 
@@ -472,7 +476,8 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 		resp.ShareNum = info.ShareNum
 	}
 
-
+	// 帖子置顶事件
+	redismq.PushTopEventMsg(redismq.NewTopEvent(post.UserId, fmt.Sprint(post.Id), consts.EVENT_SET_TOP_POST))
 	return resp, errdef.SUCCESS
 }
 

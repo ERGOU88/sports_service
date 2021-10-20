@@ -6,12 +6,14 @@ import (
 	"sports_service/server/backend/controller/configure"
 	"sports_service/server/global/backend/errdef"
   "sports_service/server/global/consts"
-  "sports_service/server/models/mbanner"
+	"sports_service/server/models"
+	"sports_service/server/models/mbanner"
 	"sports_service/server/models/muser"
   "sports_service/server/models/mvideo"
   "sports_service/server/models/mconfigure"
   "sports_service/server/tools/tencentCloud"
   "sports_service/server/util"
+	"strconv"
 )
 
 // 添加banner
@@ -248,4 +250,50 @@ func PackageDetail(c *gin.Context) {
   detail := svc.GetPackageDetail(id)
   reply.Data["detail"] = detail
   reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+func AddActionScoreConf(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &models.ActionScoreConfig{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := configure.New(c)
+	reply.Response(http.StatusOK, svc.AddActionScoreConf(param))
+}
+
+func UpdateActionScoreConf(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &models.ActionScoreConfig{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := configure.New(c)
+	reply.Response(http.StatusOK, svc.UpdateActionScoreConf(param))
+}
+
+func GetActionScoreConf(c *gin.Context) {
+	reply := errdef.New(c)
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := configure.New(c)
+	code, detail := svc.GetActionScoreConfById(int64(id))
+	reply.Data["detail"] = detail
+	reply.Response(http.StatusOK, code)
+}
+
+func GetActionScoreConfList(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := configure.New(c)
+	code, list := svc.GetActionScoreConfList()
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
 }

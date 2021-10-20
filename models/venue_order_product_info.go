@@ -4,7 +4,7 @@ type VenueOrderProductInfo struct {
 	Id              int64  `json:"id" xorm:"pk autoincr comment('自增ID') BIGINT(20)"`
 	PayOrderId      string `json:"pay_order_id" xorm:"not null comment('订单号') index VARCHAR(150)"`
 	ProductId       int64  `json:"product_id" xorm:"not null comment('商品id') BIGINT(20)"`
-	ProductType     int    `json:"product_type" xorm:"not null comment('1001 场馆预约 2101 临时卡 2201 次卡 2311 月卡 2321 季卡 2331 半年卡 2341 年卡 3001 私教（教练）订单 3002 课程订单 4001 充值订单  5101 线下实体商品') INT(8)"`
+	ProductType     int    `json:"product_type" xorm:"not null comment('1001 场馆预约 2101 临时卡 2201 次卡 2311 月卡 2321 季卡 2331 半年卡 2341 年卡 3001 私教（教练）订单 3002 课程订单 4001 充值订单  5101 线下实体商品 5102线下结算') INT(8)"`
 	Count           int    `json:"count" xorm:"not null comment('购买数量') INT(11)"`
 	RealAmount      int    `json:"real_amount" xorm:"not null comment('[单个商品]定价（单位：分）') INT(11)"`
 	CurAmount       int    `json:"cur_amount" xorm:"not null comment('[单个商品]当前价格 [售价](包含真实价格、 折扣价格（单位：分）') INT(11)"`

@@ -414,6 +414,7 @@ func (svc *PubModule) VerifyContentLen(postType int, content, title string) bool
 func (svc *PubModule) PubInformation(param *models.Information) int {
 	now := int(time.Now().Unix())
 	param.CreateAt = now
+	param.Status = 1
 	if _, err := svc.information.AddInformation(param); err != nil {
 		return errdef.ERROR
 	}

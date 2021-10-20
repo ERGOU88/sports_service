@@ -178,6 +178,17 @@ type BindDeviceTokenParam struct {
   Platform          int        `json:"platform"`                           // 平台 0 android 1 ios 2 web
 }
 
+// 管理后台 官方用户返回信息
+type OfficialUserInfo struct {
+	Id          int64     `json:"id"`
+	UserId      string    `json:"user_id"`
+	NickName    string    `json:"nick_name"`
+	MobileNum   int       `json:"mobile_num"`
+	PubVideoNum int64     `json:"pub_video_num"`
+	PubPostNum  int64     `json:"pub_post_num"`
+	PubInfoNum  int64     `json:"pub_info_num"`   // 发布资讯数
+}
+
 var validPhone = regexp.MustCompile(`^1\d{10}$`)
 // 检验手机号
 func (m *UserModel) CheckCellPhoneNumber(mobileNum string) bool {
@@ -550,6 +561,32 @@ func (u *UserModel) SetTencentImInfo(accid, token string) {
 	u.User.TxToken = token
 }
 
+func (m *UserModel) GetUserID() string {
+	uid := fmt.Sprint(util.GetXID())
+	if len(uid) == 8 {
+		return uid
+	}
+
+	rds := dao.NewRedisDao()
+	ok, err := rds.EXISTS(rdskey.USER_ID_INCR)
+	if err != nil {
+		log.Log.Errorf("user_trace: uid incr err:%s", err)
+		return uid
+	}
+
+	if !ok {
+		rds.Set(rdskey.USER_ID_INCR, 10240102)
+	}
+
+	num := util.GenerateRandnum(1, 33)
+	incrUid, err := rds.INCRBY(rdskey.USER_ID_INCR, int64(num))
+	if err != nil {
+		log.Log.Errorf("user_trace: uid incr err:%s", err)
+	}
+
+	return fmt.Sprint(incrUid)
+}
+
 // 获取用户token
 func (m *UserModel) GetUserToken(uid string) (string, error) {
 	rds := dao.NewRedisDao()
@@ -584,4 +621,15 @@ func (m *UserModel) AddActivityRecord(userId string, now int) (int64, error) {
 	}
 
 	return m.Engine.InsertOne(record)
+}
+
+// 获取官方用户列表
+func (m *UserModel) GetOfficialUsers(offset, size int) ([]*OfficialUserInfo, error) {
+	var list []*OfficialUserInfo
+	if err := m.Engine.SQL("SELECT user_id, nick_name, mobile_num, id FROM user " +
+		"WHERE account_type=1 ORDER BY id DESC LIMIT ?, ?", offset, size).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
 }

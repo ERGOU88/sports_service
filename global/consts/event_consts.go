@@ -70,3 +70,10 @@ const (
   // 预约大课订单超时
   ORDER_EVENT_COURSE_TIME_OUT          = 3
 )
+
+// 作品置顶事件
+const (
+  EVENT_SET_TOP_VIDEO     = 1
+  EVENT_SET_TOP_POST      = 2
+  EVENT_SET_TOP_INFO      = 3
+)

@@ -28,19 +28,27 @@ func Router(engine *gin.Engine) {
 		configure.POST("/del/hot/search", DelHotSearch)
 		// 设置热搜权重
 		configure.POST("/set/hot/sort", SetSortByHotSearch)
-    // 设置热搜状态
-    configure.POST("/set/hot/status", SetStatusByHotSearch)
-    // 获取腾讯cos通行证
-    configure.GET("/cos/access", CosTempAccess)
-    // 添加新包
-    configure.POST("/package/add", AddPackage)
-    // 更新包信息
-    configure.POST("/package/update", UpdatePackage)
-    // 删除包
-    configure.POST("/package/del", DelPackage)
-    // 获取包信息列表
-    configure.GET("/package/list", PackageList)
-    // 获取包详情信息
-    configure.GET("/package/detail", PackageDetail)
+		// 设置热搜状态
+		configure.POST("/set/hot/status", SetStatusByHotSearch)
+		// 获取腾讯cos通行证
+		configure.GET("/cos/access", CosTempAccess)
+		// 添加新包
+		configure.POST("/package/add", AddPackage)
+		// 更新包信息
+		configure.POST("/package/update", UpdatePackage)
+		// 删除包
+		configure.POST("/package/del", DelPackage)
+		// 获取包信息列表
+		configure.GET("/package/list", PackageList)
+		// 获取包详情信息
+		configure.GET("/package/detail", PackageDetail)
+		// 添加行为得分配置
+		configure.POST("/add/action/score", AddActionScoreConf)
+		// 更新行为得分配置
+		configure.POST("/update/action/score", UpdateActionScoreConf)
+		// 获取行为得分配置
+		configure.GET("/action/score", GetActionScoreConf)
+		// 获取行为得分配置列表
+		configure.GET("/action/score/list", GetActionScoreConfList)
 	}
 }
