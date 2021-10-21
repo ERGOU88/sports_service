@@ -12,6 +12,10 @@ func Router(engine *gin.Engine) {
 		user.POST("/forbid", ForbidUser)
 		// 后台解封用户
 		user.POST("/unforbid", UnForbidUser)
+		// 官方用户列表
+		user.GET("/official/list", OfficialUserList)
+		// 添加官方用户
+		user.POST("/add", AddOfficialUser)
 	}
 }
 

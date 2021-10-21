@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sports_service/server/backend/controller/cuser"
 	"sports_service/server/global/backend/errdef"
+	"sports_service/server/models"
 	"sports_service/server/models/muser"
 	"sports_service/server/util"
 )
@@ -13,11 +14,11 @@ import (
 func UserList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
-  condition := c.Query("condition")
-  sortType := c.Query("sort_type")
-  queryId := c.Query("query_id")
+	condition := c.Query("condition")
+	sortType := c.Query("sort_type")
+	queryId := c.Query("query_id")
 
-  svc := cuser.New(c)
+	svc := cuser.New(c)
 	//list := svc.GetUserList(page, size)
 	list, total := svc.GetUserListBySort(queryId, sortType, condition, page, size)
 	reply.Data["list"] = list
@@ -51,4 +52,26 @@ func UnForbidUser(c *gin.Context) {
 	svc := cuser.New(c)
 	syscode := svc.UnForbidUser(param.Id)
 	reply.Response(http.StatusOK, syscode)
+}
+
+func OfficialUserList(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	svc := cuser.New(c)
+	code, list := svc.GetOfficialUsers(page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
+
+func AddOfficialUser(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &models.User{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	param.RegIp = c.ClientIP()
+	svc := cuser.New(c)
+	reply.Response(http.StatusOK, svc.AddOfficialUser(param))
 }

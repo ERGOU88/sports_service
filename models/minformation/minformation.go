@@ -52,6 +52,10 @@ func (m *InformationModel) GetInformationList(condition string, offset, size int
 	return list, nil
 }
 
+func (m *InformationModel) AddInformation(information *models.Information) (int64, error) {
+	return m.Engine.InsertOne(information)
+}
+
 // 资讯统计初始化
 func (m *InformationModel) AddInformationStatistic() (int64, error) {
 	return m.Engine.InsertOne(m.Statistic)
@@ -103,8 +107,8 @@ const (
 		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `news_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
 )
 // 更新资讯点赞数
-func (m *InformationModel) UpdateInformationLikeNum(newsId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_INFORMATION_LIKE_NUM, num, num, now, newsId, num); err != nil {
+func (m *InformationModel) UpdateInformationLikeNum(newsId int64, now, num, score int) error {
+	if _, err := m.Engine.Exec(UPDATE_INFORMATION_LIKE_NUM, num, score, now, newsId, num); err != nil {
 		return err
 	}
 
@@ -128,8 +132,8 @@ const (
 		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `news_id`=? AND `comment_num` + ? >= 0 LIMIT 1"
 )
 // 更新资讯评论数
-func (m *InformationModel) UpdateInformationCommentNum(newsId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_INFORMATION_COMMENT_NUM, num, num, now, newsId, num); err != nil {
+func (m *InformationModel) UpdateInformationCommentNum(newsId int64, now, num, score int) error {
+	if _, err := m.Engine.Exec(UPDATE_INFORMATION_COMMENT_NUM, num, score, now, newsId, num); err != nil {
 		return err
 	}
 
@@ -141,8 +145,8 @@ const (
 		" `update_at`=? WHERE `news_id`=? AND `browse_num` + ? >= 0 LIMIT 1"
 )
 // 更新资讯浏览数
-func (m *InformationModel) UpdateInformationBrowseNum(newsId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_INFORMATION_BROWSE_NUM, num, num, now, newsId, num); err != nil {
+func (m *InformationModel) UpdateInformationBrowseNum(newsId int64, now, num, score int) error {
+	if _, err := m.Engine.Exec(UPDATE_INFORMATION_BROWSE_NUM, num, score, now, newsId, num); err != nil {
 		return err
 	}
 
@@ -150,13 +154,25 @@ func (m *InformationModel) UpdateInformationBrowseNum(newsId int64, now, num int
 }
 
 const (
-	UPDATE_INFORMATION_SHARE_NUM = "UPDATE `information_statistic` SET `share_num` = `share_num` + ?, `update_at`=? WHERE `news_id`=? AND `share_num` + ? >= 0 LIMIT 1"
+	UPDATE_INFORMATION_SHARE_NUM = "UPDATE `information_statistic` SET `share_num` = `share_num` + ?, `heat_num` = `heat_num` + ?, " +
+		"`update_at`=? WHERE `news_id`=? AND `share_num` + ? >= 0 LIMIT 1"
 )
 // 更新资讯分享数
-func (m *InformationModel) UpdateInformationShareNum(newsId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_INFORMATION_SHARE_NUM, num, now, newsId, num); err != nil {
+func (m *InformationModel) UpdateInformationShareNum(newsId int64, now, num, score int) error {
+	if _, err := m.Engine.Exec(UPDATE_INFORMATION_SHARE_NUM, num, score, now, newsId, num); err != nil {
 		return err
 	}
 
 	return nil
 }
+
+// 获取用户发布的资讯数
+func (m *InformationModel) GetTotalPublish(userId string) int64 {
+	total, err := m.Engine.Where("user_id=? AND status=1", userId).Count(&models.Information{})
+	if err != nil {
+		return 0
+	}
+
+	return total
+}
+

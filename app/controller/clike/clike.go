@@ -11,6 +11,7 @@ import (
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
 	"sports_service/server/models/mcomment"
+	"sports_service/server/models/mconfigure"
 	"sports_service/server/models/minformation"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/mposting"
@@ -33,6 +34,7 @@ type LikeModule struct {
 	collect    *mcollect.CollectModel
 	post       *mposting.PostingModel
 	information *minformation.InformationModel
+	config      *mconfigure.ConfigModel
 }
 
 func New(c *gin.Context) LikeModule {
@@ -48,6 +50,7 @@ func New(c *gin.Context) LikeModule {
 		collect: mcollect.NewCollectModel(socket),
 		post: mposting.NewPostingModel(socket),
 		information: minformation.NewInformationModel(socket),
+		config: mconfigure.NewConfigModel(socket),
 		engine: socket,
 	}
 }
@@ -93,8 +96,9 @@ func (svc *LikeModule) GiveLikeForVideo(userId string, videoId int64) int {
 	}
 
 	now :=  int(time.Now().Unix())
+	score := svc.config.GetActionScore(int(consts.WORK_TYPE_VIDEO), consts.ACTION_TYPE_FABULOUS)
 	// 更新视频点赞总计 +1
-	if err := svc.video.UpdateVideoLikeNum(videoId, now, consts.CONFIRM_OPERATE); err != nil {
+	if err := svc.video.UpdateVideoLikeNum(videoId, now, consts.CONFIRM_OPERATE, score); err != nil {
 		log.Log.Errorf("like_trace: update video like num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.LIKE_VIDEO_FAIL
@@ -125,7 +129,8 @@ func (svc *LikeModule) GiveLikeForVideo(userId string, videoId int64) int {
 	// 发送视频点赞推送
 	//event.PushEventMsg(config.Global.AmqpDsn, video.UserId, user.NickName, video.Cover, "", consts.VIDEO_LIKE_MSG)
 	redismq.PushEventMsg(redismq.NewEvent(video.UserId, fmt.Sprint(video.VideoId), user.NickName, video.Cover, "", consts.VIDEO_LIKE_MSG))
-
+	// 视频置顶事件
+	redismq.PushTopEventMsg(redismq.NewTopEvent(video.UserId, fmt.Sprint(video.VideoId), consts.EVENT_SET_TOP_VIDEO))
 	return errdef.SUCCESS
 }
 
@@ -167,8 +172,9 @@ func (svc *LikeModule) CancelLikeForVideo(userId string, videoId int64) int {
 	}
 
 	now :=  int(time.Now().Unix())
+	score := svc.config.GetActionScore(int(consts.WORK_TYPE_VIDEO), consts.ACTION_TYPE_FABULOUS)
 	// 更新视频点赞总计 -1
-	if err := svc.video.UpdateVideoLikeNum(videoId, now, consts.CANCEL_OPERATE); err != nil {
+	if err := svc.video.UpdateVideoLikeNum(videoId, now, consts.CANCEL_OPERATE, score * -1); err != nil {
 		log.Log.Errorf("like_trace: update video like num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.LIKE_CANCEL_FAIL
@@ -497,8 +503,9 @@ func (svc *LikeModule) GiveLikeForPost(userId string, postId int64) int {
 	}
 
 	now :=  int(time.Now().Unix())
+	score := svc.config.GetActionScore(int(consts.WORK_TYPE_POST), consts.ACTION_TYPE_FABULOUS)
 	// 更新帖子点赞总计 +1
-	if err := svc.post.UpdatePostLikeNum(postId, now, consts.CONFIRM_OPERATE); err != nil {
+	if err := svc.post.UpdatePostLikeNum(postId, now, consts.CONFIRM_OPERATE, score); err != nil {
 		log.Log.Errorf("like_trace: update post like num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.LIKE_POST_FAIL
@@ -529,6 +536,8 @@ func (svc *LikeModule) GiveLikeForPost(userId string, postId int64) int {
 	// todo: 帖子点赞 推送内容
 	// 发送帖子点赞推送
 	redismq.PushEventMsg(redismq.NewEvent(post.UserId, fmt.Sprint(post.Id), user.NickName, "", "", consts.POST_LIKE_MSG))
+	// 帖子置顶事件
+	redismq.PushTopEventMsg(redismq.NewTopEvent(post.UserId, fmt.Sprint(post.Id), consts.EVENT_SET_TOP_POST))
 
 	return errdef.SUCCESS
 }
@@ -572,8 +581,9 @@ func (svc *LikeModule) CancelLikeForPost(userId string, postId int64) int {
 	}
 
 	now :=  int(time.Now().Unix())
+	score := svc.config.GetActionScore(int(consts.WORK_TYPE_POST), consts.ACTION_TYPE_FABULOUS)
 	// 更新帖子点赞总计 -1
-	if err := svc.post.UpdatePostLikeNum(postId, now, consts.CANCEL_OPERATE); err != nil {
+	if err := svc.post.UpdatePostLikeNum(postId, now, consts.CANCEL_OPERATE, score * -1); err != nil {
 		log.Log.Errorf("like_trace: update post like num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.LIKE_CANCEL_FAIL
@@ -729,8 +739,9 @@ func (svc *LikeModule) GiveLikeForInformation(userId string, newsId int64) int {
 	}
 
 	now :=  int(time.Now().Unix())
+	score := svc.config.GetActionScore(int(consts.WORK_TYPE_INFO), consts.ACTION_TYPE_FABULOUS)
 	// 更新资讯点赞总计 +1
-	if err := svc.information.UpdateInformationLikeNum(newsId, now, consts.CONFIRM_OPERATE); err != nil {
+	if err := svc.information.UpdateInformationLikeNum(newsId, now, consts.CONFIRM_OPERATE, score); err != nil {
 		log.Log.Errorf("like_trace: update information like num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.LIKE_INFORMATION_FAIL
@@ -757,6 +768,10 @@ func (svc *LikeModule) GiveLikeForInformation(userId string, newsId int64) int {
 	}
 
 	svc.engine.Commit()
+
+	// 资讯置顶事件
+	redismq.PushTopEventMsg(redismq.NewTopEvent(svc.information.Information.UserId,
+		fmt.Sprint(svc.information.Information.Id), consts.EVENT_SET_TOP_INFO))
 
 	return errdef.SUCCESS
 }
@@ -800,8 +815,9 @@ func (svc *LikeModule) CancelLikeForInformation(userId string, newsId int64) int
 	}
 
 	now :=  int(time.Now().Unix())
+	score := svc.config.GetActionScore(int(consts.WORK_TYPE_INFO), consts.ACTION_TYPE_FABULOUS)
 	// 更新资讯点赞总计 -1
-	if err := svc.information.UpdateInformationLikeNum(newsId, now, consts.CANCEL_OPERATE); err != nil {
+	if err := svc.information.UpdateInformationLikeNum(newsId, now, consts.CANCEL_OPERATE, score * -1); err != nil {
 		log.Log.Errorf("like_trace: update information like num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.LIKE_CANCEL_FAIL

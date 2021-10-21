@@ -138,7 +138,7 @@ func (m *base) newUser(u *UserModel, c *gin.Context, avatar, nickName string, ge
 	u.SetNickName(m.getNickName(nickName))
 	u.SetLastLoginTime(now)
 	// todo 暂时先使用时间 + 4位随机数 生成uid
-	u.SetUid(m.getUserID())
+	u.SetUid(u.GetUserID())
 	u.SetCreateAt(now)
 	u.SetUpdateAt(now)
 	u.SetPassword("")

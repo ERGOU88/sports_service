@@ -19,6 +19,7 @@ func NewPayModel(engine *xorm.Session) *PayModel {
 
 // 通过id获取支付渠道配置
 func (m *PayModel) GetPaymentChannel(payChannelId int) (bool, error) {
+	m.PayChannel = new(models.VenuePaymentChannel)
 	return m.Engine.Where("status=0 AND id=?", payChannelId).Get(m.PayChannel)
 }
 

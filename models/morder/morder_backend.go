@@ -121,7 +121,7 @@ func (m *OrderModel) GetRevenueFlow(minDate, maxDate, orderId string, offset, si
 		m.Engine.Where("pay_order_id=?", orderId)
 	}
 
-	if err := m.Engine.Find(&list); err != nil {
+	if err := m.Engine.Desc("id").Find(&list); err != nil {
 		return nil, err
 	}
 

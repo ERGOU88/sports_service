@@ -36,3 +36,8 @@ type OrderData struct {
 	OrderId    string     `json:"order_id"`   // 订单id
 	ProcessTm  int64      `json:"process_tm"` // 处理事件
 }
+
+// 作品信息
+type WorkInfo struct {
+	Id        string     `json:"id"`    // 作品id
+}

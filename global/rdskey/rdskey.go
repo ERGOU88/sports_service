@@ -38,6 +38,7 @@ const (
 
 	MSG_PUSH_EVENT_KEY        = SUGAR + "push_event_key"                           // 推送消息（App推送等）
 	MSG_ORDER_EVENT_KEY       = SUGAR + "order_event_key"                          // 订单消息
+	MSG_TOP_EVENT_KEY         = SUGAR + "top_event_key"                            // 作品是否置顶消息[包含帖子/视频/资讯]
 
 	ORDER_EXPIRE_INFO         = SUGAR + "order_expire_info"                        // 需过期的订单id集合
 

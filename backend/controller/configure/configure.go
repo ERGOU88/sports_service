@@ -278,3 +278,49 @@ func (svc *ConfigModule) GetPackageList(page, size int) []*models.AppVersionCont
 func (svc *ConfigModule) GetPackageDetail(id string) *models.AppVersionControl {
 	return svc.configure.GetPackageDetail(id)
 }
+
+// 添加行为得分配置
+func (svc *ConfigModule) AddActionScoreConf(param *models.ActionScoreConfig) int {
+	now := int(time.Now().Unix())
+	param.CreateAt = now
+	param.UpdateAt = now
+	if _, err := svc.configure.AddActionScoreConf(param); err != nil {
+		return errdef.ERROR
+	}
+
+	return errdef.SUCCESS
+}
+
+func (svc *ConfigModule) UpdateActionScoreConf(param *models.ActionScoreConfig) int {
+	now := int(time.Now().Unix())
+	param.UpdateAt = now
+	if _, err := svc.configure.UpdateActionScoreConf(param); err != nil {
+		return errdef.ERROR
+	}
+
+	return errdef.SUCCESS
+}
+
+func (svc *ConfigModule) GetActionScoreConfById(id int64) (int, *models.ActionScoreConfig) {
+	svc.configure.ActionScore.Id = id
+	ok, err := svc.configure.GetActionScoreConf()
+	if !ok || err != nil {
+		return errdef.ERROR, nil
+	}
+
+	return errdef.SUCCESS, svc.configure.ActionScore
+}
+
+// 获取行为得分配置列表
+func (svc *ConfigModule) GetActionScoreConfList() (int, []*models.ActionScoreConfig) {
+	list, err := svc.configure.GetActionScoreConfList()
+	if err != nil {
+		return errdef.ERROR, []*models.ActionScoreConfig{}
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*models.ActionScoreConfig{}
+	}
+
+	return errdef.SUCCESS, list
+}

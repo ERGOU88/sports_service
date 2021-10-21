@@ -11,6 +11,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mcommunity"
+	"sports_service/server/models/mconfigure"
 	"sports_service/server/models/minformation"
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/mshare"
@@ -31,6 +32,7 @@ type ShareModule struct {
 	community   *mcommunity.CommunityModel
 	share       *mshare.ShareModel
 	information *minformation.InformationModel
+	config      *mconfigure.ConfigModel
 }
 
 func New(c *gin.Context) ShareModule {
@@ -44,6 +46,7 @@ func New(c *gin.Context) ShareModule {
 		community: mcommunity.NewCommunityModel(socket),
 		share: mshare.NewShareModel(socket),
 		information: minformation.NewInformationModel(socket),
+		config: mconfigure.NewConfigModel(socket),
 		engine: socket,
 	}
 }
@@ -69,8 +72,9 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 				return errdef.VIDEO_NOT_EXISTS
 			}
 
+			score := svc.config.GetActionScore(int(consts.WORK_TYPE_VIDEO), consts.ACTION_TYPE_SHARE)
 			// 更新视频分享数量
-			if err := svc.video.UpdateVideoShareNum(video.VideoId, now, 1); err != nil {
+			if err := svc.video.UpdateVideoShareNum(video.VideoId, now, 1, score); err != nil {
 				log.Log.Errorf("share_trace: update video share num fail, err:%s", err)
 				svc.engine.Rollback()
 				return errdef.SHARE_DATA_FAIL
@@ -90,7 +94,8 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 				return errdef.POST_NOT_EXISTS
 			}
 
-			if err := svc.posting.UpdatePostShareNum(post.Id, now, 1); err != nil {
+			score := svc.config.GetActionScore(int(consts.WORK_TYPE_POST), consts.ACTION_TYPE_SHARE)
+			if err := svc.posting.UpdatePostShareNum(post.Id, now, 1, score); err != nil {
 				log.Log.Errorf("share_trace: update post share num fail, err:%s", err)
 				svc.engine.Rollback()
 				return errdef.SHARE_DATA_FAIL
@@ -104,7 +109,8 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 				return errdef.INFORMATION_NOT_EXISTS
 			}
 
-			if err := svc.information.UpdateInformationShareNum(svc.information.Information.Id, now, 1); err != nil {
+			score := svc.config.GetActionScore(int(consts.WORK_TYPE_INFO), consts.ACTION_TYPE_SHARE)
+			if err := svc.information.UpdateInformationShareNum(svc.information.Information.Id, now, 1, score); err != nil {
 				log.Log.Errorf("share_trace: update post share num fail, err:%s", err)
 				svc.engine.Rollback()
 				return errdef.SHARE_DATA_FAIL
@@ -209,8 +215,9 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 			svc.posting.Posting.PostingType = consts.POST_TYPE_VIDEO
 			// 关联的视频id todo: 只有发布视频才有关联id
 			//svc.posting.Posting.VideoId = video.VideoId
+			score := svc.config.GetActionScore(int(consts.WORK_TYPE_VIDEO), consts.ACTION_TYPE_SHARE)
 			// 更新视频分享数量
-			if err := svc.video.UpdateVideoShareNum(video.VideoId, now, 1); err != nil {
+			if err := svc.video.UpdateVideoShareNum(video.VideoId, now, 1, score); err != nil {
 				log.Log.Errorf("share_trace: update video share num fail, err:%s", err)
 				svc.engine.Rollback()
 				return errdef.SHARE_DATA_FAIL
@@ -262,8 +269,9 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 			svc.posting.Posting.ContentType = consts.COMMUNITY_FORWARD_POST
 			// 产品需求： 分享的帖子 皆为文本
 			svc.posting.Posting.PostingType = consts.POST_TYPE_TEXT
+			score := svc.config.GetActionScore(int(consts.WORK_TYPE_POST), consts.ACTION_TYPE_SHARE)
 			// 更新原帖子分享数
-			if err := svc.posting.UpdatePostShareNum(int64(params.ComposeId), now, 1); err != nil {
+			if err := svc.posting.UpdatePostShareNum(int64(params.ComposeId), now, 1, score); err != nil {
 				log.Log.Errorf("share_trace: update post share num fail, err:%s", err)
 				svc.engine.Rollback()
 				return errdef.SHARE_DATA_FAIL

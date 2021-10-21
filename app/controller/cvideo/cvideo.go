@@ -13,6 +13,7 @@ import (
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mbanner"
 	"sports_service/server/models/mcollect"
+	"sports_service/server/models/mconfigure"
 	"sports_service/server/models/minformation"
 	"sports_service/server/models/mlabel"
 	"sports_service/server/models/mlike"
@@ -21,6 +22,7 @@ import (
 	"sports_service/server/models/msection"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
+	redismq "sports_service/server/redismq/event"
 	cloud "sports_service/server/tools/tencentCloud"
 	"sports_service/server/tools/tencentCloud/vod"
 	"sports_service/server/util"
@@ -43,6 +45,7 @@ type VideoModule struct {
 	post         *mposting.PostingModel
 	section      *msection.SectionModel
 	information  *minformation.InformationModel
+	config       *mconfigure.ConfigModel
 }
 
 func New(c *gin.Context) VideoModule {
@@ -61,6 +64,7 @@ func New(c *gin.Context) VideoModule {
 		post: mposting.NewPostingModel(socket),
 		section: msection.NewSectionModel(socket),
 		information: minformation.NewInformationModel(socket),
+		config: mconfigure.NewConfigModel(socket),
 		engine: socket,
 	}
 }
@@ -863,8 +867,10 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDet
 	// 粉丝数
 	resp.FansNum = svc.attention.GetTotalFans(fmt.Sprint(video.UserId))
 	now := int(time.Now().Unix())
-	// 增加视频浏览总数
-	if err := svc.video.UpdateVideoBrowseNum(video.VideoId, now, 1); err != nil {
+
+	score := svc.config.GetActionScore(int(consts.WORK_TYPE_VIDEO), consts.ACTION_TYPE_BROWSE)
+	// 增加视频浏览总数 及 热度值
+	if err := svc.video.UpdateVideoBrowseNum(video.VideoId, now, 1, score); err != nil {
 		log.Log.Errorf("video_trace: update video browse num err:%s", err)
 	}
 
@@ -918,8 +924,11 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDet
 		resp.IsCollect = collectInfo.Status
 	}
 
-	return resp, errdef.SUCCESS
+	// 视频置顶事件
+	redismq.PushTopEventMsg(redismq.NewTopEvent(userId,
+		fmt.Sprint(video.VideoId), consts.EVENT_SET_TOP_VIDEO))
 
+	return resp, errdef.SUCCESS
 }
 
 // 获取详情页推荐视频（根据同标签推荐）

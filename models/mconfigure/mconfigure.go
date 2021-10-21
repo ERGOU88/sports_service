@@ -2,6 +2,7 @@ package mconfigure
 
 import (
   "github.com/go-xorm/xorm"
+  "sports_service/server/global/consts"
   "sports_service/server/models"
 )
 
@@ -9,6 +10,7 @@ import (
 type ConfigModel struct {
   Engine                *xorm.Session
   VersionControl        *models.AppVersionControl
+  ActionScore           *models.ActionScoreConfig
 }
 
 // 实例
@@ -16,6 +18,7 @@ func NewConfigModel(engine *xorm.Session) *ConfigModel {
   return &ConfigModel{
     Engine: engine,
     VersionControl: new(models.AppVersionControl),
+    ActionScore: new(models.ActionScoreConfig),
   }
 }
 
@@ -128,4 +131,66 @@ func (m *ConfigModel) GetPackageByVersion(version string, plt int32) *models.App
   }
 
   return m.VersionControl
+}
+
+// 添加行为得分配置
+func (m *ConfigModel) AddActionScoreConf(param *models.ActionScoreConfig) (int64, error) {
+  return m.Engine.InsertOne(param)
+}
+
+// 更新行为得分配置
+func (m *ConfigModel) UpdateActionScoreConf(param *models.ActionScoreConfig) (int64, error) {
+  return m.Engine.Update(param)
+}
+
+// 获取行为得分配置列表
+func (m *ConfigModel) GetActionScoreConfList() ([]*models.ActionScoreConfig, error) {
+  var list []*models.ActionScoreConfig
+  if err := m.Engine.Find(&list); err != nil {
+    return nil, err
+  }
+
+  return list, nil
+}
+
+// 获取行为得分配置
+func (m *ConfigModel) GetActionScoreConf() (bool, error) {
+  var (
+  	ok bool
+  	err error
+  )
+  if m.ActionScore.WorkType > 0 {
+    ok, err = m.Engine.Where("work_type=?", m.ActionScore.WorkType).Get(m.ActionScore)
+  }
+
+  if m.ActionScore.Id > 0 {
+    ok, err = m.Engine.Where("id=?", m.ActionScore.Id).Get(m.ActionScore)
+  }
+
+  return ok, err
+}
+
+// 获取行为得分
+func (m *ConfigModel) GetActionScore(workType, actionType int) int {
+  m.ActionScore.WorkType = workType
+  // 默认1分
+  score := 1
+  if ok, err := m.GetActionScoreConf(); ok && err == nil {
+    switch actionType {
+    case consts.ACTION_TYPE_FABULOUS:
+      score = m.ActionScore.FabulousScore
+    case consts.ACTION_TYPE_BROWSE:
+      score = m.ActionScore.BrowseScore
+    case consts.ACTION_TYPE_SHARE:
+      score = m.ActionScore.ShareScore
+    case consts.ACTION_TYPE_BARRAGE:
+      score = m.ActionScore.BarrageScore
+    case consts.ACTION_TYPE_COMMENT:
+      score = m.ActionScore.CommentScore
+    case consts.ACTION_TYPE_COLLECT:
+      score = m.ActionScore.CollectScore
+    }
+  }
+
+  return score
 }

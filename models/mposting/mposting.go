@@ -244,8 +244,8 @@ const (
 		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `posting_id`=? AND `browse_num` + ? >= 0 LIMIT 1"
 )
 // 更新帖子浏览数 及 帖子热度
-func (m *PostingModel) UpdatePostBrowseNum(postId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_POST_BROWSE_NUM, num, num, now, postId, num); err != nil {
+func (m *PostingModel) UpdatePostBrowseNum(postId int64, now, num, score int) error {
+	if _, err := m.Engine.Exec(UPDATE_POST_BROWSE_NUM, num, score, now, postId, num); err != nil {
 		return err
 	}
 
@@ -257,8 +257,8 @@ const (
 		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `posting_id`=? AND `share_num` + ? >= 0 LIMIT 1"
 )
 // 更新帖子浏览数 及 帖子热度
-func (m *PostingModel) UpdatePostShareNum(postId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_POST_SHARE_NUM, num, num, now, postId, num); err != nil {
+func (m *PostingModel) UpdatePostShareNum(postId int64, now, num, score int) error {
+	if _, err := m.Engine.Exec(UPDATE_POST_SHARE_NUM, num, score, now, postId, num); err != nil {
 		return err
 	}
 
@@ -270,8 +270,8 @@ const (
 		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `posting_id`=? AND `fabulous_num` + ? >= 0 LIMIT 1"
 )
 // 更新帖子点赞数 及 帖子热度
-func (m *PostingModel) UpdatePostLikeNum(postId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_POST_LIKE_NUM, num, num, now, postId, num); err != nil {
+func (m *PostingModel) UpdatePostLikeNum(postId int64, now, num, score int) error {
+	if _, err := m.Engine.Exec(UPDATE_POST_LIKE_NUM, num, score, now, postId, num); err != nil {
 		return err
 	}
 
@@ -283,8 +283,8 @@ const (
 		"`heat_num` = `heat_num` + ?, `update_at`=? WHERE `posting_id`=? AND `comment_num` + ? >= 0 LIMIT 1"
 )
 // 更新帖子评论数 及 帖子热度
-func (m *PostingModel) UpdatePostCommentNum(postId int64, now, num int) error {
-	if _, err := m.Engine.Exec(UPDATE_POST_COMMENT_NUM, num, num, now, postId, num); err != nil {
+func (m *PostingModel) UpdatePostCommentNum(postId int64, now, num, score int) error {
+	if _, err := m.Engine.Exec(UPDATE_POST_COMMENT_NUM, num, score, now, postId, num); err != nil {
 		return err
 	}
 

@@ -12,7 +12,9 @@ import (
 	"sports_service/server/models/mbarrage"
 	"sports_service/server/models/mcollect"
 	"sports_service/server/models/mcomment"
+	"sports_service/server/models/minformation"
 	"sports_service/server/models/mlike"
+	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	"strconv"
@@ -30,6 +32,8 @@ type UserModule struct {
 	video       *mvideo.VideoModel
 	comment     *mcomment.CommentModel
 	barrage     *mbarrage.BarrageModel
+	post        *mposting.PostingModel
+	information *minformation.InformationModel
 }
 
 func New(c *gin.Context) UserModule {
@@ -44,6 +48,8 @@ func New(c *gin.Context) UserModule {
 		video: mvideo.NewVideoModel(socket),
 		comment: mcomment.NewCommentModel(socket),
 		barrage: mbarrage.NewBarrageModel(socket),
+		post: mposting.NewPostingModel(socket),
+		information: minformation.NewInformationModel(socket),
 		engine: socket,
 	}
 }
@@ -178,6 +184,43 @@ func (svc *UserModule) UnForbidUser(id string) int {
 	if err := svc.user.UpdateUserStatus(id); err != nil {
 		log.Log.Errorf("user_trace: un forbid user err:%s", err)
 		return errdef.USER_UNFORBID_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
+// 获取官方用户列表
+func (svc *UserModule) GetOfficialUsers(page, size int) (int, []*muser.OfficialUserInfo) {
+	offset := (page - 1) * size
+	list, err := svc.user.GetOfficialUsers(offset, size)
+	if err != nil {
+		log.Log.Errorf("user_trace: get official user fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*muser.OfficialUserInfo{}
+	}
+
+	for _, item := range list {
+		item.PubPostNum = svc.post.GetTotalPublish(item.UserId)
+		item.PubVideoNum = svc.video.GetTotalPublish(item.UserId)
+		item.PubInfoNum = svc.information.GetTotalPublish(item.UserId)
+	}
+
+	return errdef.SUCCESS, list
+}
+
+// 添加官方用户
+func (svc *UserModule) AddOfficialUser(param *models.User) int {
+	now := int(time.Now().Unix())
+	param.UserId = svc.user.GetUserID()
+	param.AccountType = 1
+	param.CreateAt = now
+	param.UpdateAt = now
+	param.Avatar = consts.DEFAULT_AVATAR
+	if err := svc.user.AddUser(); err != nil {
+		return errdef.ERROR
 	}
 
 	return errdef.SUCCESS

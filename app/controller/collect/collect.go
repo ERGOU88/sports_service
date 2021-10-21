@@ -10,6 +10,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
+	"sports_service/server/models/mconfigure"
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
@@ -27,6 +28,7 @@ type CollectModule struct {
 	video       *mvideo.VideoModel
 	attention   *mattention.AttentionModel
 	like        *mlike.LikeModel
+	config      *mconfigure.ConfigModel
 }
 
 func New(c *gin.Context) CollectModule {
@@ -39,6 +41,7 @@ func New(c *gin.Context) CollectModule {
 		video: mvideo.NewVideoModel(socket),
 		attention: mattention.NewAttentionModel(socket),
 		like: mlike.NewLikeModel(socket),
+		config: mconfigure.NewConfigModel(socket),
 		engine: socket,
 	}
 }
@@ -78,8 +81,9 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 	}
 
 	now :=  int(time.Now().Unix())
+	score := svc.config.GetActionScore(int(consts.WORK_TYPE_VIDEO), consts.ACTION_TYPE_COLLECT)
 	// 更新视频收藏总计 +1
-	if err := svc.video.UpdateVideoCollectNum(videoId, now, consts.CONFIRM_OPERATE); err != nil {
+	if err := svc.video.UpdateVideoCollectNum(videoId, now, consts.CONFIRM_OPERATE, score); err != nil {
 		log.Log.Errorf("collect_trace: update video collect num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.COLLECT_VIDEO_FAIL
@@ -112,6 +116,8 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 		redismq.PushEventMsg(redismq.NewEvent(video.UserId, fmt.Sprint(video.VideoId), user.NickName, video.Cover, "", consts.COLLECT_VIDEO_MSG))
 	}
 
+	// 视频置顶事件
+	redismq.PushTopEventMsg(redismq.NewTopEvent(video.UserId, fmt.Sprint(video.VideoId), consts.EVENT_SET_TOP_VIDEO))
 	return errdef.SUCCESS
 }
 
@@ -153,8 +159,9 @@ func (svc *CollectModule) CancelCollect(userId string, videoId int64) int {
 	}
 
 	now :=  int(time.Now().Unix())
+	score := svc.config.GetActionScore(int(consts.WORK_TYPE_VIDEO), consts.ACTION_TYPE_COLLECT)
 	// 更新视频收藏总计 -1
-	if err := svc.video.UpdateVideoCollectNum(videoId, now, consts.CANCEL_OPERATE); err != nil {
+	if err := svc.video.UpdateVideoCollectNum(videoId, now, consts.CANCEL_OPERATE, score * -1); err != nil {
 		log.Log.Errorf("collect_trace: update video collect num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.COLLECT_CANCEL_FAIL
