@@ -37,9 +37,13 @@ func New(c *gin.Context) AdminModule {
 
 // 添加后台管理员 todo:测试使用
 func (svc *AdminModule) AddAdminUser(params *models.SystemUser) int {
+  if params.Username == "" || params.Password == "" {
+    return errdef.INVALID_PARAMS
+  }
+
   admin := svc.admin.FindAdminUserByName(params.Username)
   if admin != nil {
-    return errdef.ADMIN_NOT_EXISTS
+    return errdef.ADMIN_HAS_EXISTS
   }
 
   // 去掉空格 换行
@@ -49,6 +53,9 @@ func (svc *AdminModule) AddAdminUser(params *models.SystemUser) int {
   params.Salt = util.GenSecret(util.CHAR_MODE, 8)
   params.Username = name
   params.Password = util.Md5String(fmt.Sprintf("%s%s", params.Password, params.Salt))
+  now := time.Now()
+  params.CreateAt = now
+  params.UpdateAt = now
   if err := svc.admin.AddAdminUser(params); err != nil {
     log.Log.Errorf("user_trace: add admin fail, err:%s", err)
     return errdef.ADMIN_ADD_FAIL
@@ -59,8 +66,12 @@ func (svc *AdminModule) AddAdminUser(params *models.SystemUser) int {
 
 // 更新后台管理员
 func (svc *AdminModule) UpdateAdminUser(params *models.SystemUser) int {
+  if params.Username == "" || params.Password == "" {
+    return errdef.INVALID_PARAMS
+  }
+
   admin := svc.admin.FindAdminUserByName(params.Username)
-  if admin != nil {
+  if admin == nil {
     return errdef.ADMIN_NOT_EXISTS
   }
 
