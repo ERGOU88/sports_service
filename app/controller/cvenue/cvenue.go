@@ -359,7 +359,7 @@ func (svc *VenueModule) AddOrder(extra *mappointment.OrderResp, orderId, userId,
 }
 
 // 获取场馆用户进出场记录
-func (svc *VenueModule) GetActionRecord(userId string, page, size int) (int, []*models.VenueEntryOrExitRecords) {
+func (svc *VenueModule) GetActionRecord(userId string, page, size int) (int, []mvenue.VenueEntryOrExitRecords) {
 	user := svc.user.FindUserByUserid(userId)
 	if user == nil {
 		log.Log.Errorf("venue_trace: user not found, userId:%s", userId)
@@ -374,8 +374,39 @@ func (svc *VenueModule) GetActionRecord(userId string, page, size int) (int, []*
 	}
 
 	if len(list) == 0 {
-		return errdef.SUCCESS, []*models.VenueEntryOrExitRecords{}
+		return errdef.SUCCESS, []mvenue.VenueEntryOrExitRecords{}
 	}
 
-	return errdef.SUCCESS, list
+	res := make([]mvenue.VenueEntryOrExitRecords, 0)
+	for _, item := range list {
+		if item.DtEnter == 0 && item.DtExit == 0 {
+			continue
+		}
+
+		info := mvenue.VenueEntryOrExitRecords{}
+		info.Id = item.Id
+		info.UserId = item.UserId
+		info.VenueId = item.VenueId
+		info.Status = 0
+		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.VenueId))
+		if ok && err == nil {
+			info.VenueName = svc.venue.Venue.VenueName
+		}
+
+		if item.DtExit > 0 {
+			info.ActionType = 2
+			info.CreateAt = item.DtExit
+			info.UpdateAt = item.DtExit
+			res = append(res, info)
+		}
+
+		if item.DtEnter > 0 {
+			info.ActionType = 1
+			info.CreateAt = item.DtEnter
+			info.UpdateAt = item.DtEnter
+			res = append(res, info)
+		}
+	}
+
+	return errdef.SUCCESS, res
 }
