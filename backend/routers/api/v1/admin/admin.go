@@ -1,25 +1,28 @@
 package admin
 
 import (
-	"github.com/gin-gonic/gin"
+  "fmt"
+  "github.com/gin-gonic/gin"
   "io"
   "net/http"
   "os"
   "path"
   "sports_service/server/backend/config"
   "sports_service/server/backend/controller/cadmin"
-  "sports_service/server/global/backend/log"
   "sports_service/server/global/backend/errdef"
+  "sports_service/server/global/backend/log"
+  "sports_service/server/global/consts"
+  "sports_service/server/middleware/jwt"
+  "sports_service/server/models"
   "sports_service/server/models/madmin"
   "sports_service/server/util"
   "time"
-	"fmt"
 )
 
 // 注册后台用户
 func RegAdminUser(c *gin.Context) {
   reply := errdef.New(c)
-  params := new(madmin.AdminRegOrLoginParams)
+  params := new(models.SystemUser)
   if err := c.BindJSON(params); err != nil {
     reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
     return
@@ -30,8 +33,7 @@ func RegAdminUser(c *gin.Context) {
   reply.Response(http.StatusOK, syscode)
 }
 
-// 后台管理员登陆
-func LoginByPassword(c *gin.Context) {
+func AdLogin(c *gin.Context) {
   reply := errdef.New(c)
   params := new(madmin.AdminRegOrLoginParams)
   if err := c.BindJSON(params); err != nil {
@@ -93,4 +95,56 @@ func UploadFile(c *gin.Context) {
   reply.Data["file_url"] = config.Global.FileAddr + shortPath
 
   reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// 后台管理员登陆
+func AdminLogin(c *gin.Context) {
+  reply := errdef.New(c)
+  params := new(madmin.AdminRegOrLoginParams)
+  if err := c.BindJSON(params); err != nil {
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := cadmin.New(c)
+  syscode, token, menus := svc.AdminLogin(params)
+  if syscode != errdef.SUCCESS {
+    reply.Response(http.StatusOK, syscode)
+    return
+  }
+
+  reply.Data["menus"] = menus
+  reply.Data["token"] = token
+  reply.Response(http.StatusOK, syscode)
+}
+
+func AddAdmin(c *gin.Context) {
+  reply := errdef.New(c)
+  param := &models.SystemUser{}
+  if err := c.BindJSON(param); err != nil {
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  param.CreateBy, _ = util.StringToInt(jwt.GetUserInfo(c, consts.IDENTIFY))
+  svc := cadmin.New(c)
+  reply.Response(http.StatusOK, svc.AddAdminUser(param))
+}
+
+func UpdateAdmin(c *gin.Context) {
+  reply := errdef.New(c)
+  param := &models.SystemUser{}
+  if err := c.BindJSON(param); err != nil {
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  param.UpdateBy, _ = util.StringToInt(jwt.GetUserInfo(c, consts.IDENTIFY))
+  svc := cadmin.New(c)
+  svc.UpdateAdminUser(param)
+  reply.Response(http.StatusOK, svc.UpdateAdminUser(param))
+}
+
+func DelAdmin(c *gin.Context) {
+
 }

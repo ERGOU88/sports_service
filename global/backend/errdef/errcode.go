@@ -4,6 +4,7 @@ const (
 	SUCCESS            = 200
 	ERROR              = 500
 	INVALID_PARAMS     = 400
+	UNAUTHORIZED       = 401
 
 	// 10001 - 11000 视频相关错误码
 	VIDEO_ALREADY_DELETE        = 10001
@@ -56,6 +57,7 @@ const (
 	ADMIN_HAS_EXISTS            = 14002
 	ADMIN_NOT_EXISTS            = 14003
 	ADMIN_PASSWORD_NOT_MATCH    = 14004
+	ADMIN_UPDATE_FAIL           = 14005
 
 	// 15001 - 16000 通知相关错误码
 	NOTIFY_INVALID_SEND_TM      = 15001
@@ -142,6 +144,7 @@ var MsgFlags = map[int]string{
 	ADMIN_HAS_EXISTS:            "管理员已存在",
 	ADMIN_NOT_EXISTS:            "管理员不存在",
 	ADMIN_PASSWORD_NOT_MATCH:    "帐号/密码不正确",
+	ADMIN_UPDATE_FAIL:           "管理员更新失败",
 
 	NOTIFY_INVALID_SEND_TM:         "无效的发送时间，发送时间必须大于当前时间",
 	NOTIFY_INVALID_CONTENT:         "推送内容含有违规文字",
