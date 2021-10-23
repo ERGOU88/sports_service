@@ -39,3 +39,4 @@ func (m *AdminModel) GetAdminUserList(offset, size int) ([]*models.AdminUser, er
 
 	return list, nil
 }
+

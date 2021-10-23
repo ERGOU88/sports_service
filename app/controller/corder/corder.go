@@ -1188,6 +1188,15 @@ func (svc *OrderModule) CheckOrderExpire() error {
 			return errors.New("update order status fail")
 		}
 
+		svc.order.OrderProduct.Status = consts.ORDER_TYPE_UNPAID
+		svc.order.OrderProduct.UpdateAt = int(time.Now().Unix())
+		// 更新订单商品流水状态
+		if _, err = svc.order.UpdateOrderProductStatus(order.PayOrderId, consts.ORDER_TYPE_PAID); err != nil {
+			log.Log.Errorf("order_trace: update order product status fail, err:%s, affected:%d, orderId:%s", err, affected, order.PayOrderId)
+			svc.engine.Rollback()
+			return errors.New("update order product status fail")
+		}
+
 		svc.engine.Commit()
 	}
 

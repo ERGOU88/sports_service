@@ -11,3 +11,13 @@ func (m *AdminModel) GetRoleMenu(roleId string) ([]*models.SystemRoleMenu, error
 
 	return list, nil
 }
+
+// 添加角色可查看的菜单
+func (m *AdminModel) AddRoleMenuList(list []*models.SystemRoleMenu) (int64, error) {
+	return m.Engine.InsertMulti(list)
+}
+
+// 更新角色可查看的菜单
+func (m *AdminModel) UpdateRoleMenuList(list []*models.SystemRoleMenu) (int64, error) {
+	return m.Engine.Update(list)
+}

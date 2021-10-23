@@ -58,6 +58,7 @@ const (
 	ADMIN_NOT_EXISTS            = 14003
 	ADMIN_PASSWORD_NOT_MATCH    = 14004
 	ADMIN_UPDATE_FAIL           = 14005
+	ADMIN_STATUS_FORBID         = 14006
 
 	// 15001 - 16000 通知相关错误码
 	NOTIFY_INVALID_SEND_TM      = 15001
@@ -145,6 +146,7 @@ var MsgFlags = map[int]string{
 	ADMIN_NOT_EXISTS:            "管理员不存在",
 	ADMIN_PASSWORD_NOT_MATCH:    "帐号/密码不正确",
 	ADMIN_UPDATE_FAIL:           "管理员更新失败",
+	ADMIN_STATUS_FORBID:         "该账号已封禁",
 
 	NOTIFY_INVALID_SEND_TM:         "无效的发送时间，发送时间必须大于当前时间",
 	NOTIFY_INVALID_CONTENT:         "推送内容含有违规文字",

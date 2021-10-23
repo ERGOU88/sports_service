@@ -141,10 +141,93 @@ func UpdateAdmin(c *gin.Context) {
 
   param.UpdateBy, _ = util.StringToInt(jwt.GetUserInfo(c, consts.IDENTIFY))
   svc := cadmin.New(c)
-  svc.UpdateAdminUser(param)
   reply.Response(http.StatusOK, svc.UpdateAdminUser(param))
 }
 
-func DelAdmin(c *gin.Context) {
+func ForbidAdmin(c *gin.Context) {
+  reply := errdef.New(c)
+  username := c.Query("username")
+  status, _ := util.StringToInt(c.Query("status"))
+  svc := cadmin.New(c)
+  reply.Response(http.StatusOK, svc.ForbidAdminUser(username, status))
+}
 
+func GetRoleMenu(c *gin.Context) {
+  reply := errdef.New(c)
+  roleId := c.Query("role_id")
+  svc := cadmin.New(c)
+  code, list := svc.GetRoleMenuList(roleId)
+  reply.Data["list"] = list
+  reply.Response(http.StatusOK, code)
+}
+
+func AddRoleMenu(c *gin.Context) {
+  reply := errdef.New(c)
+  param := make([]*models.SystemRoleMenu, 0)
+  if err := c.BindJSON(param); err != nil {
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := cadmin.New(c)
+  code := svc.AddRoleMenuList(param)
+  reply.Response(http.StatusOK, code)
+}
+
+func UpdateRoleMenu(c *gin.Context) {
+  reply := errdef.New(c)
+  param := make([]*models.SystemRoleMenu, 0)
+  if err := c.BindJSON(param); err != nil {
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := cadmin.New(c)
+  code := svc.UpdateRoleMenuList(param)
+  reply.Response(http.StatusOK, code)
+}
+
+func AdminDetail(c *gin.Context) {
+  reply := errdef.New(c)
+  username := c.Query("username")
+
+  svc := cadmin.New(c)
+  admin := svc.GetAdminDetail(username)
+  reply.Data["detail"] = admin
+  reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+func MenuDetail(c *gin.Context) {
+  reply := errdef.New(c)
+  menuId := c.Query("menu_id")
+  svc := cadmin.New(c)
+  menu := svc.GetMenuDetail(menuId)
+  reply.Data["detail"] = menu
+  reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+func AddMenu(c *gin.Context) {
+  reply := errdef.New(c)
+  param := &models.SystemMenu{}
+  if err := c.Bind(param); err != nil {
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := cadmin.New(c)
+  code := svc.AddMenuDetail(param)
+  reply.Response(http.StatusOK, code)
+}
+
+func UpdateMenu(c *gin.Context) {
+  reply := errdef.New(c)
+  param := &models.SystemMenu{}
+  if err := c.Bind(param); err != nil {
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := cadmin.New(c)
+  code := svc.UpdateMenuDetail(param)
+  reply.Response(http.StatusOK, code)
 }
