@@ -1040,7 +1040,7 @@ func (svc *OrderModule) GetCouponCodeInfo(userId, orderId string) (int, *morder.
 	resp := &morder.CouponCodeInfo{}
 	resp.VenueName = extra.VenueName
 	resp.Subject = svc.order.Order.Subject
-	resp.Code = fmt.Sprintf("O%d", util.GetSnowId())
+	resp.Code = fmt.Sprintf("o%s", strings.ToLower(util.GenSecret(util.CHAR_MODE, 18)))
 	resp.Count = extra.Count
 	resp.TotalAmount = svc.order.Order.Amount
 	//resp.QrCodeInfo = fmt.Sprintf("O%s", util.GenSecret(util.MIX_MODE, 16))
