@@ -157,6 +157,9 @@ type VideoDetailInfo struct {
 	Album         int64                 `json:"album"`                                // 专辑
 	Subarea       int                   `json:"subarea"`                              // 分区
 	AlbumInfo     []*InfoByVideoAlbum   `json:"album_info"`                           // 专辑下的视频数据
+	SectionId     int                   `json:"section_id"`                           // 板块id
+	SectionName   string                `json:"section_name"`                         // 板块名称
+	SubareaName   string                `json:"subarea_name"`                         // 分区名称
 }
 
 // 专辑下的视频数据

@@ -72,9 +72,9 @@ func VideoReviewList(c *gin.Context) {
 
 	svc := cvideo.New(c)
 	list := svc.GetVideoReviewList(page, size)
-  total := svc.GetVideoReviewTotalCount()
-  reply.Data["list"] = list
-  reply.Data["total"] = total
+	total := svc.GetVideoReviewTotalCount()
+	reply.Data["list"] = list
+	reply.Data["total"] = total
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 

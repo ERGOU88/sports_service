@@ -11,6 +11,7 @@ import (
   "sports_service/server/models"
   "sports_service/server/models/mattention"
   "sports_service/server/models/mlabel"
+  "sports_service/server/models/msection"
   "sports_service/server/models/muser"
   "sports_service/server/models/mvideo"
   redismq "sports_service/server/redismq/event"
@@ -26,6 +27,7 @@ type VideoModule struct {
   label        *mlabel.LabelModel
   attention    *mattention.AttentionModel
   user         *muser.UserModel
+  section      *msection.SectionModel
 }
 
 func New(c *gin.Context) VideoModule {
@@ -37,6 +39,7 @@ func New(c *gin.Context) VideoModule {
     label: mlabel.NewLabelModel(socket),
     attention: mattention.NewAttentionModel(socket),
     user: muser.NewUserModel(socket),
+    section: msection.NewSectionModel(socket),
     engine: socket,
   }
 }
@@ -157,6 +160,15 @@ func (svc *VideoModule) GetVideoList(page, size int) []*mvideo.VideoDetailInfo {
   for _, video := range list {
     video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
     video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
+    ok, err := svc.section.GetSectionById(fmt.Sprint(video.SectionId))
+    if ok && err == nil {
+      video.SectionName = svc.section.Section.Name
+    }
+
+    subarea, err := svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))
+    if subarea != nil && err == nil {
+      video.SubareaName = subarea.SubareaName
+    }
   }
 
   return list
