@@ -62,14 +62,13 @@ func PubPost(c *gin.Context) {
 // 获取上传签名（腾讯云）
 func UploadSign(c *gin.Context) {
 	reply := errdef.New(c)
-	userId, _ := c.Get(consts.USER_ID)
 	biteRate, err := strconv.Atoi(c.Query("bite_rate"))
 	if err != nil {
 		biteRate = 0
 	}
 
 	svc := cpub.New(c)
-	syscode, sign, taskId := svc.GetUploadSign(userId.(string), int64(biteRate))
+	syscode, sign, taskId := svc.GetUploadSign(c.Query("user_id"), int64(biteRate))
 	reply.Data["sign"] = sign
 	reply.Data["task_id"] = taskId
 

@@ -127,6 +127,21 @@ func (svc *AdminModule) GetAdminDetail(username string) *models.SystemUser {
   return svc.admin.FindAdminUserByName(username)
 }
 
+// 获取管理员列表
+func (svc *AdminModule) GetAdminList(page, size int) (int, []*models.SystemUser) {
+  offset := (page - 1) * size
+  list, err := svc.admin.GetAdminUserList(offset, size)
+  if err != nil {
+    return errdef.ERROR, nil
+  }
+
+  if len(list) == 0 {
+    return errdef.SUCCESS, []*models.SystemUser{}
+  }
+
+  return errdef.SUCCESS, list
+}
+
 func (svc *AdminModule) GetMenuDetail(menuId string) *models.SystemMenu {
   ok, err := svc.admin.GetMenu(menuId)
   if !ok || err != nil {
@@ -134,6 +149,21 @@ func (svc *AdminModule) GetMenuDetail(menuId string) *models.SystemMenu {
   }
 
   return svc.admin.Menu
+}
+
+// 获取菜单列表
+func (svc *AdminModule) GetMenuList(page, size int) (int, []*models.SystemMenu) {
+  offset := (page - 1) * size
+  list, err := svc.admin.GetMenuList(offset, size)
+  if err != nil {
+    return errdef.ERROR, nil
+  }
+
+  if len(list) == 0 {
+    return errdef.SUCCESS, []*models.SystemMenu{}
+  }
+
+  return errdef.SUCCESS, list
 }
 
 func (svc *AdminModule) GetRoleMenuList(roleId string) (int, []*models.SystemMenu) {
@@ -225,16 +255,43 @@ func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) int {
   return errdef.SUCCESS
 }
 
-func (svc *AdminModule) AddRoleMenuList(list []*models.SystemRoleMenu) int {
-  if _, err := svc.admin.AddRoleMenuList(list); err != nil {
+func (svc *AdminModule) AddRoleMenuList(param *madmin.AddRoleMenuParam) int {
+  if _, err := svc.admin.AddRoleMenuList(param.Menus); err != nil {
     return errdef.ERROR
   }
 
   return errdef.SUCCESS
 }
 
-func (svc *AdminModule) UpdateRoleMenuList(list []*models.SystemRoleMenu) int {
-  if _, err := svc.admin.UpdateRoleMenuList(list); err != nil {
+func (svc *AdminModule) UpdateRoleMenuList(param *madmin.AddRoleMenuParam) int {
+  for _, item := range param.Menus {
+    if _, err := svc.admin.UpdateRoleMenu(item); err != nil {
+      log.Log.Errorf("admin_trace: update role menu list fail, err:%s", err)
+      return errdef.ERROR
+    }
+  }
+
+  return errdef.SUCCESS
+}
+
+// 获取角色列表
+func (svc *AdminModule) GetRoleList(page, size int) (int, []*models.SystemRole) {
+  offset := (page - 1) * size
+  roleList, err := svc.admin.GetRoleList(offset, size)
+  if err != nil {
+    return errdef.ERROR, nil
+  }
+
+  if len(roleList) == 0 {
+    return errdef.SUCCESS, []*models.SystemRole{}
+  }
+
+  return errdef.SUCCESS, roleList
+}
+
+// 添加角色
+func (svc *AdminModule) AddRole(role *models.SystemRole) int {
+  if _, err := svc.admin.AddRole(role); err != nil {
     return errdef.ERROR
   }
 

@@ -11,7 +11,7 @@ func Router(engine *gin.Engine) {
 		// 发布帖子
 		pub.POST("/post", PubPost)
 		// 腾讯云vod签名
-		pub.POST("/upload/sign", UploadSign)
+		pub.GET("/upload/sign", UploadSign)
 		// 发布资讯
 		pub.POST("/information", PubInformation)
 	}

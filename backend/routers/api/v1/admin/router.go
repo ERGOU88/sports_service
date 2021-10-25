@@ -25,18 +25,26 @@ func Router(engine *gin.Engine) {
     // 禁用/解禁 管理员
     admin.POST("/forbid", jwt.JwtAuth(), ForbidAdmin)
     // 管理员详情
-    admin.GET("/detail", jwt.JwtAuth(), AdminDetail)
-    // 设置管理员可浏览的菜单
-    admin.POST("/add/role/menu", jwt.JwtAuth(), AddRoleMenu)
-    // 更新管理员可浏览的菜单
-    admin.POST("/update/role/menu", jwt.JwtAuth(), UpdateRoleMenu)
-    // 获取管理员可浏览的菜单
-    admin.GET("/role/menu", jwt.JwtAuth(), GetRoleMenu)
+    admin.GET("/detail", AdminDetail)
+    // 管理员列表
+    admin.GET("/list", AdminList)
+    // 角色列表
+    admin.GET("/role/list", RoleList)
+    // 添加角色
+    admin.POST("/add/role", AddRole)
+    // 设置角色可浏览的菜单
+    admin.POST("/add/role/menu", AddRoleMenu)
+    // 更新角色可浏览的菜单
+    admin.POST("/update/role/menu", UpdateRoleMenu)
+    // 获取角色可浏览的菜单
+    admin.GET("/role/menu", GetRoleMenu)
     // 添加菜单
-    admin.POST("/add/menu", jwt.JwtAuth(), AddMenu)
+    admin.POST("/add/menu", AddMenu)
     // 更新菜单
     admin.POST("/update/menu", jwt.JwtAuth(), UpdateMenu)
     // 菜单详情
-    admin.GET("/menu/detail", jwt.JwtAuth(), MenuDetail)
+    admin.GET("/menu/detail", MenuDetail)
+    // 菜单列表
+    admin.GET("/menu/list", MenuList)
   }
 }

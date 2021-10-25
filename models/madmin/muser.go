@@ -8,6 +8,12 @@ type AdminRegOrLoginParams struct {
 	Password     string       `json:"password" binding:"required"`
 }
 
+// 禁用/解禁 管理员
+type ForbidAdmin struct {
+	UserName     string       `json:"username" binding:"required"`
+	Status       int          `json:"status" binding:"required"`
+}
+
 // 添加后台用户
 func (m *AdminModel) AddAdminUser(admin *models.SystemUser) error {
 	if _, err := m.Engine.InsertOne(admin); err != nil {
@@ -31,8 +37,8 @@ func (m *AdminModel) FindAdminUserByName(userName string) *models.SystemUser {
 	return m.User
 }
 
-func (m *AdminModel) GetAdminUserList(offset, size int) ([]*models.AdminUser, error) {
-	var list []*models.AdminUser
+func (m *AdminModel) GetAdminUserList(offset, size int) ([]*models.SystemUser, error) {
+	var list []*models.SystemUser
 	if err := m.Engine.Limit(size, offset).Find(&list); err != nil {
 		return nil, err
 	}

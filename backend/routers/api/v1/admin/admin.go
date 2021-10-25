@@ -146,10 +146,14 @@ func UpdateAdmin(c *gin.Context) {
 
 func ForbidAdmin(c *gin.Context) {
   reply := errdef.New(c)
-  username := c.Query("username")
-  status, _ := util.StringToInt(c.Query("status"))
+  param := &madmin.ForbidAdmin{}
+  if err := c.BindJSON(param); err != nil {
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
   svc := cadmin.New(c)
-  reply.Response(http.StatusOK, svc.ForbidAdminUser(username, status))
+  reply.Response(http.StatusOK, svc.ForbidAdminUser(param.UserName, param.Status))
 }
 
 func GetRoleMenu(c *gin.Context) {
@@ -163,8 +167,9 @@ func GetRoleMenu(c *gin.Context) {
 
 func AddRoleMenu(c *gin.Context) {
   reply := errdef.New(c)
-  param := make([]*models.SystemRoleMenu, 0)
+  param := &madmin.AddRoleMenuParam{}
   if err := c.BindJSON(param); err != nil {
+    log.Log.Errorf("admin_trace: invalid param, param:%+v, err:%s", param, err)
     reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
     return
   }
@@ -176,7 +181,7 @@ func AddRoleMenu(c *gin.Context) {
 
 func UpdateRoleMenu(c *gin.Context) {
   reply := errdef.New(c)
-  param := make([]*models.SystemRoleMenu, 0)
+  param := &madmin.AddRoleMenuParam{}
   if err := c.BindJSON(param); err != nil {
     reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
     return
@@ -197,6 +202,15 @@ func AdminDetail(c *gin.Context) {
   reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
+func AdminList(c *gin.Context) {
+  reply := errdef.New(c)
+  page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+  svc := cadmin.New(c)
+  code, list := svc.GetAdminList(page, size)
+  reply.Data["list"] = list
+  reply.Response(http.StatusOK, code)
+}
+
 func MenuDetail(c *gin.Context) {
   reply := errdef.New(c)
   menuId := c.Query("menu_id")
@@ -204,6 +218,15 @@ func MenuDetail(c *gin.Context) {
   menu := svc.GetMenuDetail(menuId)
   reply.Data["detail"] = menu
   reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+func MenuList(c *gin.Context) {
+  reply := errdef.New(c)
+  page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+  svc := cadmin.New(c)
+  code, list := svc.GetMenuList(page, size)
+  reply.Data["list"] = list
+  reply.Response(http.StatusOK, code)
 }
 
 func AddMenu(c *gin.Context) {
@@ -230,4 +253,25 @@ func UpdateMenu(c *gin.Context) {
   svc := cadmin.New(c)
   code := svc.UpdateMenuDetail(param)
   reply.Response(http.StatusOK, code)
+}
+
+func RoleList(c *gin.Context) {
+  reply := errdef.New(c)
+  page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+  svc := cadmin.New(c)
+  code, list := svc.GetRoleList(page, size)
+  reply.Data["list"] = list
+  reply.Response(http.StatusOK, code)
+}
+
+func AddRole(c *gin.Context) {
+  reply := errdef.New(c)
+  param := &models.SystemRole{}
+  if err := c.BindJSON(param); err != nil {
+    reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+    return
+  }
+
+  svc := cadmin.New(c)
+  reply.Response(http.StatusOK, svc.AddRole(param))
 }
