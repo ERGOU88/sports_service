@@ -401,7 +401,7 @@ func (svc *base) SetOrderProductInfo(orderId string, now, count int, productId i
 	return &models.VenueOrderProductInfo{
 		ProductId:   productId,
 		ProductType: svc.Extra.OrderType,
-		ProductCategory: consts.PRODUCT_CATEGORY_APPOINTMENT,
+		ProductCategory: svc.GetAppointmentCategory(svc.Extra.OrderType),
 		Count:       count,
 		RealAmount:  svc.appointment.AppointmentInfo.RealAmount,
 		CurAmount:   svc.appointment.AppointmentInfo.CurAmount,
@@ -413,6 +413,18 @@ func (svc *base) SetOrderProductInfo(orderId string, now, count int, productId i
 		UpdateAt: now,
 		PayOrderId: orderId,
 	}
+}
+
+// 获取预约分类
+func (svc *base) GetAppointmentCategory(orderType int) int {
+	switch {
+	case orderType > 1000 && orderType < 2000:
+		return consts.PRODUCT_CATEGORY_APPOINTMENT_VENUE
+	case orderType > 3000 && orderType < 4000:
+		return consts.PRODUCT_CATEGORY_APPOINTMENT_COURSE
+	}
+
+	return 0
 }
 
 func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, count int, seatInfo []*mappointment.SeatInfo,
