@@ -62,7 +62,7 @@ const (
 		"v.create_at, 1 as content_type, v.`title`, v.`video_duration`,v.user_id FROM videos as v " +
 		"WHERE status=1 AND pub_type=3 AND section_id=? UNION ALL SELECT i.id as id, 0, i.describe, i.cover, '', " +
 		"i.create_at, 2 as content_type, i.title, 0, i.user_id FROM information as i " +
-		"WHERE status=0 AND pub_type=2 AND related_id=? ORDER BY create_at DESC LIMIT ?, ?"
+		"WHERE status=1 AND pub_type=2 AND related_id=? ORDER BY create_at DESC LIMIT ?, ?"
 )
 // 通过板块id 获取推荐的内容
 func (m *SectionModel) GetRecommendInfoBySectionId(sectionId string, offset, size int) ([]*SectionRecommendInfo, error) {
