@@ -55,6 +55,9 @@ func (m *OrderModel) UpdateRefundRate(id, rate int) (int64, error) {
 
 // 获取订单数量（所有场馆 已付款的订单）
 func (m *OrderModel) GetOrderCount() (int64, error) {
+	if m.Order.UserId != "" {
+		m.Engine.Where("user_id=?", m.Order.UserId)
+	}
 	return m.Engine.In("status", []int{2, 3, 4, 5, 6}).Count(&models.VenuePayOrders{})
 }
 
@@ -237,4 +240,9 @@ func (m *OrderModel) GetSalesDetail(queryType int, minDate, maxDate string) ([]*
 	}
 
 	return list, nil
+}
+
+// 获取用户消费总额
+func (m *OrderModel) GetTotalSalesByUser(userId string) (int64, error) {
+	return m.Engine.Where("user_id=?", userId).In("status", []int{2, 3, 4, 5, 6}).SumInt(m.Order, "amount")
 }
