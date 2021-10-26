@@ -14,6 +14,7 @@ import (
 	"sports_service/server/models/mcomment"
 	"sports_service/server/models/minformation"
 	"sports_service/server/models/mlike"
+	"sports_service/server/models/morder"
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
@@ -34,11 +35,14 @@ type UserModule struct {
 	barrage     *mbarrage.BarrageModel
 	post        *mposting.PostingModel
 	information *minformation.InformationModel
+	order       *morder.OrderModel
 }
 
 func New(c *gin.Context) UserModule {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
+	venueSocket := dao.AppEngine.NewSession()
+	defer venueSocket.Close()
 	return UserModule{
 		context: c,
 		user: muser.NewUserModel(socket),
@@ -50,6 +54,7 @@ func New(c *gin.Context) UserModule {
 		barrage: mbarrage.NewBarrageModel(socket),
 		post: mposting.NewPostingModel(socket),
 		information: minformation.NewInformationModel(socket),
+		order: morder.NewOrderModel(venueSocket),
 		engine: socket,
 	}
 }
@@ -92,6 +97,26 @@ func (svc *UserModule) GetUserListBySort(queryId, sortType, condition string, pa
 	list := svc.user.GetUserListBySort(userId, mobileNum, sortType, condition, offset, size)
 	if len(list) == 0 {
 		return []*muser.UserInfo{}, total
+	}
+
+	for _, item := range list {
+		svc.order.Order.UserId = item.UserId
+		orderNum, err := svc.order.GetOrderCount()
+		if err != nil {
+			log.Log.Errorf("user_trace: get order count fail, err:%s", err)
+		}
+
+		item.TotalOrder = orderNum
+
+		totalAmount, err := svc.order.GetTotalSalesByUser(item.UserId)
+		if err != nil {
+			log.Log.Errorf("user_trace: get total sales by user fail, userId:%s, err:%s", item.UserId, err)
+		}
+		item.TotalConsume = totalAmount
+
+		item.TotalPubPost = svc.post.GetTotalPublish(item.UserId)
+
+		item.TotalComment = item.TotalComment + svc.comment.GetUserTotalCommentByPost(item.UserId) + svc.comment.GetUserTotalCommentByInfo(item.UserId)
 	}
 
 	return list, total

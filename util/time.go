@@ -5,6 +5,7 @@ import (
   "math"
   "strconv"
   "time"
+  "fmt"
 )
 
 type TimeS struct {
@@ -200,4 +201,30 @@ func GetDiffDays(t1, t2 time.Time) int {
   t2 = time.Date(t2.Year(), t2.Month(), t2.Day(), 0, 0, 0, 0, time.Local)
 
   return int(t1.Sub(t2).Hours() / 24)
+}
+
+func ResolveTimeByMilliSecond(seconds int) string {
+  oneMin := 60 * 1000
+  oneHour := 60 * oneMin
+  oneDay := 24 * oneHour
+
+  var day = seconds / oneDay
+  hour := (seconds - day * oneDay) / oneHour
+
+  minute := (seconds - day * oneDay - hour * oneHour) / oneMin
+  second := (seconds - day * oneDay - hour * oneHour - minute * oneMin) / 1000
+  milliSecond := seconds - hour * oneHour - second * 1000 - minute * oneMin
+  var res string
+  if minute > 0 {
+
+    res += fmt.Sprintf("%d′", minute)
+  }
+
+  res += fmt.Sprintf("%d″", second)
+
+  if milliSecond > 0 {
+    res += fmt.Sprintf("%d", milliSecond)
+  }
+
+  return res
 }

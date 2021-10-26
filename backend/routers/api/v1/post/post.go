@@ -104,3 +104,19 @@ func ApplyCreamList(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
+
+func SectionList(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cpost.New(c)
+	code, list := svc.GetSectionList()
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
+
+func TopicList(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cpost.New(c)
+	code, list := svc.GetTopicList()
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}

@@ -123,3 +123,13 @@ func (m *CommunityModel) GetTopicListOrderByPostNum(offset, size int) ([]*Commun
 
 	return list, nil
 }
+
+// 获取所有话题
+func (m *CommunityModel) GetAllTopic() ([]*models.CommunityTopic, error) {
+	var list []*models.CommunityTopic
+	if err := m.Engine.Where("status=1").Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}

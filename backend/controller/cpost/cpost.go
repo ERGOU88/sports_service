@@ -260,6 +260,7 @@ func (svc *PostModule) AddTopic(param *mcommunity.AddTopic) int {
 	svc.community.CommunityTopic.Sortorder = param.Sortorder
 	svc.community.CommunityTopic.TopicName = param.Name
 	svc.community.CommunityTopic.Describe = param.Describe
+	svc.community.CommunityTopic.SectionId = 1
 	if _, err := svc.community.AddTopic(); err != nil {
 		log.Log.Errorf("post_trace: add topic fail, err:%s", err)
 		return errdef.POST_ADD_TOPIC_FAIL
@@ -326,6 +327,34 @@ func (svc *PostModule) GetApplyCreamList(page, size int) (int, []*mposting.PostD
 			item.SectionName = sectionInfo.SectionName
 		}
 
+	}
+
+	return errdef.SUCCESS, list
+}
+
+// 板块列表
+func (svc *PostModule) GetSectionList() (int, []*models.CommunitySection) {
+	list, err := svc.community.GetAllSection()
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*models.CommunitySection{}
+	}
+
+	return errdef.SUCCESS, list
+}
+
+// 话题列表
+func (svc *PostModule) GetTopicList() (int, []*models.CommunityTopic) {
+	list, err := svc.community.GetAllTopic()
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*models.CommunityTopic{}
 	}
 
 	return errdef.SUCCESS, list

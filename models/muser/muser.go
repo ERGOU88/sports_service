@@ -67,12 +67,15 @@ type UserInfo struct {
 	TotalBeLiked     int64  `json:"total_beLiked" example:"100"`     // 被点赞数
 	TotalFans        int64  `json:"total_fans" example:"100"`        // 粉丝数
 	TotalAttention   int64  `json:"total_attention" example:"100"`   // 关注数
-	TotalCollect     int64  `json:"total_collect" example:"100"`     // 收藏的作品数
-	TotalPublish     int64  `json:"total_publish" example:"100"`     // 发布的作品数
-	TotalLikes       int64  `json:"total_likes" example:"100"`       // 点赞的作品数
+	TotalCollect     int64  `json:"total_collect" example:"100"`     // 收藏的视频数
+	TotalPublish     int64  `json:"total_publish" example:"100"`     // 发布的视频数
+	TotalLikes       int64  `json:"total_likes" example:"100"`       // 点赞的视频数
 	TotalComment     int64  `json:"total_comment" example:"100"`     // 总评价数
 	TotalBrowse      int64  `json:"total_browse" example:"100"`      // 总浏览数
 	TotalBarrage     int64  `json:"total_barrage" example:"100"`     // 总弹幕数
+	TotalPubPost     int64  `json:"total_pub_post"`                  // 总发布帖子数
+	TotalOrder       int64  `json:"total_order"`                     // 总订单
+	TotalConsume     int64  `json:"total_consume"`                   // 消费总额
 }
 
 // 用户简单信息返回

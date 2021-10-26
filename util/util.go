@@ -361,14 +361,14 @@ func IsSpace(r []rune) bool {
 
 // 转换为时分秒
 func ResolveTime(seconds int) string {
-	oneSecond := 60
-	oneHour := 60 * oneSecond
+	oneMin := 60
+	oneHour := 60 * oneMin
 	oneDay := 24 * oneHour
 
 	var day = seconds / oneDay
 	hour := (seconds - day * oneDay) / oneHour
-	minute := (seconds - day * oneDay - hour * oneHour) / oneSecond
-	second := seconds - day * oneDay - hour * oneHour - minute * oneSecond
+	minute := (seconds - day * oneDay - hour * oneHour) / oneMin
+	second := seconds - day * oneDay - hour * oneHour - minute *oneMin
 
 	var res string
 	if hour > 0 {

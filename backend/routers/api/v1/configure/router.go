@@ -1,10 +1,13 @@
 package configure
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 func Router(engine *gin.Engine) {
 	api := engine.Group("/backend/v1")
 	configure := api.Group("/config")
+	//configure.Use(jwt.JwtAuth())
 	{
 		// 添加banner
 		configure.POST("/add/banner", AddBanner)

@@ -43,6 +43,17 @@ type VenueProduct struct {
 	Instructions      string `json:"instructions"`         // 购买须知
 }
 
+type VenueEntryOrExitRecords struct {
+	Id         int64  `json:"id"`
+	UserId     string `json:"user_id"`
+	ActionType int    `json:"action_type"`    // 1 进场 2 出场
+	VenueName  string `json:"venue_name"`
+	VenueId    int64  `json:"venue_id"`
+	Status     int    `json:"status"`
+	CreateAt   int    `json:"create_at"`
+	UpdateAt   int    `json:"update_at"`
+}
+
 func NewVenueModel(engine *xorm.Session) *VenueModel {
 	return &VenueModel{
 		Venue: new(models.VenueInfo),
@@ -115,9 +126,9 @@ func (m *VenueModel) UpdateVenueVipInfo(cols string) (int64, error) {
 }
 
 // 场馆进出场记录
-func (m *VenueModel) VenueEntryOrExitRecords(userId string, offset, size int) ([]*models.VenueEntryOrExitRecords, error) {
-	var list []*models.VenueEntryOrExitRecords
-	if err := m.Engine.Where("user_id=? AND status=0", userId).Desc("id").Limit(size, offset).Find(&list); err != nil {
+func (m *VenueModel) VenueEntryOrExitRecords(userId string, offset, size int) ([]*models.VenueEnterLog, error) {
+	var list []*models.VenueEnterLog
+	if err := m.Engine.Where("user_id=?", userId).Desc("id").Limit(size, offset).Find(&list); err != nil {
 		return nil, err
 	}
 

@@ -1,10 +1,14 @@
 package venue
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"sports_service/server/middleware/jwt"
+)
 
 func Router(engine *gin.Engine) {
 	api := engine.Group("/backend/v1")
 	venue := api.Group("/venue")
+	venue.Use(jwt.JwtAuth())
 	{
 		// 获取场馆列表
 		venue.GET("/list", VenueList)

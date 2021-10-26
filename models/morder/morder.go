@@ -30,6 +30,7 @@ type OrderInfo struct {
 	ProductImg         string      `json:"product_img"`
 	HasEvaluate        bool        `json:"has_evaluate"`        // 是否评价
 	TimeNode           string      `json:"time_node,omitempty"` // 预约的时间节点
+	CanRefund          bool        `json:"can_refund"`          // 是否可退款
 }
 
 // 订单退款/删除订单/取消订单
