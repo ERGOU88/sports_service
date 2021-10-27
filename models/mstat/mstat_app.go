@@ -23,8 +23,8 @@ type Stat struct {
 // 管理后台首页统计数据
 type HomePageInfo struct {
 	TopInfo        map[string]interface{}      `json:"top_info"`         // 顶部统计数据
-	DauList        []*Stat                      `json:"dau_list"`         // 日活数据
-	NewUserList    []*Stat                      `json:"new_user_list"`    // 新增用户数据
+	DauList        map[string]interface{}      `json:"dau_list"`         // 日活数据
+	NewUserList    map[string]interface{}       `json:"new_user_list"`    // 新增用户数据
 	RetentionRate  []*RetentionRateInfo         `json:"retention_rate"`   // 留存率数据
 
 	NextDayRetentionRate []*RetentionRateInfo   `json:"next_day_retention_rate"` // 次日留存率数据
@@ -97,7 +97,7 @@ func (m *StatModel) GetDAUByDays(days int) ([]*Stat, error) {
 }
 
 const (
-	GET_NET_ADDITION_BY_DAYS = "SELECT count(1) AS sum, date(FROM_UNIXTIME(create_at)) AS dt FROM user WHERE " +
+	GET_NET_ADDITION_BY_DAYS = "SELECT count(1) AS count, date(FROM_UNIXTIME(create_at)) AS dt FROM user WHERE " +
 		"DATE_SUB(CURDATE(), INTERVAL ? DAY) <= date(FROM_UNIXTIME(create_at)) GROUP BY dt"
 )
 // 获取N天的新增用户数据
