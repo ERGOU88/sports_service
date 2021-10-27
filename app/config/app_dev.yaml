@@ -43,11 +43,11 @@ nsqAddr: 127.0.0.1:4150
 amqpDsn: amqp://admin:admin@127.0.0.1:5672
 staticDomain: https://fpv-web-qa.bluetrans.cn
 ## 微信支付 回调地址
-wechatNotifyUrl: http://fpv-app-api-qa.bluetrans.cn/api/v1/pay/wechat/notify
+wechatNotifyUrl: https://fpv-app-api.bluetrans.cn/api/v1/pay/wechat/notify
 ## 微信退款回调地址
-wechatRefundNotify: http://fpv-app-api-qa.bluetrans.cn/api/v1/pay/wechat/refund
+wechatRefundNotify: https://fpv-app-api.bluetrans.cn/api/v1/pay/wechat/refund
 ## 支付宝 回调地址
-alipayNotifyUrl: http://fpv-app-api-qa.bluetrans.cn/api/v1/pay/alipay/notify
+alipayNotifyUrl: https://fpv-app-api.bluetrans.cn/api/v1/pay/alipay/notify
 # 苹果
 appleLinkPath: /data/service/fpv-app-api/config/apple-app-site-association
 # 微信证书
