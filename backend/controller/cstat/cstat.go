@@ -92,17 +92,20 @@ func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, 
 	homepageInfo.TopInfo["new_users"] = newUsers.Count
 	homepageInfo.TopInfo["total_order"] = totalOrder
 
-	homepageInfo.DauList, err = svc.stat.GetDAUByDays(100)
+	dauList, err := svc.stat.GetDAUByDays(100)
 	if err != nil {
 		log.Log.Errorf("stat_trace: get dau by days fail, err:%s", err)
 		return errdef.ERROR, homepageInfo
 	}
 
-	homepageInfo.NewUserList, err = svc.stat.GetNetAdditionByDays(100)
+	homepageInfo.DauList =  svc.ResultInfoByDate(dauList, 100)
+
+	newUserList, err := svc.stat.GetNetAdditionByDays(100)
 	if err != nil {
 		log.Log.Errorf("stat_trace: get new users by days fail, err:%s", err)
 		return errdef.ERROR, homepageInfo
 	}
+	homepageInfo.NewUserList = svc.ResultInfoByDate(newUserList, 100)
 
 	minDate := time.Now().AddDate(0, 0, -100).Format(consts.FORMAT_DATE)
 	// 次日留存率
@@ -142,7 +145,7 @@ func (svc *StatModule) GetVideoSubareaStat() (int, map[string]interface{}) {
 	mp["title"] = "视频各分区发布数据"
 
 	for _, item := range subareaStat {
-		item.Rate = fmt.Sprintf("%.0f%s", float64(item.Count) / float64(total) * 100, "%")
+		item.Rate = fmt.Sprintf("%.2f%s", float64(item.Count) / float64(total) * 100, "%")
 		if item.Id == 0 {
 			item.Name = "其他"
 			continue
@@ -177,7 +180,7 @@ func (svc *StatModule) GetPostSectionStat() (int, map[string]interface{}) {
 	mp["title"] = "帖子各板块发布数据"
 
 	for _, item := range sectionStat {
-		item.Rate = fmt.Sprintf("%.0f%s", float64(item.Count) / float64(total) * 100, "%")
+		item.Rate = fmt.Sprintf("%.2f%s", float64(item.Count) / float64(total) * 100, "%")
 		if item.Id == 0 {
 			item.Name = "其他"
 			continue

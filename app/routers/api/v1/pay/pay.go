@@ -125,14 +125,13 @@ func WechatNotify(c *gin.Context) {
 		return
 	}
 
+	body, _ := util.JsonFast.Marshal(bm)
+	log.Log.Debug("wxNotify_trace: body:%s, bm:%+v", string(body), bm)
 	svc := corder.New(c)
 	if b := svc.VerifySign(consts.WEICHAT, "", "", bm); !b {
 		c.String(http.StatusBadRequest, "fail")
 		return
 	}
-
-	body, _ := util.JsonFast.Marshal(bm)
-	log.Log.Debug("wxNotify_trace: body:%s, bm:%+v", string(body), bm)
 
 	if hasExist := util.MapExistBySlice(bm, []string{"return_code", "result_code", "out_trade_no", "total_fee",
 		"time_end", "transaction_id"}); !hasExist {
