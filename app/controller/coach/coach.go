@@ -212,8 +212,6 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 		return errdef.COACH_ORDER_NOT_SUCCESS
 	}
 
-
-
 	if svc.order.Order.Status != consts.ORDER_TYPE_COMPLETED {
 		log.Log.Errorf("coach_trace: coach order not success, status:%d", svc.order.Order.Status)
 		svc.engine.Rollback()

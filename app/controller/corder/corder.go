@@ -985,14 +985,14 @@ func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderI
 
 		// 不能退款
 		if !can {
-			return false, 0, 0, 0, nil
+			return false, 0, 0, endTime, nil
 		}
 
 		// 可退款 则计算手续费
 		refundFee, ruleId, err = svc.CalculationRefundFee(amount, int(startTime))
 		if err != nil {
 			log.Log.Errorf("order_trace: calculation refund fee fail, orderId:%s, err:%s", orderId, err)
-			return false, 0, 0, 0, nil
+			return false, 0, 0, endTime, nil
 		}
 
 	case consts.ORDER_TYPE_EXPERIENCE_CARD:
@@ -1002,10 +1002,10 @@ func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderI
 			return false, 0, 0, 0, errors.New("get vip card fail")
 		}
 
-		expireTm := payTime + svc.order.CardRecord.ExpireDuration
-		// 次卡  订单完成时间 + 过期时长 <= 当前时间戳 表示已过期
-		if expireTm <= int(now) {
-			return false, 0, 0, 0, nil
+		endTime = int64(payTime + svc.order.CardRecord.ExpireDuration)
+		// 次卡  订单完成时间 + 过期时长 <= 当前时间戳 表示不能退款
+		if endTime <= now {
+			return false, 0, 0, endTime, nil
 		}
 
 		// 未过期 可退款, 次卡 全额退 则 手续费为0
@@ -1183,6 +1183,7 @@ func (svc *OrderModule) CheckOrderExpire() error {
 
 		loc, _ := time.LoadLocation("Asia/Shanghai")
 		now := time.Now().In(loc).Unix()
+		log.Log.Errorf("endTm:%d, now:%d", endTm, now)
 		// 节点结束时间 > 当前时间  表示未过期
 		if endTm > now {
 			svc.engine.Rollback()
