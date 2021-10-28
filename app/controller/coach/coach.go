@@ -197,19 +197,22 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 		return errdef.COACH_ORDER_NOT_EXISTS
 	}
 
-	// 如果订单类型 不是 预约私教
-	if svc.order.Order.ProductType != consts.ORDER_TYPE_APPOINTMENT_COACH {
-		log.Log.Errorf("coach_trace: invalid order product type, orderId:%s, productType:%d",
-			svc.order.Order.PayOrderId, svc.order.Order.ProductType)
-		svc.engine.Rollback()
-		return errdef.COACH_ORDER_NOT_EXISTS
-	}
 
 	products, err := svc.order.GetOrderProductsById(svc.order.Order.PayOrderId)
 	if len(products) == 0 || err != nil {
 		log.Log.Errorf("coach_trace: get order product by id fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
 		svc.engine.Rollback()
 		return errdef.COACH_ORDER_NOT_SUCCESS
+	}
+
+	for _, item := range products {
+		// 如果订单类型 不是 预约私教
+		if item.ProductType != consts.ORDER_TYPE_APPOINTMENT_COACH {
+			log.Log.Errorf("coach_trace: invalid order product type, orderId:%s, productType:%d",
+				svc.order.Order.PayOrderId, item.ProductType)
+			svc.engine.Rollback()
+			return errdef.COACH_ORDER_NOT_EXISTS
+		}
 	}
 
 	if svc.order.Order.Status != consts.ORDER_TYPE_COMPLETED {
