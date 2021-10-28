@@ -205,6 +205,15 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 		return errdef.COACH_ORDER_NOT_EXISTS
 	}
 
+	products, err := svc.order.GetOrderProductsById(svc.order.Order.PayOrderId)
+	if len(products) == 0 || err != nil {
+		log.Log.Errorf("coach_trace: get order product by id fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
+		svc.engine.Rollback()
+		return errdef.COACH_ORDER_NOT_SUCCESS
+	}
+
+
+
 	if svc.order.Order.Status != consts.ORDER_TYPE_COMPLETED {
 		log.Log.Errorf("coach_trace: coach order not success, status:%d", svc.order.Order.Status)
 		svc.engine.Rollback()

@@ -99,7 +99,8 @@ func orderTimeOut(orderId string) error {
 		return errors.New("fail")
 	}
 
-	now := int(time.Now().Unix())
+	loc, _ := time.LoadLocation("Asia/Shanghai")
+	now := int(time.Now().In(loc).Unix())
 	// 如果当前时间 < 超时处理时间 不处理
 	if now < orderModel.Order.CreateAt + consts.PAYMENT_DURATION {
 		log.Log.Errorf("orderJob_trace: now < processTm, orderId:%s, now:%d, createAt:%d", orderId,

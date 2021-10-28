@@ -531,8 +531,8 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 			}
 
 		case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_YEAR_CARD:
-			ok, err := svc.order.GetOrderProductsById(order.PayOrderId)
-			if !ok || err != nil {
+			products, err := svc.order.GetOrderProductsById(order.PayOrderId)
+			if len(products) == 0 || err != nil {
 				continue
 			}
 
@@ -580,7 +580,7 @@ func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, productType,
 			svc.venue.Vip.EndTm = int64(now + expireDuration * count)
 			// 可用时长
 			svc.venue.Vip.Duration = int64(duration)
-            // 会员类型
+			// 会员类型
 			svc.venue.Vip.VipType = productType
 			cols = "vip_type, start_tm, end_tm, duration, update_at"
 		}
@@ -938,8 +938,8 @@ func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderI
 
 	var (
 		refundFee, ruleId int
-	    // 预约类型订单 最早节点 开始时间 及 最后节点 结束时间
-	    startTime, endTime int64
+		// 预约类型订单 最早节点 开始时间 及 最后节点 结束时间
+		startTime, endTime int64
 	)
 	now := time.Now().Unix()
 	switch orderType {
@@ -1126,7 +1126,7 @@ func (svc *OrderModule) OrderCancel(param *morder.ChangeOrder) int {
 		return errdef.ORDER_NOT_ALLOW_CANCEL
 	}
 
-    // 取消订单流程
+	// 取消订单流程
 	if err := svc.OrderProcess(svc.order.Order.PayOrderId, "", svc.order.Order.Transaction, 0, consts.CANCEL_ORDER,
 		svc.order.Order.RefundAmount, svc.order.Order.RefundFee); err != nil {
 		svc.engine.Rollback()
@@ -1181,8 +1181,10 @@ func (svc *OrderModule) CheckOrderExpire() error {
 			continue
 		}
 
+		loc, _ := time.LoadLocation("Asia/Shanghai")
+		now := time.Now().In(loc).Unix()
 		// 节点结束时间 > 当前时间  表示未过期
-		if endTm > time.Now().Unix() {
+		if endTm > now {
 			svc.engine.Rollback()
 			continue
 		}

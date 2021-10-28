@@ -123,9 +123,19 @@ func (m *OrderModel) UpdateOrderStatus(orderId string, status int) (int64, error
 }
 
 // 通过订单id 获取订单流水信息 [会员卡类商品]
-func (m *OrderModel) GetOrderProductsById(orderId string) (bool, error) {
-	m.OrderProduct = new(models.VenueOrderProductInfo)
-	return m.Engine.Where("pay_order_id=?", orderId).Get(m.OrderProduct)
+//func (m *OrderModel) GetOrderProductsById(orderId string) (bool, error) {
+//	m.OrderProduct = new(models.VenueOrderProductInfo)
+//	return m.Engine.Where("pay_order_id=?", orderId).Get(m.OrderProduct)
+//}
+
+// 通过订单id 获取订单商品流水信息
+func (m *OrderModel) GetOrderProductsById(orderId string) ([]*models.VenueOrderProductInfo, error) {
+	var list []*models.VenueOrderProductInfo
+	if err := m.Engine.Where("pay_order_id=?", orderId).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
 }
 
 // 更新订单商品状态
