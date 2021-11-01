@@ -566,7 +566,7 @@ func RecordPlayDuration(c *gin.Context) {
 	reply := errdef.New(c)
 	param := new(mvideo.PlayDurationParams)
 	if err := c.BindJSON(param); err != nil {
-		log.Log.Errorf("video_trace: invalid param, param:%+v", param)
+		log.Log.Errorf("video_trace: invalid param, param:%+v, err:%s", param, err)
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
