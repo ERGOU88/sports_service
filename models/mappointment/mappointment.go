@@ -67,6 +67,7 @@ type OptionsInfo struct {
 	StartTm         int64  `json:"start_tm"`                     // 开始时间戳
 	EndTm           int64  `json:"end_tm"`                       // 结束时间戳
 	CoachId         int64  `json:"coach_id"`                     // 教练id
+	VenueId         int64  `json:"venue_id"`                     // 场馆id
 }
 
 // 已预约人数
@@ -106,6 +107,7 @@ type AppointmentReq struct {
 	ReqType         int                 `json:"req_type"`         // 1 查询购物车数据 2 下单
 	IsDiscount      int32               `json:"is_discount"`      // 是否抵扣时长 1 抵扣 0 不抵扣
 	Channel         int                 `json:"channel"`          // 1001 安卓 1002 ios
+	VenueId         int64               `json:"venue_id"`         // 场馆id
 }
 
 // 预约请求数据
