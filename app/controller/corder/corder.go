@@ -1183,7 +1183,7 @@ func (svc *OrderModule) CheckOrderExpire() error {
 
 		loc, _ := time.LoadLocation("Asia/Shanghai")
 		now := time.Now().In(loc).Unix()
-		log.Log.Errorf("endTm:%d, now:%d", endTm, now)
+		log.Log.Errorf("order_trace: orderId:%s, endTm:%d, now:%d", order.PayOrderId, endTm, now)
 		// 节点结束时间 > 当前时间  表示未过期
 		if endTm > now {
 			svc.engine.Rollback()
@@ -1211,7 +1211,7 @@ func (svc *OrderModule) CheckOrderExpire() error {
 			return errors.New("update order status fail")
 		}
 
-		svc.order.OrderProduct.Status = consts.ORDER_TYPE_UNPAID
+		svc.order.OrderProduct.Status = svc.order.Order.Status
 		svc.order.OrderProduct.UpdateAt = int(time.Now().Unix())
 		// 更新订单商品流水状态
 		if _, err = svc.order.UpdateOrderProductStatus(order.PayOrderId, consts.ORDER_TYPE_PAID); err != nil {
