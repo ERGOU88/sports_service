@@ -328,6 +328,7 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		EndTm: end,
 		Date: fmt.Sprintf("%s %s", date, item.TimeNode),
 		CoachId: item.CoachId,
+		VenueId: item.VenueId,
 	}
 
 	switch info.AppointmentType {
