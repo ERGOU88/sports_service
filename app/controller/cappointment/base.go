@@ -311,6 +311,7 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		//}
 	}
 
+	log.Log.Infof("#######item:%+v", item)
 	info := &mappointment.OptionsInfo{
 		CurAmount: item.CurAmount,
 		TimeNode: item.TimeNode,
@@ -361,7 +362,7 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 	if ok {
 		log.Log.Debugf("stock:%+v", svc.appointment.Stock)
 		info.PurchasedNum = svc.appointment.Stock.PurchasedNum
-		info.QuotaNum = svc.appointment.Stock.QuotaNum
+		//info.QuotaNum = svc.appointment.Stock.QuotaNum
 		// 库存 <= 冻结库存 表示已满场
 		if info.QuotaNum <= info.PurchasedNum {
 			info.IsFull = 1
