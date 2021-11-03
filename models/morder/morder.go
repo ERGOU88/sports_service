@@ -79,6 +79,16 @@ func (m *OrderModel) GetCardRecordByOrderId(orderId string) (bool, error) {
 	return m.Engine.Where("pay_order_id=?", orderId).Get(m.CardRecord)
 }
 
+// 通过订单id获取购买的卡类商品流水[多条]
+func (m *OrderModel) FindCardRecordsByOrderId(orderId string) ([]*models.VenueCardRecord, error) {
+	var list []*models.VenueCardRecord
+	if err := m.Engine.Where("pay_order_id=?", orderId).Find(&list); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
 // 添加会员卡购买记录
 func (m *OrderModel) AddVipCardRecord() (int64, error) {
 	return m.Engine.InsertOne(m.CardRecord)

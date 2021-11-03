@@ -2,14 +2,14 @@ package video
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/jwt"
+	//"sports_service/server/middleware/jwt"
 )
 
 // 视频点播模块后台路由
 func Router(engine *gin.Engine) {
 	api := engine.Group("/backend/v1")
 	video := api.Group("/video")
-	video.Use(jwt.JwtAuth())
+	//video.Use(jwt.JwtAuth())
 	{
 		// 视频审核 修改视频状态
 		video.POST("/edit/status", EditVideoStatus)

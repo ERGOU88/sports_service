@@ -305,50 +305,83 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 
 	switch svc.order.Order.ProductType {
 	case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
-		// 更新订单对应的预约流水状态
-		//if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, status, curStatus); err != nil {
-		//	log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
-		//	svc.engine.Rollback()
-		//	return err
-		//}
+		if err := svc.AppointmentOrderProcess(changeType, now, orderId); err != nil {
+			return err
+		}
 		// 申请退款 / 取消订单 需归还库存 及 抵扣的会员时长
-		if changeType == consts.APPLY_REFUND || changeType == consts.CANCEL_ORDER {
-			if err := svc.UpdateAppointmentInfo(orderId, now); err != nil {
-				log.Log.Errorf("payNotify_trace: update appointment info fail, err:%s, orderId:%s", err, orderId)
-				return err
-			}
-		}
-
-		// 更新订单对应的预约流水状态
-		//if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, recordStatus); err != nil {
-		//	log.Log.Errorf("order_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
-		//	return err
+		//if changeType == consts.APPLY_REFUND || changeType == consts.CANCEL_ORDER {
+		//	if err := svc.UpdateAppointmentInfo(orderId, now); err != nil {
+		//		log.Log.Errorf("payNotify_trace: update appointment info fail, err:%s, orderId:%s", err, orderId)
+		//		return err
+		//	}
 		//}
 
-		if svc.order.Order.ProductType == consts.ORDER_TYPE_APPOINTMENT_VENUE {
-			// 更新标签状态[废弃]
-			svc.appointment.Labels.Status = 1
-			if _, err = svc.appointment.UpdateLabelsStatus(orderId, 0); err != nil {
-				log.Log.Errorf("order_trace: update labels status fail, orderId:%s, err:%s", orderId, err)
-				return errors.New("update label status fail")
-			}
-		}
+
+		//if svc.order.Order.ProductType == consts.ORDER_TYPE_APPOINTMENT_VENUE {
+		//	// 更新标签状态[废弃]
+		//	svc.appointment.Labels.Status = 1
+		//	if _, err = svc.appointment.UpdateLabelsStatus(orderId, 0); err != nil {
+		//		log.Log.Errorf("order_trace: update labels status fail, orderId:%s, err:%s", orderId, err)
+		//		return errors.New("update label status fail")
+		//	}
+		//}
 
 	case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_HALF_YEAR_CARD, consts.ORDER_TYPE_YEAR_CARD:
-		ok, err := svc.order.GetCardRecordByOrderId(orderId)
-		if !ok || err != nil {
-			log.Log.Errorf("payNotify_trace: get card record by id fail, orderId:%s, err:%s", orderId, err)
-			return errors.New("get card record fail")
-		}
+		//ok, err := svc.order.GetCardRecordByOrderId(orderId)
+		//if !ok || err != nil {
+		//	log.Log.Errorf("payNotify_trace: get card record by id fail, orderId:%s, err:%s", orderId, err)
+		//	return errors.New("get card record fail")
+		//}
 
 		// 支付成功 需更新会员数据 [会员卡不可退款]
-		if changeType == consts.PAY_NOTIFY {
-			// 更新会员可用时长 及 过期时长
-			if err := svc.UpdateVipInfo(svc.order.Order.UserId, svc.order.CardRecord.VenueId, svc.order.CardRecord.ProductType,
-				now, svc.order.CardRecord.PurchasedNum, svc.order.CardRecord.ExpireDuration, svc.order.CardRecord.Duration,
-				changeType); err != nil {
-				log.Log.Errorf("payNotify_trace: update vip info fail, orderId:%s, err:%s", orderId, err)
-				return err
+		//if changeType == consts.PAY_NOTIFY {
+		//	// 更新会员可用时长 及 过期时长
+		//	if err := svc.UpdateVipInfo(svc.order.Order.UserId, svc.order.CardRecord.VenueId, svc.order.CardRecord.ProductType,
+		//		now, svc.order.CardRecord.PurchasedNum, svc.order.CardRecord.ExpireDuration, svc.order.CardRecord.Duration,
+		//		changeType); err != nil {
+		//		log.Log.Errorf("payNotify_trace: update vip info fail, orderId:%s, err:%s", orderId, err)
+		//		return err
+		//	}
+		//}
+
+		if err := svc.CardOrderProcess(changeType, now, orderId); err != nil {
+			return err
+		}
+
+	// 混合型订单
+	case consts.ORDER_TYPE_MIXED:
+		products, err := svc.order.GetOrderProductsById(svc.order.Order.PayOrderId)
+		if len(products) == 0 || err != nil {
+			log.Log.Errorf("payNotify_trace: get order products fail, orderId:%s, err:%s", svc.order.Order.PayOrderId, err)
+			return errors.New("get order products fail")
+		}
+
+		var (
+			isProcess, hasProcess bool
+		)
+		for _, item := range products {
+			switch item.ProductType {
+			// 预约类 包含 场馆、课程预约
+			case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
+				if isProcess {
+					continue
+				}
+				if err := svc.AppointmentOrderProcess(changeType, now, orderId); err != nil {
+					return err
+				}
+
+				isProcess = true
+			// 会员卡类
+			case consts.ORDER_TYPE_MONTH_CARD, consts.ORDER_TYPE_SEANSON_CARD, consts.ORDER_TYPE_HALF_YEAR_CARD, consts.ORDER_TYPE_YEAR_CARD:
+				if hasProcess {
+					continue
+				}
+
+				if err := svc.CardOrderProcess(changeType, now, orderId); err != nil {
+					return err
+				}
+
+				hasProcess = true
 			}
 		}
 	}
@@ -361,7 +394,66 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		}
 	}
 
-	log.Log.Debug("payNotify_trace: 订单成功， orderId: %s", orderId)
+	log.Log.Debug("payNotify_trace: 订单成功， changeType:%d, orderId: %s", changeType, orderId)
+	return nil
+}
+
+// 预约类 订单处理 tips: 直接load所属当前订单的所有预约快照 所以在循环订单商品列表时 执行一次即可
+func (svc *OrderModule) AppointmentOrderProcess(changeType, now int, orderId string) error {
+	// 更新订单对应的预约流水状态
+	//if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, status, curStatus); err != nil {
+	//	log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
+	//	svc.engine.Rollback()
+	//	return err
+	//}
+
+	// 申请退款 / 取消订单 需归还库存 及 抵扣的会员时长
+	if changeType == consts.APPLY_REFUND || changeType == consts.CANCEL_ORDER {
+		if err := svc.UpdateAppointmentInfo(orderId, now); err != nil {
+			log.Log.Errorf("payNotify_trace: update appointment info fail, err:%s, orderId:%s", err, orderId)
+			return err
+		}
+
+		if svc.order.Order.ProductType == consts.ORDER_TYPE_APPOINTMENT_VENUE {
+			// 更新标签状态[废弃]
+			svc.appointment.Labels.Status = 1
+			if _, err := svc.appointment.UpdateLabelsStatus(orderId, 0); err != nil {
+				log.Log.Errorf("order_trace: update labels status fail, orderId:%s, err:%s", orderId, err)
+				return errors.New("update label status fail")
+			}
+		}
+	}
+
+	// 更新订单对应的预约流水状态
+	//if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, recordStatus); err != nil {
+	//	log.Log.Errorf("order_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
+	//	return err
+	//}
+
+	return nil
+}
+
+// 会员卡类订单处理 tips: 直接load所属当前订单的所有会员卡类快照 所以在循环订单商品列表时 执行一次即可
+func (svc *OrderModule) CardOrderProcess(changeType, now int, orderId string) error {
+	list, err := svc.order.FindCardRecordsByOrderId(orderId)
+	if len(list) == 0 || err != nil {
+		log.Log.Errorf("payNotify_trace: get card record by id fail, orderId:%s, err:%s", orderId, err)
+		return errors.New("get card record fail")
+	}
+
+	// 支付成功 需更新会员数据 [会员卡不可退款]
+	if changeType == consts.PAY_NOTIFY {
+		for _, card := range list {
+			// 更新会员可用时长 及 过期时长
+			if err := svc.UpdateVipInfo(svc.order.Order.UserId, card.VenueId, card.ProductType,
+				now, card.PurchasedNum, card.ExpireDuration, card.Duration,
+				changeType); err != nil {
+				log.Log.Errorf("payNotify_trace: update vip info fail, orderId:%s, err:%s", orderId, err)
+				return err
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -996,6 +1088,7 @@ func (svc *OrderModule) CanRefund(amount, status, orderType, payTime int, orderI
 		}
 
 	case consts.ORDER_TYPE_EXPERIENCE_CARD:
+		// todo: 只处理app端次卡退款 一次购买 对应一条快照
 		ok, err := svc.order.GetCardRecordByOrderId(orderId)
 		if !ok || err != nil {
 			log.Log.Errorf("order_trace: get vip card by id fail, orderId:%s, err:%s", orderId, err)

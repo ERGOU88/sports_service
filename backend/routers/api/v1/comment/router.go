@@ -2,14 +2,13 @@ package comment
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/jwt"
 )
 
 // 评论模块后台路由
 func Router(engine *gin.Engine) {
 	api := engine.Group("/backend/v1")
 	comment := api.Group("/comment")
-	comment.Use(jwt.JwtAuth())
+	//comment.Use(jwt.JwtAuth())
 	{
 		// 获取视频评论列表(后台)
 		comment.GET("/list", VideoCommentList)
