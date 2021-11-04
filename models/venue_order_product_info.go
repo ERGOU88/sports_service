@@ -14,7 +14,7 @@ type VenueOrderProductInfo struct {
 	CreateAt        int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt        int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
 	Status          int    `json:"status" xorm:"not null default 0 comment('0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 已过期') TINYINT(2)"`
-	ProductCategory int    `json:"product_category" xorm:"not null default 0 comment('商品类别 1000 预约类 2000 卡类 5000 实物类') INT(8)"`
+	ProductCategory int    `json:"product_category" xorm:"not null default 0 comment('商品类别 1000 场馆预约 2000 卡类 3000 预约类5000 实物类') INT(8)"`
 	VenueId         int64  `json:"venue_id" xorm:"not null default 0 comment('场馆id') BIGINT(20)"`
 	IsWriteOff      int    `json:"is_write_off" xorm:"not null default 0 comment('是否核销 0 未核销 1 已核销') TINYINT(1)"`
 	SnapshotId      int64  `json:"snapshot_id" xorm:"not null default 0 comment('商品快照id') BIGINT(20)"`

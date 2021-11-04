@@ -8,7 +8,7 @@ type VenuePayOrders struct {
 	Status         int    `json:"status" xorm:"not null default 0 comment(' 0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 已过期') index(user_id) TINYINT(4)"`
 	Extra          string `json:"extra" xorm:"comment('记录订单相关扩展数据') TEXT"`
 	Transaction    string `json:"transaction" xorm:"not null default '' comment('第三方订单号') VARCHAR(200)"`
-	ProductType    int    `json:"product_type" xorm:"default 0 comment('1001 场馆预约 3001 私教预约 3002 课程预约 2101 临时卡 2201 次卡 2311 月卡 2321 季卡 2331 半年卡 2341 年卡 4001 储值卡  5101 线下实体商品') INT(8)"`
+	ProductType    int    `json:"product_type" xorm:"default 0 comment('-1组合购买 1001 场馆预约 3001 私教预约 3002 课程预约 2101 临时卡 2201 次卡 2311 月卡 2321 季卡 2331 半年卡 2341 年卡 4001 储值卡  5101 线下实体商品 5102 离场结算') INT(8)"`
 	ErrorCode      string `json:"error_code" xorm:"not null default '' comment('错误码') VARCHAR(20)"`
 	OrderType      int    `json:"order_type" xorm:"not null comment('下单方式：1001 APP下单，1002 前台购买，1003第三方推广渠道购买') index(user_id) INT(8)"`
 	PayTime        int    `json:"pay_time" xorm:"not null default 0 comment('用户支付时间') INT(11)"`
