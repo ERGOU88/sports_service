@@ -39,6 +39,7 @@ type CoachDetail struct {
 type CourseInfo struct {
 	Id             int64  `json:"id"`
 	CoachId        int64  `json:"coach_id"`
+	Subhead        string `json:"subhead"`
 	ClassPeriod    int    `json:"class_period"`
 	Title          string `json:"title"`
 	Describe       string `json:"describe"`
