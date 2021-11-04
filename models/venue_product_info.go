@@ -11,8 +11,8 @@ type VenueProductInfo struct {
 	CurAmount         int    `json:"cur_amount" xorm:"not null comment('当前价格 (包含真实价格、 折扣价格（单位：分）') INT(11)"`
 	DiscountRate      int    `json:"discount_rate" xorm:"not null default 0 comment('折扣率') INT(11)"`
 	DiscountAmount    int    `json:"discount_amount" xorm:"not null default 0 comment('优惠的金额') INT(11)"`
-	EffectiveDuration int    `json:"effective_duration" xorm:"not null default 0 comment('可用时长（秒）') INT(11)"`
-	ExpireDuration    int    `json:"expire_duration" xorm:"not null default 0 comment('过期时长（秒）') INT(11)"`
+	EffectiveDuration int64  `json:"effective_duration" xorm:"not null default 0 comment('可用时长（秒）') BIGINT(11)"`
+	ExpireDuration    int64  `json:"expire_duration" xorm:"not null default 0 comment('过期时长（秒）') BIGINT(11)"`
 	Icon              string `json:"icon" xorm:"not null default '' comment('商品icon') VARCHAR(1000)"`
 	Image             string `json:"image" xorm:"not null default '' comment('商品图片') VARCHAR(1000)"`
 	Describe          string `json:"describe" xorm:"not null default '' comment('商品介绍') VARCHAR(1000)"`

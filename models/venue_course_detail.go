@@ -6,7 +6,6 @@ type VenueCourseDetail struct {
 	Subhead         string `json:"subhead" xorm:"not null default '' comment('课程副标题') VARCHAR(521)"`
 	Describe        string `json:"describe" xorm:"comment('课程描述') MEDIUMTEXT"`
 	PromotionPic    string `json:"promotion_pic" xorm:"not null default '' comment('宣传图') VARCHAR(1000)"`
-	Icon            string `json:"icon" xorm:"not null default '' comment('图标') VARCHAR(256)"`
 	CostDescription string `json:"cost_description" xorm:"not null default '' comment('费用说明') VARCHAR(1000)"`
 	Instructions    string `json:"instructions" xorm:"not null default '' comment('购买须知') VARCHAR(1000)"`
 	Status          int    `json:"status" xorm:"not null default 0 comment('0 正常 1 废弃') TINYINT(1)"`

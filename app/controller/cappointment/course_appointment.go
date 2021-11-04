@@ -59,7 +59,7 @@ func (svc *CourseAppointmentModule) Options(relatedId int64) (int, interface{}) 
 	for index, item := range list {
 		info := &mappointment.Options{
 			Id: item.Id,
-			Name: item.Title,
+			Name: item.Subhead,
 			Title: item.Title,
 			Avatar: item.PromotionPic,
 			Describe: item.Describe,

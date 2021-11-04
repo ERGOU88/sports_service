@@ -1171,7 +1171,7 @@ func (svc *OrderModule) GetCouponCodeInfo(userId, orderId string) (int, *morder.
 
 	case consts.ORDER_TYPE_EXPERIENCE_CARD:
 
-		resp.ExpireTm = time.Unix(int64(svc.order.Order.PayTime + extra.ExpireDuration), 0).In(cstSh).Format(consts.FORMAT_DATE)
+		resp.ExpireTm = time.Unix(int64(svc.order.Order.PayTime + int(extra.ExpireDuration)), 0).In(cstSh).Format(consts.FORMAT_DATE)
 
 	default:
 		log.Log.Errorf("order_trace: unsupported product type, type:%d", svc.order.Order.ProductType)

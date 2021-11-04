@@ -28,7 +28,7 @@ type VenueProduct struct {
 	Id                int64  `json:"id"`                   // 商品id
 	ProductName       string `json:"product_name"`
 	ProductType       int    `json:"product_type"`
-	EffectiveDuration int    `json:"effective_duration"`   // 有效时长 例如体验卡 15/h
+	EffectiveDuration int64  `json:"effective_duration"`   // 有效时长 例如体验卡 15/h
 	RealAmount        int    `json:"real_amount"`          // 定价
 	CurAmount         int    `json:"cur_amount"`           // 售价
 	DiscountRate      int    `json:"discount_rate"`        // 折扣率
