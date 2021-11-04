@@ -279,9 +279,9 @@ func (svc *VenueModule) AddVipCardRecord(orderId, userId string, venueId int64, 
 	svc.order.CardRecord.VenueId = venueId
 	svc.order.CardRecord.PayOrderId = orderId
 	svc.order.CardRecord.UserId = userId
-	svc.order.CardRecord.SingleDuration = svc.venue.Product.EffectiveDuration
-	svc.order.CardRecord.ExpireDuration = svc.venue.Product.ExpireDuration
-	svc.order.CardRecord.Duration = svc.venue.Product.EffectiveDuration * count
+	svc.order.CardRecord.SingleDuration = int(svc.venue.Product.EffectiveDuration)
+	svc.order.CardRecord.ExpireDuration = int(svc.venue.Product.ExpireDuration)
+	svc.order.CardRecord.Duration = int(svc.venue.Product.EffectiveDuration) * count
 	svc.order.CardRecord.CreateAt = now
 	svc.order.CardRecord.UpdateAt = now
 	svc.order.CardRecord.PurchasedNum = count
