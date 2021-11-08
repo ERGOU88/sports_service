@@ -93,6 +93,7 @@ type PlayerInfoResp struct {
 	IsWin      int    `json:"is_win"`
 	Score      string `json:"score"`
 	NumInGroup int    `json:"num_in_group"`
+	Integral   string `json:"integral"`
 }
 
 type IntegralRanking struct {
@@ -224,6 +225,12 @@ func (m *ContestModel) GetIntegralRankingByContestId(contestId string, offset, s
 	}
 
 	return list, nil
+}
+
+// 获取选手总积分
+func (m *ContestModel) GetTotalIntegralByPlayer(contestId, playerId string) (bool, error) {
+	m.IntegralRanking = new(models.FpvContestPlayerIntegralRanking)
+	return m.Engine.Where("status=0 AND contest_id=? AND player_id=?", contestId, playerId).Get(m.IntegralRanking)
 }
 
 const (

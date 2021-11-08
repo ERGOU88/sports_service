@@ -397,6 +397,12 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 				IsWin: item.IsWin,
 				Score: fmt.Sprintf("%.3f", float64(item.Score)/1000),
 				NumInGroup: item.NumInGroup,
+				Integral: "0",
+			}
+
+			ok, err := svc.contest.GetTotalIntegralByPlayer(fmt.Sprint(item.ContestId), fmt.Sprint(item.PlayerId))
+			if ok && err == nil {
+				player.Integral = fmt.Sprintf("%.3f", float64(svc.contest.IntegralRanking.TotalIntegral) / 1000)
 			}
 
 			mp[item.GroupNum].Player = append(mp[item.GroupNum].Player, player)
