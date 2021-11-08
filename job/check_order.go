@@ -24,12 +24,8 @@ func CheckOrder() {
 	for {
 		select {
 		case <- ticker.C:
-			log.Log.Debugf("开始检测订单支付是否超时")
 			checkOrderTimeOut()
-			log.Log.Debugf("检测完毕")
-			log.Log.Debugf("开始检测订单是否过期")
 			checkOrderExpire()
-			log.Log.Debugf("检测完毕")
 		}
 	}
 }
