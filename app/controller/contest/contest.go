@@ -311,17 +311,17 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 				detail.ScheduleId = item.ScheduleId
 				//detail.IsWin = item.IsWin
 				detail.Photo = item.Photo
-				detail.BestScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+				detail.BestScore = util.ResolveTimeByMilliSecond(item.Score)
 				if item.Rounds == 1 {
-					detail.RoundOneScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+					detail.RoundOneScore = util.ResolveTimeByMilliSecond(item.Score)
 				}
 
 				if item.Rounds == 2 {
-					detail.RoundTwoScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+					detail.RoundTwoScore = util.ResolveTimeByMilliSecond(item.Score)
 				}
 
 				if item.Rounds == 3 {
-					detail.RoundThreeScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+					detail.RoundThreeScore = util.ResolveTimeByMilliSecond(item.Score)
 				}
 
 				detail.Ranking = ranking
@@ -329,15 +329,15 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 				mp[item.PlayerId] = detail
 			} else {
 				if item.Rounds == 1 {
-					mp[item.PlayerId].RoundOneScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+					mp[item.PlayerId].RoundOneScore = util.ResolveTimeByMilliSecond(item.Score)
 				}
 
 				if item.Rounds == 2 {
-					mp[item.PlayerId].RoundTwoScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+					mp[item.PlayerId].RoundTwoScore = util.ResolveTimeByMilliSecond(item.Score)
 				}
 
 				if item.Rounds == 3 {
-					mp[item.PlayerId].RoundThreeScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
+					mp[item.PlayerId].RoundThreeScore = util.ResolveTimeByMilliSecond(item.Score)
 				}
 			}
 		}
@@ -395,7 +395,7 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 				PlayerName: item.PlayerName,
 				Photo: item.Photo,
 				IsWin: item.IsWin,
-				Score: fmt.Sprintf("%.3f", float64(item.Score)/1000),
+				Score: util.ResolveTimeByMilliSecond(item.Score),
 				NumInGroup: item.NumInGroup,
 				Integral: "0",
 			}
