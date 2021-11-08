@@ -16,10 +16,8 @@ func CheckBanners() {
 	for {
 		select {
 		case <- ticker.C:
-			log.Log.Debugf("开始检测banner 是否上架/是否已过期")
 			// 检测banner是否上架/是否已过期
 			checkBannerStatus()
-			log.Log.Debugf("检测完毕")
 		}
 	}
 

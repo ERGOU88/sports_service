@@ -1,9 +1,8 @@
 package job
 
 import (
-  "sports_service/server/global/app/log"
-  "sports_service/server/models/mnotify"
   "sports_service/server/dao"
+  "sports_service/server/models/mnotify"
   "time"
 )
 
@@ -15,10 +14,8 @@ func CheckTimedNotify() {
   for {
     select {
     case <- ticker.C:
-      log.Log.Debugf("开始检测定时广播推送 是否已发送")
       // 检测定时推送 是否已发送
       checkTimedNotify()
-      log.Log.Debugf("检测完毕")
     }
   }
 
