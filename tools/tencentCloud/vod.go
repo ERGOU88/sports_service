@@ -69,19 +69,19 @@ func (tc *TencentCloud) PullEvents() (*vod.PullEventsResponse, error){
 	// 通过client对象调用想要访问的接口，需要传入请求对象
 	response, err := client.PullEvents(req)
 	// 处理异常
-	fmt.Println(err)
+	//fmt.Println(err)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		fmt.Printf("An API error has returned: %s", err)
+		//fmt.Printf("An API error has returned: %s", err)
 		return nil, err
 	}
 	// 非SDK异常，直接失败。
 	if err != nil {
-		fmt.Printf("Request Pull Event error: %s", err)
+		//fmt.Printf("Request Pull Event error: %s", err)
 		return nil, err
 	}
 
 	// 打印返回的json字符串
-	fmt.Printf("%s", response.ToJsonString())
+	//fmt.Printf("%s", response.ToJsonString())
 
 	return response, nil
 }
@@ -106,14 +106,14 @@ func (tc *TencentCloud) ConfirmEvents(events []string) error {
 	// 通过client对象调用想要访问的接口，需要传入请求对象
 	response, err := client.ConfirmEvents(req)
 	// 处理异常
-	fmt.Println(err)
+	//fmt.Println(err)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		fmt.Printf("An API error has returned: %s", err)
+		//fmt.Printf("An API error has returned: %s", err)
 		return err
 	}
 	// 非SDK异常，直接失败。
 	if err != nil {
-		fmt.Printf("Request Confirm Event error: %s", err)
+		//fmt.Printf("Request Confirm Event error: %s", err)
 		return err
 	}
 
@@ -143,24 +143,24 @@ func (tc *TencentCloud) TextModeration(content string) (bool, string, error) {
 	// 通过client对象调用想要访问的接口，需要传入请求对象
 	response, err := client.TextModeration(req)
 	// 处理异常
-	fmt.Println(err)
+	//fmt.Println(err)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		fmt.Printf("An API error has returned: %s", err)
+		//fmt.Printf("An API error has returned: %s", err)
 		return false, content, err
 	}
 	// 非SDK异常，直接失败。
 	if err != nil {
-		fmt.Printf("Request Pull Event error: %s", err)
+		//fmt.Printf("Request Pull Event error: %s", err)
 		return false, content, err
 	}
 
 	// 打印返回的json字符串
-	fmt.Printf("%s", response.ToJsonString())
+	//fmt.Printf("%s", response.ToJsonString())
 	// Label Normal：正常，Polity：涉政，Porn：色情，Illegal：违法，Abuse：谩骂，Terror：暴恐，Ad：广告，Custom：自定义关键词
 	// Suggestion Block：建议打击，Review：建议复审，Normal：建议通过。
 	if *response.Response.Suggestion == "Block" {
-		fmt.Printf("Content Not Pass, Label:%s, Suggestion:%s, Content:%s",
-			*response.Response.Label, *response.Response.Suggestion, content)
+		//fmt.Printf("Content Not Pass, Label:%s, Suggestion:%s, Content:%s",
+			//*response.Response.Label, *response.Response.Suggestion, content)
 		if len(response.Response.Keywords) > 0 {
 			for _, str := range response.Response.Keywords {
 				content = strings.Replace(content, *str, "***", -1)
@@ -196,13 +196,13 @@ func (tc *TencentCloud) Upload(taskId int64, userId, token, path, region, proced
 
 	rsp, err := vodClient.Upload(region, req)
 	if err != nil {
-		fmt.Printf("Request Upload error: %s", err)
+		//fmt.Printf("Request Upload error: %s", err)
 		return nil, err
 	}
 
-	fmt.Println(*rsp.Response.FileId)
-	fmt.Println(*rsp.Response.MediaUrl)
-	fmt.Println(*rsp.Response.CoverUrl)
+	//fmt.Println(*rsp.Response.FileId)
+	//fmt.Println(*rsp.Response.MediaUrl)
+	//fmt.Println(*rsp.Response.CoverUrl)
 
 	return rsp, nil
 }
