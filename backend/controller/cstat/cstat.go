@@ -48,6 +48,28 @@ func New(c *gin.Context) StatModule {
 
 // 管理后台首页统计数据
 func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, mstat.HomePageInfo) {
+	days := 11
+	minDate := time.Now().AddDate(0, 0, -days).Format(consts.FORMAT_DATE)
+	maxDate := time.Now().Format(consts. FORMAT_DATE)
+	if queryMinDate != "" && queryMaxDate != "" {
+		minDate = queryMinDate
+		maxDate = queryMaxDate
+		min, err := time.Parse(consts.FORMAT_DATE, queryMinDate)
+		if err != nil {
+			log.Log.Errorf("stat_trace: time.Parse fail, err:%s", err)
+			return errdef.ERROR, mstat.HomePageInfo{}
+		}
+
+		max, err := time.Parse(consts.FORMAT_DATE, queryMaxDate)
+		if err != nil {
+			log.Log.Errorf("stat_trace: time.Parse fail, err:%s", err)
+			return errdef.ERROR, mstat.HomePageInfo{}
+		}
+
+		days = util.GetDiffDays(max, min)
+		log.Log.Infof("##########days:%d", days)
+	}
+
 	today := time.Now().Format(consts. FORMAT_DATE)
 	// 日活
 	dau, err := svc.stat.GetDAUByDate(today)
@@ -99,34 +121,26 @@ func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, 
 	homepageInfo.TopInfo["total_order"] = totalOrder
 	homepageInfo.TopInfo["daily_loyalty_users"] = dailyLoyaltyUsers
 
-	dauList, err := svc.stat.GetDAUByDays(100)
+	dauList, err := svc.stat.GetDAUByDays(days)
 	if err != nil {
 		log.Log.Errorf("stat_trace: get dau by days fail, err:%s", err)
 		return errdef.ERROR, homepageInfo
 	}
 
-	homepageInfo.DauList =  svc.ResultInfoByDate(dauList, 100)
+	homepageInfo.DauList =  svc.ResultInfoByDate(dauList, days)
 
-	newUserList, err := svc.stat.GetNetAdditionByDays(100)
+	newUserList, err := svc.stat.GetNetAdditionByDays(days)
 	if err != nil {
 		log.Log.Errorf("stat_trace: get new users by days fail, err:%s", err)
 		return errdef.ERROR, homepageInfo
 	}
-	homepageInfo.NewUserList = svc.ResultInfoByDate(newUserList, 100)
+	homepageInfo.NewUserList = svc.ResultInfoByDate(newUserList, days)
 
-	minDate := time.Now().AddDate(0, 0, -100).Format(consts.FORMAT_DATE)
 	// 次日留存率
 	homepageInfo.NextDayRetentionRate, err = svc.stat.GetUserRetentionRate("", minDate, today)
 	if err != nil {
 		log.Log.Errorf("stat_trace: get user retentionRate fail, err:%s", err)
 		return errdef.ERROR, homepageInfo
-	}
-
-	minDate = time.Now().AddDate(0, 0, -100).Format(consts.FORMAT_DATE)
-	maxDate := today
-	if queryMinDate != "" && queryMaxDate != "" {
-		minDate = queryMinDate
-		maxDate = queryMaxDate
 	}
 
 	// 留存率详情
