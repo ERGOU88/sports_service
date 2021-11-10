@@ -80,7 +80,7 @@ func TokenAuth() gin.HandlerFunc {
 			}
 
 			// todo:
-			go RecordInfo(userid)
+			go RecordInfo(userid, c.Request.URL.Path)
 		}
 
 		c.Set(consts.USER_ID, userid)
@@ -88,7 +88,8 @@ func TokenAuth() gin.HandlerFunc {
 	}
 }
 
-func RecordInfo(userid string) {
+func RecordInfo(userid, path string) {
+	activityType := GetUserActivityType(path)
 	session := dao.AppEngine.NewSession()
 	defer session.Close()
 	umodel := muser.NewUserModel(session)
@@ -100,9 +101,45 @@ func RecordInfo(userid string) {
 		log.Log.Errorf("token_trace: update login time fail, userId:%s, err:%s", userid, err)
 	}
 
-	if _, err := umodel.AddActivityRecord(userid, now); err != nil {
+
+	if _, err := umodel.AddActivityRecord(userid, now, activityType); err != nil {
 		log.Log.Errorf("token_trace: record activity user fail, userId:%s, err:%s", userid, err)
 	}
 
 	return
+}
+
+// 获取用户活跃类型
+func GetUserActivityType(path string) int {
+	activityType := 0
+	switch {
+	case strings.Contains(path, "/api/v1/like/video"):
+		activityType = consts.ACTIVITY_TYPE_LIKE_VIDEO
+	case strings.Contains(path, "/api/v1/like/comment"):
+		activityType = consts.ACTIVITY_TYPE_LIKE_COMMENT
+	case strings.Contains(path, "/api/v1/like/information"):
+		activityType = consts.ACTIVITY_TYPE_LIKE_INFORMATION
+	case strings.Contains(path, "/api/v1/like/post"):
+		activityType = consts.ACTIVITY_TYPE_LIKE_POST
+	case strings.Contains(path, "/api/v1/collect/video"):
+		activityType = consts.ACTIVITY_TYPE_LIKE_COMMENT
+	case strings.Contains(path, "/api/v1/comment/publish/v2"):
+		activityType = consts.ACTIVITY_TYPE_COMMENT
+	case strings.Contains(path, "/api/v1/collect/video"):
+		activityType = consts.ACTIVITY_TYPE_COLLECT_VIDEO
+	case strings.Contains(path, "/api/v1/comment/reply"):
+		activityType = consts.ACTIVITY_TYPE_REPLY
+	case strings.Contains(path, "/api/v1/barrage/send"):
+		activityType = consts.ACTIVITY_TYPE_BARRAGE
+	case strings.Contains(path, "/api/v1/video/publish"):
+		activityType = consts.ACTIVITY_TYPE_PUB_VIDEO
+	case strings.Contains(path, "/api/v1/post/publish"):
+		activityType = consts.ACTIVITY_TYPE_PUB_POST
+	case strings.Contains(path, "/api/v1/share/social"):
+		activityType = consts.ACTIVITY_TYPE_SHARE_SOCIAL
+	case strings.Contains(path, "/api/v1/share/community"):
+		activityType = consts.ACTIVITY_TYPE_SHARE_COMMUNITY
+	}
+
+	return activityType
 }
