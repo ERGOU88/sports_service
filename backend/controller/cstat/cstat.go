@@ -127,14 +127,14 @@ func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, 
 		return errdef.ERROR, homepageInfo
 	}
 
-	homepageInfo.DauList =  svc.ResultInfoByDate(dauList, days)
+	homepageInfo.DauList =  svc.ResultInfoByDate(dauList, days, maxDate)
 
 	newUserList, err := svc.stat.GetNetAdditionByDays(minDate, maxDate)
 	if err != nil {
 		log.Log.Errorf("stat_trace: get new users by days fail, err:%s", err)
 		return errdef.ERROR, homepageInfo
 	}
-	homepageInfo.NewUserList = svc.ResultInfoByDate(newUserList, days)
+	homepageInfo.NewUserList = svc.ResultInfoByDate(newUserList, days, maxDate)
 
 	// 次日留存率
 	homepageInfo.NextDayRetentionRate, err = svc.stat.GetUserRetentionRate("", minDate, today)
@@ -378,7 +378,7 @@ func (svc *StatModule) DailyTotalPost(queryMinDate, queryMaxDate string) (int, m
 		return errdef.ERROR, nil
 	}
 
-	return errdef.SUCCESS, svc.ResultInfoByDate(stat, 10)
+	return errdef.SUCCESS, svc.ResultInfoByDate(stat, 10, maxDate)
 }
 
 // 每日视频发布总数
@@ -395,13 +395,18 @@ func (svc *StatModule) DailyTotalVideo(queryMinDate, queryMaxDate string) (int, 
 		return errdef.ERROR, nil
 	}
 
-	return errdef.SUCCESS, svc.ResultInfoByDate(stat, 10)
+	return errdef.SUCCESS, svc.ResultInfoByDate(stat, 10, maxDate)
 }
 
-func (svc *StatModule) ResultInfoByDate(data []*mstat.Stat, days int) map[string]interface{} {
+func (svc *StatModule) ResultInfoByDate(data []*mstat.Stat, days int, maxDate string) map[string]interface{} {
 	mapList := make(map[string]interface{})
+	max, err := time.Parse(consts.FORMAT_DATE, maxDate)
+	if err != nil {
+		return nil
+	}
+
 	for i := 0; i <= days; i++ {
-		date := time.Now().AddDate(0, 0, -i).Format("2006-01-02")
+		date := max.AddDate(0, 0, -i).Format("2006-01-02")
 		for _, v := range data {
 			if v.Dt == date {
 				mapList[date] = v.Count
