@@ -137,15 +137,40 @@ func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, 
 	homepageInfo.NewUserList = svc.ResultInfoByDate(newUserList, days, maxDate)
 
 	// 次日留存率
-	homepageInfo.NextDayRetentionRate, err = svc.stat.GetUserRetentionRate("", minDate, today)
+	nextDayRetentionRate, err := svc.stat.GetUserRetentionRate("", minDate, today)
 	if err != nil {
 		log.Log.Errorf("stat_trace: get user retentionRate fail, err:%s", err)
 		return errdef.ERROR, homepageInfo
 	}
 
+	homepageInfo.NextDayRetentionRate = svc.RetentionResultInfo(nextDayRetentionRate, days, maxDate)
 	// 留存率详情
-	homepageInfo.RetentionRate, err = svc.stat.GetUserRetentionRate("1", minDate, maxDate)
+	retentionRate, err := svc.stat.GetUserRetentionRate("1", minDate, maxDate)
+	homepageInfo.RetentionRate = svc.RetentionResultInfo(retentionRate, days, maxDate)
 	return errdef.SUCCESS, homepageInfo
+}
+
+// 留存率返回数据
+func (svc *StatModule) RetentionResultInfo(data []*mstat.RetentionRateInfo, days int, maxDate string) []*mstat.RetentionRateInfo {
+	max, err := time.Parse(consts.FORMAT_DATE, maxDate)
+	if err != nil {
+		return nil
+	}
+
+	if len(data) == 0 {
+		for i := days; i >= 0; i-- {
+			date := max.AddDate(0, 0, -i).Format("2006-01-02")
+
+			res := &mstat.RetentionRateInfo{
+				Dt:       date,
+				NewUsers: 0,
+			}
+
+			data = append(data, res)
+		}
+	}
+
+	return data
 }
 
 // 视频分区统计 [发布占比]
