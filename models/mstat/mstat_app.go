@@ -4,6 +4,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/models"
 	"fmt"
+	"errors"
 )
 
 type StatModel struct {
@@ -283,4 +284,22 @@ func (m *StatModel) GetDailyPublishVideoByDate(date string) int64 {
 	}
 
 	return stat.Count
+}
+
+// 获取忠诚用户
+func (m *StatModel) GetLoyaltyUsers(date string) (int64, error) {
+	sql := "SELECT date(from_unixtime(create_at)) AS dt, count(distinct(user_id)) AS count FROM user_activity_record " +
+		"WHERE activity_type > 0 "
+
+	if date != "" {
+		sql += fmt.Sprintf("AND date(from_unixtime(create_at))=%s", date)
+	}
+
+	stat := Stat{}
+	ok, err := m.Engine.SQL(sql).Get(&stat)
+	if !ok && err != nil {
+		return 0, errors.New("get loyalty users fail")
+	}
+
+	return stat.Count, nil
 }

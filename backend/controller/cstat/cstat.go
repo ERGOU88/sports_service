@@ -83,6 +83,12 @@ func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, 
 		return errdef.ERROR, mstat.HomePageInfo{}
 	}
 
+	dailyLoyaltyUsers, err := svc.stat.GetLoyaltyUsers(today)
+	if err != nil {
+		log.Log.Errorf("stat_trace: get loyalty users fail, err:%s", err)
+		return errdef.ERROR, mstat.HomePageInfo{}
+	}
+
 	homepageInfo := mstat.HomePageInfo{
 		TopInfo: make(map[string]interface{}, 0),
 	}
@@ -91,6 +97,7 @@ func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, 
 	homepageInfo.TopInfo["mau"] = mau.Count
 	homepageInfo.TopInfo["new_users"] = newUsers.Count
 	homepageInfo.TopInfo["total_order"] = totalOrder
+	homepageInfo.TopInfo["daily_loyalty_users"] = dailyLoyaltyUsers
 
 	dauList, err := svc.stat.GetDAUByDays(100)
 	if err != nil {
