@@ -121,7 +121,7 @@ func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, 
 	homepageInfo.TopInfo["total_order"] = totalOrder
 	homepageInfo.TopInfo["daily_loyalty_users"] = dailyLoyaltyUsers
 
-	dauList, err := svc.stat.GetDAUByDays(days)
+	dauList, err := svc.stat.GetDAUByDays(minDate, maxDate)
 	if err != nil {
 		log.Log.Errorf("stat_trace: get dau by days fail, err:%s", err)
 		return errdef.ERROR, homepageInfo
@@ -129,7 +129,7 @@ func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, 
 
 	homepageInfo.DauList =  svc.ResultInfoByDate(dauList, days)
 
-	newUserList, err := svc.stat.GetNetAdditionByDays(days)
+	newUserList, err := svc.stat.GetNetAdditionByDays(minDate, maxDate)
 	if err != nil {
 		log.Log.Errorf("stat_trace: get new users by days fail, err:%s", err)
 		return errdef.ERROR, homepageInfo
@@ -299,7 +299,7 @@ func (svc *StatModule) ResultInfo(days, pubType int, data []*mstat.Stat, maxDate
 
 	for i := 0; i <= days; i++ {
 		date := max.AddDate(0, 0, -i).Format("2006-01-02")
-		if len(date) > 0 {
+		if len(data) > 0 {
 			for _, v := range data {
 				if v.Dt == date {
 					vs, ok := list[v.Id]

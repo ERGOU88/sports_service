@@ -85,12 +85,12 @@ func (m *StatModel) GetNetAdditionByDate(date string) (Stat, error) {
 
 const (
 	GET_DAU_BY_DAYS = "SELECT count(DISTINCT user_id) AS count, date(FROM_UNIXTIME(create_at)) AS dt FROM " +
-		"user_activity_record WHERE DATE_SUB(CURDATE(), INTERVAL ? DAY) <= date(FROM_UNIXTIME(create_at)) GROUP BY dt"
+		"user_activity_record WHERE date(FROM_UNIXTIME(create_at)) >= ? AND date(FROM_UNIXTIME(create_at)) <= ?  GROUP BY dt"
 )
 // 获取N天的日活数据
-func (m *StatModel) GetDAUByDays(days int) ([]*Stat, error) {
+func (m *StatModel) GetDAUByDays(minDate, maxDate string) ([]*Stat, error) {
 	var dauList []*Stat
-	if err := m.Engine.SQL(GET_DAU_BY_DAYS, days).Find(&dauList); err != nil {
+	if err := m.Engine.SQL(GET_DAU_BY_DAYS, minDate, maxDate).Find(&dauList); err != nil {
 		return dauList, err
 	}
 
@@ -99,12 +99,12 @@ func (m *StatModel) GetDAUByDays(days int) ([]*Stat, error) {
 
 const (
 	GET_NET_ADDITION_BY_DAYS = "SELECT count(1) AS count, date(FROM_UNIXTIME(create_at)) AS dt FROM user WHERE " +
-		"DATE_SUB(CURDATE(), INTERVAL ? DAY) <= date(FROM_UNIXTIME(create_at)) GROUP BY dt"
+		"date(FROM_UNIXTIME(create_at)) >= ? AND date(FROM_UNIXTIME(create_at)) <= ?  GROUP BY dt"
 )
 // 获取N天的新增用户数据
-func (m *StatModel) GetNetAdditionByDays(days int) ([]*Stat, error) {
+func (m *StatModel) GetNetAdditionByDays(minDate, maxDate string) ([]*Stat, error) {
 	var statList []*Stat
-	if err := m.Engine.SQL(GET_NET_ADDITION_BY_DAYS, days).Find(&statList); err != nil {
+	if err := m.Engine.SQL(GET_NET_ADDITION_BY_DAYS, minDate, maxDate).Find(&statList); err != nil {
 		return statList, err
 	}
 
