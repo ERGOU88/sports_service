@@ -299,22 +299,45 @@ func (svc *StatModule) ResultInfo(days, pubType int, data []*mstat.Stat, maxDate
 
 	for i := 0; i <= days; i++ {
 		date := max.AddDate(0, 0, -i).Format("2006-01-02")
-		for _, v := range data {
-			if v.Dt == date {
-				vs, ok := list[v.Id]
+		if len(date) > 0 {
+			for _, v := range data {
+				if v.Dt == date {
+					vs, ok := list[v.Id]
+					if ok {
+						vs.List[date] = v.Count
+					} else {
+						list[v.Id] = &PublishStat{
+							Title: v.Name,
+							List:  make(map[string]int64),
+						}
+
+						list[v.Id].List[date] = v.Count
+					}
+				}
+
+			}
+		} else {
+			sections, err := svc.community.GetAllSection()
+			if err != nil {
+				log.Log.Errorf("stat_trace: get all section fail, err:%s", err)
+				break
+			}
+
+			for _, v := range sections {
+				vs, ok := list[int64(v.Id)]
 				if ok {
-					vs.List[date] = v.Count
+					vs.List[date] = 0
 				} else {
-					list[v.Id] = &PublishStat{
-						Title: v.Name,
+					list[int64(v.Id)] = &PublishStat{
+						Title: v.SectionName,
 						List:  make(map[string]int64),
 					}
 
-					list[v.Id].List[date] = v.Count
+					list[int64(v.Id)].List[date] = 0
 				}
 			}
-
 		}
+
 	}
 
 	list[1000] = &PublishStat{
