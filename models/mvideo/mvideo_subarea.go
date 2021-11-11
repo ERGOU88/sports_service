@@ -9,6 +9,8 @@ type AddSubarea struct {
 	SortOrder int       `json:"sortorder"`
 	SysId     int       `json:"sys_id"`
 	SysUser   string    `json:"sys_user"`
+	Id        int       `json:"id"`
+	Status    int       `json:"status"`
 }
 
 type DelSubarea struct {
@@ -17,6 +19,10 @@ type DelSubarea struct {
 
 func (m *VideoModel) AddSubArea() (int64, error) {
 	return m.Engine.InsertOne(m.Subarea)
+}
+
+func (m *VideoModel) UpdateSubArea() (int64, error) {
+	return m.Engine.Where("id=?", m.Subarea.Id).Update(m.Subarea)
 }
 
 func (m *VideoModel) DelSubArea(id int) (int64, error) {

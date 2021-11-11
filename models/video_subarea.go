@@ -8,4 +8,5 @@ type VideoSubarea struct {
 	CreateAt    int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	SysId       int    `json:"sys_id" xorm:"not null default 0 comment('系统账号id') INT(11)"`
 	SysUser     string `json:"sys_user" xorm:"not null default '' comment('系统用户昵称') VARCHAR(128)"`
+	UpdateAt    int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
 }

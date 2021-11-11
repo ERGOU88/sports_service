@@ -103,6 +103,19 @@ func AddVideoLabel(c *gin.Context) {
 	reply.Response(http.StatusOK, syscode)
 }
 
+func EditVideoLabel(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mlabel.AddVideoLabelParam{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cvideo.New(c)
+	syscode := svc.AddVideoLabel(param)
+	reply.Response(http.StatusOK, syscode)
+}
+
 // 删除视频标签
 func DelVideoLabel(c *gin.Context) {
 	reply := errdef.New(c)
@@ -130,6 +143,21 @@ func AddVideoSubareaConf(c *gin.Context) {
 	param.SysUser = jwt.GetUserInfo(c, consts.USER_NAME)
 	svc := cvideo.New(c)
 	syscode := svc.AddVideoSubareaConf(param)
+	reply.Response(http.StatusOK, syscode)
+}
+
+func EditVideoSubareaConf(c *gin.Context) {
+	reply := errdef.New(c)
+	param := new(mvideo.AddSubarea)
+	if err := c.Bind(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	param.SysId, _ = util.StringToInt(jwt.GetUserInfo(c, consts.IDENTIFY))
+	param.SysUser = jwt.GetUserInfo(c, consts.USER_NAME)
+	svc := cvideo.New(c)
+	syscode := svc.EditVideoSubareaConf(param)
 	reply.Response(http.StatusOK, syscode)
 }
 

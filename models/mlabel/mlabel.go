@@ -33,6 +33,8 @@ type AddVideoLabelParam struct {
 	LabelName    string    `json:"label_name"`     // 视频标签名称
 	Icon         string    `json:"icon"`           // icon
 	Sortorder    int       `json:"sortorder"`      // 权重
+	LabelId      int       `json:"label_id"`       // 视频标签id
+	Status       int       `json:"status"`         // 状态
 }
 
 // 删除视频标签请求参数
@@ -78,6 +80,15 @@ func (m *LabelModel) DelVideoLabel(labelId string) error {
 // 添加视频标签
 func (m *LabelModel) AddVideoLabel() error {
 	if _, err := m.Engine.Insert(m.VideoLabels); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// 更新视频标签
+func (m *LabelModel) UpdateVideoLabel() error {
+	if _, err := m.Engine.Where("label_id=?", m.VideoLabels.LabelId).Update(m.VideoLabels); err != nil {
 		return err
 	}
 

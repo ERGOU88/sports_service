@@ -262,6 +262,23 @@ func (svc *VideoModule) GetVideoLabelList() []*mlabel.VideoLabel {
   return svc.label.GetVideoLabelList()
 }
 
+// 编辑视频标签
+func (svc *VideoModule) EditVideoLabel(param *mlabel.AddVideoLabelParam) int {
+  now := time.Now().Unix()
+  svc.label.VideoLabels.UpdateAt = int(now)
+  svc.label.VideoLabels.Icon = param.Icon
+  svc.label.VideoLabels.Sortorder = param.Sortorder
+  svc.label.VideoLabels.Status = param.Status
+  svc.label.VideoLabels.LabelId = param.LabelId
+  if err := svc.label.UpdateVideoLabel(); err != nil {
+    return errdef.VIDEO_INVALID_LABEL_NAME
+  }
+
+  svc.label.CleanLabelInfoByMem()
+
+  return errdef.SUCCESS
+}
+
 // 添加视频标签
 func (svc *VideoModule) AddVideoLabel(param *mlabel.AddVideoLabelParam) int {
   client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
@@ -294,6 +311,7 @@ func (svc *VideoModule) AddVideoLabel(param *mlabel.AddVideoLabelParam) int {
   return errdef.SUCCESS
 }
 
+
 // 删除视频标签
 func (svc *VideoModule) DelVideoLabel(labelId string) int {
   if info := svc.label.GetLabelInfoByMem(labelId); info == nil {
@@ -318,6 +336,22 @@ func (svc *VideoModule) AddVideoSubareaConf(param *mvideo.AddSubarea) int {
   svc.video.Subarea.SysId = param.SysId
   svc.video.Subarea.SysUser = param.SysUser
   if _, err := svc.video.AddSubArea(); err != nil {
+    log.Log.Errorf("video_trace: add subarea fail, err:%s", err)
+    return errdef.VIDEO_ADD_SUBAREA_FAIL
+  }
+
+  return errdef.SUCCESS
+}
+
+// 修改视频分区
+func (svc *VideoModule) EditVideoSubareaConf(param *mvideo.AddSubarea) int {
+  svc.video.Subarea.Sortorder = param.SortOrder
+  svc.video.Subarea.UpdateAt = int(time.Now().Unix())
+  svc.video.Subarea.SysId = param.SysId
+  svc.video.Subarea.SysUser = param.SysUser
+  svc.video.Subarea.Id = param.Id
+  svc.video.Subarea.Status = param.Status
+  if _, err := svc.video.UpdateSubArea(); err != nil {
     log.Log.Errorf("video_trace: add subarea fail, err:%s", err)
     return errdef.VIDEO_ADD_SUBAREA_FAIL
   }
