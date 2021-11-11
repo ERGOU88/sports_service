@@ -112,7 +112,7 @@ func EditVideoLabel(c *gin.Context) {
 	}
 
 	svc := cvideo.New(c)
-	syscode := svc.AddVideoLabel(param)
+	syscode := svc.EditVideoLabel(param)
 	reply.Response(http.StatusOK, syscode)
 }
 
