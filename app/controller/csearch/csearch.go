@@ -87,11 +87,11 @@ func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDe
 
 // 推荐视频 默认取两条
 func (svc *SearchModule) RecommendVideo() []*mvideo.VideoDetailInfo {
-	if svc.video.GetVideoTotalCount() - 10 <= 0 {
+	if svc.video.GetVideoTotalCount("") - 10 <= 0 {
 		return []*mvideo.VideoDetailInfo{}
 	}
 
-	offset := util.GenerateRandnum(0, int(svc.video.GetVideoTotalCount())-10)
+	offset := util.GenerateRandnum(0, int(svc.video.GetVideoTotalCount(""))-10)
 	videos := svc.video.GetRecommendVideos(int32(offset), 2)
 	if videos == nil {
 		log.Log.Error("search_trace: get recommend video fail")

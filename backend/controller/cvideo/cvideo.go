@@ -151,12 +151,22 @@ func (svc *VideoModule) EditVideoStatus(param *mvideo.EditVideoStatusParam) int 
 }
 
 // 获取视频列表
-func (svc *VideoModule) GetVideoList(page, size int) []*mvideo.VideoDetailInfo {
+func (svc *VideoModule) GetVideoList(keyword string, page, size int) []*mvideo.VideoDetailInfo {
   offset := (page - 1) * size
-  list := svc.video.GetVideoList(offset, size)
-  if len(list) == 0 {
-    return []*mvideo.VideoDetailInfo{}
+  var list []*mvideo.VideoDetailInfo
+  if keyword !=  "" {
+    list = svc.video.SearchVideos(keyword, "", 0, 0, 0, offset, size)
+    if len(list) == 0 {
+      return []*mvideo.VideoDetailInfo{}
+    }
+
+  } else {
+    list = svc.video.GetVideoList(offset, size)
+    if len(list) == 0 {
+      return []*mvideo.VideoDetailInfo{}
+    }
   }
+
   for _, video := range list {
     video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
     video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
@@ -175,8 +185,8 @@ func (svc *VideoModule) GetVideoList(page, size int) []*mvideo.VideoDetailInfo {
 }
 
 // 获取已审核通过的视频总数
-func (svc *VideoModule) GetVideoTotalCount() int64 {
-  return svc.video.GetVideoTotalCount()
+func (svc *VideoModule) GetVideoTotalCount(keyword string) int64 {
+  return svc.video.GetVideoTotalCount(keyword)
 }
 
 // 获取未审核/审核失败的视频总数

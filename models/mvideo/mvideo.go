@@ -651,7 +651,11 @@ func (m *VideoModel) GetRecommendVideoList(index string, offset, size int) []*Re
 }
 
 // 获取视频总数（已审核通过的）
-func (m *VideoModel) GetVideoTotalCount() int64 {
+func (m *VideoModel) GetVideoTotalCount(keyword string) int64 {
+	if keyword != "" {
+		m.Engine.Where("title like ?", "%" + keyword + "%")
+	}
+
 	count, err := m.Engine.Where("status=1").Count(&models.Videos{})
 	if err != nil {
 		return 0
@@ -724,7 +728,12 @@ func (m *VideoModel) SearchVideos(name, sortCondition string, minDuration, maxDu
 		sql += fmt.Sprintf("AND v.create_at >= %d ", publishTime)
 	}
 
-	sql += fmt.Sprintf("GROUP BY v.video_id ORDER BY s.%s DESC, v.is_top DESC, v.is_recommend DESC, v.sortorder DESC, v.video_id DESC LIMIT ?, ?", sortCondition)
+	sql += "GROUP BY v.video_id ORDER BY "
+	if sortCondition != "" {
+		sql += fmt.Sprintf("s.%s DESC,", sortCondition)
+	}
+
+	sql += " v.is_top DESC, v.is_recommend DESC, v.sortorder DESC, v.video_id DESC LIMIT ?, ?"
 
 	var list []*VideoDetailInfo
 	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {

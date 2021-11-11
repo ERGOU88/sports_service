@@ -30,10 +30,11 @@ func EditVideoStatus(c *gin.Context) {
 func VideoList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	keyword := c.Query("keyword")
 
 	svc := cvideo.New(c)
-	list := svc.GetVideoList(page, size)
-	total := svc.GetVideoTotalCount()
+	list := svc.GetVideoList(keyword, page, size)
+	total := svc.GetVideoTotalCount(keyword)
 	reply.Data["list"] = list
 	reply.Data["total"] = total
 	reply.Response(http.StatusOK, errdef.SUCCESS)
