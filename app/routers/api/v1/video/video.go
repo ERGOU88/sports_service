@@ -672,3 +672,5 @@ func SectionRecommendInfo(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
+
+

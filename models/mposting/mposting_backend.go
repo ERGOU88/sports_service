@@ -11,6 +11,15 @@ type SettingParam struct {
 	Id            int64 `json:"id"`           // 帖子id
 }
 
+// 批量修改帖子数据
+type BatchEditParam struct {
+	EditType   int32       `json:"edit_type" binding:"required"` // 1 编辑帖子标题 2 编辑帖子板块 3 编辑帖子话题
+	Ids        []int64     `json:"ids" binding:"required"`       // 帖子id
+	Title      string      `json:"title"`
+	SectionId  int         `json:"section_id"`
+	TopicIds   []int64     `json:"topic_ids"`
+}
+
 // todo: 后台查询帖子审核列表时 需过滤掉发布的视频 以及 帖子审核通过时 需给up主的粉丝们发推送通知
 // 更新帖子审核状态 不包含关联视频的帖子
 func (m *PostingModel) UpdateStatusByPost() error {
@@ -57,4 +66,14 @@ func (m *PostingModel) GetApplyCreamList(offset, size int) ([]*PostDetailInfo, e
 // 更新申精状态
 func (m *PostingModel) UpdateApplyCreamStatus(id int64) (int64, error) {
 	return m.Engine.Where("id=?", id).Cols("status").Update(m.ApplyCream)
+}
+
+// 批量编辑
+func (m *PostingModel) BatchEditPost(postIds []int64) (int64, error) {
+	return m.Engine.In("id", postIds).Update(m.Posting)
+}
+
+// 批量删除帖子话题
+func (m *PostingModel) BatchDelPostTopic(postIds []int64) (int64, error) {
+	return m.Engine.In("id", postIds).Delete(m.PostingTopic)
 }

@@ -30,5 +30,7 @@ func Router(engine *gin.Engine) {
 		post.POST("/setting", PostSetting)
 		// 申精列表
 		post.GET("/apply/cream", ApplyCreamList)
+		// 批量修改帖子信息
+		post.POST("/batch/edit", BatchEditPostInfo)
 	}
 }

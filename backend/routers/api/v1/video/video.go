@@ -149,3 +149,15 @@ func VideoSubareaList(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
+
+func BatchEditVideoInfo(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mvideo.BatchEditVideos{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cvideo.New(c)
+	reply.Response(http.StatusOK, svc.BatchEditVideos(param))
+}

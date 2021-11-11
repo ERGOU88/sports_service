@@ -280,6 +280,16 @@ type VideoInfoBySubarea struct {
 	IsAttention   int                   `json:"is_attention"`                         // 是否关注
 }
 
+// 批量编辑
+type BatchEditVideos struct {
+	EditType   int32       `json:"edit_type" binding:"required"` // 1 编辑视频标题 2 编辑视频描述 3 编辑视频分区 4 视频标签
+	Ids        []int64     `json:"ids" binding:"required"`       // 视频id
+	Title      string      `json:"title"`
+	Describe   string      `json:"describe"`
+	SubareaId  int         `json:"subarea_id"`
+	LabelIds   []int64     `json:"label_ids"`
+}
+
 // 实栗
 func NewVideoModel(engine *xorm.Session) *VideoModel {
 	return &VideoModel{
@@ -1021,4 +1031,9 @@ func (m *VideoModel) GetVideoListByAlbum(userId string, album int64) ([]*InfoByV
 	}
 
 	return list, nil
+}
+
+// 批量编辑视频
+func (m *VideoModel) BatchEditVideos(ids []int64) (int64, error) {
+	return m.Engine.In("video_id", ids).Update(m.Videos)
 }

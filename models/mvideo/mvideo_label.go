@@ -77,3 +77,8 @@ func (m *VideoModel) DelVideoLabels(videoId string) error {
 
   return nil
 }
+
+// 批量删除视频标签
+func (m *VideoModel) BatchDelVideoLabels(videoIds []int64) (int64, error) {
+  return m.Engine.In("video_id", videoIds).Delete(m.Labels)
+}

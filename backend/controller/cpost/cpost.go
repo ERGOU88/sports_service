@@ -359,3 +359,67 @@ func (svc *PostModule) GetTopicList() (int, []*models.CommunityTopic) {
 
 	return errdef.SUCCESS, list
 }
+
+// 批量编辑
+func (svc *PostModule) BatchEditPostInfo(param *mposting.BatchEditParam) int {
+	if err := svc.engine.Begin(); err != nil {
+		return errdef.ERROR
+	}
+
+	switch param.EditType {
+	case 1:
+		svc.post.Posting.Title = param.Title
+		affected, err := svc.post.BatchEditPost(param.Ids)
+		if affected != int64(len(param.Ids)) || err != nil {
+			svc.engine.Rollback()
+			return errdef.ERROR
+		}
+
+	case 2:
+		svc.post.Posting.SectionId = param.SectionId
+		affected, err := svc.post.BatchEditPost(param.Ids)
+		if affected != int64(len(param.Ids)) || err != nil {
+			svc.engine.Rollback()
+			return errdef.ERROR
+		}
+
+	case 3:
+		if _, err := svc.post.BatchDelPostTopic(param.Ids); err != nil {
+			svc.engine.Rollback()
+			return errdef.ERROR
+		}
+
+		list := make([]*models.PostingTopic, len(param.Ids) * len(param.TopicIds))
+		i := 0
+		now := int(time.Now().Unix())
+		for _, postId := range param.Ids {
+			for _, topicId := range param.TopicIds {
+				topic, err := svc.community.GetTopicInfo(fmt.Sprint(topicId))
+				if topic == nil || err != nil {
+					log.Log.Errorf("post_trace: get post topic fail, topicId:%d", topicId)
+					svc.engine.Rollback()
+					return errdef.ERROR
+				}
+
+				list[i] = &models.PostingTopic{
+					PostingId: postId,
+					TopicId: int(topicId),
+					TopicName: topic.TopicName,
+					UpdateAt: now,
+				}
+
+				i++
+			}
+		}
+
+		affected, err := svc.post.AddPostingTopics(list)
+		if affected != int64(len(list)) || err != nil {
+			svc.engine.Rollback()
+			return errdef.ERROR
+		}
+	}
+
+	svc.engine.Commit()
+	return errdef.SUCCESS
+}
+

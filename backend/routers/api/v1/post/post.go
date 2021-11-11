@@ -120,3 +120,15 @@ func TopicList(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
+
+func BatchEditPostInfo(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mposting.BatchEditParam{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cpost.New(c)
+	reply.Response(http.StatusOK, svc.BatchEditPostInfo(param))
+}

@@ -346,3 +346,72 @@ func (svc *VideoModule) GetVideoSubareaList() (int, []*models.VideoSubarea) {
 
   return errdef.SUCCESS, list
 }
+
+// 批量编辑视频信息
+func (svc *VideoModule) BatchEditVideos(param *mvideo.BatchEditVideos) int {
+  if err := svc.engine.Begin(); err != nil {
+    return errdef.ERROR
+  }
+
+  switch param.EditType {
+  case 1:
+    svc.video.Videos.Title = param.Title
+    affected, err := svc.video.BatchEditVideos(param.Ids)
+    if err != nil || affected != int64(len(param.Ids)) {
+      svc.engine.Rollback()
+      return errdef.ERROR
+    }
+
+  case 2:
+    svc.video.Videos.Describe = param.Describe
+    affected, err := svc.video.BatchEditVideos(param.Ids)
+    if err != nil || affected != int64(len(param.Ids)) {
+      svc.engine.Rollback()
+      return errdef.ERROR
+    }
+
+  case 3:
+    svc.video.Videos.Subarea = param.SubareaId
+    affected, err := svc.video.BatchEditVideos(param.Ids)
+    if err != nil || affected != int64(len(param.Ids)) {
+      svc.engine.Rollback()
+      return errdef.ERROR
+    }
+
+  case 4:
+    if _, err := svc.video.BatchDelVideoLabels(param.Ids); err != nil {
+      svc.engine.Rollback()
+      return errdef.ERROR
+    }
+
+    list := make([]*models.VideoLabels, len(param.Ids) * len(param.LabelIds))
+    i := 0
+    for _, videoId := range param.Ids {
+      for _, labelId := range param.LabelIds {
+        labelInfo := svc.label.GetVideoLabelInfoById(fmt.Sprint(labelId))
+        if labelInfo == nil {
+          log.Log.Errorf("video_trace: get video label fail, labelId:%d", labelId)
+          svc.engine.Rollback()
+          return errdef.ERROR
+        }
+
+        list[i] = &models.VideoLabels{
+          VideoId: videoId,
+          LabelId: fmt.Sprint(labelInfo.LabelId),
+          LabelName: labelInfo.LabelName,
+        }
+
+        i++
+      }
+    }
+
+    affected, err := svc.video.AddVideoLabels(list)
+    if affected != int64(len(list)) || err != nil {
+      svc.engine.Rollback()
+      return errdef.ERROR
+    }
+  }
+
+  svc.engine.Commit()
+  return errdef.SUCCESS
+}
