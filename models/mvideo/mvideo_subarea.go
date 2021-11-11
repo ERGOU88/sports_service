@@ -22,7 +22,7 @@ func (m *VideoModel) AddSubArea() (int64, error) {
 }
 
 func (m *VideoModel) UpdateSubArea() (int64, error) {
-	return m.Engine.Where("id=?", m.Subarea.Id).Update(m.Subarea)
+	return m.Engine.Where("id=?", m.Subarea.Id).Cols("status, update_at, sortorder").Update(m.Subarea)
 }
 
 func (m *VideoModel) DelSubArea(id int) (int64, error) {
