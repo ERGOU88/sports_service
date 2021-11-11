@@ -30,9 +30,9 @@ func (m *VideoModel) DelSubArea(id int) (int64, error) {
 }
 
 // 获取视频分区配置列表
-func (m *VideoModel) GetSubAreaList() ([]*models.VideoSubarea, error) {
+func (m *VideoModel) GetSubAreaList(status []int) ([]*models.VideoSubarea, error) {
 	var list []*models.VideoSubarea
-	if err := m.Engine.Where("status=0").Desc("sortorder").Find(&list); err != nil {
+	if err := m.Engine.In("status", status).Desc("sortorder").Find(&list); err != nil {
 		return nil, err
 	}
 

@@ -370,7 +370,7 @@ func (svc *VideoModule) DelVideoSubareaConf(id int) int {
 }
 
 func (svc *VideoModule) GetVideoSubareaList() (int, []*models.VideoSubarea) {
-  list, err := svc.video.GetSubAreaList()
+  list, err := svc.video.GetSubAreaList([]int{0, 1})
   if err != nil {
     log.Log.Errorf("video_trace: get video subarea fail, err:%s", err)
     return errdef.ERROR, []*models.VideoSubarea{}
