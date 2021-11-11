@@ -134,7 +134,7 @@ func DelVideoLabel(c *gin.Context) {
 func AddVideoSubareaConf(c *gin.Context) {
 	reply := errdef.New(c)
 	param := new(mvideo.AddSubarea)
-	if err := c.Bind(param); err != nil {
+	if err := c.BindJSON(param); err != nil {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
@@ -149,7 +149,7 @@ func AddVideoSubareaConf(c *gin.Context) {
 func EditVideoSubareaConf(c *gin.Context) {
 	reply := errdef.New(c)
 	param := new(mvideo.AddSubarea)
-	if err := c.Bind(param); err != nil {
+	if err := c.BindJSON(param); err != nil {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
