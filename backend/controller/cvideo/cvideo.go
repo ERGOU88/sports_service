@@ -315,6 +315,8 @@ func (svc *VideoModule) AddVideoSubareaConf(param *mvideo.AddSubarea) int {
   svc.video.Subarea.SubareaName = param.Name
   svc.video.Subarea.Sortorder = param.SortOrder
   svc.video.Subarea.CreateAt = int(time.Now().Unix())
+  svc.video.Subarea.SysId = param.SysId
+  svc.video.Subarea.SysUser = param.SysUser
   if _, err := svc.video.AddSubArea(); err != nil {
     log.Log.Errorf("video_trace: add subarea fail, err:%s", err)
     return errdef.VIDEO_ADD_SUBAREA_FAIL
@@ -358,6 +360,7 @@ func (svc *VideoModule) BatchEditVideos(param *mvideo.BatchEditVideos) int {
     svc.video.Videos.Title = param.Title
     affected, err := svc.video.BatchEditVideos(param.Ids)
     if err != nil || affected != int64(len(param.Ids)) {
+      log.Log.Errorf("video_trace: batch del video labels fail, err:%s", err)
       svc.engine.Rollback()
       return errdef.ERROR
     }
@@ -380,6 +383,7 @@ func (svc *VideoModule) BatchEditVideos(param *mvideo.BatchEditVideos) int {
 
   case 4:
     if _, err := svc.video.BatchDelVideoLabels(param.Ids); err != nil {
+      log.Log.Errorf("video_trace: batch del video labels fail, err:%s", err)
       svc.engine.Rollback()
       return errdef.ERROR
     }
@@ -407,6 +411,7 @@ func (svc *VideoModule) BatchEditVideos(param *mvideo.BatchEditVideos) int {
 
     affected, err := svc.video.AddVideoLabels(list)
     if affected != int64(len(list)) || err != nil {
+      log.Log.Errorf("video_trace: add video labels fail, err:%s", err)
       svc.engine.Rollback()
       return errdef.ERROR
     }

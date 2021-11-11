@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"sports_service/server/backend/controller/cvideo"
 	"sports_service/server/global/backend/errdef"
+	"sports_service/server/global/consts"
+	"sports_service/server/middleware/jwt"
 	"sports_service/server/models/mlabel"
 	"sports_service/server/models/mvideo"
 	"sports_service/server/util"
@@ -124,6 +126,8 @@ func AddVideoSubareaConf(c *gin.Context) {
 		return
 	}
 
+	param.SysId, _ = util.StringToInt(jwt.GetUserInfo(c, consts.IDENTIFY))
+	param.SysUser = jwt.GetUserInfo(c, consts.USER_NAME)
 	svc := cvideo.New(c)
 	syscode := svc.AddVideoSubareaConf(param)
 	reply.Response(http.StatusOK, syscode)

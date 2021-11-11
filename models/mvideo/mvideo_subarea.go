@@ -7,6 +7,8 @@ import (
 type AddSubarea struct {
 	Name      string    `json:"name"`
 	SortOrder int       `json:"sortorder"`
+	SysId     int       `json:"sys_id"`
+	SysUser   string    `json:"sys_user"`
 }
 
 type DelSubarea struct {
