@@ -226,7 +226,7 @@ func (m *PostingModel) AddPost() (int64, error) {
 }
 
 // 删除帖子
-func (m *PostingModel) DelPost(postId int64) error {
+func (m *PostingModel) DelPost(postId string) error {
 	if _, err := m.Engine.Where("id=?", postId).Delete(&models.PostingInfo{}); err != nil {
 		return err
 	}

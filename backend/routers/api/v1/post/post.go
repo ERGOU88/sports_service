@@ -132,3 +132,10 @@ func BatchEditPostInfo(c *gin.Context) {
 	svc := cpost.New(c)
 	reply.Response(http.StatusOK, svc.BatchEditPostInfo(param))
 }
+
+func DelPost(c *gin.Context) {
+	reply := errdef.New(c)
+	postId := c.Query("id")
+	svc := cpost.New(c)
+	reply.Response(http.StatusOK, svc.DelPost(postId))
+}

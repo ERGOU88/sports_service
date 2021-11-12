@@ -32,5 +32,7 @@ func Router(engine *gin.Engine) {
 		post.GET("/apply/cream", ApplyCreamList)
 		// 批量修改帖子信息
 		post.POST("/batch/edit", BatchEditPostInfo)
+		// 删除帖子
+		post.DELETE("/del", DelPost)
 	}
 }

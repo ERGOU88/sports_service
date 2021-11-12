@@ -433,3 +433,10 @@ func (svc *PostModule) BatchEditPostInfo(param *mposting.BatchEditParam) int {
 	return errdef.SUCCESS
 }
 
+func (svc *PostModule) DelPost(postId string) int {
+	if err := svc.post.DelPost(postId); err != nil {
+		return errdef.ERROR
+	}
+
+	return errdef.SUCCESS
+}
