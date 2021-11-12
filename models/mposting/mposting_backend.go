@@ -75,5 +75,5 @@ func (m *PostingModel) BatchEditPost(postIds []int64) (int64, error) {
 
 // 批量删除帖子话题
 func (m *PostingModel) BatchDelPostTopic(postIds []int64) (int64, error) {
-	return m.Engine.In("id", postIds).Delete(m.PostingTopic)
+	return m.Engine.In("posting_id", postIds).Delete(m.PostingTopic)
 }
