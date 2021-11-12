@@ -222,6 +222,16 @@ func (svc *PostModule) GetPostList(page, size int) (int, []*mposting.PostDetailI
 			item.SectionName = sectionInfo.SectionName
 		}
 
+		item.Topics, err = svc.post.GetPostTopic(fmt.Sprint(item.Id))
+		if item.Topics == nil || err != nil  {
+			item.Topics = []*models.PostingTopic{}
+		}
+
+		record, err := svc.post.GetApplyCreamRecord(fmt.Sprint(item.Id))
+		if record != nil && err == nil {
+			item.IsCream = 1
+		}
+
 		item.Content = ""
 
 	}
