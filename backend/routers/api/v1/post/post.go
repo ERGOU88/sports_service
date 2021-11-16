@@ -30,9 +30,11 @@ func AuditPost(c *gin.Context) {
 func PostList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	status := c.DefaultQuery("status", "1")
 	svc := cpost.New(c)
-	code, list := svc.GetPostList(page, size)
+	code, list := svc.GetPostList(page, size, status)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetTotalCountByPost(status)
 	reply.Response(http.StatusOK, code)
 }
 

@@ -144,6 +144,9 @@ func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 
 			refundTradeNo := params.Get("out_biz_no")
 			svc.order.RefundRecord.Status = 1
+			svc.order.RefundRecord.UpdateAt = int(time.Now().Unix())
+			refundTime, _ := time.ParseInLocation("2006-01-02 15:04:05", params.Get("gmt_refund"), time.Local)
+			svc.order.RefundRecord.RefundTime = int(refundTime.Unix())
 			affected, err := svc.order.UpdateRefundRecordStatus(refundTradeNo)
 			if affected != 1 || err != nil {
 				log.Log.Errorf("aliNotify_trace: update refund record fail, refundTradeNo:%s, err:%s",
@@ -185,8 +188,11 @@ func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 		}
 
 		refundTradeNo := params.Get("out_biz_no")
+		refundTime, _ := time.ParseInLocation("2006-01-02 15:04:05", params.Get("gmt_refund"), time.Local)
 		// 状态为已退款
 		svc.order.RefundRecord.Status = 1
+		svc.order.RefundRecord.RefundTime = int(refundTime.Unix())
+		svc.order.RefundRecord.UpdateAt = int(time.Now().Unix())
 		affected, err := svc.order.UpdateRefundRecordStatus(refundTradeNo)
 		if affected != 1 || err != nil {
 			log.Log.Errorf("aliNotify_trace: update refund record fail, refundTradeNo:%s, err:%s",
@@ -213,7 +219,7 @@ func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 }
 
 // 微信支付回调
-func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo, refundNo string, payTm int64, changeType int) error {
+func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo, refundNo string, payTm, refundTm int64, changeType int) error {
 	if err := svc.engine.Begin(); err != nil {
 		return err
 	}
@@ -234,6 +240,8 @@ func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo, refundNo string,
 	if changeType == consts.REFUND_NOTIFY {
 		// 状态为已退款
 		svc.order.RefundRecord.Status = 1
+		svc.order.RefundRecord.RefundTime = int(refundTm)
+		svc.order.RefundRecord.UpdateAt = int(time.Now().Unix())
 		affected, err := svc.order.UpdateRefundRecordStatus(refundNo)
 		if affected != 1 || err != nil {
 			log.Log.Errorf("wxNotify_trace: update refund record fail, refundTradeNo:%s, err:%s",

@@ -1,5 +1,7 @@
 package mposting
 
+import "sports_service/server/models"
+
 type AudiPostParam struct {
 	Id       string     `json:"id"`
 	Status   int        `json:"status"`
@@ -37,9 +39,20 @@ const (
 		" ORDER BY p.is_cream DESC, p.is_top DESC, p.id DESC LIMIT ?, ?"
 )
 // 获取帖子列表 [管理后台]
-func (m *PostingModel) GetPostList(offset, size int) ([]*PostDetailInfo, error) {
+func (m *PostingModel) GetPostList(offset, size int, status string) ([]*PostDetailInfo, error) {
+	sql := "SELECT p.*, ps.fabulous_num, ps.browse_num, ps.share_num, ps.comment_num, ps.heat_num FROM " +
+		"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id "
+
+	// 取审核中/审核失败
+	if status == "0" {
+		sql += "WHERE status in(0, 2) "
+	} else {
+		sql += "WHERE status=? "
+	}
+
+	sql += " ORDER BY p.is_cream DESC, p.is_top DESC, p.id DESC LIMIT ?, ?"
 	var list []*PostDetailInfo
-	if err := m.Engine.SQL(GET_POST_LIST, offset, size).Find(&list); err != nil {
+	if err := m.Engine.SQL(GET_POST_LIST, status, offset, size).Find(&list); err != nil {
 		return nil, err
 	}
 
@@ -48,6 +61,16 @@ func (m *PostingModel) GetPostList(offset, size int) ([]*PostDetailInfo, error) 
 
 func (m *PostingModel) UpdatePostInfo(id int64, cols string) (int64, error) {
 	return m.Engine.Where("id=?", id).Cols(cols).Update(m.Posting)
+}
+
+// 获取帖子总数
+func (m *PostingModel) GetTotalCountByPost(condition []int) int64 {
+	count, err := m.Engine.In("status", condition).Count(&models.PostingInfo{})
+	if err != nil {
+		return 0
+	}
+
+	return count
 }
 
 const (

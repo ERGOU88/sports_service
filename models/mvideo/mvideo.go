@@ -666,7 +666,7 @@ func (m *VideoModel) GetVideoTotalCount(keyword string) int64 {
 
 // 获取视频总数（未审核/未通过审核）
 func (m *VideoModel) GetVideoReviewTotalCount() int64 {
-	count, err := m.Engine.Where("status = 0 or status = 2").Count(&models.Videos{})
+	count, err := m.Engine.In("status", []int{0,2}).Count(&models.Videos{})
 	if err != nil {
 		return 0
 	}
@@ -805,7 +805,7 @@ func (m *VideoModel) UpdateStatusByHotSearch(id int) error {
 // 获取审核中/审核失败 的视频列表
 func (m *VideoModel) GetVideoReviewList(offset, size int) []*models.Videos {
 	var list []*models.Videos
-	if err := m.Engine.Where("status=0 OR status=2").Desc("video_id").Limit(size, offset).Find(&list); err != nil {
+	if err := m.Engine.In("status", []int{0, 2}).Desc("video_id").Limit(size, offset).Find(&list); err != nil {
 		return nil
 	}
 

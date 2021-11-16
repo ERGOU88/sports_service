@@ -119,9 +119,9 @@ func (svc *PostModule) AudiPost(param *mposting.AudiPostParam) int {
 }
 
 // 管理后台获取帖子列表
-func (svc *PostModule) GetPostList(page, size int) (int, []*mposting.PostDetailInfo) {
+func (svc *PostModule) GetPostList(page, size int, status string) (int, []*mposting.PostDetailInfo) {
 	offset := (page - 1) * size
-	list, err := svc.post.GetPostList(offset, size)
+	list, err := svc.post.GetPostList(offset, size, status)
 	if err != nil {
 		return errdef.ERROR, nil
 	}
@@ -237,6 +237,15 @@ func (svc *PostModule) GetPostList(page, size int) (int, []*mposting.PostDetailI
 	}
 
 	return errdef.SUCCESS, list
+}
+
+func (svc *PostModule) GetTotalCountByPost(status string) int64 {
+	condition := []int{1}
+	if status == "0" {
+		condition = []int{0, 2}
+	}
+
+	return svc.post.GetTotalCountByPost(condition)
 }
 
 func (svc *PostModule) AddSection(param *mcommunity.AddSection) int {
@@ -435,6 +444,17 @@ func (svc *PostModule) BatchEditPostInfo(param *mposting.BatchEditParam) int {
 
 func (svc *PostModule) DelPost(postId string) int {
 	if err := svc.post.DelPost(postId); err != nil {
+		return errdef.ERROR
+	}
+
+	post, err := svc.post.GetPostById(postId)
+	if post == nil || err != nil {
+		return errdef.ERROR
+	}
+
+	svc.post.Posting.Status = 3
+	if _, err := svc.post.UpdatePostInfo(post.Id, "status"); err != nil {
+		log.Log.Errorf("post_trace: update post info fail, postId:%s, err:%s", postId, err)
 		return errdef.ERROR
 	}
 

@@ -207,5 +207,5 @@ func (m *OrderModel) AddRefundRecord() (int64, error) {
 
 // 更新退款记录状态
 func (m *OrderModel) UpdateRefundRecordStatus(refundTradeNo string) (int64, error) {
-	return m.Engine.Where("refund_trade_no=?", refundTradeNo).Cols("status").Update(m.RefundRecord)
+	return m.Engine.Where("refund_trade_no=?", refundTradeNo).Cols("status, refund_time, update_at").Update(m.RefundRecord)
 }
