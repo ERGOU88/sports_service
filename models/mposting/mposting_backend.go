@@ -25,6 +25,20 @@ type BatchEditParam struct {
 	TopicIds   []int64     `json:"topic_ids"`
 }
 
+type TopicInfo struct {
+	Id        int    `json:"id"`
+	TopicName string `json:"topic_name"`
+	Sortorder int    `json:"sortorder"`
+	Status    int    `json:"status"`
+	IsHot     int    `json:"is_hot"`
+	CreateAt  int    `json:"create_at"`
+	UpdateAt  int    `json:"update_at"`
+	Cover     string `json:"cover"`
+	Describe  string `json:"describe"`
+	SectionId int    `json:"section_id"`
+	PostNum   int64  `json:"post_num"`
+}
+
 // todo: 后台查询帖子审核列表时 需过滤掉发布的视频 以及 帖子审核通过时 需给up主的粉丝们发推送通知
 // 更新帖子审核状态 不包含关联视频的帖子
 func (m *PostingModel) UpdateStatusByPost() error {
