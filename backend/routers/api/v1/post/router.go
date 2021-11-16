@@ -20,6 +20,8 @@ func Router(engine *gin.Engine) {
 		post.POST("/add/section", AddSection)
 		// 删除板块
 		post.POST("/del/section", DelSection)
+		// 编辑板块
+		post.POST("/edit/section", EditSection)
 		// 帖子话题列表
 		post.GET("/topic/list", TopicList)
 		// 添加话题

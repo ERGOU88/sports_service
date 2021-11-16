@@ -261,10 +261,26 @@ func (svc *PostModule) AddSection(param *mcommunity.AddSection) int {
 	return errdef.SUCCESS
 }
 
+func (svc *PostModule) EditSection(param *mcommunity.AddSection) int {
+	mp := map[string]interface{}{
+		"section_name": param.SectionName,
+		"sortorder": param.Sortorder,
+		"update_at": int(time.Now().Unix()),
+		"status": param.Status,
+	}
+	if _, err := svc.community.UpdateSectionInfo(param.Id, mp); err != nil {
+		log.Log.Errorf("post_trace: add section fail, err:%s", err)
+		return errdef.POST_ADD_SECTION_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
 // 软删除 将板块隐藏
 func (svc *PostModule) DelSection(param *mcommunity.DelSection) int {
-	svc.community.CommunitySection.Status = 2
-	if _, err := svc.community.UpdateSectionStatus(param.Id); err != nil {
+	//svc.community.CommunitySection.Status = 2
+	mp := map[string]interface{}{"status":2}
+	if _, err := svc.community.UpdateSectionInfo(param.Id, mp); err != nil {
 		log.Log.Errorf("post_trace: del section fail, err:%s", err)
 		return errdef.POST_DEL_SECTION_FAIL
 	}

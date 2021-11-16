@@ -63,6 +63,18 @@ func DelSection(c *gin.Context) {
 	reply.Response(http.StatusOK, svc.DelSection(param))
 }
 
+func EditSection(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mcommunity.AddSection{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cpost.New(c)
+	reply.Response(http.StatusOK, svc.EditSection(param))
+}
+
 func AddTopic(c *gin.Context) {
 	reply := errdef.New(c)
 	param := &mcommunity.AddTopic{}
