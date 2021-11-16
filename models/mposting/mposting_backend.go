@@ -98,6 +98,12 @@ func (m *PostingModel) GetApplyCreamList(offset, size int) ([]*PostDetailInfo, e
 	return list, nil
 }
 
+
+func (m *PostingModel) GetApplyCreamCount() (int64, error) {
+	sql := "SELECT p.* FROM posting_apply_cream AS pac LEFT JOIN posting_info AS p ON pac.post_id=p.id WHERE pac.status=0"
+	return m.Engine.SQL(sql).Count(&models.PostingInfo{})
+}
+
 // 更新申精状态
 func (m *PostingModel) UpdateApplyCreamStatus(id int64) (int64, error) {
 	return m.Engine.Where("id=?", id).Cols("status").Update(m.ApplyCream)

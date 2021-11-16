@@ -105,6 +105,7 @@ func ApplyCreamList(c *gin.Context) {
 	svc := cpost.New(c)
 	code, list := svc.GetApplyCreamList(page, size)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetApplyCreamCount()
 	reply.Response(http.StatusOK, code)
 }
 

@@ -63,7 +63,7 @@ func (svc *PostModule) AudiPost(param *mposting.AudiPostParam) int {
 		return errdef.POST_ALREADY_PASS
 	}
 
-	// 通过 / 不通过 / 执行删除操作 且 视频状态为审核通过 则只能逻辑删除/不通过 直接更新视频状态
+	// 通过 / 不通过 / 执行删除操作 且 状态为审核通过 则只能逻辑删除/不通过 直接更新状态
 	if fmt.Sprint(param.Status) == consts.POST_AUDIT_SUCCESS || fmt.Sprint(param.Status) == consts.POST_AUDIT_FAILURE ||
 		(fmt.Sprint(param.Status) == consts.POST_DELETE_STATUS && status == consts.POST_AUDIT_SUCCESS) {
 		post.Status = param.Status
@@ -92,7 +92,7 @@ func (svc *PostModule) AudiPost(param *mposting.AudiPostParam) int {
 		return errdef.SUCCESS
 	}
 
-	// 如果执行删除操作 且 视频状态未审核通过 删除相关所有数据
+	// 如果执行删除操作 且 状态未审核通过 删除相关所有数据
 	if fmt.Sprint(param.Status) == consts.VIDEO_DELETE_STATUS && status != consts.VIDEO_AUDIT_SUCCESS {
 		// 物理删除发布的帖子、帖子所属话题、帖子统计数据
 		if err := svc.post.DelPublishPostById(param.Id); err != nil {
@@ -349,6 +349,15 @@ func (svc *PostModule) GetApplyCreamList(page, size int) (int, []*mposting.PostD
 	}
 
 	return errdef.SUCCESS, list
+}
+
+func (svc *PostModule) GetApplyCreamCount() int64 {
+	count, err := svc.post.GetApplyCreamCount()
+	if err != nil {
+		log.Log.Errorf("post_trace: get apply cream count fail, err:%s", err)
+	}
+
+	return count
 }
 
 // 板块列表
