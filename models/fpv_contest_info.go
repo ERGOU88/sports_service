@@ -3,7 +3,7 @@ package models
 type FpvContestInfo struct {
 	Id          int    `json:"id" xorm:"not null pk autoincr comment('赛事id') INT(11)"`
 	ContestName string `json:"contest_name" xorm:"not null comment('赛事名称 例如：x-fly fpv大赛s1') VARCHAR(128)"`
-	Organizer   string `json:"organizer" xorm:"not null default '' comment('举报方') VARCHAR(255)"`
+	Organizer   string `json:"organizer" xorm:"not null default '' comment('举办方') VARCHAR(255)"`
 	Status      int    `json:"status" xorm:"not null default 0 comment('赛事状态 0 未开始 1 已开始 2 已结束') TINYINT(2)"`
 	StartTm     int    `json:"start_tm" xorm:"not null default 0 comment('赛事开始时间') INT(11)"`
 	EndTm       int    `json:"end_tm" xorm:"not null default 0 comment('赛事结束时间') INT(11)"`

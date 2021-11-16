@@ -516,12 +516,12 @@ func (svc *base) UpdateStock(date string, count, now int) (int64, error) {
 // 添加预约流水
 func (svc *base) AddAppointmentRecord() error {
 	for key, list := range svc.recordMp {
-		// 实付金额为0 表示使用时长抵扣 或 活动免费 直接置为可用
-		//if svc.order.Order.Amount == 0 {
-		//	list.Status = 1
-		//}
 		for _, record := range list {
 			record.OrderProductId = svc.orderMp[key].Id
+			// 实付金额为0 表示使用时长抵扣 或 活动免费 直接置为可用
+			if svc.order.Order.Amount == 0 {
+				record.Status = 0
+			}
 		}
 
 		affected, err := svc.appointment.AddMultiAppointmentRecord(list)

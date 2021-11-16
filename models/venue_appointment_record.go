@@ -25,4 +25,5 @@ type VenueAppointmentRecord struct {
 	VenueId         int64  `json:"venue_id" xorm:"not null default 0 comment('场馆id') BIGINT(20)"`
 	CreateAt        int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt        int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
+	Status          int    `json:"status" xorm:"not null default 1 comment('0可用 1不可用') TINYINT(1)"`
 }

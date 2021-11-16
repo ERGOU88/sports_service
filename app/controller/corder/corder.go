@@ -261,21 +261,24 @@ func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo, refundNo string,
 func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64, changeType, refundAmount, refundFee int) error {
 	// tips: 不可直接更新状态 并发情况下会有问题
 	// 订单当前状态, 需更新的状态, 快照记录需更新的状态
-	var curStatus, status int
+	var curStatus, status, recordStatus int
 	switch changeType {
 	case consts.PAY_NOTIFY:
 		// 如果是支付成功回调 则订单当前状态应是 待支付 需更新状态为 已支付
 		curStatus = consts.ORDER_TYPE_WAIT
 		status = consts.ORDER_TYPE_PAID
+		recordStatus = 0
 		svc.order.Order.IsCallback = 1
 	case consts.REFUND_NOTIFY:
 		curStatus = consts.ORDER_TYPE_REFUND_WAIT
 		status = consts.ORDER_TYPE_REFUND_SUCCESS
+		recordStatus = 1
 		svc.order.Order.IsCallback = 1
 	case consts.APPLY_REFUND:
 		// 如果是申请退款 则订单当前状态 应是已付款 需更新状态为 退款中
 		curStatus = consts.ORDER_TYPE_PAID
 		status = consts.ORDER_TYPE_REFUND_WAIT
+		recordStatus = 1
 		// 如果退款金额和退款手续费均为0 则表示退款单金额为0 直接将退款状态置为成功
 		if refundFee == 0 && refundAmount == 0 {
 			status = consts.ORDER_TYPE_REFUND_SUCCESS
@@ -313,7 +316,7 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 
 	switch svc.order.Order.ProductType {
 	case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
-		if err := svc.AppointmentOrderProcess(changeType, now, orderId); err != nil {
+		if err := svc.AppointmentOrderProcess(changeType, now, recordStatus, orderId); err != nil {
 			return err
 		}
 		// 申请退款 / 取消订单 需归还库存 及 抵扣的会员时长
@@ -374,7 +377,7 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 				if isProcess {
 					continue
 				}
-				if err := svc.AppointmentOrderProcess(changeType, now, orderId); err != nil {
+				if err := svc.AppointmentOrderProcess(changeType, now, recordStatus, orderId); err != nil {
 					return err
 				}
 
@@ -407,7 +410,7 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 }
 
 // 预约类 订单处理 tips: 直接load所属当前订单的所有预约快照 所以在循环订单商品列表时 执行一次即可
-func (svc *OrderModule) AppointmentOrderProcess(changeType, now int, orderId string) error {
+func (svc *OrderModule) AppointmentOrderProcess(changeType, now, recordStatus int, orderId string) error {
 	// 更新订单对应的预约流水状态
 	//if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, status, curStatus); err != nil {
 	//	log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
@@ -432,11 +435,15 @@ func (svc *OrderModule) AppointmentOrderProcess(changeType, now int, orderId str
 		}
 	}
 
-	// 更新订单对应的预约流水状态
-	//if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, recordStatus); err != nil {
-	//	log.Log.Errorf("order_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
-	//	return err
-	//}
+	// 申请退款 [不可用] / 支付成功 [可用] 修改预约流水状态
+	if changeType == consts.APPLY_REFUND || changeType == consts.PAY_NOTIFY {
+		// 更新订单对应的预约流水状态
+		if err := svc.appointment.UpdateAppointmentRecordStatus(orderId, now, recordStatus); err != nil {
+			log.Log.Errorf("order_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
+			return err
+		}
+
+	}
 
 	return nil
 }

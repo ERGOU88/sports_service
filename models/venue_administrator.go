@@ -4,8 +4,8 @@ type VenueAdministrator struct {
 	Id        int    `json:"id" xorm:"not null pk autoincr INT(10)"`
 	UserId    string `json:"user_id" xorm:"default '' VARCHAR(255)"`
 	JobNumber string `json:"job_number" xorm:"default '' comment('工号') VARCHAR(255)"`
-	Mobile    int64  `json:"mobile" xorm:"default 0 comment('手机号') unique(mobile) BIGINT(11)"`
-	Name      string `json:"name" xorm:"default '' comment('用户名称') VARCHAR(255)"`
+	Mobile    int64  `json:"mobile" xorm:"not null default 0 comment('手机号') unique(mobile) BIGINT(11)"`
+	Name      string `json:"name" xorm:"not null default '' comment('用户名称') VARCHAR(255)"`
 	Username  string `json:"username" xorm:"not null default '' comment('账号') unique(username) VARCHAR(255)"`
 	Password  string `json:"password" xorm:"not null default '' comment('密码') VARCHAR(255)"`
 	Status    int    `json:"status" xorm:"default 0 comment('状态') TINYINT(1)"`

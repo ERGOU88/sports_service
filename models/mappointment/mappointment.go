@@ -510,15 +510,15 @@ func (m *AppointmentModel) GetAppointmentRecordByOrderId(orderId string) ([]*mod
 	return list, nil
 }
 
-//const (
-//	UPDATE_RECORD_STATUS = "UPDATE `venue_appointment_record` SET `update_at`=?, `status`=? " +
-//		"WHERE `pay_order_id`=?"
-//)
-// 更新预约记录状态 todo：废弃
-//func (m *AppointmentModel) UpdateAppointmentRecordStatus(orderId string, now, status int) error {
-//	if _, err := m.Engine.Exec(UPDATE_RECORD_STATUS, now, status, orderId); err != nil {
-//		return err
-//	}
-//
-//	return nil
-//}
+const (
+	UPDATE_RECORD_STATUS = "UPDATE `venue_appointment_record` SET `update_at`=?, `status`=? " +
+		"WHERE `pay_order_id`=?"
+)
+// 更新预约记录状态
+func (m *AppointmentModel) UpdateAppointmentRecordStatus(orderId string, now, status int) error {
+	if _, err := m.Engine.Exec(UPDATE_RECORD_STATUS, now, status, orderId); err != nil {
+		return err
+	}
+
+	return nil
+}
