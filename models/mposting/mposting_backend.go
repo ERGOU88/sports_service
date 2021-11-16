@@ -1,6 +1,9 @@
 package mposting
 
-import "sports_service/server/models"
+import (
+	"sports_service/server/models"
+	"fmt"
+)
 
 type AudiPostParam struct {
 	Id       string     `json:"id"`
@@ -47,12 +50,12 @@ func (m *PostingModel) GetPostList(offset, size int, status string) ([]*PostDeta
 	if status == "0" {
 		sql += "WHERE status in(0, 2) "
 	} else {
-		sql += "WHERE status=? "
+		sql += fmt.Sprintf("WHERE status=%s ", status)
 	}
 
 	sql += " ORDER BY p.is_cream DESC, p.is_top DESC, p.id DESC LIMIT ?, ?"
 	var list []*PostDetailInfo
-	if err := m.Engine.SQL(GET_POST_LIST, status, offset, size).Find(&list); err != nil {
+	if err := m.Engine.SQL(GET_POST_LIST, offset, size).Find(&list); err != nil {
 		return nil, err
 	}
 
