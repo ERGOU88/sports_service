@@ -330,8 +330,8 @@ func (svc *ContestModule) AddContestLive(info *models.VideoLive) int {
 		return errdef.INVALID_PARAMS
 	}
 	var err error
-	info.GroupId, err = im.Im.CreateGroup("AVChatRoom", "", info.Title, info.Describe, "",
-		"")
+	info.GroupId, err = im.Im.CreateGroup("AVChatRoom", "", fmt.Sprintf("%s %s", info.Title, info.Subhead),
+		info.Describe, "", "")
 	if err != nil {
 		log.Log.Errorf("contest_trace: create group fail, err:%s", err)
 		return errdef.ERROR

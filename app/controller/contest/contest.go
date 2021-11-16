@@ -139,6 +139,7 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 			FlvAddr: item.FlvAddr,
 			PlayTime: item.PlayTime,
 			Title: item.Title,
+			Subhead: item.Subhead,
 			HighLights: item.HighLights,
 			Describe: item.Describe,
 			Tags: item.Tags,
@@ -217,6 +218,7 @@ func (svc *ContestModule) GetLiveReplayInfo(id int64, live *mcontest.LiveInfo) {
 			CreateAt: svc.contest.VideoLiveReplay.CreateAt,
 			HistoryAddr: svc.video.AntiStealingLink(svc.contest.VideoLiveReplay.HistoryAddr),
 			Title: svc.contest.VideoLiveReplay.Title,
+			Subhead: svc.contest.VideoLiveReplay.Subhead,
 			PlayNum: svc.contest.VideoLiveReplay.PlayNum,
 		}
 

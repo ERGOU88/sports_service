@@ -19,6 +19,8 @@ type InformationResp struct {
 	Content     string `json:"content"`
 	Describe    string `json:"describe,omitempty"`
 	PubType     int    `json:"pub_type,omitempty"`      // 1. 发布至赛事模块 2. 发布至视频首页板块',
+	RelatedId   int64  `json:"related_id"`
+	Name        string `json:"name"`
 	//JumpUrl     string `json:"jump_url"`
 	CreateAt    int    `json:"create_at"`
 	UserId      string `json:"user_id"`

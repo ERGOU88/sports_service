@@ -11,5 +11,6 @@ func Router(engine *gin.Engine) {
 	{
 		information.GET("/list", InformationList)
 		information.DELETE("/delete", DeleteInformation)
+		information.GET("")
 	}
 }

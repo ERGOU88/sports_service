@@ -9,8 +9,10 @@ import (
 	"sports_service/server/global/backend/log"
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/mcollect"
+	"sports_service/server/models/mcontest"
 	"sports_service/server/models/minformation"
 	"sports_service/server/models/mlike"
+	"sports_service/server/models/msection"
 	"sports_service/server/models/muser"
 )
 
@@ -22,6 +24,8 @@ type InformationModule struct {
 	attention   *mattention.AttentionModel
 	like        *mlike.LikeModel
 	collect     *mcollect.CollectModel
+	section     *msection.SectionModel
+	contest     *mcontest.ContestModel
 }
 
 func New(c *gin.Context) InformationModule {
@@ -34,6 +38,8 @@ func New(c *gin.Context) InformationModule {
 		attention: mattention.NewAttentionModel(socket),
 		like: mlike.NewLikeModel(socket),
 		collect: mcollect.NewCollectModel(socket),
+		section: msection.NewSectionModel(socket),
+		contest: mcontest.NewContestModel(socket),
 		engine: socket,
 	}
 }
@@ -65,6 +71,21 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 			Describe: information.Describe,
 			PubType: information.PubType,
 			Status: information.Status,
+			RelatedId: information.RelatedId,
+		}
+
+		if info.PubType == 2 {
+			ok, err := svc.section.GetSectionById(fmt.Sprint(info.Id))
+			if ok && err == nil {
+				info.Name = svc.section.Section.Name
+			}
+		}
+
+		if info.PubType == 1 && info.RelatedId > 0 {
+			ok, err := svc.contest.GetLiveInfoByCondition(fmt.Sprintf("id=%d", info.RelatedId))
+			if ok && err == nil {
+				info.Name = fmt.Sprintf("%s %s", svc.contest.VideoLive.Title, svc.contest.VideoLive.Subhead)
+			}
 		}
 
 		if user := svc.user.FindUserByUserid(info.UserId); user != nil {
