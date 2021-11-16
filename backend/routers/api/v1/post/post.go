@@ -99,6 +99,18 @@ func DelTopic(c *gin.Context) {
 	reply.Response(http.StatusOK, svc.DelTopic(param))
 }
 
+func EditTopic(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mcommunity.AddTopic{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cpost.New(c)
+	reply.Response(http.StatusOK, svc.UpdateTopic(param))
+}
+
 func PostSetting(c *gin.Context) {
 	reply := errdef.New(c)
 	param := &mposting.SettingParam{}

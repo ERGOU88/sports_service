@@ -293,7 +293,7 @@ func (svc *PostModule) AddTopic(param *mcommunity.AddTopic) int {
 	svc.community.CommunityTopic.Cover = param.Cover
 	svc.community.CommunityTopic.CreateAt = int(time.Now().Unix())
 	svc.community.CommunityTopic.Sortorder = param.Sortorder
-	svc.community.CommunityTopic.TopicName = param.Name
+	svc.community.CommunityTopic.TopicName = param.TopicName
 	svc.community.CommunityTopic.Describe = param.Describe
 	svc.community.CommunityTopic.SectionId = 1
 	if _, err := svc.community.AddTopic(); err != nil {
@@ -304,9 +304,31 @@ func (svc *PostModule) AddTopic(param *mcommunity.AddTopic) int {
 	return errdef.SUCCESS
 }
 
+func (svc *PostModule) UpdateTopic(param *mcommunity.AddTopic) int {
+	mp := map[string]interface{}{
+		"status": param.Status,
+		"cover": param.Cover,
+		"update_at": time.Now().Unix(),
+		"sortorder": param.Sortorder,
+		"topic_name": param.TopicName,
+		"describe": param.Describe,
+		"section_id": param.SectionId,
+		"is_hot": param.IsHot,
+	}
+
+	if _, err := svc.community.UpdateTopicInfo(param.Id, mp); err != nil {
+		return errdef.ERROR
+	}
+
+	return errdef.SUCCESS
+}
+
 func (svc *PostModule) DelTopic(param *mcommunity.DelTopic) int {
-	svc.community.CommunityTopic.Status = 2
-	if _, err := svc.community.UpdateTopicStatus(param.Id); err != nil {
+	mp := map[string]interface{}{
+		"status": 2,
+		"update_at": int(time.Now().Unix()),
+	}
+	if _, err := svc.community.UpdateTopicInfo(param.Id, mp); err != nil {
 		log.Log.Errorf("post_trace: update topic status fail, err:%s", err)
 		return errdef.POST_DEL_TOPIC_FAIL
 	}
@@ -391,14 +413,15 @@ func (svc *PostModule) GetSectionList() (int, []*models.CommunitySection) {
 }
 
 // 话题列表
-func (svc *PostModule) GetTopicList() (int, []*models.CommunityTopic) {
-	list, err := svc.community.GetAllTopic()
+func (svc *PostModule) GetTopicList() (int, []*mcommunity.CommunityTopicInfo) {
+	list, err := svc.community.GetTopicListOrderByPostNum(0, 200)
 	if err != nil {
-		return errdef.ERROR, nil
+		log.Log.Errorf("community_trace: get topics fail, err:%s", err)
+		return errdef.ERROR, []*mcommunity.CommunityTopicInfo{}
 	}
 
-	if len(list) == 0 {
-		return errdef.SUCCESS, []*models.CommunityTopic{}
+	if list == nil {
+		return errdef.SUCCESS, []*mcommunity.CommunityTopicInfo{}
 	}
 
 	return errdef.SUCCESS, list

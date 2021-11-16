@@ -28,6 +28,8 @@ func Router(engine *gin.Engine) {
 		post.POST("/add/topic", AddTopic)
 		// 删除话题
 		post.POST("/del/topic", DelTopic)
+		// 编辑话题
+		post.POST("/edit/topic", EditTopic)
 		// 帖子设置 置顶/精华
 		post.POST("/setting", PostSetting)
 		// 申精列表
