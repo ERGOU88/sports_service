@@ -119,9 +119,9 @@ func (svc *PostModule) AudiPost(param *mposting.AudiPostParam) int {
 }
 
 // 管理后台获取帖子列表
-func (svc *PostModule) GetPostList(page, size int, status string) (int, []*mposting.PostDetailInfo) {
+func (svc *PostModule) GetPostList(page, size int, status, title string) (int, []*mposting.PostDetailInfo) {
 	offset := (page - 1) * size
-	list, err := svc.post.GetPostList(offset, size, status)
+	list, err := svc.post.GetPostList(offset, size, status, title)
 	if err != nil {
 		return errdef.ERROR, nil
 	}
@@ -239,13 +239,13 @@ func (svc *PostModule) GetPostList(page, size int, status string) (int, []*mpost
 	return errdef.SUCCESS, list
 }
 
-func (svc *PostModule) GetTotalCountByPost(status string) int64 {
+func (svc *PostModule) GetTotalCountByPost(status, title string) int64 {
 	condition := []int{1}
 	if status == "0" {
 		condition = []int{0, 2}
 	}
 
-	return svc.post.GetTotalCountByPost(condition)
+	return svc.post.GetTotalCountByPost(condition, title)
 }
 
 func (svc *PostModule) AddSection(param *mcommunity.AddSection) int {

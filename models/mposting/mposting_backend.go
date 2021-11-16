@@ -42,20 +42,24 @@ const (
 		" ORDER BY p.is_cream DESC, p.is_top DESC, p.id DESC LIMIT ?, ?"
 )
 // 获取帖子列表 [管理后台]
-func (m *PostingModel) GetPostList(offset, size int, status string) ([]*PostDetailInfo, error) {
+func (m *PostingModel) GetPostList(offset, size int, status, title string) ([]*PostDetailInfo, error) {
 	sql := "SELECT p.*, ps.fabulous_num, ps.browse_num, ps.share_num, ps.comment_num, ps.heat_num FROM " +
 		"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id "
 
 	// 取审核中/审核失败
 	if status == "0" {
-		sql += "WHERE status in(0, 2) "
+		sql += " WHERE p.status in(0, 2) "
 	} else {
-		sql += fmt.Sprintf("WHERE status=%s ", status)
+		sql += fmt.Sprintf(" WHERE p.status=%s ", status)
 	}
 
-	sql += " ORDER BY p.is_cream DESC, p.is_top DESC, p.id DESC LIMIT ?, ?"
+	if title != "" {
+		sql += " AND p.title Like '%" + title + "%' "
+	}
+
+	sql +=  fmt.Sprintf(" ORDER BY p.is_cream DESC, p.is_top DESC, p.id DESC LIMIT %d, %d", offset, size)
 	var list []*PostDetailInfo
-	if err := m.Engine.SQL(GET_POST_LIST, offset, size).Find(&list); err != nil {
+	if err := m.Engine.SQL(sql).Find(&list); err != nil {
 		return nil, err
 	}
 
@@ -67,8 +71,13 @@ func (m *PostingModel) UpdatePostInfo(id int64, cols string) (int64, error) {
 }
 
 // 获取帖子总数
-func (m *PostingModel) GetTotalCountByPost(condition []int) int64 {
-	count, err := m.Engine.In("status", condition).Count(&models.PostingInfo{})
+func (m *PostingModel) GetTotalCountByPost(condition []int, title string) int64 {
+	m.Engine.In("status", condition)
+	if title != "" {
+		m.Engine.Where("title like '%" + title + "%'")
+	}
+
+	count, err := m.Engine.Count(&models.PostingInfo{})
 	if err != nil {
 		return 0
 	}

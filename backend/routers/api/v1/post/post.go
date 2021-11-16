@@ -31,10 +31,11 @@ func PostList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	status := c.DefaultQuery("status", "1")
+	title := c.Query("title")
 	svc := cpost.New(c)
-	code, list := svc.GetPostList(page, size, status)
+	code, list := svc.GetPostList(page, size, status, title)
 	reply.Data["list"] = list
-	reply.Data["total"] = svc.GetTotalCountByPost(status)
+	reply.Data["total"] = svc.GetTotalCountByPost(status, title)
 	reply.Response(http.StatusOK, code)
 }
 
