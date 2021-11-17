@@ -54,6 +54,11 @@ func (m *InformationModel) GetInformationList(condition string, offset, size int
 	return list, nil
 }
 
+// 获取资讯总数
+func (m *InformationModel) GetTotalNum() (int64, error) {
+	return m.Engine.Where("status != 3").Count(&models.Information{})
+}
+
 func (m *InformationModel) AddInformation(information *models.Information) (int64, error) {
 	return m.Engine.InsertOne(information)
 }

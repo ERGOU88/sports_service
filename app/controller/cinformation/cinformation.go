@@ -50,7 +50,7 @@ func (svc *InformationModule) GetInformationList(userId, liveId string, page, si
 	offset := (page - 1) * size
 	condition := "status=1 AND pub_type=1 AND related_id=0"
 	if liveId != "" {
-		condition = "status=1 AND pub_type=1 AND related_id=1"
+		condition = fmt.Sprintf("status=1 AND pub_type=1 AND related_id=%s", liveId)
 	}
 
 	list, err := svc.information.GetInformationList(condition, offset, size)

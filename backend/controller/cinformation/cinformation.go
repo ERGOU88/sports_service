@@ -75,7 +75,7 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 		}
 
 		if info.PubType == 2 {
-			ok, err := svc.section.GetSectionById(fmt.Sprint(info.Id))
+			ok, err := svc.section.GetSectionById(fmt.Sprint(info.RelatedId))
 			if ok && err == nil {
 				info.Name = svc.section.Section.Name
 			}
@@ -109,6 +109,15 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 	}
 
 	return errdef.SUCCESS, resp
+}
+
+func (svc *InformationModule) GetTotalNumByInformation() int64 {
+	count, err := svc.information.GetTotalNum()
+	if err != nil {
+		log.Log.Errorf("information_trace: get total num fail, err:%s", err)
+	}
+
+	return count
 }
 
 func (svc *InformationModule) DeleteInformation(id string) int {
