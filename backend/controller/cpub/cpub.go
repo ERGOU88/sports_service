@@ -430,3 +430,17 @@ func (svc *PubModule) PubInformation(param *models.Information) int {
 
 	return errdef.SUCCESS
 }
+
+// 获取视频首页板块信息
+func (svc *PubModule) GetHomepageSectionInfo(sectionType string) (int, []*models.RecommendInfoSection) {
+	list, err := svc.section.GetRecommendSectionByType(sectionType)
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+	
+	if list == nil {
+		return errdef.SUCCESS, []*models.RecommendInfoSection{}
+	}
+	
+	return errdef.SUCCESS, list
+}

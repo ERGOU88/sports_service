@@ -314,6 +314,81 @@ type PublishStat struct {
 	List  map[string]int64   `json:"list"`
 }
 
+func (svc *StatModule) VideoResultInfo(days, pubType int, data []*mstat.Stat, maxDate string) map[int64]*PublishStat {
+	list := make(map[int64]*PublishStat)
+	max, err := time.Parse(consts.FORMAT_DATE, maxDate)
+	if err != nil {
+		return nil
+	}
+	
+	for i := 0; i <= days; i++ {
+		date := max.AddDate(0, 0, -i).Format("2006-01-02")
+		if len(data) > 0 {
+			for _, v := range data {
+				if v.Dt == date {
+					vs, ok := list[v.Id]
+					if ok {
+						vs.List[date] = v.Count
+					} else {
+						list[v.Id] = &PublishStat{
+							Title: v.Name,
+							List:  make(map[string]int64),
+						}
+						
+						list[v.Id].List[date] = v.Count
+					}
+				}
+				
+			}
+		} else {
+			sections, err := svc.community.GetAllSection()
+			if err != nil {
+				log.Log.Errorf("stat_trace: get all section fail, err:%s", err)
+				break
+			}
+			
+			for _, v := range sections {
+				vs, ok := list[int64(v.Id)]
+				if ok {
+					vs.List[date] = 0
+				} else {
+					list[int64(v.Id)] = &PublishStat{
+						Title: v.SectionName,
+						List:  make(map[string]int64),
+					}
+					
+					list[int64(v.Id)].List[date] = 0
+				}
+			}
+		}
+		
+	}
+	
+	list[1000] = &PublishStat{
+		Title: "总数",
+		List:  make(map[string]int64),
+	}
+	//mp := make(map[string]int64, days-1)
+	
+	for k, v := range list {
+		for i := 0; i <= days; i++ {
+			date := max.AddDate(0, 0, -i).Format("2006-01-02")
+			if _, ok := v.List[date]; !ok {
+				list[k].List[date] = 0
+			}
+			
+			if pubType == 1 {
+				list[1000].List[date] = svc.stat.GetDailyPublishVideoByDate(date)
+			} else {
+				list[1000].List[date] = svc.stat.GetDailyPublishPostByDate(date)
+			}
+			
+		}
+	}
+	
+	return list
+}
+
 // pubType 1 视频 2 帖子
 func (svc *StatModule) ResultInfo(days, pubType int, data []*mstat.Stat, maxDate string) map[int64]*PublishStat {
 	list := make(map[int64]*PublishStat)
@@ -370,6 +445,7 @@ func (svc *StatModule) ResultInfo(days, pubType int, data []*mstat.Stat, maxDate
 		List:  make(map[string]int64),
 	}
 	//mp := make(map[string]int64, days-1)
+	
 	for k, v := range list {
 		for i := 0; i <= days; i++ {
 			date := max.AddDate(0, 0, -i).Format("2006-01-02")

@@ -86,3 +86,12 @@ func PubInformation(c *gin.Context) {
 	svc := cpub.New(c)
 	reply.Response(http.StatusOK, svc.PubInformation(param))
 }
+
+func SectionInfo(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cpub.New(c)
+	sectionType := c.DefaultQuery("section_type", "0")
+	code, list := svc.GetHomepageSectionInfo(sectionType)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
