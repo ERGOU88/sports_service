@@ -419,7 +419,7 @@ func (svc *PubModule) PubInformation(param *models.Information) int {
 		return errdef.ERROR
 	}
 
-	svc.information.Statistic.NewsId = param.Id
+	svc.information.Statistic.NewsId = svc.information.Information.Id
 	svc.information.Statistic.CreateAt = now
 	svc.information.Statistic.UpdateAt = now
 	// 初始化资讯统计数据
