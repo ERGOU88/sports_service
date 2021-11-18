@@ -244,7 +244,9 @@ func (svc *UserModule) AddOfficialUser(param *models.User) int {
 	param.CreateAt = now
 	param.UpdateAt = now
 	param.Avatar = consts.DEFAULT_AVATAR
+	svc.user.User = param
 	if err := svc.user.AddUser(); err != nil {
+		log.Log.Errorf("user_trace: add user fail, err:%s", err)
 		return errdef.ERROR
 	}
 
