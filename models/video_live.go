@@ -25,4 +25,5 @@ type VideoLive struct {
 	ScheduleId    int    `json:"schedule_id" xorm:"not null default 0 comment('赛程id') INT(11)"`
 	StartTime     int    `json:"start_time" xorm:"not null default 0 comment('真实开播时间') INT(11)"`
 	PushStreamKey string `json:"push_stream_key" xorm:"not null default '' comment('推流密钥') VARCHAR(255)"`
+	Subhead       string `json:"subhead" xorm:"not null default '' comment('副标题') VARCHAR(255)"`
 }

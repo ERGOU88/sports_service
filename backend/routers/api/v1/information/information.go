@@ -14,6 +14,7 @@ func InformationList(c *gin.Context) {
 	svc := cinformation.New(c)
 	code, list := svc.GetInformationList(page, size)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetTotalNumByInformation()
 	reply.Response(http.StatusOK, code)
 }
 

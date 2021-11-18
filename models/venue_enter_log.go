@@ -16,6 +16,7 @@ type VenueEnterLog struct {
 	UnitPrice     int    `json:"unit_price" xorm:"default 0 INT(10)"`
 	UnitDuration  int    `json:"unit_duration" xorm:"default 0 INT(255)"`
 	HasSettle     int    `json:"has_settle" xorm:"default 0 comment('是否结算0未结算 1自动结算 2人工结算') TINYINT(4)"`
+	Status        int    `json:"status" xorm:"not null default 0 comment('状态，0可用，1不可用') INT(4)"`
 	CreateAt      int    `json:"create_at" xorm:"default 0 comment('创建时间') index(user_id_2) INT(11)"`
 	UpdateAt      int    `json:"update_at" xorm:"default 0 comment('更新时间') INT(11)"`
 }

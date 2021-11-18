@@ -418,7 +418,7 @@ func (svc *PubModule) PubInformation(param *models.Information) int {
 	if _, err := svc.information.AddInformation(param); err != nil {
 		return errdef.ERROR
 	}
-
+	
 	svc.information.Statistic.NewsId = param.Id
 	svc.information.Statistic.CreateAt = now
 	svc.information.Statistic.UpdateAt = now
@@ -429,4 +429,18 @@ func (svc *PubModule) PubInformation(param *models.Information) int {
 	}
 
 	return errdef.SUCCESS
+}
+
+// 获取视频首页板块信息
+func (svc *PubModule) GetHomepageSectionInfo(sectionType string) (int, []*models.RecommendInfoSection) {
+	list, err := svc.section.GetRecommendSectionByType(sectionType)
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+	
+	if list == nil {
+		return errdef.SUCCESS, []*models.RecommendInfoSection{}
+	}
+	
+	return errdef.SUCCESS, list
 }

@@ -59,6 +59,7 @@ type LiveInfo struct {
 	HlsAddr        string `json:"hls_addr"`
 	PlayTime       int    `json:"play_time"`
 	Title          string `json:"title"`
+	Subhead        string `json:"subhead"`
 	HighLights     string `json:"high_lights"`
 	Describe       string `json:"describe"`
 	Tags           string `json:"tags"`
@@ -78,6 +79,7 @@ type LiveReplayInfo struct {
 	LiveId      int64  `json:"live_id"`
 	HistoryAddr string `json:"history_addr"`
 	Title       string `json:"title"`
+	Subhead     string `json:"subhead"`
 	PlayNum     int64  `json:"play_num"`
 	Duration    int    `json:"duration"`
 	Size        int64  `json:"size"`

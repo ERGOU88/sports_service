@@ -20,6 +20,11 @@ type CommunityTopicInfo struct {
 	Cover     string `json:"cover,omitempty"`
 	Describe  string `json:"describe,omitempty"`
 	PostNum   int64  `json:"post_num"`      // 帖子数量
+	Sortorder int    `json:"sortorder"`
+	Status    int    `json:"status"`
+	CreateAt  int    `json:"create_at"`
+	UpdateAt  int    `json:"update_at"`
+	SectionId int    `json:"section_id"`
 }
 
 // 社区板块信息

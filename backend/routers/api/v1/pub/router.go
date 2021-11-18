@@ -14,5 +14,7 @@ func Router(engine *gin.Engine) {
 		pub.GET("/upload/sign", UploadSign)
 		// 发布资讯
 		pub.POST("/information", PubInformation)
+		// 首页板块
+		pub.GET("/section", SectionInfo)
 	}
 }

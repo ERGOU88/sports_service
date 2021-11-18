@@ -280,6 +280,16 @@ type VideoInfoBySubarea struct {
 	IsAttention   int                   `json:"is_attention"`                         // 是否关注
 }
 
+// 批量编辑
+type BatchEditVideos struct {
+	EditType   int32       `json:"edit_type" binding:"required"` // 1 编辑视频标题 2 编辑视频描述 3 编辑视频分区 4 视频标签
+	Ids        []int64     `json:"ids" binding:"required"`       // 视频id
+	Title      string      `json:"title"`
+	Describe   string      `json:"describe"`
+	SubareaId  int         `json:"subarea_id"`
+	LabelIds   []int64     `json:"label_ids"`
+}
+
 // 实栗
 func NewVideoModel(engine *xorm.Session) *VideoModel {
 	return &VideoModel{
@@ -641,7 +651,11 @@ func (m *VideoModel) GetRecommendVideoList(index string, offset, size int) []*Re
 }
 
 // 获取视频总数（已审核通过的）
-func (m *VideoModel) GetVideoTotalCount() int64 {
+func (m *VideoModel) GetVideoTotalCount(keyword string) int64 {
+	if keyword != "" {
+		m.Engine.Where("title like ?", "%" + keyword + "%")
+	}
+
 	count, err := m.Engine.Where("status=1").Count(&models.Videos{})
 	if err != nil {
 		return 0
@@ -652,7 +666,7 @@ func (m *VideoModel) GetVideoTotalCount() int64 {
 
 // 获取视频总数（未审核/未通过审核）
 func (m *VideoModel) GetVideoReviewTotalCount() int64 {
-	count, err := m.Engine.Where("status = 0 or status = 2").Count(&models.Videos{})
+	count, err := m.Engine.In("status", []int{0,2}).Count(&models.Videos{})
 	if err != nil {
 		return 0
 	}
@@ -714,7 +728,12 @@ func (m *VideoModel) SearchVideos(name, sortCondition string, minDuration, maxDu
 		sql += fmt.Sprintf("AND v.create_at >= %d ", publishTime)
 	}
 
-	sql += fmt.Sprintf("GROUP BY v.video_id ORDER BY s.%s DESC, v.is_top DESC, v.is_recommend DESC, v.sortorder DESC, v.video_id DESC LIMIT ?, ?", sortCondition)
+	sql += "GROUP BY v.video_id ORDER BY "
+	if sortCondition != "" {
+		sql += fmt.Sprintf("s.%s DESC,", sortCondition)
+	}
+
+	sql += " v.is_top DESC, v.is_recommend DESC, v.sortorder DESC, v.video_id DESC LIMIT ?, ?"
 
 	var list []*VideoDetailInfo
 	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
@@ -786,7 +805,7 @@ func (m *VideoModel) UpdateStatusByHotSearch(id int) error {
 // 获取审核中/审核失败 的视频列表
 func (m *VideoModel) GetVideoReviewList(offset, size int) []*models.Videos {
 	var list []*models.Videos
-	if err := m.Engine.Where("status=0 OR status=2").Desc("video_id").Limit(size, offset).Find(&list); err != nil {
+	if err := m.Engine.In("status", []int{0, 2}).Desc("video_id").Limit(size, offset).Find(&list); err != nil {
 		return nil
 	}
 
@@ -1021,4 +1040,9 @@ func (m *VideoModel) GetVideoListByAlbum(userId string, album int64) ([]*InfoByV
 	}
 
 	return list, nil
+}
+
+// 批量编辑视频
+func (m *VideoModel) BatchEditVideos(ids []int64) (int64, error) {
+	return m.Engine.In("video_id", ids).Update(m.Videos)
 }

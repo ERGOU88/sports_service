@@ -20,15 +20,23 @@ func Router(engine *gin.Engine) {
 		post.POST("/add/section", AddSection)
 		// 删除板块
 		post.POST("/del/section", DelSection)
+		// 编辑板块
+		post.POST("/edit/section", EditSection)
 		// 帖子话题列表
 		post.GET("/topic/list", TopicList)
 		// 添加话题
 		post.POST("/add/topic", AddTopic)
 		// 删除话题
 		post.POST("/del/topic", DelTopic)
+		// 编辑话题
+		post.POST("/edit/topic", EditTopic)
 		// 帖子设置 置顶/精华
 		post.POST("/setting", PostSetting)
 		// 申精列表
 		post.GET("/apply/cream", ApplyCreamList)
+		// 批量修改帖子信息
+		post.POST("/batch/edit", BatchEditPostInfo)
+		// 删除帖子
+		post.DELETE("/del", DelPost)
 	}
 }

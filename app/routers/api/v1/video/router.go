@@ -62,6 +62,5 @@ func Router(engine *gin.Engine) {
 		video.GET("/homepage/section/info", HomePageSectionInfo)
 		// 首页板块推荐的内容
 		video.GET("/homepage/section/recommend", SectionRecommendInfo)
-
 	}
 }

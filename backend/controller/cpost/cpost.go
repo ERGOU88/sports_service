@@ -63,7 +63,7 @@ func (svc *PostModule) AudiPost(param *mposting.AudiPostParam) int {
 		return errdef.POST_ALREADY_PASS
 	}
 
-	// 通过 / 不通过 / 执行删除操作 且 视频状态为审核通过 则只能逻辑删除/不通过 直接更新视频状态
+	// 通过 / 不通过 / 执行删除操作 且 状态为审核通过 则只能逻辑删除/不通过 直接更新状态
 	if fmt.Sprint(param.Status) == consts.POST_AUDIT_SUCCESS || fmt.Sprint(param.Status) == consts.POST_AUDIT_FAILURE ||
 		(fmt.Sprint(param.Status) == consts.POST_DELETE_STATUS && status == consts.POST_AUDIT_SUCCESS) {
 		post.Status = param.Status
@@ -92,7 +92,7 @@ func (svc *PostModule) AudiPost(param *mposting.AudiPostParam) int {
 		return errdef.SUCCESS
 	}
 
-	// 如果执行删除操作 且 视频状态未审核通过 删除相关所有数据
+	// 如果执行删除操作 且 状态未审核通过 删除相关所有数据
 	if fmt.Sprint(param.Status) == consts.VIDEO_DELETE_STATUS && status != consts.VIDEO_AUDIT_SUCCESS {
 		// 物理删除发布的帖子、帖子所属话题、帖子统计数据
 		if err := svc.post.DelPublishPostById(param.Id); err != nil {
@@ -119,9 +119,9 @@ func (svc *PostModule) AudiPost(param *mposting.AudiPostParam) int {
 }
 
 // 管理后台获取帖子列表
-func (svc *PostModule) GetPostList(page, size int) (int, []*mposting.PostDetailInfo) {
+func (svc *PostModule) GetPostList(page, size int, status, title string) (int, []*mposting.PostDetailInfo) {
 	offset := (page - 1) * size
-	list, err := svc.post.GetPostList(offset, size)
+	list, err := svc.post.GetPostList(offset, size, status, title)
 	if err != nil {
 		return errdef.ERROR, nil
 	}
@@ -222,11 +222,30 @@ func (svc *PostModule) GetPostList(page, size int) (int, []*mposting.PostDetailI
 			item.SectionName = sectionInfo.SectionName
 		}
 
+		item.Topics, err = svc.post.GetPostTopic(fmt.Sprint(item.Id))
+		if item.Topics == nil || err != nil  {
+			item.Topics = []*models.PostingTopic{}
+		}
+
+		record, err := svc.post.GetApplyCreamRecord(fmt.Sprint(item.Id))
+		if record != nil && err == nil {
+			item.IsCream = 1
+		}
+
 		item.Content = ""
 
 	}
 
 	return errdef.SUCCESS, list
+}
+
+func (svc *PostModule) GetTotalCountByPost(status, title string) int64 {
+	condition := []int{1}
+	if status == "0" {
+		condition = []int{0, 2}
+	}
+
+	return svc.post.GetTotalCountByPost(condition, title)
 }
 
 func (svc *PostModule) AddSection(param *mcommunity.AddSection) int {
@@ -242,10 +261,26 @@ func (svc *PostModule) AddSection(param *mcommunity.AddSection) int {
 	return errdef.SUCCESS
 }
 
+func (svc *PostModule) EditSection(param *mcommunity.AddSection) int {
+	mp := map[string]interface{}{
+		"section_name": param.SectionName,
+		"sortorder": param.Sortorder,
+		"update_at": int(time.Now().Unix()),
+		"status": param.Status,
+	}
+	if _, err := svc.community.UpdateSectionInfo(param.Id, mp); err != nil {
+		log.Log.Errorf("post_trace: add section fail, err:%s", err)
+		return errdef.POST_ADD_SECTION_FAIL
+	}
+
+	return errdef.SUCCESS
+}
+
 // 软删除 将板块隐藏
 func (svc *PostModule) DelSection(param *mcommunity.DelSection) int {
-	svc.community.CommunitySection.Status = 2
-	if _, err := svc.community.UpdateSectionStatus(param.Id); err != nil {
+	//svc.community.CommunitySection.Status = 2
+	mp := map[string]interface{}{"status":2}
+	if _, err := svc.community.UpdateSectionInfo(param.Id, mp); err != nil {
 		log.Log.Errorf("post_trace: del section fail, err:%s", err)
 		return errdef.POST_DEL_SECTION_FAIL
 	}
@@ -258,7 +293,7 @@ func (svc *PostModule) AddTopic(param *mcommunity.AddTopic) int {
 	svc.community.CommunityTopic.Cover = param.Cover
 	svc.community.CommunityTopic.CreateAt = int(time.Now().Unix())
 	svc.community.CommunityTopic.Sortorder = param.Sortorder
-	svc.community.CommunityTopic.TopicName = param.Name
+	svc.community.CommunityTopic.TopicName = param.TopicName
 	svc.community.CommunityTopic.Describe = param.Describe
 	svc.community.CommunityTopic.SectionId = 1
 	if _, err := svc.community.AddTopic(); err != nil {
@@ -269,9 +304,31 @@ func (svc *PostModule) AddTopic(param *mcommunity.AddTopic) int {
 	return errdef.SUCCESS
 }
 
+func (svc *PostModule) UpdateTopic(param *mcommunity.AddTopic) int {
+	mp := map[string]interface{}{
+		"status": param.Status,
+		"cover": param.Cover,
+		"update_at": time.Now().Unix(),
+		"sortorder": param.Sortorder,
+		"topic_name": param.TopicName,
+		"describe": param.Describe,
+		"section_id": param.SectionId,
+		"is_hot": param.IsHot,
+	}
+
+	if _, err := svc.community.UpdateTopicInfo(param.Id, mp); err != nil {
+		return errdef.ERROR
+	}
+
+	return errdef.SUCCESS
+}
+
 func (svc *PostModule) DelTopic(param *mcommunity.DelTopic) int {
-	svc.community.CommunityTopic.Status = 2
-	if _, err := svc.community.UpdateTopicStatus(param.Id); err != nil {
+	mp := map[string]interface{}{
+		"status": 2,
+		"update_at": int(time.Now().Unix()),
+	}
+	if _, err := svc.community.UpdateTopicInfo(param.Id, mp); err != nil {
 		log.Log.Errorf("post_trace: update topic status fail, err:%s", err)
 		return errdef.POST_DEL_TOPIC_FAIL
 	}
@@ -332,6 +389,15 @@ func (svc *PostModule) GetApplyCreamList(page, size int) (int, []*mposting.PostD
 	return errdef.SUCCESS, list
 }
 
+func (svc *PostModule) GetApplyCreamCount() int64 {
+	count, err := svc.post.GetApplyCreamCount()
+	if err != nil {
+		log.Log.Errorf("post_trace: get apply cream count fail, err:%s", err)
+	}
+
+	return count
+}
+
 // 板块列表
 func (svc *PostModule) GetSectionList() (int, []*models.CommunitySection) {
 	list, err := svc.community.GetAllSection()
@@ -347,15 +413,98 @@ func (svc *PostModule) GetSectionList() (int, []*models.CommunitySection) {
 }
 
 // 话题列表
-func (svc *PostModule) GetTopicList() (int, []*models.CommunityTopic) {
-	list, err := svc.community.GetAllTopic()
+func (svc *PostModule) GetTopicList() (int, []*mcommunity.CommunityTopicInfo) {
+	list, err := svc.community.GetTopicListOrderByPostNum(0, 200)
 	if err != nil {
-		return errdef.ERROR, nil
+		log.Log.Errorf("community_trace: get topics fail, err:%s", err)
+		return errdef.ERROR, []*mcommunity.CommunityTopicInfo{}
 	}
 
-	if len(list) == 0 {
-		return errdef.SUCCESS, []*models.CommunityTopic{}
+	if list == nil {
+		return errdef.SUCCESS, []*mcommunity.CommunityTopicInfo{}
 	}
 
 	return errdef.SUCCESS, list
+}
+
+// 批量编辑
+func (svc *PostModule) BatchEditPostInfo(param *mposting.BatchEditParam) int {
+	if err := svc.engine.Begin(); err != nil {
+		return errdef.ERROR
+	}
+
+	switch param.EditType {
+	case 1:
+		svc.post.Posting.Title = param.Title
+		affected, err := svc.post.BatchEditPost(param.Ids)
+		if affected != int64(len(param.Ids)) || err != nil {
+			svc.engine.Rollback()
+			return errdef.ERROR
+		}
+
+	case 2:
+		svc.post.Posting.SectionId = param.SectionId
+		affected, err := svc.post.BatchEditPost(param.Ids)
+		if affected != int64(len(param.Ids)) || err != nil {
+			svc.engine.Rollback()
+			return errdef.ERROR
+		}
+
+	case 3:
+		if _, err := svc.post.BatchDelPostTopic(param.Ids); err != nil {
+			svc.engine.Rollback()
+			return errdef.ERROR
+		}
+
+		list := make([]*models.PostingTopic, len(param.Ids) * len(param.TopicIds))
+		i := 0
+		now := int(time.Now().Unix())
+		for _, postId := range param.Ids {
+			for _, topicId := range param.TopicIds {
+				topic, err := svc.community.GetTopicInfo(fmt.Sprint(topicId))
+				if topic == nil || err != nil {
+					log.Log.Errorf("post_trace: get post topic fail, topicId:%d", topicId)
+					svc.engine.Rollback()
+					return errdef.ERROR
+				}
+
+				list[i] = &models.PostingTopic{
+					PostingId: postId,
+					TopicId: int(topicId),
+					TopicName: topic.TopicName,
+					UpdateAt: now,
+				}
+
+				i++
+			}
+		}
+
+		affected, err := svc.post.AddPostingTopics(list)
+		if affected != int64(len(list)) || err != nil {
+			svc.engine.Rollback()
+			return errdef.ERROR
+		}
+	}
+
+	svc.engine.Commit()
+	return errdef.SUCCESS
+}
+
+func (svc *PostModule) DelPost(postId string) int {
+	if err := svc.post.DelPost(postId); err != nil {
+		return errdef.ERROR
+	}
+
+	post, err := svc.post.GetPostById(postId)
+	if post == nil || err != nil {
+		return errdef.ERROR
+	}
+
+	svc.post.Posting.Status = 3
+	if _, err := svc.post.UpdatePostInfo(post.Id, "status"); err != nil {
+		log.Log.Errorf("post_trace: update post info fail, postId:%s, err:%s", postId, err)
+		return errdef.ERROR
+	}
+
+	return errdef.SUCCESS
 }

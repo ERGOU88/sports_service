@@ -151,12 +151,22 @@ func (svc *VideoModule) EditVideoStatus(param *mvideo.EditVideoStatusParam) int 
 }
 
 // 获取视频列表
-func (svc *VideoModule) GetVideoList(page, size int) []*mvideo.VideoDetailInfo {
+func (svc *VideoModule) GetVideoList(keyword string, page, size int) []*mvideo.VideoDetailInfo {
   offset := (page - 1) * size
-  list := svc.video.GetVideoList(offset, size)
-  if len(list) == 0 {
-    return []*mvideo.VideoDetailInfo{}
+  var list []*mvideo.VideoDetailInfo
+  if keyword !=  "" {
+    list = svc.video.SearchVideos(keyword, "", 0, 0, 0, offset, size)
+    if len(list) == 0 {
+      return []*mvideo.VideoDetailInfo{}
+    }
+
+  } else {
+    list = svc.video.GetVideoList(offset, size)
+    if len(list) == 0 {
+      return []*mvideo.VideoDetailInfo{}
+    }
   }
+
   for _, video := range list {
     video.Labels = svc.video.GetVideoLabels(fmt.Sprint(video.VideoId))
     video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
@@ -175,8 +185,8 @@ func (svc *VideoModule) GetVideoList(page, size int) []*mvideo.VideoDetailInfo {
 }
 
 // 获取已审核通过的视频总数
-func (svc *VideoModule) GetVideoTotalCount() int64 {
-  return svc.video.GetVideoTotalCount()
+func (svc *VideoModule) GetVideoTotalCount(keyword string) int64 {
+  return svc.video.GetVideoTotalCount(keyword)
 }
 
 // 获取未审核/审核失败的视频总数
@@ -262,6 +272,23 @@ func (svc *VideoModule) GetVideoLabelList() []*mlabel.VideoLabel {
   return svc.label.GetVideoLabelList()
 }
 
+// 编辑视频标签
+func (svc *VideoModule) EditVideoLabel(param *mlabel.AddVideoLabelParam) int {
+  now := time.Now().Unix()
+  svc.label.VideoLabels.UpdateAt = int(now)
+  svc.label.VideoLabels.Icon = param.Icon
+  svc.label.VideoLabels.Sortorder = param.Sortorder
+  svc.label.VideoLabels.Status = param.Status
+  svc.label.VideoLabels.LabelId = param.LabelId
+  if err := svc.label.UpdateVideoLabel(); err != nil {
+    return errdef.VIDEO_INVALID_LABEL_NAME
+  }
+
+  svc.label.CleanLabelInfoByMem()
+
+  return errdef.SUCCESS
+}
+
 // 添加视频标签
 func (svc *VideoModule) AddVideoLabel(param *mlabel.AddVideoLabelParam) int {
   client := tencentCloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.TMS_API_DOMAIN)
@@ -294,6 +321,7 @@ func (svc *VideoModule) AddVideoLabel(param *mlabel.AddVideoLabelParam) int {
   return errdef.SUCCESS
 }
 
+
 // 删除视频标签
 func (svc *VideoModule) DelVideoLabel(labelId string) int {
   if info := svc.label.GetLabelInfoByMem(labelId); info == nil {
@@ -315,7 +343,26 @@ func (svc *VideoModule) AddVideoSubareaConf(param *mvideo.AddSubarea) int {
   svc.video.Subarea.SubareaName = param.Name
   svc.video.Subarea.Sortorder = param.SortOrder
   svc.video.Subarea.CreateAt = int(time.Now().Unix())
+  svc.video.Subarea.SysId = param.SysId
+  svc.video.Subarea.SysUser = param.SysUser
   if _, err := svc.video.AddSubArea(); err != nil {
+    log.Log.Errorf("video_trace: add subarea fail, err:%s", err)
+    return errdef.VIDEO_ADD_SUBAREA_FAIL
+  }
+
+  return errdef.SUCCESS
+}
+
+// 修改视频分区
+func (svc *VideoModule) EditVideoSubareaConf(param *mvideo.AddSubarea) int {
+  svc.video.Subarea.Sortorder = param.SortOrder
+  svc.video.Subarea.UpdateAt = int(time.Now().Unix())
+  svc.video.Subarea.SysId = param.SysId
+  svc.video.Subarea.SysUser = param.SysUser
+  svc.video.Subarea.Id = param.Id
+  log.Log.Infof("param.Id:%d", param.Id)
+  svc.video.Subarea.Status = param.Status
+  if _, err := svc.video.UpdateSubArea(); err != nil {
     log.Log.Errorf("video_trace: add subarea fail, err:%s", err)
     return errdef.VIDEO_ADD_SUBAREA_FAIL
   }
@@ -334,7 +381,7 @@ func (svc *VideoModule) DelVideoSubareaConf(id int) int {
 }
 
 func (svc *VideoModule) GetVideoSubareaList() (int, []*models.VideoSubarea) {
-  list, err := svc.video.GetSubAreaList()
+  list, err := svc.video.GetSubAreaList([]int{0, 1})
   if err != nil {
     log.Log.Errorf("video_trace: get video subarea fail, err:%s", err)
     return errdef.ERROR, []*models.VideoSubarea{}
@@ -345,4 +392,76 @@ func (svc *VideoModule) GetVideoSubareaList() (int, []*models.VideoSubarea) {
   }
 
   return errdef.SUCCESS, list
+}
+
+// 批量编辑视频信息
+func (svc *VideoModule) BatchEditVideos(param *mvideo.BatchEditVideos) int {
+  if err := svc.engine.Begin(); err != nil {
+    return errdef.ERROR
+  }
+
+  switch param.EditType {
+  case 1:
+    svc.video.Videos.Title = param.Title
+    affected, err := svc.video.BatchEditVideos(param.Ids)
+    if err != nil || affected != int64(len(param.Ids)) {
+      log.Log.Errorf("video_trace: batch del video labels fail, err:%s", err)
+      svc.engine.Rollback()
+      return errdef.ERROR
+    }
+
+  case 2:
+    svc.video.Videos.Describe = param.Describe
+    affected, err := svc.video.BatchEditVideos(param.Ids)
+    if err != nil || affected != int64(len(param.Ids)) {
+      svc.engine.Rollback()
+      return errdef.ERROR
+    }
+
+  case 3:
+    svc.video.Videos.Subarea = param.SubareaId
+    affected, err := svc.video.BatchEditVideos(param.Ids)
+    if err != nil || affected != int64(len(param.Ids)) {
+      svc.engine.Rollback()
+      return errdef.ERROR
+    }
+
+  case 4:
+    if _, err := svc.video.BatchDelVideoLabels(param.Ids); err != nil {
+      log.Log.Errorf("video_trace: batch del video labels fail, err:%s", err)
+      svc.engine.Rollback()
+      return errdef.ERROR
+    }
+
+    list := make([]*models.VideoLabels, len(param.Ids) * len(param.LabelIds))
+    i := 0
+    for _, videoId := range param.Ids {
+      for _, labelId := range param.LabelIds {
+        labelInfo := svc.label.GetVideoLabelInfoById(fmt.Sprint(labelId))
+        if labelInfo == nil {
+          log.Log.Errorf("video_trace: get video label fail, labelId:%d", labelId)
+          svc.engine.Rollback()
+          return errdef.ERROR
+        }
+
+        list[i] = &models.VideoLabels{
+          VideoId: videoId,
+          LabelId: fmt.Sprint(labelInfo.LabelId),
+          LabelName: labelInfo.LabelName,
+        }
+
+        i++
+      }
+    }
+
+    affected, err := svc.video.AddVideoLabels(list)
+    if affected != int64(len(list)) || err != nil {
+      log.Log.Errorf("video_trace: add video labels fail, err:%s", err)
+      svc.engine.Rollback()
+      return errdef.ERROR
+    }
+  }
+
+  svc.engine.Commit()
+  return errdef.SUCCESS
 }

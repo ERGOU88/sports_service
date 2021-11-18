@@ -94,7 +94,7 @@ func init() {
 	// redis
 	setupRedis()
 	// 性能监控
-	setupPprof()
+	//setupPprof()
 	// snow id
 	setupSnowId()
 	// 设置运行模式

@@ -48,6 +48,28 @@ func New(c *gin.Context) StatModule {
 
 // 管理后台首页统计数据
 func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, mstat.HomePageInfo) {
+	days := 11
+	minDate := time.Now().AddDate(0, 0, -days).Format(consts.FORMAT_DATE)
+	maxDate := time.Now().Format(consts. FORMAT_DATE)
+	if queryMinDate != "" && queryMaxDate != "" {
+		minDate = queryMinDate
+		maxDate = queryMaxDate
+		min, err := time.Parse(consts.FORMAT_DATE, queryMinDate)
+		if err != nil {
+			log.Log.Errorf("stat_trace: time.Parse fail, err:%s", err)
+			return errdef.ERROR, mstat.HomePageInfo{}
+		}
+
+		max, err := time.Parse(consts.FORMAT_DATE, queryMaxDate)
+		if err != nil {
+			log.Log.Errorf("stat_trace: time.Parse fail, err:%s", err)
+			return errdef.ERROR, mstat.HomePageInfo{}
+		}
+
+		days = util.GetDiffDays(max, min)
+		log.Log.Infof("##########days:%d", days)
+	}
+
 	today := time.Now().Format(consts. FORMAT_DATE)
 	// 日活
 	dau, err := svc.stat.GetDAUByDate(today)
@@ -83,6 +105,12 @@ func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, 
 		return errdef.ERROR, mstat.HomePageInfo{}
 	}
 
+	dailyLoyaltyUsers, err := svc.stat.GetLoyaltyUsers(today)
+	if err != nil {
+		log.Log.Errorf("stat_trace: get loyalty users fail, err:%s", err)
+		return errdef.ERROR, mstat.HomePageInfo{}
+	}
+
 	homepageInfo := mstat.HomePageInfo{
 		TopInfo: make(map[string]interface{}, 0),
 	}
@@ -91,40 +119,58 @@ func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, 
 	homepageInfo.TopInfo["mau"] = mau.Count
 	homepageInfo.TopInfo["new_users"] = newUsers.Count
 	homepageInfo.TopInfo["total_order"] = totalOrder
+	homepageInfo.TopInfo["daily_loyalty_users"] = dailyLoyaltyUsers
 
-	dauList, err := svc.stat.GetDAUByDays(100)
+	dauList, err := svc.stat.GetDAUByDays(minDate, maxDate)
 	if err != nil {
 		log.Log.Errorf("stat_trace: get dau by days fail, err:%s", err)
 		return errdef.ERROR, homepageInfo
 	}
 
-	homepageInfo.DauList =  svc.ResultInfoByDate(dauList, 100)
+	homepageInfo.DauList =  svc.ResultInfoByDate(dauList, days, maxDate)
 
-	newUserList, err := svc.stat.GetNetAdditionByDays(100)
+	newUserList, err := svc.stat.GetNetAdditionByDays(minDate, maxDate)
 	if err != nil {
 		log.Log.Errorf("stat_trace: get new users by days fail, err:%s", err)
 		return errdef.ERROR, homepageInfo
 	}
-	homepageInfo.NewUserList = svc.ResultInfoByDate(newUserList, 100)
+	homepageInfo.NewUserList = svc.ResultInfoByDate(newUserList, days, maxDate)
 
-	minDate := time.Now().AddDate(0, 0, -100).Format(consts.FORMAT_DATE)
 	// 次日留存率
-	homepageInfo.NextDayRetentionRate, err = svc.stat.GetUserRetentionRate("", minDate, today)
+	nextDayRetentionRate, err := svc.stat.GetUserRetentionRate("", minDate, today)
 	if err != nil {
 		log.Log.Errorf("stat_trace: get user retentionRate fail, err:%s", err)
 		return errdef.ERROR, homepageInfo
 	}
 
-	minDate = time.Now().AddDate(0, 0, -100).Format(consts.FORMAT_DATE)
-	maxDate := today
-	if queryMinDate != "" && queryMaxDate != "" {
-		minDate = queryMinDate
-		maxDate = queryMaxDate
+	homepageInfo.NextDayRetentionRate = svc.RetentionResultInfo(nextDayRetentionRate, days, maxDate)
+	// 留存率详情
+	retentionRate, err := svc.stat.GetUserRetentionRate("1", minDate, maxDate)
+	homepageInfo.RetentionRate = svc.RetentionResultInfo(retentionRate, days, maxDate)
+	return errdef.SUCCESS, homepageInfo
+}
+
+// 留存率返回数据
+func (svc *StatModule) RetentionResultInfo(data []*mstat.RetentionRateInfo, days int, maxDate string) []*mstat.RetentionRateInfo {
+	max, err := time.Parse(consts.FORMAT_DATE, maxDate)
+	if err != nil {
+		return nil
 	}
 
-	// 留存率详情
-	homepageInfo.RetentionRate, err = svc.stat.GetUserRetentionRate("1", minDate, maxDate)
-	return errdef.SUCCESS, homepageInfo
+	if len(data) == 0 {
+		for i := days; i >= 0; i-- {
+			date := max.AddDate(0, 0, -i).Format("2006-01-02")
+
+			res := &mstat.RetentionRateInfo{
+				Dt:       date,
+				NewUsers: 0,
+			}
+
+			data = append(data, res)
+		}
+	}
+
+	return data
 }
 
 // 视频分区统计 [发布占比]
@@ -268,6 +314,81 @@ type PublishStat struct {
 	List  map[string]int64   `json:"list"`
 }
 
+func (svc *StatModule) VideoResultInfo(days, pubType int, data []*mstat.Stat, maxDate string) map[int64]*PublishStat {
+	list := make(map[int64]*PublishStat)
+	max, err := time.Parse(consts.FORMAT_DATE, maxDate)
+	if err != nil {
+		return nil
+	}
+	
+	for i := 0; i <= days; i++ {
+		date := max.AddDate(0, 0, -i).Format("2006-01-02")
+		if len(data) > 0 {
+			for _, v := range data {
+				if v.Dt == date {
+					vs, ok := list[v.Id]
+					if ok {
+						vs.List[date] = v.Count
+					} else {
+						list[v.Id] = &PublishStat{
+							Title: v.Name,
+							List:  make(map[string]int64),
+						}
+						
+						list[v.Id].List[date] = v.Count
+					}
+				}
+				
+			}
+		} else {
+			sections, err := svc.community.GetAllSection()
+			if err != nil {
+				log.Log.Errorf("stat_trace: get all section fail, err:%s", err)
+				break
+			}
+			
+			for _, v := range sections {
+				vs, ok := list[int64(v.Id)]
+				if ok {
+					vs.List[date] = 0
+				} else {
+					list[int64(v.Id)] = &PublishStat{
+						Title: v.SectionName,
+						List:  make(map[string]int64),
+					}
+					
+					list[int64(v.Id)].List[date] = 0
+				}
+			}
+		}
+		
+	}
+	
+	list[1000] = &PublishStat{
+		Title: "总数",
+		List:  make(map[string]int64),
+	}
+	//mp := make(map[string]int64, days-1)
+	
+	for k, v := range list {
+		for i := 0; i <= days; i++ {
+			date := max.AddDate(0, 0, -i).Format("2006-01-02")
+			if _, ok := v.List[date]; !ok {
+				list[k].List[date] = 0
+			}
+			
+			if pubType == 1 {
+				list[1000].List[date] = svc.stat.GetDailyPublishVideoByDate(date)
+			} else {
+				list[1000].List[date] = svc.stat.GetDailyPublishPostByDate(date)
+			}
+			
+		}
+	}
+	
+	return list
+}
+
 // pubType 1 视频 2 帖子
 func (svc *StatModule) ResultInfo(days, pubType int, data []*mstat.Stat, maxDate string) map[int64]*PublishStat {
 	list := make(map[int64]*PublishStat)
@@ -278,22 +399,45 @@ func (svc *StatModule) ResultInfo(days, pubType int, data []*mstat.Stat, maxDate
 
 	for i := 0; i <= days; i++ {
 		date := max.AddDate(0, 0, -i).Format("2006-01-02")
-		for _, v := range data {
-			if v.Dt == date {
-				vs, ok := list[v.Id]
+		if len(data) > 0 {
+			for _, v := range data {
+				if v.Dt == date {
+					vs, ok := list[v.Id]
+					if ok {
+						vs.List[date] = v.Count
+					} else {
+						list[v.Id] = &PublishStat{
+							Title: v.Name,
+							List:  make(map[string]int64),
+						}
+
+						list[v.Id].List[date] = v.Count
+					}
+				}
+
+			}
+		} else {
+			sections, err := svc.community.GetAllSection()
+			if err != nil {
+				log.Log.Errorf("stat_trace: get all section fail, err:%s", err)
+				break
+			}
+
+			for _, v := range sections {
+				vs, ok := list[int64(v.Id)]
 				if ok {
-					vs.List[date] = v.Count
+					vs.List[date] = 0
 				} else {
-					list[v.Id] = &PublishStat{
-						Title: v.Name,
+					list[int64(v.Id)] = &PublishStat{
+						Title: v.SectionName,
 						List:  make(map[string]int64),
 					}
 
-					list[v.Id].List[date] = v.Count
+					list[int64(v.Id)].List[date] = 0
 				}
 			}
-
 		}
+
 	}
 
 	list[1000] = &PublishStat{
@@ -301,6 +445,7 @@ func (svc *StatModule) ResultInfo(days, pubType int, data []*mstat.Stat, maxDate
 		List:  make(map[string]int64),
 	}
 	//mp := make(map[string]int64, days-1)
+	
 	for k, v := range list {
 		for i := 0; i <= days; i++ {
 			date := max.AddDate(0, 0, -i).Format("2006-01-02")
@@ -334,7 +479,7 @@ func (svc *StatModule) DailyTotalPost(queryMinDate, queryMaxDate string) (int, m
 		return errdef.ERROR, nil
 	}
 
-	return errdef.SUCCESS, svc.ResultInfoByDate(stat, 10)
+	return errdef.SUCCESS, svc.ResultInfoByDate(stat, 10, maxDate)
 }
 
 // 每日视频发布总数
@@ -351,13 +496,18 @@ func (svc *StatModule) DailyTotalVideo(queryMinDate, queryMaxDate string) (int, 
 		return errdef.ERROR, nil
 	}
 
-	return errdef.SUCCESS, svc.ResultInfoByDate(stat, 10)
+	return errdef.SUCCESS, svc.ResultInfoByDate(stat, 10, maxDate)
 }
 
-func (svc *StatModule) ResultInfoByDate(data []*mstat.Stat, days int) map[string]interface{} {
+func (svc *StatModule) ResultInfoByDate(data []*mstat.Stat, days int, maxDate string) map[string]interface{} {
 	mapList := make(map[string]interface{})
+	max, err := time.Parse(consts.FORMAT_DATE, maxDate)
+	if err != nil {
+		return nil
+	}
+
 	for i := 0; i <= days; i++ {
-		date := time.Now().AddDate(0, 0, -i).Format("2006-01-02")
+		date := max.AddDate(0, 0, -i).Format("2006-01-02")
 		for _, v := range data {
 			if v.Dt == date {
 				mapList[date] = v.Count

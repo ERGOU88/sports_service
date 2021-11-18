@@ -25,13 +25,20 @@ func Router(engine *gin.Engine) {
 		video.GET("/label/list", VideoLabelList)
 		// 添加视频标签
 		video.POST("/add/label", AddVideoLabel)
+		// 编辑视频标签
+		video.POST("/edit/label", EditVideoLabel)
 		// 删除视频标签
 		video.POST("/del/label", DelVideoLabel)
 		// 添加分区配置
 		video.POST("/add/subarea/conf", AddVideoSubareaConf)
+		// 编辑分区配置
+		video.POST("/edit/subarea/conf", EditVideoSubareaConf)
 		// 删除分区配置
 		video.POST("/del/subarea/conf", DelVideoSubareaConf)
 		// 获取视频分区列表
 		video.GET("/subarea/list", VideoSubareaList)
+		// 批量编辑视频信息
+		video.POST("/batch/edit", BatchEditVideoInfo)
+
 	}
 }

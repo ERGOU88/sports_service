@@ -1220,7 +1220,7 @@ func (svc *VideoModule) RecordPlayDuration(params *mvideo.PlayDurationParams) in
 
 // 获取视频分区配置
 func (svc *VideoModule) GetVideoSubarea() (int, []*models.VideoSubarea) {
-	list, err := svc.video.GetSubAreaList()
+	list, err := svc.video.GetSubAreaList([]int{0})
 	if err != nil {
 		log.Log.Errorf("video_trace: get video subarea fail, err:%s", err)
 		return errdef.VIDEO_SUBAREA_FAIL, []*models.VideoSubarea{}

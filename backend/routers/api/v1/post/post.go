@@ -30,9 +30,12 @@ func AuditPost(c *gin.Context) {
 func PostList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	status := c.DefaultQuery("status", "1")
+	title := c.Query("title")
 	svc := cpost.New(c)
-	code, list := svc.GetPostList(page, size)
+	code, list := svc.GetPostList(page, size, status, title)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetTotalCountByPost(status, title)
 	reply.Response(http.StatusOK, code)
 }
 
@@ -60,6 +63,18 @@ func DelSection(c *gin.Context) {
 	reply.Response(http.StatusOK, svc.DelSection(param))
 }
 
+func EditSection(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mcommunity.AddSection{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cpost.New(c)
+	reply.Response(http.StatusOK, svc.EditSection(param))
+}
+
 func AddTopic(c *gin.Context) {
 	reply := errdef.New(c)
 	param := &mcommunity.AddTopic{}
@@ -84,6 +99,18 @@ func DelTopic(c *gin.Context) {
 	reply.Response(http.StatusOK, svc.DelTopic(param))
 }
 
+func EditTopic(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mcommunity.AddTopic{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cpost.New(c)
+	reply.Response(http.StatusOK, svc.UpdateTopic(param))
+}
+
 func PostSetting(c *gin.Context) {
 	reply := errdef.New(c)
 	param := &mposting.SettingParam{}
@@ -102,6 +129,7 @@ func ApplyCreamList(c *gin.Context) {
 	svc := cpost.New(c)
 	code, list := svc.GetApplyCreamList(page, size)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetApplyCreamCount()
 	reply.Response(http.StatusOK, code)
 }
 
@@ -119,4 +147,23 @@ func TopicList(c *gin.Context) {
 	code, list := svc.GetTopicList()
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
+}
+
+func BatchEditPostInfo(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mposting.BatchEditParam{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cpost.New(c)
+	reply.Response(http.StatusOK, svc.BatchEditPostInfo(param))
+}
+
+func DelPost(c *gin.Context) {
+	reply := errdef.New(c)
+	postId := c.Query("id")
+	svc := cpost.New(c)
+	reply.Response(http.StatusOK, svc.DelPost(postId))
 }

@@ -666,9 +666,11 @@ func SectionRecommendInfo(c *gin.Context) {
 	svc := cvideo.New(c)
 	userId := c.Query("user_id")
 	sectionId := c.Query("section_id")
-	page, size := util.PageInfo(c.Query("page"), c.Query("type"))
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 
 	code, list := svc.GetRecommendInfoBySection(userId, sectionId, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
+
+

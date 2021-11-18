@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"sports_service/server/backend/controller/cvideo"
 	"sports_service/server/global/backend/errdef"
+	"sports_service/server/global/consts"
+	"sports_service/server/middleware/jwt"
 	"sports_service/server/models/mlabel"
 	"sports_service/server/models/mvideo"
 	"sports_service/server/util"
@@ -28,10 +30,11 @@ func EditVideoStatus(c *gin.Context) {
 func VideoList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	keyword := c.Query("keyword")
 
 	svc := cvideo.New(c)
-	list := svc.GetVideoList(page, size)
-	total := svc.GetVideoTotalCount()
+	list := svc.GetVideoList(keyword, page, size)
+	total := svc.GetVideoTotalCount(keyword)
 	reply.Data["list"] = list
 	reply.Data["total"] = total
 	reply.Response(http.StatusOK, errdef.SUCCESS)
@@ -101,6 +104,19 @@ func AddVideoLabel(c *gin.Context) {
 	reply.Response(http.StatusOK, syscode)
 }
 
+func EditVideoLabel(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mlabel.AddVideoLabelParam{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cvideo.New(c)
+	syscode := svc.EditVideoLabel(param)
+	reply.Response(http.StatusOK, syscode)
+}
+
 // 删除视频标签
 func DelVideoLabel(c *gin.Context) {
 	reply := errdef.New(c)
@@ -119,13 +135,30 @@ func DelVideoLabel(c *gin.Context) {
 func AddVideoSubareaConf(c *gin.Context) {
 	reply := errdef.New(c)
 	param := new(mvideo.AddSubarea)
-	if err := c.Bind(param); err != nil {
+	if err := c.BindJSON(param); err != nil {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
 
+	param.SysId, _ = util.StringToInt(jwt.GetUserInfo(c, consts.IDENTIFY))
+	param.SysUser = jwt.GetUserInfo(c, consts.USER_NAME)
 	svc := cvideo.New(c)
 	syscode := svc.AddVideoSubareaConf(param)
+	reply.Response(http.StatusOK, syscode)
+}
+
+func EditVideoSubareaConf(c *gin.Context) {
+	reply := errdef.New(c)
+	param := new(mvideo.AddSubarea)
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	param.SysId, _ = util.StringToInt(jwt.GetUserInfo(c, consts.IDENTIFY))
+	param.SysUser = jwt.GetUserInfo(c, consts.USER_NAME)
+	svc := cvideo.New(c)
+	syscode := svc.EditVideoSubareaConf(param)
 	reply.Response(http.StatusOK, syscode)
 }
 
@@ -148,4 +181,16 @@ func VideoSubareaList(c *gin.Context) {
 	code, list := svc.GetVideoSubareaList()
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
+}
+
+func BatchEditVideoInfo(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mvideo.BatchEditVideos{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cvideo.New(c)
+	reply.Response(http.StatusOK, svc.BatchEditVideos(param))
 }

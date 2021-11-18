@@ -97,6 +97,7 @@ func (svc *LiveModule) TranscribeStreamCallback(param *mcontest.StreamCallbackIn
 	svc.contest.VideoLiveReplay.TaskId = param.TaskID
 	svc.contest.VideoLiveReplay.HistoryAddr = param.VideoURL
 	svc.contest.VideoLiveReplay.Title = svc.contest.VideoLive.Title
+	svc.contest.VideoLiveReplay.Subhead = svc.contest.VideoLive.Subhead
 	svc.contest.VideoLiveReplay.Describe = svc.contest.VideoLive.Describe
 	svc.contest.VideoLiveReplay.LiveId = svc.contest.VideoLive.Id
 	svc.contest.VideoLiveReplay.FileId = param.FileID
