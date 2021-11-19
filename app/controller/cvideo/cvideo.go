@@ -316,7 +316,7 @@ func (svc *VideoModule) UserBrowseVideosRecord(userId string, page, size int) []
 
 		// 获取用户信息
 		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
-			video.Avatar = user.Avatar
+			video.Avatar = cloud.BucketURI(user.Avatar)
 			video.Nickname = user.NickName
 			// 是否关注
 			attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)
@@ -575,7 +575,7 @@ func (svc *VideoModule) GetRecommendVideos(userId, index string, page, size int)
 			continue
 		}
 
-		video.Avatar = userInfo.Avatar
+		video.Avatar = cloud.BucketURI(userInfo.Avatar)
 		video.Nickname = userInfo.NickName
 
 		// 获取统计标签

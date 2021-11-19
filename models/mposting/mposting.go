@@ -104,14 +104,14 @@ type PostDetailInfo struct {
 	ShareNum      int                    `json:"share_num" example:"10"`                // 分享数
 	BrowseNum     int                    `json:"browse_num" example:"10"`               // 浏览数
 	UserId        string                 `json:"user_id" example:"发布视频的用户id"`      // 发布者用户id
-	Avatar        string                 `json:"avatar" example:"头像"`                 // 头像
+	Avatar        tencentCloud.BucketURI                 `json:"avatar" example:"头像"`                 // 头像
 	Nickname      string                 `json:"nick_name"  example:"昵称"`             // 昵称
 	IsAttention   int                    `json:"is_attention" example:"1"`             // 是否关注 1 关注 0 未关注
 	IsLike        int                    `json:"is_like" example:"1"`                  // 是否点赞
 	Topics        []*models.PostingTopic `json:"topics,omitempty"`                     // 所属话题
 	ForwardVideo  *mshare.ShareVideoInfo `json:"forward_video,omitempty"`              // 转发的视频内容 todo: 结构体
 	ForwardPost   *mshare.SharePostInfo  `json:"forward_post,omitempty"`               // 转发的帖子内容
-	ImagesAddr    []string               `json:"images_addr,omitempty"`                // 图片地址
+	ImagesAddr    []tencentCloud.BucketURI               `json:"images_addr,omitempty"`                // 图片地址
 	ContentType   int                    `json:"content_type"`                         // 0 社区发布 1 转发视频 2 转发帖子
 	PostingType   int                    `json:"posting_type"`                         // 帖子类型  0 纯文本 1 图文 2 视频 + 文字
 	HeatNum       int                    `json:"heat_num"`                             // 热度

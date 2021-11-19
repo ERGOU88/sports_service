@@ -230,7 +230,7 @@ func (svc *CommunityModule) GetPostDetailByList(userId string, list []*mposting.
 
 		user := svc.user.FindUserByUserid(item.UserId)
 		if user != nil {
-			item.Avatar = user.Avatar
+			item.Avatar = tencentCloud.BucketURI(user.Avatar)
 			item.Nickname = user.NickName
 		}
 

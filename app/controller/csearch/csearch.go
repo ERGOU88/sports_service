@@ -14,6 +14,7 @@ import (
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"time"
 	"fmt"
@@ -507,7 +508,7 @@ func (svc *SearchModule) PostSearch(userId, name string, page, size int) []*mpos
 		}
 
 		if user := svc.user.FindUserByUserid(item.UserId); user != nil {
-			item.Avatar = user.Avatar
+			item.Avatar = tencentCloud.BucketURI(user.Avatar)
 			item.Nickname = user.NickName
 		}
 

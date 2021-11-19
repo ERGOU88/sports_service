@@ -18,6 +18,7 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	redismq "sports_service/server/redismq/event"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"strings"
 	"time"
@@ -242,7 +243,7 @@ func (svc *LikeModule) GetUserLikeVideos(userId string, page, size int) []*mvide
 		resp.UserId = video.UserId
 		// 获取用户信息
 		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
-			resp.Avatar = user.Avatar
+			resp.Avatar = tencentCloud.BucketURI(user.Avatar)
 			resp.Nickname = user.NickName
 			// 是否关注
 			attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId)

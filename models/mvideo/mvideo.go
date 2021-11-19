@@ -8,6 +8,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/global/rdskey"
 	"sports_service/server/models"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"strings"
 	"time"
@@ -62,7 +63,7 @@ type VideosInfoResp struct {
 	VideoHeight   int64  `json:"video_height" example:"1000"`        // 视频高
 	CreateAt      int    `json:"create_at" example:"1600000000"`     // 视频创建时间
 	UserId        string `json:"user_id" example:"用户id"`            // 发布视频的用户id
-	Avatar        string `json:"avatar" example:"头像"`                // 头像
+	Avatar        tencentCloud.BucketURI `json:"avatar" example:"头像"`                // 头像
 	Nickname      string `json:"nick_name" example:"昵称"`             // 昵称
 	IsAttention   int    `json:"is_attention" example:"1"`            // 是否关注 1 关注 2 未关注
 	OpTime        int    `json:"op_time" example:"1600000000"`        // 用户收藏/点赞/浏览等的操作时间
@@ -113,7 +114,7 @@ type RecommendVideoInfo struct {
 	StatisticsTab string                `json:"statistics_tab"`                        // 统计标签 1个点赞  2分 1个收藏  5分 1个弹幕  10分  1个评论  10分  四项中，哪个分数最高，显示哪个
 	BrowseNum     int                   `json:"browse_num" example:"10"`              // 浏览数（播放数）
 	UserId        string                `json:"user_id" example:"发布视频的用户id"`      // 发布视频的用户id
-	Avatar        string                `json:"avatar" example:"头像"`                 // 头像
+	Avatar        tencentCloud.BucketURI   `json:"avatar" example:"头像"`                 // 头像
 	Nickname      string                `json:"nick_name"  example:"昵称"`             // 昵称
 	IsCollect     int                   `json:"is_collect" example:"1"`               // 是否收藏
 	IsLike        int                   `json:"is_like" example:"1"`                  // 是否点赞
