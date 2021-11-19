@@ -3,6 +3,7 @@ package minformation
 import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/models"
+	"sports_service/server/tools/tencentCloud"
 )
 
 type InformationModel struct {
@@ -14,7 +15,7 @@ type InformationModel struct {
 
 type InformationResp struct {
 	Id          int64  `json:"id"`
-	Cover       string `json:"cover"`
+	Cover       tencentCloud.BucketURI `json:"cover"`
 	Title       string `json:"title"`
 	Content     string `json:"content"`
 	Describe    string `json:"describe,omitempty"`
@@ -24,7 +25,7 @@ type InformationResp struct {
 	//JumpUrl     string `json:"jump_url"`
 	CreateAt    int    `json:"create_at"`
 	UserId      string `json:"user_id"`
-	Avatar      string `json:"avatar"`
+	Avatar      tencentCloud.BucketURI `json:"avatar"`
 	NickName    string `json:"nick_name"`
 	CommentNum  int    `json:"comment_num"`
 	FabulousNum int    `json:"fabulous_num"`
