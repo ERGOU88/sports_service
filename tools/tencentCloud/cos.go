@@ -118,8 +118,8 @@ func (tc *TencentCloud) RecognitionImage(baseUrl, path string) (*cos.ImageRecogn
 }
 
 const (
-	CDN_SECRET = "xGRrbbgxIIyOuV6vqJBwCyLe7X15rt"
-	CDN_HOST   = "https://fpv-cos.bluetrans.cn"
+	CDN_SECRET = "DjL77HnpevmDlNrR2ACvjn60N1"
+	CDN_HOST   = "https://resource-1253904687.file.myqcloud.com"
 )
 func (tc *TencentCloud) GenCdnUrl(baseUrl string) (string, error) {
 	u, err := url.Parse(baseUrl)
