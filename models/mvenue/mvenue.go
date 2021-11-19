@@ -3,6 +3,7 @@ package mvenue
 import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/models"
+	"sports_service/server/tools/tencentCloud"
 )
 
 type VenueModel struct {
@@ -36,8 +37,8 @@ type VenueProduct struct {
 	HasDiscount       int32  `json:"has_discount"`         // 是否打折 0 未打折 1 打折
 	VenueId           int64  `json:"venue_id"`             // 场馆id
 	Sales             int64  `json:"sales"`                // 销量
-	Icon              string `json:"icon"`                 // 商品icon
-	Image             string `json:"image"`                // 商品图片
+	Icon              tencentCloud.BucketURI `json:"icon"`                 // 商品icon
+	Image             tencentCloud.BucketURI `json:"image"`                // 商品图片
 	Describe          string `json:"describe"`             // 商品介绍
 	Title             string `json:"title"`                // 商品简介
 	Instructions      string `json:"instructions"`         // 购买须知

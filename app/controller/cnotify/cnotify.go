@@ -19,6 +19,7 @@ import (
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"strconv"
 	"strings"
@@ -292,7 +293,7 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 			info.UserList = append(info.UserList, &mlike.LikedUserInfo{
 				UserId: user.UserId,
 				NickName: user.NickName,
-				Avatar: user.Avatar,
+				Avatar: tencentCloud.BucketURI(user.Avatar),
 				OpTm:  liked.CreateAt,
 			})
 		}
@@ -374,7 +375,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 
 					vlikeMap[video.VideoId] = append(vlikeMap[video.VideoId], &mlike.LikedUserInfo{
 						UserId: user.UserId,
-						Avatar: user.Avatar,
+						Avatar: tencentCloud.BucketURI(user.Avatar),
 						NickName: user.NickName,
 						OpTm: liked.CreateAt,
 					})
@@ -393,7 +394,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 				if user := svc.user.FindUserByUserid(liked.UserId); user != nil {
 					clikeMap[comment.Id] = append(clikeMap[comment.Id], &mlike.LikedUserInfo{
 						UserId: user.UserId,
-						Avatar: user.Avatar,
+						Avatar: tencentCloud.BucketURI(user.Avatar),
 						NickName: user.NickName,
 						OpTm: liked.CreateAt,
 					})
@@ -659,7 +660,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				// 执行@的用户信息
 				if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
 					info.UserId = user.UserId
-					info.Avatar = user.Avatar
+					info.Avatar = tencentCloud.BucketURI(user.Avatar)
 					info.Nickname = user.NickName
 				}
 
@@ -700,7 +701,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			// 执行@的用户信息
 			if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
 				info.UserId = user.UserId
-				info.Avatar = user.Avatar
+				info.Avatar = tencentCloud.BucketURI(user.Avatar)
 				info.Nickname = user.NickName
 			}
 
@@ -720,7 +721,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
 					// 执行@的用户信息
 					info.UserId = user.UserId
-					info.Avatar = user.Avatar
+					info.Avatar = tencentCloud.BucketURI(user.Avatar)
 					info.Nickname = user.NickName
 				}
 
@@ -821,7 +822,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
 					// 执行@的用户信息
 					info.UserId = user.UserId
-					info.Avatar = user.Avatar
+					info.Avatar = tencentCloud.BucketURI(user.Avatar)
 					info.Nickname = user.NickName
 				}
 
@@ -921,7 +922,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
 					// 执行@的用户信息
 					info.UserId = user.UserId
-					info.Avatar = user.Avatar
+					info.Avatar = tencentCloud.BucketURI(user.Avatar)
 					info.Nickname = user.NickName
 				}
 
@@ -1023,7 +1024,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 				if user := svc.user.FindUserByUserid(receiveAt.UserId); user != nil {
 					// 执行@的用户信息
 					info.UserId = user.UserId
-					info.Avatar = user.Avatar
+					info.Avatar = tencentCloud.BucketURI(user.Avatar)
 					info.Nickname = user.NickName
 				}
 

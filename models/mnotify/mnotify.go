@@ -5,6 +5,7 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/rdskey"
 	"sports_service/server/models"
+	"sports_service/server/tools/tencentCloud"
 	"time"
 	"fmt"
 )
@@ -41,7 +42,7 @@ type ReceiveAtInfo struct {
 	BarrageNum    int                   `json:"barrage_num,omitempty" example:"1000"`           // 弹幕数
 	BrowseNum     int                   `json:"browse_num,omitempty" example:"1000"`            // 浏览数（播放数）
 	UserId        string                `json:"user_id,omitempty" example:"执行@的用户id"`        // 执行@的用户id
-	Avatar        string                `json:"avatar,omitempty" example:"执行@的用户头像"`        // 执行@的用户头像
+	Avatar        tencentCloud.BucketURI                `json:"avatar,omitempty" example:"执行@的用户头像"`        // 执行@的用户头像
 	Nickname      string                `json:"nick_name,omitempty" example:"执行@的用户昵称"`     // 执行@的用户昵称
 	ToUserId      string                `json:"to_user_id,omitempty" example:"被@的用户id"`       // 被@的用户id
 	ToUserAvatar  string                `json:"to_user_avatar,omitempty" example:"被@的用户头像"`  // 被@用户头像

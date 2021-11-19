@@ -4,6 +4,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/global/app/log"
 	"sports_service/server/models"
+	"sports_service/server/tools/tencentCloud"
 	"time"
 )
 
@@ -113,13 +114,13 @@ func (m *AttentionModel) GetTotalFans(userId string) int64 {
 // 用户搜索联系人（关注/粉丝）
 type SearchContactRes struct {
 	UserId        string `json:"user_id" example:"2009011314521111"`
-	Avatar        string `json:"avatar" example:"头像地址"`
+	Avatar        tencentCloud.BucketURI `json:"avatar" example:"头像地址"`
 	NickName      string `json:"nick_name" example:"昵称 陈二狗"`
 	Gender        int32  `json:"gender" example:"0"`
 	Signature     string `json:"signature" example:"个性签名"`
 	Status        int32  `json:"status" example:"0"`
 	IsAnchor      int32  `json:"is_anchor" example:"0"`
-	BackgroundImg string `json:"background_img" example:"背景图"`
+	BackgroundImg tencentCloud.BucketURI `json:"background_img" example:"背景图"`
 	Born          string `json:"born" example:"出生日期"`
 	Age           int    `json:"age" example:"27"`
 	IsAttention   int32  `json:"is_attention"  example:"0"`

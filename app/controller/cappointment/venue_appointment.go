@@ -12,6 +12,7 @@ import (
 	"sports_service/server/models/mappointment"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"time"
 )
@@ -113,7 +114,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
-	svc.Extra.ProductImg = svc.venue.Venue.PromotionPic
+	svc.Extra.ProductImg = tencentCloud.BucketURI(svc.venue.Venue.PromotionPic)
 
 	if err := svc.AppointmentProcess(user.UserId, orderId, params.RelatedId, params.WeekNum, params.LabelIds, params.Infos); err != nil {
 		log.Log.Errorf("venue_trace: appointment fail, err:%s", err)
@@ -280,7 +281,7 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 					user := svc.user.FindUserByUserid(val.UserId)
 					if user != nil {
 						seatInfo.NickName = user.NickName
-						seatInfo.Avatar = user.Avatar
+						seatInfo.Avatar = tencentCloud.BucketURI(user.Avatar)
 					}
 
 					info.ReservedUsers = append(info.ReservedUsers, seatInfo)

@@ -15,6 +15,7 @@ import (
 	"sports_service/server/models/morder"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"time"
 )
@@ -62,7 +63,7 @@ func (svc *CoachModule) GetCoachList(page, size int) (int, []*mcoach.CoachInfo) 
 	for index, item := range list {
 		info := &mcoach.CoachInfo{
 			Id:   item.Id,
-			Cover: item.Cover,
+			Cover: tencentCloud.BucketURI(item.Cover),
 			Name: item.Name,
 			Designation: item.Designation,
 		}
@@ -87,8 +88,8 @@ func (svc *CoachModule) GetCoachDetail(coachId string) (int, *mcoach.CoachDetail
 		Designation: svc.coach.Coach.Designation,
 		Describe: svc.coach.Coach.Describe,
 		AreasOfExpertise: svc.coach.Coach.AreasOfExpertise,
-		Cover: svc.coach.Coach.Cover,
-		Avatar: svc.coach.Coach.Avatar,
+		Cover: tencentCloud.BucketURI(svc.coach.Coach.Cover),
+		Avatar: tencentCloud.BucketURI(svc.coach.Coach.Avatar),
 	}
 
 	ok, err = svc.venue.GetVenueInfoById(fmt.Sprint(svc.course.Course.VenueId))

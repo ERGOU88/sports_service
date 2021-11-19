@@ -199,7 +199,7 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 			up := svc.user.FindUserByUserid(video.UserId)
 			if up != nil {
 				shareInfo.Nickname = up.NickName
-				shareInfo.Avatar = up.Avatar
+				shareInfo.Avatar = cloud.BucketURI(up.Avatar)
 			}
 
 			statistic := svc.video.GetVideoStatistic(fmt.Sprint(video.VideoId))
@@ -252,7 +252,7 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 			up := svc.user.FindUserByUserid(post.UserId)
 			if up != nil {
 				shareInfo.Nickname = up.NickName
-				shareInfo.Avatar = up.Avatar
+				shareInfo.Avatar = cloud.BucketURI(up.Avatar)
 			}
 
 			statistic, err := svc.posting.GetPostStatistic(fmt.Sprint(post.Id))

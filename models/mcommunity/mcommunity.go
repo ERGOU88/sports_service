@@ -3,6 +3,7 @@ package mcommunity
 import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/models"
+	"sports_service/server/tools/tencentCloud"
 )
 
 // 社区模块
@@ -17,7 +18,7 @@ type CommunityTopicInfo struct {
 	Id        int    `json:"id"`
 	TopicName string `json:"topic_name"`
 	IsHot     int    `json:"is_hot"`
-	Cover     string `json:"cover,omitempty"`
+	Cover     tencentCloud.BucketURI `json:"cover,omitempty"`
 	Describe  string `json:"describe,omitempty"`
 	PostNum   int64  `json:"post_num"`      // 帖子数量
 	Sortorder int    `json:"sortorder"`

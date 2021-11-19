@@ -1,11 +1,12 @@
 package mposting
 
 import (
+	"fmt"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mshare"
-	"fmt"
+	"sports_service/server/tools/tencentCloud"
 )
 
 // 帖子模块
@@ -64,7 +65,7 @@ type ForwardVideoInfo struct {
 	CreateAt      int                   `json:"create_at" example:"1600000000"`        // 视频创建时间
 	BrowseNum     int                   `json:"browse_num" example:"10"`               // 浏览数（播放数）
 	UserId        string                `json:"user_id" example:"发布视频的用户id"`      // 发布视频的用户id
-	Avatar        string                `json:"avatar" example:"头像"`                 // 头像
+	Avatar        tencentCloud.BucketURI                `json:"avatar" example:"头像"`                 // 头像
 	Nickname      string                `json:"nick_name"  example:"昵称"`             // 昵称
 	Size          int                   `json:"size"`                                 // 视频总字节数
 	BarrageNum    int                   `json:"barrage_num" example:"1"`              // 弹幕数
@@ -130,7 +131,7 @@ type RelatedVideo struct {
 	VideoDuration int                   `json:"video_duration" example:"100000"`       // 视频时长
 	CreateAt      int                   `json:"create_at" example:"1600000000"`        // 视频创建时间
 	UserId        string                `json:"user_id" example:"发布视频的用户id"`      // 发布视频的用户id
-	Avatar        string                `json:"avatar" example:"头像"`                 // 头像
+	Avatar        tencentCloud.BucketURI                `json:"avatar" example:"头像"`                 // 头像
 	Nickname      string                `json:"nick_name"  example:"昵称"`             // 昵称
 	Size          int64                 `json:"size"`                                 // 视频总字节数
 	IsLike        int                   `json:"is_like"`                              // 是否点赞

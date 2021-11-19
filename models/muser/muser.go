@@ -9,7 +9,8 @@ import (
   "sports_service/server/global/consts"
   "sports_service/server/global/rdskey"
   "sports_service/server/models"
-  "sports_service/server/util"
+	"sports_service/server/tools/tencentCloud"
+	"sports_service/server/util"
   "strings"
   "time"
 )
@@ -22,7 +23,7 @@ type UserModel struct {
 type TencentImUser struct {
 	UserId      string    `json:"user_id"`
 	NickName    string    `json:"nick_name"`
-	Avatar      string    `json:"avatar"`
+	Avatar      tencentCloud.BucketURI    `json:"avatar"`
 	Sign        string    `json:"sign"`
 }
 
@@ -47,14 +48,14 @@ type UnForbidUserParam struct {
 type UserInfo struct {
 	Id            int64  `json:"id" example:"1000000000000"`
 	UserId        string `json:"user_id" example:"2009011314521111"`
-	Avatar        string `json:"avatar" example:"头像地址"`
+	Avatar        tencentCloud.BucketURI `json:"avatar" example:"头像地址"`
 	MobileNum     int64  `json:"mobile_num" example:"13177656222"`
 	NickName      string `json:"nick_name" example:"昵称 陈二狗"`
 	Gender        int32  `json:"gender" example:"0"`
 	Signature     string `json:"signature" example:"个性签名"`
 	Status        int32  `json:"status" example:"0"`
 	IsAnchor      int32  `json:"is_anchor" example:"0"`
-	BackgroundImg string `json:"background_img" example:"背景图"`
+	BackgroundImg tencentCloud.BucketURI `json:"background_img" example:"背景图"`
 	Born          string `json:"born" example:"出生日期"`
 	Age           int    `json:"age" example:"27"`
 	Country       int32  `json:"country" example:"0"`
@@ -81,7 +82,7 @@ type UserInfo struct {
 // 用户简单信息返回
 type UserInfoResp struct {
 	UserId        string `json:"user_id" example:"2009011314521111"`
-	Avatar        string `json:"avatar" example:"头像地址"`
+	Avatar        tencentCloud.BucketURI `json:"avatar" example:"头像地址"`
 	MobileNum     int64  `json:"mobile_num" example:"13177656222"`
 	NickName      string `json:"nick_name" example:"昵称 陈二狗"`
 	Gender        int32  `json:"gender" example:"0"`
@@ -111,13 +112,13 @@ type UserZoneInfoResp struct {
 // 用户搜索
 type UserSearchResults struct {
 	UserId        string `json:"user_id" example:"2009011314521111"`
-	Avatar        string `json:"avatar" example:"头像地址"`
+	Avatar        tencentCloud.BucketURI `json:"avatar" example:"头像地址"`
 	NickName      string `json:"nick_name" example:"昵称 陈二狗"`
 	Gender        int32  `json:"gender" example:"0"`
 	Signature     string `json:"signature" example:"个性签名"`
 	Status        int32  `json:"status" example:"0"`
 	IsAnchor      int32  `json:"is_anchor" example:"0"`
-	BackgroundImg string `json:"background_img" example:"背景图"`
+	BackgroundImg tencentCloud.BucketURI `json:"background_img" example:"背景图"`
 	Born          string `json:"born" example:"出生日期"`
 	Age           int    `json:"age" example:"27"`
 	IsAttention   int32  `json:"is_attention"  example:"1"`
@@ -154,7 +155,7 @@ type UserKabawInfo struct {
 	IsVip           bool   `json:"is_vip"`         // 是否会员
 	HasExpire       bool   `json:"has_expire"`     // 会员是否过期 true 过期
 	VenueName       string `json:"venue_name"`     // 场馆名称
-	VipImage        string `json:"vip_image"`      // 会员图片
+	VipImage        tencentCloud.BucketURI `json:"vip_image"`      // 会员图片
 }
 
 // 用户反馈请求参数

@@ -3,6 +3,7 @@ package mposting
 import (
 	"sports_service/server/models"
 	"fmt"
+	"sports_service/server/tools/tencentCloud"
 )
 
 type AudiPostParam struct {
@@ -33,7 +34,7 @@ type TopicInfo struct {
 	IsHot     int    `json:"is_hot"`
 	CreateAt  int    `json:"create_at"`
 	UpdateAt  int    `json:"update_at"`
-	Cover     string `json:"cover"`
+	Cover     tencentCloud.BucketURI `json:"cover"`
 	Describe  string `json:"describe"`
 	SectionId int    `json:"section_id"`
 	PostNum   int64  `json:"post_num"`

@@ -13,6 +13,7 @@ import (
 	"sports_service/server/models/morder"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"strconv"
 	"fmt"
@@ -154,13 +155,13 @@ func (svc *VenueModule) GetVenueProducts(venueId int64) ([]*mvenue.VenueProduct,
 	for index, val := range list {
 		info := &mvenue.VenueProduct{
 			Id:  val.Id,
-			Icon: val.Icon,
+			Icon: tencentCloud.BucketURI(val.Icon),
 			ProductName: val.ProductName,
 			ProductType: val.ProductType,
 			EffectiveDuration: val.EffectiveDuration,
 			Describe: val.Describe,
 			Instructions: val.Instructions,
-			Image: val.Image,
+			Image: tencentCloud.BucketURI(val.Image),
 			RealAmount: val.RealAmount,
 			CurAmount: val.CurAmount,
 			VenueId: val.VenueId,
@@ -250,7 +251,7 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 		VenueId:        param.VenueId,
 		OrderType:      svc.venue.Product.ProductType,
 		VenueName:      svc.venue.Venue.VenueName,
-		ProductImg:     svc.venue.Product.Image,
+		ProductImg:     tencentCloud.BucketURI(svc.venue.Product.Image),
 		OriginalAmount: svc.venue.Product.RealAmount * param.Count,
 	}
 

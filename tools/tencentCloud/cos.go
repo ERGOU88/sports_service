@@ -7,8 +7,10 @@ import (
 	sts "github.com/tencentyun/qcloud-cos-sts-sdk/go"
 	"net/http"
 	"net/url"
+	"sports_service/server/util"
 	"time"
 	"errors"
+	"fmt"
 )
 
 // 获取腾讯对象存储临时通行证
@@ -113,4 +115,19 @@ func (tc *TencentCloud) RecognitionImage(baseUrl, path string) (*cos.ImageRecogn
 	//}
 
 	return res, nil
+}
+
+const (
+	CDN_SECRET = "xGRrbbgxIIyOuV6vqJBwCyLe7X15rt"
+	CDN_HOST   = "https://fpv-cos.bluetrans.cn"
+)
+func (tc *TencentCloud) GenCdnUrl(baseUrl string) (string, error) {
+	u, err := url.Parse(baseUrl)
+	if err != nil {
+		return "", err
+	}
+	
+	now := time.Now().Unix()
+	sign := util.Md5String(fmt.Sprintf("%s%s%d", CDN_SECRET, u.Path, now))
+	return fmt.Sprintf("%s%s?sign=%s&t=%d", CDN_HOST, u.Path, sign, now), nil
 }

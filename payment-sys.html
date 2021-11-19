@@ -1,0 +1,1431 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>数据库结构—ha666</title>
+  <style type="text/css">
+        body
+        {
+            font-size: 9pt;
+        }
+        .styledb
+        {
+            font-size: 14px;
+        }
+        .styletab
+        {
+            font-size: 14px;
+             padding-top:15px;             
+        }
+    </style>
+ </head>
+ <body>
+  <div style="text-align: center">
+   <div class="styledb">
+    数据库名：payment-sys
+   </div>
+   <div class="styletab">
+    表名：merchant_info（商户信息表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">自增id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>mch_id</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商户id</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>app_id</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">应用id</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>app_secret</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">应用密钥</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>white_ips</td>
+           <td>varchar</td>
+           <td>256</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">Ip白名单</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">更新时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：merchant_order（商户订单表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">ID</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">平台用户id</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>mch_user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商户用户id</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>amount</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">金额 (分)</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>status</td>
+           <td>int</td>
+           <td>3</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">订单状态 1未支付 2已支付 3 退款中 4 已退款</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>trade_type</td>
+           <td>int</td>
+           <td>3</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">0 APP 1 H5 ...</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>trade_no</td>
+           <td>varchar</td>
+           <td>200</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">系统交易号</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>out_trade_no</td>
+           <td>varchar</td>
+           <td>200</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商户订单号</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>pay_type</td>
+           <td>int</td>
+           <td>3</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">支付方式 100 支付宝 200 微信</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>app_id</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">应用id</td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>mch_id</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">商户ID</td>
+          </tr>
+          <tr>
+           <td>12</td>
+           <td>mch_product_id</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商户商品标识</td>
+          </tr>
+          <tr>
+           <td>13</td>
+           <td>extra</td>
+           <td>text</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">业务扩展字段(透传)</td>
+          </tr>
+          <tr>
+           <td>14</td>
+           <td>refund_amount</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">实际退款金额（分）</td>
+          </tr>
+          <tr>
+           <td>15</td>
+           <td>refund_fee</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">退款手续费（分）</td>
+          </tr>
+          <tr>
+           <td>16</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>17</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">更新时间</td>
+          </tr>
+          <tr>
+           <td>18</td>
+           <td>remark</td>
+           <td>varchar</td>
+           <td>512</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">备注</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：merchant_refund_record（商户退款记录表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">自增ID</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>refund_amount</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">退款金额</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>refund_channel_id</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">退款的渠道id 关联payment_channel表</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>trade_no</td>
+           <td>varchar</td>
+           <td>200</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">系统订单号</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>out_trade_no</td>
+           <td>varchar</td>
+           <td>200</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商户订单号</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>refund_trade_no</td>
+           <td>varchar</td>
+           <td>150</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">退款交易号</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>app_id</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">应用id</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>mch_id</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">商户id</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">用户id</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>mch_user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商户用户id</td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>remark</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">备注</td>
+          </tr>
+          <tr>
+           <td>12</td>
+           <td>fee_rate</td>
+           <td>int</td>
+           <td>5</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">手续费比例 例如：1.55% 则 值为155 [乘以100存储]</td>
+          </tr>
+          <tr>
+           <td>13</td>
+           <td>minimum_charge</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">最低收取手续费金额 单位[分]</td>
+          </tr>
+          <tr>
+           <td>14</td>
+           <td>refund_fee</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">退款手续费</td>
+          </tr>
+          <tr>
+           <td>15</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">0 退款中 1 已退款</td>
+          </tr>
+          <tr>
+           <td>16</td>
+           <td>refund_time</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">退款时间</td>
+          </tr>
+          <tr>
+           <td>17</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>18</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">更新时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：payment_channel（第三方支付渠道配置）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">自增id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>name</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">名称</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>icon</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">icon</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">状态 0 可用，1禁用</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>sort</td>
+           <td>tinyint</td>
+           <td>4</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">排序</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>desc</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">说明</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>rate</td>
+           <td>int</td>
+           <td>5</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">费率</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>app_id</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">第三方支付应用id</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>app_key</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">第三方支付appkey</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>app_secret</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">第三方支付密钥</td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>public_key</td>
+           <td>text</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">公钥</td>
+          </tr>
+          <tr>
+           <td>12</td>
+           <td>private_key</td>
+           <td>text</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">私钥</td>
+          </tr>
+          <tr>
+           <td>13</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>14</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">更新时间</td>
+          </tr>
+          <tr>
+           <td>15</td>
+           <td>identifier</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">支付渠道标识</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：payment_notify（第三方支付回调信息）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">自增主键</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>notify_info</td>
+           <td>text</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">回调通知信息</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>transaction</td>
+           <td>varchar</td>
+           <td>200</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">第三方订单号</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>pay_channel_id</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">关联支付渠道表id</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>trade_no</td>
+           <td>varchar</td>
+           <td>200</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">系统订单号</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>out_trade_no</td>
+           <td>varchar</td>
+           <td>200</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商户订单号</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">更新时间</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>notify_type</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>1</td>
+           <td align="left">1 付款回调 2 退款回调</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：user_social_account（用户社交账号表[第三方登录]）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left"></td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">用户id</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>unionid</td>
+           <td>varchar</td>
+           <td>256</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">社交平台关联id</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>social_type</td>
+           <td>tinyint</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">区分社交软件 1 微信关联id 2 微博关联id 3 qq关联id</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td>0</td>
+           <td align="left">0 正常 1 封禁</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">更新时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：users（用户表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">主键id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">用户id</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>username</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">登录账号</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>mobile</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">手机号码</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>password</td>
+           <td>varchar</td>
+           <td>64</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">用户密码</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>nick_name</td>
+           <td>varchar</td>
+           <td>45</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">昵称</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>gender</td>
+           <td>tinyint</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">性别 0人妖 1男性 2女性</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>born</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">出生日期</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>avatar</td>
+           <td>varchar</td>
+           <td>300</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">头像</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">0 正常 1 封禁</td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>signature</td>
+           <td>varchar</td>
+           <td>200</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">签名</td>
+          </tr>
+          <tr>
+           <td>12</td>
+           <td>device_type</td>
+           <td>tinyint</td>
+           <td>4</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">设备类型 0 android 1 iOS 2 web</td>
+          </tr>
+          <tr>
+           <td>13</td>
+           <td>app_id</td>
+           <td>varchar</td>
+           <td>128</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">应用id</td>
+          </tr>
+          <tr>
+           <td>14</td>
+           <td>background_img</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">背景图</td>
+          </tr>
+          <tr>
+           <td>15</td>
+           <td>title</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">称号/特殊身份</td>
+          </tr>
+          <tr>
+           <td>16</td>
+           <td>user_type</td>
+           <td>tinyint</td>
+           <td>4</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">用户类型 1 手机号、2 手机一键验证、6第三方账号</td>
+          </tr>
+          <tr>
+           <td>17</td>
+           <td>country</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">国家</td>
+          </tr>
+          <tr>
+           <td>18</td>
+           <td>city</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">所在城市</td>
+          </tr>
+          <tr>
+           <td>19</td>
+           <td>level</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">用户等级</td>
+          </tr>
+          <tr>
+           <td>20</td>
+           <td>device_token</td>
+           <td>varchar</td>
+           <td>100</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">设备token</td>
+          </tr>
+          <tr>
+           <td>21</td>
+           <td>last_login_ip</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">最后登录IP</td>
+          </tr>
+          <tr>
+           <td>22</td>
+           <td>reg_ip</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">注册IP</td>
+          </tr>
+          <tr>
+           <td>23</td>
+           <td>last_login_time</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">最后登录时间</td>
+          </tr>
+          <tr>
+           <td>24</td>
+           <td>reg_time</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">注册时间</td>
+          </tr>
+          <tr>
+           <td>25</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">更新时间</td>
+          </tr>
+          <tr>
+           <td>26</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+  </div>
+ </body>
+</html>

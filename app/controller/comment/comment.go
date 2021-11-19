@@ -158,7 +158,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		composeId = video.VideoId
 
 		resp.Id = svc.comment.VideoComment.Id
-		resp.Avatar = user.Avatar
+		resp.Avatar = tencentCloud.BucketURI(user.Avatar)
 		resp.UserName = user.NickName
 		resp.VideoId = params.ComposeId
 		resp.CommentLevel = svc.comment.VideoComment.CommentLevel
@@ -216,7 +216,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		composeId = post.Id
 
 		resp.Id = svc.comment.PostComment.Id
-		resp.Avatar = user.Avatar
+		resp.Avatar = tencentCloud.BucketURI(user.Avatar)
 		resp.UserName = user.NickName
 		resp.PostId = params.ComposeId
 		resp.CommentLevel = svc.comment.PostComment.CommentLevel
@@ -265,7 +265,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		composeId = params.ComposeId
 
 		resp.Id = svc.comment.InformationComment.Id
-		resp.Avatar = user.Avatar
+		resp.Avatar = tencentCloud.BucketURI(user.Avatar)
 		resp.UserName = user.NickName
 		resp.NewsId = params.ComposeId
 		resp.CommentLevel = svc.comment.InformationComment.CommentLevel
@@ -577,7 +577,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		composeId = replyInfo.VideoId
 
 		resp.Id = svc.comment.VideoComment.Id
-		resp.Avatar = user.Avatar
+		resp.Avatar = tencentCloud.BucketURI(user.Avatar)
 		resp.UserName = user.NickName
 		resp.VideoId = params.ComposeId
 		resp.CommentLevel = svc.comment.VideoComment.CommentLevel
@@ -591,7 +591,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		resp.ReplyCommentId = replyInfo.Id
 
 		if uinfo := svc.user.FindUserByUserid(replyInfo.UserId); uinfo != nil {
-			resp.ReplyCommentAvatar = uinfo.Avatar
+			resp.ReplyCommentAvatar = tencentCloud.BucketURI(uinfo.Avatar)
 			resp.ReplyCommentUserName = uinfo.NickName
 		}
 
@@ -666,7 +666,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		composeId = replyInfo.PostId
 
 		resp.Id = svc.comment.PostComment.Id
-		resp.Avatar = user.Avatar
+		resp.Avatar = tencentCloud.BucketURI(user.Avatar)
 		resp.UserName = user.NickName
 		resp.VideoId = params.ComposeId
 		resp.CommentLevel = svc.comment.PostComment.CommentLevel
@@ -680,7 +680,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		resp.ReplyCommentId = replyInfo.Id
 
 		if uinfo := svc.user.FindUserByUserid(replyInfo.UserId); uinfo != nil {
-			resp.ReplyCommentAvatar = uinfo.Avatar
+			resp.ReplyCommentAvatar = tencentCloud.BucketURI(uinfo.Avatar)
 			resp.ReplyCommentUserName = uinfo.NickName
 		}
 
@@ -747,7 +747,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		composeId = replyInfo.NewsId
 
 		resp.Id = svc.comment.InformationComment.Id
-		resp.Avatar = user.Avatar
+		resp.Avatar = tencentCloud.BucketURI(user.Avatar)
 		resp.UserName = user.NickName
 		resp.NewsId = params.ComposeId
 		resp.CommentLevel = svc.comment.InformationComment.CommentLevel
@@ -761,7 +761,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		resp.ReplyCommentId = replyInfo.Id
 
 		if uinfo := svc.user.FindUserByUserid(replyInfo.UserId); uinfo != nil {
-			resp.ReplyCommentAvatar = uinfo.Avatar
+			resp.ReplyCommentAvatar = tencentCloud.BucketURI(uinfo.Avatar)
 			resp.ReplyCommentUserName = uinfo.NickName
 		}
 
@@ -960,7 +960,7 @@ func (svc *CommentModule) GetInformationCommentList(userId, composeId string, of
 		// todo: 用户信息需使用最新数据
 		user := svc.user.FindUserByUserid(comment.UserId)
 		if user != nil {
-			comment.Avatar = user.Avatar
+			comment.Avatar = tencentCloud.BucketURI(user.Avatar)
 			comment.UserName = user.NickName
 		}
 
@@ -975,7 +975,7 @@ func (svc *CommentModule) GetInformationCommentList(userId, composeId string, of
 			//userInfo[reply.UserId] = user
 			user = svc.user.FindUserByUserid(reply.UserId)
 			if user != nil {
-				reply.Avatar = user.Avatar
+				reply.Avatar = tencentCloud.BucketURI(user.Avatar)
 				reply.UserName = user.NickName
 			}
 
@@ -986,7 +986,7 @@ func (svc *CommentModule) GetInformationCommentList(userId, composeId string, of
 			// todo: 被回复的用户名、用户头像使用最新数据
 			user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
 			if user != nil {
-				reply.ReplyCommentAvatar = user.Avatar
+				reply.ReplyCommentAvatar = tencentCloud.BucketURI(user.Avatar)
 				reply.ReplyCommentUserName = user.NickName
 			}
 
@@ -1087,7 +1087,7 @@ func (svc *CommentModule) GetPostCommentList(userId, composeId string, offset, s
 		// todo: 用户信息需使用最新数据
 		user := svc.user.FindUserByUserid(comment.UserId)
 		if user != nil {
-			comment.Avatar = user.Avatar
+			comment.Avatar = tencentCloud.BucketURI(user.Avatar)
 			comment.UserName = user.NickName
 		}
 
@@ -1102,7 +1102,7 @@ func (svc *CommentModule) GetPostCommentList(userId, composeId string, offset, s
 			//userInfo[reply.UserId] = user
 			user = svc.user.FindUserByUserid(reply.UserId)
 			if user != nil {
-				reply.Avatar = user.Avatar
+				reply.Avatar = tencentCloud.BucketURI(user.Avatar)
 				reply.UserName = user.NickName
 			}
 
@@ -1113,7 +1113,7 @@ func (svc *CommentModule) GetPostCommentList(userId, composeId string, offset, s
 			// todo: 被回复的用户名、用户头像使用最新数据
 			user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
 			if user != nil {
-				reply.ReplyCommentAvatar = user.Avatar
+				reply.ReplyCommentAvatar = tencentCloud.BucketURI(user.Avatar)
 				reply.ReplyCommentUserName = user.NickName
 			}
 
@@ -1218,7 +1218,7 @@ func (svc *CommentModule) GetVideoCommentList(userId, composeId string, offset, 
 		// todo: 用户信息需使用最新数据
 		user := svc.user.FindUserByUserid(comment.UserId)
 		if user != nil {
-			comment.Avatar = user.Avatar
+			comment.Avatar = tencentCloud.BucketURI(user.Avatar)
 			comment.UserName = user.NickName
 		}
 
@@ -1233,7 +1233,7 @@ func (svc *CommentModule) GetVideoCommentList(userId, composeId string, offset, 
 			//userInfo[reply.UserId] = user
 			user = svc.user.FindUserByUserid(reply.UserId)
 			if user != nil {
-				reply.Avatar = user.Avatar
+				reply.Avatar = tencentCloud.BucketURI(user.Avatar)
 				reply.UserName = user.NickName
 			}
 
@@ -1250,7 +1250,7 @@ func (svc *CommentModule) GetVideoCommentList(userId, composeId string, offset, 
 			// todo: 被回复的用户名、用户头像使用最新数据
 			user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
 			if user != nil {
-				reply.ReplyCommentAvatar = user.Avatar
+				reply.ReplyCommentAvatar = tencentCloud.BucketURI(user.Avatar)
 				reply.ReplyCommentUserName = user.NickName
 			}
 
@@ -1371,7 +1371,7 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 		// todo: 评论用户的头像、昵称需使用最新的数据
 		user := svc.user.FindUserByUserid(item.UserId)
 		if user != nil {
-			item.Avatar = user.Avatar
+			item.Avatar = tencentCloud.BucketURI(user.Avatar)
 			item.UserName = user.NickName
 		}
 
@@ -1400,13 +1400,13 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 			user := svc.user.FindUserByUserid(reply.UserId)
 			if user != nil {
 				reply.UserName = user.NickName
-				reply.Avatar = user.Avatar
+				reply.Avatar = tencentCloud.BucketURI(user.Avatar)
 			}
 
 			// todo: 被回复的用户名、用户头像使用最新数据
 			user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
 			if user != nil {
-				reply.ReplyCommentAvatar = user.Avatar
+				reply.ReplyCommentAvatar = tencentCloud.BucketURI(user.Avatar)
 				reply.ReplyCommentUserName = user.NickName
 			}
 
@@ -1528,7 +1528,7 @@ func (svc *CommentModule) GetCommentReplyList(userId, composeId, commentId strin
 		user := svc.user.FindUserByUserid(reply.UserId)
 		if user != nil {
 			reply.UserName = user.NickName
-			reply.Avatar = user.Avatar
+			reply.Avatar = tencentCloud.BucketURI(user.Avatar)
 		}
 
 		if reply.Status == 0 {
@@ -1547,7 +1547,7 @@ func (svc *CommentModule) GetCommentReplyList(userId, composeId, commentId strin
 		// todo: 用户信息需使用最新数据
 		user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
 		if user != nil {
-			reply.ReplyCommentAvatar = user.Avatar
+			reply.ReplyCommentAvatar = tencentCloud.BucketURI(user.Avatar)
 			reply.ReplyCommentUserName = user.NickName
 		}
 
@@ -1602,7 +1602,7 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Co
 
 			user := svc.user.FindUserByUserid(comment.UserId)
 			if user != nil {
-				first.Avatar = user.Avatar
+				first.Avatar = tencentCloud.BucketURI(user.Avatar)
 				first.UserName = user.NickName
 				first.UserId = user.UserId
 				// 获取点赞的信息
@@ -1627,7 +1627,7 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Co
 				// todo: 被回复的用户名、用户头像使用最新数据
 				user = svc.user.FindUserByUserid(reply.ReplyCommentUserId)
 				if user != nil {
-					reply.ReplyCommentAvatar = user.Avatar
+					reply.ReplyCommentAvatar = tencentCloud.BucketURI(user.Avatar)
 					reply.ReplyCommentUserName = user.NickName
 					reply.ReplyCommentUserId = user.UserId
 					if user.UserId != "" {

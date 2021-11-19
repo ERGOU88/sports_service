@@ -82,7 +82,7 @@ func (svc *UserModule) GetUserInfoByUserid(userId string) (int, *muser.UserInfoR
 	// 重新组装返回数据
 	resp := &muser.UserInfoResp{
 		UserId: info.UserId,
-		Avatar: info.Avatar,
+		Avatar: tencentCloud.BucketURI(info.Avatar),
 		MobileNum: info.MobileNum,
 		NickName: info.NickName,
 		Gender: int32(info.Gender),
@@ -242,7 +242,7 @@ func (svc *UserModule) GetUserZoneInfo(userId, toUserId string) (int, *muser.Use
 	// 重新组装返回数据
 	resp := &muser.UserInfoResp{
 		UserId: info.UserId,
-		Avatar: info.Avatar,
+		Avatar: tencentCloud.BucketURI(info.Avatar),
 		MobileNum: info.MobileNum,
 		NickName: info.NickName,
 		Gender: int32(info.Gender),
@@ -492,7 +492,7 @@ func (svc *UserModule) AddGuestByTencentIm() (int, *muser.TencentImUser) {
 
 	info := &muser.TencentImUser{
 		UserId: userId,
-		Avatar: avatar,
+		Avatar: tencentCloud.BucketURI(avatar),
 		NickName: nickName,
 		Sign: sign,
 	}
@@ -581,7 +581,7 @@ func (svc *UserModule) GetTencentImSignByUser(userId string) (int, *muser.Tencen
 	if user.TxAccid != "" && user.TxToken != "" {
 		info := &muser.TencentImUser{
 			NickName: user.NickName,
-			Avatar: user.Avatar,
+			Avatar: tencentCloud.BucketURI(user.Avatar),
 			UserId: user.TxAccid,
 			Sign: user.TxToken,
 		}
@@ -608,7 +608,7 @@ func (svc *UserModule) GetTencentImSignByUser(userId string) (int, *muser.Tencen
 
 	info := &muser.TencentImUser{
 		NickName: user.NickName,
-		Avatar: user.Avatar,
+		Avatar: tencentCloud.BucketURI(user.Avatar),
 		UserId: user.TxAccid,
 		Sign: user.TxToken,
 	}

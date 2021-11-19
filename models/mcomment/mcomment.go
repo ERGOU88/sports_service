@@ -6,6 +6,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"fmt"
+	"sports_service/server/tools/tencentCloud"
 )
 
 type CommentModel struct {
@@ -22,7 +23,7 @@ type CommentModel struct {
 type CommentList struct {
 	Id                  int64               `json:"id" example:"1000000000"`                      // 评论id
 	IsTop               int                 `json:"is_top"  example:"1"`                          // 置顶状态 1 置顶 0 不置顶
-	Avatar              string              `json:"avatar"  example:"用户头像"`                    // 用户头像
+	Avatar              tencentCloud.BucketURI              `json:"avatar"  example:"用户头像"`                    // 用户头像
 	UserId              string              `json:"user_id" example:"用户id"`                     // 用户id
 	UserName            string              `json:"user_name" example:"用户昵称"`                  // 用户名称
 	CommentLevel        int                 `json:"comment_level" example:"1"`                    // 评论等级[1 一级评论 默认 ，2 二级评论]
@@ -44,7 +45,7 @@ type CommentList struct {
 type ReplyComment struct {
 	Id                   int64               `json:"id" example:"1600000000"`                          // 评论id
 	IsTop                int                 `json:"is_top" example:"1"`                               // 置顶状态 1 置顶 0 不置顶
-	Avatar               string              `json:"avatar" xorm:"-" example:"头像"`                             // 用户头像
+	Avatar               tencentCloud.BucketURI              `json:"avatar" xorm:"-" example:"头像"`                             // 用户头像
 	UserId               string              `json:"user_id" example:"用户id"`                          // 用户id
 	UserName             string              `json:"user_name" xorm:"-" example:"用户昵称"`                       // 用户名称
 	CommentLevel         int                 `json:"comment_level" example:"1"`                         // 评论等级[1 一级评论 默认 ，2 二级评论]
@@ -55,7 +56,7 @@ type ReplyComment struct {
 	ReplyCommentId       int64               `json:"reply_comment_id" example:"1000000000"`             // 被回复的评论id
 	ReplyCommentUserId   string              `json:"reply_comment_user_id" example:"被回复的评论用户id"`   // 被回复的评论用户id
 	ReplyCommentUserName string              `json:"reply_comment_user_name" example:"被回复评论的用户昵称"`// 被回复评论的用户昵称
-	ReplyCommentAvatar   string              `json:"reply_comment_avatar" example:"被回复评论的用户头像"`   // 被回复评论的用户头像
+	ReplyCommentAvatar   tencentCloud.BucketURI             `json:"reply_comment_avatar" example:"被回复评论的用户头像"`   // 被回复评论的用户头像
 	ReplyContent         string              `json:"reply_content"  example:"被回复的内容"`                // 被回复的内容
 	Status               int                 `json:"status" example:"1"`                                 // 状态 1 有效 0 逻辑删除
 	VideoId              int64               `json:"video_id,omitempty" example:"1000000000"`            // 视频id

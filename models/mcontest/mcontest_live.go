@@ -1,6 +1,9 @@
 package mcontest
 
-import "sports_service/server/models"
+import (
+	"sports_service/server/models"
+	"sports_service/server/tools/tencentCloud"
+)
 
 type baseInfo struct {
 	EventType        int       `json:"event_type"`          // 1推流  0断流  100直播录制
@@ -53,7 +56,7 @@ type LiveInfo struct {
 	UserId         string `json:"user_id"`
 	RoomId         string `json:"room_id"`
 	GroupId        string `json:"group_id"`
-	Cover          string `json:"cover"`
+	Cover          tencentCloud.BucketURI `json:"cover"`
 	RtmpAddr       string `json:"rtmp_addr"`
 	FlvAddr        string `json:"flv_addr"`
 	HlsAddr        string `json:"hls_addr"`
@@ -65,7 +68,7 @@ type LiveInfo struct {
 	Tags           string `json:"tags"`
 	LiveType       int    `json:"live_type"`
 	NickName       string `json:"nick_name"`
-	Avatar         string `json:"avatar"`
+	Avatar         tencentCloud.BucketURI `json:"avatar"`
 	Status         int    `json:"status"`        // 状态 0未直播 1直播中 2 已结束
 	HasReplay      int    `json:"has_replay"`    // 是否有回放 1 有 2 无
 

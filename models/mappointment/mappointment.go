@@ -3,6 +3,7 @@ package mappointment
 import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/models"
+	"sports_service/server/tools/tencentCloud"
 	"time"
 )
 
@@ -58,7 +59,7 @@ type OptionsInfo struct {
 	IsFull          int    `json:"is_full"`                      // 是否满场
 	PurchasedNum    int    `json:"purchased_num,omitempty"`      // 已购买人数 包含[成功购买及已下单]
 	Name            string `json:"name,omitempty"`               // 场馆名称
-	Avatar          string `json:"avatar,omitempty"`             // 大课老师头像
+	Avatar          tencentCloud.BucketURI `json:"avatar,omitempty"`             // 大课老师头像
 	Address         string `json:"address,omitempty"`            // 上课地点
 	Labels          []*LabelInfo     `json:"labels,omitempty"`   // 标签列表
 	ReservedUsers   []*SeatInfo      `json:"reserved_users"`     // 已预约人数
@@ -74,7 +75,7 @@ type OptionsInfo struct {
 type ReservedUsers struct {
 	UserId      string       `json:"user_id"`
 	NickName    string       `json:"nick_name"`
-	Avatar      string       `json:"avatar"`
+	Avatar      tencentCloud.BucketURI       `json:"avatar"`
 }
 
 type LabelInfo struct {
@@ -89,7 +90,7 @@ type Options struct {
 	Id                 int64        `json:"id"`
 	Name               string       `json:"name"`
 	Title              string       `json:"title"`
-	Avatar             string       `json:"avatar"`
+	Avatar             tencentCloud.BucketURI       `json:"avatar"`
 	Describe           string       `json:"describe,omitempty"`
 	CostDescription    string       `json:"cost_description,omitempty"`     // 费用说明
 	Instructions       string       `json:"instructions,omitempty"`         // 购买须知
@@ -123,7 +124,7 @@ type AppointmentInfo struct {
 // 座位信息
 type SeatInfo struct {
 	UserId      string     `json:"user_id"`
-	Avatar      string     `json:"avatar"`
+	Avatar      tencentCloud.BucketURI     `json:"avatar"`
 	NickName    string     `json:"nick_name"`
 	SeatNo      int        `json:"seat_no"`       // 座位号
 }
@@ -169,7 +170,7 @@ type OrderResp struct {
 	CanRefund        bool   `json:"can_refund"`                   // 是否可退款
 	HasEvaluate      bool   `json:"has_evaluate"`                 // 是否已评价
 	VenueName        string `json:"venue_name,omitempty"`         // 场馆名称
-	ProductImg       string `json:"product_img,omitempty"`        // 商品图片
+	ProductImg       tencentCloud.BucketURI `json:"product_img,omitempty"`        // 商品图片
 	OriginalAmount   int    `json:"original_amount,omitempty"`    // 订单原始金额
 	RefundFee        int    `json:"refund_fee,omitempty"`         // 退款手续费
 	RefundAmount     int    `json:"refund_amount,omitempty"`      // 退款金额

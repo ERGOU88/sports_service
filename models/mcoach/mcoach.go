@@ -4,6 +4,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/models"
 	"fmt"
+	"sports_service/server/tools/tencentCloud"
 )
 
 type CoachModel struct {
@@ -16,7 +17,7 @@ type CoachModel struct {
 
 type CoachInfo struct {
 	Id           int64      `json:"id"`
-	Cover        string     `json:"cover"`
+	Cover        tencentCloud.BucketURI     `json:"cover"`
 	Name         string     `json:"name"`
 	Designation  string     `json:"designation"`
 }
@@ -29,8 +30,8 @@ type CoachDetail struct {
 	Designation       string  `json:"designation"`
 	Describe          string  `json:"describe"`
 	AreasOfExpertise  string  `json:"areas_of_expertise"`
-	Cover             string  `json:"cover"`
-	Avatar            string  `json:"avatar"`
+	Cover             tencentCloud.BucketURI  `json:"cover"`
+	Avatar            tencentCloud.BucketURI  `json:"avatar"`
 	Score             string  `json:"score"`
 	TotalNum          int     `json:"total_num"`
 	Courses           []*CourseInfo    `json:"courses"`
@@ -44,7 +45,7 @@ type CourseInfo struct {
 	Title          string `json:"title"`
 	Describe       string `json:"describe"`
 	Price          int    `json:"price"`
-	PromotionPic   string `json:"promotion_pic"`
+	PromotionPic   tencentCloud.BucketURI `json:"promotion_pic"`
 	Icon           string `json:"icon"`
 	CourseType     int    `json:"course_type"`
 	PeriodNum      int    `json:"period_num"`

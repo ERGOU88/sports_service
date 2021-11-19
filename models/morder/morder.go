@@ -6,6 +6,7 @@ import (
 	"sports_service/server/global/rdskey"
 	"sports_service/server/models"
 	"fmt"
+	"sports_service/server/tools/tencentCloud"
 )
 
 // 支付请求参数
@@ -27,7 +28,7 @@ type OrderInfo struct {
 	UserId             string      `json:"user_id"`
 	OrderId            string      `json:"order_id"`            // 订单id
 	Count              int         `json:"count"`
-	ProductImg         string      `json:"product_img"`
+	ProductImg         tencentCloud.BucketURI      `json:"product_img"`
 	HasEvaluate        bool        `json:"has_evaluate"`        // 是否评价
 	TimeNode           string      `json:"time_node,omitempty"` // 预约的时间节点
 	CanRefund          bool        `json:"can_refund"`          // 是否可退款
