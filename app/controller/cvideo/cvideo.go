@@ -1400,9 +1400,9 @@ func (svc *VideoModule) GetRecommendInfoBySection(userId, sectionId string, page
 		user := svc.user.FindUserByUserid(item.UserId)
 		if user != nil {
 			item.Nickname = user.NickName
-			item.Avatar = user.Avatar
+			item.Avatar = cloud.BucketURI(user.Avatar)
 		}
-
+		
 		var likeType int
 		switch item.ContentType {
 		case 1:

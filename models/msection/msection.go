@@ -3,6 +3,7 @@ package msection
 import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/models"
+	"sports_service/server/tools/tencentCloud"
 )
 
 // 推荐的模块
@@ -15,7 +16,7 @@ type SectionRecommendInfo struct {
 	Id            int64                 `json:"id"`                            // 视频/富文本id
 	Title         string                `json:"title"`                         // 标题
 	Describe      string                `json:"describe"`                      // 描述
-	Cover         string                `json:"cover"`                         // 封面
+	Cover         tencentCloud.BucketURI                `json:"cover"`                         // 封面
 	VideoAddr     string                `json:"video_addr"`                    // 视频地址
 	Size          int64                 `json:"size"`                          // 视频大小 字节数
 	VideoDuration int                   `json:"video_duration"`                // 视频时长
@@ -24,7 +25,7 @@ type SectionRecommendInfo struct {
 	CommentNum    int                   `json:"comment_num"`                   // 评论数
 	ShareNum      int                   `json:"share_num"`                     // 分享数
 	UserId        string                `json:"user_id"`                       // 用户id
-	Avatar        string                `json:"avatar"`                        // 头像
+	Avatar        tencentCloud.BucketURI                `json:"avatar"`                        // 头像
 	Nickname      string                `json:"nick_name"`                     // 昵称
 	IsAttention   int                   `json:"is_attention"`                  // 是否关注 1 关注 0 未关注
 	IsLike        int                   `json:"is_like"`                       // 是否点赞
