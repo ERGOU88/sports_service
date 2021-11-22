@@ -66,7 +66,7 @@ type EvaluateInfo struct {
 	Id        int64        `json:"id"`
 	//UserId    string       `json:"user_id"`
 	//NickName  string       `json:"nick_name"`
-	Avatar    string       `json:"avatar"`
+	Avatar    tencentCloud.BucketURI     `json:"avatar"`
 	CoachId   int64       `json:"coach_id"`
 	Star      int          `json:"star"`
 	Content   string       `json:"content"`

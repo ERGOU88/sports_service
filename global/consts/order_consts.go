@@ -85,5 +85,5 @@ const (
 )
 
 const (
-    EVALUATE_DEFAULT_AVATAR = "https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/default_avatar.png"
+    EVALUATE_DEFAULT_AVATAR = "https://resource-1253904687.cos.ap-shanghai.myqcloud.com/fpv/default_avatar.png"
 )
