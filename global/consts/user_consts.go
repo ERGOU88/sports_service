@@ -35,7 +35,7 @@ const (
 	CHANNEL        = "channel"
 	USER_STATUS    = "user_status"
 	// todo: 默认头像
-	DEFAULT_AVATAR = "https://fpv-1253904687.cos.ap-shanghai.myqcloud.com/default_01.png"
+	DEFAULT_AVATAR = "https://resource-1253904687.cos.ap-shanghai.myqcloud.com/fpv/default_01.png"
 )
 
 const (
