@@ -35,7 +35,7 @@ type VenueInfoRes struct {
 	Address       string   `json:"address"`
 	Describe      string   `json:"describe"`
 	Telephone     string   `json:"telephone"`
-	VenueImages   []string `json:"venue_images"`
+	VenueImages   []tencentCloud.BucketURI `json:"venue_images"`
 	BusinessHours string   `json:"business_hours"`
 	Services      string   `json:"services"`
 	Longitude     float64  `json:"longitude"`
