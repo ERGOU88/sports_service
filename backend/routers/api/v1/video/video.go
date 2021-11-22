@@ -7,6 +7,7 @@ import (
 	"sports_service/server/global/backend/errdef"
 	"sports_service/server/global/consts"
 	"sports_service/server/middleware/jwt"
+	"sports_service/server/models"
 	"sports_service/server/models/mlabel"
 	"sports_service/server/models/mvideo"
 	"sports_service/server/util"
@@ -193,4 +194,34 @@ func BatchEditVideoInfo(c *gin.Context) {
 
 	svc := cvideo.New(c)
 	reply.Response(http.StatusOK, svc.BatchEditVideos(param))
+}
+
+func AddAlbum(c *gin.Context) {
+	reply := errdef.New(c)
+	param := new(models.VideoAlbum)
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := cvideo.New(c)
+	syscode, album := svc.CreateVideoAlbum(param)
+	if syscode == errdef.SUCCESS {
+		reply.Data["album"] = album
+	}
+	
+	reply.Response(http.StatusOK, syscode)
+}
+
+// 官方用户发布的视频专辑列表
+func VideoAlbumList(c *gin.Context) {
+	reply := errdef.New(c)
+	userId := c.Query("user_id")
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	svc := cvideo.New(c)
+	code, list := svc.GetVideoAlbumByUserId(userId, page, size)
+	reply.Data["list"] = list
+	
+	reply.Response(http.StatusOK, code)
+	
 }
