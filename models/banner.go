@@ -1,9 +1,11 @@
 package models
 
+import "sports_service/server/tools/tencentCloud"
+
 type Banner struct {
 	Id         int    `json:"id" xorm:"not null pk autoincr comment('主键') INT(10)"`
 	Title      string `json:"title" xorm:"not null default '' comment('标题') VARCHAR(255)"`
-	Cover      string `json:"cover" xorm:"not null default '' comment('banner封面') VARCHAR(512)"`
+	Cover      tencentCloud.BucketURI `json:"cover" xorm:"not null default '' comment('banner封面') VARCHAR(512)"`
 	Explain    string `json:"explain" xorm:"not null default '' comment('说明') VARCHAR(255)"`
 	JumpUrl    string `json:"jump_url" xorm:"not null default '' comment('跳转地址') VARCHAR(512)"`
 	ShareUrl   string `json:"share_url" xorm:"not null default '' comment('分享地址') VARCHAR(512)"`
@@ -15,6 +17,6 @@ type Banner struct {
 	CreateAt   int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt   int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
 	JumpType   int    `json:"jump_type" xorm:"not null comment('跳转类型 0 站内跳转 1 站外跳转') TINYINT(1)"`
-	VideoAddr  string `json:"video_addr" xorm:"not null default '' comment('视频地址') VARCHAR(512)"`
+	VideoAddr  tencentCloud.BucketURI `json:"video_addr" xorm:"not null default '' comment('视频地址') VARCHAR(512)"`
 	BannerType int    `json:"banner_type" xorm:"not null default 0 comment('0图片 1视频') TINYINT(1)"`
 }

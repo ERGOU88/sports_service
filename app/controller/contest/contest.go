@@ -14,6 +14,7 @@ import (
 	"sports_service/server/models/mcontest"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"time"
 	"fmt"
@@ -133,7 +134,7 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 			UserId: item.UserId,
 			RoomId: item.RoomId,
 			GroupId: item.GroupId,
-			Cover: item.Cover,
+			Cover: tencentCloud.BucketURI(item.Cover),
 			RtmpAddr: item.RtmpAddr,
 			HlsAddr: item.HlsAddr,
 			FlvAddr: item.FlvAddr,
@@ -169,7 +170,7 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 		user := svc.user.FindUserByUserid(item.UserId)
 		if user != nil {
 			live.NickName = user.NickName
-			live.Avatar = user.Avatar
+			live.Avatar = tencentCloud.BucketURI(user.Avatar)
 		}
 
 		mp[date].LiveInfo = append(mp[date].LiveInfo, live)
@@ -500,7 +501,7 @@ func (svc *ContestModule) GetLiveScheduleData(liveId string, page, size int) (in
 		}
 
 		info.PlayerName = svc.contest.PlayerInfo.Name
-		info.Photo = svc.contest.PlayerInfo.Photo
+		info.Photo = tencentCloud.BucketURI(svc.contest.PlayerInfo.Photo)
 
 		resp[index] = info
 	}

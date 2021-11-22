@@ -391,7 +391,7 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 	}
 
 	if user := svc.user.FindUserByUserid(post.UserId); user != nil {
-		resp.Avatar = user.Avatar
+		resp.Avatar = cloud.BucketURI(user.Avatar)
 		resp.Nickname = user.NickName
 	}
 
@@ -510,7 +510,7 @@ func (svc *PostingModule) GetPostPublishListByUser(userId, status string, page, 
 		//}
 
 		item.StatusCn = svc.GetPostStatusCn(fmt.Sprint(item.Status))
-		item.Avatar = user.Avatar
+		item.Avatar = cloud.BucketURI(user.Avatar)
 		item.Nickname = user.NickName
 
 

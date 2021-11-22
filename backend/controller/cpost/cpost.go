@@ -14,6 +14,7 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
 	redismq "sports_service/server/redismq/event"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"sports_service/server/global/backend/log"
 	"time"
@@ -139,7 +140,7 @@ func (svc *PostModule) GetPostList(page, size int, status, title string) (int, [
 
 		user := svc.user.FindUserByUserid(item.UserId)
 		if user != nil {
-			item.Avatar = user.Avatar
+			item.Avatar = tencentCloud.BucketURI(user.Avatar)
 			item.Nickname = user.NickName
 		}
 
@@ -204,7 +205,7 @@ func (svc *PostModule) GetPostList(page, size int, status, title string) (int, [
 
 				if user != nil {
 					item.RelatedVideo.Nickname = user.NickName
-					item.RelatedVideo.Avatar = user.Avatar
+					item.RelatedVideo.Avatar = tencentCloud.BucketURI(user.Avatar)
 				}
 
 				subarea, err := svc.video.GetSubAreaById(fmt.Sprint(video.Subarea))

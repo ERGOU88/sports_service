@@ -392,6 +392,7 @@ func UserZoneInfo(c *gin.Context) {
 	syscode, userInfo, zoneInfo := svc.GetUserZoneInfo(userId, toUserId)
 	reply.Data["user_info"] = userInfo
 	reply.Data["zone_info"] = zoneInfo
+	reply.Data["code"] = syscode
 	reply.Response(http.StatusOK, syscode)
 }
 

@@ -3,6 +3,7 @@ package mcontest
 import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/models"
+	"sports_service/server/tools/tencentCloud"
 )
 
 // 赛事
@@ -43,7 +44,7 @@ type ScheduleDetail struct {
 	GroupName  string `json:"group_name"`
 	PlayerId   int64  `json:"player_id"`
 	PlayerName string `json:"name"`
-	Photo      string `json:"photo"`
+	Photo      tencentCloud.BucketURI `json:"photo"`
 	Score      int    `json:"score"`
 	IsWin      int    `json:"is_win"`
 	NumInGroup int    `json:"num_in_group"`
@@ -59,7 +60,7 @@ type ScheduleListDetailResp struct {
 	ScheduleId int    `json:"schedule_id"`
 	PlayerId   int64  `json:"player_id"`
 	PlayerName string `json:"player_name"`
-	Photo      string `json:"photo"`
+	Photo      tencentCloud.BucketURI `json:"photo"`
 	IsWin      int    `json:"is_win"`
 	ContestId  int    `json:"contest_id"`
 	Ranking    int    `json:"ranking"`
@@ -89,7 +90,7 @@ type PlayerInfoResp struct {
 	Id         int64  `json:"id,omitempty"`
 	PlayerId   int64  `json:"player_id"`
 	PlayerName string `json:"player_name"`
-	Photo      string `json:"photo"`
+	Photo      tencentCloud.BucketURI `json:"photo"`
 	IsWin      int    `json:"is_win"`
 	Score      string `json:"score"`
 	NumInGroup int    `json:"num_in_group"`
@@ -100,7 +101,7 @@ type IntegralRanking struct {
 	Id         int    `json:"id"`
 	PlayerId   int64  `json:"player_id"`
 	PlayerName string `json:"player_name"`
-	Photo      string `json:"photo"`
+	Photo      tencentCloud.BucketURI `json:"photo"`
 	ContestId  int    `json:"contest_id"`
 
 	Ranking            int       `json:"ranking"`
@@ -118,7 +119,7 @@ type LiveSchedulePlayerData struct {
 	ScheduleId       int      `json:"schedule_id"`
 	PlayerId         int64    `json:"player_id"`
 	PlayerName       string   `json:"player_name"`
-	Photo            string   `json:"photo"`
+	Photo            tencentCloud.BucketURI   `json:"photo"`
 	LiveId           int64    `json:"live_id"`
 	RoundsNum        int      `json:"rounds_num"`
 	IntervalDuration string   `json:"interval_duration"`

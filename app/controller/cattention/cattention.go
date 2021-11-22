@@ -10,6 +10,7 @@ import (
 	"sports_service/server/models/mattention"
 	"sports_service/server/models/muser"
 	redismq "sports_service/server/redismq/event"
+	"sports_service/server/tools/tencentCloud"
 	"strings"
 	"time"
 )
@@ -180,7 +181,7 @@ func (svc *AttentionModule) GetOtherUserAttentionList(userId, toUserId string, p
     info := &muser.UserInfoResp{
       NickName:  user.NickName,
       UserId: user.UserId,
-      Avatar: user.Avatar,
+      Avatar: tencentCloud.BucketURI(user.Avatar),
       MobileNum: user.MobileNum,
       Gender: int32(user.Gender),
       Signature: user.Signature,
@@ -234,7 +235,7 @@ func (svc *AttentionModule) GetAttentionUserList(userId string, page, size int) 
 		info := &muser.UserInfoResp{
 			NickName:  user.NickName,
 			UserId: user.UserId,
-			Avatar: user.Avatar,
+			Avatar: tencentCloud.BucketURI(user.Avatar),
 			MobileNum: user.MobileNum,
 			Gender: int32(user.Gender),
 			Signature: user.Signature,
@@ -281,7 +282,7 @@ func (svc *AttentionModule) GetFansList(userId string, page, size int) []*muser.
 		info := &muser.UserInfoResp{
 			NickName:  user.NickName,
 			UserId: user.UserId,
-			Avatar: user.Avatar,
+			Avatar: tencentCloud.BucketURI(user.Avatar),
 			MobileNum: user.MobileNum,
 			Gender: int32(user.Gender),
 			Signature: user.Signature,
@@ -329,7 +330,7 @@ func (svc *AttentionModule) GetOtherUserFansList(userId, toUserId string, page, 
     info := &muser.UserInfoResp{
       NickName:  user.NickName,
       UserId: user.UserId,
-      Avatar: user.Avatar,
+      Avatar: tencentCloud.BucketURI(user.Avatar),
       MobileNum: user.MobileNum,
       Gender: int32(user.Gender),
       Signature: user.Signature,

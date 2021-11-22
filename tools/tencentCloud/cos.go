@@ -7,8 +7,10 @@ import (
 	sts "github.com/tencentyun/qcloud-cos-sts-sdk/go"
 	"net/http"
 	"net/url"
+	"sports_service/server/util"
 	"time"
 	"errors"
+	"fmt"
 )
 
 // 获取腾讯对象存储临时通行证
@@ -39,6 +41,7 @@ func (tc *TencentCloud) GetCosTempAccess(region string) (map[string]interface{},
 					Resource: []string{
 						//这里改成允许的路径前缀，可以根据自己网站的用户登录态判断允许上传的具体路径，例子： a.jpg 或者 a/* 或者 * (使用通配符*存在重大安全风险, 请谨慎评估使用)
 						"qcs::cos:" + region + ":uid/" + APPID + ":" + BUCKET + "/" + CRPATH + "/*",
+						//"allowPrefixes:fpv/images/*:fpv/videos/*",
 					},
 				},
 			},
@@ -113,4 +116,19 @@ func (tc *TencentCloud) RecognitionImage(baseUrl, path string) (*cos.ImageRecogn
 	//}
 
 	return res, nil
+}
+
+const (
+	CDN_SECRET = "DjL77HnpevmDlNrR2ACvjn60N1"
+	CDN_HOST   = "https://resource-1253904687.file.myqcloud.com"
+)
+func (tc *TencentCloud) GenCdnUrl(baseUrl string) (string, error) {
+	u, err := url.Parse(baseUrl)
+	if err != nil {
+		return "", err
+	}
+	
+	now := time.Now().Unix()
+	sign := util.Md5String(fmt.Sprintf("%s%s%d", CDN_SECRET, u.Path, now))
+	return fmt.Sprintf("%s%s?sign=%s&t=%d", CDN_HOST, u.Path, sign, now), nil
 }

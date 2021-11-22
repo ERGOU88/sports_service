@@ -18,6 +18,7 @@ import (
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
+	"sports_service/server/tools/tencentCloud"
 	"strconv"
 	"time"
 	"fmt"
@@ -134,14 +135,14 @@ func (svc *UserModule) GetUserList(page, size int) []*muser.UserInfo {
 	for index, info := range list {
 		resp := &muser.UserInfo{
 			UserId: info.UserId,
-			Avatar: info.Avatar,
-			MobileNum: int64(info.MobileNum),
+			Avatar:  tencentCloud.BucketURI(info.Avatar),
+			MobileNum: info.MobileNum,
 			NickName: info.NickName,
 			Gender: int32(info.Gender),
 			Signature: info.Signature,
 			Status: int32(info.Status),
 			IsAnchor: int32(info.IsAnchor),
-			BackgroundImg: info.BackgroundImg,
+			BackgroundImg: tencentCloud.BucketURI(info.BackgroundImg),
 			Born: info.Born,
 			Age: info.Age,
 			Country: int32(info.Country),
@@ -244,7 +245,9 @@ func (svc *UserModule) AddOfficialUser(param *models.User) int {
 	param.CreateAt = now
 	param.UpdateAt = now
 	param.Avatar = consts.DEFAULT_AVATAR
+	svc.user.User = param
 	if err := svc.user.AddUser(); err != nil {
+		log.Log.Errorf("user_trace: add user fail, err:%s", err)
 		return errdef.ERROR
 	}
 

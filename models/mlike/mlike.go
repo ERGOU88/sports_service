@@ -4,6 +4,7 @@ import (
 	"github.com/go-xorm/xorm"
 	"sports_service/server/global/app/log"
 	"sports_service/server/models"
+	"sports_service/server/tools/tencentCloud"
 	"time"
 )
 
@@ -41,7 +42,7 @@ type BeLikedVideoInfo struct {
 	//ToUserName    string                `json:"to_user_name"`    // 被点赞的用户昵称
 	NickNames    []string `json:"nick_names"`     // 点赞用户昵称（多个）
 	TotalLikeNum int      `json:"total_like_num"` // 总点赞数
-	Avatar       string   `json:"avatar"`         // 最近点赞的用户头像
+	Avatar       tencentCloud.BucketURI   `json:"avatar"`         // 最近点赞的用户头像
 	OpTime       int      `json:"op_time"`        // 用户点赞操作时间
 	Type         int      `json:"type"`           // 类型 1 视频 2 帖子 3 评论
 }
@@ -50,7 +51,7 @@ type BeLikedVideoInfo struct {
 // 点赞的用户信息
 type ZanUserInfo struct {
 	UserId        string                `json:"user_id"`         // 点赞的用户id
-	Avatar        string                `json:"avatar"`          // 点赞用户头像
+	Avatar        tencentCloud.BucketURI                `json:"avatar"`          // 点赞用户头像
 	Nickname      string                `json:"nick_name"`       // 点赞的用户昵称
 }
 
@@ -58,7 +59,7 @@ type ZanUserInfo struct {
 type LikedUserInfo struct {
 	UserId      string   `json:"user_id"`
 	NickName    string   `json:"nick_name"`
-	Avatar      string   `json:"avatar"`
+	Avatar      tencentCloud.BucketURI   `json:"avatar"`
 	OpTm        int      `json:"op_tm"`       // 用户点赞时间
 }
 
@@ -109,7 +110,7 @@ type BeLikedCommentInfo struct {
 	BarrageNum    int                   `json:"barrage_num"`     // 弹幕数
 	BrowseNum     int                   `json:"browse_num"`      // 浏览数（播放数）
 	//UserId        string                `json:"user_id"`         // 点赞的用户id
-	Avatar        string                `json:"avatar"`          // 点赞用户头像
+	Avatar       tencentCloud.BucketURI                `json:"avatar"`          // 点赞用户头像
 	Nicknames     []string              `json:"nick_name"`       // 点赞的用户昵称
 	TotalLikeNum  int                   `json:"total_like_num"`  // 总点赞数
 	//ToUserId      string                `json:"to_user_id"`      // 被点赞的用户id

@@ -23,6 +23,7 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
 	"sports_service/server/tools/alipay"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/tools/wechat"
 	"sports_service/server/util"
 	"strconv"
@@ -606,7 +607,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 			continue
 		}
 		info.Count = extra.Count
-		info.ProductImg = extra.ProductImg
+		info.ProductImg = tencentCloud.BucketURI(extra.ProductImg)
 
 		switch info.OrderType {
 		// 预约场馆、私教、大课

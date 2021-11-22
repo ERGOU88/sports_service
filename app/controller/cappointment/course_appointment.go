@@ -12,6 +12,7 @@ import (
 	"sports_service/server/models/mcoach"
 	"sports_service/server/models/mcourse"
 	"sports_service/server/models/muser"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"time"
 )
@@ -138,7 +139,7 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 	svc.Extra.Address = svc.venue.Venue.Address
 	svc.Extra.CourseId = svc.course.Course.Id
 	svc.Extra.CourseName = fmt.Sprintf("《%s》", svc.course.Course.Title)
-	svc.Extra.ProductImg = svc.course.Course.PromotionPic
+	svc.Extra.ProductImg = tencentCloud.BucketURI(svc.course.Course.PromotionPic)
 
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
@@ -246,7 +247,7 @@ func (svc *CourseAppointmentModule) AppointmentOptions() (int, interface{}) {
 
 		if ok {
 			info.Name = svc.coach.Coach.Name
-			info.Avatar = svc.coach.Coach.Avatar
+			info.Avatar = tencentCloud.BucketURI(svc.coach.Coach.Avatar)
 		}
 
 		ok, err = svc.venue.GetVenueInfoById(fmt.Sprint(svc.coach.Coach.VenueId))

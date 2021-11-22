@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvideo"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"strings"
 )
@@ -150,7 +151,7 @@ func (svc *CommunityModule) GetCommunityTopicById(id string) (int, *mcommunity.C
 		Id: info.Id,
 		TopicName: info.TopicName,
 		IsHot: info.IsHot,
-		Cover: info.Cover,
+		Cover: tencentCloud.BucketURI(info.Cover),
 		Describe: info.Describe,
 	}
 
@@ -229,7 +230,7 @@ func (svc *CommunityModule) GetPostDetailByList(userId string, list []*mposting.
 
 		user := svc.user.FindUserByUserid(item.UserId)
 		if user != nil {
-			item.Avatar = user.Avatar
+			item.Avatar = tencentCloud.BucketURI(user.Avatar)
 			item.Nickname = user.NickName
 		}
 
@@ -294,7 +295,7 @@ func (svc *CommunityModule) GetPostDetailByList(userId string, list []*mposting.
 
 				if user != nil {
 					item.RelatedVideo.Nickname = user.NickName
-					item.RelatedVideo.Avatar = user.Avatar
+					item.RelatedVideo.Avatar = tencentCloud.BucketURI(user.Avatar)
 				}
 
 				// 是否点赞

@@ -15,6 +15,7 @@ import (
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/muser"
 	redismq "sports_service/server/redismq/event"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"time"
 )
@@ -67,7 +68,7 @@ func (svc *InformationModule) GetInformationList(userId, liveId string, page, si
 	for index, information := range list {
 		info := &minformation.InformationResp{
 			Id: information.Id,
-			Cover: information.Cover,
+			Cover: tencentCloud.BucketURI(information.Cover),
 			Title: information.Title,
 			CreateAt: information.CreateAt,
 			//JumpUrl: information.JumpUrl,
@@ -75,7 +76,7 @@ func (svc *InformationModule) GetInformationList(userId, liveId string, page, si
 		}
 
 		if user := svc.user.FindUserByUserid(info.UserId); user != nil {
-			info.Avatar = user.Avatar
+			info.Avatar = tencentCloud.BucketURI(user.Avatar)
 			info.NickName = user.NickName
 		}
 
@@ -131,7 +132,7 @@ func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *min
 
 	resp := &minformation.InformationResp{
 		Id: svc.information.Information.Id,
-		Cover: svc.information.Information.Cover,
+		Cover: tencentCloud.BucketURI(svc.information.Information.Cover),
 		Title: svc.information.Information.Title,
 		CreateAt: svc.information.Information.CreateAt,
 		//JumpUrl: svc.information.Information.JumpUrl,
@@ -140,7 +141,7 @@ func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *min
 	}
 
 	if user := svc.user.FindUserByUserid(resp.UserId); user != nil {
-		resp.Avatar = user.Avatar
+		resp.Avatar = tencentCloud.BucketURI(user.Avatar)
 		resp.NickName = user.NickName
 	}
 
