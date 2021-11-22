@@ -64,6 +64,9 @@ func (tc *TencentCloud) GetCosTempAccess(region string) (map[string]interface{},
 		"expired_time": res.ExpiredTime,
 		"start_time":   res.StartTime,
 		"dir":          CRPATH,
+		"bucket":       BUCKET,
+		"img_dir":      CRPATH + "/images",
+		"video_dir":    CRPATH + "/videos",
 	}
 
 	return resp, nil
