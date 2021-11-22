@@ -22,7 +22,7 @@ func (tc *TencentCloud) GetCosTempAccess(region, uploadType string) (map[string]
 	)
 	
 	var (
-		resource, imgDir, videoDir, dir, bucket string
+		resource, imgDir, videoDir, dir, bucket, cdnHost string
 	)
 	switch uploadType {
 	case "public":
@@ -31,6 +31,7 @@ func (tc *TencentCloud) GetCosTempAccess(region, uploadType string) (map[string]
 		imgDir = "/images"
 		videoDir = "/videos"
 		bucket = PUBLIC_BUCKET
+		cdnHost = PUBLIC_HOST
 	case "private":
 		resource = 	"qcs::cos:" + region + ":uid/" + APPID + ":" + BUCKET + "/" + CRPATH + "/*"
 		dir = CRPATH
@@ -86,6 +87,7 @@ func (tc *TencentCloud) GetCosTempAccess(region, uploadType string) (map[string]
 		"bucket":       bucket,
 		"img_dir":      imgDir,
 		"video_dir":    videoDir,
+		"cdn_host":     cdnHost,
 	}
 
 	return resp, nil
