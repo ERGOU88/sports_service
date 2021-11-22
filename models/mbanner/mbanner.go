@@ -4,6 +4,7 @@ import (
   "github.com/go-xorm/xorm"
   "sports_service/server/global/app/log"
   "sports_service/server/models"
+	"sports_service/server/tools/tencentCloud"
 )
 
 type BannerModel struct {
@@ -47,6 +48,25 @@ type DelBannerParam struct {
 	Id         string       `json:"id"`
 }
 
+type Banner struct {
+	Id         int    `json:"id" xorm:"not null pk autoincr comment('主键') INT(10)"`
+	Title      string `json:"title" xorm:"not null default '' comment('标题') VARCHAR(255)"`
+	Cover      tencentCloud.BucketURI `json:"cover" xorm:"not null default '' comment('banner封面') VARCHAR(512)"`
+	Explain    string `json:"explain" xorm:"not null default '' comment('说明') VARCHAR(255)"`
+	JumpUrl    tencentCloud.BucketURI `json:"jump_url" xorm:"not null default '' comment('跳转地址') VARCHAR(512)"`
+	ShareUrl   tencentCloud.BucketURI `json:"share_url" xorm:"not null default '' comment('分享地址') VARCHAR(512)"`
+	Type       int    `json:"type" xorm:"not null default 1 comment('1 首页 2 赛事 3 官网banner') INT(1)"`
+	StartTime  int    `json:"start_time" xorm:"not null default 0 comment('上架时间') INT(11)"`
+	EndTime    int    `json:"end_time" xorm:"not null default 0 comment('下架时间') INT(11)"`
+	Sortorder  int    `json:"sortorder" xorm:"not null default 0 comment('排序权重') INT(11)"`
+	Status     int    `json:"status" xorm:"not null default 0 comment('0待上架 1上架 2 已过期') TINYINT(1)"`
+	CreateAt   int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
+	UpdateAt   int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
+	JumpType   int    `json:"jump_type" xorm:"not null comment('跳转类型 0 站内跳转 1 站外跳转') TINYINT(1)"`
+	VideoAddr  tencentCloud.BucketURI `json:"video_addr" xorm:"not null default '' comment('视频地址') VARCHAR(512)"`
+	BannerType int    `json:"banner_type" xorm:"not null default 0 comment('0图片 1视频') TINYINT(1)"`
+}
+
 // 实栗
 func NewBannerMolde(engine *xorm.Session) *BannerModel {
 	return &BannerModel{
@@ -60,11 +80,11 @@ const (
 )
 
 // 获取首页推荐banner 符合上架时间的 (types: 1 首页 2 直播页 3 官网banner)
-func (m *BannerModel) GetRecommendBanners(bannerType int32, tm int64, offset, size int) []*models.Banner {
-	var info []*models.Banner
+func (m *BannerModel) GetRecommendBanners(bannerType int32, tm int64, offset, size int) []*Banner {
+	var info []*Banner
 	if err := m.Engine.SQL(QUERY_BANNER_LIST, bannerType, tm, tm, offset, size).Find(&info); err != nil {
 		log.Log.Errorf("banner_trace: get recommend banners err:%s", err)
-		return []*models.Banner{}
+		return []*Banner{}
 	}
 
 	return info
@@ -106,11 +126,11 @@ const (
 	GET_BANNER_LIST = "SELECT * FROM `banner` ORDER BY id DESC LIMIT ?, ?"
 )
 // 后台获取banner列表
-func (m *BannerModel) GetBannerList(offset, size int) []*models.Banner {
-	var info []*models.Banner
+func (m *BannerModel) GetBannerList(offset, size int) []*Banner {
+	var info []*Banner
 	if err := m.Engine.SQL(GET_BANNER_LIST, offset, size).Find(&info); err != nil {
 		log.Log.Errorf("banner_trace: get banner list err:%s", err)
-		return []*models.Banner{}
+		return []*Banner{}
 	}
 
 	return info

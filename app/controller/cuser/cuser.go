@@ -331,10 +331,10 @@ func (svc *UserModule) GetWorldInfoById(id int32) *models.WorldMap {
 }
 
 // 获取系统默认头像列表
-func (svc *UserModule) GetDefaultAvatarList() []*models.DefaultAvatar {
+func (svc *UserModule) GetDefaultAvatarList() []*muser.DefaultAvatar {
 	list := svc.user.GetSystemAvatarList()
 	if len(list) == 0 {
-		return []*models.DefaultAvatar{}
+		return []*muser.DefaultAvatar{}
 	}
 
 	return list
