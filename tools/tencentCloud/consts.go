@@ -12,5 +12,4 @@ const (
   CRPATH    = "fpv"
   
   PUBLIC_BUCKET = "public-1253904687"
-  PUBLIC_CRPATH = "public"
 )
