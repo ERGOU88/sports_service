@@ -693,10 +693,10 @@ func (svc *VideoModule) GetStatisticTab(info *models.VideoStatistic) string {
 }
 
 // 获取app首页推荐的banner 默认取10条
-func (svc *VideoModule) GetRecommendBanners() []*models.Banner {
+func (svc *VideoModule) GetRecommendBanners() []*mbanner.Banner {
 	banners := svc.banner.GetRecommendBanners(int32(consts.HOMEPAGE_BANNERS), time.Now().Unix(), 0, 10)
 	if len(banners) == 0 {
-		return []*models.Banner{}
+		return []*mbanner.Banner{}
 	}
 
 	return banners

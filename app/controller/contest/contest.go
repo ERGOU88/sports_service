@@ -1,6 +1,7 @@
 package contest
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sort"
@@ -8,7 +9,6 @@ import (
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
-	"sports_service/server/models"
 	"sports_service/server/models/mbanner"
 	"sports_service/server/models/mcommunity"
 	"sports_service/server/models/mcontest"
@@ -17,7 +17,6 @@ import (
 	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"time"
-	"fmt"
 )
 
 type ContestModule struct {
@@ -45,10 +44,10 @@ func New(c *gin.Context) ContestModule {
 }
 
 // 获取赛事首页banner
-func (svc *ContestModule) GetBanner() []*models.Banner {
+func (svc *ContestModule) GetBanner() []*mbanner.Banner {
 	banners := svc.banner.GetRecommendBanners(int32(consts.CONTEST_BANNERS), time.Now().Unix(), 0, 10)
 	if len(banners) == 0 {
-		return []*models.Banner{}
+		return []*mbanner.Banner{}
 	}
 
 	return banners

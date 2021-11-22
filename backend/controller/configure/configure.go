@@ -48,7 +48,7 @@ func (svc *ConfigModule) AddBanner(params *mbanner.AddBannerParams) int {
 
 	svc.banner.Banners.UpdateAt = now
 	svc.banner.Banners.CreateAt = now
-	svc.banner.Banners.Cover = tencentCloud.BucketURI(params.Cover)
+	svc.banner.Banners.Cover = params.Cover
 	svc.banner.Banners.Status = consts.WAIT_LAUNCHE
 	svc.banner.Banners.Title = params.Title
 	svc.banner.Banners.Explain = params.Explain
@@ -58,7 +58,7 @@ func (svc *ConfigModule) AddBanner(params *mbanner.AddBannerParams) int {
 	svc.banner.Banners.EndTime = params.EndTime
 	svc.banner.Banners.Sortorder = params.Sortorder
 	svc.banner.Banners.Type = params.Type
-	svc.banner.Banners.VideoAddr =  tencentCloud.BucketURI(params.VideoAddr)
+	svc.banner.Banners.VideoAddr = params.VideoAddr
 	// todo: 后台可选跳转形式
 	svc.banner.Banners.JumpType = params.JumpType
 	if err := svc.banner.AddBanner(); err != nil {
@@ -78,7 +78,7 @@ func (svc *ConfigModule) UpdateBanner(params *mbanner.UpdateBannerParams) int {
 	}
 
 	svc.banner.Banners.UpdateAt = now
-	svc.banner.Banners.Cover = tencentCloud.BucketURI(params.Cover)
+	svc.banner.Banners.Cover = params.Cover
 	svc.banner.Banners.Status = params.Status
 	svc.banner.Banners.Title = params.Title
 	svc.banner.Banners.Explain = params.Explain
@@ -108,7 +108,7 @@ func (svc *ConfigModule) DelBanner(param *mbanner.DelBannerParam) int {
 }
 
 // 后台获取banner列表 同时判断时间 更新状态
-func (svc *ConfigModule) GetBannerList(page, size int) []*models.Banner {
+func (svc *ConfigModule) GetBannerList(page, size int) []*mbanner.Banner {
 	offset := (page - 1) * size
 	return svc.banner.GetBannerList(offset, size)
 }
@@ -137,7 +137,7 @@ func (svc *ConfigModule) DelSystemAvatar(param *muser.DelSystemAvatarParam) int 
 }
 
 // 后台获取系统头像（一次性获取）
-func (svc *ConfigModule) GetSystemAvatars() []*models.DefaultAvatar {
+func (svc *ConfigModule) GetSystemAvatars() []*muser.DefaultAvatar {
 	return svc.user.GetSystemAvatarList()
 }
 
