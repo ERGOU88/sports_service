@@ -13,7 +13,8 @@ import (
 func CosTempAccess(c *gin.Context) {
   reply := errdef.New(c)
   client := tencentCloud.New(consts.TX_CLOUD_COS_SECRET_ID, consts.TX_CLOUD_COS_SECRET_KEY, consts.TMS_API_DOMAIN)
-  info, err := client.GetCosTempAccess("ap-shanghai")
+  uploadType := c.DefaultQuery("upload_type", "private")
+  info, err := client.GetCosTempAccess("ap-shanghai", uploadType)
   if err != nil {
     log.Log.Errorf("cloud_trace: get cos temp access err:%s", err)
     reply.Response(http.StatusOK, errdef.CLOUD_COS_ACCESS_FAIL)

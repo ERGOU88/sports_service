@@ -12,5 +12,5 @@ const (
   CRPATH    = "fpv"
   
   PUBLIC_BUCKET = "public-1253904687"
-  PUBLIC_CRPATH = "public"
+  PUBLIC_HOST   = "https://public-1253904687.file.myqcloud.com"
 )

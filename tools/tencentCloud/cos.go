@@ -14,12 +14,31 @@ import (
 )
 
 // 获取腾讯对象存储临时通行证
-func (tc *TencentCloud) GetCosTempAccess(region string) (map[string]interface{}, error) {
+func (tc *TencentCloud) GetCosTempAccess(region, uploadType string) (map[string]interface{}, error) {
 	credential := sts.NewClient(
 		tc.secretId,
 		tc.secretKey,
 		nil,
 	)
+	
+	var (
+		resource, imgDir, videoDir, dir, bucket, cdnHost string
+	)
+	switch uploadType {
+	case "public":
+		resource = 	"qcs::cos:" + region + ":uid/" + APPID + ":" + PUBLIC_BUCKET + "/*"
+		dir = ""
+		imgDir = "/images"
+		videoDir = "/videos"
+		bucket = PUBLIC_BUCKET
+		cdnHost = PUBLIC_HOST
+	case "private":
+		resource = 	"qcs::cos:" + region + ":uid/" + APPID + ":" + BUCKET + "/" + CRPATH + "/*"
+		dir = CRPATH
+		imgDir = CRPATH + "/images"
+		videoDir = CRPATH + "/videos"
+		bucket = BUCKET
+	}
 
 	opt := &sts.CredentialOptions{
 		DurationSeconds: int64(2 * time.Hour.Seconds()),
@@ -40,8 +59,9 @@ func (tc *TencentCloud) GetCosTempAccess(region string) (map[string]interface{},
 					Effect: "allow",
 					Resource: []string{
 						//这里改成允许的路径前缀，可以根据自己网站的用户登录态判断允许上传的具体路径，例子： a.jpg 或者 a/* 或者 * (使用通配符*存在重大安全风险, 请谨慎评估使用)
-						"qcs::cos:" + region + ":uid/" + APPID + ":" + BUCKET + "/" + CRPATH + "/*",
+						//"qcs::cos:" + region + ":uid/" + APPID + ":" + BUCKET + "/*",
 						//"allowPrefixes:fpv/images/*:fpv/videos/*",
+						resource,
 					},
 				},
 			},
@@ -63,10 +83,11 @@ func (tc *TencentCloud) GetCosTempAccess(region string) (map[string]interface{},
 		"credentials":  credentials,
 		"expired_time": res.ExpiredTime,
 		"start_time":   res.StartTime,
-		"dir":          CRPATH,
-		"bucket":       BUCKET,
-		"img_dir":      CRPATH + "/images",
-		"video_dir":    CRPATH + "/videos",
+		"dir":          dir,
+		"bucket":       bucket,
+		"img_dir":      imgDir,
+		"video_dir":    videoDir,
+		"cdn_host":     cdnHost,
 	}
 
 	return resp, nil

@@ -39,6 +39,10 @@ func Router(engine *gin.Engine) {
 		video.GET("/subarea/list", VideoSubareaList)
 		// 批量编辑视频信息
 		video.POST("/batch/edit", BatchEditVideoInfo)
+		// 添加视频专辑
+		video.POST("/add/album", AddAlbum)
+		// 用户发布的专辑列表
+		video.GET("/album/list", VideoAlbumList)
 
 	}
 }

@@ -178,8 +178,10 @@ func SetStatusByHotSearch(c *gin.Context) {
 // 获取腾讯cos临时通行证
 func CosTempAccess(c *gin.Context) {
   reply := errdef.New(c)
+  // private 私读私写 / public 公读私写
+  uploadType := c.DefaultQuery("upload_type", "private")
   client := tencentCloud.New(consts.TX_CLOUD_COS_SECRET_ID, consts.TX_CLOUD_COS_SECRET_KEY, consts.TMS_API_DOMAIN)
-  info, err := client.GetCosTempAccess("ap-shanghai")
+  info, err := client.GetCosTempAccess("ap-shanghai", uploadType)
   if err != nil {
     reply.Response(http.StatusOK, errdef.CONFIG_COS_ACCESS_FAIL)
     return

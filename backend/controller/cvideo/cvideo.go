@@ -465,3 +465,41 @@ func (svc *VideoModule) BatchEditVideos(param *mvideo.BatchEditVideos) int {
   svc.engine.Commit()
   return errdef.SUCCESS
 }
+
+// 创建视频专辑
+func (svc *VideoModule) CreateVideoAlbum(param *models.VideoAlbum) (int, *models.VideoAlbum) {
+  if user := svc.user.FindUserByUserid(param.UserId); user == nil {
+    log.Log.Errorf("user_trace: user not found, userId:%s", param.UserId)
+    return errdef.ERROR, nil
+  }
+  
+  svc.video.Album.UserId = param.UserId
+  svc.video.Album.CreateAt = int(time.Now().Unix())
+  svc.video.Album.AlbumName = param.AlbumName
+  if _, err := svc.video.CreateVideoAlbum(); err != nil {
+    log.Log.Errorf("video_trace: create video album fail, err:%s", err)
+    return errdef.ERROR, nil
+  }
+  
+  return errdef.SUCCESS, svc.video.Album
+}
+
+// 获取用户发布的专辑列表
+func (svc *VideoModule) GetVideoAlbumByUserId(userId string, page, size int) (int, []*mvideo.VideoAlbumInfo) {
+  if user := svc.user.FindUserByUserid(userId); user == nil {
+    return errdef.ERROR, []*mvideo.VideoAlbumInfo{}
+  }
+  
+  offset := (page - 1) * size
+  list, err := svc.video.GetVideoAlbumListByUser(userId, offset, size)
+  if err != nil {
+    log.Log.Errorf("video_trace: get video album list by user fail, err:%s, userId:%s", err, userId)
+    return errdef.SUCCESS, []*mvideo.VideoAlbumInfo{}
+  }
+  
+  if list == nil {
+    return errdef.SUCCESS, []*mvideo.VideoAlbumInfo{}
+  }
+  
+  return errdef.SUCCESS, list
+}
