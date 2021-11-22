@@ -14,6 +14,7 @@ import (
 	"sports_service/server/models/mlike"
 	"sports_service/server/models/msection"
 	"sports_service/server/models/muser"
+	"sports_service/server/tools/tencentCloud"
 )
 
 type InformationModule struct {
@@ -62,7 +63,7 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 	for index, information := range list {
 		info := &minformation.InformationResp{
 			Id: information.Id,
-			Cover: information.Cover,
+			Cover:  tencentCloud.BucketURI(information.Cover),
 			Title: information.Title,
 			CreateAt: information.CreateAt,
 			//JumpUrl: information.JumpUrl,
@@ -89,7 +90,7 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 		}
 
 		if user := svc.user.FindUserByUserid(info.UserId); user != nil {
-			info.Avatar = user.Avatar
+			info.Avatar = tencentCloud.BucketURI(user.Avatar)
 			info.NickName = user.NickName
 		}
 
