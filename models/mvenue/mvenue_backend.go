@@ -19,3 +19,8 @@ func (m *VenueModel) UpdateVenueInfo(info *models.VenueInfo) (int64, error) {
 func (m *VenueModel) AddVenueInfo(info *models.VenueInfo) (int64, error) {
 	return m.Engine.InsertOne(info)
 }
+
+// 添加场馆角标配置
+func (m *VenueModel) AddMark(info *models.VenueRecommendConf) (int64, error) {
+	return m.Engine.InsertOne(info)
+}

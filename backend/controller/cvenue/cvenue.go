@@ -174,3 +174,11 @@ func (svc *VenueModule) GetRefundRules() (int, []*models.VenueRefundRules) {
 
 	return errdef.SUCCESS, rules
 }
+
+func (svc *VenueModule) AddMark(param *models.VenueRecommendConf) int {
+	if _, err := svc.venue.AddMark(param); err != nil {
+		return errdef.ERROR
+	}
+	
+	return errdef.SUCCESS
+}

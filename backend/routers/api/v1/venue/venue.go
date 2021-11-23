@@ -74,3 +74,15 @@ func AddVenue(c *gin.Context) {
 	reply.Response(http.StatusOK, svc.AddVenueInfo(param))
 
 }
+
+func AddMark(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &models.VenueRecommendConf{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := cvenue.New(c)
+	reply.Response(http.StatusOK, svc.AddMark(param))
+}

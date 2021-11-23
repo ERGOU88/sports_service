@@ -21,6 +21,8 @@ func Router(engine *gin.Engine) {
 		venue.GET("/refund/rules", RefundRules)
 		// 添加场馆
 		venue.POST("/add", AddVenue)
+		// 添加场馆角标配置
+		venue.POST("/add/mark", AddMark)
 	}
 }
 
