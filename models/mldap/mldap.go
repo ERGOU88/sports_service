@@ -15,10 +15,10 @@ func NewAdModel() *LdapService {
 }
 
 const (
-	URL        = "ad-ds.bluetrans.cn"
-	PORT       = 389
+	URL         = "adfs.bluetrans.cn"
+	PORT        = 5389
 	USER_NAME   = "bluetrans"
-	PASSWORD  = "bluetrans2021"
+	PASSWORD    = "bluetrans2021"
 	BASE_DN     = "dc=bluetrans,dc=local"
 )
 
