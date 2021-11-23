@@ -36,3 +36,12 @@ func (m *VenueModel) AddMark(infos []*models.VenueRecommendConf) (int64, error) 
 func (m *VenueModel) DelMark(ids []int) (int64, error) {
 	return m.Engine.In("id", ids).Delete(&models.VenueRecommendConf{})
 }
+
+func (m *VenueModel) MarkList(venueId string) ([]*models.VenueRecommendConf, error) {
+	var list []*models.VenueRecommendConf
+	if err := m.Engine.Where("venue_id=?", venueId).Find(&list); err != nil {
+		return nil, err
+	}
+	
+	return list, nil
+}

@@ -100,3 +100,12 @@ func DelMark(c *gin.Context) {
 	svc := cvenue.New(c)
 	reply.Response(http.StatusOK, svc.DelMark(param))
 }
+
+func MarkList(c *gin.Context) {
+	reply := errdef.New(c)
+	venueId := c.Query("venue_id")
+	svc := cvenue.New(c)
+	code, list := svc.MarkList(venueId)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}

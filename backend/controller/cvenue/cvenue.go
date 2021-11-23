@@ -190,3 +190,12 @@ func (svc *VenueModule) DelMark(param *mvenue.DelMarkParam) int {
 	
 	return errdef.SUCCESS
 }
+
+func (svc *VenueModule) MarkList(venueId string) (int, []*models.VenueRecommendConf) {
+	list, err := svc.venue.MarkList(venueId)
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+	
+	return errdef.SUCCESS, list
+}
