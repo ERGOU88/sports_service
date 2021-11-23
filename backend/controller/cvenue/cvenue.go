@@ -175,8 +175,16 @@ func (svc *VenueModule) GetRefundRules() (int, []*models.VenueRefundRules) {
 	return errdef.SUCCESS, rules
 }
 
-func (svc *VenueModule) AddMark(param *models.VenueRecommendConf) int {
-	if _, err := svc.venue.AddMark(param); err != nil {
+func (svc *VenueModule) AddMark(param *mvenue.AddMarkParam) int {
+	if _, err := svc.venue.AddMark(param.Conf); err != nil {
+		return errdef.ERROR
+	}
+	
+	return errdef.SUCCESS
+}
+
+func (svc *VenueModule) DelMark(param *mvenue.DelMarkParam) int {
+	if _, err := svc.venue.DelMark(param.Ids); err != nil {
 		return errdef.ERROR
 	}
 	

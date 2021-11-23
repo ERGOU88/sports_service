@@ -7,6 +7,7 @@ import (
 	"sports_service/server/backend/controller/cvenue"
 	"sports_service/server/models"
 	"sports_service/server/models/morder"
+	"sports_service/server/models/mvenue"
 )
 
 func VenueList(c *gin.Context) {
@@ -71,13 +72,14 @@ func AddVenue(c *gin.Context) {
 	}
 
 	svc := cvenue.New(c)
+	reply.Data["venue_id"] = param.Id
 	reply.Response(http.StatusOK, svc.AddVenueInfo(param))
 
 }
 
 func AddMark(c *gin.Context) {
 	reply := errdef.New(c)
-	param := &models.VenueRecommendConf{}
+	param := &mvenue.AddMarkParam{}
 	if err := c.BindJSON(param); err != nil {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
@@ -85,4 +87,16 @@ func AddMark(c *gin.Context) {
 	
 	svc := cvenue.New(c)
 	reply.Response(http.StatusOK, svc.AddMark(param))
+}
+
+func DelMark(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mvenue.DelMarkParam{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := cvenue.New(c)
+	reply.Response(http.StatusOK, svc.DelMark(param))
 }

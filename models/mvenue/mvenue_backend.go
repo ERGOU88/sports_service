@@ -2,6 +2,14 @@ package mvenue
 
 import "sports_service/server/models"
 
+type AddMarkParam struct {
+	Conf []*models.VenueRecommendConf  `json:"conf"`
+}
+
+type DelMarkParam struct {
+	Ids  []int    `json:"ids"`
+}
+
 // 通过场馆id 获取场馆所有商品
 func (m *VenueModel) GetVenueAllProduct() ([]*models.VenueProductInfo, error) {
 	var list []*models.VenueProductInfo
@@ -21,6 +29,10 @@ func (m *VenueModel) AddVenueInfo(info *models.VenueInfo) (int64, error) {
 }
 
 // 添加场馆角标配置
-func (m *VenueModel) AddMark(info *models.VenueRecommendConf) (int64, error) {
-	return m.Engine.InsertOne(info)
+func (m *VenueModel) AddMark(infos []*models.VenueRecommendConf) (int64, error) {
+	return m.Engine.InsertMulti(infos)
+}
+
+func (m *VenueModel) DelMark(ids []int) (int64, error) {
+	return m.Engine.In("id", ids).Delete(&models.VenueRecommendConf{})
 }

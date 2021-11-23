@@ -23,6 +23,8 @@ func Router(engine *gin.Engine) {
 		venue.POST("/add", AddVenue)
 		// 添加场馆角标配置
 		venue.POST("/add/mark", AddMark)
+		// 删除场馆角标配置
+		venue.POST("/del/mark", DelMark)
 	}
 }
 
