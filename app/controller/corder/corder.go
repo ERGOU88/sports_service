@@ -289,6 +289,7 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		// 如果是取消订单 则订单当前状态 应是待支付 需更新状态为 未支付
 		curStatus = consts.ORDER_TYPE_WAIT
 		status = consts.ORDER_TYPE_UNPAID
+		recordStatus = 1
 	}
 
 	now := int(time.Now().Unix())

@@ -50,6 +50,7 @@ type PostPublishParam struct {
 	SectionId         int                 `json:"section_id"`                          // 主模块id
 	TopicIds          []string            `binding:"required" json:"topic_ids"`        // 话题id （多个）
 	AtInfo            []string            `json:"at_info"`                             // @信息 [需@的用户uid]
+	UserId            string              `json:"user_id"`
 	//ContentType       int                 `json:"content_type"`                       // 0 发布 1 转发视频 2 转发帖子
 	//ForwardPost       *ForwardPostInfo    `json:"forward_post"`                       // 转发的帖子内容
 }

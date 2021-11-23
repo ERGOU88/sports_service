@@ -63,7 +63,7 @@ func New(c *gin.Context) PubModule {
 }
 
 // 记录后台发布的视频信息
-func (svc *PubModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPublishParams) int {
+func (svc *PubModule) RecordPubVideoInfo(params *mvideo.VideoPublishParams) int {
 	// 开启事务
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("video_trace: session begin err:%s", err)
@@ -72,21 +72,21 @@ func (svc *PubModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPubl
 
 	// 通过任务id获取用户id 是否为同一个用户
 	uid, err := svc.video.GetUploadUserIdByTaskId(params.TaskId)
-	if err != nil || strings.Compare(uid, userId) != 0 {
-		log.Log.Errorf("video_trace: user not match, cur userId:%s, uid:%s", userId, uid)
+	if err != nil || strings.Compare(uid, params.UserId) != 0 {
+		log.Log.Errorf("video_trace: user not match, cur userId:%s, uid:%s", params.UserId, uid)
 		svc.engine.Rollback()
 		return errdef.VIDEO_PUBLISH_FAIL
 	}
 
 	// 查询用户是否存在
-	if user := svc.user.FindUserByUserid(userId); user == nil {
-		log.Log.Errorf("video_trace: user not found, userId:%s", userId)
+	if user := svc.user.FindUserByUserid(params.UserId); user == nil {
+		log.Log.Errorf("video_trace: user not found, userId:%s", params.UserId)
 		svc.engine.Rollback()
 		return errdef.USER_NOT_EXISTS
 	}
 
 	// 用户发布视频
-	if err := svc.UserPublishVideo(userId, params); err != nil {
+	if err := svc.UserPublishVideo(params.UserId, params); err != nil {
 		log.Log.Errorf("video_trace: video publish failed, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.VIDEO_PUBLISH_FAIL
@@ -95,7 +95,7 @@ func (svc *PubModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPubl
 	info, _ := util.JsonFast.Marshal(params)
 
 	// 记录到缓存 数据规则为 {videoId_info}
-	if err := svc.video.RecordPublishInfo(userId, svc.genVideoTag(svc.video.Videos.VideoId, string(info), svc.video.Videos.PubType), params.TaskId); err != nil {
+	if err := svc.video.RecordPublishInfo(params.UserId, svc.genVideoTag(svc.video.Videos.VideoId, string(info), svc.video.Videos.PubType), params.TaskId); err != nil {
 		log.Log.Errorf("video_trace: record publish info by redis err:%s", err)
 		svc.engine.Rollback()
 		return errdef.VIDEO_PUBLISH_FAIL
@@ -270,7 +270,7 @@ func (svc *PubModule) GetProcedureByBiteRate(biteRate int64) string {
 }
 
 // 发布帖子
-func (svc *PubModule) PublishPosting(userId string, params *mposting.PostPublishParam) int {
+func (svc *PubModule) PublishPosting(params *mposting.PostPublishParam) int {
 	postType := svc.GetPostingType(params)
 	if b := svc.VerifyContentLen(postType, params.Describe, params.Title); !b {
 		log.Log.Error("post_trace: invalid content len")
@@ -289,8 +289,8 @@ func (svc *PubModule) PublishPosting(userId string, params *mposting.PostPublish
 		return errdef.ERROR
 	}
 	//
-	if user := svc.user.FindUserByUserid(userId); user == nil {
-		log.Log.Errorf("post_trace: user not found, userId:%s", userId)
+	if user := svc.user.FindUserByUserid(params.UserId); user == nil {
+		log.Log.Errorf("post_trace: user not found, userId:%s", params.UserId)
 		svc.engine.Rollback()
 		return errdef.USER_NOT_EXISTS
 	}
@@ -320,7 +320,7 @@ func (svc *PubModule) PublishPosting(userId string, params *mposting.PostPublish
 	svc.posting.Posting.CreateAt = now
 	svc.posting.Posting.UpdateAt = now
 	svc.posting.Posting.SectionId = section.Id
-	svc.posting.Posting.UserId = userId
+	svc.posting.Posting.UserId = params.UserId
 	svc.posting.Posting.Status = 1
 	if len(params.ImagesAddr) > 0 {
 		bts, _ := util.JsonFast.Marshal(params.ImagesAddr)
