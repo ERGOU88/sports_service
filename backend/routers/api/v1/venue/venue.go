@@ -72,8 +72,9 @@ func AddVenue(c *gin.Context) {
 	}
 
 	svc := cvenue.New(c)
+	code := svc.AddVenueInfo(param)
 	reply.Data["venue_id"] = param.Id
-	reply.Response(http.StatusOK, svc.AddVenueInfo(param))
+	reply.Response(http.StatusOK, code)
 
 }
 
