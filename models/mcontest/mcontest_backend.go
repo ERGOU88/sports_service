@@ -44,6 +44,17 @@ func (m *ContestModel) GetPlayerList(offset, size int) ([]*models.FpvContestPlay
 	return list, nil
 }
 
+// 获取选手总数
+func (m *ContestModel) GetPlayerCount() int64 {
+	count, err := m.Engine.Count(&models.FpvContestPlayerInformation{})
+	if err != nil {
+		return 0
+	}
+	
+	return count
+}
+
+
 // 添加赛程组别
 func (m *ContestModel) AddContestGroup(group *models.FpvContestScheduleGroup) (int64, error) {
 	return m.Engine.InsertOne(group)

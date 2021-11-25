@@ -42,8 +42,9 @@ func PlayerList(c *gin.Context) {
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 
 	svc := contest.New(c)
-	code, list := svc.GetPlayerList(page, size)
+	code, list, count := svc.GetPlayerList(page, size)
 	reply.Data["list"] = list
+	reply.Data["total"] = count
 	reply.Response(http.StatusOK, code)
 }
 
@@ -187,5 +188,6 @@ func ContestLiveList(c *gin.Context) {
 	svc := contest.New(c)
 	code, list := svc.GetContestLiveList(page, size)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetContestLiveCount()
 	reply.Response(http.StatusOK, code)
 }

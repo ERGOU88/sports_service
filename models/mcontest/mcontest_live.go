@@ -181,7 +181,7 @@ func (m *ContestModel) AddContestLive(live *models.VideoLive) (int64, error) {
 
 // 更新赛事直播信息
 func (m *ContestModel) UpdateContestLive(live *models.VideoLive) (int64, error) {
-	return m.Engine.Update(live)
+	return m.Engine.Where("id=?", live.Id).Update(live)
 }
 
 // 删除赛事直播
@@ -197,4 +197,14 @@ func (m *ContestModel) GetContestLiveList(offset, size int) ([]*models.VideoLive
 	}
 
 	return list, nil
+}
+
+// 获取直播数据总数
+func (m *ContestModel) GetLiveCount() int64 {
+	count, err := m.Engine.Count(&models.VideoLive{})
+	if err != nil {
+		return 0
+	}
+	
+	return count
 }

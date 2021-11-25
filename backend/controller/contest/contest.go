@@ -54,18 +54,18 @@ func (svc *ContestModule) UpdatePlayer(player *models.FpvContestPlayerInformatio
 	return errdef.SUCCESS
 }
 
-func (svc *ContestModule) GetPlayerList(page, size int) (int, []*models.FpvContestPlayerInformation) {
+func (svc *ContestModule) GetPlayerList(page, size int) (int, []*models.FpvContestPlayerInformation, int64) {
 	offset := (page - 1) * size
 	list, err := svc.contest.GetPlayerList(offset, size)
 	if err != nil {
-		return errdef.ERROR, nil
+		return errdef.ERROR, nil, 0
 	}
 
 	if len(list) == 0 {
-		return errdef.SUCCESS, []*models.FpvContestPlayerInformation{}
+		return errdef.SUCCESS, []*models.FpvContestPlayerInformation{}, 0
 	}
 
-	return errdef.SUCCESS, list
+	return errdef.SUCCESS, list, svc.contest.GetPlayerCount()
 }
 
 // 添加组别配置
@@ -394,4 +394,8 @@ func (svc *ContestModule) GetContestLiveList(page, size int) (int, []*models.Vid
 	}
 
 	return errdef.SUCCESS, list
+}
+
+func (svc *ContestModule) GetContestLiveCount() int64 {
+	return svc.contest.GetLiveCount()
 }
