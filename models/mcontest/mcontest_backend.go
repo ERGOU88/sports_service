@@ -31,7 +31,7 @@ func (m *ContestModel) AddPlayer(player *models.FpvContestPlayerInformation) (in
 
 // 更新选手信息
 func (m *ContestModel) UpdatePlayer(player *models.FpvContestPlayerInformation) (int64, error) {
-	return m.Engine.Update(player)
+	return m.Engine.Where("id=?", player.Id).Update(player)
 }
 
 // 获取选手列表
@@ -51,7 +51,7 @@ func (m *ContestModel) AddContestGroup(group *models.FpvContestScheduleGroup) (i
 
 // 更新赛程组别信息
 func (m *ContestModel) UpdateContestGroup(group *models.FpvContestScheduleGroup) (int64, error) {
-	return m.Engine.Update(group)
+	return m.Engine.Where("id=?", group.Id).Update(group)
 }
 
 // 获取赛事 赛程组别配置信息
@@ -92,7 +92,7 @@ func (m *ContestModel) SetIntegralRanking(info *models.FpvContestPlayerIntegralR
 
 // 更新赛事积分排行信息
 func (m *ContestModel) UpdateIntegralRanking(info *models.FpvContestPlayerIntegralRanking) (int64, error) {
-	return m.Engine.Update(info)
+	return m.Engine.Where("id=?", info.Id).Update(info)
 }
 
 // 添加赛事详情
