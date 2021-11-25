@@ -38,6 +38,7 @@ func (svc *ContestModule) AddPlayer(player *models.FpvContestPlayerInformation) 
 		player.ContestId = svc.contest.Contest.Id
 	}
 
+	player.Age = util.GetAge(util.GetTimeFromStrDate(player.Born))
 	if _, err := svc.contest.AddPlayer(player); err != nil {
 		return errdef.ERROR
 	}
