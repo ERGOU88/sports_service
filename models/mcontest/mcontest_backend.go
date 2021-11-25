@@ -2,6 +2,7 @@ package mcontest
 
 import (
 	"sports_service/server/models"
+	"sports_service/server/tools/tencentCloud"
 )
 
 // 添加赛程详情请求参数
@@ -24,6 +25,24 @@ type AddScheduleDetail struct {
 	ContestId        int     `json:"contest_id"`
 }
 
+type FpvContestPlayerInformation struct {
+	Id        int64  `json:"id" xorm:"pk autoincr comment('自增id') BIGINT(20)"`
+	Name      string `json:"name" xorm:"not null comment('选手名称 例如：pdd') VARCHAR(60)"`
+	Photo     tencentCloud.BucketURI `json:"photo" xorm:"not null default '' comment('选手照片') VARCHAR(512)"`
+	Country   string `json:"country" xorm:"not null default '' comment('国家') VARCHAR(128)"`
+	Province  string `json:"province" xorm:"not null default '' comment('省份') VARCHAR(128)"`
+	City      string `json:"city" xorm:"not null default '' comment('城市') VARCHAR(128)"`
+	Age       int    `json:"age" xorm:"not null default 0 comment('年龄') INT(3)"`
+	Hobby     string `json:"hobby" xorm:"not null default '' comment('爱好') VARCHAR(255)"`
+	ContestId int    `json:"contest_id" xorm:"not null default 0 comment('参加的赛事id') index INT(11)"`
+	Status    int    `json:"status" xorm:"not null default 0 comment('0 正常 1 废弃') TINYINT(1)"`
+	IdCard    string `json:"id_card" xorm:"not null default '' comment('证件号码') VARCHAR(255)"`
+	IdType    int    `json:"id_type" xorm:"not null default 0 comment('1 身份证 2 居住证 3 护照 4 港澳') TINYINT(2)"`
+	Gender    int    `json:"gender" xorm:"not null default 0 comment('0 未知 1 男 2 女') TINYINT(1)"`
+	Born      string `json:"born" xorm:"not null default '' comment('出生年月日') VARCHAR(128)"`
+	MobileNum string `json:"mobile_num" xorm:"not null default '' comment('手机号码') VARCHAR(60)"`
+}
+
 // 添加选手信息
 func (m *ContestModel) AddPlayer(player *models.FpvContestPlayerInformation) (int64, error) {
 	return m.Engine.InsertOne(player)
@@ -35,8 +54,8 @@ func (m *ContestModel) UpdatePlayer(player *models.FpvContestPlayerInformation) 
 }
 
 // 获取选手列表
-func (m *ContestModel) GetPlayerList(offset, size int) ([]*models.FpvContestPlayerInformation, error) {
-	var list []*models.FpvContestPlayerInformation
+func (m *ContestModel) GetPlayerList(offset, size int) ([]*FpvContestPlayerInformation, error) {
+	var list []*FpvContestPlayerInformation
 	if err := m.Engine.Where("status=0").Limit(size, offset).Find(&list); err != nil {
 		return nil, err
 	}
@@ -82,6 +101,25 @@ func (m *ContestModel) GetContestGroupList(offset, size int, scheduleId, contest
 	}
 
 	return list, nil
+}
+
+// 获取赛程组别总数
+func (m *ContestModel) GetContestGroupCount(scheduleId, contestId string) int64 {
+	m.Engine.Where("status=0")
+	if scheduleId != "" {
+		m.Engine.Where("schedule_id=?", scheduleId)
+	}
+	
+	if contestId != "" {
+		m.Engine.Where("contest_id=?", contestId)
+	}
+	
+	count, err := m.Engine.Count(&models.FpvContestScheduleGroup{})
+	if err != nil {
+		return 0
+	}
+	
+	return count
 }
 
 

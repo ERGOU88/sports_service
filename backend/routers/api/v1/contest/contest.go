@@ -81,6 +81,7 @@ func ContestGroupList(c *gin.Context) {
 	svc := contest.New(c)
 	code, list := svc.GetContestGroupList(page, size, scheduleId, contestId)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetContestGroupCount(scheduleId, contestId)
 	reply.Response(http.StatusOK, code)
 }
 

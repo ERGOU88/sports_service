@@ -54,7 +54,7 @@ func (svc *ContestModule) UpdatePlayer(player *models.FpvContestPlayerInformatio
 	return errdef.SUCCESS
 }
 
-func (svc *ContestModule) GetPlayerList(page, size int) (int, []*models.FpvContestPlayerInformation, int64) {
+func (svc *ContestModule) GetPlayerList(page, size int) (int, []*mcontest.FpvContestPlayerInformation, int64) {
 	offset := (page - 1) * size
 	list, err := svc.contest.GetPlayerList(offset, size)
 	if err != nil {
@@ -62,7 +62,7 @@ func (svc *ContestModule) GetPlayerList(page, size int) (int, []*models.FpvConte
 	}
 
 	if len(list) == 0 {
-		return errdef.SUCCESS, []*models.FpvContestPlayerInformation{}, 0
+		return errdef.SUCCESS, []*mcontest.FpvContestPlayerInformation{}, 0
 	}
 
 	return errdef.SUCCESS, list, svc.contest.GetPlayerCount()
@@ -113,6 +113,11 @@ func (svc *ContestModule) GetContestGroupList(page, size int, scheduleId, contes
 	}
 
 	return errdef.SUCCESS, list
+}
+
+// 获取赛事分组总数
+func (svc *ContestModule) GetContestGroupCount(scheduleId, contestId string) int64 {
+	return svc.contest.GetContestGroupCount(scheduleId, contestId)
 }
 
 // 获取赛程信息
@@ -382,7 +387,7 @@ func (svc *ContestModule) DelContestLive(id string) int {
 	return errdef.SUCCESS
 }
 
-func (svc *ContestModule) GetContestLiveList(page, size int) (int, []*models.VideoLive) {
+func (svc *ContestModule) GetContestLiveList(page, size int) (int, []*mcontest.VideoLive) {
 	offset := (page - 1) * size
 	list, err := svc.contest.GetContestLiveList(offset, size)
 	if err != nil {
@@ -390,7 +395,7 @@ func (svc *ContestModule) GetContestLiveList(page, size int) (int, []*models.Vid
 	}
 
 	if len(list) == 0 {
-		return errdef.SUCCESS, []*models.VideoLive{}
+		return errdef.SUCCESS, []*mcontest.VideoLive{}
 	}
 
 	return errdef.SUCCESS, list
