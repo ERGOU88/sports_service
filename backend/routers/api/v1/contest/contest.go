@@ -146,6 +146,7 @@ func IntegralRankingList(c *gin.Context) {
 	svc := contest.New(c)
 	code, list := svc.GetIntegralRankingList(page, size)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetIntegralRankingTotal()
 	reply.Response(http.StatusOK, code)
 }
 

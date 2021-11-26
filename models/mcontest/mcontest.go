@@ -198,7 +198,7 @@ func (m *ContestModel) GetScheduleDetailInfo(showType int, contestId, scheduleId
 	if showType == 2 {
 		sql = GET_SCHEDULE_DETAIL_BY_GROUP
 	}
-
+ 
 	if showType == 3 {
 		sql = GET_SCHEDULE_DETAIL_BY_BACKEND
 	}
@@ -226,6 +226,11 @@ func (m *ContestModel) GetIntegralRankingByContestId(contestId string, offset, s
 	}
 
 	return list, nil
+}
+
+// 获取排行榜总数
+func (m *ContestModel) GetIntegralRankingTotal(contestId string) (int64, error) {
+	return m.Engine.Where("status=0 AND contest_id=?", contestId).Count()
 }
 
 // 获取选手总积分

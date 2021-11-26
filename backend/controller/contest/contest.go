@@ -327,6 +327,21 @@ func (svc *ContestModule) GetIntegralRankingList(page, size int) (int, []*mconte
 	return errdef.SUCCESS, list
 }
 
+func (svc *ContestModule) GetIntegralRankingTotal() int64 {
+	// 最新赛事
+	ok, err := svc.contest.GetContestInfo(time.Now().Unix())
+	if !ok || err != nil {
+		return 0
+	}
+	
+	count, err := svc.contest.GetIntegralRankingTotal(fmt.Sprint(svc.contest.Contest.Id))
+	if err != nil {
+		return 0
+	}
+	
+	return count
+}
+
 // 添加赛事直播
 func (svc *ContestModule) AddContestLive(info *models.VideoLive) int {
 	now := int(time.Now().Unix())

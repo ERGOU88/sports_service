@@ -65,7 +65,7 @@ func (m *ContestModel) GetPlayerList(offset, size int) ([]*FpvContestPlayerInfor
 
 // 获取选手总数
 func (m *ContestModel) GetPlayerCount() int64 {
-	count, err := m.Engine.Count(&models.FpvContestPlayerInformation{})
+	count, err := m.Engine.Where("status=0").Count(&models.FpvContestPlayerInformation{})
 	if err != nil {
 		return 0
 	}
