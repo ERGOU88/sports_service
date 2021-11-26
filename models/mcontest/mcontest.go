@@ -230,7 +230,7 @@ func (m *ContestModel) GetIntegralRankingByContestId(contestId string, offset, s
 
 // 获取排行榜总数
 func (m *ContestModel) GetIntegralRankingTotal(contestId string) (int64, error) {
-	return m.Engine.Where("status=0 AND contest_id=?", contestId).Count()
+	return m.Engine.Where("status=0 AND contest_id=?", contestId).Count(&models.FpvContestPlayerInformation{})
 }
 
 // 获取选手总积分
