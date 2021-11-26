@@ -139,6 +139,11 @@ func (m *ContestModel) SetIntegralRanking(info *models.FpvContestPlayerIntegralR
 	return m.Engine.InsertOne(info)
 }
 
+// 获取选手积分排行数据
+func (m *ContestModel) GetIntegralRankingByPlayerId(contestId, playerId string) (bool, error) {
+	return m.Engine.Where("contest_id=? AND player_id=?", contestId, playerId).Get(m.IntegralRanking)
+}
+
 // 更新赛事积分排行信息
 func (m *ContestModel) UpdateIntegralRanking(info *models.FpvContestPlayerIntegralRanking) (int64, error) {
 	return m.Engine.Where("id=?", info.Id).Update(info)

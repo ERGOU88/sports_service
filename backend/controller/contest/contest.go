@@ -276,6 +276,11 @@ func (svc *ContestModule) SetIntegralRanking(info *models.FpvContestPlayerIntegr
 	if ok && err == nil {
 		info.ContestId = svc.contest.Contest.Id
 	}
+	
+	ok, err = svc.contest.GetIntegralRankingByPlayerId(fmt.Sprint(svc.contest.Contest.Id), fmt.Sprint(info.PlayerId))
+	if ok && err == nil {
+		return errdef.CONTEST_INTEGRAL_RANK_EXISTS
+	}
 
 	if _, err := svc.contest.SetIntegralRanking(info); err != nil {
 		return errdef.ERROR
