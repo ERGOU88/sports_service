@@ -319,8 +319,6 @@ func (svc *ContestModule) GetIntegralRankingList(page, size int) (int, []*mconte
 	for _, item := range list {
 		item.TotalIntegralStr = fmt.Sprintf("%.3f", float64(item.TotalIntegral) / 1000)
 		item.BestScoreStr = fmt.Sprintf("%.3f", float64(item.BestScore) / 1000)
-
-		item.TotalIntegralStr = util.ResolveTimeByMilliSecond(item.TotalIntegral)
 		item.BestScoreStr = util.ResolveTimeByMilliSecond(item.BestScore)
 		item.TotalIntegral = 0
 		item.BestScore = 0
