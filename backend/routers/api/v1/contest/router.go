@@ -21,7 +21,7 @@ func Router(engine *gin.Engine) {
 		// 获取赛程信息
 		contest.GET("/schedule", ContestSchedule)
 		// 添加赛程详情
-		contest.GET("/add/schedule/detail", AddContestScheduleDetail)
+		contest.POST("/add/schedule/detail", AddContestScheduleDetail)
 		// 赛程详情列表
 		contest.GET("/schedule/detail/list", ContestScheduleDetailList)
 		// 设置赛事积分排行
