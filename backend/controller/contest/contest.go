@@ -166,6 +166,7 @@ func (svc *ContestModule) AddContestScheduleDetail(param *mcontest.AddScheduleDe
 				CreateAt: now,
 				UpdateAt: now,
 				Ranking: param.Ranking,
+				ContestId: svc.contest.Contest.Id,
 			}
 
 			if round == 0 {
