@@ -93,7 +93,7 @@ func StringToFloat(v string) (d float32, err error) {
 }
 
 func StringToFloat64(v string) (d float64, err error) {
-	d, err = O
+	d, err = strconv.ParseFloat(v, 10)
 	return
 }
 
