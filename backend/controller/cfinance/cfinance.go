@@ -475,6 +475,8 @@ func (svc *FinanceModule) GetChartStat(queryMinDate, queryMaxDate string) (int, 
 		Title: "订单均价",
 		List: svc.ResultInfoByDate(salesByDate, days, 0, 3),
 	})
+	
+	result["order_result_list"] = orderResultList
 
 	return errdef.SUCCESS, result
 }
