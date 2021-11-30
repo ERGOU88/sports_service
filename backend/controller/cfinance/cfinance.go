@@ -69,18 +69,25 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 			Status: item.Status,
 		}
 
-		extra := mappointment.OrderResp{}
-		if err := util.JsonFast.UnmarshalFromString(item.Extra, &extra); err == nil {
-			info.MobileNum = extra.MobileNum
+		extra := &mappointment.OrderResp{}
+		if err := util.JsonFast.UnmarshalFromString(item.Extra, extra); err != nil {
+		
 		}
-
+		
+		if user := svc.user.FindUserByUserid(item.UserId); user != nil {
+			info.MobileNum = util.HideMobileNum(fmt.Sprint(svc.user.User.MobileNum))
+		}
+		
 		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.Id))
 		if ok && err == nil {
 			info.VenueName = svc.venue.Venue.VenueName
 		}
 
 		productName := svc.GetProductName(item.ProductType)
-		info.Detail = fmt.Sprintf("%s * %d", productName, extra.Count)
+		if extra != nil {
+			info.Detail = fmt.Sprintf("%s * %d", productName, extra.Count)
+		}
+		
 		ok, err = svc.pay.GetPaymentChannel(item.PayChannelId)
 		if ok && err == nil {
 			info.PayChannel = svc.pay.PayChannel.Title
@@ -90,6 +97,16 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 	}
 
 	return errdef.SUCCESS, res
+}
+
+// 订单总数
+func (svc *FinanceModule) GetOrderTotal() int64 {
+	count, err := svc.order.GetOrderCount(nil)
+	if err != nil {
+		return 0
+	}
+	
+	return count
 }
 
 // 获取退款流水列表
@@ -102,6 +119,7 @@ func (svc *FinanceModule) GetRefundList(orderId string, page, size int) (int, []
 
 	list, err := svc.order.GetRefundRecordList(orderId, offset, size)
 	if err != nil {
+		log.Log.Errorf("finance_trace: get refund list fail, err:%s", err)
 		return errdef.ERROR, nil
 	}
 
@@ -110,44 +128,49 @@ func (svc *FinanceModule) GetRefundList(orderId string, page, size int) (int, []
 	}
 
 	for _, item := range list {
-		info := &morder.RefundInfo{
-			Id:  item.Id,
-			PayOrderId: item.PayOrderId,
-			AmountCn: fmt.Sprintf("%.2f", float64(item.Amount)/100),
-			CreateAtCn: time.Unix(item.CreateAt, 0).Format(consts.FORMAT_TM),
-			RefundAmountCn: fmt.Sprintf("%.2f", float64(item.RefundAmount)/100),
-			Status: item.Status,
-			RefundFeeCn: fmt.Sprintf("%.2f", float64(item.RefundFee)/100),
-		}
-
-		extra := mappointment.OrderResp{}
-		if err := util.JsonFast.UnmarshalFromString(item.Extra, &extra); err == nil {
-			info.MobileNum = extra.MobileNum
+		item.AmountCn = fmt.Sprintf("%.2f", float64(item.Amount)/100)
+		item.CreateAtCn = time.Unix(item.CreateAt, 0).Format(consts.FORMAT_TM)
+		item.RefundAmountCn = fmt.Sprintf("%.2f", float64(item.RefundAmount)/100)
+		item.RefundFeeCn = fmt.Sprintf("%.2f", float64(item.RefundFee)/100)
+		
+		if user := svc.user.FindUserByUserid(item.UserId); user != nil {
+			item.MobileNum = util.HideMobileNum(fmt.Sprint(svc.user.User.MobileNum))
 		}
 
 		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.Id))
 		if ok && err == nil {
-			info.VenueName = svc.venue.Venue.VenueName
+			item.VenueName = svc.venue.Venue.VenueName
 		}
 
-		info.Detail = svc.GetProductName(item.ProductType)
+		item.Detail = svc.GetProductName(item.ProductType)
 
-		if info.OrderType == 1001 {
-			info.OrderTypeCn = "线上退单"
+		if item.OrderType == 1001 {
+			item.OrderTypeCn = "线上退单"
 		}
 
-		if info.OrderType == 1002 {
-			info.OrderTypeCn = "线下退单"
+		if item.OrderType == 1002 {
+			item.OrderTypeCn = "线下退单"
 		}
 
 		ok, err = svc.pay.GetPaymentChannel(item.RefundChannelId)
 		if ok && err == nil {
-			info.RefundChannelCn = svc.pay.PayChannel.Title
+			item.RefundChannelCn = svc.pay.PayChannel.Title
 		}
 
 	}
 
 	return errdef.SUCCESS, list
+}
+
+// 退款记录总数
+func (svc *FinanceModule) GetRefundRecordTotal() int64 {
+	count, err := svc.order.GetRefundRecordTotal()
+	if err != nil {
+		log.Log.Errorf("finance_trace: get refund total fail, err:%s", err)
+		return 0
+	}
+	
+	return count
 }
 
 // 获取订单收益流水[已成功/已付款]

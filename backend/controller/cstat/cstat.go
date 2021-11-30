@@ -99,7 +99,7 @@ func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, 
 		return errdef.ERROR, mstat.HomePageInfo{}
 	}
 
-	totalOrder, err := svc.order.GetOrderCount()
+	totalOrder, err := svc.order.GetOrderCount([]int{2, 3, 4, 5, 6})
 	if err != nil {
 		log.Log.Errorf("stat_trace: get order count fail, err:%s", err)
 		return errdef.ERROR, mstat.HomePageInfo{}
