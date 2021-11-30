@@ -359,6 +359,7 @@ func (svc *FinanceModule) TopStat() (int, *morder.OrderStat){
 	
 	// 本周新增
 	var weekNewUser int
+	orderStat.TopInfo["week_new_users"] = 0
 	weekUser, err := svc.order.GetVenueNewUsers(weekDay.Format(consts.FORMAT_DATE), today, "")
 	if err == nil && weekUser != nil {
 		weekNewUser = len(weekUser)
@@ -374,6 +375,7 @@ func (svc *FinanceModule) TopStat() (int, *morder.OrderStat){
 	
 	// 上周新增场馆用户
 	var lastWeekNewUser int
+	orderStat.TopInfo["last_week_new_users"] = 0
 	lastWeekDay := weekDay.AddDate(0, 0, -1)
 	lastWeekUser, err := svc.order.GetVenueNewUsers(lastWeekDay.AddDate(0, 0, -6).Format(consts.FORMAT_DATE),
 		lastWeekDay.Format(consts.FORMAT_DATE), "")
