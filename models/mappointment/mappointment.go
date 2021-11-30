@@ -523,3 +523,8 @@ func (m *AppointmentModel) UpdateAppointmentRecordStatus(orderId string, now, st
 
 	return nil
 }
+
+// 更新预约流水记录信息
+func (m *AppointmentModel) UpdateAppointmentRecordInfo(cols string, record *models.VenueCardRecord) (int64, error) {
+	return m.Engine.Where("id=?", record.Id).Cols(cols).Update(record)
+}

@@ -120,7 +120,7 @@ func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, 
 	homepageInfo.TopInfo["new_users"] = newUsers.Count
 	homepageInfo.TopInfo["total_order"] = totalOrder
 	homepageInfo.TopInfo["daily_loyalty_users"] = dailyLoyaltyUsers
-
+	
 	dauList, err := svc.stat.GetDAUByDays(minDate, maxDate)
 	if err != nil {
 		log.Log.Errorf("stat_trace: get dau by days fail, err:%s", err)

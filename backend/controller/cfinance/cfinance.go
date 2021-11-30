@@ -15,6 +15,7 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
 	"sports_service/server/util"
+	"strings"
 	"time"
 )
 
@@ -353,6 +354,44 @@ func (svc *FinanceModule) TopStat() (int, *morder.OrderStat){
 		return errdef.ERROR, orderStat
 	}
 	orderStat.TopInfo["week_order"] = weekOrder
+	
+	weekDay := time.Now().AddDate(0, 0, -6)
+	
+	// 本周新增
+	var weekNewUser int
+	weekUser, err := svc.order.GetVenueNewUsers(weekDay.Format(consts.FORMAT_DATE), today, "")
+	if err == nil && weekUser != nil {
+		weekNewUser = len(weekUser)
+		orderStat.TopInfo["week_new_users"] = fmt.Sprintf("%.2f", float64(weekNewUser) / 7)
+		// 之前是否已成为场馆用户
+		beforeUser, err := svc.order.GetVenueNewUsers("",
+			weekDay.AddDate(0, 0, -1).Format(consts.FORMAT_DATE), strings.Join(weekUser, ","))
+		if err == nil && beforeUser != nil {
+			weekNewUser = len(weekUser) - len(beforeUser)
+			orderStat.TopInfo["week_new_users"] = fmt.Sprintf("%.2f", float64(weekNewUser) / 7)
+		}
+	}
+	
+	// 上周新增场馆用户
+	var lastWeekNewUser int
+	lastWeekDay := weekDay.AddDate(0, 0, -1)
+	lastWeekUser, err := svc.order.GetVenueNewUsers(lastWeekDay.AddDate(0, 0, -6).Format(consts.FORMAT_DATE),
+		lastWeekDay.Format(consts.FORMAT_DATE), "")
+	if err == nil && lastWeekUser != nil {
+		lastWeekNewUser = len(lastWeekUser)
+		orderStat.TopInfo["last_week_new_users"] = fmt.Sprintf("%.2f", float64(lastWeekNewUser) / 7)
+		// 之前是否已成为场馆用户
+		beforeUser, err := svc.order.GetVenueNewUsers("",
+			lastWeekDay.AddDate(0, 0, -8).Format(consts.FORMAT_DATE), strings.Join(lastWeekUser, ","))
+		log.Log.Error("#######err:%s", err)
+		if err == nil && beforeUser != nil {
+			lastWeekNewUser = len(lastWeekUser) - len(beforeUser)
+			// 7日平均
+			orderStat.TopInfo["last_week_new_users"] = fmt.Sprintf("%.2f", float64(lastWeekNewUser) / 7)
+		}
+	}
+	
+	orderStat.TopInfo["user_rate"] = svc.GetRingRatio(int64(weekNewUser), int64(lastWeekNewUser))
 
 	return errdef.SUCCESS, orderStat
 }
@@ -436,19 +475,19 @@ func (svc *FinanceModule) GetChartStat(queryMinDate, queryMaxDate string) (int, 
 	var salesResultList []morder.ResultList
 	salesResultList = append(salesResultList, morder.ResultList{
 		Title: "销售总额",
-		List:  svc.ResultInfoByDate(salesByDate, days, 0, 0),
+		List:  svc.ResultInfoByDate(salesByDate, days, 0, 0, maxDate),
 	}, morder.ResultList{
 		Title: "课程预约",
-		List:  svc.ResultInfoByDate(salesByProduct, days, consts.ORDER_TYPE_APPOINTMENT_COURSE, 1),
+		List:  svc.ResultInfoByDate(salesByProduct, days, consts.ORDER_TYPE_APPOINTMENT_COURSE, 1, maxDate),
 	}, morder.ResultList{
 		Title: "私教预约",
-		List:  svc.ResultInfoByDate(salesByProduct, days, consts.ORDER_TYPE_APPOINTMENT_COACH, 1),
+		List:  svc.ResultInfoByDate(salesByProduct, days, consts.ORDER_TYPE_APPOINTMENT_COACH, 1, maxDate),
 	},morder.ResultList{
 		Title: "实体商品",
-		List:  svc.ResultInfoByDate(salesByProduct, days, consts.ORDER_TYPE_PHYSICAL_GOODS, 1),
+		List:  svc.ResultInfoByDate(salesByProduct, days, consts.ORDER_TYPE_PHYSICAL_GOODS, 1, maxDate),
 	},morder.ResultList{
 		Title: "卡类商品[次卡/月卡/季卡/半年卡/年卡]",
-		List:  svc.ResultInfoByDate(salesByProduct, days, 2000, 1),
+		List:  svc.ResultInfoByDate(salesByProduct, days, 2000, 1, maxDate),
 	})
 
 	result["sales_result_list"] = salesResultList
@@ -457,23 +496,23 @@ func (svc *FinanceModule) GetChartStat(queryMinDate, queryMaxDate string) (int, 
 	var payChannelResultList []morder.ResultList
 	payChannelResultList = append(payChannelResultList, morder.ResultList{
 		Title: "收款总额",
-		List: svc.ResultInfoByDate(salesByDate, days, 0, 0),
+		List: svc.ResultInfoByDate(salesByDate, days, 0, 0, maxDate),
 	}, morder.ResultList{
 		Title: "支付宝支付",
-		List:  svc.ResultInfoByDate(salesByDate, days, 1, 2),
+		List:  svc.ResultInfoByDate(salesByDate, days, 1, 2, maxDate),
 	}, morder.ResultList{
 		Title: "微信支付",
-		List:  svc.ResultInfoByDate(salesByDate, days, 2, 2),
+		List:  svc.ResultInfoByDate(salesByDate, days, 2, 2, maxDate),
 	}, morder.ResultList{
 		Title: "现金支付",
-		List:  svc.ResultInfoByDate(salesByDate, days, 3, 2),
+		List:  svc.ResultInfoByDate(salesByDate, days, 3, 2, maxDate),
 	})
 	result["pay_result_list"] = payChannelResultList
 
 	var orderResultList []morder.ResultList
 	orderResultList = append(orderResultList, morder.ResultList{
 		Title: "订单均价",
-		List: svc.ResultInfoByDate(salesByDate, days, 0, 3),
+		List: svc.ResultInfoByDate(salesByDate, days, 0, 3, maxDate),
 	})
 	
 	result["order_result_list"] = orderResultList
@@ -495,10 +534,15 @@ func (svc *FinanceModule) GetRingRatio(current, before int64) string {
 }
 
 
-func (svc *FinanceModule) ResultInfoByDate(data []*morder.SalesDetail, days, condition, queryType int) map[string]interface{} {
+func (svc *FinanceModule) ResultInfoByDate(data []*morder.SalesDetail, days, condition, queryType int, maxDate string) map[string]interface{} {
 	mapList := make(map[string]interface{})
+	max, err := time.Parse(consts.FORMAT_DATE, maxDate)
+	if err != nil {
+		return nil
+	}
+	
 	for i := 0; i <= days; i++ {
-		date := time.Now().AddDate(0, 0, -i).Format("2006-01-02")
+		date := max.AddDate(0, 0, -i).Format("2006-01-02")
 		for _, v := range data {
 			if v.Dt != date {
 				continue

@@ -161,9 +161,47 @@ func (m *OrderModel) GetOrderNum(minDate, maxDate string) (int64, error) {
 	return m.Engine.Where("date(from_unixtime(create_at)) >= ? AND date(from_unixtime(create_at)) <=?", minDate, maxDate).In("status", []int{2,3,4,5,6}).Count(m.Order)
 }
 
+const (
+	VENUE_NEW_USERS = "SELECT DISTINCT (r.use_user_id) as user_id FROM " +
+	"(SELECT use_user_id FROM venue_appointment_record WHERE " +
+		"date(from_unixtime(create_at)) >= ? AND date(from_unixtime(create_at)) <= ? UNION ALL " +
+    " SELECT use_user_id FROM venue_card_record WHERE date(from_unixtime(create_at)) >= ? AND " +
+	" date(from_unixtime(create_at)) <= ?) r"
+)
 // 通过日期获取场馆新增用户
-func (m *OrderModel) GetDailyNewUsers() {
-
+func (m *OrderModel) GetVenueNewUsers(minDate, maxDate, userIds string) ([]string, error) {
+	sql := "SELECT DISTINCT (r.use_user_id) as user_id FROM " +
+		"(SELECT use_user_id FROM venue_appointment_record WHERE 1=1 "
+	if minDate != "" {
+		sql += fmt.Sprintf(" AND date(from_unixtime(create_at)) >= %s ", minDate)
+	}
+	
+	if maxDate != "" {
+		sql += fmt.Sprintf(" AND date(from_unixtime(create_at)) <= %s ", maxDate)
+	}
+	
+	sql += " UNION ALL " +
+		" SELECT use_user_id FROM venue_card_record WHERE 1=1 "
+	if minDate != "" {
+		sql += fmt.Sprintf(" AND date(from_unixtime(create_at)) >= %s ", minDate)
+	}
+	
+	if maxDate != "" {
+		sql += fmt.Sprintf(" AND date(from_unixtime(create_at)) <= %s ", maxDate)
+	}
+	
+	sql += ") r"
+	
+	if userIds != "" {
+		sql += fmt.Sprintf(" WHERE user_id in (%s)", userIds)
+	}
+	
+	var res []string
+	if err := m.Engine.SQL(sql).Find(&res); err != nil {
+		return nil, err
+	}
+	
+	return res, nil
 }
 
 const (

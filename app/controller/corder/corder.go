@@ -468,7 +468,16 @@ func (svc *OrderModule) CardOrderProcess(changeType, now int, orderId string) er
 				log.Log.Errorf("payNotify_trace: update vip info fail, orderId:%s, err:%s", orderId, err)
 				return err
 			}
+			
+			cols := "use_user_id"
+			card.UseUserId = svc.order.Order.UserId
+			if _, err := svc.appointment.UpdateAppointmentRecordInfo(cols, card); err != nil {
+				log.Log.Errorf("payNotify_trace: update record info fail, id:%d, err:%s", card.Id, err)
+				return err
+			}
 		}
+		
+		
 	}
 
 	return nil
