@@ -5,6 +5,7 @@ import (
   "net/http/httptest"
   "sports_service/server/dao"
   "testing"
+  "github.com/davecgh/go-spew/spew"
 )
 
 func init() {
@@ -33,6 +34,7 @@ func TestGetAttentionUserList(t *testing.T) {
   svc := New(c)
   list := svc.GetAttentionUserList("202009101933004667", 1, 10)
   t.Logf("\n attention list len :%d", len(list))
+  spew.Dump(list)
 }
 
 func BenchmarkAttentionUserList(b *testing.B) {

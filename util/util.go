@@ -8,6 +8,7 @@ import (
 	"github.com/json-iterator/go"
 	"github.com/rs/xid"
 	"github.com/zheng-ji/goSnowFlake"
+	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/html"
 	"io"
 	"log"
@@ -473,4 +474,26 @@ func RenderNode(n *html.Node) string {
 func TruncFloat(f float64, prec int) float64 {
 	x := math.Pow10(prec)
 	return math.Trunc(f * x) / x
+}
+
+var base = []byte("0123456789")
+// 6位数字
+func GenQrcodeInfo() string {
+	rand.Seed(time.Now().Unix())
+	id := make([]byte, 6)
+	for i := 0; i < 6; i++ {
+		id[i] = base[rand.Int()%len(base)]
+	}
+	
+	return string(id)
+}
+
+func GenPassword(pwd string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+	
+	return string(hash), nil
 }

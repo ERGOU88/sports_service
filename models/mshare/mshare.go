@@ -59,7 +59,7 @@ type SharePostInfo struct {
 	UserId        string                      `json:"user_id"`                 // up主id
 	Nickname      string                      `json:"nick_name"`               // up主昵称
 	Avatar        tencentCloud.BucketURI                      `json:"avatar"`                  // up主头像
-	ImagesAddr    []string                    `json:"images_addr,omitempty"`   // 图片地址
+	ImagesAddr    []tencentCloud.BucketURI                     `json:"images_addr,omitempty"`   // 图片地址
 }
 
 func NewShareModel(engine *xorm.Session) *ShareModel {

@@ -53,12 +53,17 @@ func (m *OrderModel) UpdateRefundRate(id, rate int) (int64, error) {
 	return m.Engine.Where("id=?", id).Update(rules)
 }
 
-// 获取订单数量（所有场馆 已付款的订单）
-func (m *OrderModel) GetOrderCount() (int64, error) {
+// 获取订单数量（所有场馆）
+func (m *OrderModel) GetOrderCount(status []int) (int64, error) {
 	if m.Order.UserId != "" {
 		m.Engine.Where("user_id=?", m.Order.UserId)
 	}
-	return m.Engine.In("status", []int{2, 3, 4, 5, 6}).Count(&models.VenuePayOrders{})
+	
+	if len(status) > 0 {
+		m.Engine.In("status", status)
+	}
+	
+	return m.Engine.Count(&models.VenuePayOrders{})
 }
 
 // 获取订单列表
@@ -94,11 +99,13 @@ type RefundInfo struct {
 	CreateAtCn         string     `json:"create_at_cn"`
 	MobileNum          string     `json:"mobile_num"`
 	VenueName          string     `json:"venue_name"`
+	UserId             string     `json:"user_id"`
 }
 
 // 获取退款列表
 func (m *OrderModel) GetRefundRecordList(orderId string, offset, size int) ([]*RefundInfo, error) {
-	sql :=  "SELECT vrc.id, vrc.refund_channel_id,vrc.remark,vrc.create_at,o.order_type, o.refund_amount, " +
+	sql :=  "SELECT vrc.id, vrc.pay_order_id," +
+		" vrc.refund_channel_id,vrc.remark,vrc.create_at,o.order_type,o.user_id, o.refund_amount, " +
 		"o.refund_fee, o.status, o.extra,o.pay_order_id,o.product_type,o.amount FROM venue_pay_orders AS o " +
 		"LEFT JOIN venue_refund_record AS vrc ON vrc.pay_order_id = o.pay_order_id WHERE o.refund_amount >0 "
 
@@ -113,6 +120,23 @@ func (m *OrderModel) GetRefundRecordList(orderId string, offset, size int) ([]*R
 	}
 
 	return list, nil
+}
+
+// 获取退款记录总数
+func (m *OrderModel) GetRefundRecordTotal() (int64, error) {
+	sql := "SELECT count(1) as count FROM venue_pay_orders AS o " +
+		"LEFT JOIN venue_refund_record AS vrc ON vrc.pay_order_id = o.pay_order_id WHERE o.refund_amount >0 "
+	type stat struct {
+		Count   int64
+	}
+	
+	tmp := stat{}
+	ok, err := m.Engine.SQL(sql).Get(&tmp)
+	if !ok || err != nil {
+		return 0, err
+	}
+	
+	return tmp.Count, nil
 }
 
 // 获取订单收益流水[已付款/已退款]
@@ -161,9 +185,47 @@ func (m *OrderModel) GetOrderNum(minDate, maxDate string) (int64, error) {
 	return m.Engine.Where("date(from_unixtime(create_at)) >= ? AND date(from_unixtime(create_at)) <=?", minDate, maxDate).In("status", []int{2,3,4,5,6}).Count(m.Order)
 }
 
+const (
+	VENUE_NEW_USERS = "SELECT DISTINCT (r.use_user_id) as user_id FROM " +
+	"(SELECT use_user_id FROM venue_appointment_record WHERE " +
+		"date(from_unixtime(create_at)) >= ? AND date(from_unixtime(create_at)) <= ? UNION ALL " +
+    " SELECT use_user_id FROM venue_card_record WHERE date(from_unixtime(create_at)) >= ? AND " +
+	" date(from_unixtime(create_at)) <= ?) r"
+)
 // 通过日期获取场馆新增用户
-func (m *OrderModel) GetDailyNewUsers() {
-
+func (m *OrderModel) GetVenueNewUsers(minDate, maxDate, userIds string) ([]string, error) {
+	sql := "SELECT DISTINCT (r.use_user_id) as user_id FROM " +
+		"(SELECT use_user_id FROM venue_appointment_record WHERE 1=1 "
+	if minDate != "" {
+		sql += fmt.Sprintf(" AND date(from_unixtime(create_at)) >= %s ", minDate)
+	}
+	
+	if maxDate != "" {
+		sql += fmt.Sprintf(" AND date(from_unixtime(create_at)) <= %s ", maxDate)
+	}
+	
+	sql += " UNION ALL " +
+		" SELECT use_user_id FROM venue_card_record WHERE 1=1 "
+	if minDate != "" {
+		sql += fmt.Sprintf(" AND date(from_unixtime(create_at)) >= %s ", minDate)
+	}
+	
+	if maxDate != "" {
+		sql += fmt.Sprintf(" AND date(from_unixtime(create_at)) <= %s ", maxDate)
+	}
+	
+	sql += ") r"
+	
+	if userIds != "" {
+		sql += fmt.Sprintf(" WHERE user_id in (%s)", userIds)
+	}
+	
+	var res []string
+	if err := m.Engine.SQL(sql).Find(&res); err != nil {
+		return nil, err
+	}
+	
+	return res, nil
 }
 
 const (

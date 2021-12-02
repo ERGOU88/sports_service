@@ -64,6 +64,7 @@ type ScheduleListDetailResp struct {
 	IsWin      int    `json:"is_win"`
 	ContestId  int    `json:"contest_id"`
 	Ranking    int    `json:"ranking"`
+	Ids        []int64 `json:"ids,omitempty"`
 
 	BestScore          string    `json:"best_score"`
 	RoundOneScore      string    `json:"round_one_score"`
@@ -179,15 +180,15 @@ func (m *ContestModel) GetScheduleDetail(contestId, scheduleId string) ([]*model
 const (
 	GET_SCHEDULE_DETAIL_BY_SCORE = "SELECT p.id AS player_id, p.name AS player_name, p.photo, cs.* FROM fpv_contest_player_information AS p " +
 		"LEFT JOIN fpv_contest_schedule_detail AS cs ON p.id = cs.player_id AND cs.contest_id=? AND cs.schedule_id=? " +
-		" WHERE p.status = 0 ORDER BY cs.score is null, cs.score ASC, ISNULL(cs.ranking),cs.ranking ASC, p.id ASC"
+		" WHERE p.status = 0 ORDER BY cs.id DESC, cs.score is null, cs.score ASC, ISNULL(cs.ranking),cs.ranking ASC, p.id ASC"
 
 	GET_SCHEDULE_DETAIL_BY_GROUP = "SELECT cs.*, p.id AS player_id, p.name AS player_name, p.photo FROM " +
 		"fpv_contest_schedule_detail AS cs LEFT JOIN fpv_contest_player_information AS p " +
-		"ON cs.player_id=p.id WHERE cs.contest_id=? AND cs.schedule_id=? ORDER BY group_num ASC, score ASC"
+		"ON cs.player_id=p.id WHERE cs.contest_id=? AND cs.schedule_id=? ORDER BY cs.id DESC, group_num ASC, score ASC"
 
 	GET_SCHEDULE_DETAIL_BY_BACKEND = "SELECT p.id AS player_id, p.name AS player_name, p.photo, cs.* FROM " +
 		"fpv_contest_schedule_detail AS cs LEFT JOIN fpv_contest_player_information AS p ON p.id = cs.player_id " +
-		"AND cs.contest_id=? AND cs.schedule_id=? WHERE p.status = 0 ORDER BY cs.score is null, cs.score ASC, " +
+		"AND cs.contest_id=? AND cs.schedule_id=? WHERE p.status = 0 ORDER BY cs.id DESC, cs.score is null, cs.score ASC, " +
 		"ISNULL(cs.ranking),cs.ranking ASC, p.id ASC"
 
 
@@ -198,7 +199,7 @@ func (m *ContestModel) GetScheduleDetailInfo(showType int, contestId, scheduleId
 	if showType == 2 {
 		sql = GET_SCHEDULE_DETAIL_BY_GROUP
 	}
-
+ 
 	if showType == 3 {
 		sql = GET_SCHEDULE_DETAIL_BY_BACKEND
 	}
@@ -209,6 +210,11 @@ func (m *ContestModel) GetScheduleDetailInfo(showType int, contestId, scheduleId
 	}
 
 	return list, nil
+}
+
+// 删除赛程详情
+func (m *ContestModel) DelScheduleDetail(ids []int) (int64, error) {
+	return m.Engine.In("id", ids).Delete(&models.FpvContestScheduleDetail{})
 }
 
 const (
@@ -226,6 +232,11 @@ func (m *ContestModel) GetIntegralRankingByContestId(contestId string, offset, s
 	}
 
 	return list, nil
+}
+
+// 获取排行榜总数
+func (m *ContestModel) GetIntegralRankingTotal(contestId string) (int64, error) {
+	return m.Engine.Where("status=0 AND contest_id=?", contestId).Count(&models.FpvContestPlayerInformation{})
 }
 
 // 获取选手总积分

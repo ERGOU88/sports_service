@@ -7,6 +7,8 @@ import (
 	"sports_service/server/backend/controller/cvenue"
 	"sports_service/server/models"
 	"sports_service/server/models/morder"
+	"sports_service/server/models/mvenue"
+	"sports_service/server/util"
 )
 
 func VenueList(c *gin.Context) {
@@ -71,6 +73,75 @@ func AddVenue(c *gin.Context) {
 	}
 
 	svc := cvenue.New(c)
-	reply.Response(http.StatusOK, svc.AddVenueInfo(param))
+	code := svc.AddVenueInfo(param)
+	reply.Data["venue_id"] = param.Id
+	reply.Response(http.StatusOK, code)
 
+}
+
+func AddMark(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mvenue.AddMarkParam{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := cvenue.New(c)
+	reply.Response(http.StatusOK, svc.AddMark(param))
+}
+
+func DelMark(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mvenue.DelMarkParam{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := cvenue.New(c)
+	reply.Response(http.StatusOK, svc.DelMark(param))
+}
+
+func MarkList(c *gin.Context) {
+	reply := errdef.New(c)
+	venueId := c.Query("venue_id")
+	svc := cvenue.New(c)
+	code, list := svc.MarkList(venueId)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
+
+func AddStoreManager(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mvenue.VenueAdminParam{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := cvenue.New(c)
+	reply.Response(http.StatusOK, svc.AddStoreManager(param))
+}
+
+func EditStoreManager(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &models.VenueAdministrator{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := cvenue.New(c)
+	reply.Response(http.StatusOK, svc.EditStoreManage(param))
+}
+
+func StoreManagerList(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	
+	svc := cvenue.New(c)
+	code, list := svc.StoreManageList(page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
 }

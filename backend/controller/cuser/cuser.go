@@ -102,7 +102,7 @@ func (svc *UserModule) GetUserListBySort(queryId, sortType, condition string, pa
 
 	for _, item := range list {
 		svc.order.Order.UserId = item.UserId
-		orderNum, err := svc.order.GetOrderCount()
+		orderNum, err := svc.order.GetOrderCount([]int{2, 3, 4, 5, 6})
 		if err != nil {
 			log.Log.Errorf("user_trace: get order count fail, err:%s", err)
 		}

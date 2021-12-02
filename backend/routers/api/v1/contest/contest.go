@@ -42,8 +42,9 @@ func PlayerList(c *gin.Context) {
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 
 	svc := contest.New(c)
-	code, list := svc.GetPlayerList(page, size)
+	code, list, count := svc.GetPlayerList(page, size)
 	reply.Data["list"] = list
+	reply.Data["total"] = count
 	reply.Response(http.StatusOK, code)
 }
 
@@ -80,6 +81,7 @@ func ContestGroupList(c *gin.Context) {
 	svc := contest.New(c)
 	code, list := svc.GetContestGroupList(page, size, scheduleId, contestId)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetContestGroupCount(scheduleId, contestId)
 	reply.Response(http.StatusOK, code)
 }
 
@@ -113,6 +115,19 @@ func ContestScheduleDetailList(c *gin.Context) {
 	reply.Response(http.StatusOK, code)
 }
 
+func DelScheduleDetail(c *gin.Context) {
+	reply := errdef.New(c)
+	ids := c.Query("ids")
+	var infoIds []int
+	if err := util.JsonFast.UnmarshalFromString(ids, &infoIds); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := contest.New(c)
+	reply.Response(http.StatusOK, svc.DelScheduleDetail(infoIds))
+}
+
 func SetIntegralRanking(c *gin.Context) {
 	reply := errdef.New(c)
 	param := &models.FpvContestPlayerIntegralRanking{}
@@ -144,6 +159,7 @@ func IntegralRankingList(c *gin.Context) {
 	svc := contest.New(c)
 	code, list := svc.GetIntegralRankingList(page, size)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetIntegralRankingTotal()
 	reply.Response(http.StatusOK, code)
 }
 
@@ -187,5 +203,6 @@ func ContestLiveList(c *gin.Context) {
 	svc := contest.New(c)
 	code, list := svc.GetContestLiveList(page, size)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetContestLiveCount()
 	reply.Response(http.StatusOK, code)
 }
