@@ -105,7 +105,7 @@ func (svc *SearchModule) RecommendVideo() []*mvideo.VideoDetailInfo {
 		user := svc.user.FindUserByUserid(val.UserId)
 		if user != nil {
 			val.Nickname = user.NickName
-			val.Avatar = user.Avatar
+			val.Avatar = tencentCloud.BucketURI(user.Avatar)
 		}
 	}
 
@@ -147,7 +147,7 @@ func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime s
 		video.Title = util.TrimHtml(video.Title)
 		video.Describe = util.TrimHtml(video.Describe)
 
-		video.Avatar = userInfo.Avatar
+		video.Avatar = tencentCloud.BucketURI(userInfo.Avatar)
 		video.Nickname = userInfo.NickName
 		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 
@@ -273,7 +273,7 @@ func (svc *SearchModule) LabelSearch(userId string, labelId string, page, size i
 		resp.UserId = video.UserId
 		// 获取用户信息
 		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
-			resp.Avatar = user.Avatar
+			resp.Avatar = tencentCloud.BucketURI(user.Avatar)
 			resp.Nickname = user.NickName
 		}
 
