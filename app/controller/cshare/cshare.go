@@ -357,6 +357,8 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 			}
 		}
 
+		// 重置数据
+		svc.posting.Statistic = nil
 		svc.posting.Statistic.PostingId = svc.posting.Posting.Id
 		svc.posting.Statistic.CreateAt = now
 		svc.posting.Statistic.UpdateAt = now
