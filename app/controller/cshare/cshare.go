@@ -358,10 +358,15 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 		}
 
 		// 重置数据
-		svc.posting.Statistic = nil
 		svc.posting.Statistic.PostingId = svc.posting.Posting.Id
 		svc.posting.Statistic.CreateAt = now
 		svc.posting.Statistic.UpdateAt = now
+		svc.posting.Statistic.FabulousNum = 0
+		svc.posting.Statistic.BrowseNum = 0
+		svc.posting.Statistic.HeatNum = 0
+		svc.posting.Statistic.CommentNum = 0
+		svc.posting.Statistic.ShareNum = 0
+		svc.posting.Statistic.CollectNum = 0
 		// 初始化帖子统计数据
 		if err := svc.posting.AddPostStatistic(); err != nil {
 			log.Log.Errorf("share_trace: add post statistic err:%s", err)
