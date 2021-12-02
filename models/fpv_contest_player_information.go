@@ -11,7 +11,9 @@ type FpvContestPlayerInformation struct {
 	Hobby     string `json:"hobby" xorm:"not null default '' comment('爱好') VARCHAR(255)"`
 	ContestId int    `json:"contest_id" xorm:"not null default 0 comment('参加的赛事id') index INT(11)"`
 	Status    int    `json:"status" xorm:"not null default 0 comment('0 正常 1 废弃') TINYINT(1)"`
-	IdCard    string `json:"id_card" xorm:"not null default '' comment('身份证件号码') VARCHAR(255)"`
+	IdCard    string `json:"id_card" xorm:"not null default '' comment('证件号码') VARCHAR(255)"`
 	IdType    int    `json:"id_type" xorm:"not null default 0 comment('1 身份证 2 居住证 3 护照 4 港澳') TINYINT(2)"`
 	Gender    int    `json:"gender" xorm:"not null default 0 comment('0 未知 1 男 2 女') TINYINT(1)"`
+	Born      string `json:"born" xorm:"not null default '' comment('出生年月日') VARCHAR(128)"`
+	MobileNum string `json:"mobile_num" xorm:"not null default '' comment('手机号码') VARCHAR(60)"`
 }

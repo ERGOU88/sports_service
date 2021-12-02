@@ -98,6 +98,21 @@ func (m *StatModel) GetDAUByDays(minDate, maxDate string) ([]*Stat, error) {
 }
 
 const (
+	GET_NET_ADDITION_TOTAL = "SELECT count(1) AS count FROM user WHERE " +
+		"date(FROM_UNIXTIME(create_at)) >= ? AND date(FROM_UNIXTIME(create_at)) <= ? "
+)
+
+// 获取N天的新增用户总数
+func (m *StatModel) GetNetAdditionTotalByDays(minDate, maxDate string) (*Stat, error) {
+	var stat *Stat
+	if ok, err := m.Engine.SQL(GET_NET_ADDITION_TOTAL, minDate, maxDate).Get(stat);!ok || err != nil {
+		return nil, err
+	}
+	
+	return stat, nil
+}
+
+const (
 	GET_NET_ADDITION_BY_DAYS = "SELECT count(1) AS count, date(FROM_UNIXTIME(create_at)) AS dt FROM user WHERE " +
 		"date(FROM_UNIXTIME(create_at)) >= ? AND date(FROM_UNIXTIME(create_at)) <= ?  GROUP BY dt"
 )

@@ -3,25 +3,18 @@ package pub
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/global/consts"
+	"sports_service/server/backend/controller/cpub"
+	"sports_service/server/global/backend/errdef"
+	"sports_service/server/global/backend/log"
 	"sports_service/server/models"
 	"sports_service/server/models/mposting"
 	"sports_service/server/models/mvideo"
 	"strconv"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/backend/controller/cpub"
-	"sports_service/server/global/backend/log"
 )
 
 // 发布视频
 func PubVideo(c *gin.Context) {
 	reply := errdef.New(c)
-	userId, ok := c.Get(consts.USER_ID)
-	if !ok {
-		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
-		return
-	}
-
 	params := new(mvideo.VideoPublishParams)
 	if err := c.BindJSON(params); err != nil {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
@@ -29,19 +22,13 @@ func PubVideo(c *gin.Context) {
 	}
 
 	svc := cpub.New(c)
-	syscode := svc.RecordPubVideoInfo(userId.(string), params)
+	syscode := svc.RecordPubVideoInfo(params)
 	reply.Response(http.StatusOK, syscode)
 }
 
 // 发布帖子
 func PubPost(c *gin.Context) {
 	reply := errdef.New(c)
-	userId, ok := c.Get(consts.USER_ID)
-	if !ok {
-		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
-		return
-	}
-
 	params := new(mposting.PostPublishParam)
 	if err := c.BindJSON(params); err != nil {
 		log.Log.Errorf("post_trace: post publish params err:%s, params:%+v", err, params)
@@ -55,7 +42,7 @@ func PubPost(c *gin.Context) {
 	}
 
 	svc := cpub.New(c)
-	code := svc.PublishPosting(userId.(string), params)
+	code := svc.PublishPosting(params)
 	reply.Response(http.StatusOK, code)
 }
 

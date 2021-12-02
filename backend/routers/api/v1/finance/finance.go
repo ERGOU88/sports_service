@@ -14,6 +14,7 @@ func OrderList(c *gin.Context) {
 	svc := cfinance.New(c)
 	code, list := svc.GetOrderList(page, size)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetOrderTotal()
 	reply.Response(http.StatusOK, code)
 }
 
@@ -23,6 +24,7 @@ func RefundList(c *gin.Context) {
 	svc := cfinance.New(c)
 	code, list := svc.GetRefundList(c.Query("order_id"), page, size)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetRefundRecordTotal()
 	reply.Response(http.StatusOK, code)
 }
 

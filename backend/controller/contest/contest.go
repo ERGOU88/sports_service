@@ -38,6 +38,7 @@ func (svc *ContestModule) AddPlayer(player *models.FpvContestPlayerInformation) 
 		player.ContestId = svc.contest.Contest.Id
 	}
 
+	player.Age = util.GetAge(util.GetTimeFromStrDate(player.Born))
 	if _, err := svc.contest.AddPlayer(player); err != nil {
 		return errdef.ERROR
 	}
@@ -53,18 +54,18 @@ func (svc *ContestModule) UpdatePlayer(player *models.FpvContestPlayerInformatio
 	return errdef.SUCCESS
 }
 
-func (svc *ContestModule) GetPlayerList(page, size int) (int, []*models.FpvContestPlayerInformation) {
+func (svc *ContestModule) GetPlayerList(page, size int) (int, []*mcontest.FpvContestPlayerInformation, int64) {
 	offset := (page - 1) * size
 	list, err := svc.contest.GetPlayerList(offset, size)
 	if err != nil {
-		return errdef.ERROR, nil
+		return errdef.ERROR, nil, 0
 	}
 
 	if len(list) == 0 {
-		return errdef.SUCCESS, []*models.FpvContestPlayerInformation{}
+		return errdef.SUCCESS, []*mcontest.FpvContestPlayerInformation{}, 0
 	}
 
-	return errdef.SUCCESS, list
+	return errdef.SUCCESS, list, svc.contest.GetPlayerCount()
 }
 
 // 添加组别配置
@@ -114,6 +115,11 @@ func (svc *ContestModule) GetContestGroupList(page, size int, scheduleId, contes
 	return errdef.SUCCESS, list
 }
 
+// 获取赛事分组总数
+func (svc *ContestModule) GetContestGroupCount(scheduleId, contestId string) int64 {
+	return svc.contest.GetContestGroupCount(scheduleId, contestId)
+}
+
 // 获取赛程信息
 func (svc *ContestModule) GetContestScheduleInfo() (int, []*models.FpvContestSchedule) {
 	list, err := svc.contest.GetScheduleInfo()
@@ -160,6 +166,7 @@ func (svc *ContestModule) AddContestScheduleDetail(param *mcontest.AddScheduleDe
 				CreateAt: now,
 				UpdateAt: now,
 				Ranking: param.Ranking,
+				ContestId: svc.contest.Contest.Id,
 			}
 
 			if round == 0 {
@@ -246,6 +253,8 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 				mp[item.PlayerId].RoundThreeScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
 			}
 		}
+		
+		mp[item.PlayerId].Ids = append(mp[item.PlayerId].Ids, item.Id)
 	}
 
 	// 防止数组越界
@@ -263,12 +272,25 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 	return errdef.SUCCESS, resp
 }
 
+func (svc *ContestModule) DelScheduleDetail(ids []int) int {
+	if _, err := svc.contest.DelScheduleDetail(ids); err != nil {
+		return errdef.ERROR
+	}
+	
+	return errdef.SUCCESS
+}
+
 // 设置赛事积分榜
 func (svc *ContestModule) SetIntegralRanking(info *models.FpvContestPlayerIntegralRanking) int {
 	// 最新赛事
 	ok, err := svc.contest.GetContestInfo(time.Now().Unix())
 	if ok && err == nil {
 		info.ContestId = svc.contest.Contest.Id
+	}
+	
+	ok, err = svc.contest.GetIntegralRankingByPlayerId(fmt.Sprint(svc.contest.Contest.Id), fmt.Sprint(info.PlayerId))
+	if ok && err == nil {
+		return errdef.CONTEST_INTEGRAL_RANK_EXISTS
 	}
 
 	if _, err := svc.contest.SetIntegralRanking(info); err != nil {
@@ -313,14 +335,27 @@ func (svc *ContestModule) GetIntegralRankingList(page, size int) (int, []*mconte
 	for _, item := range list {
 		item.TotalIntegralStr = fmt.Sprintf("%.3f", float64(item.TotalIntegral) / 1000)
 		item.BestScoreStr = fmt.Sprintf("%.3f", float64(item.BestScore) / 1000)
-
-		item.TotalIntegralStr = util.ResolveTimeByMilliSecond(item.TotalIntegral)
 		item.BestScoreStr = util.ResolveTimeByMilliSecond(item.BestScore)
 		item.TotalIntegral = 0
 		item.BestScore = 0
 	}
 
 	return errdef.SUCCESS, list
+}
+
+func (svc *ContestModule) GetIntegralRankingTotal() int64 {
+	// 最新赛事
+	ok, err := svc.contest.GetContestInfo(time.Now().Unix())
+	if !ok || err != nil {
+		return 0
+	}
+	
+	count, err := svc.contest.GetIntegralRankingTotal(fmt.Sprint(svc.contest.Contest.Id))
+	if err != nil {
+		return 0
+	}
+	
+	return count
 }
 
 // 添加赛事直播
@@ -381,7 +416,7 @@ func (svc *ContestModule) DelContestLive(id string) int {
 	return errdef.SUCCESS
 }
 
-func (svc *ContestModule) GetContestLiveList(page, size int) (int, []*models.VideoLive) {
+func (svc *ContestModule) GetContestLiveList(page, size int) (int, []*mcontest.VideoLive) {
 	offset := (page - 1) * size
 	list, err := svc.contest.GetContestLiveList(offset, size)
 	if err != nil {
@@ -389,8 +424,12 @@ func (svc *ContestModule) GetContestLiveList(page, size int) (int, []*models.Vid
 	}
 
 	if len(list) == 0 {
-		return errdef.SUCCESS, []*models.VideoLive{}
+		return errdef.SUCCESS, []*mcontest.VideoLive{}
 	}
 
 	return errdef.SUCCESS, list
+}
+
+func (svc *ContestModule) GetContestLiveCount() int64 {
+	return svc.contest.GetLiveCount()
 }

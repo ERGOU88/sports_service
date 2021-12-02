@@ -47,6 +47,7 @@ type VideoPublishParams struct {
 	PubType        int     `json:"pub_type"`                          // 发布类型 1 首页发布 2 社区发布
 	SubareaId      string  `json:"subarea_id"`                        // 分区id
 	AlbumId        string  `json:"album_id"`                          // 专辑id
+	UserId         string  `json:"user_id"`
 }
 
 // 视频信息

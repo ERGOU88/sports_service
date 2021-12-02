@@ -289,6 +289,7 @@ func (svc *OrderModule) OrderProcess(orderId, body, tradeNo string, payTm int64,
 		// 如果是取消订单 则订单当前状态 应是待支付 需更新状态为 未支付
 		curStatus = consts.ORDER_TYPE_WAIT
 		status = consts.ORDER_TYPE_UNPAID
+		recordStatus = 1
 	}
 
 	now := int(time.Now().Unix())
@@ -467,7 +468,16 @@ func (svc *OrderModule) CardOrderProcess(changeType, now int, orderId string) er
 				log.Log.Errorf("payNotify_trace: update vip info fail, orderId:%s, err:%s", orderId, err)
 				return err
 			}
+			
+			cols := "use_user_id"
+			card.UseUserId = svc.order.Order.UserId
+			if _, err := svc.appointment.UpdateAppointmentRecordInfo(cols, card); err != nil {
+				log.Log.Errorf("payNotify_trace: update record info fail, id:%d, err:%s", card.Id, err)
+				return err
+			}
 		}
+		
+		
 	}
 
 	return nil
@@ -1163,7 +1173,8 @@ func (svc *OrderModule) GetCouponCodeInfo(userId, orderId string) (int, *morder.
 	resp := &morder.CouponCodeInfo{}
 	resp.VenueName = extra.VenueName
 	resp.Subject = svc.order.Order.Subject
-	resp.Code = fmt.Sprintf("o%s", strings.ToLower(util.GenSecret(util.CHAR_MODE, 18)))
+	//resp.Code = fmt.Sprintf("o%s", strings.ToLower(util.GenSecret(util.CHAR_MODE, 18)))
+	resp.Code = fmt.Sprintf("o%s", util.GenQrcodeInfo())
 	resp.Count = extra.Count
 	resp.TotalAmount = svc.order.Order.Amount
 	//resp.QrCodeInfo = fmt.Sprintf("O%s", util.GenSecret(util.MIX_MODE, 16))
