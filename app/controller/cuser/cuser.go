@@ -391,7 +391,8 @@ func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
 	// 默认非会员
 	kabaw.StartTm = 0
 	kabaw.EndTm = 0
-	kabaw.QrCodeInfo = fmt.Sprintf("u%s", strings.ToLower(util.GenSecret(util.CHAR_MODE, 18)))
+	//kabaw.QrCodeInfo = fmt.Sprintf("u%s", strings.ToLower(util.GenSecret(util.CHAR_MODE, 18)))
+	kabaw.QrCodeInfo = fmt.Sprintf("u%s", util.GenQrcodeInfo())
 	kabaw.RemainDuration = 0
 	kabaw.Tips = "对准闸机扫描口 高度5cm扫码入场"
 	kabaw.VenueName = svc.venue.Venue.VenueName

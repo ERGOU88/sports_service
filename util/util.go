@@ -474,3 +474,15 @@ func TruncFloat(f float64, prec int) float64 {
 	x := math.Pow10(prec)
 	return math.Trunc(f * x) / x
 }
+
+var base = []byte("0123456789")
+// 6位数字
+func GenQrcodeInfo() string {
+	rand.Seed(time.Now().Unix())
+	id := make([]byte, 6)
+	for i := 0; i < 6; i++ {
+		id[i] = base[rand.Int()%len(base)]
+	}
+	
+	return string(id)
+}
