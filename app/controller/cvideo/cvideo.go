@@ -741,7 +741,7 @@ func (svc *VideoModule) GetAttentionVideos(userId string, page, size int) []*mvi
 		video.Describe = util.TrimHtml(video.Describe)
 		video.Title = util.TrimHtml(video.Title)
 
-		video.Avatar = userInfo.Avatar
+		video.Avatar = cloud.BucketURI(userInfo.Avatar)
 		video.Nickname = userInfo.NickName
 		video.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
 		// 获取统计标签
@@ -875,7 +875,7 @@ func (svc *VideoModule) GetVideoDetail(userId, videoId string) (*mvideo.VideoDet
 	}
 
 	if user := svc.user.FindUserByUserid(video.UserId); user != nil {
-		resp.Avatar = user.Avatar
+		resp.Avatar = cloud.BucketURI(user.Avatar)
 		resp.Nickname = user.NickName
 	}
 
@@ -1009,7 +1009,7 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 		if userId != "" {
 			// 获取用户信息
 			if user := svc.user.FindUserByUserid(video.UserId); user != nil {
-				resp.Avatar = user.Avatar
+				resp.Avatar = cloud.BucketURI(user.Avatar)
 				resp.Nickname = user.NickName
 			}
 
@@ -1316,7 +1316,7 @@ func (svc *VideoModule) GetVideoListBySubarea(subareaId, userId string, page, si
 
 		user := svc.user.FindUserByUserid(item.UserId)
 		if user != nil {
-			item.Avatar = user.Avatar
+			item.Avatar = cloud.BucketURI(user.Avatar)
 			item.Nickname = user.NickName
 		}
 
@@ -1431,7 +1431,7 @@ func (svc *VideoModule) GetRecommendInfoBySection(userId, sectionId string, page
 				item.CommentNum = svc.information.Statistic.CommentNum
 				item.FabulousNum = svc.information.Statistic.FabulousNum
 			}
-
+			
 			likeType = consts.LIKE_TYPE_INFORMATION
 		}
 

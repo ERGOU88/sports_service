@@ -147,7 +147,7 @@ type VideoDetailInfo struct {
 	ShareNum      int                   `json:"share_num" example:"10"`               // 分享数
 	BrowseNum     int                   `json:"browse_num" example:"10"`              // 浏览数（播放数）
 	UserId        string                `json:"user_id" example:"发布视频的用户id"`      // 发布视频的用户id
-	Avatar        string                `json:"avatar" example:"头像"`                 // 头像
+	Avatar        tencentCloud.BucketURI `json:"avatar" example:"头像"`                 // 头像
 	Nickname      string                `json:"nick_name"  example:"昵称"`             // 昵称
 	IsAttention   int                   `json:"is_attention" example:"1"`             // 是否关注 1 关注 0 未关注
 	IsCollect     int                   `json:"is_collect" example:"1"`               // 是否收藏
@@ -274,7 +274,7 @@ type VideoInfoBySubarea struct {
 	CollectNum    int                   `json:"collect_num" example:"10"`              // 收藏数
 	ShareNum      int                   `json:"share_num" example:"10"`                // 分享数
 	UserId        string                `json:"user_id" example:"发布视频的用户id"`       // 发布视频的用户id
-	Avatar        string                `json:"avatar" example:"头像"`                  // 头像
+	Avatar        tencentCloud.BucketURI `json:"avatar" example:"头像"`                  // 头像
 	Nickname      string                `json:"nick_name"  example:"昵称"`              // 昵称
 	Labels        []*models.VideoLabels `json:"labels"`                               // 视频标签
 	StatisticsTab string                `json:"statistics_tab"`                       // 统计标签
