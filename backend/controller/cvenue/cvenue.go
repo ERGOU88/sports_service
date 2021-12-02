@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
+	"time"
 )
 
 type VenueModule struct {
@@ -200,6 +201,64 @@ func (svc *VenueModule) MarkList(venueId string) (int, []*models.VenueRecommendC
 	list, err := svc.venue.MarkList(venueId)
 	if err != nil {
 		return errdef.ERROR, nil
+	}
+	
+	return errdef.SUCCESS, list
+}
+
+func (svc *VenueModule) AddStoreManager(admin *mvenue.VenueAdminParam) int {
+	now := int(time.Now().Unix())
+	pwd, err := util.GenPassword(admin.Password)
+	if err != nil {
+		return errdef.ERROR
+	}
+	
+	info := &models.VenueAdministrator{
+		Mobile: admin.Mobile,
+		Name: admin.Name,
+		Username: admin.Username,
+		Password: pwd,
+		Status: admin.Status,
+		Roles: "ROLE_ADMIN",
+		VenueId: admin.VenueId,
+		CreateAt: now,
+		UpdateAt: now,
+	}
+	
+	if _, err := svc.venue.AddVenueManager(info); err != nil {
+		log.Log.Errorf("venue_trace: add manager fail, err:%s", err)
+		return errdef.ERROR
+	}
+	
+	return errdef.SUCCESS
+}
+
+func (svc *VenueModule) EditStoreManage(admin *models.VenueAdministrator) int {
+	admin.UpdateAt = int(time.Now().Unix())
+	pwd, err := util.GenPassword(admin.Password)
+	if err != nil {
+		return errdef.ERROR
+	}
+	
+	admin.Password = pwd
+	
+	if _, err := svc.venue.UpdateVenueManager(admin); err != nil {
+		return errdef.ERROR
+	}
+	
+	return errdef.SUCCESS
+}
+
+// 店长列表
+func (svc *VenueModule) StoreManageList(page, size int) (int, []*models.VenueAdministrator) {
+	offset := (page - 1) * size
+	list, err := svc.venue.VenueManagerList(offset, size)
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+	
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*models.VenueAdministrator{}
 	}
 	
 	return errdef.SUCCESS, list

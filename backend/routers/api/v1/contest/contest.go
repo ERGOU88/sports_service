@@ -115,6 +115,19 @@ func ContestScheduleDetailList(c *gin.Context) {
 	reply.Response(http.StatusOK, code)
 }
 
+func DelScheduleDetail(c *gin.Context) {
+	reply := errdef.New(c)
+	ids := c.Query("ids")
+	var infoIds []int
+	if err := util.JsonFast.UnmarshalFromString(ids, &infoIds); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := contest.New(c)
+	reply.Response(http.StatusOK, svc.DelScheduleDetail(infoIds))
+}
+
 func SetIntegralRanking(c *gin.Context) {
 	reply := errdef.New(c)
 	param := &models.FpvContestPlayerIntegralRanking{}

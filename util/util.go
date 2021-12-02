@@ -8,6 +8,7 @@ import (
 	"github.com/json-iterator/go"
 	"github.com/rs/xid"
 	"github.com/zheng-ji/goSnowFlake"
+	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/html"
 	"io"
 	"log"
@@ -485,4 +486,14 @@ func GenQrcodeInfo() string {
 	}
 	
 	return string(id)
+}
+
+func GenPassword(pwd string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+	
+	return string(hash), nil
 }

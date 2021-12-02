@@ -253,6 +253,8 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 				mp[item.PlayerId].RoundThreeScore = fmt.Sprintf("%.3f", float64(item.Score)/1000)
 			}
 		}
+		
+		mp[item.PlayerId].Ids = append(mp[item.PlayerId].Ids, item.Id)
 	}
 
 	// 防止数组越界
@@ -268,6 +270,14 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 	}
 
 	return errdef.SUCCESS, resp
+}
+
+func (svc *ContestModule) DelScheduleDetail(ids []int) int {
+	if _, err := svc.contest.DelScheduleDetail(ids); err != nil {
+		return errdef.ERROR
+	}
+	
+	return errdef.SUCCESS
 }
 
 // 设置赛事积分榜

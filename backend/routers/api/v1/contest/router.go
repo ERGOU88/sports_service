@@ -24,6 +24,8 @@ func Router(engine *gin.Engine) {
 		contest.POST("/add/schedule/detail", AddContestScheduleDetail)
 		// 赛程详情列表
 		contest.GET("/schedule/detail/list", ContestScheduleDetailList)
+		// 删除赛程详情数据
+		contest.DELETE("/del/schedule/detail", DelScheduleDetail)
 		// 设置赛事积分排行
 		contest.POST("/set/integral/ranking", SetIntegralRanking)
 		// 编辑赛事积分排行

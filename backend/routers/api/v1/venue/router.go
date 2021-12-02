@@ -27,6 +27,12 @@ func Router(engine *gin.Engine) {
 		venue.POST("/del/mark", DelMark)
 		// 角标列表
 		venue.GET("/mark/list", MarkList)
+		// 添加店长
+		venue.POST("/add/store/manager", AddStoreManager)
+		// 编辑店长
+		venue.POST("/edit/store/manager", EditStoreManager)
+		// 店长列表
+		venue.GET("/store/manager/list", StoreManagerList)
 	}
 }
 

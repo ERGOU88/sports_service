@@ -6,6 +6,16 @@ type AddMarkParam struct {
 	Conf []*models.VenueRecommendConf  `json:"conf"`
 }
 
+// 添加店长
+type VenueAdminParam struct {
+	Mobile    int64  `json:"mobile" binding:"required"`
+	Name      string `json:"name" binding:"required"`
+	Username  string `json:"username" binding:"required"`
+	Password  string `json:"password" binding:"required"`
+	Status    int    `json:"status"`
+	VenueId   int64  `json:"venue_id"`
+}
+
 type DelMarkParam struct {
 	Ids  []int    `json:"ids"`
 }
@@ -40,6 +50,24 @@ func (m *VenueModel) DelMark(ids []int) (int64, error) {
 func (m *VenueModel) MarkList(venueId string) ([]*models.VenueRecommendConf, error) {
 	var list []*models.VenueRecommendConf
 	if err := m.Engine.Where("venue_id=?", venueId).Find(&list); err != nil {
+		return nil, err
+	}
+	
+	return list, nil
+}
+
+func (m *VenueModel) AddVenueManager(admin *models.VenueAdministrator) (int64, error) {
+	return m.Engine.InsertOne(admin)
+}
+
+func (m *VenueModel) UpdateVenueManager(admin *models.VenueAdministrator) (int64, error) {
+	return m.Engine.Table(&models.VenueAdministrator{}).Where("id=?", admin.Id).Update(admin)
+}
+
+// 店长列表
+func (m *VenueModel) VenueManagerList(offset, size int) ([]*models.VenueAdministrator, error) {
+	var list []*models.VenueAdministrator
+	if err := m.Engine.Where("roles=?", "ROLE_ADMIN").Limit(size, offset).Find(&list); err != nil {
 		return nil, err
 	}
 	
