@@ -142,7 +142,7 @@ func (m *ConfigModel) AddActionScoreConf(param *models.ActionScoreConfig) (int64
 
 // 更新行为得分配置
 func (m *ConfigModel) UpdateActionScoreConf(param *models.ActionScoreConfig) (int64, error) {
-  return m.Engine.Where("id=?", param.Id).Update(param)
+  return m.Engine.Table(&models.ActionScoreConfig{}).Where("id=?", param.Id).Update(param)
 }
 
 // 获取行为得分配置列表
