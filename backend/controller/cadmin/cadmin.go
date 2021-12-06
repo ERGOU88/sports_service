@@ -166,7 +166,7 @@ func (svc *AdminModule) GetMenuList(page, size int) (int, []*models.SystemMenu) 
   return errdef.SUCCESS, list
 }
 
-func (svc *AdminModule) GetRoleMenuList(roleId string) (int, []*models.SystemMenu) {
+func (svc *AdminModule) GetRoleMenuList(roleId string) (int, []*models.SystemRoleMenu) {
   list, err := svc.admin.GetRoleMenu(roleId)
   if err != nil {
     return errdef.ERROR, nil
@@ -176,21 +176,21 @@ func (svc *AdminModule) GetRoleMenuList(roleId string) (int, []*models.SystemMen
     return errdef.SUCCESS, []*models.SystemMenu{}
   }
 
-  res := make([]*models.SystemMenu, 0)
-  for _, item := range list {
-    ok, err := svc.admin.GetMenu(fmt.Sprint(item.MenuId))
-    if !ok || err != nil {
-      continue
-    }
+  //res := make([]*models.SystemMenu, 0)
+  //for _, item := range list {
+  //  ok, err := svc.admin.GetMenu(fmt.Sprint(item.MenuId))
+  //  if !ok || err != nil {
+  //    continue
+  //  }
+  //
+  //  res = append(res, svc.admin.Menu)
+  //}
 
-    res = append(res, svc.admin.Menu)
-  }
-
-  return errdef.SUCCESS, res
+  return errdef.SUCCESS, list
 }
 
 // 管理员登陆 todo:rbac
-func (svc *AdminModule) AdminLogin(params *madmin.AdminRegOrLoginParams) (int, string, []*models.SystemMenu) {
+func (svc *AdminModule) AdminLogin(params *madmin.AdminRegOrLoginParams) (int, string, []*models.SystemRoleMenu) {
   admin := svc.admin.FindAdminUserByName(params.UserName)
   if admin == nil {
     return errdef.ADMIN_NOT_EXISTS, "", nil
@@ -232,17 +232,17 @@ func (svc *AdminModule) AdminLogin(params *madmin.AdminRegOrLoginParams) (int, s
     return errdef.SUCCESS, token, []*models.SystemMenu{}
   }
 
-  res := make([]*models.SystemMenu, 0)
-  for _, item := range menus {
-    ok, err := svc.admin.GetMenu(fmt.Sprint(item.MenuId))
-    if !ok || err != nil {
-      continue
-    }
+  //res := make([]*models.SystemMenu, 0)
+  //for _, item := range menus {
+  //  ok, err := svc.admin.GetMenu(fmt.Sprint(item.MenuId))
+  //  if !ok || err != nil {
+  //    continue
+  //  }
+  //
+  //  res = append(res, svc.admin.Menu)
+  //}
 
-    res = append(res, svc.admin.Menu)
-  }
-
-  return errdef.SUCCESS, token, res
+  return errdef.SUCCESS, token, menus
 }
 
 // 域用户登录
