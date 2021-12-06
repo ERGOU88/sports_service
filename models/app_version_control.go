@@ -13,4 +13,5 @@ type AppVersionControl struct {
 	CreateAt    int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt    int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
 	Describe    string `json:"describe" xorm:"not null default '' comment('版本说明') VARCHAR(500)"`
+	ByteSize    int    `json:"byte_size" xorm:"not null default 0 comment('字节大小') INT(11)"`
 }

@@ -47,10 +47,8 @@ func (m *OrderModel) GetTotalRefundByVenue(venueId string) (int64, error) {
 }
 
 // 更新退款费率
-func (m *OrderModel) UpdateRefundRate(id, rate int) (int64, error) {
-	rules := new(models.VenueRefundRules)
-	rules.FeeRate = rate
-	return m.Engine.Where("id=?", id).Update(rules)
+func (m *OrderModel) UpdateRefundRate(rule *models.VenueRefundRules) (int64, error) {
+	return m.Engine.Where("id=?", rule.Id).Update(rule)
 }
 
 // 获取订单数量（所有场馆）
