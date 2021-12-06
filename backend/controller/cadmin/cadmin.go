@@ -256,6 +256,12 @@ func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) int {
 }
 
 func (svc *AdminModule) AddRoleMenuList(param *madmin.AddRoleMenuParam) int {
+  now := time.Now()
+  for _, item := range param.Menus {
+    item.CreateAt = now
+    item.UpdateAt = now
+  }
+  
   if _, err := svc.admin.AddRoleMenuList(param.Menus); err != nil {
     log.Log.Errorf("admin_trace: add role menu list fail, err:%s", err)
     return errdef.ERROR
