@@ -21,6 +21,10 @@ func (m *AdminModel) AddRoleMenuList(list []*models.SystemRoleMenu) (int64, erro
 	return m.Engine.InsertMulti(list)
 }
 
+func (m *AdminModel) DelRoleMenus(roleId int, menuIds []int) (int64, error) {
+	return m.Engine.Where("role_id=?", roleId).NotIn("menu_id", menuIds).Delete(&models.SystemRoleMenu{})
+}
+
 // 角色菜单是否已存在
 func (m *AdminModel) HasExistsRoleMenu(roleId, menuId int) (bool, error) {
 	roleMenu := new(models.SystemRoleMenu)
