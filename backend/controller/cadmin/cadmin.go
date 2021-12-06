@@ -229,8 +229,9 @@ func (svc *AdminModule) AdminLogin(params *madmin.AdminRegOrLoginParams) (int, s
   }
 
   if len(menus) == 0 {
-    return errdef.SUCCESS, token, []*models.SystemMenu{}
+    return errdef.SUCCESS, token, []*models.SystemRoleMenu{}
   }
+  
 
   //res := make([]*models.SystemMenu, 0)
   //for _, item := range menus {
