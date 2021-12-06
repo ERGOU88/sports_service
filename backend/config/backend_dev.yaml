@@ -45,7 +45,7 @@ tencentImSecret: 080789c06a28b355e1ec94b97ad61edc4eb887275e68fa0046f5659cead396e
 tencentImIdentifier: bluetrans
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
-  path: ./log/backend_server_%s.log
+  path: /data/logs/fpv-backend-api/backend_server_%s.log
   level: 0
   showColor: true
 
