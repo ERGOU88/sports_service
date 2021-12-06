@@ -2,6 +2,7 @@ package mconfigure
 
 import (
   "github.com/go-xorm/xorm"
+  "sports_service/server/global/app/log"
   "sports_service/server/global/consts"
   "sports_service/server/models"
 )
@@ -118,6 +119,7 @@ func (m *ConfigModel) GetLatestPackageInfo(plt int32) *models.AppVersionControl 
   m.VersionControl = new(models.AppVersionControl)
   ok, err := m.Engine.Where("platform=? AND status=0", plt).Desc("version_code").Limit(1).Get(m.VersionControl)
   if !ok || err != nil {
+    log.Log.Errorf("configure_trace: get latest package fail, plt:%d err:%s", plt, err)
     return nil
   }
 
