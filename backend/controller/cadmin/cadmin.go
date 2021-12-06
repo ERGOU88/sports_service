@@ -173,7 +173,7 @@ func (svc *AdminModule) GetRoleMenuList(roleId string) (int, []*models.SystemRol
   }
 
   if len(list) == 0 {
-    return errdef.SUCCESS, []*models.SystemMenu{}
+    return errdef.SUCCESS, []*models.SystemRoleMenu{}
   }
 
   //res := make([]*models.SystemMenu, 0)
