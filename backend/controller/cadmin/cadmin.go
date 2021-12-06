@@ -256,13 +256,27 @@ func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) int {
 }
 
 func (svc *AdminModule) AddRoleMenuList(param *madmin.AddRoleMenuParam) int {
+  list := make([]*models.SystemRoleMenu, 0)
   now := time.Now()
   for _, item := range param.Menus {
-    item.CreateAt = now
-    item.UpdateAt = now
+    exists, err := svc.admin.HasExistsRoleMenu(item.RoleId, item.MenuId)
+    if exists || err != nil {
+      continue
+    }
+    
+    info := &models.SystemRoleMenu{
+      RoleId: item.RoleId,
+      MenuId: item.MenuId,
+      RoleName: item.RoleName,
+      CreateAt: now,
+      UpdateAt: now,
+    }
+    
+    list = append(list, info)
   }
   
-  if _, err := svc.admin.AddRoleMenuList(param.Menus); err != nil {
+  
+  if _, err := svc.admin.AddRoleMenuList(list); err != nil {
     log.Log.Errorf("admin_trace: add role menu list fail, err:%s", err)
     return errdef.ERROR
   }
