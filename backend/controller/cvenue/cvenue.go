@@ -159,12 +159,13 @@ func (svc *VenueModule) AddVenueInfo(info *models.VenueInfo) int {
 }
 
 // 更新退款费率
-func (svc *VenueModule) UpdateRefundRate(param *morder.RefundRateParam) int {
-	if param.Rate <= 0 {
+func (svc *VenueModule) UpdateRefundRate(param *models.VenueRefundRules) int {
+	if param.FeeRate <= 0 {
 		return errdef.INVALID_PARAMS
 	}
 
-	if _, err := svc.order.UpdateRefundRate(param.Id, param.Rate); err != nil {
+	param.UpdateAt = int(time.Now().Unix())
+	if _, err := svc.order.UpdateRefundRate(param); err != nil {
 		return errdef.ERROR
 	}
 

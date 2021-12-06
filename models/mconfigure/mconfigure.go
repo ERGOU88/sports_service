@@ -28,6 +28,7 @@ type AddPackageParams struct {
   Version         string     `json:"version"  binding:"required"`          // 版本
   VersionCode     int        `json:"version_code"  binding:"required"`     // 版本code
   Size            string     `json:"size"  binding:"required"`             // 包大小
+  ByteSize        int        `json:"byte_size"`                            // 字节大小
   IsForce         int32      `json:"is_force" `                            // 是否强更 0 不需要强更 1 需要强更
   Status          int32      `json:"status"`                               // 0 可用 1 不可用
   Platform        int32      `json:"platform"`                             // 0 android 1 ios
@@ -42,6 +43,7 @@ type UpdatePackageParams struct {
   Version         string     `json:"version"  binding:"required"`          // 版本
   VersionCode     int        `json:"version_code"  binding:"required"`     // 版本code
   Size            string     `json:"size"  binding:"required"`             // 包大小
+  ByteSize        int        `json:"byte_size"`                            // 字节大小
   IsForce         int32      `json:"is_force"`                             // 是否强更 0 不需要强更 1 需要强更
   Status          int32      `json:"status"`                               // 0 可用 1 不可用
   Platform        int32      `json:"platform"`                             // 0 android 1 ios
@@ -140,7 +142,7 @@ func (m *ConfigModel) AddActionScoreConf(param *models.ActionScoreConfig) (int64
 
 // 更新行为得分配置
 func (m *ConfigModel) UpdateActionScoreConf(param *models.ActionScoreConfig) (int64, error) {
-  return m.Engine.Update(param)
+  return m.Engine.Table(&models.ActionScoreConfig{}).Where("id=?", param.Id).Update(param)
 }
 
 // 获取行为得分配置列表

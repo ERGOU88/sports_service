@@ -3,10 +3,9 @@ package venue
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/global/backend/errdef"
 	"sports_service/server/backend/controller/cvenue"
+	"sports_service/server/global/backend/errdef"
 	"sports_service/server/models"
-	"sports_service/server/models/morder"
 	"sports_service/server/models/mvenue"
 	"sports_service/server/util"
 )
@@ -46,7 +45,7 @@ func EditVenue(c *gin.Context) {
 
 func UpdateRefundRate(c *gin.Context) {
 	reply := errdef.New(c)
-	param := &morder.RefundRateParam{}
+	param := &models.VenueRefundRules{}
 	if err := c.BindJSON(param); err != nil {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return

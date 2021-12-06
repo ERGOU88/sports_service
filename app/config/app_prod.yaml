@@ -3,19 +3,19 @@ pprofAddr: :12001
 mode: prod
 mysql:
   main:
-    master: fpv-app-api:QbjScl1ms2fKqWIx@tcp(192.168.0.127:3306)/fpv-app-api?charset=utf8mb4
+    master: fpv_app:ZPXWe5OjbAJmNBQk@tcp(120.92.141.106:33497)/fpv-app-api?charset=utf8mb4
     slave:
-      - fpv-app-api:QbjScl1ms2fKqWIx@tcp(192.168.0.127:3306)/fpv-app-api?charset=utf8mb4
-      - fpv-app-api:QbjScl1ms2fKqWIx@tcp(192.168.0.127:3306)/fpv-app-api?charset=utf8mb4
-      - fpv-app-api:QbjScl1ms2fKqWIx@tcp(192.168.0.127:3306)/fpv-app-api?charset=utf8mb4
+      - fpv_app:ZPXWe5OjbAJmNBQk@tcp(120.92.141.106:33497)/fpv-app-api?charset=utf8mb4
+      - fpv_app:ZPXWe5OjbAJmNBQk@tcp(120.92.141.106:33497)/fpv-app-api?charset=utf8mb4
+      - fpv_app:ZPXWe5OjbAJmNBQk@tcp(120.92.141.106:33497)/fpv-app-api?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
   venue:
-    master: fpv-app-api:QbjScl1ms2fKqWIx@tcp(192.168.0.127:3306)/venue?charset=utf8mb4
+    master: venue:umgSL4PTXyn2Z9li@tcp(120.92.141.106:33497)/venue?charset=utf8mb4
     slave:
-      - fpv-app-api:QbjScl1ms2fKqWIx@tcp(192.168.0.127:3306)/venue?charset=utf8mb4
-      - fpv-app-api:QbjScl1ms2fKqWIx@tcp(192.168.0.127:3306)/venue?charset=utf8mb4
-      - fpv-app-api:QbjScl1ms2fKqWIx@tcp(192.168.0.127:3306)/venue?charset=utf8mb4
+      - venue:umgSL4PTXyn2Z9li@tcp(120.92.141.106:33497)/venue?charset=utf8mb4
+      - venue:umgSL4PTXyn2Z9li@tcp(120.92.141.106:33497)/venue?charset=utf8mb4
+      - venue:umgSL4PTXyn2Z9li@tcp(120.92.141.106:33497)/venue?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
 redis:
