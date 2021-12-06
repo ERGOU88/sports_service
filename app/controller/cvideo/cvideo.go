@@ -1410,7 +1410,7 @@ func (svc *VideoModule) GetRecommendInfoBySection(userId, sectionId string, page
 			if item.Labels == nil {
 				item.Labels = []*models.VideoLabels{}
 			}
-
+			
 			// 获取统计标签
 			info := svc.video.GetVideoStatistic(fmt.Sprint(item.Id))
 			if info != nil {
@@ -1430,6 +1430,12 @@ func (svc *VideoModule) GetRecommendInfoBySection(userId, sectionId string, page
 				item.ShareNum = svc.information.Statistic.ShareNum
 				item.CommentNum = svc.information.Statistic.CommentNum
 				item.FabulousNum = svc.information.Statistic.FabulousNum
+			}
+			
+			client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, "")
+			item.Cover, err = client.GenCdnUrl(item.Cover)
+			if err != nil {
+				log.Log.Errorf("video_trace: gen cdn url fail, err:%s", err)
 			}
 			
 			likeType = consts.LIKE_TYPE_INFORMATION
