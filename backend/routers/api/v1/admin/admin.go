@@ -43,7 +43,9 @@ func AdLogin(c *gin.Context) {
 
   svc := cadmin.New(c)
   //syscode := svc.AdminLogin(params)
-  syscode := svc.AdUserLogin(params)
+  syscode, token, menus := svc.AdUserLogin(params)
+  reply.Data["token"] = token
+  reply.Data["menus"] = menus
   reply.Response(http.StatusOK, syscode)
 }
 

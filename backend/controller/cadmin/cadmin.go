@@ -247,13 +247,61 @@ func (svc *AdminModule) AdminLogin(params *madmin.AdminRegOrLoginParams) (int, s
 }
 
 // 域用户登录
-func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) int {
+func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) (int, string, []*models.SystemRoleMenu) {
   if err := svc.ldap.CheckLogin(params.UserName, params.Password); err != nil {
     log.Log.Errorf("user_trace: check login err:%s", err)
-    return errdef.ADMIN_PASSWORD_NOT_MATCH
+    return errdef.ADMIN_PASSWORD_NOT_MATCH, "", nil
   }
-
-  return errdef.SUCCESS
+  
+  sysUser := &models.SystemUser{
+    Username: params.UserName,
+    Password: params.Password,
+    RoleId: 3,
+  }
+  
+  if code := svc.AddAdminUser(sysUser); code != errdef.SUCCESS {
+    svc.UpdateAdminUser(sysUser)
+  }
+  
+  ok, err := svc.admin.GetRole(fmt.Sprint(sysUser.RoleId))
+  if !ok || err != nil {
+    return errdef.UNAUTHORIZED, "", nil
+  }
+  
+  jwtInfo :=  make([]jwt.JwtInfo, 0)
+  jwtInfo = append(jwtInfo, jwt.JwtInfo{Key: consts.USER_NAME, Val: params.UserName},
+    jwt.JwtInfo{Key: consts.EXPIRE, Val: time.Now().Add(time.Hour * 1).Unix()},
+    jwt.JwtInfo{Key: consts.ROLE_ID, Val: fmt.Sprint(svc.admin.Role.RoleId)},
+    jwt.JwtInfo{Key: consts.ROLE_KEY, Val: svc.admin.Role.RoleKey},
+    jwt.JwtInfo{Key: consts.ROLE_NAME, Val: svc.admin.Role.RoleName},
+    jwt.JwtInfo{Key: consts.IDENTIFY, Val: fmt.Sprint(svc.admin.User.UserId)})
+  
+  token, err := jwt.GenerateJwt(svc.context, jwtInfo)
+  if err != nil {
+    return errdef.ERROR, "", nil
+  }
+  
+  menus, err := svc.admin.GetRoleMenu(fmt.Sprint(sysUser.RoleId))
+  if err != nil {
+    return errdef.ERROR, "", nil
+  }
+  
+  if len(menus) == 0 {
+    return errdef.SUCCESS, token, []*models.SystemRoleMenu{}
+  }
+  
+  
+  //res := make([]*models.SystemMenu, 0)
+  //for _, item := range menus {
+  //  ok, err := svc.admin.GetMenu(fmt.Sprint(item.MenuId))
+  //  if !ok || err != nil {
+  //    continue
+  //  }
+  //
+  //  res = append(res, svc.admin.Menu)
+  //}
+  
+  return errdef.SUCCESS, token, menus
 }
 
 func (svc *AdminModule) AddRoleMenuList(param *madmin.AddRoleMenuParam) int {
