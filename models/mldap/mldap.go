@@ -2,6 +2,7 @@ package mldap
 
 import (
 	"crypto/tls"
+	"github.com/davecgh/go-spew/spew"
 	"gopkg.in/ldap.v2"
 	"fmt"
 )
@@ -59,6 +60,8 @@ func (m *LdapService) CheckLogin(name, password string) error {
 		err = fmt.Errorf("%s does not exist", name)
 		return err
 	}
+	
+	spew.Dump("ldap_trace: curInfo", cur)
 
 	if len(cur.Entries) > 1 {
 		err = fmt.Errorf("exist multiple %s", name)
