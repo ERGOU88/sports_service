@@ -256,7 +256,7 @@ func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) (int, 
   sysUser := &models.SystemUser{
     Username: params.UserName,
     Password: params.Password,
-    RoleId: 3,
+    RoleId: 5,
   }
   
   if code := svc.AddAdminUser(sysUser); code != errdef.SUCCESS {
@@ -267,7 +267,7 @@ func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) (int, 
     return errdef.ADMIN_STATUS_FORBID, "", nil
   }
   
-  ok, err := svc.admin.GetRole(fmt.Sprint(sysUser.RoleId))
+  ok, err := svc.admin.GetRole(fmt.Sprint(svc.admin.Role.RoleId))
   if !ok || err != nil {
     return errdef.UNAUTHORIZED, "", nil
   }

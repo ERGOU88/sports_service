@@ -5,6 +5,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"gopkg.in/ldap.v2"
 	"fmt"
+	"sports_service/server/global/app/log"
 )
 
 type LdapService struct {
@@ -74,6 +75,9 @@ func (m *LdapService) CheckLogin(name, password string) error {
 	if err != nil {
 		return err
 	}
+	
+	realName := cur.Entries[0].GetAttributeValue("sAMAccountName")
+	log.Log.Infof("ldap_trace: realName:%s", realName)
 
 	return nil
 }
