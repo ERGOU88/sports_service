@@ -24,21 +24,21 @@ const (
 	BASE_DN     = "dc=bluetrans,dc=local"
 )
 
-func (m *LdapService) CheckLogin(name, password string) error {
+func (m *LdapService) CheckLogin(name, password string) (string, error) {
 	l, err := ldap.Dial("tcp", fmt.Sprintf("%s:%d", URL, PORT))
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
 	if err != nil {
-		return  err
+		return "", err
 	}
 
 	// 绑定用于管理的用户
 	err = l.Bind(USER_NAME, PASSWORD)
 	if err != nil {
-		return  err
+		return "", err
 	}
 
 	// 查询
@@ -54,30 +54,30 @@ func (m *LdapService) CheckLogin(name, password string) error {
 
 	cur, err := l.Search(sql)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if len(cur.Entries) == 0 {
 		err = fmt.Errorf("%s does not exist", name)
-		return err
+		return "", err
 	}
 	
 	spew.Dump("ldap_trace: curInfo", cur)
 
 	if len(cur.Entries) > 1 {
 		err = fmt.Errorf("exist multiple %s", name)
-		return  err
+		return "", err
 	}
 
 	userdn := cur.Entries[0].DN
 	// 用户密码校验，一条对应的dn记录的密码校验
 	err = l.Bind(userdn, password)
 	if err != nil {
-		return err
+		return "", err
 	}
 	
 	realName := cur.Entries[0].GetAttributeValue("cn")
 	log.Log.Infof("ldap_trace: realName:%s", realName)
 
-	return nil
+	return realName, nil
 }

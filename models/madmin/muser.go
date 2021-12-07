@@ -16,8 +16,7 @@ type ForbidAdmin struct {
 
 // 添加后台用户
 func (m *AdminModel) AddAdminUser(admin *models.SystemUser) error {
-	m.User = admin
-	if _, err := m.Engine.InsertOne(m.User); err != nil {
+	if _, err := m.Engine.InsertOne(admin); err != nil {
 		return err
 	}
 
@@ -25,8 +24,7 @@ func (m *AdminModel) AddAdminUser(admin *models.SystemUser) error {
 }
 
 func (m *AdminModel) UpdateAdminUser(admin *models.SystemUser) (int64, error) {
-	m.User = admin
-	return m.Engine.Where("user_id=?", admin.UserId).Update(m.User)
+	return m.Engine.Where("user_id=?", admin.UserId).Update(admin)
 }
 
 // 通过用户名 查询 管理员

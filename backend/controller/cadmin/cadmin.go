@@ -43,6 +43,7 @@ func (svc *AdminModule) AddAdminUser(params *models.SystemUser) int {
 
   admin := svc.admin.FindAdminUserByName(params.Username)
   if admin != nil {
+    params = admin
     return errdef.ADMIN_HAS_EXISTS
   }
 
@@ -83,7 +84,9 @@ func (svc *AdminModule) UpdateAdminUser(params *models.SystemUser) int {
   // +盐
   params.Salt = util.GenSecret(util.CHAR_MODE, 8)
   params.Username = name
+  params.UserId = admin.UserId
   params.Password = util.Md5String(fmt.Sprintf("%s%s", params.Password, params.Salt))
+  params.RoleId = admin.RoleId
   if _, err := svc.admin.UpdateAdminUser(params); err != nil {
     log.Log.Errorf("user_trace: update admin fail, err:%s", err)
     return errdef.ADMIN_UPDATE_FAIL
@@ -250,7 +253,8 @@ func (svc *AdminModule) AdminLogin(params *madmin.AdminRegOrLoginParams) (int, s
 
 // 域用户登录
 func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) (int, string, []*models.SystemRoleMenu) {
-  if err := svc.ldap.CheckLogin(params.UserName, params.Password); err != nil {
+  realName, err := svc.ldap.CheckLogin(params.UserName, params.Password)
+  if err != nil {
     log.Log.Errorf("user_trace: check login err:%s", err)
     return errdef.ADMIN_PASSWORD_NOT_MATCH, "", nil
   }
@@ -258,6 +262,7 @@ func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) (int, 
   sysUser := &models.SystemUser{
     Username: params.UserName,
     Password: params.Password,
+    NickName: realName,
   }
   
   if code := svc.AddAdminUser(sysUser); code != errdef.SUCCESS {
@@ -268,7 +273,7 @@ func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) (int, 
     return errdef.ADMIN_STATUS_FORBID, "", nil
   }
   
-  ok, err := svc.admin.GetRole(fmt.Sprint(svc.admin.Role.RoleId))
+  ok, err := svc.admin.GetRole(fmt.Sprint(sysUser.RoleId))
   if !ok || err != nil {
     return errdef.UNAUTHORIZED, "", nil
   }
