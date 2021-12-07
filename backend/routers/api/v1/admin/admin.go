@@ -273,5 +273,8 @@ func AddRole(c *gin.Context) {
   }
 
   svc := cadmin.New(c)
-  reply.Response(http.StatusOK, svc.AddRole(param))
+  code := svc.AddRole(param)
+  reply.Data["role_id"] = param.RoleId
+  reply.Data["role_name"] = param.RoleName
+  reply.Response(http.StatusOK, code)
 }
