@@ -263,6 +263,10 @@ func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) (int, 
     svc.UpdateAdminUser(sysUser)
   }
   
+  if sysUser.Status == consts.USER_FORBID {
+    return errdef.ADMIN_STATUS_FORBID, "", nil
+  }
+  
   ok, err := svc.admin.GetRole(fmt.Sprint(sysUser.RoleId))
   if !ok || err != nil {
     return errdef.UNAUTHORIZED, "", nil
