@@ -43,7 +43,9 @@ func AdLogin(c *gin.Context) {
 
   svc := cadmin.New(c)
   //syscode := svc.AdminLogin(params)
-  syscode := svc.AdUserLogin(params)
+  syscode, token, menus := svc.AdUserLogin(params)
+  reply.Data["token"] = token
+  reply.Data["menus"] = menus
   reply.Response(http.StatusOK, syscode)
 }
 
@@ -273,5 +275,8 @@ func AddRole(c *gin.Context) {
   }
 
   svc := cadmin.New(c)
-  reply.Response(http.StatusOK, svc.AddRole(param))
+  code := svc.AddRole(param)
+  reply.Data["role_id"] = param.RoleId
+  reply.Data["role_name"] = param.RoleName
+  reply.Response(http.StatusOK, code)
 }
