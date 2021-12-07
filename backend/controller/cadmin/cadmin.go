@@ -43,6 +43,7 @@ func (svc *AdminModule) AddAdminUser(params *models.SystemUser) int {
 
   admin := svc.admin.FindAdminUserByName(params.Username)
   if admin != nil {
+    params = admin
     return errdef.ADMIN_HAS_EXISTS
   }
 
@@ -50,6 +51,8 @@ func (svc *AdminModule) AddAdminUser(params *models.SystemUser) int {
   name := strings.Trim(params.Username, " ")
   name = strings.Replace(name, "\n", "", -1)
   // +盐
+  // todo：默认角色
+  params.RoleId = 5
   params.Salt = util.GenSecret(util.CHAR_MODE, 8)
   params.Username = name
   params.Password = util.Md5String(fmt.Sprintf("%s%s", params.Password, params.Salt))
@@ -81,7 +84,9 @@ func (svc *AdminModule) UpdateAdminUser(params *models.SystemUser) int {
   // +盐
   params.Salt = util.GenSecret(util.CHAR_MODE, 8)
   params.Username = name
+  params.UserId = admin.UserId
   params.Password = util.Md5String(fmt.Sprintf("%s%s", params.Password, params.Salt))
+  params.RoleId = admin.RoleId
   if _, err := svc.admin.UpdateAdminUser(params); err != nil {
     log.Log.Errorf("user_trace: update admin fail, err:%s", err)
     return errdef.ADMIN_UPDATE_FAIL
@@ -166,31 +171,31 @@ func (svc *AdminModule) GetMenuList(page, size int) (int, []*models.SystemMenu) 
   return errdef.SUCCESS, list
 }
 
-func (svc *AdminModule) GetRoleMenuList(roleId string) (int, []*models.SystemMenu) {
+func (svc *AdminModule) GetRoleMenuList(roleId string) (int, []*models.SystemRoleMenu) {
   list, err := svc.admin.GetRoleMenu(roleId)
   if err != nil {
     return errdef.ERROR, nil
   }
 
   if len(list) == 0 {
-    return errdef.SUCCESS, []*models.SystemMenu{}
+    return errdef.SUCCESS, []*models.SystemRoleMenu{}
   }
 
-  res := make([]*models.SystemMenu, 0)
-  for _, item := range list {
-    ok, err := svc.admin.GetMenu(fmt.Sprint(item.MenuId))
-    if !ok || err != nil {
-      continue
-    }
+  //res := make([]*models.SystemMenu, 0)
+  //for _, item := range list {
+  //  ok, err := svc.admin.GetMenu(fmt.Sprint(item.MenuId))
+  //  if !ok || err != nil {
+  //    continue
+  //  }
+  //
+  //  res = append(res, svc.admin.Menu)
+  //}
 
-    res = append(res, svc.admin.Menu)
-  }
-
-  return errdef.SUCCESS, res
+  return errdef.SUCCESS, list
 }
 
 // 管理员登陆 todo:rbac
-func (svc *AdminModule) AdminLogin(params *madmin.AdminRegOrLoginParams) (int, string, []*models.SystemMenu) {
+func (svc *AdminModule) AdminLogin(params *madmin.AdminRegOrLoginParams) (int, string, []*models.SystemRoleMenu) {
   admin := svc.admin.FindAdminUserByName(params.UserName)
   if admin == nil {
     return errdef.ADMIN_NOT_EXISTS, "", nil
@@ -229,34 +234,118 @@ func (svc *AdminModule) AdminLogin(params *madmin.AdminRegOrLoginParams) (int, s
   }
 
   if len(menus) == 0 {
-    return errdef.SUCCESS, token, []*models.SystemMenu{}
+    return errdef.SUCCESS, token, []*models.SystemRoleMenu{}
   }
+  
 
-  res := make([]*models.SystemMenu, 0)
-  for _, item := range menus {
-    ok, err := svc.admin.GetMenu(fmt.Sprint(item.MenuId))
-    if !ok || err != nil {
-      continue
-    }
+  //res := make([]*models.SystemMenu, 0)
+  //for _, item := range menus {
+  //  ok, err := svc.admin.GetMenu(fmt.Sprint(item.MenuId))
+  //  if !ok || err != nil {
+  //    continue
+  //  }
+  //
+  //  res = append(res, svc.admin.Menu)
+  //}
 
-    res = append(res, svc.admin.Menu)
-  }
-
-  return errdef.SUCCESS, token, res
+  return errdef.SUCCESS, token, menus
 }
 
 // 域用户登录
-func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) int {
-  if err := svc.ldap.CheckLogin(params.UserName, params.Password); err != nil {
+func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) (int, string, []*models.SystemRoleMenu) {
+  realName, err := svc.ldap.CheckLogin(params.UserName, params.Password)
+  if err != nil {
     log.Log.Errorf("user_trace: check login err:%s", err)
-    return errdef.ADMIN_PASSWORD_NOT_MATCH
+    return errdef.ADMIN_PASSWORD_NOT_MATCH, "", nil
   }
-
-  return errdef.SUCCESS
+  
+  sysUser := &models.SystemUser{
+    Username: params.UserName,
+    Password: params.Password,
+    NickName: realName,
+  }
+  
+  if code := svc.AddAdminUser(sysUser); code != errdef.SUCCESS {
+    svc.UpdateAdminUser(sysUser)
+  }
+  
+  if sysUser.Status == consts.USER_FORBID {
+    return errdef.ADMIN_STATUS_FORBID, "", nil
+  }
+  
+  ok, err := svc.admin.GetRole(fmt.Sprint(sysUser.RoleId))
+  if !ok || err != nil {
+    return errdef.UNAUTHORIZED, "", nil
+  }
+  
+  jwtInfo :=  make([]jwt.JwtInfo, 0)
+  jwtInfo = append(jwtInfo, jwt.JwtInfo{Key: consts.USER_NAME, Val: params.UserName},
+    jwt.JwtInfo{Key: consts.EXPIRE, Val: time.Now().Add(time.Hour * 1).Unix()},
+    jwt.JwtInfo{Key: consts.ROLE_ID, Val: fmt.Sprint(svc.admin.Role.RoleId)},
+    jwt.JwtInfo{Key: consts.ROLE_KEY, Val: svc.admin.Role.RoleKey},
+    jwt.JwtInfo{Key: consts.ROLE_NAME, Val: svc.admin.Role.RoleName},
+    jwt.JwtInfo{Key: consts.IDENTIFY, Val: fmt.Sprint(svc.admin.User.UserId)})
+  
+  token, err := jwt.GenerateJwt(svc.context, jwtInfo)
+  if err != nil {
+    return errdef.ERROR, "", nil
+  }
+  
+  menus, err := svc.admin.GetRoleMenu(fmt.Sprint(sysUser.RoleId))
+  if err != nil {
+    return errdef.ERROR, "", nil
+  }
+  
+  if len(menus) == 0 {
+    return errdef.SUCCESS, token, []*models.SystemRoleMenu{}
+  }
+  
+  
+  //res := make([]*models.SystemMenu, 0)
+  //for _, item := range menus {
+  //  ok, err := svc.admin.GetMenu(fmt.Sprint(item.MenuId))
+  //  if !ok || err != nil {
+  //    continue
+  //  }
+  //
+  //  res = append(res, svc.admin.Menu)
+  //}
+  
+  return errdef.SUCCESS, token, menus
 }
 
 func (svc *AdminModule) AddRoleMenuList(param *madmin.AddRoleMenuParam) int {
-  if _, err := svc.admin.AddRoleMenuList(param.Menus); err != nil {
+  list := make([]*models.SystemRoleMenu, 0)
+  now := time.Now()
+  ids := make([]int, len(param.Menus))
+  var roleId int
+  for index, item := range param.Menus {
+    roleId = item.RoleId
+    ids[index] = item.MenuId
+    exists, err := svc.admin.HasExistsRoleMenu(item.RoleId, item.MenuId)
+    if exists || err != nil {
+      continue
+    }
+    
+    info := &models.SystemRoleMenu{
+      RoleId: item.RoleId,
+      MenuId: item.MenuId,
+      RoleName: item.RoleName,
+      CreateAt: now,
+      UpdateAt: now,
+    }
+    
+    list = append(list, info)
+  }
+  
+  
+  if _, err := svc.admin.AddRoleMenuList(list); err != nil {
+    log.Log.Errorf("admin_trace: add role menu list fail, err:%s", err)
+    return errdef.ERROR
+  }
+  
+  if _, err := svc.admin.DelRoleMenus(roleId, ids); err != nil {
+    log.Log.Errorf("admin_trace: del role menus fail, err:%s", err)
     return errdef.ERROR
   }
 

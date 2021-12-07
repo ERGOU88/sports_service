@@ -24,7 +24,7 @@ func (m *AdminModel) AddAdminUser(admin *models.SystemUser) error {
 }
 
 func (m *AdminModel) UpdateAdminUser(admin *models.SystemUser) (int64, error) {
-	return m.Engine.Update(admin)
+	return m.Engine.Where("user_id=?", admin.UserId).Update(admin)
 }
 
 // 通过用户名 查询 管理员
