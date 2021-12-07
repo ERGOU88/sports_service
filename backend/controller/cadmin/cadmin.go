@@ -50,6 +50,8 @@ func (svc *AdminModule) AddAdminUser(params *models.SystemUser) int {
   name := strings.Trim(params.Username, " ")
   name = strings.Replace(name, "\n", "", -1)
   // +盐
+  // todo：默认角色
+  params.RoleId = 5
   params.Salt = util.GenSecret(util.CHAR_MODE, 8)
   params.Username = name
   params.Password = util.Md5String(fmt.Sprintf("%s%s", params.Password, params.Salt))
@@ -256,7 +258,6 @@ func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) (int, 
   sysUser := &models.SystemUser{
     Username: params.UserName,
     Password: params.Password,
-    RoleId: 5,
   }
   
   if code := svc.AddAdminUser(sysUser); code != errdef.SUCCESS {

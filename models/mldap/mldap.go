@@ -76,7 +76,7 @@ func (m *LdapService) CheckLogin(name, password string) error {
 		return err
 	}
 	
-	realName := cur.Entries[0].GetAttributeValue("sAMAccountName")
+	realName := cur.Entries[0].GetAttributeValue("cn")
 	log.Log.Infof("ldap_trace: realName:%s", realName)
 
 	return nil
