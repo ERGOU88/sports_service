@@ -71,14 +71,14 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 
 		extra := &mappointment.OrderResp{}
 		if err := util.JsonFast.UnmarshalFromString(item.Extra, extra); err != nil {
-		
+
 		}
-		
+
 		if user := svc.user.FindUserByUserid(item.UserId); user != nil {
 			info.MobileNum = util.HideMobileNum(fmt.Sprint(svc.user.User.MobileNum))
 		}
-		
-		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.Id))
+
+		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.VenueId))
 		if ok && err == nil {
 			info.VenueName = svc.venue.Venue.VenueName
 		}
@@ -87,7 +87,8 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 		if extra != nil {
 			info.Detail = fmt.Sprintf("%s * %d", productName, extra.Count)
 		}
-		
+
+		info.ProductName = productName
 		ok, err = svc.pay.GetPaymentChannel(item.PayChannelId)
 		if ok && err == nil {
 			info.PayChannel = svc.pay.PayChannel.Title
@@ -105,7 +106,7 @@ func (svc *FinanceModule) GetOrderTotal() int64 {
 	if err != nil {
 		return 0
 	}
-	
+
 	return count
 }
 
@@ -132,7 +133,7 @@ func (svc *FinanceModule) GetRefundList(orderId string, page, size int) (int, []
 		item.CreateAtCn = time.Unix(item.CreateAt, 0).Format(consts.FORMAT_TM)
 		item.RefundAmountCn = fmt.Sprintf("%.2f", float64(item.RefundAmount)/100)
 		item.RefundFeeCn = fmt.Sprintf("%.2f", float64(item.RefundFee)/100)
-		
+
 		if user := svc.user.FindUserByUserid(item.UserId); user != nil {
 			item.MobileNum = util.HideMobileNum(fmt.Sprint(svc.user.User.MobileNum))
 		}
@@ -169,7 +170,7 @@ func (svc *FinanceModule) GetRefundRecordTotal() int64 {
 		log.Log.Errorf("finance_trace: get refund total fail, err:%s", err)
 		return 0
 	}
-	
+
 	return count
 }
 
@@ -377,9 +378,9 @@ func (svc *FinanceModule) TopStat() (int, *morder.OrderStat){
 		return errdef.ERROR, orderStat
 	}
 	orderStat.TopInfo["week_order"] = weekOrder
-	
+
 	weekDay := time.Now().AddDate(0, 0, -6)
-	
+
 	// 本周新增
 	var weekNewUser int
 	orderStat.TopInfo["week_new_users"] = 0
@@ -395,7 +396,7 @@ func (svc *FinanceModule) TopStat() (int, *morder.OrderStat){
 			orderStat.TopInfo["week_new_users"] = fmt.Sprintf("%.2f", float64(weekNewUser) / 7)
 		}
 	}
-	
+
 	// 上周新增场馆用户
 	var lastWeekNewUser int
 	orderStat.TopInfo["last_week_new_users"] = 0
@@ -415,7 +416,7 @@ func (svc *FinanceModule) TopStat() (int, *morder.OrderStat){
 			orderStat.TopInfo["last_week_new_users"] = fmt.Sprintf("%.2f", float64(lastWeekNewUser) / 7)
 		}
 	}
-	
+
 	orderStat.TopInfo["user_rate"] = svc.GetRingRatio(int64(weekNewUser), int64(lastWeekNewUser))
 
 	return errdef.SUCCESS, orderStat
@@ -539,7 +540,7 @@ func (svc *FinanceModule) GetChartStat(queryMinDate, queryMaxDate string) (int, 
 		Title: "订单均价",
 		List: svc.ResultInfoByDate(salesByDate, days, 0, 3, maxDate),
 	})
-	
+
 	result["order_result_list"] = orderResultList
 
 	return errdef.SUCCESS, result
@@ -565,7 +566,7 @@ func (svc *FinanceModule) ResultInfoByDate(data []*morder.SalesDetail, days, con
 	if err != nil {
 		return nil
 	}
-	
+
 	for i := 0; i <= days; i++ {
 		date := max.AddDate(0, 0, -i).Format("2006-01-02")
 		for _, v := range data {
