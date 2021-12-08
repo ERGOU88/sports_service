@@ -85,7 +85,10 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 
 		productName := svc.GetProductName(item.ProductType)
 		if extra != nil {
-			info.Detail = fmt.Sprintf("%s * %d", productName, extra.Count)
+			info.Detail = productName
+			if extra.Count > 0 {
+				info.Detail = fmt.Sprintf("%s * %d", productName, extra.Count)
+			}
 		}
 
 		info.ProductName = productName
