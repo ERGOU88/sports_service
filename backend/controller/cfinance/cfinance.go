@@ -212,7 +212,7 @@ func (svc *FinanceModule) GetRevenueFlow(queryMinDate, queryMaxDate, orderId str
 			statusCn = "结算"
 		}
 
-		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.Id))
+		ok, err := svc.venue.GetVenueInfoById(fmt.Sprint(item.VenueId))
 		if ok && err == nil {
 			info.VenueName = svc.venue.Venue.VenueName
 		}
