@@ -34,6 +34,7 @@ func InitRouters(engine *gin.Engine) {
 		doc.Router(engine)
 	}
 
+	engine.Use(gin.Recovery())
 	// 后台点播模块
 	video.Router(engine)
 	// 后台评论模块
