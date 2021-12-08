@@ -156,6 +156,8 @@ func (svc *FinanceModule) GetRefundList(orderId string, page, size int) (int, []
 			item.OrderTypeCn = "线下退单"
 		}
 
+		item.ProductName = svc.GetProductName(item.ProductType)
+
 		ok, err = svc.pay.GetPaymentChannel(item.RefundChannelId)
 		if ok && err == nil {
 			item.RefundChannelCn = svc.pay.PayChannel.Title

@@ -99,6 +99,7 @@ type RefundInfo struct {
 	MobileNum          string     `json:"mobile_num"`
 	VenueName          string     `json:"venue_name"`
 	UserId             string     `json:"user_id"`
+	ProductName        string     `json:"product_name,omitempty"`
 }
 
 // 获取退款列表
