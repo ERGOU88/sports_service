@@ -43,8 +43,10 @@ func setupLogger() {
 
 // 初始化mysql
 func setupMysql() {
-	dao.AppEngine = dao.InitXorm(config.Global.Mysql.Main.Master, config.Global.Mysql.Main.Slave)
-	dao.VenueEngine = dao.InitXorm(config.Global.Mysql.Venue.Master, config.Global.Mysql.Venue.Slave)
+	dao.AppEngine = dao.InitXorm(config.Global.Mysql.Main.Master, config.Global.Log.Path, config.Global.Mode,
+		config.Global.Mysql.Main.Slave, config.Global.Mysql.Main.MaxIdle, config.Global.Mysql.Main.MaxActive)
+	dao.VenueEngine = dao.InitXorm(config.Global.Mysql.Venue.Master, config.Global.Log.Path, config.Global.Mode,
+		config.Global.Mysql.Venue.Slave, config.Global.Mysql.Venue.MaxIdle, config.Global.Mysql.Venue.MaxActive)
 }
 
 // 初始化redis

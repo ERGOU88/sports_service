@@ -3,11 +3,13 @@ package dao
 import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
+	rotatelogs "github.com/lestrrat/go-file-rotatelogs"
+	"io"
 	"sports_service/server/global/consts"
-	"sports_service/server/app/config"
-
-	//"fmt"
+	"time"
+	"fmt"
 	//"github.com/arthurkiller/rollingwriter"
+	//"sports_service/server/app/config"
 )
 
 var (
@@ -33,9 +35,9 @@ func MasterOnly() xorm.GroupPolicyHandler {
 	}
 }
 
-func InitXorm(masterDb string, slaveDb []string) *xorm.EngineGroup {
+func InitXorm(masterDb, logPath, mode string, slaveDb []string, maxIdle, maxActive int) *xorm.EngineGroup {
 	var err error
-	engine, err := ConnectDbs(masterDb, slaveDb)
+	engine, err := ConnectDbs(masterDb, logPath, mode, slaveDb, maxIdle, maxActive)
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +46,7 @@ func InitXorm(masterDb string, slaveDb []string) *xorm.EngineGroup {
 }
 
 // ConnectDb 连接数据库，主从
-func ConnectDbs(masterDsn string, slaveDsn []string) (*xorm.EngineGroup, error) {
+func ConnectDbs(masterDsn, logPath, mode string, slaveDsn []string, maxIdle, maxActive int) (*xorm.EngineGroup, error) {
 	conns := make([]string, len(slaveDsn)+1)
 	conns[0] = masterDsn
 	for i, v := range slaveDsn {
@@ -56,30 +58,30 @@ func ConnectDbs(masterDsn string, slaveDsn []string) (*xorm.EngineGroup, error) 
 		return nil, err
 	}
 
-	//config := rollingwriter.Config{
-	//	LogPath:       "./logs",                    // 日志路径
-	//	TimeTagFormat: "060102150405",              // 时间格式串
-	//	FileName:      "mysql_exec",                // 日志文件名
-	//	MaxRemain:     0,                           // 配置日志最大存留数
-	//	RollingPolicy: rollingwriter.VolumeRolling, // 配置滚动策略
-	//	RollingTimePattern: "* * * * * *", // 配置时间滚动策略
-	//	RollingVolumeSize:  "1M",          // 配置截断文件下限大小
-	//	WriterMode: "none",
-	//	BufferWriterThershould: 256,
-	//	Compress: true, // Compress will compress log file with gzip
-	//}
-	//
-	//writer, err := rollingwriter.NewWriterFromConfig(&config)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//engineGroup.SetLogger(xorm.NewSimpleLogger(writer))
 
-	if config.Global.Mode != string(consts.ModeProd) {
+	engineGroup.SetLogger(xorm.NewSimpleLogger(getWriter(logPath)))
+	if mode != string(consts.ModeProd) {
 		engineGroup.ShowSQL(true)
 	}
 
-	engineGroup.SetMaxIdleConns(config.Global.Mysql.Main.MaxIdle)
-	engineGroup.SetMaxOpenConns(config.Global.Mysql.Main.MaxActive)
+	engineGroup.SetMaxIdleConns(maxIdle)
+	engineGroup.SetMaxOpenConns(maxActive)
 	return engineGroup, nil
+}
+
+// 日志文件切割
+func getWriter(filename string) io.Writer {
+	// 保存30天内的日志，每24小时(整点)分割一次日志
+	hook, err := rotatelogs.New(
+		fmt.Sprintf(filename, "%Y%m%d"),
+		//rotatelogs.WithLinkName(filename),
+		rotatelogs.WithMaxAge(time.Hour * 24 * 90),
+		rotatelogs.WithRotationTime(time.Hour * 24),
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return hook
 }
