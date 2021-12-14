@@ -102,7 +102,7 @@ func (m *PostingModel) GetTotalCountByPost(condition []int, title string) int64 
 
 const (
 	GET_APPLY_CREAM_LIST = " SELECT p.* FROM posting_apply_cream AS pac LEFT JOIN posting_info AS p ON pac.post_id=p.id " +
-		"WHERE pac.status=0 ORDER BY pac.id DESC LIMIT ?,?"
+		"WHERE pac.status=0 AND p.status=1 ORDER BY pac.id DESC LIMIT ?,?"
 )
 func (m *PostingModel) GetApplyCreamList(offset, size int) ([]*PostDetailInfo, error) {
 	var list []*PostDetailInfo
