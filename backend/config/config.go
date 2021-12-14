@@ -18,6 +18,7 @@ type MysqlType struct {
 	Slave     []string
 	MaxIdle   int
 	MaxActive int
+	LogPath   string
 }
 
 type RedisOption struct {

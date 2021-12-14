@@ -9,6 +9,7 @@ import (
 func Router(engine *gin.Engine) {
   api := engine.Group("/backend/v1")
   admin := api.Group("/admin")
+  admin.Use(jwt.JwtAuth())
   {
     // 注册后台用户（测试使用）
     admin.POST("/reg", RegAdminUser)

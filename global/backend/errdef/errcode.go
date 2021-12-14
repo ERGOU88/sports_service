@@ -92,7 +92,7 @@ const (
 	// 17001 - 18000 资讯相关错误码
 	INFORMATION_LIST_FAIL       = 17001
 	INFORMATION_DELETE_FAIL     = 17002
-	
+
 	// 18001 - 19000 赛事相关错误码
 	CONTEST_INTEGRAL_RANK_EXISTS = 18001
 )
@@ -101,6 +101,7 @@ var MsgFlags = map[int]string{
 	SUCCESS:        "ok",
 	ERROR:          "fail",
 	INVALID_PARAMS: "请求参数错误",
+	UNAUTHORIZED:   "请重新登录",
 
 	VIDEO_ALREADY_DELETE:        "视频已删除",
 	VIDEO_NOT_EXISTS:            "视频不存在",
@@ -180,7 +181,7 @@ var MsgFlags = map[int]string{
 
 	INFORMATION_LIST_FAIL:          "获取资讯列表失败",
 	INFORMATION_DELETE_FAIL:        "删除资讯失败",
-	
+
 	CONTEST_INTEGRAL_RANK_EXISTS:   "选手排行数据已存在",
 }
 

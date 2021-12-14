@@ -23,6 +23,7 @@ type OrderRecord struct {
 	Status          int       `json:"status"`
 	StatusCn        string    `json:"status_cn"`
 	PayChannel      string    `json:"pay_channel"`
+	ProductName     string    `json:"product_name"`
 }
 
 // 财务模块 订单统计数据
@@ -56,11 +57,11 @@ func (m *OrderModel) GetOrderCount(status []int) (int64, error) {
 	if m.Order.UserId != "" {
 		m.Engine.Where("user_id=?", m.Order.UserId)
 	}
-	
+
 	if len(status) > 0 {
 		m.Engine.In("status", status)
 	}
-	
+
 	return m.Engine.Count(&models.VenuePayOrders{})
 }
 
@@ -98,6 +99,7 @@ type RefundInfo struct {
 	MobileNum          string     `json:"mobile_num"`
 	VenueName          string     `json:"venue_name"`
 	UserId             string     `json:"user_id"`
+	ProductName        string     `json:"product_name,omitempty"`
 }
 
 // 获取退款列表
@@ -127,13 +129,13 @@ func (m *OrderModel) GetRefundRecordTotal() (int64, error) {
 	type stat struct {
 		Count   int64
 	}
-	
+
 	tmp := stat{}
 	ok, err := m.Engine.SQL(sql).Get(&tmp)
 	if !ok || err != nil {
 		return 0, err
 	}
-	
+
 	return tmp.Count, nil
 }
 
@@ -197,32 +199,32 @@ func (m *OrderModel) GetVenueNewUsers(minDate, maxDate, userIds string) ([]strin
 	if minDate != "" {
 		sql += fmt.Sprintf(" AND date(from_unixtime(create_at)) >= %s ", minDate)
 	}
-	
+
 	if maxDate != "" {
 		sql += fmt.Sprintf(" AND date(from_unixtime(create_at)) <= %s ", maxDate)
 	}
-	
+
 	sql += " UNION ALL " +
 		" SELECT use_user_id FROM venue_card_record WHERE 1=1 "
 	if minDate != "" {
 		sql += fmt.Sprintf(" AND date(from_unixtime(create_at)) >= %s ", minDate)
 	}
-	
+
 	if maxDate != "" {
 		sql += fmt.Sprintf(" AND date(from_unixtime(create_at)) <= %s ", maxDate)
 	}
-	
+
 	sql += ") r"
-	
+
 	if userIds != "" {
 		sql += fmt.Sprintf(" WHERE user_id in (%s)", userIds)
 	}
-	
+
 	var res []string
 	if err := m.Engine.SQL(sql).Find(&res); err != nil {
 		return nil, err
 	}
-	
+
 	return res, nil
 }
 

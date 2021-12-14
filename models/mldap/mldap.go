@@ -2,10 +2,8 @@ package mldap
 
 import (
 	"crypto/tls"
-	"github.com/davecgh/go-spew/spew"
-	"gopkg.in/ldap.v2"
 	"fmt"
-	"sports_service/server/global/app/log"
+	"gopkg.in/ldap.v2"
 )
 
 type LdapService struct {
@@ -61,8 +59,8 @@ func (m *LdapService) CheckLogin(name, password string) (string, error) {
 		err = fmt.Errorf("%s does not exist", name)
 		return "", err
 	}
-	
-	spew.Dump("ldap_trace: curInfo", cur)
+
+	//spew.Dump("ldap_trace: curInfo", cur)
 
 	if len(cur.Entries) > 1 {
 		err = fmt.Errorf("exist multiple %s", name)
@@ -75,9 +73,8 @@ func (m *LdapService) CheckLogin(name, password string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	
+
 	realName := cur.Entries[0].GetAttributeValue("cn")
-	log.Log.Infof("ldap_trace: realName:%s", realName)
 
 	return realName, nil
 }

@@ -1,10 +1,14 @@
 package pub
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"sports_service/server/middleware/jwt"
+)
 
 func Router(engine *gin.Engine) {
 	backend := engine.Group("/backend/v1")
 	pub := backend.Group("/pub")
+	pub.Use(jwt.JwtAuth())
 	{
 		// 发布视频
 		pub.POST("/video", PubVideo)

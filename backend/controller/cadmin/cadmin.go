@@ -69,7 +69,10 @@ func (svc *AdminModule) AddAdminUser(params *models.SystemUser) int {
 
 // 更新后台管理员
 func (svc *AdminModule) UpdateAdminUser(params *models.SystemUser) int {
-  if params.Username == "" || params.Password == "" {
+  //if params.Username == "" || params.Password == "" {
+  //  return errdef.INVALID_PARAMS
+  //}
+  if params.Username == "" {
     return errdef.INVALID_PARAMS
   }
 
@@ -82,11 +85,10 @@ func (svc *AdminModule) UpdateAdminUser(params *models.SystemUser) int {
   name := strings.Trim(params.Username, " ")
   name = strings.Replace(name, "\n", "", -1)
   // +盐
-  params.Salt = util.GenSecret(util.CHAR_MODE, 8)
+  //params.Salt = util.GenSecret(util.CHAR_MODE, 8)
   params.Username = name
   params.UserId = admin.UserId
-  params.Password = util.Md5String(fmt.Sprintf("%s%s", params.Password, params.Salt))
-  params.RoleId = admin.RoleId
+  //params.Password = util.Md5String(fmt.Sprintf("%s%s", params.Password, params.Salt))
   if _, err := svc.admin.UpdateAdminUser(params); err != nil {
     log.Log.Errorf("user_trace: update admin fail, err:%s", err)
     return errdef.ADMIN_UPDATE_FAIL
@@ -266,7 +268,9 @@ func (svc *AdminModule) AdUserLogin(params *madmin.AdminRegOrLoginParams) (int, 
   }
   
   if code := svc.AddAdminUser(sysUser); code != errdef.SUCCESS {
-    svc.UpdateAdminUser(sysUser)
+    if code := svc.UpdateAdminUser(sysUser); code == errdef.SUCCESS {
+      sysUser.RoleId = svc.admin.User.RoleId
+    }
   }
   
   if sysUser.Status == consts.USER_FORBID {
