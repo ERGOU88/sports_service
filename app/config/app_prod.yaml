@@ -10,6 +10,7 @@ mysql:
       - fpv_app:ZPXWe5OjbAJmNBQk@tcp(120.92.141.106:33497)/fpv-app-api?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
+    logPath: /data/logs/fpv-app-api/db/db_fpv_%s.log
   venue:
     master: venue:umgSL4PTXyn2Z9li@tcp(120.92.141.106:33497)/venue?charset=utf8mb4
     slave:
@@ -18,6 +19,7 @@ mysql:
       - venue:umgSL4PTXyn2Z9li@tcp(120.92.141.106:33497)/venue?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
+    logPath: /data/logs/fpv-app-api/db/db_venue_%s.log
 redis:
   main:
     master:
