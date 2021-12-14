@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"sports_service/server/global/backend/errdef"
 	"sports_service/server/global/backend/log"
+	"strings"
 )
 
 const JWT_SECRET = "!@#WE$%!SEgfcgHT#456"
@@ -15,6 +16,12 @@ const JWT_SECRET = "!@#WE$%!SEgfcgHT#456"
 // 验证token的中间件
 func JwtAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		path := c.Request.URL.Path
+		if strings.Contains(path, "/backend/v1/admin/ad/login") || strings.Contains(path, "/backend/v1/admin/login") {
+			c.Next()
+			return
+		}
+
 		reply := errdef.New(c)
 		data, err := request.ParseFromRequest(c.Request, request.OAuth2Extractor, func(token *jwt_lib.Token) (interface{}, error) {
 			b := []byte(JWT_SECRET)

@@ -1,11 +1,15 @@
 package stat
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"sports_service/server/middleware/jwt"
+)
 
 // 统计模块
 func Router(engine *gin.Engine) {
 	backend := engine.Group("/backend/v1")
 	stat := backend.Group("/stat")
+	stat.Use(jwt.JwtAuth())
 	{
 		// 首页统计数据
 		stat.GET("/homepage", HomePageInfo)

@@ -10,6 +10,7 @@ mysql:
       - root:bluetrans888@tcp(10.1.3.12:3306)/sports_service?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
+    logPath: /data/logs/fpv-backend-api/db/db_fpv_%s.log
   venue:
     master: root:bluetrans888@tcp(10.1.3.12:3306)/venue?charset=utf8mb4
     slave:
@@ -18,6 +19,7 @@ mysql:
       - root:bluetrans888@tcp(10.1.3.12:3306)/venue?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
+    logPath: /data/logs/fpv-backend-api/db/db_venue_%s.log
 
 redis:
   main:

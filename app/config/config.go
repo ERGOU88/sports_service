@@ -18,6 +18,7 @@ type MysqlType struct {
 	Slave     []string
 	MaxIdle   int
 	MaxActive int
+	LogPath   string
 }
 
 type RedisOption struct {
@@ -81,6 +82,7 @@ type Config struct {
 	TencentImSecret string
 	TencentImIdentifier string
 	ShareUrl string
+	DbLogPath string
 
 	Debug bool
 }

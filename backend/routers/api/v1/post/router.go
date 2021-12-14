@@ -2,13 +2,14 @@ package post
 
 import (
 	"github.com/gin-gonic/gin"
+	"sports_service/server/middleware/jwt"
 )
 
 // 帖子模块
 func Router(engine *gin.Engine) {
 	backend := engine.Group("/backend/v1")
 	post := backend.Group("/post")
-	//post.Use(jwt.JwtAuth())
+	post.Use(jwt.JwtAuth())
 	{
 		// 后台审核帖子
 		post.POST("/audit", AuditPost)
