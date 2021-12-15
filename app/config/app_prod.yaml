@@ -3,11 +3,11 @@ pprofAddr: :12001
 mode: prod
 mysql:
   main:
-    master: fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv-app-api?charset=utf8mb4
+    master: fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
     slave:
-      - fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv-app-api?charset=utf8mb4
-      - fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv-app-api?charset=utf8mb4
-      - fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv-app-api?charset=utf8mb4
+      - fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
+      - fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
+      - fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
     logPath: /data/logs/fpv-app-api/db/db_fpv_%s.log
