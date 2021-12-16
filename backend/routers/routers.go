@@ -2,6 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"sports_service/server/backend/routers/api/v1/contest"
 	"sports_service/server/backend/routers/api/v1/finance"
 	"sports_service/server/backend/routers/api/v1/pub"
@@ -35,6 +36,11 @@ func InitRouters(engine *gin.Engine) {
 	}
 
 	engine.Use(gin.Recovery())
+	engine.Any("/", func(c *gin.Context) {
+		c.Status(http.StatusOK)
+		return
+	})
+
 	// 后台点播模块
 	video.Router(engine)
 	// 后台评论模块
