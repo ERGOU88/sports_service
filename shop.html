@@ -1,0 +1,2435 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>数据库结构—ha666</title>
+  <style type="text/css">
+        body
+        {
+            font-size: 9pt;
+        }
+        .styledb
+        {
+            font-size: 14px;
+        }
+        .styletab
+        {
+            font-size: 14px;
+             padding-top:15px;             
+        }
+    </style>
+ </head>
+ <body>
+  <div style="text-align: center">
+   <div class="styledb">
+    数据库名：shop
+   </div>
+   <div class="styletab">
+    表名：area（地址表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left"></td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>pid</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">父级</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>name</td>
+           <td>varchar</td>
+           <td>50</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">名称</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>shortname</td>
+           <td>varchar</td>
+           <td>30</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">简称</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>longitude</td>
+           <td>varchar</td>
+           <td>30</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">经度</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>latitude</td>
+           <td>varchar</td>
+           <td>30</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">纬度</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>level</td>
+           <td>tinyint</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">级别</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>sortorder</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">排序</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">状态 0 有效 1 废弃</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：order_product（订单商品表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left"></td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>related_id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">关联订单表id</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>order_id</td>
+           <td>varchar</td>
+           <td>50</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">订单id</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">买家id</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>product_id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">商品id</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>sku_id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">商品skuid</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>sku_name</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商品实体名称</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>sku_image</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商品实体图片</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>sku_no</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商品实体编码</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>product_amount</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">商品总金额 (分) </td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>delivery_amount</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">配送费用（分）</td>
+          </tr>
+          <tr>
+           <td>12</td>
+           <td>order_amount</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">合计金额 (分)</td>
+          </tr>
+          <tr>
+           <td>13</td>
+           <td>discount_amount</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">优惠金额 (分)</td>
+          </tr>
+          <tr>
+           <td>14</td>
+           <td>pay_amount</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">应付金额 (分)</td>
+          </tr>
+          <tr>
+           <td>15</td>
+           <td>count</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">购买数量</td>
+          </tr>
+          <tr>
+           <td>16</td>
+           <td>delivery_no</td>
+           <td>varchar</td>
+           <td>50</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">配送单号</td>
+          </tr>
+          <tr>
+           <td>17</td>
+           <td>product_name</td>
+           <td>varchar</td>
+           <td>400</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商品名称</td>
+          </tr>
+          <tr>
+           <td>18</td>
+           <td>sku_spec</td>
+           <td>varchar</td>
+           <td>1000</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">sku规格格式</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：order_refund_record（退款记录表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">自增ID</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>refund_amount</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">退款金额</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>refund_pay_type</td>
+           <td>int</td>
+           <td>8</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">退款类型 2001 支付宝  3001 微信</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>refund_type</td>
+           <td>int</td>
+           <td>8</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">退款形式：1001 APP退款 1002 小程序退款</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>refund_address</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">退货地址</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>order_id</td>
+           <td>varchar</td>
+           <td>150</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">订单id</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>refund_trade_no</td>
+           <td>varchar</td>
+           <td>150</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">退款交易号</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">用户id</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>remark</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">备注</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">0 退款中 1 已退款</td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>refund_time</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">退款时间</td>
+          </tr>
+          <tr>
+           <td>12</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：orders（订单表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left"></td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>order_id</td>
+           <td>varchar</td>
+           <td>50</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">订单编号</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>extra</td>
+           <td>text</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">记录订单相关扩展数据</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>order_type_name</td>
+           <td>varchar</td>
+           <td>50</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">订单类型名称</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>transaction</td>
+           <td>varchar</td>
+           <td>100</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">第三方订单号</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>delivery_code</td>
+           <td>varchar</td>
+           <td>50</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">提货编码</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>order_status</td>
+           <td>tinyint</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">订单状态 0 待付款 1 待收货 2 退款/售后</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>pay_status</td>
+           <td>tinyint</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">支付状态 0 未付款 1 已付款</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>delivery_status</td>
+           <td>tinyint</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">配送状态 0 未配送 1 已配送</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>refund_status</td>
+           <td>tinyint</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">退款状态 0 未退款 1 退款中 2 已退款</td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>pay_type</td>
+           <td>int</td>
+           <td>8</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">支付方式 2001 支付宝 3001微信</td>
+          </tr>
+          <tr>
+           <td>12</td>
+           <td>delivery_type</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">配送方式</td>
+          </tr>
+          <tr>
+           <td>13</td>
+           <td>delivery_type_name</td>
+           <td>varchar</td>
+           <td>50</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">配送方式名称</td>
+          </tr>
+          <tr>
+           <td>14</td>
+           <td>user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">买家uid</td>
+          </tr>
+          <tr>
+           <td>15</td>
+           <td>name</td>
+           <td>varchar</td>
+           <td>50</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">买家姓名</td>
+          </tr>
+          <tr>
+           <td>16</td>
+           <td>mobile</td>
+           <td>varchar</td>
+           <td>15</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">买家手机</td>
+          </tr>
+          <tr>
+           <td>17</td>
+           <td>telephone</td>
+           <td>varchar</td>
+           <td>30</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">买家固定电话</td>
+          </tr>
+          <tr>
+           <td>18</td>
+           <td>province_id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">买家省id</td>
+          </tr>
+          <tr>
+           <td>19</td>
+           <td>city_id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">买家市id</td>
+          </tr>
+          <tr>
+           <td>20</td>
+           <td>district_id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">买家区县id</td>
+          </tr>
+          <tr>
+           <td>21</td>
+           <td>community_id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">买家社区id</td>
+          </tr>
+          <tr>
+           <td>22</td>
+           <td>address</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">买家地址</td>
+          </tr>
+          <tr>
+           <td>23</td>
+           <td>full_address</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">买家详细地址</td>
+          </tr>
+          <tr>
+           <td>24</td>
+           <td>longitude</td>
+           <td>varchar</td>
+           <td>50</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">买家地址经度</td>
+          </tr>
+          <tr>
+           <td>25</td>
+           <td>latitude</td>
+           <td>varchar</td>
+           <td>50</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">买家地址纬度</td>
+          </tr>
+          <tr>
+           <td>26</td>
+           <td>buyer_ip</td>
+           <td>varchar</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">买家ip</td>
+          </tr>
+          <tr>
+           <td>27</td>
+           <td>buyer_remark</td>
+           <td>varchar</td>
+           <td>50</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">买家留言信息</td>
+          </tr>
+          <tr>
+           <td>28</td>
+           <td>product_amount</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">商品总金额 (分) </td>
+          </tr>
+          <tr>
+           <td>29</td>
+           <td>delivery_amount</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">配送费用（分）</td>
+          </tr>
+          <tr>
+           <td>30</td>
+           <td>order_amount</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">订单合计金额 (分)</td>
+          </tr>
+          <tr>
+           <td>31</td>
+           <td>discount_amount</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">订单优惠金额 (分)</td>
+          </tr>
+          <tr>
+           <td>32</td>
+           <td>pay_amount</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">应付金额</td>
+          </tr>
+          <tr>
+           <td>33</td>
+           <td>pay_time</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">订单支付时间</td>
+          </tr>
+          <tr>
+           <td>34</td>
+           <td>delivery_time</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">订单配送时间</td>
+          </tr>
+          <tr>
+           <td>35</td>
+           <td>sign_time</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">订单签收时间</td>
+          </tr>
+          <tr>
+           <td>36</td>
+           <td>finish_time</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">订单完成时间</td>
+          </tr>
+          <tr>
+           <td>37</td>
+           <td>close_time</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">订单关闭时间</td>
+          </tr>
+          <tr>
+           <td>38</td>
+           <td>is_evaluate</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">是否允许订单评价 0 允许 1不允许</td>
+          </tr>
+          <tr>
+           <td>39</td>
+           <td>is_delete</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">是否删除 0 未删 1 已删</td>
+          </tr>
+          <tr>
+           <td>40</td>
+           <td>is_enable_refund</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">是否允许退款 0 允许 1 不允许</td>
+          </tr>
+          <tr>
+           <td>41</td>
+           <td>remark</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">卖家留言</td>
+          </tr>
+          <tr>
+           <td>42</td>
+           <td>evaluate_status</td>
+           <td>tinyint</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">评价状态，0：未评价，1：已评价，2：已追评</td>
+          </tr>
+          <tr>
+           <td>43</td>
+           <td>refund_amount</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">订单退款金额（分）</td>
+          </tr>
+          <tr>
+           <td>44</td>
+           <td>order_type</td>
+           <td>int</td>
+           <td>8</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">下单方式：1001 APP下单，1002 小程序下单，1003第三方推广渠道购买</td>
+          </tr>
+          <tr>
+           <td>45</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>46</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">更新时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：product_cart（商品购物车）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left"></td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">用户id</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>sku_id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">sku id</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>count</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">数量</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>is_check</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">0选中 1未选中</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>product_id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">商品id</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">0 有效 1 无效</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：product_category（ 商品分类）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>category_id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">分类id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>category_name</td>
+           <td>varchar</td>
+           <td>50</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">分类名称</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>short_name</td>
+           <td>varchar</td>
+           <td>50</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">简称</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>pid</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">分类上级</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>level</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">层级</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>is_show</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">是否显示（0显示  1不显示）</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>sortorder</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">排序</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>image</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">分类图片</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>keywords</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">分类页面关键字</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>description</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">分类介绍</td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>12</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">更新时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：product_sku（sku表, 具体的商品实体 如远峰蓝 128GB iphone13 pro）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">sku id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>product_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商品id</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>title</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商品标题</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>sku_image</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">sku主图</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>sku_no</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商品sku编码</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>images</td>
+           <td>varchar</td>
+           <td>1000</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">sku图片[多张]</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>cur_price</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">商品价格（分）</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>market_price</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">划线价格（分）</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>is_free_ship</td>
+           <td>tinyint</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">是否免邮 0 免邮</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>indexes</td>
+           <td>varchar</td>
+           <td>100</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">特有规格属性在商品属性模板中的对应下标组合 例如1_3_2 则可能表示 颜色选项 1 红色  内存选项 3 16g  套餐选项 2  +保修1年</td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>own_spec</td>
+           <td>varchar</td>
+           <td>1000</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">商品实体的特有规格参数，json格式，反序列化时保证有序</td>
+          </tr>
+          <tr>
+           <td>12</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">是否有效，0 有效, 1 无效</td>
+          </tr>
+          <tr>
+           <td>13</td>
+           <td>discount_price</td>
+           <td>decimal</td>
+           <td>10</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0.00</td>
+           <td align="left">活动折扣价（默认等于单价）</td>
+          </tr>
+          <tr>
+           <td>14</td>
+           <td>start_time</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">活动开始时间</td>
+          </tr>
+          <tr>
+           <td>15</td>
+           <td>end_time</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">活动结束时间</td>
+          </tr>
+          <tr>
+           <td>16</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>17</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">修改时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：product_sku_stock（商品实体库存表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>sku_id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">sku id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>stock</td>
+           <td>int</td>
+           <td>9</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">库存数量</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>max_buy</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">限购 0 表示无限制</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>min_buy</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">起购数</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">更新时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：product_specification（商品规格参数模板）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>category_id</td>
+           <td>bigint</td>
+           <td>20</td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">规格模板所属商品分类id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>specifications</td>
+           <td>varchar</td>
+           <td>3000</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">规格参数模板，json格式</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">更新时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：products（商品表）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left">商品id</td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>product_name</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商品名称</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>product_image</td>
+           <td>varchar</td>
+           <td>512</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">商品主图路径</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>product_detail</td>
+           <td>text</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">商品详情</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>status</td>
+           <td>tinyint</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">商品状态（0. 正常 1. 下架）</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>is_free_ship</td>
+           <td>tinyint</td>
+           <td>2</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">是否免邮 0 免邮</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>is_delete</td>
+           <td>tinyint</td>
+           <td>4</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">是否已经删除</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>introduction</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">促销语</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>keywords</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">关键词</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>sortorder</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">排序</td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>video_url</td>
+           <td>varchar</td>
+           <td>512</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">视频地址</td>
+          </tr>
+          <tr>
+           <td>12</td>
+           <td>sale_num</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">销量</td>
+          </tr>
+          <tr>
+           <td>13</td>
+           <td>cur_price</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">商品价格（分）</td>
+          </tr>
+          <tr>
+           <td>14</td>
+           <td>market_price</td>
+           <td>int</td>
+           <td>10</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">划线价格（分）</td>
+          </tr>
+          <tr>
+           <td>15</td>
+           <td>evaluate_num</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">总评价数</td>
+          </tr>
+          <tr>
+           <td>16</td>
+           <td>is_recommend</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">推荐（0：不推荐；1：推荐）</td>
+          </tr>
+          <tr>
+           <td>17</td>
+           <td>is_top</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">置顶（0：不置顶；1：置顶；）</td>
+          </tr>
+          <tr>
+           <td>18</td>
+           <td>is_cream</td>
+           <td>tinyint</td>
+           <td>1</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">是否精华（0: 不是 1: 是）</td>
+          </tr>
+          <tr>
+           <td>19</td>
+           <td>specifications</td>
+           <td>varchar</td>
+           <td>3000</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">全部规格参数数据</td>
+          </tr>
+          <tr>
+           <td>20</td>
+           <td>spec_template</td>
+           <td>varchar</td>
+           <td>1000</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">特有规格参数及可选值信息，json格式</td>
+          </tr>
+          <tr>
+           <td>21</td>
+           <td>after_service</td>
+           <td>varchar</td>
+           <td>1000</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>是</td>
+           <td></td>
+           <td align="left">售后服务</td>
+          </tr>
+          <tr>
+           <td>22</td>
+           <td>timer_on</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">上架时间</td>
+          </tr>
+          <tr>
+           <td>23</td>
+           <td>timer_off</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">下架时间</td>
+          </tr>
+          <tr>
+           <td>24</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>25</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">修改时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="styletab">
+    表名：user_address（用户收货地址管理）
+   </div>
+   <div align="left"></div>
+   <div>
+    <table border="0" cellpadding="5" cellspacing="0" width="90%">
+     <tbody>
+      <tr>
+       <td bgcolor="#F5F9FF">
+        <table cellspacing="0" cellpadding="5" border="1" width="100%" bordercolorlight="#4F7FC9" bordercolordark="#D3D8E0">
+         <tbody>
+          <tr bgcolor="#E3EFFF">
+           <td>序号</td>
+           <td>列名</td>
+           <td>数据类型</td>
+           <td>长度</td>
+           <td>小数位</td>
+           <td>是否主键</td>
+           <td>是否自增</td>
+           <td>允许空</td>
+           <td>默认值</td>
+           <td>说明</td>
+          </tr>
+          <tr>
+           <td>1</td>
+           <td>id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td>是</td>
+           <td>是</td>
+           <td></td>
+           <td></td>
+           <td align="left"></td>
+          </tr>
+          <tr>
+           <td>2</td>
+           <td>user_id</td>
+           <td>varchar</td>
+           <td>60</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">会员id</td>
+          </tr>
+          <tr>
+           <td>3</td>
+           <td>name</td>
+           <td>varchar</td>
+           <td>50</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">用户姓名</td>
+          </tr>
+          <tr>
+           <td>4</td>
+           <td>mobile</td>
+           <td>varchar</td>
+           <td>15</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">手机</td>
+          </tr>
+          <tr>
+           <td>5</td>
+           <td>telephone</td>
+           <td>varchar</td>
+           <td>30</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">联系电话</td>
+          </tr>
+          <tr>
+           <td>6</td>
+           <td>province_id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">省id</td>
+          </tr>
+          <tr>
+           <td>7</td>
+           <td>city_id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">市id</td>
+          </tr>
+          <tr>
+           <td>8</td>
+           <td>district_id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">区县id</td>
+          </tr>
+          <tr>
+           <td>9</td>
+           <td>community_id</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">社区id</td>
+          </tr>
+          <tr>
+           <td>10</td>
+           <td>address</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">地址信息</td>
+          </tr>
+          <tr>
+           <td>11</td>
+           <td>full_address</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">详细地址信息</td>
+          </tr>
+          <tr>
+           <td>12</td>
+           <td>postal_code</td>
+           <td>varchar</td>
+           <td>50</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">邮编</td>
+          </tr>
+          <tr>
+           <td>13</td>
+           <td>longitude</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">经度</td>
+          </tr>
+          <tr>
+           <td>14</td>
+           <td>latitude</td>
+           <td>varchar</td>
+           <td>255</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td align="left">纬度</td>
+          </tr>
+          <tr>
+           <td>15</td>
+           <td>is_default</td>
+           <td>tinyint</td>
+           <td>4</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">是否是默认地址 0 默认</td>
+          </tr>
+          <tr>
+           <td>16</td>
+           <td>create_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">创建时间</td>
+          </tr>
+          <tr>
+           <td>17</td>
+           <td>update_at</td>
+           <td>int</td>
+           <td>11</td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td>0</td>
+           <td align="left">更新时间</td>
+          </tr>
+         </tbody>
+        </table></td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+  </div>
+ </body>
+</html>
