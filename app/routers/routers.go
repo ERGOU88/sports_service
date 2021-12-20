@@ -24,6 +24,7 @@ import (
 	"sports_service/server/app/routers/api/v1/posting"
 	"sports_service/server/app/routers/api/v1/search"
 	"sports_service/server/app/routers/api/v1/share"
+	"sports_service/server/app/routers/api/v1/shop"
 	"sports_service/server/app/routers/api/v1/swag"
 	"sports_service/server/app/routers/api/v1/tencentCloud"
 	"sports_service/server/app/routers/api/v1/user"
@@ -99,4 +100,6 @@ func InitRouters(engine *gin.Engine) {
 	contest.Router(engine)
 	// 直播模块
 	live.Router(engine)
+	// 商城模块
+	shop.Router(engine)
 }

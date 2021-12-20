@@ -246,6 +246,11 @@ const (
 	CONTEST_PLAYER_INFO_FAIL     = 40005
 	CONTEST_RANKING_FAIL         = 40006
 	CONTEST_LIVE_SCHEDULE_DATA   = 40007
+
+	// 商城相关错误码 50001-60000
+	SHOP_GET_ALL_SPU_FAIL        = 50001
+	SHOP_GET_SPU_BY_CATEGORY_FAIL= 50002
+	SHOP_RECOMMEND_FAIL          = 50003
 )
 
 var MsgFlags = map[int]string{
@@ -468,6 +473,10 @@ var MsgFlags = map[int]string{
 	CONTEST_PLAYER_INFO_FAIL:    "获取选手信息失败",
 	CONTEST_RANKING_FAIL:        "获取选手积分排行失败",
 	CONTEST_LIVE_SCHEDULE_DATA:  "获取赛程直播选手数据失败",
+
+    SHOP_GET_ALL_SPU_FAIL:         "商品获取失败",
+	SHOP_GET_SPU_BY_CATEGORY_FAIL: "分类商品获取失败",
+	SHOP_RECOMMEND_FAIL:           "推荐商品获取失败",
 }
 
 func GetMsg(code int) string {
