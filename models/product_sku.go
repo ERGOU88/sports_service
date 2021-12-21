@@ -10,7 +10,7 @@ type ProductSku struct {
 	CurPrice      int    `json:"cur_price" xorm:"not null default 0 comment('商品价格（分）') INT(10)"`
 	MarketPrice   int    `json:"market_price" xorm:"not null default 0 comment('划线价格（分）') INT(10)"`
 	IsFreeShip    int    `json:"is_free_ship" xorm:"not null default 0 comment('是否免邮 0 免邮') TINYINT(2)"`
-	Indexes       string `json:"indexes" xorm:"comment('特有规格属性在商品属性模板中的对应下标组合 例如1_3_2 则可能表示 颜色选项 1 红色  内存选项 3 16g  套餐选项 2  +保修1年') index VARCHAR(100)"`
+	Indexes       string `json:"indexes" xorm:"comment('特有规格属性在商品属性模板中的对应下标组合 例如0_1_0 则可能表示 颜色选项 0 远峰蓝 内存选项 1 3GB  机身存储 0  16GB') index VARCHAR(100)"`
 	OwnSpec       string `json:"own_spec" xorm:"comment('商品实体的特有规格参数，json格式，反序列化时保证有序') VARCHAR(1000)"`
 	Status        int    `json:"status" xorm:"not null default 0 comment('是否有效，0 有效, 1 无效') TINYINT(1)"`
 	DiscountPrice int    `json:"discount_price" xorm:"not null default 0 comment('活动折扣价（默认等于单价）单位：分') INT(10)"`

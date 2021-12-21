@@ -2,6 +2,9 @@ package mshop
 
 import (
 	"sports_service/server/models"
+	"errors"
+	"fmt"
+	tc "sports_service/server/tools/tencentCloud"
 )
 
 type ProductSimpleInfo struct {
@@ -19,8 +22,59 @@ type ProductSimpleInfo struct {
 	MarketPrice    int    `json:"market_price" xorm:"not null default 0 comment('划线价格（分）') INT(10)"`
 }
 
-type ProductDetail struct {
+type ProductDetailInfo struct {
+	Id              int             `json:"sku_id"`
+	ProductId       int64           `json:"product_id"`
+	Title           string          `json:"title"`
+	SkuImage        string          `json:"sku_image"`
+	SkuNo           string          `json:"sku_no"`
+	Images          []tc.BucketURI  `json:"images"`
+	CurPrice        int             `json:"cur_price"`
+	MarketPrice     int             `json:"market_price"`
+	VideoUrl        tc.BucketURI    `json:"video_url"`
+	IsFreeShip      int             `json:"is_free_ship"`
+	DiscountPrice   int             `json:"discount_price"`
+	StartTime       int64           `json:"start_time"`
+	EndTime         int64           `json:"end_time"`
+	RemainDuration  int64           `json:"remain_duration"`        // 活动剩余时长
+	HasActivities   int32           `json:"has_activities"`         // 1 有活动
+	ProductDetail   string          `json:"product_detail"`         // 商品详情 长图/描述
+	OwnSpec         []OwnSpec       `json:"own_spec"`               // 商品实体的特有规格参数
+	AfterService    string          `json:"after_service"`          // 服务
+	Specifications  []SpecInfo      `json:"specifications"`         // 全部规格参数
+	SpecTemplate    []SpecTemplate  `json:"spec_template"`          // 特有规格参数
+	Indexes         string          `json:"indexes"`                // 特有规格属性在商品属性模板中的对应下标组合
+	Stock           int             `json:"stock"`                  // 库存
+	MaxBuy          int             `json:"max_buy"`                // 限购 0 表示无限制
+	MinBuy          int             `json:"min_buy"`                // 起购数
+	SaleNum         int             `json:"sale_num"`               // 销量
+}
 
+// 商品实体的特有规格参数
+type OwnSpec struct {
+	Key       string    `json:"key"`
+	Val       string    `json:"val"`
+}
+
+// 规格信息
+type SpecInfo struct {
+	Group    string    `json:"group"`                       // 规格组名称
+	Params   []struct {                                     // 规格属性
+		Key          string     `json:"key"`                // 属性名称
+		Val          string     `json:"val"`                // 属性值
+		Searchable   int32      `json:"searchable"`         // 是否作为搜索条件  1 是
+		Global       int32      `json:"global"`             // 是否为全局属性 1 是
+		Unit         string     `json:"unit,omitempty"`     // 单位
+		Numerical    int32      `json:"numerical,omitempty"`// 参数是否为数值类型 1是
+		Icon         string     `json:"icon"`               // icon图标
+		Options      []string   `json:"options,omitempty"`  // 参数选项
+	} `json:"params"`
+}
+
+// 特有规格参数选项
+type SpecTemplate struct {
+	Key       string    `json:"key"`
+	Options   []string  `json:"options"`
 }
 
 const (
@@ -101,4 +155,87 @@ func (m *ShopModel) GetProductSkuList() ([]models.ProductSku, error) {
 	}
 
 	return list, nil
+}
+
+func (m *ShopModel) GetProductSkuById(skuId string) (*models.ProductSku, error) {
+	sku := &models.ProductSku{}
+	ok, err := m.Engine.Where("id=?", skuId).Get(&sku)
+	if !ok && err != nil {
+		return sku, err
+	}
+
+	if !ok {
+		return sku, errors.New("sku not found")
+	}
+
+	return sku, nil
+}
+
+// 获取权重最高的sku
+func (m *ShopModel) GetProductSkuBySort(productId string) (*models.ProductSku, error) {
+	sku := &models.ProductSku{}
+	ok, err := m.Engine.Where("product_id=? AND status=0", productId).Desc("sortorder").Get(sku)
+	if !ok && err != nil {
+		return sku, err
+	}
+
+	if !ok {
+		return sku, errors.New("sku not found")
+	}
+
+	return sku, nil
+}
+
+// 获取商品spu
+func (m *ShopModel) GetProductSpu(productId string) (*models.Products, error) {
+	spu := &models.Products{}
+	ok, err := m.Engine.Where("id=?", productId).Get(spu)
+	if !ok || err != nil {
+		return spu, err
+	}
+
+	if !ok {
+		return spu, errors.New("spu not found")
+	}
+
+	return spu, nil
+}
+
+// indexes 特有规格属性在商品属性模板中的对应下标组合
+func (m *ShopModel) GetProductDetail(productId, indexes string) (*ProductDetailInfo, error) {
+	sql := "SELECT ps.*, p.specifications, p.spec_template, p.after_service, p.video_url, p.sale_num FROM product_sku AS ps " +
+	"LEFT JOIN products AS p ON ps.product_id = p.id WHERE ps.status=0 AND ps.product_id=? "
+
+	if indexes != "" {
+		sql += fmt.Sprintf(" AND ps.indexes='%s'", indexes)
+	} else {
+		sql += "ORDER BY ps.sortorder DESC, id DESC LIMIT 1"
+	}
+
+	detail := &ProductDetailInfo{}
+	ok, err := m.Engine.SQL(sql, productId).Get(detail)
+	if err != nil {
+		return detail, err
+	}
+
+	if !ok {
+		return detail, errors.New("get detail fail")
+	}
+
+	return detail, nil
+}
+
+// 获取商品sku库存
+func (m *ShopModel) GetProductSkuStock(skuId string) (*models.ProductSkuStock, error) {
+	stock := &models.ProductSkuStock{}
+	ok, err := m.Engine.Where("sku_id=?", skuId).Get(stock)
+	if err != nil {
+		return stock, err
+	}
+
+	if !ok {
+		return stock, errors.New("get detail fail")
+	}
+
+	return stock, nil
 }

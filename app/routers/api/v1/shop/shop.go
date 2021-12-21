@@ -4,6 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sports_service/server/app/controller/cshop"
+	"sports_service/server/global/app/log"
+	"sports_service/server/models"
 	"sports_service/server/util"
 	"sports_service/server/global/app/errdef"
 )
@@ -39,8 +41,31 @@ func RecommendProduct(c *gin.Context) {
 func ProductDetail(c *gin.Context) {
 	reply := errdef.New(c)
 	productId := c.Query("product_id")
+	indexes := c.Query("indexes")
 
 	svc := cshop.New(c)
-	svc.GetProductDetail(productId)
+	code, detail := svc.GetProductDetail(productId, indexes)
+	reply.Data["detail"] = detail
+	reply.Response(http.StatusOK, code)
+}
+
+func AreaConfig(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cshop.New(c)
+	areaList := svc.GetAreaConf()
+	reply.Data["list"] = areaList
 	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+func EditArea(c *gin.Context) {
+	reply := errdef.New(c)
+	params := &models.UserAddress{}
+	if err := c.BindJSON(params); err != nil {
+		log.Log.Errorf("shop_trace: invalid param, params:%+v, err:%s", params, err)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cshop.New(c)
+	reply.Response(http.StatusOK, svc.AddOrUpdateUserArea(params))
 }

@@ -16,8 +16,12 @@ func Router(engine *gin.Engine) {
 		// 获取分类下的商品
 		shop.GET("/products", ProductList)
 		// 推荐的商品
-		shop.GET("/recommend", RecommendProduct)
+		shop.GET("/product/recommend", RecommendProduct)
 		// 商品详情
-		shop.GET("/detail", ProductDetail)
+		shop.GET("/product/detail", ProductDetail)
+		// 地址配置
+		shop.GET("/area/config", AreaConfig)
+		// 用户添加/更新 地址信息
+		shop.POST("/edit/area", EditArea)
 	}
 }

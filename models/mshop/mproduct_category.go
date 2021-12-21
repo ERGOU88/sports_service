@@ -99,7 +99,7 @@ func (m *ShopModel) CleanCategoryInfoByMem() {
 	categoryList = nil
 }
 
-// 从内存读取视频标签 （第一次请求 内存没有 则从数据库load到内存）
+// 从内存读取分类 （第一次请求 内存没有 则从数据库load到内存）
 func (m *ShopModel) GetProductCategory() []*Category {
 	if len(categoryList) == 0 {
 		var err error

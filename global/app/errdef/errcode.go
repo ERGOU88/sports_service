@@ -251,6 +251,11 @@ const (
 	SHOP_GET_ALL_SPU_FAIL        = 50001
 	SHOP_GET_SPU_BY_CATEGORY_FAIL= 50002
 	SHOP_RECOMMEND_FAIL          = 50003
+	SHOP_PRODUCT_SKU_FAIL        = 50004
+	SHOP_PRODUCT_SPU_FAIL        = 50005
+	SHOP_ADD_USER_ADDR_FAIL      = 50006
+	SHOP_UPDATE_USER_ADDR_FAIL   = 50007
+	SHOP_USER_ADDR_NOT_FOUND     = 50008
 )
 
 var MsgFlags = map[int]string{
@@ -477,6 +482,11 @@ var MsgFlags = map[int]string{
     SHOP_GET_ALL_SPU_FAIL:         "商品获取失败",
 	SHOP_GET_SPU_BY_CATEGORY_FAIL: "分类商品获取失败",
 	SHOP_RECOMMEND_FAIL:           "推荐商品获取失败",
+	SHOP_PRODUCT_SKU_FAIL:         "商品sku获取失败",
+	SHOP_PRODUCT_SPU_FAIL:         "商品spu获取失败",
+	SHOP_ADD_USER_ADDR_FAIL:       "添加用户地址失败",
+	SHOP_UPDATE_USER_ADDR_FAIL:    "更新用户地址失败",
+	SHOP_USER_ADDR_NOT_FOUND:      "当前地址不存在",
 }
 
 func GetMsg(code int) string {
