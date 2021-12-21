@@ -139,18 +139,17 @@ func (svc *ShopModule) AddOrUpdateUserArea(info *models.UserAddress) int {
 		return errdef.USER_INVALID_MOBILE_NUM
 	}
 
-	if info.Id <= 0 {
-		// 如果要将当前地址设置为默认
-		if info.IsDefault == 1 {
-			// 先将其他地址置为不默认
-			if _, err := svc.shop.UpdateUserDefaultAddr("", info.UserId, 0); err != nil {
-				log.Log.Errorf("shop_trace: update user default addr fail, err:%s", err)
-				svc.engine.Rollback()
-				return errdef.SHOP_ADD_USER_ADDR_FAIL
-			}
+	// 如果要将当前地址设置为默认
+	if info.IsDefault == 1 {
+		// 先将其他地址置为不默认
+		if _, err := svc.shop.UpdateUserDefaultAddr("", info.UserId, 0); err != nil {
+			log.Log.Errorf("shop_trace: update user default addr fail, err:%s", err)
+			svc.engine.Rollback()
+			return errdef.SHOP_UPDATE_USER_ADDR_FAIL
 		}
+	}
 
-
+	if info.Id <= 0 {
 		if _, err := svc.shop.AddUserAddr(info); err != nil {
 			log.Log.Errorf("shop_trace: add user addr fail, err:%s", err)
 			svc.engine.Rollback()
@@ -166,15 +165,6 @@ func (svc *ShopModule) AddOrUpdateUserArea(info *models.UserAddress) int {
 		log.Log.Errorf("shop_trace: user addr not found, id:%d", info.Id)
 		svc.engine.Rollback()
 		return errdef.SHOP_USER_ADDR_NOT_FOUND
-	}
-
-	if info.IsDefault == 1 {
-		// 先将其他地址置为不默认
-		if _, err := svc.shop.UpdateUserDefaultAddr("", info.UserId, 0); err != nil {
-			log.Log.Errorf("shop_trace: update user default addr fail, err:%s", err)
-			svc.engine.Rollback()
-			return errdef.SHOP_UPDATE_USER_ADDR_FAIL
-		}
 	}
 
 	if _, err := svc.shop.UpdateUserAddr(info); err != nil {
