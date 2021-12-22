@@ -264,7 +264,12 @@ func (svc *ShopModule) SearchProduct(sortType, keyword string, page, size int) (
 		return errdef.SUCCESS, []mshop.ProductSimpleInfo{}
 	}
 
-	return svc.GetProductList(sortType, keyword, page, size)
+	code, list := svc.GetProductList(sortType, keyword, page, size)
+	if list == nil {
+		return code, []mshop.ProductSimpleInfo{}
+	}
+	
+	return code, list
 }
 
 // 更新用户商品购物车
