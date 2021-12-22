@@ -17,31 +17,42 @@ func (m *ShopModel) UpdateUserDefaultAddr(id, userId string, isDefault int) (int
 	if id == "" && userId == "" {
 		return 0, errors.New("invalid param")
 	}
+
+	engine := m.Engine
 	if id != "" {
-		m.Engine.Where("id=?", id)
+		engine.Where("id=?", id)
 	}
 
 	if userId != "" {
-		m.Engine.Where("user_id=?", userId)
+		engine.Where("user_id=?", userId)
 	}
 
 	info := &models.UserAddress{
 		IsDefault: isDefault,
 	}
 
-	return m.Engine.Update(info)
+	return engine.Cols("is_default").Update(info)
 }
 
 func (m *ShopModel) GetUserAddrById(id string) (*models.UserAddress, error) {
 	addr := &models.UserAddress{}
-	ok, err := m.Engine.Where("id=?", id).Get(addr)
+	ok, err := m.Engine.Where("id=?", id).OrderBy("is_default").Get(addr)
 	if err != nil {
-		return addr, err
+		return nil, err
 	}
 
 	if !ok {
-		return addr, errors.New("get addr fail")
+		return nil, errors.New("addr not found")
 	}
 
 	return addr, nil
+}
+
+func (m *ShopModel) GetUserAddrByUserId(userId string, offset, size int) ([]models.UserAddress, error) {
+	var list []models.UserAddress
+	if err := m.Engine.Where("user_id=?", userId).Limit(size, offset).Find(&list); err != nil {
+		return list, err
+	}
+
+	return list, nil
 }

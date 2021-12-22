@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"sports_service/server/app/controller/cshop"
 	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
 	"sports_service/server/models"
+	"sports_service/server/models/mshop"
 	"sports_service/server/util"
 	"sports_service/server/global/app/errdef"
 )
@@ -57,7 +59,7 @@ func AreaConfig(c *gin.Context) {
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
-func EditArea(c *gin.Context) {
+func EditAddr(c *gin.Context) {
 	reply := errdef.New(c)
 	params := &models.UserAddress{}
 	if err := c.BindJSON(params); err != nil {
@@ -66,6 +68,76 @@ func EditArea(c *gin.Context) {
 		return
 	}
 
+	userId, _ := c.Get(consts.USER_ID)
+	params.UserId = userId.(string)
 	svc := cshop.New(c)
-	reply.Response(http.StatusOK, svc.AddOrUpdateUserArea(params))
+	reply.Response(http.StatusOK, svc.AddOrUpdateUserAddr(params))
+}
+
+func UserAddrList(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+
+	userId, _ := c.Get(consts.USER_ID)
+	svc := cshop.New(c)
+	code, list := svc.GetUserAddrList(page, size, userId.(string))
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
+
+func AddProductCart(c *gin.Context) {
+	reply := errdef.New(c)
+	params := &models.ProductCart{}
+	if err := c.BindJSON(params); err != nil {
+		log.Log.Errorf("shop_trace: invalid param, params:%+v, err:%s", params, err)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	userId, _ := c.Get(consts.USER_ID)
+	params.UserId = userId.(string)
+	svc := cshop.New(c)
+	reply.Response(http.StatusOK, svc.AddProductCart(params))
+}
+
+func ProductCart(c *gin.Context) {
+	reply := errdef.New(c)
+	//page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	userId, _ := c.Get(consts.USER_ID)
+
+	svc := cshop.New(c)
+	code, list := svc.GetProductCartList(userId.(string))
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
+
+func SearchProduct(c *gin.Context) {
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	sortType := c.DefaultQuery("sort_type", "0")
+	keyword := c.Query("keyword")
+	svc := cshop.New(c)
+	code, list := svc.SearchProduct(sortType, keyword, page, size)
+	reply.Data["list"] = list
+	if len(list) == 0 {
+		_, recommend := svc.RecommendProduct("")
+		reply.Data["recommend"] = recommend
+	}
+
+	reply.Response(http.StatusOK, code)
+}
+
+func UpdateProductCart(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mshop.UpdateProductCartParam{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("shop_trace: invalid param, params:%+v, err:%s", param, err)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+
+	svc := cshop.New(c)
+	code, id := svc.UpdateProductCart(param.Params)
+	reply.Data["id"] = id
+	reply.Response(http.StatusOK, code)
 }

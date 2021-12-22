@@ -3,6 +3,7 @@ package shop
 import (
 	"github.com/gin-gonic/gin"
 	"sports_service/server/middleware/sign"
+	"sports_service/server/middleware/token"
 )
 
 // 分享/转发模块路由
@@ -22,6 +23,16 @@ func Router(engine *gin.Engine) {
 		// 地址配置
 		shop.GET("/area/config", AreaConfig)
 		// 用户添加/更新 地址信息
-		shop.POST("/edit/area", EditArea)
+		shop.POST("/edit/addr", token.TokenAuth(), EditAddr)
+		// 用户地址列表
+		shop.GET("/user/addr/list", token.TokenAuth(), UserAddrList)
+		// 添加商品购物车
+		shop.POST("/add/product/cart", token.TokenAuth(), AddProductCart)
+		// 获取商品购物车列表
+		shop.GET("/product/cart", token.TokenAuth(), ProductCart)
+		// 搜索商品
+		shop.GET("/product/search", SearchProduct)
+		// 更新商品购物车
+		shop.POST("/update/product/cart", token.TokenAuth(), UpdateProductCart)
 	}
 }

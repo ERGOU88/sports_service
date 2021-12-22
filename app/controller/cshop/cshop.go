@@ -34,15 +34,15 @@ func New(c *gin.Context) ShopModule {
 
 func (svc *ShopModule) GetProducts(categoryId, sortType string, page, size int) (int, []mshop.ProductSimpleInfo) {
 	if categoryId == "0" {
-		return svc.GetProductList(sortType, page, size)
+		return svc.GetProductList(sortType, "", page, size)
 	}
 
 	return svc.GetProductListByCategory(categoryId, sortType,  page, size)
 }
 
-func (svc *ShopModule) GetProductList(sortType string, page, size int) (int, []mshop.ProductSimpleInfo) {
+func (svc *ShopModule) GetProductList(sortType, keyword string, page, size int) (int, []mshop.ProductSimpleInfo) {
 	offset := (page - 1) * size
-	list, err := svc.shop.GetAllSpu(sortType, offset, size)
+	list, err := svc.shop.GetAllSpu(sortType, keyword, offset, size)
 	if err != nil {
 		log.Log.Errorf("shop_trace: get all spu fail, err:%s", err)
 		return errdef.SHOP_GET_ALL_SPU_FAIL, nil
@@ -128,7 +128,7 @@ func (svc *ShopModule) GetAreaConf() []*mshop.AreaInfo {
 }
 
 // 用户添加/更新 地址信息
-func (svc *ShopModule) AddOrUpdateUserArea(info *models.UserAddress) int {
+func (svc *ShopModule) AddOrUpdateUserAddr(info *models.UserAddress) int {
 	if err := svc.engine.Begin(); err != nil {
 		return errdef.ERROR
 	}
@@ -141,15 +141,28 @@ func (svc *ShopModule) AddOrUpdateUserArea(info *models.UserAddress) int {
 
 	// 如果要将当前地址设置为默认
 	if info.IsDefault == 1 {
-		// 先将其他地址置为不默认
-		if _, err := svc.shop.UpdateUserDefaultAddr("", info.UserId, 0); err != nil {
-			log.Log.Errorf("shop_trace: update user default addr fail, err:%s", err)
+		addrList, err := svc.shop.GetUserAddrByUserId(info.UserId, 0, 1)
+		if err != nil {
+			log.Log.Errorf("shop_trace: get user addr by userId fail, userId:%d", info.UserId)
 			svc.engine.Rollback()
-			return errdef.SHOP_UPDATE_USER_ADDR_FAIL
+			return errdef.SHOP_USER_ADDR_NOT_FOUND
+		}
+
+		if len(addrList) > 0 {
+			// 先将其他地址置为不默认
+			if _, err := svc.shop.UpdateUserDefaultAddr("", info.UserId, 0); err != nil {
+				log.Log.Errorf("shop_trace: update user default addr fail, err:%s", err)
+				svc.engine.Rollback()
+				return errdef.SHOP_UPDATE_USER_ADDR_FAIL
+			}
 		}
 	}
 
+	now := int(time.Now().Unix())
+	info.UpdateAt = now
 	if info.Id <= 0 {
+		info.CreateAt = now
+		// 添加地址
 		if _, err := svc.shop.AddUserAddr(info); err != nil {
 			log.Log.Errorf("shop_trace: add user addr fail, err:%s", err)
 			svc.engine.Rollback()
@@ -167,6 +180,7 @@ func (svc *ShopModule) AddOrUpdateUserArea(info *models.UserAddress) int {
 		return errdef.SHOP_USER_ADDR_NOT_FOUND
 	}
 
+	// 修改地址
 	if _, err := svc.shop.UpdateUserAddr(info); err != nil {
 		svc.engine.Rollback()
 		return errdef.SHOP_UPDATE_USER_ADDR_FAIL
@@ -174,4 +188,141 @@ func (svc *ShopModule) AddOrUpdateUserArea(info *models.UserAddress) int {
 
 	svc.engine.Commit()
 	return errdef.SUCCESS
+}
+
+func (svc *ShopModule) GetUserAddrList(page, size int, userId string) (int, []models.UserAddress) {
+	offset := (page - 1) * size
+	addrList, err := svc.shop.GetUserAddrByUserId(userId, offset, size)
+	if err != nil {
+		log.Log.Errorf("shop_trace: get user addr by userId fail, userId:%s, err:%s", userId, err)
+		return errdef.SHOP_GET_USER_ADDR_FAIL, nil
+	}
+
+	return errdef.SUCCESS, addrList
+}
+
+// 添加商品购物车
+func (svc *ShopModule) AddProductCart(info *models.ProductCart) int {
+	if info.Count <= 0 {
+		return errdef.INVALID_PARAMS
+	}
+
+	if _, err := svc.shop.GetProductSpu(fmt.Sprint(info.ProductId)); err != nil {
+		log.Log.Errorf("shop_trace: get product spu fail, productId:%d, err:%s", info.ProductId, err)
+		return errdef.SHOP_PRODUCT_SPU_FAIL
+	}
+
+	condition := fmt.Sprintf("id=%d AND product_id=%d", info.SkuId, info.ProductId)
+	if _, err := svc.shop.GetProductSku(condition); err != nil {
+		log.Log.Errorf("shop_trace: get product sku by id fail, skuId:%d, err:%s", info.SkuId, err)
+		return errdef.SHOP_PRODUCT_SKU_FAIL
+	}
+
+	info.CreateAt = int(time.Now().Unix())
+	condition = fmt.Sprintf("product_id=%d AND user_id=%s AND sku_id=%d", info.ProductId, info.UserId, info.SkuId)
+	cartInfo, _ := svc.shop.GetProductCart(condition)
+	if cartInfo == nil {
+		if _, err := svc.shop.AddProductCart(info); err != nil {
+			log.Log.Errorf("shop_trace: add product cart fail, err:%s", err)
+			return errdef.SHOP_ADD_PRODUCT_CART_FAIL
+		}
+
+	} else {
+		affected, err := svc.shop.UpdateProductCart(info)
+		if affected <= 0 || err != nil {
+			log.Log.Errorf("shop_trace: update product cart fail, err:%s", err)
+			return errdef.SHOP_ADD_PRODUCT_CART_FAIL
+		}
+	}
+
+
+	return errdef.SUCCESS
+}
+
+// 获取商品购物车列表
+func (svc *ShopModule) GetProductCartList(userId string) (int, []mshop.ProductCartInfo) {
+	//offset := (page - 1) * size
+	list, err := svc.shop.GetProductCartList(userId)
+	if err != nil {
+		log.Log.Errorf("shop_trace: get product cart list fail, err:%s", err)
+		return errdef.SHOP_GET_PRODUCT_CART_FAIL, nil
+	}
+
+	for _, info := range list {
+		now := time.Now().Unix()
+		if now >= info.StartTime && now < info.EndTime {
+			info.HasActivities = 1
+			info.RemainDuration = info.EndTime - now
+		}
+	}
+
+	return errdef.SUCCESS, list
+}
+
+func (svc *ShopModule) SearchProduct(sortType, keyword string, page, size int) (int, []mshop.ProductSimpleInfo) {
+	if keyword == "" {
+		return errdef.SUCCESS, []mshop.ProductSimpleInfo{}
+	}
+
+	return svc.GetProductList(sortType, keyword, page, size)
+}
+
+// 更新用户商品购物车
+func (svc *ShopModule) UpdateProductCart(list []*models.ProductCart) (int, []int) {
+	if len(list) == 0 {
+		log.Log.Errorf("shop_trace: invalid params, len:%d", len(list))
+		return errdef.INVALID_PARAMS, []int{}
+	}
+
+	if err := svc.engine.Begin(); err != nil {
+		return errdef.ERROR, []int{}
+	}
+
+	ids := make([]int, 0)
+	for _, item := range list {
+		if item.Count <= 0 {
+			return errdef.INVALID_PARAMS, []int{}
+		}
+
+		if _, err := svc.shop.GetProductSpu(fmt.Sprint(item.ProductId)); err != nil {
+			log.Log.Errorf("shop_trace: get product spu fail, productId:%d, err:%s", item.ProductId, err)
+			return errdef.SHOP_PRODUCT_SPU_FAIL, []int{}
+		}
+
+		condition := fmt.Sprintf("id=%d AND product_id=%d", item.SkuId, item.ProductId)
+		if _, err := svc.shop.GetProductSku(condition); err != nil {
+			log.Log.Errorf("shop_trace: get product sku by id fail, skuId:%d, err:%s", item.SkuId, err)
+			return errdef.SHOP_PRODUCT_SKU_FAIL, []int{}
+		}
+
+		stockInfo, err := svc.shop.GetProductSkuStock(fmt.Sprint(item.SkuId))
+		if err != nil {
+			log.Log.Errorf("shop_trace: get product sku stock fail, skuId:%d, err:%s", item.SkuId, err)
+			svc.engine.Rollback()
+			return errdef.ERROR, []int{}
+		}
+
+		if item.Count > stockInfo.MaxBuy && stockInfo.MaxBuy != 0 || item.Count < stockInfo.MinBuy {
+			log.Log.Errorf("shop_trace: invalid count, item.Count:%d, max:%d, min:%d", item.Count, stockInfo.MaxBuy, stockInfo.MinBuy)
+			ids = append(ids, item.Id)
+		}
+
+		if len(ids) == 0 {
+			if _, err := svc.shop.UpdateProductCartById(item); err != nil {
+				log.Log.Errorf("shop_trace: update product cart by id fail, id:%d, err:%s", item.Id, err)
+				svc.engine.Rollback()
+				return errdef.SHOP_UPDATE_PRODUCT_CART_FAIL, []int{}
+			}
+		}
+	}
+
+	if len(ids) > 0 {
+		log.Log.Errorf("shop_trace: invalid count, ids:%+v", ids)
+		svc.engine.Rollback()
+		return errdef.INVALID_PARAMS, ids
+	}
+
+	svc.engine.Commit()
+
+	return errdef.SUCCESS, []int{}
 }

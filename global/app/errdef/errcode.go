@@ -256,6 +256,10 @@ const (
 	SHOP_ADD_USER_ADDR_FAIL      = 50006
 	SHOP_UPDATE_USER_ADDR_FAIL   = 50007
 	SHOP_USER_ADDR_NOT_FOUND     = 50008
+	SHOP_GET_USER_ADDR_FAIL      = 50009
+	SHOP_ADD_PRODUCT_CART_FAIL   = 50010
+	SHOP_GET_PRODUCT_CART_FAIL   = 50011
+	SHOP_UPDATE_PRODUCT_CART_FAIL= 50012
 )
 
 var MsgFlags = map[int]string{
@@ -487,6 +491,10 @@ var MsgFlags = map[int]string{
 	SHOP_ADD_USER_ADDR_FAIL:       "添加用户地址失败",
 	SHOP_UPDATE_USER_ADDR_FAIL:    "更新用户地址失败",
 	SHOP_USER_ADDR_NOT_FOUND:      "当前地址不存在",
+	SHOP_GET_USER_ADDR_FAIL:       "地址信息获取失败",
+	SHOP_ADD_PRODUCT_CART_FAIL:    "添加商品购物车失败",
+	SHOP_GET_PRODUCT_CART_FAIL:    "商品购物车获取失败",
+	SHOP_UPDATE_PRODUCT_CART_FAIL: "更新商品购物车失败",
 }
 
 func GetMsg(code int) string {

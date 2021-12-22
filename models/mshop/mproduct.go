@@ -109,18 +109,23 @@ func (m *ShopModel) GetSpuListByCategory(categoryId, sortType string, offset, si
 }
 
 // 获取所有商品spu
-// sortType 0 销量倒序 1 价格倒序 2 价格正序
-func (m *ShopModel) GetAllSpu(sortType string, offset, size int) ([]ProductSimpleInfo, error) {
+// sortType 0 销量倒序 1 销量正序 2 价格倒序 3 价格正序
+func (m *ShopModel) GetAllSpu(sortType, keyword string, offset, size int) ([]ProductSimpleInfo, error) {
 	var list []ProductSimpleInfo
 	engine := m.Engine.Table(&models.Products{})
 	engine.Where("status=0 AND is_delete=0")
+	if keyword != "" {
+		engine.Where("product_name like '%" + keyword + "%'")
+	}
 
 	switch sortType {
 	case "0":
 		engine.OrderBy("sale_num DESC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
 	case "1":
-		engine.OrderBy("cur_price ASC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
+		engine.OrderBy("sale_num ASC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
 	case "2":
+		engine.OrderBy("cur_price ASC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
+	case "3":
 		engine.OrderBy("cur_price DESC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
 	default:
 		engine.OrderBy("sale_num DESC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
@@ -157,15 +162,15 @@ func (m *ShopModel) GetProductSkuList() ([]models.ProductSku, error) {
 	return list, nil
 }
 
-func (m *ShopModel) GetProductSkuById(skuId string) (*models.ProductSku, error) {
+func (m *ShopModel) GetProductSku(condition string) (*models.ProductSku, error) {
 	sku := &models.ProductSku{}
-	ok, err := m.Engine.Where("id=?", skuId).Get(&sku)
-	if !ok && err != nil {
-		return sku, err
+	ok, err := m.Engine.Where(condition).Get(sku)
+	if err != nil {
+		return nil, err
 	}
 
 	if !ok {
-		return sku, errors.New("sku not found")
+		return nil, errors.New("sku not found")
 	}
 
 	return sku, nil
@@ -175,12 +180,12 @@ func (m *ShopModel) GetProductSkuById(skuId string) (*models.ProductSku, error) 
 func (m *ShopModel) GetProductSkuBySort(productId string) (*models.ProductSku, error) {
 	sku := &models.ProductSku{}
 	ok, err := m.Engine.Where("product_id=? AND status=0", productId).Desc("sortorder").Get(sku)
-	if !ok && err != nil {
-		return sku, err
+	if err != nil {
+		return nil, err
 	}
 
 	if !ok {
-		return sku, errors.New("sku not found")
+		return nil, errors.New("sku not found")
 	}
 
 	return sku, nil
@@ -191,11 +196,11 @@ func (m *ShopModel) GetProductSpu(productId string) (*models.Products, error) {
 	spu := &models.Products{}
 	ok, err := m.Engine.Where("id=?", productId).Get(spu)
 	if !ok || err != nil {
-		return spu, err
+		return nil, err
 	}
 
 	if !ok {
-		return spu, errors.New("spu not found")
+		return nil, errors.New("spu not found")
 	}
 
 	return spu, nil
@@ -215,11 +220,11 @@ func (m *ShopModel) GetProductDetail(productId, indexes string) (*ProductDetailI
 	detail := &ProductDetailInfo{}
 	ok, err := m.Engine.SQL(sql, productId).Get(detail)
 	if err != nil {
-		return detail, err
+		return nil, err
 	}
 
 	if !ok {
-		return detail, errors.New("get detail fail")
+		return nil, errors.New("get detail fail")
 	}
 
 	return detail, nil
@@ -230,11 +235,11 @@ func (m *ShopModel) GetProductSkuStock(skuId string) (*models.ProductSkuStock, e
 	stock := &models.ProductSkuStock{}
 	ok, err := m.Engine.Where("sku_id=?", skuId).Get(stock)
 	if err != nil {
-		return stock, err
+		return nil, err
 	}
 
 	if !ok {
-		return stock, errors.New("get detail fail")
+		return nil, errors.New("get detail fail")
 	}
 
 	return stock, nil

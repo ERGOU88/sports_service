@@ -154,7 +154,7 @@ func TransferChinese(num int) string{
 		return "0"
 	}
 
-	chineseMap:= []string{"百", "千", "万", "十万", "百万", "千万", "亿", "十亿", "百亿", "千亿"}
+	chineseMap:= []string{"00", "千", "万", "0万", "00万", "000万", "亿", "0亿", "00亿", "000亿"}
 	chinese := fmt.Sprintf("%d%s", count/int(Pow(float64(10), len(fmt.Sprint(count))-1)), chineseMap[len(fmt.Sprint(count))-1])
 
 	return chinese

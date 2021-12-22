@@ -124,6 +124,7 @@ type RecommendVideoInfo struct {
 	SubareaInfo   *models.VideoSubarea  `json:"subarea_info"`                         // 视频分区信息
 	Subarea       int                   `json:"subarea_id"`                           // 视频分区id
 	Labels        []*models.VideoLabels `json:"labels"`                               // 视频标签
+	BarrageNum    int                   `json:"barrage_num" example:"1"`              // 弹幕数
 }
 
 type VideoDetailInfo struct {
@@ -637,7 +638,7 @@ const (
 	// "LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status = 1 AND v.video_id < ? GROUP BY v.video_id " +
 	// "ORDER BY v.is_top DESC, v.is_recommend DESC, v.sortorder DESC, v.video_id DESC LIMIT ?, ?"
 
-	QUERY_RECOMMEND_VIDEO_LIST = "SELECT v.*, s.fabulous_num,s.browse_num FROM `videos` as v " +
+	QUERY_RECOMMEND_VIDEO_LIST = "SELECT v.*, s.fabulous_num,s.browse_num,s.barrage_num FROM `videos` as v " +
 		"LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status = 1 AND v.video_id < ? GROUP BY v.video_id " +
 		"ORDER BY v.video_id DESC LIMIT ?, ?"
 )
