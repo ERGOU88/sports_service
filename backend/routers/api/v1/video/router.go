@@ -45,6 +45,7 @@ func Router(engine *gin.Engine) {
 		video.POST("/add/album", AddAlbum)
 		// 用户发布的专辑列表
 		video.GET("/album/list", VideoAlbumList)
-
+		// 首页板块信息
+		video.GET("/section/info", SectionInfo)
 	}
 }

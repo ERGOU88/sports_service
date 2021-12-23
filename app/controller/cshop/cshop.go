@@ -19,6 +19,7 @@ type ShopModule struct {
 	engine      *xorm.Session
 	user        *muser.UserModel
 	shop        *mshop.ShopModel
+	//resp        *mshop.OrderResp
 }
 
 func New(c *gin.Context) ShopModule {
@@ -28,6 +29,7 @@ func New(c *gin.Context) ShopModule {
 		context: c,
 		user: muser.NewUserModel(socket),
 		shop: mshop.NewShop(socket),
+		//resp: &mshop.OrderResp{Products: make([]*mshop.Product, 0)},
 		engine: socket,
 	}
 }
@@ -286,17 +288,20 @@ func (svc *ShopModule) UpdateProductCart(list []*models.ProductCart) (int, []int
 	ids := make([]int, 0)
 	for _, item := range list {
 		if item.Count <= 0 {
+			svc.engine.Rollback()
 			return errdef.INVALID_PARAMS, []int{}
 		}
 
 		if _, err := svc.shop.GetProductSpu(fmt.Sprint(item.ProductId)); err != nil {
 			log.Log.Errorf("shop_trace: get product spu fail, productId:%d, err:%s", item.ProductId, err)
+			svc.engine.Rollback()
 			return errdef.SHOP_PRODUCT_SPU_FAIL, []int{}
 		}
 
 		condition := fmt.Sprintf("id=%d AND product_id=%d", item.SkuId, item.ProductId)
 		if _, err := svc.shop.GetProductSku(condition); err != nil {
 			log.Log.Errorf("shop_trace: get product sku by id fail, skuId:%d, err:%s", item.SkuId, err)
+			svc.engine.Rollback()
 			return errdef.SHOP_PRODUCT_SKU_FAIL, []int{}
 		}
 

@@ -260,6 +260,8 @@ const (
 	SHOP_ADD_PRODUCT_CART_FAIL   = 50010
 	SHOP_GET_PRODUCT_CART_FAIL   = 50011
 	SHOP_UPDATE_PRODUCT_CART_FAIL= 50012
+	SHOP_SKU_STOCK_NOT_ENOUGH    = 50013
+	SHOP_PLACE_ORDER_FAIL        = 50014
 )
 
 var MsgFlags = map[int]string{
@@ -495,6 +497,8 @@ var MsgFlags = map[int]string{
 	SHOP_ADD_PRODUCT_CART_FAIL:    "添加商品购物车失败",
 	SHOP_GET_PRODUCT_CART_FAIL:    "商品购物车获取失败",
 	SHOP_UPDATE_PRODUCT_CART_FAIL: "更新商品购物车失败",
+	SHOP_SKU_STOCK_NOT_ENOUGH:     "库存不足",
+	SHOP_PLACE_ORDER_FAIL:         "下单失败",
 }
 
 func GetMsg(code int) string {

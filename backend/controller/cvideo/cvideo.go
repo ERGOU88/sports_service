@@ -503,3 +503,17 @@ func (svc *VideoModule) GetVideoAlbumByUserId(userId string, page, size int) (in
   
   return errdef.SUCCESS, list
 }
+
+// 获取视频首页板块信息
+func (svc *VideoModule) GetSectionInfo(sectionType string) (int, []*models.RecommendInfoSection) {
+  list, err := svc.section.GetRecommendSectionByType(sectionType)
+  if err != nil {
+    return errdef.ERROR, nil
+  }
+  
+  if list == nil {
+    return errdef.SUCCESS, []*models.RecommendInfoSection{}
+  }
+  
+  return errdef.SUCCESS, list
+}

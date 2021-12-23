@@ -84,3 +84,8 @@ func (m *ShopModel) GetProductCartList(userId string) ([]ProductCartInfo, error)
 func (m *ShopModel) UpdateProductCartById(info *models.ProductCart) (int64, error) {
 	return m.Engine.Where("id=?", info.Id).Cols("count, is_check").Update(info)
 }
+
+// 清理用户购物车
+func (m *ShopModel) DelProductCartByIds(cartIds []int) (int64, error) {
+	return m.Engine.In("id", cartIds).Delete(&models.ProductCart{})
+}

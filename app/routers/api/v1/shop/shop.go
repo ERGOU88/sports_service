@@ -141,3 +141,20 @@ func UpdateProductCart(c *gin.Context) {
 	reply.Data["id"] = id
 	reply.Response(http.StatusOK, code)
 }
+
+func PlaceOrder(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mshop.PlaceOrderReq{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("shop_trace: invalid param, err:%s", err)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	userId, _ := c.Get(consts.USER_ID)
+	param.UserId = userId.(string)
+	svc := cshop.New(c)
+	code, resp := svc.PlaceOrder(param)
+	reply.Data["detail"] = resp
+	reply.Response(http.StatusOK, code)
+}

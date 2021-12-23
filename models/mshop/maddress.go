@@ -36,7 +36,11 @@ func (m *ShopModel) UpdateUserDefaultAddr(id, userId string, isDefault int) (int
 
 func (m *ShopModel) GetUserAddrById(id string) (*models.UserAddress, error) {
 	addr := &models.UserAddress{}
-	ok, err := m.Engine.Where("id=?", id).OrderBy("is_default").Get(addr)
+	if id != "" {
+		m.Engine.Where("id=?", id)
+	}
+	
+	ok, err := m.Engine.Desc("is_default").Get(addr)
 	if err != nil {
 		return nil, err
 	}

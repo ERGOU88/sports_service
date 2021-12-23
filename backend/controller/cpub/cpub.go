@@ -153,6 +153,7 @@ func (svc *PubModule) UserPublishVideo(userId string, params *mvideo.VideoPublis
 	svc.video.Videos.VideoWidth = params.VideoWidth
 	svc.video.Videos.VideoHeight = params.VideoHeight
 	svc.video.Videos.Size = params.Size
+	svc.video.Videos.SectionId = params.SectionId
 	fileId, _ := strconv.Atoi(params.FileId)
 	svc.video.Videos.FileId = int64(fileId)
 	// 默认为首页发布
