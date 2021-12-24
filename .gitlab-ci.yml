@@ -25,7 +25,7 @@ build-job-backend:
     - gitlab_build_theseus
   stage: build
   only:
-    - feature/backend
+    - feature/shop
   script:
     - 'eval $build_shell'
     - 'eval $rsync_shell'
