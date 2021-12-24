@@ -20,8 +20,6 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 	resp.UserId = param.UserId
 	resp.ClientIp = param.ClientIp
 	resp.OrderId = fmt.Sprint("T", util.NewOrderId())
-	// 订单商品流水mp
-	//productMp := make(map[string]*models.OrderProduct, 0)
 	// 存储购物车id
 	cartIds := make([]int, 0)
 	for index, item := range param.Products {
@@ -70,15 +68,6 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 		resp.DiscountAmount += info.DiscountAmount
 		resp.ProductAmount += info.ProductAmount
 		resp.Products[index] = info
-		
-		// 订单商品快照
-		//record := &models.OrderProduct{
-		//	OrderId: resp.OrderId,
-		//	UserId: resp.UserId,
-		//	ProductId: item.ProductId,
-		//	SkuId: item.SkuId,
-		//
-		//}
 	}
 	
 	switch param.ReqType {
