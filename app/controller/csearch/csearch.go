@@ -441,6 +441,7 @@ func (svc *SearchModule) GetSortField(condition string) string {
 	// 点赞数
 	case consts.VIDEO_CONDITION_LIKE:
 		return consts.CONDITION_FIELD_LIKE
+	// 发布时间
 	case consts.VIDEO_PUBLISH_TIME:
 		return consts.CONDITION_FIELD_PUBLISH
 	default:
