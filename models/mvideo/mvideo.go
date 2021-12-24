@@ -716,7 +716,7 @@ func (m *VideoModel) GetUnBrowsedAttentionVideos(userIds, browseTm string) int64
 // mixDuration: 视频时长筛选 最小时长
 // maxDuration: 视频时长筛选 最大时长
 // publishTime: 发布时间筛选
-func (m *VideoModel) SearchVideos(name, sortCondition string, minDuration, maxDuration, publishTime int64, offset, size int) []*VideoDetailInfo {
+func (m *VideoModel) SearchVideos(name, sortCondition, sortType string, minDuration, maxDuration, publishTime int64, offset, size int) []*VideoDetailInfo {
 	sql :=  "SELECT v.*, s.fabulous_num, s.share_num, s.comment_num, s.browse_num FROM videos as v " +
 		"LEFT JOIN video_statistic as s ON v.video_id=s.video_id WHERE v.status=1 "
 
@@ -734,7 +734,11 @@ func (m *VideoModel) SearchVideos(name, sortCondition string, minDuration, maxDu
 
 	sql += "GROUP BY v.video_id ORDER BY "
 	if sortCondition != "" {
-		sql += fmt.Sprintf("s.%s DESC,", sortCondition)
+		if sortType == "2" {
+			sql += fmt.Sprintf("s.%s ASC,", sortCondition)
+		} else {
+			sql += fmt.Sprintf("s.%s DESC,", sortCondition)
+		}
 	}
 
 	sql += " v.is_top DESC, v.is_recommend DESC, v.sortorder DESC, v.video_id DESC LIMIT ?, ?"

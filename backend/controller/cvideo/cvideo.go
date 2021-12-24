@@ -155,7 +155,7 @@ func (svc *VideoModule) GetVideoList(keyword string, page, size int) []*mvideo.V
   offset := (page - 1) * size
   var list []*mvideo.VideoDetailInfo
   if keyword !=  "" {
-    list = svc.video.SearchVideos(keyword, "", 0, 0, 0, offset, size)
+    list = svc.video.SearchVideos(keyword, "", "", 0, 0, 0, offset, size)
     if len(list) == 0 {
       return []*mvideo.VideoDetailInfo{}
     }

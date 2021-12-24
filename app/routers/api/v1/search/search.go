@@ -43,11 +43,12 @@ func VideoSearch(c *gin.Context) {
 	sort := c.Query("sort")
 	duration := c.Query("duration")
 	publishTime := c.Query("publish_time")
+	sortType := c.DefaultQuery("sort_type", "1")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 
 	svc := csearch.New(c)
 	// 搜索视频
-	list := svc.VideoSearch(userId, name, sort, duration, publishTime, page, size)
+	list := svc.VideoSearch(userId, name, sort, sortType, duration, publishTime, page, size)
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
