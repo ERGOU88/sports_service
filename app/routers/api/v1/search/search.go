@@ -292,3 +292,11 @@ func PostingSearch(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
+
+func RecommendVideo(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := csearch.New(c)
+	list := svc.RecommendVideo()
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
