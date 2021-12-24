@@ -19,6 +19,7 @@ type ProductParam struct {
 
 // 下单返回数据
 type OrderResp struct {
+	ClientIp         string          `json:"client_ip"`              // ip地址
 	UserId           string          `json:"user_id"`
 	OrderId          string          `json:"order_id"`               // 订单id
 	IsEnough         bool            `json:"is_enough"`              // 库存标识 是否足够 false 库存不足
@@ -29,36 +30,38 @@ type OrderResp struct {
 	OrderAmount      int             `json:"order_amount"`           // 合计金额
 	ProductAmount    int             `json:"product_amount"`         // 商品总金额
 	Products         []*Product      `json:"products"`               // 商品sku列表
-	
+	CreateTm         string          `json:"create_tm"`              // 订单创建时间
+	CreateAt         int             `json:"create_at"`
+	PayDuration      int             `json:"pay_duration"`           // 支付时长
 	UserAddr         *models.UserAddress  `json:"user_addr"`         // 用户收获地址
 }
 
 type Product struct {
-	UserId           string          `json:"user_id"`
-	OrderId          string          `json:"order_id"`
-	SkuId            int             `json:"sku_id"`
-	ProductId        int             `json:"product_id"`
-	Count            int             `json:"count"`
-	IsEnough         bool            `json:"is_enough"`
-	CartId           int             `json:"cart_id"`
-	SkuImage         string          `json:"sku_image"`
-	Title            string          `json:"title"`
-	ProductName      string          `json:"product_name"`
-	SkuNo            string          `json:"sku_no"`
-	CurPrice         int             `json:"cur_price"`
-	MarketPrice      int             `json:"market_price"`
-	IsFreeShip       int             `json:"is_free_ship"`
-	DiscountPrice    int             `json:"discount_price"`
-	StartTime        int             `json:"start_time"`
-	EndTime          int             `json:"end_time"`
-	RemainDuration   int             `json:"remain_duration"`        // 活动剩余时长
-	HasActivities    int32           `json:"has_activities"`         // 1 有活动
-	OwnSpec          []OwnSpec       `json:"own_spec"`               // 商品实体的特有规格参数
-	Indexes          string          `json:"indexes"`                // 特有规格属性在商品属性模板中的对应下标组合
-	Stock            int             `json:"stock"`                  // 库存
-	MaxBuy           int             `json:"max_buy"`                // 限购 0 表示无限制
-	MinBuy           int             `json:"min_buy"`                // 起购数
-	CanBuy           bool            `json:"can_buy"`                // 当前数量是否可购买
+	UserId         string `json:"user_id"`
+	OrderId        string `json:"order_id"`
+	SkuId          int    `json:"sku_id"`
+	ProductId      int    `json:"product_id"`
+	Count          int    `json:"count"`
+	IsEnough       bool   `json:"is_enough" xorm:"-"`
+	CartId         int    `json:"cart_id" xorm:"-"`
+	SkuImage       string `json:"sku_image"`
+	SkuName        string `json:"sku_name"`
+	ProductName    string `json:"product_name"`
+	SkuNo          string `json:"sku_no"`
+	CurPrice       int    `json:"cur_price" xorm:"-"`
+	MarketPrice    int    `json:"market_price" xorm:"-"`
+	IsFreeShip     int    `json:"is_free_ship" xorm:"-"`
+	DiscountPrice  int    `json:"discount_price" xorm:"-"`
+	StartTime      int    `json:"start_time" xorm:"-"`
+	EndTime        int    `json:"end_time" xorm:"-"`
+	RemainDuration int    `json:"remain_duration" xorm:"-"` // 活动剩余时长
+	HasActivities  int32  `json:"has_activities" xorm:"-"`  // 1 有活动
+	SkuSpec          []OwnSpec       `json:"own_spec"`                 // 商品实体的特有规格参数
+	Indexes          string          `json:"indexes" xorm:"-"`         // 特有规格属性在商品属性模板中的对应下标组合
+	Stock            int             `json:"stock" xorm:"-"`           // 库存
+	MaxBuy           int             `json:"max_buy" xorm:"-"`         // 限购 0 表示无限制
+	MinBuy           int             `json:"min_buy" xorm:"-"`         // 起购数
+	CanBuy           bool            `json:"can_buy" xorm:"-"`         // 当前数量是否可购买
 	
 	PayAmount        int             `json:"pay_amount"`             // 应付金额
 	DiscountAmount   int             `json:"discount_amount"`        // 优惠金额
@@ -73,4 +76,8 @@ func (m *ShopModel) AddOrder(order *models.Orders) (int64, error) {
 
 func (m *ShopModel) AddOrderProduct(list []*Product) (int64, error) {
 	return m.Engine.Table("order_product").InsertMulti(list)
+}
+
+func (m *ShopModel) AddBuyerDeliveryInfo(info *models.BuyerDeliveryInfo) (int64, error) {
+	return m.Engine.InsertOne(info)
 }

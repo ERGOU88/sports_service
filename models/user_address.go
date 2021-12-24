@@ -6,10 +6,10 @@ type UserAddress struct {
 	Name          string `json:"name" xorm:"not null default '' comment('用户姓名') VARCHAR(50)"`
 	Mobile        string `json:"mobile" xorm:"not null default '' comment('手机') VARCHAR(15)"`
 	Telephone     string `json:"telephone" xorm:"not null default '' comment('联系电话') VARCHAR(30)"`
-	ProvinceCode  int    `json:"province_code" xorm:"not null default 0 comment('省code') INT(11)"`
-	CityCode      int    `json:"city_code" xorm:"not null default 0 comment('市code') INT(11)"`
-	DistrictCode  int    `json:"district_code" xorm:"not null default 0 comment('区县code') INT(11)"`
-	CommunityCode int    `json:"community_code" xorm:"not null default 0 comment('社区code') INT(11)"`
+	ProvinceCode  int64  `json:"province_code" xorm:"not null default 0 comment('省code') BIGINT(12)"`
+	CityCode      int64  `json:"city_code" xorm:"not null default 0 comment('市code') BIGINT(12)"`
+	DistrictCode  int64  `json:"district_code" xorm:"not null default 0 comment('区县code') BIGINT(12)"`
+	CommunityCode int64  `json:"community_code" xorm:"not null default 0 comment('社区code') BIGINT(12)"`
 	Address       string `json:"address" xorm:"not null default '' comment('地址信息') VARCHAR(255)"`
 	FullAddress   string `json:"full_address" xorm:"not null default '' comment('详细地址信息') VARCHAR(255)"`
 	PostalCode    string `json:"postal_code" xorm:"not null default '' comment('邮编') VARCHAR(50)"`

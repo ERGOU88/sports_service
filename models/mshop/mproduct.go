@@ -250,7 +250,7 @@ const (
 )
 // 更新商品sku库存
 func (m *ShopModel) UpdateProductSkuStock(skuId string, count int) (int64, error) {
-	res, err := m.Engine.Exec(UPDATE_PRODUCT_SKU_STOCK, skuId, count, count)
+	res, err := m.Engine.Exec(UPDATE_PRODUCT_SKU_STOCK, count, skuId, count)
 	if err != nil {
 		return 0, err
 	}

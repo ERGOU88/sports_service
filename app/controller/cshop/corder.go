@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mshop"
 	"sports_service/server/util"
@@ -17,6 +18,7 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 	
 	resp := &mshop.OrderResp{Products: make([]*mshop.Product, len(param.Products))}
 	resp.UserId = param.UserId
+	resp.ClientIp = param.ClientIp
 	resp.OrderId = fmt.Sprint("T", util.NewOrderId())
 	// 订单商品流水mp
 	//productMp := make(map[string]*models.OrderProduct, 0)
@@ -108,7 +110,7 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 		
 		if !resp.IsEnough {
 			svc.engine.Rollback()
-			return errdef.SHOP_SKU_STOCK_NOT_ENOUGH, nil
+			return errdef.SHOP_SKU_STOCK_NOT_ENOUGH, resp
 		}
 		
 		if len(cartIds) > 0 {
@@ -121,6 +123,10 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 			}
 		}
 		
+		now := time.Now()
+		resp.CreateAt = int(now.Unix())
+		resp.CreateTm = now.Format(consts.FORMAT_TM)
+		resp.PayDuration = consts.PAYMENT_DURATION
 		if _, err := svc.AddOrder(resp); err != nil {
 			log.Log.Errorf("shop_trace: add order fail, err:%s", err)
 			svc.engine.Rollback()
@@ -130,6 +136,12 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 		affected, err := svc.AddOrderProduct(resp.Products)
 		if int(affected) != len(resp.Products) || err != nil {
 			log.Log.Errorf("shop_trace: add order product fail, affected:%d, len:%d, err:%s", affected, len(cartIds), err)
+			svc.engine.Rollback()
+			return errdef.SHOP_PLACE_ORDER_FAIL, nil
+		}
+		
+		if _, err := svc.AddBuyerDeliveryInfo(resp); err != nil {
+			log.Log.Errorf("shop_trace: add buyer delivery info fail, err:%s", err)
 			svc.engine.Rollback()
 			return errdef.SHOP_PLACE_ORDER_FAIL, nil
 		}
@@ -144,7 +156,7 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 // 添加订单
 func (svc *ShopModule) AddOrder(resp *mshop.OrderResp) (int64, error) {
 	str, _ := util.JsonFast.MarshalToString(resp)
-	now := int(time.Now().Unix())
+	
 	order := &models.Orders{
 		OrderId:  resp.OrderId,
 		Extra: str,
@@ -156,8 +168,8 @@ func (svc *ShopModule) AddOrder(resp *mshop.OrderResp) (int64, error) {
 		PayAmount: resp.PayAmount,
 		OrderTypeName: "FPV无人机",
 		OrderType: 1001,
-		CreateAt: now,
-		UpdateAt: now,
+		CreateAt: resp.CreateAt,
+		UpdateAt: resp.CreateAt,
 	}
 	
 	return svc.shop.AddOrder(order)
@@ -165,6 +177,30 @@ func (svc *ShopModule) AddOrder(resp *mshop.OrderResp) (int64, error) {
 
 func (svc *ShopModule) AddOrderProduct(products []*mshop.Product) (int64, error) {
 	return svc.shop.AddOrderProduct(products)
+}
+
+// 添加买家配送信息
+func (svc *ShopModule) AddBuyerDeliveryInfo(resp *mshop.OrderResp) (int64, error) {
+	info := &models.BuyerDeliveryInfo{
+		OrderId: resp.OrderId,
+		UserId: resp.UserId,
+		Name: resp.UserAddr.Name,
+		Mobile: resp.UserAddr.Mobile,
+		Telephone: resp.UserAddr.Telephone,
+		ProvinceCode: resp.UserAddr.ProvinceCode,
+		CityCode: resp.UserAddr.CityCode,
+		DistrictCode: resp.UserAddr.DistrictCode,
+		CommunityCode: resp.UserAddr.CommunityCode,
+		Address: resp.UserAddr.Address,
+		FullAddress: resp.UserAddr.FullAddress,
+		Longitude: resp.UserAddr.Longitude,
+		Latitude: resp.UserAddr.Latitude,
+		BuyerIp: resp.ClientIp,
+		CreateAt: resp.CreateAt,
+		UpdateAt: resp.CreateAt,
+	}
+	
+	return svc.shop.AddBuyerDeliveryInfo(info)
 }
 
 // 下单流程
@@ -206,7 +242,7 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 		item.DeliveryAmount = 0
 	}
 	
-	if err = util.JsonFast.UnmarshalFromString(sku.OwnSpec, &item.OwnSpec); err != nil {
+	if err = util.JsonFast.UnmarshalFromString(sku.OwnSpec, &item.SkuSpec); err != nil {
 		log.Log.Errorf("shop_trace: unmarshal own spec fail, skuId:%d, err:%s", item.SkuId, err)
 	}
 	
@@ -219,7 +255,9 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 	item.MaxBuy = stockInfo.MaxBuy
 	item.MinBuy = stockInfo.MinBuy
 	item.Stock = stockInfo.Stock
-	if item.Count > stockInfo.MaxBuy && stockInfo.MaxBuy != 0 {
+	// 默认可够买
+	item.CanBuy = true
+	if item.Count > stockInfo.MaxBuy && stockInfo.MaxBuy > 0 {
 		item.Count = stockInfo.MaxBuy
 		item.CanBuy = false
 	}
@@ -238,8 +276,8 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 	item.ProductAmount = item.Count * item.MarketPrice
 	// 合计 = 商品总价 + 邮费
 	item.OrderAmount = item.ProductAmount + item.DeliveryAmount
-	// 优惠金额 = （划线价 - 活动价）* 数量
-	item.DiscountAmount = (item.MarketPrice - item.DiscountPrice) * item.Count
+	// 优惠金额 = （划线价 - 当前价/活动价）* 数量
+	item.DiscountAmount = (item.MarketPrice - price) * item.Count
 	// 应付金额
 	item.PayAmount = item.Count * price
 	// 默认库存足够
@@ -253,6 +291,7 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 	
 	if affected != 1 {
 		item.IsEnough = false
+		item.Count = stockInfo.Stock
 	}
 	
 	return errdef.SUCCESS
