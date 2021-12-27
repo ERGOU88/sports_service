@@ -7,7 +7,7 @@ import (
 	"errors"
 )
 
-// 删除订单/取消订单 请求参数
+// 删除订单/取消订单/确认收货 请求参数
 type ChangeOrderReq struct {
 	OrderId    string  `binding:"required" json:"order_id"`     // 订单id
 	UserId     string  `json:"user_id"`

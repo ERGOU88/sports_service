@@ -186,3 +186,18 @@ func OrderList(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
+
+func ConfirmReceipt(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mshop.ChangeOrderReq{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("shop_trace: invalid param, param:%+v, err:%s", param, err)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	userId, _ := c.Get(consts.USER_ID)
+	param.UserId = userId.(string)
+	svc := cshop.New(c)
+	reply.Response(http.StatusOK, svc.ConfirmReceipt(param))
+}

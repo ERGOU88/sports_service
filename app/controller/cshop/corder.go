@@ -512,3 +512,46 @@ func (svc *ShopModule) GetQueryCondition(reqType, userId string) string {
 	return condition
 }
 
+// 订单确认收货
+func (svc *ShopModule) ConfirmReceipt(param *mshop.ChangeOrderReq) int {
+	user := svc.user.FindUserByUserid(param.UserId)
+	if user == nil {
+		log.Log.Errorf("shop_trace: user not exists, userId:%s", param.UserId)
+		return errdef.USER_NOT_EXISTS
+	}
+	
+	order, err := svc.shop.GetOrder(param.OrderId)
+	if err != nil {
+		log.Log.Errorf("shop_trace: order not exists, orderId:%s", param.OrderId)
+		return errdef.SHOP_ORDER_NOT_EXISTS
+	}
+	
+	if order.UserId != user.UserId {
+		log.Log.Errorf("shop_trace: user not match, userId:%s, curUser:%s", order.UserId, user.UserId)
+		return errdef.SHOP_CONFIRM_RECEIPT_FAIL
+	}
+	
+	// 订单 != 支付成功 || 配送状态 != 已配送
+	if order.PayStatus != consts.SHOP_ORDER_TYPE_PAID || order.DeliveryStatus != consts.HAS_DELIVERED {
+		log.Log.Errorf("shop_trace: not allow confirm,orderId:%s, payStatus:%d, deliveryStatus:%d", order.OrderId,
+			order.PayStatus, order.DeliveryStatus)
+		return errdef.SHOP_NOT_ALLOW_CONFIRM
+	}
+	
+	now := int(time.Now().Unix())
+	// 支付状态=已支付 && 配送状态=已配送
+	condition := fmt.Sprintf("order_id='%s' AND pay_status=%d AND delivery_status=1", order.OrderId, consts.SHOP_ORDER_TYPE_PAID)
+	cols := "update_at, sign_time, finish_time, delivery_status"
+	order.UpdateAt = now
+	order.SignTime = now
+	// todo: 暂时已收货 即表示 已完成
+	order.FinishTime = now
+	// 配送状态 修改为 已签收
+	order.DeliveryStatus = consts.HAS_SIGNED
+	if _, err := svc.shop.UpdateOrderInfo(condition, cols, order); err != nil {
+		log.Log.Errorf("shop_trace: update order info fail, orderId:%s, err:%s", order.OrderId, err)
+		return errdef.SHOP_CONFIRM_RECEIPT_FAIL
+	}
+	
+	return errdef.SUCCESS
+}

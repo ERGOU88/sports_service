@@ -267,6 +267,8 @@ const (
 	SHOP_ORDER_NOT_ALLOW_CANCEL  = 50017
 	SHOP_ORDER_UPDATE_FAIL       = 50018
 	SHOP_ORDER_LIST_FAIL         = 50019
+	SHOP_CONFIRM_RECEIPT_FAIL    = 50020
+	SHOP_NOT_ALLOW_CONFIRM       = 50021
 )
 
 var MsgFlags = map[int]string{
@@ -509,6 +511,8 @@ var MsgFlags = map[int]string{
 	SHOP_ORDER_NOT_ALLOW_CANCEL:   "订单不允许取消",
 	SHOP_ORDER_UPDATE_FAIL:        "订单更新失败",
 	SHOP_ORDER_LIST_FAIL:          "获取订单列表失败",
+	SHOP_CONFIRM_RECEIPT_FAIL:     "确认收货失败",
+	SHOP_NOT_ALLOW_CONFIRM:        "订单暂不允许确认收货",
 	
 }
 

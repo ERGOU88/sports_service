@@ -40,5 +40,7 @@ func Router(engine *gin.Engine) {
 		shop.POST("/order/cancel", token.TokenAuth(), OrderCancel)
 		// 商城订单列表
 		shop.GET("/order/list", token.TokenAuth(), OrderList)
+		// 确认收货
+		shop.POST("/confirm/receipt", token.TokenAuth(), ConfirmReceipt)
 	}
 }
