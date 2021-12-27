@@ -11,9 +11,9 @@ import (
 	"fmt"
 )
 
-// 检测商城订单 支付是否超时（10min）
+// 检测商城订单 支付是否超时（5min）
 func CheckShopOrder() {
-	ticker := time.NewTicker(time.Minute * 2)
+	ticker := time.NewTicker(time.Minute * 5)
 	defer ticker.Stop()
 	
 	for {
