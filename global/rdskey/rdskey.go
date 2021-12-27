@@ -46,6 +46,8 @@ const (
 	QRCODE_INFO               = SUGAR + "qrcode_%s"                                // 保存二维码信息{拼接secret} 存储订单号[大写字母O + 16位secret]/存储用户id[大写字母U + 18位secret]
 	AREA_LIST_INFO            = SUGAR + "area_lst_info"                            // 保存全国地区列表信息
 	AREA_MP_INFO              = SUGAR + "area_mp_info"                             // 保存全国地区map信息
+	
+	SHOP_ORDER_EXPIRE         = SUGAR + "shop_order_expire"                        // 需处理支付超时的商城订单
 )
 
 // make redis key

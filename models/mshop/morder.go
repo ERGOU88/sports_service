@@ -1,6 +1,8 @@
 package mshop
 
 import (
+	"sports_service/server/dao"
+	"sports_service/server/global/rdskey"
 	"sports_service/server/models"
 	"errors"
 )
@@ -136,4 +138,10 @@ func (m *ShopModel) GetOrderList(condition string, offset, size int) ([]models.O
 	}
 	
 	return list, nil
+}
+
+// 记录需处理支付超时的订单号
+func (m *ShopModel) RecordOrderId(orderId string) (int, error) {
+	rds := dao.NewRedisDao()
+	return rds.SADD(rdskey.SHOP_ORDER_EXPIRE, orderId)
 }

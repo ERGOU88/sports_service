@@ -16,7 +16,7 @@ const (
 
 const (
 	// 商城订单 可支付时长 24小时
-	SHOP_PAYMENT_DURATION = 60 * 60 * 24
+	SHOP_PAYMENT_DURATION = 60 * 1
 )
 
 // 1 商品详情页下单

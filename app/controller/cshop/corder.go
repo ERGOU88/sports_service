@@ -142,6 +142,12 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 			return errdef.SHOP_PLACE_ORDER_FAIL, nil
 		}
 		
+		if _, err := svc.shop.RecordOrderId(resp.OrderId); err != nil {
+			log.Log.Errorf("shop_trace: record orderId fail, orderId:%s, err:%s", resp.OrderId, err)
+			svc.engine.Rollback()
+			return errdef.SHOP_PLACE_ORDER_FAIL, nil
+		}
+		
 		svc.engine.Commit()
 	default:
 		log.Log.Errorf("shop_trace: invalid reqType, reqType:%d", param.ReqType)
