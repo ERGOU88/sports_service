@@ -143,6 +143,10 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 		}
 		
 		svc.engine.Commit()
+	default:
+		log.Log.Errorf("shop_trace: invalid reqType, reqType:%d", param.ReqType)
+		svc.engine.Rollback()
+		return errdef.INVALID_PARAMS, nil
 	}
 	
 	
