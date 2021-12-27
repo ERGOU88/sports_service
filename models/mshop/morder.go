@@ -1,6 +1,15 @@
 package mshop
 
-import "sports_service/server/models"
+import (
+	"sports_service/server/models"
+	"errors"
+)
+
+// 删除订单/取消订单 请求参数
+type ChangeOrderReq struct {
+	OrderId    string  `binding:"required" json:"order_id"`     // 订单id
+	UserId     string  `json:"user_id"`
+}
 
 type PlaceOrderReq struct {
 	UserId         string            `json:"user_id"`
@@ -32,8 +41,15 @@ type OrderResp struct {
 	Products         []*Product      `json:"products"`               // 商品sku列表
 	CreateTm         string          `json:"create_tm"`              // 订单创建时间
 	CreateAt         int             `json:"create_at"`
-	PayDuration      int             `json:"pay_duration"`           // 支付时长
+	PayDuration      int64           `json:"pay_duration"`           // 支付时长
 	UserAddr         *models.UserAddress  `json:"user_addr"`         // 用户收获地址
+	ActionType       int             `json:"action_type"`            // 1 商品详情页下单 2 商品购物车下单
+	PayStatus        int             `json:"pay_status"`             // 0 待支付 1 已超时/已取消 2 已支付
+	DeliveryStatus   int             `json:"delivery_status"`        // 配送状态 0 未配送 1 已配送 2 已签收
+	DeliveryTypeName string          `json:"delivery_type_name"`     // 配送方式名称
+	DeliveryCode     string          `json:"delivery_code"`          // 运单号
+	DeliveryTelephone string         `json:"delivery_telephone"`     // 承运人电话
+	Status            int            `json:"status"`                 // 0 待支付 1 已取消 2 待收货 3 已完成
 }
 
 type Product struct {
@@ -80,4 +96,44 @@ func (m *ShopModel) AddOrderProduct(list []*Product) (int64, error) {
 
 func (m *ShopModel) AddBuyerDeliveryInfo(info *models.BuyerDeliveryInfo) (int64, error) {
 	return m.Engine.InsertOne(info)
+}
+
+func (m *ShopModel) GetOrder(orderId string) (*models.Orders, error) {
+	order := &models.Orders{}
+	ok, err := m.Engine.Where("order_id=?", orderId).Get(order)
+	if err != nil {
+		return nil, err
+	}
+	
+	if !ok {
+		return nil, errors.New("order not found")
+	}
+	
+	return order, nil
+	
+}
+
+// 更新订单信息
+func (m *ShopModel) UpdateOrderInfo(condition, cols string, order *models.Orders) (int64, error) {
+	return m.Engine.Where(condition).Cols(cols).Update(order)
+}
+
+// 获取订单商品列表
+func (m *ShopModel) GetOrderProductList(orderId string) ([]models.OrderProduct, error) {
+	var list []models.OrderProduct
+	if err := m.Engine.Where("order_id=?", orderId).Find(&list); err != nil {
+		return list, err
+	}
+	
+	return list, nil
+}
+
+// 获取订单列表
+func (m *ShopModel) GetOrderList(condition string, offset, size int) ([]models.Orders, error) {
+	var list []models.Orders
+	if err := m.Engine.Where(condition).Limit(size, offset).Find(&list); err != nil {
+		return list, err
+	}
+	
+	return list, nil
 }

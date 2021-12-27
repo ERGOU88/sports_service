@@ -2,7 +2,6 @@ package models
 
 type OrderProduct struct {
 	Id             int    `json:"id" xorm:"not null pk autoincr INT(11)"`
-	RelatedId      int    `json:"related_id" xorm:"not null default 0 comment('关联订单表id') INT(11)"`
 	OrderId        string `json:"order_id" xorm:"not null default '' comment('订单id') index VARCHAR(50)"`
 	UserId         string `json:"user_id" xorm:"not null default '' comment('买家id') index VARCHAR(60)"`
 	ProductId      int    `json:"product_id" xorm:"not null default 0 comment('商品id') index INT(11)"`

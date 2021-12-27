@@ -91,7 +91,7 @@ func (svc *ShopModule) RecommendProduct(productId string) (int, []mshop.ProductS
 }
 
 // 商品详情 获取商品实体信息
-func (svc *ShopModule) GetProductDetail(productId, indexes string) (int, *mshop.ProductDetailInfo) {
+func (svc *ShopModule) GetProductDetail(productId, indexes, userId string) (int, *mshop.ProductDetailInfo) {
 	if _, err := svc.shop.GetProductSpu(productId); err != nil {
 		log.Log.Errorf("shop_trace: get product spu fail, productId:%s, err:%s", productId, err)
 		return errdef.SHOP_PRODUCT_SPU_FAIL, nil
@@ -114,6 +114,15 @@ func (svc *ShopModule) GetProductDetail(productId, indexes string) (int, *mshop.
 		detail.Stock = stockInfo.Stock
 		detail.MinBuy = stockInfo.MinBuy
 		detail.MaxBuy = stockInfo.MaxBuy
+	}
+	
+	if userId != "" {
+		count, err := svc.shop.GetProductCartNum(userId)
+		if err != nil {
+			log.Log.Errorf("shop_trace: get product cart num fail, err:%s", err)
+		}
+		
+		detail.ProductCartNum = count
 	}
 
 	return errdef.SUCCESS, detail
@@ -222,7 +231,12 @@ func (svc *ShopModule) AddProductCart(info *models.ProductCart) int {
 
 	info.CreateAt = int(time.Now().Unix())
 	condition = fmt.Sprintf("product_id=%d AND user_id=%s AND sku_id=%d", info.ProductId, info.UserId, info.SkuId)
-	cartInfo, _ := svc.shop.GetProductCart(condition)
+	cartInfo, err := svc.shop.GetProductCart(condition)
+	if err != nil {
+		log.Log.Errorf("shop_trace: get product cart failm err:%s", err)
+		return errdef.SHOP_GET_PRODUCT_CART_FAIL
+	}
+	
 	if cartInfo == nil {
 		if _, err := svc.shop.AddProductCart(info); err != nil {
 			log.Log.Errorf("shop_trace: add product cart fail, err:%s", err)

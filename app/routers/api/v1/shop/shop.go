@@ -44,9 +44,10 @@ func ProductDetail(c *gin.Context) {
 	reply := errdef.New(c)
 	productId := c.Query("product_id")
 	indexes := c.Query("indexes")
+	userId := c.Query("user_id")
 
 	svc := cshop.New(c)
-	code, detail := svc.GetProductDetail(productId, indexes)
+	code, detail := svc.GetProductDetail(productId, indexes, userId)
 	reply.Data["detail"] = detail
 	reply.Response(http.StatusOK, code)
 }
@@ -156,5 +157,32 @@ func PlaceOrder(c *gin.Context) {
 	svc := cshop.New(c)
 	code, resp := svc.PlaceOrder(param)
 	reply.Data["detail"] = resp
+	reply.Response(http.StatusOK, code)
+}
+
+func OrderCancel(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mshop.ChangeOrderReq{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("shop_trace: invalid param, err:%s, param:%+v", err, param)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	userId, _ := c.Get(consts.USER_ID)
+	param.UserId = userId.(string)
+	svc := cshop.New(c)
+	reply.Response(http.StatusOK, svc.OrderCancel(param))
+}
+
+func OrderList(c *gin.Context) {
+	reply := errdef.New(c)
+	userId, _ := c.Get(consts.USER_ID)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	reqType := c.Query("req_type")
+	
+	svc := cshop.New(c)
+	code, list := svc.OrderList(userId.(string), reqType, page, size)
+	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }

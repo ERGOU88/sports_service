@@ -36,5 +36,9 @@ func Router(engine *gin.Engine) {
 		shop.POST("/update/product/cart", token.TokenAuth(), UpdateProductCart)
 		// 下单
 		shop.POST("/place/order", token.TokenAuth(), PlaceOrder)
+		// 订单取消
+		shop.POST("/order/cancel", token.TokenAuth(), OrderCancel)
+		// 商城订单列表
+		shop.GET("/order/list", token.TokenAuth(), OrderList)
 	}
 }

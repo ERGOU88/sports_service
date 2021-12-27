@@ -48,6 +48,7 @@ type ProductDetailInfo struct {
 	MaxBuy          int             `json:"max_buy"`                // 限购 0 表示无限制
 	MinBuy          int             `json:"min_buy"`                // 起购数
 	SaleNum         int             `json:"sale_num"`               // 销量
+	ProductCartNum  int64           `json:"product_cart_num"`       // 购物车数量
 }
 
 // 商品实体的特有规格参数

@@ -2,7 +2,6 @@ package mshop
 
 import (
 	"sports_service/server/models"
-	"errors"
 	//tc "sports_service/server/tools/tencentCloud"
 )
 
@@ -39,7 +38,7 @@ func (m *ShopModel) GetProductCart(condition string) (*models.ProductCart, error
 	}
 
 	if !ok {
-		return nil, errors.New("cart not found")
+		return nil, nil
 	}
 
 	return cart, nil
@@ -66,6 +65,11 @@ func (m *ShopModel) UpdateProductCart(info *models.ProductCart) (int64, error) {
 	}
 
 	return affected, nil
+}
+
+// 获取用户购物车数量
+func (m *ShopModel) GetProductCartNum(userId string) (int64, error) {
+	return m.Engine.Where("user_id=?", userId).Count(&models.ProductCart{})
 }
 
 const (

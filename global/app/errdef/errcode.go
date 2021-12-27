@@ -262,6 +262,11 @@ const (
 	SHOP_UPDATE_PRODUCT_CART_FAIL= 50012
 	SHOP_SKU_STOCK_NOT_ENOUGH    = 50013
 	SHOP_PLACE_ORDER_FAIL        = 50014
+	SHOP_ORDER_NOT_EXISTS        = 50015
+	SHOP_ORDER_CANCEL_FAIL       = 50016
+	SHOP_ORDER_NOT_ALLOW_CANCEL  = 50017
+	SHOP_ORDER_UPDATE_FAIL       = 50018
+	SHOP_ORDER_LIST_FAIL         = 50019
 )
 
 var MsgFlags = map[int]string{
@@ -499,6 +504,12 @@ var MsgFlags = map[int]string{
 	SHOP_UPDATE_PRODUCT_CART_FAIL: "更新商品购物车失败",
 	SHOP_SKU_STOCK_NOT_ENOUGH:     "库存不足",
 	SHOP_PLACE_ORDER_FAIL:         "下单失败",
+	SHOP_ORDER_NOT_EXISTS:         "订单不存在",
+	SHOP_ORDER_CANCEL_FAIL:        "订单取消失败",
+	SHOP_ORDER_NOT_ALLOW_CANCEL:   "订单不允许取消",
+	SHOP_ORDER_UPDATE_FAIL:        "订单更新失败",
+	SHOP_ORDER_LIST_FAIL:          "获取订单列表失败",
+	
 }
 
 func GetMsg(code int) string {
