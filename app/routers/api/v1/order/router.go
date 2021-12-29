@@ -26,6 +26,8 @@ func Router(engine *gin.Engine) {
 		order.POST("/cancel", OrderCancel)
         // 退款规则
 		order.GET("/refund/rules", RefundRules)
+		// 领取赠礼
+		order.POST("/receive/gift", ReceiveGift)
 	}
 }
 

@@ -133,3 +133,18 @@ func RefundRules(c *gin.Context) {
 
 	reply.Response(http.StatusOK, code)
 }
+
+func ReceiveGift(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &morder.ReceiveGiftReq{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("order_trace: invalid param, param:%+v, err:%s", param, err)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	userId, _ := c.Get(consts.USER_ID)
+	param.UserId = userId.(string)
+	svc := corder.New(c)
+	reply.Response(http.StatusOK, svc.ReceiveGift(param))
+}

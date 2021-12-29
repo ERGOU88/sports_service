@@ -109,6 +109,7 @@ type AppointmentReq struct {
 	IsDiscount      int32               `json:"is_discount"`      // 是否抵扣时长 1 抵扣 0 不抵扣
 	Channel         int                 `json:"channel"`          // 1001 安卓 1002 ios
 	VenueId         int64               `json:"venue_id"`         // 场馆id
+	IsGift          int                 `json:"is_gift"`          // 是否为赠品 1 为赠品
 }
 
 // 预约请求数据
@@ -174,6 +175,8 @@ type OrderResp struct {
 	OriginalAmount   int    `json:"original_amount,omitempty"`    // 订单原始金额
 	RefundFee        int    `json:"refund_fee,omitempty"`         // 退款手续费
 	RefundAmount     int    `json:"refund_amount,omitempty"`      // 退款金额
+	IsGift           int    `json:"is_gift"`                      // 是否为赠品 1 为赠品
+	GiftStatus       int    `json:"gift_status"`                  // 赠品状态 0 未赠送 1 已过期 2 已赠送
 }
 
 // 单时间节点预约数据
@@ -525,6 +528,6 @@ func (m *AppointmentModel) UpdateAppointmentRecordStatus(orderId string, now, st
 }
 
 // 更新预约流水记录信息
-func (m *AppointmentModel) UpdateAppointmentRecordInfo(cols string, record *models.VenueCardRecord) (int64, error) {
-	return m.Engine.Where("id=?", record.Id).Cols(cols).Update(record)
+func (m *AppointmentModel) UpdateAppointmentRecordInfo(condition, cols string, record *models.VenueAppointmentRecord) (int64, error) {
+	return m.Engine.Where(condition).Cols(cols).Update(record)
 }

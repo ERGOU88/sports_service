@@ -16,6 +16,12 @@ type PayReqParam struct {
 	UserId    string
 }
 
+// 领取赠品请求参数
+type ReceiveGiftReq struct {
+	OrderId   string  `binding:"required" json:"order_id"`     // 订单id
+	UserId    string  `json:"user_id"`
+}
+
 // 订单信息
 type OrderInfo struct {
 	CreatAt            string      `json:"creat_at"`            // 订单创建时间
@@ -32,6 +38,8 @@ type OrderInfo struct {
 	HasEvaluate        bool        `json:"has_evaluate"`        // 是否评价
 	TimeNode           string      `json:"time_node,omitempty"` // 预约的时间节点
 	CanRefund          bool        `json:"can_refund"`          // 是否可退款
+	IsGift             int         `json:"is_gift"`             // 是否为赠品 1 为赠品
+	GiftStatus         int         `json:"gift_status"`         // 0未赠送 1 已过期 2 已赠送
 }
 
 // 订单退款/删除订单/取消订单
@@ -78,6 +86,12 @@ func NewOrderModel(engine *xorm.Session) *OrderModel {
 func (m *OrderModel) GetCardRecordByOrderId(orderId string) (bool, error) {
 	m.CardRecord = new(models.VenueCardRecord)
 	return m.Engine.Where("pay_order_id=?", orderId).Get(m.CardRecord)
+}
+
+
+// 更新会员卡流水记录信息
+func (m *OrderModel) UpdateCardRecordInfo(cols string, record *models.VenueCardRecord) (int64, error) {
+	return m.Engine.Where("id=?", record.Id).Cols(cols).Update(record)
 }
 
 // 通过订单id获取购买的卡类商品流水[多条]

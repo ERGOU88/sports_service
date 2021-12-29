@@ -579,8 +579,8 @@ func (svc *ShopModule) DeleteOrder(param *mshop.ChangeOrderReq) int {
 		return errdef.SHOP_ORDER_DELETE_FAIL
 	}
 	
-	// 支付状态 != 已支付 || 配送状态 != 已签收
-	if order.PayStatus != consts.SHOP_ORDER_TYPE_PAID || order.DeliveryStatus != consts.HAS_SIGNED {
+	// 支付状态 != 已支付 || 配送状态 != 已签收 && 支付状态 != 未支付/支付超时
+	if (order.PayStatus != consts.SHOP_ORDER_TYPE_PAID || order.DeliveryStatus != consts.HAS_SIGNED) && order.PayStatus != consts.SHOP_ORDER_TYPE_UNPAID {
 		return errdef.SHOP_ORDER_DELETE_FAIL
 	}
 	

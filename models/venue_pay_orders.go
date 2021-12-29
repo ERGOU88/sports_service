@@ -24,4 +24,6 @@ type VenuePayOrders struct {
 	VenueId        int64  `json:"venue_id" xorm:"not null default 0 comment('场馆id') BIGINT(20)"`
 	CreateAt       int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt       int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
+	IsGift         int    `json:"is_gift" xorm:"not null default 0 comment('是否为赠品 0 不是 1 是') TINYINT(4)"`
+	GiftStatus     int    `json:"gift_status" xorm:"not null default 0 comment('礼物赠送状态 0 未赠送 1 已过期 2 已赠送/已领取') TINYINT(4)"`
 }

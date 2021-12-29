@@ -140,6 +140,7 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 	svc.Extra.CourseId = svc.course.Course.Id
 	svc.Extra.CourseName = fmt.Sprintf("《%s》", svc.course.Course.Title)
 	svc.Extra.ProductImg = tencentCloud.BucketURI(svc.course.Course.PromotionPic)
+	svc.Extra.IsGift = params.IsGift
 
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())

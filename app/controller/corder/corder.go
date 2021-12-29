@@ -630,7 +630,7 @@ func (svc *OrderModule) CardOrderProcess(changeType, now int, orderId string) er
 			
 			cols := "use_user_id"
 			card.UseUserId = svc.order.Order.UserId
-			if _, err := svc.appointment.UpdateAppointmentRecordInfo(cols, card); err != nil {
+			if _, err := svc.order.UpdateCardRecordInfo(cols, card); err != nil {
 				log.Log.Errorf("payNotify_trace: update record info fail, id:%d, err:%s", card.Id, err)
 				return err
 			}
@@ -750,8 +750,8 @@ func (svc *OrderModule) GetOrderList(userId, status string, page, size int) (int
 
 // todo:
 func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.OrderInfo {
-	res := make([]*morder.OrderInfo, len(list))
-	for index, order := range list {
+	res := make([]*morder.OrderInfo, 0)
+	for _, order := range list {
 		info := new(morder.OrderInfo)
 		info.OrderType = int32(order.ProductType)
 		cstSh, _ := time.LoadLocation("Asia/Shanghai")
@@ -762,6 +762,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 		info.Amount = fmt.Sprintf("%.2f", float64(order.Amount)/100)
 		info.TotalAmount = order.Amount
 		info.Title = order.Subject
+		info.IsGift = order.IsGift
 		// 是否可退款
 		can, _, _, _, err := svc.CanRefund(order.Amount, order.Status, order.ProductType, order.PayTime,
 			order.PayOrderId, order.Extra)
@@ -775,6 +776,35 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 			log.Log.Errorf("order_trace: unmarshal extra fail, err:%s, orderId:%s", err, order.PayOrderId)
 			continue
 		}
+		
+		// 如果是赠品 判断是否可赠送
+		if info.IsGift == 1 && info.GiftStatus == 0 {
+			records, err := svc.appointment.GetAppointmentRecordByOrderId(order.PayOrderId)
+			if err != nil || len(records) == 0 {
+				log.Log.Errorf("order_trace: get appointment record by orderId fail, err:%s", err)
+				continue
+			}
+			
+			for _, item := range records {
+				// 结束时间 > 当前时间 则礼物已过期
+				if item.EndTm > int(time.Now().Unix()) {
+					order.GiftStatus = 1
+				}
+			}
+		}
+		
+		info.GiftStatus = order.GiftStatus
+		// 赠品已过期 更新 订单赠品状态
+		if info.GiftStatus == 1 {
+			svc.order.Order = order
+			cols := "gift_status"
+			// 更新赠品状态
+			if _, err := svc.order.UpdateOrderInfo(cols); err != nil {
+				log.Log.Errorf("order_trace: update order info fail, orderId:%s, err:%s", order.PayOrderId, err)
+				continue
+			}
+		}
+		
 		info.Count = extra.Count
 		info.ProductImg = tencentCloud.BucketURI(extra.ProductImg)
 
@@ -815,7 +845,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 
 		}
 
-		res[index] = info
+		res = append(res, info)
 	}
 
 	return res
@@ -940,6 +970,8 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 	rsp.OrderDescription = "订单需知"
 	rsp.RefundFee = svc.order.Order.RefundFee
 	rsp.RefundAmount = svc.order.Order.RefundAmount
+	rsp.IsGift = svc.order.Order.IsGift
+	rsp.GiftStatus = svc.order.Order.GiftStatus
 
 	// 是否可退款
 	can, _, _, _, err := svc.CanRefund(svc.order.Order.Amount, svc.order.Order.Status, svc.order.Order.ProductType, svc.order.Order.PayTime,
@@ -1582,4 +1614,97 @@ func (svc *OrderModule) CalculationRefundFee(amount, lastStartTime int) (int, in
 	}
 
 	return refundFee, ruleId, nil
+}
+
+// 领取赠品
+func (svc *OrderModule) ReceiveGift(param *morder.ReceiveGiftReq) int {
+	if param.UserId == "" {
+		return errdef.INVALID_PARAMS
+	}
+	
+	user := svc.user.FindUserByUserid(param.UserId)
+	if user == nil {
+		log.Log.Errorf("order_trace: user not found, userId:%s", param.UserId)
+		return errdef.USER_NOT_EXISTS
+	}
+	
+	ok, err := svc.order.GetOrder(param.OrderId)
+	if !ok || err != nil {
+		log.Log.Errorf("order_trace: order not found, orderId:%s, err:%s", param.OrderId, err)
+		return errdef.ORDER_NOT_EXISTS
+	}
+	
+	// 是否为赠品
+	if svc.order.Order.IsGift != 1 {
+		log.Log.Errorf("order_trace: not gift, orderId:%s", param.OrderId)
+		return errdef.ORDER_GIFT_NOT_ALLOW_RECEIVE
+	}
+	
+	// 赠品已过期
+	if svc.order.Order.GiftStatus == 1 {
+		log.Log.Errorf("order_trace: gitf has expired, orderId:%s", param.OrderId)
+		return errdef.ORDER_GIFT_HAS_EXPIRED
+	}
+	
+	// 赠品已被领取
+	if svc.order.Order.GiftStatus == 2 {
+		log.Log.Errorf("order_trace: gift has received, orderId:%s", param.OrderId)
+		return errdef.ORDER_GIFT_HAS_RECEIVED
+	}
+	
+	if svc.order.Order.UserId == user.UserId {
+		log.Log.Errorf("order_trace: gift not allow receive, orderId:%s", param.OrderId)
+		return errdef.ORDER_GIFT_NOT_ALLOW_RECEIVE
+	}
+	
+	records, err := svc.appointment.GetAppointmentRecordByOrderId(param.OrderId)
+	if records == nil || err != nil {
+		log.Log.Errorf("order_trace: get appointment record fail, orderId:%s, err:%s", param.OrderId, err)
+		return errdef.ORDER_APPOINTMENT_RECORD_FAIL
+	}
+	
+	if err := svc.engine.Begin(); err != nil {
+		return errdef.ERROR
+	}
+	
+	for _, item := range records {
+		if item.UseUserId != "" {
+			log.Log.Errorf("order_trace: gift has received, orderId:%s", param.OrderId)
+			svc.engine.Rollback()
+			return errdef.ORDER_GIFT_HAS_RECEIVED
+		}
+		
+		// 结束时间 > 当前时间 不可领取 赠品已过期
+		if item.EndTm > int(time.Now().Unix()) {
+			log.Log.Errorf("order_trace: gift has expired, orderId:%s", param.OrderId)
+			svc.engine.Rollback()
+			return errdef.ORDER_GIFT_HAS_EXPIRED
+		}
+		
+		cols := "use_user_id"
+		item.UseUserId = param.UserId
+		condition := fmt.Sprintf("id=%d AND use_user_id=''", item.Id)
+		// 更新使用者
+		if _, err := svc.appointment.UpdateAppointmentRecordInfo(condition, cols, item); err != nil {
+			log.Log.Errorf("order_trace: update appointment record fail, orderId:%s, useUserId:%s, err:%s",
+				item.PayOrderId, param.UserId, err)
+			svc.engine.Rollback()
+			return errdef.ORDER_GIFT_RECEIVE_FAIL
+		}
+	}
+	
+	// 状态更新为已赠送/已领取
+	svc.order.Order.GiftStatus = 2
+	svc.order.Order.UpdateAt = int(time.Now().Unix())
+	cols := "gift_status, update_at"
+	if _, err := svc.order.UpdateOrderInfo(cols); err != nil {
+		log.Log.Errorf("order_trace: update gift status fail, orderId:%s, useUserId:%s, err:%s",
+			svc.order.Order.PayOrderId, param.UserId, err)
+		svc.engine.Rollback()
+		return errdef.ORDER_GIFT_RECEIVE_FAIL
+	}
+	
+	svc.engine.Commit()
+	
+	return errdef.SUCCESS
 }
