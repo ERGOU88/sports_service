@@ -50,6 +50,11 @@ func NewOrderId() string {
 	return fmt.Sprintf("%s%d", t, GenerateRandnum(1000, 9999))
 }
 
+func NewShopOrderId() string {
+	t := time.Now().Format("20060102150405")
+	return fmt.Sprintf("%s%d", t, GenerateRandnum(1000, 9999))
+}
+
 func GenerateRandnum(min, max int) int {
 	rand.Seed(time.Now().UnixNano())
 	num := rand.Intn(max - min)
