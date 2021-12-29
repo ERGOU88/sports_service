@@ -116,6 +116,10 @@ func (svc *ShopModule) GetProductDetail(productId, indexes, userId string) (int,
 		detail.MaxBuy = stockInfo.MaxBuy
 	}
 	
+	if detail.Specifications == nil {
+		detail.Specifications = make([]mshop.SpecInfo, 0)
+	}
+	
 	if detail.SpecTemplate == nil {
 		detail.SpecTemplate = make([]mshop.SpecTemplate, 0)
 	}

@@ -20,7 +20,7 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 	resp := &mshop.OrderResp{Products: make([]*mshop.Product, len(param.Products))}
 	resp.UserId = param.UserId
 	resp.ClientIp = param.ClientIp
-	resp.OrderId = fmt.Sprint("T", util.NewOrderId())
+	resp.OrderId = util.NewShopOrderId()
 	// 默认详情页下单
 	resp.ActionType = consts.ORDER_ACTION_TYPE_DETAIL
 	// 存储购物车id
