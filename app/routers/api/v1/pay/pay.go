@@ -179,7 +179,7 @@ func WechatNotify(c *gin.Context) {
 	}
 
 	payTime, _ := time.ParseInLocation("20060102150405", bm["time_end"].(string), time.Local)
-	if err := svc.WechatPayNotify(orderId, string(body),  bm["transaction_id"].(string), "", payTime.Unix(), 0, consts.PAY_NOTIFY); err != nil {
+	if err := svc.WechatPayNotify(orderId, string(body),  bm["transaction_id"].(string), totalFee,"", payTime.Unix(), 0, consts.PAY_NOTIFY); err != nil {
 		log.Log.Errorf("wxNotify_trace: order process fail, err:%s", err)
 		c.String(http.StatusInternalServerError, "fail")
 		return
@@ -234,20 +234,6 @@ func WechatRefundNotify(c *gin.Context) {
 		return
 	}
 
-	totalFee := refundNotify.TotalFee
-	amount, err := strconv.Atoi(totalFee)
-	if err != nil {
-		log.Log.Error("wxNotify_trace: amount not match, orderId:%s, err:%s", orderId, err)
-		c.String(http.StatusBadRequest, "fail")
-		return
-	}
-
-	if amount != order.Amount {
-		log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d", order.Amount, amount)
-		c.String(http.StatusBadRequest, "fail")
-		return
-	}
-
 	refundFee := refundNotify.RefundFee
 	refund, err := strconv.Atoi(refundFee)
 	if err != nil {
@@ -263,7 +249,7 @@ func WechatRefundNotify(c *gin.Context) {
 	}
 
 	refundTm, _ := time.ParseInLocation("20060102150405", refundNotify.SuccessTime, time.Local)
-	if err := svc.WechatPayNotify(orderId, string(body), refundNotify.TransactionId, refundNotify.OutRefundNo,
+	if err := svc.WechatPayNotify(orderId, string(body), refundNotify.TransactionId, refundNotify.TotalFee, refundNotify.OutRefundNo,
 		int64(order.PayTime), refundTm.Unix(), consts.REFUND_NOTIFY); err != nil {
 		log.Log.Errorf("wxNotify_trace: order process fail, err:%s", err)
 		c.String(http.StatusInternalServerError, "fail")

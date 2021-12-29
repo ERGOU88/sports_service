@@ -20,6 +20,7 @@ import (
 	"sports_service/server/models/mcoach"
 	"sports_service/server/models/morder"
 	"sports_service/server/models/mpay"
+	"sports_service/server/models/mshop"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
 	"sports_service/server/tools/alipay"
@@ -40,6 +41,7 @@ type OrderModule struct {
 	venue       *mvenue.VenueModel
 	coach       *mcoach.CoachModel
 	pay         *mpay.PayModel
+	shop        *mshop.ShopModel
 }
 
 func New(c *gin.Context) OrderModule {
@@ -56,6 +58,7 @@ func New(c *gin.Context) OrderModule {
 		venue: mvenue.NewVenueModel(socket),
 		coach: mcoach.NewCoachModel(socket),
 		pay: mpay.NewPayModel(socket),
+		shop: mshop.NewShop(appSocket),
 		engine: socket,
 	}
 }
@@ -74,10 +77,96 @@ func (svc *OrderModule) GetOrder(orderId string) (*models.VenuePayOrders, error)
 	return svc.order.Order, nil
 }
 
+
 // 支付宝通知 包含[支付成功、部分退款成功、全额退款成功]
 func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("payNotify_trace: session begin fail, err:%s", err)
+		return errdef.ERROR
+	}
+	
+	orderId := params.Get("out_trade_no")
+	length := len(orderId)
+	switch length {
+	// 场馆订单
+	case 16:
+		return svc.AliPayNotifyByVenue(params, body)
+	// 商城订单
+	case 18:
+		return svc.AliPayNotifyByShop(params, body)
+	}
+	
+	log.Log.Errorf("order_trace: invalid orderId, orderId:%s", orderId)
+	return errdef.ERROR
+}
+
+// 支付宝通知 商城订单 [暂只有支付成功]
+func (svc *OrderModule) AliPayNotifyByShop(params url.Values, body string) int {
+	orderId := params.Get("out_trade_no")
+	order, err := svc.shop.GetOrder(orderId)
+	if order == nil || err != nil {
+		log.Log.Errorf("aliNotify_trace: get order fail, orderId:%s, err:%s", orderId, err)
+		return errdef.ERROR
+	}
+	
+	status := strings.Trim(params.Get("trade_status"), " ")
+	payTime, _ := time.ParseInLocation("2006-01-02 15:04:05", params.Get("gmt_payment"), time.Local)
+	tradeNo := params.Get("trade_no")
+	
+	switch status {
+	// 成功需区分 部分退款和支付成功
+	case consts.TradeSuccess:
+		switch order.PayStatus {
+		// 待支付状态
+		case consts.SHOP_ORDER_TYPE_WAIT:
+			amount, err := strconv.ParseFloat(strings.Trim(params.Get("total_amount"), " "), 64)
+			if err != nil {
+				log.Log.Errorf("aliNotify_trace: parse float fail, err:%s", err)
+				return errdef.ERROR
+			}
+			
+			if int(amount * 100) != order.PayAmount {
+				log.Log.Error("aliNotify_trace: amount not match, orderAmount:%d, amount:%d",
+					order.PayAmount, amount * 100)
+				return errdef.ERROR
+			}
+			
+			
+			condition := fmt.Sprintf("`pay_status`=%d AND `order_id`='%s'", consts.SHOP_ORDER_TYPE_WAIT, order.OrderId)
+			cols := "pay_status, transaction, pay_time, update_at"
+			order.PayStatus = consts.SHOP_ORDER_TYPE_PAID
+			now := int(time.Now().Unix())
+			order.UpdateAt = now
+			order.Transaction = tradeNo
+			order.PayTime = int(payTime.Unix())
+			// 更新订单状态
+			if _, err := svc.shop.UpdateOrderInfo(condition, cols, order); err != nil {
+				log.Log.Errorf("shop_trace: update order info fail, orderId:%s, err:%v", order.OrderId, err)
+				return errdef.SHOP_ORDER_UPDATE_FAIL
+			}
+			
+		default:
+			return errdef.ERROR
+		}
+	
+	
+	// 全额退款
+	case consts.TradeClosed:
+		log.Log.Debug("trade closed, order_id:%v", orderId)
+	case consts.WaitBuyerPay:
+		log.Log.Debug("wait buyer pay, order_id:%v", orderId)
+	case consts.TradeFinished:
+		log.Log.Debug("trade finished, order_id:%v", orderId)
+	}
+	
+	
+	return errdef.SUCCESS
+}
+
+// 支付宝通知 场馆订单包含[支付成功、部分退款成功、全额退款成功]
+func (svc *OrderModule) AliPayNotifyByVenue(params url.Values, body string) int {
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("aliNotify_trace: session begin fail, err:%s", err)
 		return errdef.ERROR
 	}
 
@@ -219,8 +308,65 @@ func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 	return errdef.SUCCESS
 }
 
-// 微信支付回调
-func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo, refundNo string, payTm, refundTm int64, changeType int) error {
+func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo, totalFee, refundNo string, payTm, refundTm int64, changeType int) error {
+	length := len(orderId)
+	switch length {
+	// 场馆订单
+	case 16:
+		return svc.WechatPayNotifyByVenue(orderId, body, tradeNo, totalFee, refundNo, payTm, refundTm, changeType)
+	// 商城订单
+	case 18:
+		return svc.WechatPayNotifyByShop(orderId, tradeNo, totalFee, payTm)
+	}
+	
+	return nil
+}
+
+func (svc *OrderModule) WechatPayNotifyByShop(orderId, tradeNo, totalFee string, payTm int64) error {
+	order, err := svc.shop.GetOrder(orderId)
+	if order == nil || err != nil {
+		log.Log.Errorf("wxNotify_trace: get order fail, orderId:%s, err:%s", orderId, err)
+		return errors.New("order not found")
+	}
+	
+	switch order.PayStatus {
+	// 待支付状态
+	case consts.SHOP_ORDER_TYPE_WAIT:
+		amount, err := strconv.Atoi(totalFee)
+		if err != nil {
+			log.Log.Errorf("wxNotify_trace: parse float fail, err:%s", err)
+			return err
+		}
+		
+		if amount != order.PayAmount {
+			log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d",
+				order.PayAmount, amount)
+			return errors.New("amount not match")
+		}
+		
+		
+		condition := fmt.Sprintf("`pay_status`=%d AND `order_id`='%s'", consts.SHOP_ORDER_TYPE_WAIT, order.OrderId)
+		cols := "pay_status, transaction, pay_time, update_at"
+		order.PayStatus = consts.SHOP_ORDER_TYPE_PAID
+		now := int(time.Now().Unix())
+		order.UpdateAt = now
+		order.Transaction = tradeNo
+		order.PayTime = int(payTm)
+		// 更新订单状态
+		if _, err := svc.shop.UpdateOrderInfo(condition, cols, order); err != nil {
+			log.Log.Errorf("shop_trace: update order info fail, orderId:%s, err:%v", order.OrderId, err)
+			return err
+		}
+	
+	default:
+		return errors.New("invalid order type")
+	}
+	
+	return nil
+}
+
+// 微信支付/退款 回调
+func (svc *OrderModule) WechatPayNotifyByVenue(orderId, body, tradeNo, totalFee, refundNo string, payTm, refundTm int64, changeType int) error {
 	if err := svc.engine.Begin(); err != nil {
 		return err
 	}
@@ -230,6 +376,19 @@ func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo, refundNo string,
 		log.Log.Errorf("wxNotify_trace: order not exists, orderId:%s", orderId)
 		svc.engine.Rollback()
 		return errors.New("order not exists")
+	}
+	
+	fee, err := strconv.Atoi(totalFee)
+	if err != nil {
+		log.Log.Error("wxNotify_trace: amount fail, orderId:%s, err:%s", orderId, err)
+		svc.engine.Rollback()
+		return err
+	}
+	
+	if fee != svc.order.Order.Amount {
+		log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d", svc.order.Order.Amount, fee)
+		svc.engine.Rollback()
+		return errors.New("amount not match")
 	}
 
 	if err := svc.OrderProcess(orderId, body, tradeNo, payTm, changeType, svc.order.Order.RefundAmount, svc.order.Order.RefundFee); err != nil {
