@@ -4,12 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sports_service/server/app/controller/cshop"
+	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mshop"
 	"sports_service/server/util"
-	"sports_service/server/global/app/errdef"
 )
 
 func ProductList(c *gin.Context) {
@@ -200,4 +200,20 @@ func ConfirmReceipt(c *gin.Context) {
 	param.UserId = userId.(string)
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.ConfirmReceipt(param))
+}
+
+// 删除订单
+func OrderDelete(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mshop.ChangeOrderReq{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("order_trace: invalid param, param:%+v, err:%s", param, err)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	userId, _ := c.Get(consts.USER_ID)
+	svc := cshop.New(c)
+	param.UserId = userId.(string)
+	reply.Response(http.StatusOK, svc.DeleteOrder(param))
 }

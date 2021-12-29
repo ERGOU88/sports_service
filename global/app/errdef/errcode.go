@@ -269,6 +269,7 @@ const (
 	SHOP_ORDER_LIST_FAIL         = 50019
 	SHOP_CONFIRM_RECEIPT_FAIL    = 50020
 	SHOP_NOT_ALLOW_CONFIRM       = 50021
+	SHOP_ORDER_DELETE_FAIL       = 50022
 )
 
 var MsgFlags = map[int]string{
@@ -513,7 +514,7 @@ var MsgFlags = map[int]string{
 	SHOP_ORDER_LIST_FAIL:          "获取订单列表失败",
 	SHOP_CONFIRM_RECEIPT_FAIL:     "确认收货失败",
 	SHOP_NOT_ALLOW_CONFIRM:        "订单暂不允许确认收货",
-	
+	SHOP_ORDER_DELETE_FAIL:        "订单删除失败",
 }
 
 func GetMsg(code int) string {

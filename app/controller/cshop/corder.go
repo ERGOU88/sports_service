@@ -559,3 +559,41 @@ func (svc *ShopModule) ConfirmReceipt(param *mshop.ChangeOrderReq) int {
 	
 	return errdef.SUCCESS
 }
+
+// 删除订单
+func (svc *ShopModule) DeleteOrder(param *mshop.ChangeOrderReq) int {
+	user := svc.user.FindUserByUserid(param.UserId)
+	if user == nil {
+		log.Log.Errorf("shop_trace: user not exists, userId:%s", param.UserId)
+		return errdef.USER_NOT_EXISTS
+	}
+	
+	order, err := svc.shop.GetOrder(param.OrderId)
+	if err != nil {
+		log.Log.Errorf("shop_trace: order not exists, orderId:%s", param.OrderId)
+		return errdef.SHOP_ORDER_NOT_EXISTS
+	}
+	
+	if order.UserId != user.UserId {
+		log.Log.Errorf("order_trace: user not match, userId:%s, curUser:%s", order.UserId, user.UserId)
+		return errdef.SHOP_ORDER_DELETE_FAIL
+	}
+	
+	// 支付状态 != 已支付 || 配送状态 != 已签收
+	if order.PayStatus != consts.SHOP_ORDER_TYPE_PAID || order.DeliveryStatus != consts.HAS_SIGNED {
+		return errdef.SHOP_ORDER_DELETE_FAIL
+	}
+	
+	condition := fmt.Sprintf("order_id=%s AND pay_status=%d AND delivery_status=%d", order.OrderId,
+		consts.SHOP_ORDER_TYPE_PAID, consts.HAS_SIGNED)
+	order.IsDelete = 1
+	order.UpdateAt = int(time.Now().Unix())
+	cols := "is_delete, update_at"
+	affected, err := svc.shop.UpdateOrderInfo(condition, cols, order)
+	if affected != 1 || err != nil {
+		log.Log.Errorf("shop_trace: update order info fail, err:%s, affected:%d", err, affected)
+		return errdef.SHOP_ORDER_DELETE_FAIL
+	}
+	
+	return errdef.SUCCESS
+}
