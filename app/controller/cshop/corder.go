@@ -252,8 +252,12 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 		item.DeliveryAmount = 0
 	}
 	
-	if err = util.JsonFast.UnmarshalFromString(sku.OwnSpec, &item.SkuSpec); err != nil {
-		log.Log.Errorf("shop_trace: unmarshal own spec fail, skuId:%d, err:%s", item.SkuId, err)
+	if sku.OwnSpec != "" {
+		if err = util.JsonFast.UnmarshalFromString(sku.OwnSpec, &item.SkuSpec); err != nil {
+			log.Log.Errorf("shop_trace: unmarshal own spec fail, skuId:%d, err:%s", item.SkuId, err)
+		}
+	} else {
+		item.SkuSpec = make([]mshop.OwnSpec, 0)
 	}
 	
 	stockInfo, err := svc.shop.GetProductSkuStock(fmt.Sprint(item.SkuId))

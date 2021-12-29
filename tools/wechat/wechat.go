@@ -29,6 +29,7 @@ type WechatPayClient struct {
 	RefundAmount int                // 退款金额
 	RefundNotify string             // 退款回调地址
 	OutRefundNo  string             // 退款单号
+	Attach       string             // 附加数据，在查询API和支付通知中原样返回，可作为自定义参数使用
 }
 
 // 初始化微信客户端
@@ -64,6 +65,10 @@ func (c *WechatPayClient) TradeAppPay() (map[string]interface{}, error){
 
 	if c.TimeExpire != "" {
 		bm.Set("time_expire", c.TimeExpire)
+	}
+	
+	if c.Attach != "" {
+		bm.Set("attach", c.Attach)
 	}
 
 	// 请求支付下单，成功后得到结果

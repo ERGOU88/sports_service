@@ -116,6 +116,14 @@ func (svc *ShopModule) GetProductDetail(productId, indexes, userId string) (int,
 		detail.MaxBuy = stockInfo.MaxBuy
 	}
 	
+	if detail.SpecTemplate == nil {
+		detail.SpecTemplate = make([]mshop.SpecTemplate, 0)
+	}
+	
+	if detail.OwnSpec == nil {
+		detail.OwnSpec = make([]mshop.OwnSpec, 0)
+	}
+	
 	if userId != "" {
 		count, err := svc.shop.GetProductCartNum(userId)
 		if err != nil {
