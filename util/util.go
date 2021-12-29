@@ -63,6 +63,7 @@ func GenerateRandnum(min, max int) int {
 	return num
 }
 
+
 func GetTransactionId() string {
 	return fmt.Sprintf("%s%d", "FPV", GetSnowId())
 }
