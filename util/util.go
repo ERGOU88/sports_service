@@ -44,9 +44,15 @@ func GetSnowId() int64 {
 	return id
 }
 
-// NewOrderId 年+月+日+时间+4位随机
+// NewOrderId 年+月+日+时间+4位随机 16位
 func NewOrderId() string {
 	t := time.Now().Format("060102150405")
+	return fmt.Sprintf("%s%d", t, GenerateRandnum(1000, 9999))
+}
+
+// 商城订单 18位
+func NewShopOrderId() string {
+	t := time.Now().Format("20060102150405")
 	return fmt.Sprintf("%s%d", t, GenerateRandnum(1000, 9999))
 }
 
