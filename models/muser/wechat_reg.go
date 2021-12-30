@@ -9,6 +9,11 @@ type WxLoginParam struct {
 	Code    string     `binding:"required" json:"code" example:"code码"`
 }
 
+// 小程序登录 请求参数
+type AppletLoginParam struct {
+	Code    string   `binding:"required" json:"code"`
+}
+
 type AccessToken struct {
 	AccessToken  string `json:"access_token"`
 	ExpiresIn    int    `json:"expires_in"`

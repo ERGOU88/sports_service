@@ -46,6 +46,10 @@ func Router(engine *gin.Engine) {
 		//user.GET("/im/add/user", sign.CheckSign(), token.TokenAuth(), TencentImAddUser)
 		// 获取腾讯im签名 [包含已注册用户/游客]
 		user.GET("/im/get/sign", sign.CheckSign(), GetTencentImSign)
+		// 微信登录凭证校验
+		user.GET("/wx/code/verify", sign.CheckSign(), VerifyWxCode)
+		// 微信小程序登录
+		user.POST("/wx/applet/login", sign.CheckSign(), AppletLogin)
 	}
 
 }

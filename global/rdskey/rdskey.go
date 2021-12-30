@@ -48,6 +48,8 @@ const (
 	AREA_MP_INFO              = SUGAR + "area_mp_info"                             // 保存全国地区map信息
 	
 	SHOP_ORDER_EXPIRE         = SUGAR + "shop_order_expire"                        // 需处理支付超时的商城订单
+	
+	WECHAT_ACCESS_TOKEN       = SUGAR + "wx_access_token"                          // 微信授权令牌
 )
 
 // make redis key

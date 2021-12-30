@@ -648,3 +648,9 @@ func (m *UserModel) GetOfficialUsers(offset, size int) ([]*OfficialUserInfo, err
 
 	return list, nil
 }
+
+// 获取小程序全局唯一后台接口调用凭据
+func (m *UserModel) GetAppletAccessToken() (string, error) {
+	rds := dao.NewRedisDao()
+	return rds.Get(rdskey.WECHAT_ACCESS_TOKEN)
+}

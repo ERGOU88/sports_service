@@ -31,7 +31,7 @@ func (m *VenueModel) GetVenueAllProduct() ([]*models.VenueProductInfo, error) {
 }
 
 func (m *VenueModel) UpdateVenueInfo(info *models.VenueInfo) (int64, error) {
-	return m.Engine.Update(info)
+	return m.Engine.Where("id=?", info.Id).Update(info)
 }
 
 func (m *VenueModel) AddVenueInfo(info *models.VenueInfo) (int64, error) {

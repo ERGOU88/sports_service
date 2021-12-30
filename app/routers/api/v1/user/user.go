@@ -505,3 +505,19 @@ func GetTencentImSign(c *gin.Context) {
 	reply.Data["detail"] = info
 	reply.Response(http.StatusOK, code)
 }
+
+func VerifyWxCode(c *gin.Context) {
+
+}
+
+func AppletLogin(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &muser.AppletLoginParam{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	//svc := cuser.New(c)
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}

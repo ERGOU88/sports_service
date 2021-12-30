@@ -109,6 +109,10 @@ func setupJob() {
 	/*----检测商城订单超时----*/
 	go job.CheckShopOrder()
 	/*----检测商城订单超时----*/
+	
+	/*----刷新小程序全局唯一后台接口调用凭据----*/
+	go job.FlushAppletAccessToken()
+	/*----刷新小程序全局唯一后台接口调用凭据----*/
 }
 
 // 初始化nsq（生产者）
