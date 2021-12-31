@@ -35,7 +35,7 @@ func (svc *UserModule) QQLoginOrReg(params *muser.QQLoginParams) (int, string, *
 		r := muser.NewQQRegister()
 		gender := svc.QQInterChangeGender(qqinfo.Gender)
 		// 注册
-		if err := r.Register(svc.user, svc.social, svc.context, unionid, qqinfo.Figureurl, qqinfo.Nickname,
+		if err := r.Register(svc.user, svc.social, svc.context, unionid, qqinfo.Figureurl, qqinfo.Nickname, "",
 			consts.TYPE_QQ, gender); err != nil {
 			log.Log.Errorf("qq_trace: register err:%s", err)
 			return errdef.QQ_REGISTER_FAIL, "", nil

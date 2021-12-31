@@ -25,6 +25,11 @@ func (m *SocialModel) SetUserId(userId string) {
 	m.SocialAccount.UserId = userId
 }
 
+// 设置用户openId
+func (m *SocialModel) SetOpenId(openId string) {
+	m.SocialAccount.OpenId = openId
+}
+
 // 设置社交平台关联id
 func (m *SocialModel) SetUnionId(unionId string) {
 	m.SocialAccount.Unionid = unionId

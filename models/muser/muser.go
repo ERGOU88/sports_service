@@ -18,6 +18,7 @@ import (
 type UserModel struct {
 	User    *models.User
 	Engine  *xorm.Session
+	*base
 }
 
 type TencentImUser struct {

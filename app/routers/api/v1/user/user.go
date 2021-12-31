@@ -518,6 +518,9 @@ func AppletLogin(c *gin.Context) {
 		return
 	}
 	
-	//svc := cuser.New(c)
-	reply.Response(http.StatusOK, errdef.SUCCESS)
+	svc := cuser.New(c)
+	code, token, user := svc.AppletLoginOrReg(param)
+	reply.Data["token"] = token
+	reply.Data["user"] = user
+	reply.Response(http.StatusOK, code)
 }

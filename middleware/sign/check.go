@@ -13,9 +13,9 @@ import (
 )
 
 var AppInfo = map[string]string{
-	string(consts.WEB_APP_ID):       "PlvZrGmBKGuQPXVb",
-	string(consts.IOS_APP_ID):       "RfhHecN9zsNcy19Y",
-	string(consts.AND_APP_ID):	     "InaukEwVLLpcewX6",
+	string(consts.APPLET_APP_ID): "PlvZrGmBKGuQPXVb",
+	string(consts.IOS_APP_ID):    "RfhHecN9zsNcy19Y",
+	string(consts.AND_APP_ID):    "InaukEwVLLpcewX6",
 }
 
 // 检查签名
@@ -59,7 +59,7 @@ func CheckSign() gin.HandlerFunc {
 
 		if strings.Compare(appId, string(consts.IOS_APP_ID)) != 0 &&
 			strings.Compare(appId, string(consts.AND_APP_ID)) != 0 &&
-			strings.Compare(appId, string(consts.WEB_APP_ID)) != 0 {
+			strings.Compare(appId, string(consts.APPLET_APP_ID)) != 0 {
 			log.Log.Errorf("sign_trace: appId not match, appId:%s", appId)
 			reply.Response(http.StatusUnauthorized, errdef.UNAUTHORIZED)
 			c.Abort()

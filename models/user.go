@@ -13,7 +13,7 @@ type User struct {
 	Status        int    `json:"status" xorm:"default 0 comment('0 正常 1 封禁') TINYINT(1)"`
 	LastLoginTime int    `json:"last_login_time" xorm:"comment('最后登录时间') INT(11)"`
 	Signature     string `json:"signature" xorm:"not null default '' comment('签名') VARCHAR(200)"`
-	DeviceType    int    `json:"device_type" xorm:"comment('设备类型 0 android 1 iOS 2 web') TINYINT(2)"`
+	DeviceType    int    `json:"device_type" xorm:"comment('设备类型 0 android 1 iOS 2 小程序 3 web') TINYINT(2)"`
 	City          string `json:"city" xorm:"not null default '' comment('城市') VARCHAR(64)"`
 	IsAnchor      int    `json:"is_anchor" xorm:"not null default 0 comment('0不是主播 1为主播') TINYINT(1)"`
 	ChannelId     int    `json:"channel_id" xorm:"not null default 0 comment('渠道id') INT(11)"`

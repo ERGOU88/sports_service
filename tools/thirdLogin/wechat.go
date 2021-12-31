@@ -1,10 +1,12 @@
 package thirdLogin
 
 import (
+	"encoding/json"
 	"log"
 	"net/url"
 	"github.com/parnurzeal/gorequest"
 	"errors"
+	"fmt"
 )
 
 type Wechat struct {}
@@ -56,6 +58,18 @@ type AppletCode2SessionResp struct {
 	SessionKey   string   `json:"session_key"`         // 会话密钥
 	Openid       string   `json:"openid"`              // 用户唯一标识
 	Unionid      string   `json:"unionid"`             // 用户在开放平台的唯一标识符
+}
+
+type AppletUserInfo struct {
+	NickName  string                 `json:"nickName"`
+	OpenId    string                 `json:"openId"`
+	Img       string                 `json:"avatarUrl"`
+	UnionId   string                 `json:"unionId"`
+	Sex       int64                  `json:"sex"`
+	City      string                 `json:"city"`
+	Province  string                 `json:"province"`
+	Country   string                 `json:"country"`
+	Watermark map[string]interface{} `json:"watermark"`
 }
 
 // 微信实栗
@@ -190,4 +204,37 @@ func (wx *Wechat) AppletCode2Session(code string) (*AppletCode2SessionResp, erro
 	}
 	
 	return &info, nil
+}
+
+func (wx *Wechat) DecryptAppletUserInfo(encryptData, sessionKey, iv string) (*AppletUserInfo, error) {
+	decrypt, err := AesDecrypt(encryptData, sessionKey, iv)
+	if err != nil {
+		return nil, err
+	}
+	
+	userInfo := &AppletUserInfo{}
+	err = json.Unmarshal(decrypt, userInfo)
+	if err != nil {
+		return nil, err
+	}
+	
+	if userInfo.Watermark == nil {
+		err = errors.New(fmt.Sprintf("wx login err:%s", "Watermark wrong nil"))
+		return nil, err
+	}
+	
+	appId, ok := userInfo.Watermark["appid"]
+	if !ok {
+		err = errors.New(fmt.Sprintf("wx login err:%s", "Watermark wrong app id not found"))
+		return nil, err
+	}
+	
+	appId = fmt.Sprintf("%v", appId)
+	if appId != APPLET_APPID {
+		err = errors.New(fmt.Sprintf("wx login err:%s", "Watermark wrong app id not match"))
+		return nil, err
+	}
+	
+	
+	return userInfo, nil
 }

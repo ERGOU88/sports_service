@@ -160,9 +160,9 @@ func writeRoutine(webConn *websocket.Conn, user *User) {
 
 
 var WsKey = map[string]string{
-	string(consts.WEB_APP_ID):       "PlvZrGmBKGuQPXVb",
-	string(consts.IOS_APP_ID):       "RfhHecN9zsNcy19Y",
-	string(consts.AND_APP_ID):	     "InaukEwVLLpcewX6",
+	string(consts.APPLET_APP_ID): "PlvZrGmBKGuQPXVb",
+	string(consts.IOS_APP_ID):    "RfhHecN9zsNcy19Y",
+	string(consts.AND_APP_ID):    "InaukEwVLLpcewX6",
 }
 
 // 认证
