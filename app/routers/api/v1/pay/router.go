@@ -19,6 +19,8 @@ func Router(engine *gin.Engine) {
 		pay.POST("/wechat/notify", WechatNotify)
 		// 微信退款回调通知
 		pay.POST("/wechat/refund", WechatRefundNotify)
+		// 小程序支付
+		pay.POST("/applet/trade", sign.CheckSign(), token.TokenAuth(), AppletPay)
 	}
 }
 

@@ -14,6 +14,7 @@ type PayReqParam struct {
 	PayType   int     `binding:"required" json:"pay_type"`     // 1 支付宝 2 微信 3 钱包 4 苹果内购
 	OrderId   string  `binding:"required" json:"order_id"`     // 订单id
 	UserId    string
+	Platform  int     // 0 app  1 小程序
 }
 
 // 领取赠品请求参数

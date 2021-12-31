@@ -75,3 +75,6 @@ func (m *SocialModel) HasExistsSocialAccount(socialType int, userId string) (boo
 	return m.Engine.Where("social_type=? AND user_id=?", socialType, userId).Exist(&models.SocialAccountLogin{})
 }
 
+func (m *SocialModel) GetSocialAccount(socialType int, userId string)  (bool, error) {
+	return m.Engine.Where("social_type=? AND user_id=?", socialType, userId).Get(m.SocialAccount)
+}
