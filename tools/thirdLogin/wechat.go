@@ -46,11 +46,13 @@ type AppletAccessToken struct {
 type WechatPhoneInfo struct {
 	Errcode      int      `json:"errcode"`    //
 	Errmsg       string   `json:"errmsg"`     //
-	PhoneInfo    struct {
-		PhoneNumber       string   `json:"phoneNumber"`       // 用户绑定的手机号（国外手机号会有区号）
-		PurePhoneNumber   string   `json:"purePhoneNumber"`   // 没有区号的手机号
-		CountryCode       string   `json:"countryCode"`       // 区号
-	} `json:"phone_info"`
+	PhoneInfo    PhoneInfo `json:"phone_info"`
+}
+
+type PhoneInfo struct {
+	PhoneNumber       string   `json:"phoneNumber"`       // 用户绑定的手机号（国外手机号会有区号）
+	PurePhoneNumber   string   `json:"purePhoneNumber"`   // 没有区号的手机号
+	CountryCode       string   `json:"countryCode"`       // 区号
 }
 
 type AppletCode2SessionResp struct {
@@ -95,12 +97,13 @@ func (wx *Wechat) GetWechatAccessToken(code string) *AccessToken {
 		log2.Log.Errorf("get access token failed, err:%+v", errs)
 		return nil
 	}
-
-	if accessToken.Unionid == "" {
-		log.Printf("err body: %s, resp: %+v", string(body), resp)
-		log2.Log.Error("unionId empty")
-		return nil
-	}
+	
+	log.Printf("err body: %s, resp: %+v", string(body), resp)
+	//if accessToken.Unionid == "" {
+	//	log.Printf("err body: %s, resp: %+v", string(body), resp)
+	//	log2.Log.Error("unionId empty")
+	//	return nil
+	//}
 
 	return &accessToken
 }
@@ -152,6 +155,23 @@ func (wx *Wechat) GetAppletAccessToken() *AppletAccessToken {
 	}
 	
 	return &info
+}
+
+func (wx *Wechat) DecryptPhoneData(phoneData, sessionKey, iv string) (string, error) {
+	decrypt, err := AesDecrypt(phoneData, sessionKey, iv)
+	if err != nil {
+		return "", err
+	}
+	
+	log2.Log.Infof("decrypt:%s", string(decrypt))
+	
+	info := PhoneInfo{}
+	err = json.Unmarshal(decrypt, &info)
+	if err != nil {
+		return "", err
+	}
+
+	return info.PurePhoneNumber, nil
 }
 
 // 获取用户手机号

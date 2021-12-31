@@ -70,5 +70,8 @@ func (m *SocialModel) GetSocialAccountByType(socialType int, unionid string) *mo
 	return m.SocialAccount
 }
 
-
+// 是否存在绑定的社交账号
+func (m *SocialModel) HasExistsSocialAccount(socialType int, userId string) (bool, error) {
+	return m.Engine.Where("social_type=? AND user_id=?", socialType, userId).Exist(&models.SocialAccountLogin{})
+}
 

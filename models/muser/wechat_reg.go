@@ -13,6 +13,8 @@ type WxLoginParam struct {
 type AppletLoginParam struct {
 	Code          string   `binding:"required" json:"code"`            // 用户登录凭证（有效期五分钟）
 	CodeByPhone   string   `binding:"required" json:"code_by_phone"`   // 手机号获取凭证
+	PhoneData     string   `binding:"required" json:"phone_data"`
+	Iv            string   `binding:"required" json:"iv"`
 }
 
 type AccessToken struct {

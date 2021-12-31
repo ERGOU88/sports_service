@@ -32,11 +32,17 @@ func (svc *UserModule) AppletLoginOrReg(param *muser.AppletLoginParam) (int, str
 		return errdef.ERROR, "", nil
 	}
 	
-	mobileNum, err := wechat.GetUserPhoneNumber(param.CodeByPhone, wxToken)
+	mobileNum, err := wechat.DecryptPhoneData(param.PhoneData, resp.SessionKey, param.Iv)
 	if err != nil {
-		log.Log.Errorf("applet_trace: get user phone number failed, err:%s", err)
+		log.Log.Errorf("applet_trace: decrypt phone data, err:%s", err)
 		return errdef.ERROR, "", nil
 	}
+	
+	//mobileNum, err := wechat.GetUserPhoneNumber(param.CodeByPhone, wxToken)
+	//if err != nil {
+	//	log.Log.Errorf("applet_trace: get user phone number failed, err:%s", err)
+	//	return errdef.ERROR, "", nil
+	//}
 	
 	// 校验手机号合法性
 	if b := svc.user.CheckCellPhoneNumber(mobileNum); !b {
@@ -92,6 +98,16 @@ func (svc *UserModule) AppletLoginOrReg(param *muser.AppletLoginParam) (int, str
 		}
 		
 		return errdef.SUCCESS, token, svc.user.User
+	}
+	
+	has, err := svc.social.HasExistsSocialAccount(consts.TYPE_APPLET, svc.user.User.UserId)
+	if !has && err == nil {
+		svc.user.NewSocialAccount(svc.social, consts.TYPE_APPLET, svc.user.User.UserId, resp.Unionid, resp.Openid)
+		// 添加社交帐号（微信小程序）
+		if err := svc.social.AddSocialAccountInfo(); err != nil {
+			log.Log.Errorf("applet_trace: add wx account err:%s", err)
+			return errdef.WX_ADD_ACCOUNT_FAIL, "", nil
+		}
 	}
 	
 	// 登陆的时候 检查用户状态
