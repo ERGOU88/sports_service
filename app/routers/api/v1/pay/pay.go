@@ -279,3 +279,24 @@ func AppletPay(c *gin.Context) {
 	
 	reply.Response(http.StatusOK, code)
 }
+
+func H5Pay(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &morder.PayReqParam{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("pay_trace: invalid param, params:%+v", param)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	userId, _ := c.Get(consts.USER_ID)
+	param.UserId = userId.(string)
+	param.Platform = 1
+	svc := cpay.New(c)
+	code, payParam := svc.InitiatePayment(param)
+	if code == errdef.SUCCESS {
+		reply.Data["pay_param"] = payParam
+	}
+	
+	reply.Response(http.StatusOK, code)
+}

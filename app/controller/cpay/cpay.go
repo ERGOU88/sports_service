@@ -17,6 +17,7 @@ import (
 	"sports_service/server/tools/alipay"
 	"sports_service/server/tools/wechat"
 	"time"
+	"errors"
 )
 
 type PayModule struct {
@@ -44,7 +45,6 @@ func New(c *gin.Context) PayModule {
 		engine: venueSocket,
 	}
 }
-
 
 func (svc *PayModule) InitiatePayment(param *morder.PayReqParam) (int, interface{}) {
 	user := svc.user.FindUserByUserid(param.UserId)
@@ -129,7 +129,19 @@ func (svc *PayModule) GetPaymentParams(param *morder.PayReqParam) (int, interfac
 	
 	case consts.WEICHAT:
 		openId := ""
-		if param.Platform == 1 {
+		switch param.Platform {
+		// app
+		case 0:
+			// 微信
+			mp, err := svc.WechatPay(svc.pay.PayChannel.AppId, svc.pay.PayChannel.AppKey, svc.pay.PayChannel.AppSecret, openId, param)
+			if err != nil {
+				log.Log.Errorf("pay_trace: get wechatPay param fail, orderId:%s, err:%s", param.OrderId, err)
+				return errdef.PAY_WX_PARAM_FAIL, nil
+			}
+			
+			return errdef.SUCCESS, mp
+		// 小程序
+		case 1:
 			ok, err := svc.social.GetSocialAccount(consts.TYPE_APPLET, svc.user.User.UserId)
 			if ok && err == nil {
 				openId = svc.social.SocialAccount.OpenId
@@ -143,21 +155,21 @@ func (svc *PayModule) GetPaymentParams(param *morder.PayReqParam) (int, interfac
 			}
 			
 			return errdef.SUCCESS, mp
+		case 2:
+			mp, err := svc.WechatPay(svc.pay.PayChannel.AppId, svc.pay.PayChannel.AppKey, svc.pay.PayChannel.AppSecret, openId, param)
+			if err != nil {
+				log.Log.Errorf("pay_trace: get wechatPay param fail, orderId:%s, err:%s", param.OrderId, err)
+				return errdef.PAY_WX_PARAM_FAIL, nil
+			}
+			
+			return errdef.SUCCESS, mp
 		}
 		
-		// 微信
-		mp, err := svc.WechatPay(svc.pay.PayChannel.AppId, svc.pay.PayChannel.AppKey, svc.pay.PayChannel.AppSecret, openId, param)
-		if err != nil {
-			log.Log.Errorf("pay_trace: get wechatPay param fail, orderId:%s, err:%s", param.OrderId, err)
-			return errdef.PAY_WX_PARAM_FAIL, nil
-		}
-		
-		return errdef.SUCCESS, mp
 	default:
 		log.Log.Errorf("pay_trace: unsupported payType:%d", param.PayType)
 	}
 	
-	return  errdef.PAY_INVALID_TYPE, nil
+	return errdef.PAY_INVALID_TYPE, nil
 }
 
 // 更新场馆订单支付类型
@@ -208,10 +220,15 @@ func (svc *PayModule) WechatPay(appId, merchantId, secret, openId string, param 
 	client.TimeExpire = time.Unix(int64(param.CreateAt + consts.PAYMENT_DURATION), 0).In(cstSh).Format(consts.FORMAT_WX_TM)
 	
 	// 小程序支付
-	if param.Platform == 1 {
+	switch param.Platform {
+	case 0:
+		return client.TradeAppPay()
+	case 1:
 		return client.TradeJsAPIPay()
+	case 2:
+		return client.TradeH5Pay()
+		
 	}
 	
-	// app支付
-	return client.TradeAppPay()
+	return nil, errors.New("invalid platform")
 }
