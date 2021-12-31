@@ -7,6 +7,7 @@ import (
 	"github.com/parnurzeal/gorequest"
 	"errors"
 	"fmt"
+	log2 "sports_service/server/global/app/log"
 )
 
 type Wechat struct {}
@@ -91,11 +92,13 @@ func (wx *Wechat) GetWechatAccessToken(code string) *AccessToken {
 	resp, body, errs := gorequest.New().Get(WECHAT_ACCESS_TOKEN_URL + v.Encode()).EndStruct(&accessToken)
 	if errs != nil {
 		log.Printf("%+v", errs)
+		log2.Log.Errorf("get access token failed, err:%+v", errs)
 		return nil
 	}
 
 	if accessToken.Unionid == "" {
 		log.Printf("err body: %s, resp: %+v", string(body), resp)
+		log2.Log.Error("unionId empty")
 		return nil
 	}
 
