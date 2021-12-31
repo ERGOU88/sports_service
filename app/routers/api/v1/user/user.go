@@ -524,3 +524,7 @@ func AppletLogin(c *gin.Context) {
 	reply.Data["user"] = user
 	reply.Response(http.StatusOK, code)
 }
+
+func BindWx(c *gin.Context) {
+
+}

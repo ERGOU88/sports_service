@@ -63,6 +63,10 @@ func (svc *PayModule) InitiatePayment(param *morder.PayReqParam) (int, interface
 			return errdef.ORDER_NOT_EXISTS, nil
 		}
 		
+		param.Subject = svc.order.Order.Subject
+		param.Amount = svc.order.Order.Amount
+		param.CreateAt = svc.order.Order.CreateAt
+		
 		// 订单如果不是待支付状态
 		if svc.order.Order.Status != consts.ORDER_TYPE_WAIT {
 			log.Log.Errorf("pay_trace: order status fail, orderId:%s, status:%d", param.OrderId, svc.order.Order.Status)
@@ -81,6 +85,10 @@ func (svc *PayModule) InitiatePayment(param *morder.PayReqParam) (int, interface
 			log.Log.Errorf("pay_trace: shop order not found, orderId:%s, err:%s", param.OrderId, err)
 			return errdef.SHOP_ORDER_NOT_EXISTS, nil
 		}
+		
+		param.Subject = order.OrderTypeName
+		param.Amount = order.PayAmount
+		param.CreateAt = order.CreateAt
 		
 		if order.PayStatus != consts.SHOP_ORDER_TYPE_WAIT {
 			log.Log.Errorf("pay_trace: shop order status fail, orderId:%s, status:%d", param.OrderId, order.PayStatus)
@@ -108,7 +116,7 @@ func (svc *PayModule) GetPaymentParams(param *morder.PayReqParam) (int, interfac
 	switch svc.pay.PayChannel.Identifier {
 	case consts.ALIPAY:
 		// 支付宝
-		payParam, err := svc.AliPay(svc.pay.PayChannel.AppId, svc.pay.PayChannel.PrivateKey)
+		payParam, err := svc.AliPay(svc.pay.PayChannel.AppId, svc.pay.PayChannel.PrivateKey, param)
 		if err != nil {
 			log.Log.Errorf("pay_trace: get alipay param fail, orderId:%s, err:%s", param.OrderId, err)
 			return errdef.PAY_ALI_PARAM_FAIL, nil
@@ -126,10 +134,19 @@ func (svc *PayModule) GetPaymentParams(param *morder.PayReqParam) (int, interfac
 			if ok && err == nil {
 				openId = svc.social.SocialAccount.OpenId
 			}
+			
+			// 微信
+			mp, err := svc.WechatPay(wechat.APPLET_APPID, svc.pay.PayChannel.AppKey, svc.pay.PayChannel.AppSecret, openId, param)
+			if err != nil {
+				log.Log.Errorf("pay_trace: get wechatPay param fail, orderId:%s, err:%s", param.OrderId, err)
+				return errdef.PAY_WX_PARAM_FAIL, nil
+			}
+			
+			return errdef.SUCCESS, mp
 		}
 		
 		// 微信
-		mp, err := svc.WechatPay(svc.pay.PayChannel.AppId, svc.pay.PayChannel.AppKey, svc.pay.PayChannel.AppSecret, openId, param.Platform)
+		mp, err := svc.WechatPay(svc.pay.PayChannel.AppId, svc.pay.PayChannel.AppKey, svc.pay.PayChannel.AppSecret, openId, param)
 		if err != nil {
 			log.Log.Errorf("pay_trace: get wechatPay param fail, orderId:%s, err:%s", param.OrderId, err)
 			return errdef.PAY_WX_PARAM_FAIL, nil
@@ -163,13 +180,13 @@ func (svc *PayModule) UpdateOrderPayTypeByShop(order *models.Orders) (int64, err
 	return svc.shop.UpdateOrderInfo(condition, cols, order)
 }
 
-func (svc *PayModule) AliPay(appId, privateKey string) (string, error) {
+func (svc *PayModule) AliPay(appId, privateKey string, param *morder.PayReqParam) (string, error) {
 	cstSh, _ := time.LoadLocation("Asia/Shanghai")
 	client := alipay.NewAliPay(true, appId, privateKey)
-	client.OutTradeNo = svc.order.Order.PayOrderId
-	client.TotalAmount = fmt.Sprintf("%.2f", float64(svc.order.Order.Amount)/100)
-	client.Subject = svc.order.Order.Subject
-	client.TimeExpire = time.Unix(int64(svc.order.Order.CreateAt + consts.PAYMENT_DURATION), 0).In(cstSh).Format(consts.FORMAT_TM)
+	client.OutTradeNo = param.OrderId
+	client.TotalAmount = fmt.Sprintf("%.2f", float64(param.Amount)/100)
+	client.Subject = param.Subject
+	client.TimeExpire = time.Unix(int64(param.CreateAt + consts.PAYMENT_DURATION), 0).In(cstSh).Format(consts.FORMAT_TM)
 	payParam, err := client.TradeAppPay()
 	if err != nil {
 		return "", err
@@ -178,20 +195,20 @@ func (svc *PayModule) AliPay(appId, privateKey string) (string, error) {
 	return payParam, nil
 }
 
-func (svc *PayModule) WechatPay(appId, merchantId, secret, openId string, platform int) (map[string]interface{}, error) {
+func (svc *PayModule) WechatPay(appId, merchantId, secret, openId string, param *morder.PayReqParam) (map[string]interface{}, error) {
 	cstSh, _ := time.LoadLocation("Asia/Shanghai")
 	client := wechat.NewWechatPay(true, appId, merchantId, secret)
-	client.OutTradeNo = svc.order.Order.PayOrderId
-	client.TotalAmount = svc.order.Order.Amount
-	client.Subject = svc.order.Order.Subject
+	client.OutTradeNo = param.OrderId
+	client.TotalAmount = param.Amount
+	client.Subject = param.Subject
 	client.NotifyUrl = config.Global.WechatNotifyUrl
 	client.OpenId = openId
 	client.CreateIp = svc.context.ClientIP()
-	client.TimeStart = time.Unix(int64(svc.order.Order.CreateAt), 0).In(cstSh).Format(consts.FORMAT_WX_TM)
-	client.TimeExpire = time.Unix(int64(svc.order.Order.CreateAt + consts.PAYMENT_DURATION), 0).In(cstSh).Format(consts.FORMAT_WX_TM)
+	client.TimeStart = time.Unix(int64(param.CreateAt), 0).In(cstSh).Format(consts.FORMAT_WX_TM)
+	client.TimeExpire = time.Unix(int64(param.CreateAt + consts.PAYMENT_DURATION), 0).In(cstSh).Format(consts.FORMAT_WX_TM)
 	
 	// 小程序支付
-	if platform == 1 {
+	if param.Platform == 1 {
 		return client.TradeJsAPIPay()
 	}
 	

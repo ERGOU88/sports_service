@@ -15,6 +15,9 @@ type PayReqParam struct {
 	OrderId   string  `binding:"required" json:"order_id"`     // 订单id
 	UserId    string
 	Platform  int     // 0 app  1 小程序
+	Subject   string
+	Amount    int
+	CreateAt  int
 }
 
 // 领取赠品请求参数

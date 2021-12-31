@@ -16,6 +16,11 @@ const (
 	MERCHANT_ID    = "1610121931"
 	WECHAT_APP_ID  = "wxd693805bd4a2a39e"
 	WECHAT_SECRET  = "UyPTFdVsJPPxMYzfXBztTKwsUusxSIFw"
+	
+	// 小程序appid
+	APPLET_APPID   = "wx668f0f98d65655ae"
+	// 小程序secret
+	APPLET_SECRET  = "2360683db36bb132de7b8ef0b0e8c05a"
 )
 
 type WechatPayClient struct {
@@ -136,7 +141,7 @@ func (c *WechatPayClient) TradeRefund() (*wechat.RefundResponse, error) {
 	return wxRsp, nil
 }
 
-// 微信JsAPI支付
+// 微信小程序支付
 func (c *WechatPayClient) TradeJsAPIPay() (map[string]interface{}, error){
 	mp := make(map[string]interface{}, 0)
 	// 初始化参数Map
@@ -147,7 +152,7 @@ func (c *WechatPayClient) TradeJsAPIPay() (map[string]interface{}, error){
 		Set("total_fee", c.TotalAmount).
 		Set("spbill_create_ip", c.CreateIp).
 		Set("notify_url", c.NotifyUrl).
-		Set("trade_type", wechat.TradeType_JsApi).
+		Set("trade_type", wechat.TradeType_Mini).
 		Set("sign_type", wechat.SignType_MD5).
 		Set("openid", c.OpenId)
 	
@@ -168,7 +173,7 @@ func (c *WechatPayClient) TradeJsAPIPay() (map[string]interface{}, error){
 	timeStamp := strconv.FormatInt(time.Now().Unix(), 10)
 	// 获取JsAPI支付需要的paySign
 	pac := "prepay_id=" + wxRsp.PrepayId
-	paySign := wechat.GetJsapiPaySign(WECHAT_APP_ID, wxRsp.NonceStr, pac, wechat.SignType_MD5, timeStamp, WECHAT_SECRET)
+	paySign := wechat.GetJsapiPaySign(c.Client.AppId, wxRsp.NonceStr, pac, wechat.SignType_MD5, timeStamp, c.Client.ApiKey)
 	xlog.Debug("paySign:", paySign)
 	
 	mp["partner_id"] = MERCHANT_ID

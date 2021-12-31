@@ -17,6 +17,7 @@ type AppletLoginParam struct {
 	Iv            string   `binding:"required" json:"iv"`
 }
 
+
 type AccessToken struct {
 	AccessToken  string `json:"access_token"`
 	ExpiresIn    int    `json:"expires_in"`

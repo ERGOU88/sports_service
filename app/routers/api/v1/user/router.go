@@ -50,6 +50,8 @@ func Router(engine *gin.Engine) {
 		user.GET("/wx/code/verify", sign.CheckSign(), VerifyWxCode)
 		// 微信小程序登录
 		user.POST("/wx/applet/login", sign.CheckSign(), AppletLogin)
+		// 绑定微信
+		user.POST("/wx/bind", sign.CheckSign(), token.TokenAuth(), BindWx)
 	}
 
 }
