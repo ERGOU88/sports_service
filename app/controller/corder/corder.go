@@ -23,6 +23,7 @@ import (
 	"sports_service/server/models/mshop"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
+	"sports_service/server/models/sms"
 	"sports_service/server/tools/alipay"
 	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/tools/wechat"
@@ -42,6 +43,7 @@ type OrderModule struct {
 	coach       *mcoach.CoachModel
 	pay         *mpay.PayModel
 	shop        *mshop.ShopModel
+	sms         *sms.SmsModel
 }
 
 func New(c *gin.Context) OrderModule {
@@ -59,6 +61,7 @@ func New(c *gin.Context) OrderModule {
 		coach: mcoach.NewCoachModel(socket),
 		pay: mpay.NewPayModel(socket),
 		shop: mshop.NewShop(appSocket),
+		sms: sms.NewSmsModel(),
 		engine: socket,
 	}
 }
@@ -763,6 +766,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 		info.TotalAmount = order.Amount
 		info.Title = order.Subject
 		info.IsGift = order.IsGift
+		info.GiftStatus = order.GiftStatus
 		// 是否可退款
 		can, _, _, _, err := svc.CanRefund(order.Amount, order.Status, order.ProductType, order.PayTime,
 			order.PayOrderId, order.Extra)
@@ -1705,6 +1709,10 @@ func (svc *OrderModule) ReceiveGift(param *morder.ReceiveGiftReq) int {
 	}
 	
 	svc.engine.Commit()
+	
+	//code := svc.sms.GetSmsCode()
+	// todo: 发送短信通知
+	
 	
 	return errdef.SUCCESS
 }
