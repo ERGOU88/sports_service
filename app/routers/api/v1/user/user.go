@@ -526,5 +526,15 @@ func AppletLogin(c *gin.Context) {
 }
 
 func BindWx(c *gin.Context) {
-
+	reply := errdef.New(c)
+	param := &muser.BindWechatParam{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	userId, _ := c.Get(consts.USER_ID)
+	param.UserId = userId.(string)
+	svc := cuser.New(c)
+	reply.Response(http.StatusOK, svc.BindWechat(param))
 }

@@ -15,16 +15,16 @@ import (
 // 微信小程序 登陆/注册
 func (svc *UserModule) AppletLoginOrReg(param *muser.AppletLoginParam) (int, string, *models.User) {
 	wechat := third.NewWechat()
-	wxToken, err := svc.user.GetAppletAccessToken()
-	if err != nil || wxToken == "" {
-		accessToken := wechat.GetAppletAccessToken()
-		if accessToken == nil {
-			log.Log.Error("applet_trace: get applet access token failed")
-			return errdef.ERROR, "", nil
-		}
-		
-		wxToken = accessToken.AccessToken
-	}
+	//wxToken, err := svc.user.GetAppletAccessToken()
+	//if err != nil || wxToken == "" {
+	//	accessToken := wechat.GetAppletAccessToken()
+	//	if accessToken == nil {
+	//		log.Log.Error("applet_trace: get applet access token failed")
+	//		return errdef.ERROR, "", nil
+	//	}
+	//
+	//	wxToken = accessToken.AccessToken
+	//}
 	
 	resp, err := wechat.AppletCode2Session(param.Code)
 	if err != nil {
@@ -128,4 +128,31 @@ func (svc *UserModule) AppletLoginOrReg(param *muser.AppletLoginParam) (int, str
 	}
 	
 	return errdef.SUCCESS, token, user
+}
+
+// 绑定微信
+func (svc *UserModule) BindWechat(param *muser.BindWechatParam) int {
+	user := svc.user.FindUserByUserid(param.UserId)
+	if user == nil {
+		return errdef.USER_NOT_EXISTS
+	}
+	
+	wechat := third.NewWechat()
+	resp, err := wechat.AppletCode2Session(param.Code)
+	if err != nil {
+		log.Log.Errorf("applet_trace: applet code2 session failed, err:%s", err)
+		return errdef.ERROR
+	}
+	
+	has, err := svc.social.HasExistsSocialAccount(consts.TYPE_APPLET, user.UserId)
+	if !has && err == nil {
+		svc.user.NewSocialAccount(svc.social, consts.TYPE_APPLET, user.UserId, resp.Unionid, resp.Openid)
+		// 添加社交帐号（微信小程序）
+		if err := svc.social.AddSocialAccountInfo(); err != nil {
+			log.Log.Errorf("applet_trace: add wx account err:%s", err)
+			return errdef.WX_ADD_ACCOUNT_FAIL
+		}
+	}
+	
+	return errdef.SUCCESS
 }

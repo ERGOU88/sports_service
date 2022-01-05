@@ -17,6 +17,11 @@ type AppletLoginParam struct {
 	Iv            string   `binding:"required" json:"iv"`
 }
 
+type BindWechatParam struct {
+	Code          string   `binding:"required" json:"code"`            // 用户登录凭证（有效期五分钟）
+	UserId        string
+}
+
 
 type AccessToken struct {
 	AccessToken  string `json:"access_token"`
