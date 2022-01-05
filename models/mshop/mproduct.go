@@ -263,3 +263,17 @@ func (m *ShopModel) UpdateProductSkuStock(skuId string, count int) (int64, error
 	
 	return affected, nil
 }
+
+// 更新商品信息
+func (m *ShopModel) UpdateProductInfo(condition, cols string, product *models.Products) (int64, error) {
+	engine := m.Engine
+	if condition != "" {
+		engine.Where(condition)
+	}
+	
+	if cols != "" {
+		engine.Cols(cols)
+	}
+	
+	return engine.Update(product)
+}
