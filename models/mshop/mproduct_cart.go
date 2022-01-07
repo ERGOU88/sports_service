@@ -24,6 +24,7 @@ type ProductCartInfo struct {
 	Stock           int             `json:"stock"`                  // 库存
 	MaxBuy          int             `json:"max_buy"`                // 限购 0 表示无限制
 	MinBuy          int             `json:"min_buy"`                // 起购数
+	Count           int             `json:"count"`                  // 当前数量
 }
 
 type UpdateProductCartParam struct {

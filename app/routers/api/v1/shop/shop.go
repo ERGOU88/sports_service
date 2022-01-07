@@ -98,7 +98,9 @@ func AddProductCart(c *gin.Context) {
 	userId, _ := c.Get(consts.USER_ID)
 	params.UserId = userId.(string)
 	svc := cshop.New(c)
-	reply.Response(http.StatusOK, svc.AddProductCart(params))
+	code, total := svc.AddProductCart(params)
+	reply.Data["total"] = total
+	reply.Response(http.StatusOK, code)
 }
 
 func ProductCart(c *gin.Context) {

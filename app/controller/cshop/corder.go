@@ -405,7 +405,7 @@ func (svc *ShopModule) CancelOrderProcess(order *models.Orders) error {
 				ProductId: item.ProductId,
 			}
 			
-			if code := svc.AddProductCart(info); code != errdef.SUCCESS {
+			if code, _ := svc.AddProductCart(info); code != errdef.SUCCESS {
 				return errors.New("add product cart fail")
 			}
 		//}

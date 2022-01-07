@@ -225,20 +225,20 @@ func (svc *ShopModule) GetUserAddrList(page, size int, userId string) (int, []mo
 }
 
 // 添加商品购物车
-func (svc *ShopModule) AddProductCart(info *models.ProductCart) int {
+func (svc *ShopModule) AddProductCart(info *models.ProductCart) (int, int64) {
 	if info.Count <= 0 {
-		return errdef.INVALID_PARAMS
+		return errdef.INVALID_PARAMS, 0
 	}
 
 	if _, err := svc.shop.GetProductSpu(fmt.Sprint(info.ProductId)); err != nil {
 		log.Log.Errorf("shop_trace: get product spu fail, productId:%d, err:%s", info.ProductId, err)
-		return errdef.SHOP_PRODUCT_SPU_FAIL
+		return errdef.SHOP_PRODUCT_SPU_FAIL, 0
 	}
 
 	condition := fmt.Sprintf("id=%d AND product_id=%d", info.SkuId, info.ProductId)
 	if _, err := svc.shop.GetProductSku(condition); err != nil {
 		log.Log.Errorf("shop_trace: get product sku by id fail, skuId:%d, err:%s", info.SkuId, err)
-		return errdef.SHOP_PRODUCT_SKU_FAIL
+		return errdef.SHOP_PRODUCT_SKU_FAIL, 0
 	}
 
 	info.CreateAt = int(time.Now().Unix())
@@ -246,25 +246,32 @@ func (svc *ShopModule) AddProductCart(info *models.ProductCart) int {
 	cartInfo, err := svc.shop.GetProductCart(condition)
 	if err != nil {
 		log.Log.Errorf("shop_trace: get product cart failm err:%s", err)
-		return errdef.SHOP_GET_PRODUCT_CART_FAIL
+		return errdef.SHOP_GET_PRODUCT_CART_FAIL, 0
+	}
+	
+	total, err := svc.shop.GetProductCartNum(info.UserId)
+	if err != nil {
+		log.Log.Errorf("shop_trace: get product cart num fail, err:%s", err)
 	}
 	
 	if cartInfo == nil {
 		if _, err := svc.shop.AddProductCart(info); err != nil {
 			log.Log.Errorf("shop_trace: add product cart fail, err:%s", err)
-			return errdef.SHOP_ADD_PRODUCT_CART_FAIL
+			return errdef.SHOP_ADD_PRODUCT_CART_FAIL, total
 		}
+		
+		total += 1
 
 	} else {
 		affected, err := svc.shop.UpdateProductCart(info)
 		if affected <= 0 || err != nil {
 			log.Log.Errorf("shop_trace: update product cart fail, err:%s", err)
-			return errdef.SHOP_ADD_PRODUCT_CART_FAIL
+			return errdef.SHOP_ADD_PRODUCT_CART_FAIL, total
 		}
 	}
 
 
-	return errdef.SUCCESS
+	return errdef.SUCCESS, total
 }
 
 // 获取商品购物车列表
