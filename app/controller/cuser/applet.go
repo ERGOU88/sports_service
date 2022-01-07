@@ -2,13 +2,14 @@ package cuser
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"sports_service/server/global/consts"
 	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
+	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/muser"
-	"sports_service/server/global/app/log"
-	"sports_service/server/util"
 	third "sports_service/server/tools/thirdLogin"
+	"sports_service/server/util"
+	"strings"
 	"time"
 )
 
@@ -151,6 +152,49 @@ func (svc *UserModule) BindWechat(param *muser.BindWechatParam) int {
 		if err := svc.social.AddSocialAccountInfo(); err != nil {
 			log.Log.Errorf("applet_trace: add wx account err:%s", err)
 			return errdef.WX_ADD_ACCOUNT_FAIL
+		}
+	}
+	
+	return errdef.SUCCESS
+}
+
+func (svc *UserModule) VerifyToken(param *muser.VerifyTokenParam) int {
+	var userid, hashcode string
+	ks := strings.Split(param.Token, "_")
+	if len(ks) != 2 {
+		log.Log.Errorf("len(ks) != 2")
+		ks = strings.Split(param.Token, "%09")
+	}
+	
+	if len(ks) == 2 {
+		userid = ks[0]
+		hashcode = ks[1]
+	}
+	
+	if len(hashcode) <= 0 {
+		log.Log.Errorf("len(hashcode) <= 0")
+		return errdef.UNAUTHORIZED
+	}
+	
+	
+	token, err := svc.user.GetUserToken(userid)
+	if err != nil && err == redis.ErrNil {
+		log.Log.Errorf("token_trace: get user token by redis err:%s", err)
+		return errdef.UNAUTHORIZED
+	}
+	
+	// token是否和redis存储的一致
+	if res := strings.Compare(param.Token, token); res != 0 {
+		log.Log.Errorf("token_trace: token not match, server token:%s, client token:%s", token, param.Token)
+		return errdef.INVALID_TOKEN
+	}
+	
+	log.Log.Debugf("client token:%s, server token:%s", param.Token, token)
+	
+	if userid != "" {
+		// 给token续约
+		if err := svc.user.SaveUserToken(userid, param.Token); err != nil {
+			log.Log.Errorf("token_trace: save user token err:%s", err)
 		}
 	}
 	

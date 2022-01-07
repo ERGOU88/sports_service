@@ -538,3 +538,16 @@ func BindWx(c *gin.Context) {
 	svc := cuser.New(c)
 	reply.Response(http.StatusOK, svc.BindWechat(param))
 }
+
+func VerifyToken(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &muser.VerifyTokenParam{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("user_trace: invalid param, err:%s", err)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := cuser.New(c)
+	reply.Response(http.StatusOK, svc.VerifyToken(param))
+}

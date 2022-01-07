@@ -22,6 +22,10 @@ type BindWechatParam struct {
 	UserId        string
 }
 
+// 校验token
+type VerifyTokenParam struct {
+	Token        string   `binding:"required" json:"token"`
+}
 
 type AccessToken struct {
 	AccessToken  string `json:"access_token"`

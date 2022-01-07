@@ -52,6 +52,8 @@ func Router(engine *gin.Engine) {
 		user.POST("/wx/applet/login", sign.CheckSign(), AppletLogin)
 		// 绑定微信
 		user.POST("/wx/bind", sign.CheckSign(), token.TokenAuth(), BindWx)
+		// 校验token
+		user.POST("/verify/token", VerifyToken)
 	}
 
 }

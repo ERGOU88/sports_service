@@ -32,7 +32,7 @@ func InitAreaInfo() {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	shopModel := NewShop(socket)
-	shopModel.GetArea()
+	//shopModel.GetArea()
 	shopModel.LoadAreaMpToMem()
 }
 
@@ -136,7 +136,7 @@ func (m *ShopModel) GetArea() []*AreaInfo {
 	if err == nil {
 		m.SetAreaInfoToRds(str)
 	}
-
+	
 	mpStr, err := util.JsonFast.MarshalToString(areaMp)
 	if err == nil {
 		m.SetAreaMpToRds(mpStr)
