@@ -77,7 +77,7 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 	switch param.ReqType {
 	case 1:
 		// 查询
-		addr, err := svc.shop.GetUserAddrById("")
+		addr, err := svc.shop.GetUserAddr("", param.UserId)
 		if err != nil {
 			log.Log.Errorf("shop_trace: get user addr by id fail, err:%s", err)
 		}
@@ -91,7 +91,7 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 		svc.engine.Rollback()
 	case 2, 3:
 		// 详情页/购物车下单
-		addr, err := svc.shop.GetUserAddrById(fmt.Sprint(param.UserAddrId))
+		addr, err := svc.shop.GetUserAddr(fmt.Sprint(param.UserAddrId), param.UserId)
 		if err != nil || addr == nil {
 			log.Log.Errorf("shop_trace: get user addr by id fail, err:%s", err)
 			svc.engine.Rollback()

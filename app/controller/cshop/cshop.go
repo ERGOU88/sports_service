@@ -196,7 +196,7 @@ func (svc *ShopModule) AddOrUpdateUserAddr(info *models.UserAddress) int {
 		return errdef.SUCCESS
 	}
 
-	addr, err := svc.shop.GetUserAddrById(fmt.Sprint(info.Id))
+	addr, err := svc.shop.GetUserAddr(fmt.Sprint(info.Id), info.UserId)
 	if err != nil || addr == nil {
 		log.Log.Errorf("shop_trace: user addr not found, id:%d", info.Id)
 		svc.engine.Rollback()
