@@ -396,7 +396,7 @@ func (svc *ShopModule) CancelOrderProcess(order *models.Orders) error {
 		
 	
 		// 详情页下单 取消订单时 需添加到购物车
-		if order.ActionType == consts.ORDER_ACTION_TYPE_DETAIL {
+		//if order.ActionType == consts.ORDER_ACTION_TYPE_DETAIL {
 			info := &models.ProductCart{
 				UserId:    order.UserId,
 				SkuId:     item.SkuId,
@@ -408,7 +408,7 @@ func (svc *ShopModule) CancelOrderProcess(order *models.Orders) error {
 			if code := svc.AddProductCart(info); code != errdef.SUCCESS {
 				return errors.New("add product cart fail")
 			}
-		}
+		//}
 		
 	}
 	
