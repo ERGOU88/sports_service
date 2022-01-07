@@ -284,6 +284,17 @@ func (svc *ShopModule) GetProductCartList(userId string) (int, []mshop.ProductCa
 	}
 
 	for _, info := range list {
+		stockInfo, err := svc.shop.GetProductSkuStock(fmt.Sprint(info.Id))
+		if err != nil {
+			log.Log.Errorf("shop_trace: get product sku stock fail, skuId:%d, err:%s", info.Id, err)
+		}
+		
+		if stockInfo != nil {
+			info.Stock = stockInfo.Stock
+			info.MinBuy = stockInfo.MinBuy
+			info.MinBuy = stockInfo.MaxBuy
+		}
+		
 		now := time.Now().Unix()
 		if now >= info.StartTime && now < info.EndTime {
 			info.HasActivities = 1
