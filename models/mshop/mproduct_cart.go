@@ -25,6 +25,7 @@ type ProductCartInfo struct {
 	MaxBuy          int             `json:"max_buy"`                // 限购 0 表示无限制
 	MinBuy          int             `json:"min_buy"`                // 起购数
 	Count           int             `json:"count"`                  // 当前数量
+	IsCheck         int             `json:"is_check"`               // 0选择 1 未选择
 }
 
 type UpdateProductCartParam struct {
@@ -74,11 +75,11 @@ func (m *ShopModel) GetProductCartNum(userId string) (int64, error) {
 }
 
 const (
-	GET_PRODUCT_CART_LIST = "SELECT sku.*, cart.count, cart.user_id FROM product_sku AS sku INNER JOIN product_cart AS cart " +
+	GET_PRODUCT_CART_LIST = "SELECT sku.*, cart.count, cart.user_id, cart.is_check FROM product_sku AS sku INNER JOIN product_cart AS cart " +
 		"ON sku.id=cart.sku_id WHERE cart.user_id=? ORDER BY sku.create_at DESC"
 )
-func (m *ShopModel) GetProductCartList(userId string) ([]ProductCartInfo, error) {
-	var list []ProductCartInfo
+func (m *ShopModel) GetProductCartList(userId string) ([]*ProductCartInfo, error) {
+	var list []*ProductCartInfo
 	if err := m.Engine.SQL(GET_PRODUCT_CART_LIST, userId).Find(&list); err != nil {
 		return list, err
 	}

@@ -275,30 +275,36 @@ func (svc *ShopModule) AddProductCart(info *models.ProductCart) (int, int64) {
 }
 
 // 获取商品购物车列表
-func (svc *ShopModule) GetProductCartList(userId string) (int, []mshop.ProductCartInfo) {
+func (svc *ShopModule) GetProductCartList(userId string) (int, []*mshop.ProductCartInfo) {
 	//offset := (page - 1) * size
 	list, err := svc.shop.GetProductCartList(userId)
 	if err != nil {
 		log.Log.Errorf("shop_trace: get product cart list fail, err:%s", err)
 		return errdef.SHOP_GET_PRODUCT_CART_FAIL, nil
 	}
+	
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*mshop.ProductCartInfo{}
+	}
 
-	for _, info := range list {
-		stockInfo, err := svc.shop.GetProductSkuStock(fmt.Sprint(info.Id))
+	for _, item := range list {
+		stockInfo, err := svc.shop.GetProductSkuStock(fmt.Sprint(item.Id))
 		if err != nil {
-			log.Log.Errorf("shop_trace: get product sku stock fail, skuId:%d, err:%s", info.Id, err)
+			log.Log.Errorf("shop_trace: get product sku stock fail, skuId:%d, err:%s", item.Id, err)
 		}
 		
+		log.Log.Infof("stockInfo:%+v", stockInfo)
+		
 		if stockInfo != nil {
-			info.Stock = stockInfo.Stock
-			info.MinBuy = stockInfo.MinBuy
-			info.MinBuy = stockInfo.MaxBuy
+			item.Stock = stockInfo.Stock
+			item.MinBuy = stockInfo.MinBuy
+			item.MinBuy = stockInfo.MaxBuy
 		}
 		
 		now := time.Now().Unix()
-		if now >= info.StartTime && now < info.EndTime {
-			info.HasActivities = 1
-			info.RemainDuration = info.EndTime - now
+		if now >= item.StartTime && now < item.EndTime {
+			item.HasActivities = 1
+			item.RemainDuration = item.EndTime - now
 		}
 	}
 
