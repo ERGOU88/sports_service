@@ -950,6 +950,34 @@ func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, productType,
 	return nil
 }
 
+// 礼物详情
+func (svc *OrderModule) GiftDetail(orderId string) (int, *mappointment.OrderResp) {
+	ok, err := svc.order.GetOrder(orderId)
+	if !ok || err != nil {
+		log.Log.Errorf("order_trace: order not exists, orderId:%s, err:%s", orderId, err)
+		return errdef.ORDER_NOT_EXISTS, nil
+	}
+	
+	if svc.order.Order.Status != 2 {
+		log.Log.Errorf("order_trace: order already delete, orderId:%s", orderId)
+		return errdef.ORDER_GIFT_HAS_EXPIRED, nil
+	}
+	
+	if svc.order.Order.IsGift != 1 {
+		log.Log.Errorf("order_trace: not gift, orderId:%s", orderId)
+		return errdef.ORDER_NOT_EXISTS, nil
+	}
+	
+	rsp := &mappointment.OrderResp{}
+	if err := util.JsonFast.UnmarshalFromString(svc.order.Order.Extra, rsp); err != nil {
+		log.Log.Errorf("order_trace: unmarshal extra info fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+	
+	rsp.GiftStatus = svc.order.Order.GiftStatus
+	return errdef.SUCCESS, rsp
+}
+
 // 订单详情
 func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.OrderResp) {
 	user := svc.user.FindUserByUserid(userId)
@@ -1547,7 +1575,11 @@ func (svc *OrderModule) CheckOrderExpire() error {
 			svc.engine.Rollback()
 			continue
 		}
-
+		
+		if order.IsGift == 1 {
+			svc.order.Order.GiftStatus = 1
+		}
+		
 		// 更新订单状态
 		affected, err := svc.order.UpdateOrderStatus(order.PayOrderId, consts.ORDER_TYPE_PAID)
 		if affected != 1 || err != nil {

@@ -148,3 +148,16 @@ func ReceiveGift(c *gin.Context) {
 	svc := corder.New(c)
 	reply.Response(http.StatusOK, svc.ReceiveGift(param))
 }
+
+// 礼物详情
+func GiftDetail(c *gin.Context) {
+	reply := errdef.New(c)
+	orderId := c.Query("order_id")
+	svc := corder.New(c)
+	code, detail := svc.GiftDetail(orderId)
+	if code == errdef.SUCCESS {
+		reply.Data["detail"] = detail
+	}
+	
+	reply.Response(http.StatusOK, code)
+}

@@ -9,6 +9,8 @@ import (
 // 订单模块路由
 func Router(engine *gin.Engine) {
 	api := engine.Group("/api/v1")
+	api.GET("/order/gift/detail", sign.CheckSign(), GiftDetail)
+	
 	order := api.Group("/order")
 	order.Use(sign.CheckSign(), token.TokenAuth())
 	{
