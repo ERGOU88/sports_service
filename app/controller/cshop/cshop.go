@@ -386,3 +386,17 @@ func (svc *ShopModule) UpdateProductCart(list []*models.ProductCart) (int, []int
 
 	return errdef.SUCCESS, []int{}
 }
+
+func (svc *ShopModule) DeleteProductCart(ids []int, userId string) int {
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
+		return errdef.USER_NOT_EXISTS
+	}
+	
+	affected, err := svc.CleanProductCart(ids)
+	if err != nil || int(affected) != len(ids) {
+		return errdef.SHOP_DEL_PRODUCT_CART_FAIL
+	}
+	
+	return errdef.SUCCESS
+}

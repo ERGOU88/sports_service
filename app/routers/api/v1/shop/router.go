@@ -34,6 +34,8 @@ func Router(engine *gin.Engine) {
 		shop.GET("/product/search", SearchProduct)
 		// 更新商品购物车
 		shop.POST("/update/product/cart", token.TokenAuth(), UpdateProductCart)
+		// 删除商品购物车
+		shop.POST("/delete/product/cart", token.TokenAuth(), DeleteProductCart)
 		// 下单
 		shop.POST("/place/order", token.TokenAuth(), PlaceOrder)
 		// 订单取消

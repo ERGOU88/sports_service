@@ -33,6 +33,10 @@ type UpdateProductCartParam struct {
 	Params []*models.ProductCart `json:"params"`
 }
 
+type DeleteProductCartParam struct {
+	Ids    []int   `json:"ids" binding:"required"`
+}
+
 func (m *ShopModel) GetProductCart(condition string) (*models.ProductCart, error) {
 	cart := &models.ProductCart{}
 	ok, err := m.Engine.Where(condition).Get(cart)
