@@ -227,6 +227,11 @@ func (svc *base) SetAppointmentType(appointmentType int) {
 	svc.appointment.AppointmentInfo.AppointmentType = appointmentType
 }
 
+// 预约配置id
+func (svc *base) SetAppointmentId(id int64) {
+	svc.appointment.AppointmentInfo.Id = id
+}
+
 //func (svc *base) SetStockRelatedId(relatedId int64) {
 //	svc.appointment.Stock.RelatedId = relatedId
 //}

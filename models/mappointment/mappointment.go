@@ -179,6 +179,30 @@ type OrderResp struct {
 	GiftStatus       int    `json:"gift_status"`                  // 赠品状态 0 未赠送 1 已过期 2 已赠送
 }
 
+
+// 课程详情
+type CourseDetail struct {
+	Id                 int64        `json:"id"`           // 时间配置id
+	Date               string       `json:"date"`         // 预约的日期
+	TimeNode           string       `json:"time_node"`    // 预约时间节点
+	Address            string       `json:"address,omitempty"`         // 上课地点
+	CoachName          string       `json:"coach_name,omitempty"`      // 老师名称
+	CoachId            int64        `json:"coach_id,omitempty"`        // 老师id
+	CourseId           int64        `json:"course_id,omitempty"`       // 课程id
+	VenueId            int64        `json:"venue_id,omitempty"`
+	VenueName          string       `json:"venue_name"`                // 场馆名称
+	Title              string       `json:"title"`                     // 课程标题
+	Subhead            string       `json:"subhead"`                   // 课程副标题
+	Avatar             tencentCloud.BucketURI       `json:"avatar"`    // 老师头像
+	PromotionPic       tencentCloud.BucketURI       `json:"promotion_pic"`  // 课程宣传图
+	CoachDescribe      string       `json:"coach_describe"`                 // 老师描述
+	CourseDescribe     string       `json:"course_describe,omitempty"`      // 课程描述
+	CostDescription    string       `json:"cost_description,omitempty"`     // 费用说明
+	Instructions       string       `json:"instructions,omitempty"`         // 购买须知
+	RealAmount         int          `json:"real_amount"`
+	CurAmount          int          `json:"cur_amount"`
+}
+
 // 单时间节点预约数据
 type TimeNodeInfo struct {
 	Date         string       `json:"date"`         // 预约的日期

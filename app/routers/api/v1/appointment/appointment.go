@@ -164,3 +164,36 @@ func LabelInfo(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
+
+func AppointmentDetail(c *gin.Context) {
+	reply := errdef.New(c)
+	queryType, err := strconv.Atoi(c.Query("query_type"))
+	if err != nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	dateId, err := strconv.Atoi(c.Query("date_id"))
+	if err != nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	var i cappointment.IAppointment
+	factory := &cappointment.AppointmentFactory{}
+	i = factory.Create(queryType, c)
+	if i == nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	syscode, resp := cappointment.GetAppointmentDetail(i, dateId, id)
+	reply.Data["detail"] = resp
+	reply.Response(http.StatusOK, syscode)
+}
