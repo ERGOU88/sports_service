@@ -960,7 +960,7 @@ func (svc *OrderModule) GiftDetail(orderId string) (int, *mappointment.OrderResp
 	
 	if svc.order.Order.Status != 2 {
 		log.Log.Errorf("order_trace: order already delete, orderId:%s", orderId)
-		return errdef.ORDER_GIFT_HAS_EXPIRED, nil
+		return errdef.ORDER_STATUS_FAIL , nil
 	}
 	
 	if svc.order.Order.IsGift != 1 {
