@@ -7,6 +7,7 @@ import (
 
 type ProductCartInfo struct {
 	Id              int             `json:"sku_id"`
+	CartId          int             `json:"cart_id"`
 	ProductId       int64           `json:"product_id"`
 	Title           string          `json:"title"`
 	SkuImage        string          `json:"sku_image"`
@@ -75,7 +76,7 @@ func (m *ShopModel) GetProductCartNum(userId string) (int64, error) {
 }
 
 const (
-	GET_PRODUCT_CART_LIST = "SELECT sku.*, cart.count, cart.user_id, cart.is_check FROM product_sku AS sku INNER JOIN product_cart AS cart " +
+	GET_PRODUCT_CART_LIST = "SELECT sku.*, cart.id AS cart_id, cart.count, cart.user_id, cart.is_check FROM product_sku AS sku INNER JOIN product_cart AS cart " +
 		"ON sku.id=cart.sku_id WHERE cart.user_id=? ORDER BY sku.create_at DESC"
 )
 func (m *ShopModel) GetProductCartList(userId string) ([]*ProductCartInfo, error) {
