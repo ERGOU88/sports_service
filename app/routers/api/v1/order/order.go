@@ -153,8 +153,9 @@ func ReceiveGift(c *gin.Context) {
 func GiftDetail(c *gin.Context) {
 	reply := errdef.New(c)
 	orderId := c.Query("order_id")
+	userId := c.Query("user_id")
 	svc := corder.New(c)
-	code, detail := svc.GiftDetail(orderId)
+	code, detail := svc.GiftDetail(orderId, userId)
 	if code == errdef.SUCCESS {
 		reply.Data["detail"] = detail
 	}

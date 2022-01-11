@@ -177,7 +177,7 @@ type OrderResp struct {
 	RefundAmount     int    `json:"refund_amount,omitempty"`      // 退款金额
 	IsGift           int    `json:"is_gift"`                      // 是否为赠品 1 为赠品
 	GiftStatus       int    `json:"gift_status"`                  // 赠品状态 0 未赠送 1 已过期 2 已赠送
-	ReceiveRecord    ReceiveRecord `json:"receive_record"`        // 领取记录
+	ReceiveRecord    *ReceiveRecord `json:"receive_record"`        // 领取记录
 }
 
 type ReceiveRecord struct {

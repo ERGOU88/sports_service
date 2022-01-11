@@ -951,7 +951,7 @@ func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, productType,
 }
 
 // 礼物详情
-func (svc *OrderModule) GiftDetail(orderId string) (int, *mappointment.OrderResp) {
+func (svc *OrderModule) GiftDetail(orderId, userId string) (int, *mappointment.OrderResp) {
 	ok, err := svc.order.GetOrder(orderId)
 	if !ok || err != nil {
 		log.Log.Errorf("order_trace: order not exists, orderId:%s, err:%s", orderId, err)
@@ -975,7 +975,7 @@ func (svc *OrderModule) GiftDetail(orderId string) (int, *mappointment.OrderResp
 	}
 	
 	rsp.GiftStatus = svc.order.Order.GiftStatus
-	if rsp.GiftStatus == 2 {
+	if rsp.GiftStatus == 2 && userId == svc.order.Order.UserId {
 		records, err := svc.appointment.GetAppointmentRecordByOrderId(svc.order.Order.PayOrderId)
 		if err != nil || len(records) == 0 {
 			log.Log.Errorf("order_trace: get appointment record fail, orderId:%s", svc.order.Order.PayOrderId)
