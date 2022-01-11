@@ -975,6 +975,23 @@ func (svc *OrderModule) GiftDetail(orderId string) (int, *mappointment.OrderResp
 	}
 	
 	rsp.GiftStatus = svc.order.Order.GiftStatus
+	if rsp.GiftStatus == 2 {
+		records, err := svc.appointment.GetAppointmentRecordByOrderId(svc.order.Order.PayOrderId)
+		if err != nil || len(records) == 0 {
+			log.Log.Errorf("order_trace: get appointment record fail, orderId:%s", svc.order.Order.PayOrderId)
+			return errdef.ORDER_APPOINTMENT_RECORD_FAIL, rsp
+		}
+		
+		rsp.ReceiveRecord.UserId = records[0].UserId
+		rsp.ReceiveRecord.ReceiveTm = svc.order.Order.ReceiveTm
+		
+		useUser := svc.user.FindUserByUserid(records[0].UseUserId)
+		if useUser != nil {
+			rsp.ReceiveRecord.NickName = useUser.NickName
+			rsp.ReceiveRecord.Avatar = tencentCloud.BucketURI(useUser.Avatar)
+		}
+	}
+	
 	return errdef.SUCCESS, rsp
 }
 
@@ -1759,10 +1776,12 @@ func (svc *OrderModule) ReceiveGift(param *morder.ReceiveGiftReq) int {
 		}
 	}
 	
+	now := int(time.Now().Unix())
 	// 状态更新为已赠送/已领取
 	svc.order.Order.GiftStatus = 2
-	svc.order.Order.UpdateAt = int(time.Now().Unix())
-	cols := "gift_status, update_at"
+	svc.order.Order.UpdateAt = now
+	svc.order.Order.ReceiveTm = now
+	cols := "gift_status, update_at, receive_tm"
 	if _, err := svc.order.UpdateOrderInfo(cols); err != nil {
 		log.Log.Errorf("order_trace: update gift status fail, orderId:%s, useUserId:%s, err:%s",
 			svc.order.Order.PayOrderId, param.UserId, err)

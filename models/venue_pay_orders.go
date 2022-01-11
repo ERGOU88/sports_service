@@ -26,4 +26,5 @@ type VenuePayOrders struct {
 	UpdateAt       int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
 	IsGift         int    `json:"is_gift" xorm:"not null default 0 comment('是否为赠品 0 不是 1 是') TINYINT(4)"`
 	GiftStatus     int    `json:"gift_status" xorm:"not null default 0 comment('礼物赠送状态 0 未赠送 1 已过期 2 已赠送/已领取') TINYINT(4)"`
+	ReceiveTm      int    `json:"receive_tm" xorm:"not null default 0 comment('礼物领取时间') INT(11)"`
 }
