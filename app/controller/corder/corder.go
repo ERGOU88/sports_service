@@ -982,7 +982,8 @@ func (svc *OrderModule) GiftDetail(orderId, userId string) (int, *mappointment.O
 			return errdef.ORDER_APPOINTMENT_RECORD_FAIL, rsp
 		}
 		
-		rsp.ReceiveRecord.UserId = records[0].UserId
+		rsp.ReceiveRecord = &mappointment.ReceiveRecord{}
+		rsp.ReceiveRecord.UserId = records[0].UseUserId
 		rsp.ReceiveRecord.ReceiveTm = svc.order.Order.ReceiveTm
 		
 		useUser := svc.user.FindUserByUserid(records[0].UseUserId)
