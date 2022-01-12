@@ -234,3 +234,15 @@ func OrderDelete(c *gin.Context) {
 	param.UserId = userId.(string)
 	reply.Response(http.StatusOK, svc.DeleteOrder(param))
 }
+
+// 订单详情
+func OrderDetail(c *gin.Context) {
+	reply := errdef.New(c)
+	orderId := c.Query("order_id")
+	userId, _ := c.Get(consts.USER_ID)
+	
+	svc := cshop.New(c)
+	code, detail := svc.OrderDetail(userId.(string), orderId)
+	reply.Data["detail"] = detail
+	reply.Response(http.StatusOK, code)
+}

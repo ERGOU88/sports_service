@@ -416,7 +416,7 @@ func (svc *ShopModule) CancelOrderProcess(order *models.Orders) error {
 }
 
 // 订单列表
-func (svc *ShopModule) OrderList(userId, reqType string, page, size int) (int, []mshop.OrderResp) {
+func (svc *ShopModule) OrderList(userId, reqType string, page, size int) (int, []*mshop.OrderResp) {
 	if userId == "" {
 		return errdef.USER_NOT_EXISTS, nil
 	}
@@ -438,10 +438,39 @@ func (svc *ShopModule) OrderList(userId, reqType string, page, size int) (int, [
 	}
 	
 	if len(list) == 0 {
-		return errdef.SUCCESS, []mshop.OrderResp{}
+		return errdef.SUCCESS, []*mshop.OrderResp{}
 	}
 	
-	res, err := svc.OrderInfo(list)
+	res := make([]*mshop.OrderResp, len(list))
+	for index, item := range list {
+		info, err := svc.OrderInfo(item)
+		if err != nil {
+			log.Log.Errorf("shop_trace: get order info fail, err:%s", err)
+			return errdef.SHOP_ORDER_LIST_FAIL, nil
+		}
+		
+		res[index] = info
+	}
+	
+	
+	return errdef.SUCCESS, res
+}
+
+func (svc *ShopModule) OrderDetail(userId, orderId string) (int, *mshop.OrderResp) {
+	if userId == "" {
+		return errdef.USER_NOT_EXISTS, nil
+	}
+	
+	if user := svc.user.FindUserByUserid(userId); user == nil {
+		return errdef.USER_NOT_EXISTS, nil
+	}
+	
+	order, err := svc.shop.GetOrder(orderId)
+	if err != nil {
+		return errdef.SHOP_ORDER_NOT_EXISTS, nil
+	}
+	
+	res, err := svc.OrderInfo(*order)
 	if err != nil {
 		log.Log.Errorf("shop_trace: get order info fail, err:%s", err)
 		return errdef.SHOP_ORDER_LIST_FAIL, nil
@@ -451,10 +480,8 @@ func (svc *ShopModule) OrderList(userId, reqType string, page, size int) (int, [
 }
 
 // 订单信息
-func (svc *ShopModule) OrderInfo(list []models.Orders) ([]mshop.OrderResp, error) {
-	res := make([]mshop.OrderResp, len(list))
-	for index, item := range list {
-		info := mshop.OrderResp{}
+func (svc *ShopModule) OrderInfo(item models.Orders) (*mshop.OrderResp, error) {
+		info := &mshop.OrderResp{}
 		if err := util.JsonFast.UnmarshalFromString(item.Extra, &info); err != nil {
 			log.Log.Errorf("shop_trace: unmarshal fail, orderId:%s, err:%s", item.OrderId, err)
 			return nil, err
@@ -488,10 +515,8 @@ func (svc *ShopModule) OrderInfo(list []models.Orders) ([]mshop.OrderResp, error
 		info.DeliveryStatus = item.DeliveryStatus
 		info.DeliveryTelephone = item.DeliveryTelephone
 		info.DeliveryTypeName = item.DeliveryTypeName
-		res[index] = info
-	}
 	
-	return res, nil
+	return info, nil
 }
 
 func (svc *ShopModule) GetQueryCondition(reqType, userId string) string {
