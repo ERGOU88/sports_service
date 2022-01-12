@@ -243,6 +243,8 @@ func OrderDetail(c *gin.Context) {
 	
 	svc := cshop.New(c)
 	code, detail := svc.OrderDetail(userId.(string), orderId)
+	
+	
 	reply.Data["detail"] = detail
 	reply.Response(http.StatusOK, code)
 }
