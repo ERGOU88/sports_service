@@ -1465,7 +1465,7 @@ func (svc *OrderModule) GetCouponCodeInfo(userId, orderId string) (int, *morder.
 			}
 		}
 
-		resp.ExpireTm = time.Unix(minTm + int64(extra.ExpireDuration), 0).In(cstSh).Format(consts.FORMAT_DATE)
+		resp.ExpireTm = time.Unix(minTm + extra.ExpireDuration, 0).In(cstSh).Format(consts.FORMAT_DATE)
 
 	case consts.ORDER_TYPE_EXPERIENCE_CARD:
 
