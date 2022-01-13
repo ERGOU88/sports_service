@@ -501,13 +501,8 @@ func (svc *ShopModule) OrderInfo(item models.Orders) (*mshop.OrderResp, error) {
 			}
 		}
 		
-		if item.PayStatus == consts.SHOP_ORDER_TYPE_PAID && (item.DeliveryStatus == consts.NOT_DELIVERED ||
-			item.DeliveryStatus == consts.HAS_DELIVERED) {
-			info.Status = 2
-		}
-		
-		if item.PayStatus == consts.SHOP_ORDER_TYPE_PAID && item.DeliveryStatus == consts.HAS_SIGNED {
-			info.Status = 3
+		if item.PayStatus == consts.SHOP_ORDER_TYPE_PAID {
+			info.Status = svc.GetDeliveryStatus(item.DeliveryStatus)
 		}
 		
 		info.PayStatus = item.PayStatus
@@ -517,6 +512,19 @@ func (svc *ShopModule) OrderInfo(item models.Orders) (*mshop.OrderResp, error) {
 		info.DeliveryTypeName = item.DeliveryTypeName
 	
 	return info, nil
+}
+
+func (svc *ShopModule) GetDeliveryStatus(deliveryStatus int) int {
+	switch deliveryStatus {
+	case consts.NOT_DELIVERED:
+		return 2
+	case consts.HAS_DELIVERED:
+		return 3
+	case consts.HAS_SIGNED:
+		return 4
+	}
+	
+	return 0
 }
 
 func (svc *ShopModule) GetQueryCondition(reqType, userId string) string {

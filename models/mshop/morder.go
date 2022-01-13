@@ -51,7 +51,7 @@ type OrderResp struct {
 	DeliveryTypeName string          `json:"delivery_type_name"`     // 配送方式名称
 	DeliveryCode     string          `json:"delivery_code"`          // 运单号
 	DeliveryTelephone string         `json:"delivery_telephone"`     // 承运人电话
-	Status            int            `json:"status"`                 // 0 待支付 1 已取消 2 待收货 3 已完成
+	Status            int            `json:"status"`                 // 0 待支付 1 已取消 2 待发货 3 待收货 4 已完成
 }
 
 type Product struct {
