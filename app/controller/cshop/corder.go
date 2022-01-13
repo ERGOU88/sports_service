@@ -617,7 +617,7 @@ func (svc *ShopModule) DeleteOrder(param *mshop.ChangeOrderReq) int {
 		return errdef.SHOP_ORDER_DELETE_FAIL
 	}
 	
-	condition := fmt.Sprintf("order_id=%s", order.OrderId)
+	condition := fmt.Sprintf("order_id='%s'", order.OrderId)
 	order.IsDelete = 1
 	order.UpdateAt = int(time.Now().Unix())
 	cols := "is_delete, update_at"
