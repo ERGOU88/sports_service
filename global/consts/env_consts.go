@@ -12,9 +12,9 @@ const (
 type AppId string
 
 const (
-	WEB_APP_ID       AppId =  "aunGaE4h"
-	IOS_APP_ID       AppId =  "5EewXD1i"
-	AND_APP_ID       AppId =  "mj4mQaop"
+	APPLET_APP_ID AppId =  "aunGaE4h"
+	IOS_APP_ID    AppId =  "5EewXD1i"
+	AND_APP_ID    AppId =  "mj4mQaop"
 )
 
 const (

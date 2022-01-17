@@ -102,7 +102,7 @@ func (svc *VideoModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPu
 	//}
 
 	// 检测视频标题
-	//isPass, err = client.TextModeration(params.Title)
+	//isPass, err = client.TextModeration(params.SkuName)
 	//if !isPass {
 	//	log.Log.Errorf("video_trace: validate title err: %s，pass: %v", err, isPass)
 	//	return errdef.VIDEO_INVALID_TITLE
@@ -1005,13 +1005,13 @@ func (svc *VideoModule) GetDetailRecommend(userId, videoId string, page, size in
 		resp.BarrageNum = info.BarrageNum
 		// 粉丝数
 		resp.FansNum = svc.attention.GetTotalFans(fmt.Sprint(video.UserId))
+		// 获取用户信息
+		if user := svc.user.FindUserByUserid(video.UserId); user != nil {
+			resp.Avatar = cloud.BucketURI(user.Avatar)
+			resp.Nickname = user.NickName
+		}
 
 		if userId != "" {
-			// 获取用户信息
-			if user := svc.user.FindUserByUserid(video.UserId); user != nil {
-				resp.Avatar = cloud.BucketURI(user.Avatar)
-				resp.Nickname = user.NickName
-			}
 
 			// 是否关注
 			if attentionInfo := svc.attention.GetAttentionInfo(userId, video.UserId); attentionInfo != nil {

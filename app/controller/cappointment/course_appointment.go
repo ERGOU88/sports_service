@@ -140,6 +140,7 @@ func (svc *CourseAppointmentModule) Appointment(params *mappointment.Appointment
 	svc.Extra.CourseId = svc.course.Course.Id
 	svc.Extra.CourseName = fmt.Sprintf("《%s》", svc.course.Course.Title)
 	svc.Extra.ProductImg = tencentCloud.BucketURI(svc.course.Course.PromotionPic)
+	svc.Extra.IsGift = params.IsGift
 
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
@@ -265,7 +266,55 @@ func (svc *CourseAppointmentModule) AppointmentOptions() (int, interface{}) {
 }
 
 func (svc *CourseAppointmentModule) AppointmentDetail() (int, interface{}) {
-	return 8000, nil
+	ok, err := svc.appointment.GetAppointmentConfById(fmt.Sprint(svc.appointment.AppointmentInfo.Id))
+	if !ok || err != nil {
+		return errdef.APPOINTMENT_QUERY_NODE_FAIL, nil
+	}
+	
+	// 获取课程信息
+	ok, err = svc.course.GetCourseInfoById(fmt.Sprint(svc.appointment.AppointmentInfo.CourseId))
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get course info fail, err:%s", err)
+		return errdef.COURSE_NOT_EXISTS, nil
+	}
+	
+	// 获取老师信息
+	ok, err = svc.coach.GetCoachInfoById(fmt.Sprint(svc.appointment.AppointmentInfo.CoachId))
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get coach inf by id fail, err:%s", err)
+		return errdef.COACH_NOT_EXISTS, nil
+	}
+
+	// 获取场馆信息
+	ok, err = svc.venue.GetVenueInfoById(fmt.Sprint(svc.appointment.AppointmentInfo.VenueId))
+	if !ok || err != nil {
+		log.Log.Errorf("venue_trace: get venue info by id fail, venueId:%d, err:%s", svc.course.Course.VenueId, err)
+		return errdef.VENUE_NOT_EXISTS, nil
+	}
+	
+	rsp := &mappointment.CourseDetail{
+		Id:   svc.appointment.AppointmentInfo.Id,
+		Date: svc.GetDateById(svc.DateId, consts.FORMAT_DATE),
+		TimeNode: svc.appointment.AppointmentInfo.TimeNode,
+		Address: svc.venue.Venue.Address,
+		CoachId: svc.coach.Coach.Id,
+		CoachName: svc.coach.Coach.Name,
+		CourseId: svc.course.Course.Id,
+		VenueId: svc.appointment.AppointmentInfo.VenueId,
+		VenueName: svc.venue.Venue.VenueName,
+		Title: svc.course.Course.Title,
+		Subhead: svc.course.Course.Subhead,
+		Avatar: tencentCloud.BucketURI(svc.coach.Coach.Avatar),
+		PromotionPic: tencentCloud.BucketURI(svc.course.Course.PromotionPic),
+		CoachDescribe: svc.coach.Coach.Describe,
+		CourseDescribe: svc.course.Course.Describe,
+		CostDescription: svc.course.Course.CostDescription,
+		Instructions: svc.course.Course.Instructions,
+		RealAmount: svc.appointment.AppointmentInfo.RealAmount,
+		CurAmount: svc.appointment.AppointmentInfo.CurAmount,
+	}
+	
+	return errdef.SUCCESS, rsp
 }
 
 // 预约大课日期配置

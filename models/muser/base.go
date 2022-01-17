@@ -89,7 +89,7 @@ func (m *base) tcyAddUser(u *models.User) chan tcyAddResult {
 }
 
 // 注册
-func (m *base) Register(u *UserModel, s *SocialModel, c *gin.Context, unionId, avatar, nickName string, socialType, gender int) error {
+func (m *base) Register(u *UserModel, s *SocialModel, c *gin.Context, unionId, avatar, nickName, openId string, socialType, gender int) error {
 	key := rdskey.MakeKey(rdskey.LOGIN_REPEAT, socialType, unionId)
 	ok, err:= IsReapeat(key)
 	if err != nil {
@@ -105,7 +105,7 @@ func (m *base) Register(u *UserModel, s *SocialModel, c *gin.Context, unionId, a
 	rds:=dao.NewRedisDao()
 	rds.EXPIRE64(key, rdskey.KEY_EXPIRE_MIN)
 	m.newUser(u, c, avatar, nickName, gender, socialType)
-	m.newSocialAccount(s, socialType, u.User.UserId, unionId)
+	m.NewSocialAccount(s, socialType, u.User.UserId, unionId, openId)
 
 	// 腾讯云im导入用户
 	//ch := m.tcyAddUser(u.User)
@@ -121,11 +121,12 @@ func (m *base) Register(u *UserModel, s *SocialModel, c *gin.Context, unionId, a
 }
 
 // 设置用户社交帐号信息
-func (m *base) newSocialAccount(s *SocialModel, socialType int, userid, unionid string) {
+func (m *base) NewSocialAccount(s *SocialModel, socialType int, userid, unionid, openId string) {
 	s.SetCreateAt(time.Now().Unix())
 	s.SetSocialType(socialType)
 	s.SetUnionId(unionid)
 	s.SetUserId(userid)
+	s.SetOpenId(openId)
 	return
 }
 

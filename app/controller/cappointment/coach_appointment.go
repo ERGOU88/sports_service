@@ -154,6 +154,7 @@ func (svc *CoachAppointmentModule) Appointment(params *mappointment.AppointmentR
 	svc.Extra.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
 	svc.Extra.TmCn = util.ResolveTime(svc.Extra.TotalTm)
 	svc.Extra.Channel = params.Channel
+	svc.Extra.IsGift = params.IsGift
 
 	// 库存不足 返回最新数据 事务回滚
 	if !svc.Extra.IsEnough {

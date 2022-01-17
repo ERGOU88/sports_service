@@ -29,6 +29,7 @@ type AliPayClient struct {
 	RefundAmount string // 退款金额 (元)
 	RefundReason string // 退款理由
 	OutRequestNo string // 退款请求号(部分退款必填)
+	PassbackParams string // 公用回传参数 本参数必须进行UrlEncode
 }
 
 // appId：应用ID
@@ -53,6 +54,10 @@ func (c *AliPayClient) TradeAppPay() (string, error) {
 	body.Set("total_amount", c.TotalAmount)
 	if c.TimeExpire != "" {
 		body.Set("time_expire", c.TimeExpire)
+	}
+	
+	if c.PassbackParams != "" {
+		body.Set("passback_params", c.PassbackParams)
 	}
 
 	// 手机APP支付参数请求

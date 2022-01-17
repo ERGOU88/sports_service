@@ -66,7 +66,7 @@ func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDe
 	}
 
 	// 搜索到的视频
-	videos := svc.VideoSearch(userId, name, consts.VIDEO_CONDITION_PLAY, string(consts.UNLIMITED_DURATION),
+	videos := svc.VideoSearch(userId, name, consts.VIDEO_CONDITION_PLAY, "1", string(consts.UNLIMITED_DURATION),
 		string(consts.UNLIMITED_TIME), consts.DEFAULT_SEARCH_VIDEO_PAGE, consts.DEFAULT_SEARCH_VIDEO_SIZE)
 	// 搜索到的用户
 	users := svc.UserSearch(userId, name, consts.DEFAULT_SEARCH_USER_PAGE, consts.DEFAULT_SEARCH_USER_SIZE)
@@ -114,7 +114,7 @@ func (svc *SearchModule) RecommendVideo() []*mvideo.VideoDetailInfo {
 
 
 // 视频搜索 todo: 限制搜索的字符数
-func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime string, page, size int) []*mvideo.VideoDetailInfo {
+func (svc *SearchModule) VideoSearch(userId, name, sort, sortType, duration, publishTime string, page, size int) []*mvideo.VideoDetailInfo {
 	if name == "" {
 		log.Log.Errorf("search_trace: search name can't empty, name:%s", name)
 		return []*mvideo.VideoDetailInfo{}
@@ -131,7 +131,7 @@ func (svc *SearchModule) VideoSearch(userId, name, sort, duration, publishTime s
 	pubTime := svc.GetPublishTimeCondition(publishTime)
 	offset := (page - 1) * size
 
-	list := svc.video.SearchVideos(name, sortField, min, max, pubTime, offset, size)
+	list := svc.video.SearchVideos(name, sortField, sortType, min, max, pubTime, offset, size)
 	if len(list) == 0 {
 		return []*mvideo.VideoDetailInfo{}
 	}
@@ -429,7 +429,7 @@ func (svc *SearchModule) GetPublishTimeCondition(publishTime string) int64 {
 }
 
 // 获取排序字段
-// 0 播放数 1 弹幕数 2 评论数 3 点赞数
+// 0 播放数 1 弹幕数 2 评论数 3 点赞数 5 发布时间
 func (svc *SearchModule) GetSortField(condition string) string {
 	switch condition {
 	// 播放数
@@ -441,6 +441,9 @@ func (svc *SearchModule) GetSortField(condition string) string {
 	// 点赞数
 	case consts.VIDEO_CONDITION_LIKE:
 		return consts.CONDITION_FIELD_LIKE
+	// 发布时间
+	case consts.VIDEO_PUBLISH_TIME:
+		return consts.CONDITION_FIELD_PUBLISH
 	default:
 		log.Log.Errorf("search_trace: unsupported condition, condition: %s", condition)
 	}

@@ -14,6 +14,7 @@ import (
 	"sports_service/server/job"
 	"sports_service/server/log/zap"
 	"sports_service/server/models/mlabel"
+	"sports_service/server/models/mshop"
 	"sports_service/server/models/pprof"
 	"sports_service/server/nsqlx"
 	"sports_service/server/rabbitmq"
@@ -104,6 +105,14 @@ func setupJob() {
 	/*----检测订单超时----*/
 	go job.CheckOrder()
 	/*----检测订单超时----*/
+	
+	/*----检测商城订单超时----*/
+	go job.CheckShopOrder()
+	/*----检测商城订单超时----*/
+	
+	/*----刷新小程序全局唯一后台接口调用凭据----*/
+	go job.FlushAppletAccessToken()
+	/*----刷新小程序全局唯一后台接口调用凭据----*/
 }
 
 // 初始化nsq（生产者）
@@ -151,6 +160,10 @@ func setupLabelList() {
 	go mlabel.InitLabelList()
 }
 
+func setupAreaInfo() {
+	go mshop.InitAreaInfo()
+}
+
 // 初始化腾讯im
 func setupTencentService() {
 	im.Init(config.Global.TencentImAppId, config.Global.TencentImSecret, config.Global.TencentImIdentifier)
@@ -185,6 +198,8 @@ func init() {
 	setupRedisMqConsumer()
 	// 初始化视频标签配置列表 [load到内存]
 	setupLabelList()
+	// 初始化全国地区配置
+	setupAreaInfo()
 	// 初始化腾讯服务 im、live
 	setupTencentService()
 	// register signals handler

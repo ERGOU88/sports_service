@@ -71,7 +71,7 @@ type PushMessage struct {
 //  body.Data["content"] = "测试测试测试～～～～～"
 //  bts, _ := util.JsonFast.Marshal(body)
 //  info := umeng.Alert{
-//   Title: "123456",
+//   SkuName: "123456",
 //   SubTitle: "23232",
 //   Body: "测试测试",
 //  }

@@ -223,5 +223,13 @@ func VideoAlbumList(c *gin.Context) {
 	reply.Data["list"] = list
 	
 	reply.Response(http.StatusOK, code)
-	
+}
+
+func SectionInfo(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cvideo.New(c)
+	sectionType := c.DefaultQuery("section_type", "0")
+	code, list := svc.GetSectionInfo(sectionType)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
 }

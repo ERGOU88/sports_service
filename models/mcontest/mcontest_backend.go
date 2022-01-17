@@ -56,7 +56,7 @@ func (m *ContestModel) UpdatePlayer(player *models.FpvContestPlayerInformation) 
 // 获取选手列表
 func (m *ContestModel) GetPlayerList(offset, size int) ([]*FpvContestPlayerInformation, error) {
 	var list []*FpvContestPlayerInformation
-	if err := m.Engine.Where("status=0").Limit(size, offset).Find(&list); err != nil {
+	if err := m.Engine.Where("status=0").Desc("id").Limit(size, offset).Find(&list); err != nil {
 		return nil, err
 	}
 
