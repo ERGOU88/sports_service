@@ -75,7 +75,7 @@ func test_Push(t *testing.T) {
 
   // message 对象，表示 透传消息，用 content 属性初始化
   message := push.NewMessage("Message Content must not be empty")
-  message.Title = "Message Title"
+  message.Title = "Message SkuName"
 
   // option 对象，表示推送可选项
   options := push.NewOptions()

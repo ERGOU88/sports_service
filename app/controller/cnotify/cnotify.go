@@ -98,7 +98,7 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 				info.ComposeId = video.VideoId
 				info.Describe = util.TrimHtml(video.Describe)
 				info.Title = util.TrimHtml(video.Title)
-				//info.Title = video.Title
+				//info.SkuName = video.SkuName
 				//info.Describe = video.Describe
 				info.Cover = video.Cover
 				info.VideoAddr = svc.video.AntiStealingLink(video.VideoAddr)
@@ -169,7 +169,7 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 				if video != nil {
 					info.Status = video.Status
 					info.JumpVideoId = video.VideoId
-					//info.Title = video.Title
+					//info.SkuName = video.SkuName
 					//info.Describe = video.Describe
 					info.Describe = util.TrimHtml(video.Describe)
 					info.Title = util.TrimHtml(video.Title)

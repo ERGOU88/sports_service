@@ -30,6 +30,8 @@ func Router(engine *gin.Engine) {
 		search.POST("/clean/history", token.TokenAuth(), CleanHistorySearch)
         // 搜索帖子
 		search.GET("/posting", PostingSearch)
+		// 推荐视频
+		search.GET("/recommend/video", RecommendVideo)
 	}
 }
 

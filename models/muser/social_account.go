@@ -25,6 +25,11 @@ func (m *SocialModel) SetUserId(userId string) {
 	m.SocialAccount.UserId = userId
 }
 
+// 设置用户openId
+func (m *SocialModel) SetOpenId(openId string) {
+	m.SocialAccount.OpenId = openId
+}
+
 // 设置社交平台关联id
 func (m *SocialModel) SetUnionId(unionId string) {
 	m.SocialAccount.Unionid = unionId
@@ -65,5 +70,11 @@ func (m *SocialModel) GetSocialAccountByType(socialType int, unionid string) *mo
 	return m.SocialAccount
 }
 
+// 是否存在绑定的社交账号
+func (m *SocialModel) HasExistsSocialAccount(socialType int, userId string) (bool, error) {
+	return m.Engine.Where("social_type=? AND user_id=?", socialType, userId).Exist(&models.SocialAccountLogin{})
+}
 
-
+func (m *SocialModel) GetSocialAccount(socialType int, userId string)  (bool, error) {
+	return m.Engine.Where("social_type=? AND user_id=?", socialType, userId).Get(m.SocialAccount)
+}

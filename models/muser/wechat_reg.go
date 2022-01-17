@@ -9,6 +9,24 @@ type WxLoginParam struct {
 	Code    string     `binding:"required" json:"code" example:"code码"`
 }
 
+// 小程序登录 请求参数
+type AppletLoginParam struct {
+	Code          string   `binding:"required" json:"code"`            // 用户登录凭证（有效期五分钟）
+	//CodeByPhone   string   `binding:"required" json:"code_by_phone"`   // 手机号获取凭证
+	PhoneData     string   `binding:"required" json:"phone_data"`
+	Iv            string   `binding:"required" json:"iv"`
+}
+
+type BindWechatParam struct {
+	Code          string   `binding:"required" json:"code"`            // 用户登录凭证（有效期五分钟）
+	UserId        string
+}
+
+// 校验token
+type VerifyTokenParam struct {
+	Token        string   `binding:"required" json:"token"`
+}
+
 type AccessToken struct {
 	AccessToken  string `json:"access_token"`
 	ExpiresIn    int    `json:"expires_in"`

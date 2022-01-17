@@ -10,6 +10,16 @@ const (
 	WECHAT_ACCESS_TOKEN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?"
 	// 微信用户信息url
 	WECHAT_USER_INFO_URL    = "https://api.weixin.qq.com/sns/userinfo?"
+	// 微信用户手机号
+	WECHAT_USER_MOBILE_URL  = "https://api.weixin.qq.com/wxa/business/getuserphonenumber?"
+	// 小程序appid
+	APPLET_APPID            = "wx668f0f98d65655ae"
+	// 小程序secret
+	APPLET_SECRET           = "2360683db36bb132de7b8ef0b0e8c05a"
+	// 小程序获取access token url
+	APPLET_ACCESS_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?"
+	// 登录凭证校验
+	APPLET_CODE2_SESSION_URL = "https://api.weixin.qq.com/sns/jscode2session?"
 )
 
 // 微博相关常量

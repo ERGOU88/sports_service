@@ -26,7 +26,7 @@ func TestSanitizeRemoveRemovesNonWhitelistedNodes(t *testing.T) {
 	htmlDoc := `<!DOCTYPE html>
 				<html>
 					<head>
-						<title>My Title</title>
+						<title>My SkuName</title>
 					</head>
 					<body>
 						<div>
@@ -41,7 +41,7 @@ func TestSanitizeRemoveRemovesNonWhitelistedNodes(t *testing.T) {
 						</div>
 					</body>
 				</html>`
-	expectedOutput := `<!DOCTYPE html><html><head><title>My Title</title></head><body><div><i>Italic</i></div><div></div></body></html>`
+	expectedOutput := `<!DOCTYPE html><html><head><title>My SkuName</title></head><body><div><i>Italic</i></div><div></div></body></html>`
 	config := `{
 		"stripWhitespace": true,
 		"elements": {
@@ -66,7 +66,7 @@ func TestSanitizeUnwrapUnwrapsNonWhitelistedNodes(t *testing.T) {
 	htmlDoc := `<!DOCTYPE html>
 				<html>
 					<head>
-						<title>My Title</title>
+						<title>My SkuName</title>
 					</head>
 					<body>
 						<div class="not-allowed">
@@ -79,7 +79,7 @@ func TestSanitizeUnwrapUnwrapsNonWhitelistedNodes(t *testing.T) {
 						</div>
 					</body>
 				</html>`
-	expectedOutput := `<!DOCTYPE html><html><head><title>My Title</title></head><body><b>Bold</b><i>Italic</i><em>Emphatic</em><i>After</i></body></html>`
+	expectedOutput := `<!DOCTYPE html><html><head><title>My SkuName</title></head><body><b>Bold</b><i>Italic</i><em>Emphatic</em><i>After</i></body></html>`
 	config := `{
 		"stripWhitespace": true,
 		"elements": {

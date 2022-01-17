@@ -26,6 +26,8 @@ type IAppointment interface {
 	SetCourseId(courseId int)
 	// 设置预约类型
 	SetAppointmentType(appointmentType int)
+	// 设置预约配置id
+	SetAppointmentId(id int64)
 	// 设置日期id
 	SetDateId(id int)
 }
@@ -55,7 +57,9 @@ func GetAppointmentTimeOptions(i IAppointment, week, queryType, relatedId, id, c
 	return i.AppointmentOptions()
 }
 
-func GetAppointmentDetail(i IAppointment) (int, interface{}) {
+func GetAppointmentDetail(i IAppointment, dateId, id int) (int, interface{}) {
+	i.SetDateId(dateId)
+	i.SetAppointmentId(int64(id))
 	return i.AppointmentDetail()
 }
 

@@ -17,7 +17,7 @@ var doc = `{
     "swagger": "2.0",
     "info": {
         "description": "{{.Description}}",
-        "title": "{{.Title}}",
+        "title": "{{.SkuName}}",
         "contact": {},
         "license": {},
         "version": "{{.Version}}"
