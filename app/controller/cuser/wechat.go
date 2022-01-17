@@ -35,7 +35,7 @@ func (svc *UserModule) WechatLoginOrReg(code string) (int, string, *models.User)
 
 		r := muser.NewWechatRegister()
 		// 注册
-		if err := r.Register(svc.user, svc.social, svc.context, accessToken.Unionid, wxinfo.Headimgurl, wxinfo.Nickname,
+		if err := r.Register(svc.user, svc.social, svc.context, accessToken.Unionid, wxinfo.Headimgurl, wxinfo.Nickname, accessToken.Openid,
 			consts.TYPE_WECHAT, wxinfo.Sex); err != nil {
 			log.Log.Errorf("wx_trace: register err:%s", err)
 			return errdef.WX_REGISTER_FAIL, "", nil

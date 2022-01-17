@@ -4,12 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sports_service/server/app/controller/cshop"
+	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mshop"
 	"sports_service/server/util"
-	"sports_service/server/global/app/errdef"
 )
 
 func ProductList(c *gin.Context) {
@@ -98,7 +98,9 @@ func AddProductCart(c *gin.Context) {
 	userId, _ := c.Get(consts.USER_ID)
 	params.UserId = userId.(string)
 	svc := cshop.New(c)
-	reply.Response(http.StatusOK, svc.AddProductCart(params))
+	code, total := svc.AddProductCart(params)
+	reply.Data["total"] = total
+	reply.Response(http.StatusOK, code)
 }
 
 func ProductCart(c *gin.Context) {
@@ -140,6 +142,21 @@ func UpdateProductCart(c *gin.Context) {
 	svc := cshop.New(c)
 	code, id := svc.UpdateProductCart(param.Params)
 	reply.Data["id"] = id
+	reply.Response(http.StatusOK, code)
+}
+
+func DeleteProductCart(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mshop.DeleteProductCartParam{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("shop_trace: invalid param, params:%+v, err:%s", param, err)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	userId, _ := c.Get(consts.USER_ID)
+	svc := cshop.New(c)
+	code := svc.DeleteProductCart(param.Ids, userId.(string))
 	reply.Response(http.StatusOK, code)
 }
 
@@ -200,4 +217,34 @@ func ConfirmReceipt(c *gin.Context) {
 	param.UserId = userId.(string)
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.ConfirmReceipt(param))
+}
+
+// 删除订单
+func OrderDelete(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mshop.ChangeOrderReq{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("order_trace: invalid param, param:%+v, err:%s", param, err)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	userId, _ := c.Get(consts.USER_ID)
+	svc := cshop.New(c)
+	param.UserId = userId.(string)
+	reply.Response(http.StatusOK, svc.DeleteOrder(param))
+}
+
+// 订单详情
+func OrderDetail(c *gin.Context) {
+	reply := errdef.New(c)
+	orderId := c.Query("order_id")
+	userId, _ := c.Get(consts.USER_ID)
+	
+	svc := cshop.New(c)
+	code, detail := svc.OrderDetail(userId.(string), orderId)
+	
+	
+	reply.Data["detail"] = detail
+	reply.Response(http.StatusOK, code)
 }

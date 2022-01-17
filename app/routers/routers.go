@@ -82,7 +82,7 @@ func InitRouters(engine *gin.Engine) {
 	share.Router(engine)
 	// 社区模块
 	community.Router(engine)
-	// 订单模块
+	// 场馆订单模块
 	order.Router(engine)
 	// 场馆模块
 	venue.Router(engine)

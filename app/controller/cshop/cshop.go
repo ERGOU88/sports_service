@@ -196,7 +196,7 @@ func (svc *ShopModule) AddOrUpdateUserAddr(info *models.UserAddress) int {
 		return errdef.SUCCESS
 	}
 
-	addr, err := svc.shop.GetUserAddrById(fmt.Sprint(info.Id))
+	addr, err := svc.shop.GetUserAddr(fmt.Sprint(info.Id), info.UserId)
 	if err != nil || addr == nil {
 		log.Log.Errorf("shop_trace: user addr not found, id:%d", info.Id)
 		svc.engine.Rollback()
@@ -225,20 +225,20 @@ func (svc *ShopModule) GetUserAddrList(page, size int, userId string) (int, []mo
 }
 
 // 添加商品购物车
-func (svc *ShopModule) AddProductCart(info *models.ProductCart) int {
+func (svc *ShopModule) AddProductCart(info *models.ProductCart) (int, int64) {
 	if info.Count <= 0 {
-		return errdef.INVALID_PARAMS
+		return errdef.INVALID_PARAMS, 0
 	}
 
 	if _, err := svc.shop.GetProductSpu(fmt.Sprint(info.ProductId)); err != nil {
 		log.Log.Errorf("shop_trace: get product spu fail, productId:%d, err:%s", info.ProductId, err)
-		return errdef.SHOP_PRODUCT_SPU_FAIL
+		return errdef.SHOP_PRODUCT_SPU_FAIL, 0
 	}
 
 	condition := fmt.Sprintf("id=%d AND product_id=%d", info.SkuId, info.ProductId)
 	if _, err := svc.shop.GetProductSku(condition); err != nil {
 		log.Log.Errorf("shop_trace: get product sku by id fail, skuId:%d, err:%s", info.SkuId, err)
-		return errdef.SHOP_PRODUCT_SKU_FAIL
+		return errdef.SHOP_PRODUCT_SKU_FAIL, 0
 	}
 
 	info.CreateAt = int(time.Now().Unix())
@@ -246,41 +246,65 @@ func (svc *ShopModule) AddProductCart(info *models.ProductCart) int {
 	cartInfo, err := svc.shop.GetProductCart(condition)
 	if err != nil {
 		log.Log.Errorf("shop_trace: get product cart failm err:%s", err)
-		return errdef.SHOP_GET_PRODUCT_CART_FAIL
+		return errdef.SHOP_GET_PRODUCT_CART_FAIL, 0
+	}
+	
+	total, err := svc.shop.GetProductCartNum(info.UserId)
+	if err != nil {
+		log.Log.Errorf("shop_trace: get product cart num fail, err:%s", err)
 	}
 	
 	if cartInfo == nil {
 		if _, err := svc.shop.AddProductCart(info); err != nil {
 			log.Log.Errorf("shop_trace: add product cart fail, err:%s", err)
-			return errdef.SHOP_ADD_PRODUCT_CART_FAIL
+			return errdef.SHOP_ADD_PRODUCT_CART_FAIL, total
 		}
+		
+		total += 1
 
 	} else {
 		affected, err := svc.shop.UpdateProductCart(info)
 		if affected <= 0 || err != nil {
 			log.Log.Errorf("shop_trace: update product cart fail, err:%s", err)
-			return errdef.SHOP_ADD_PRODUCT_CART_FAIL
+			return errdef.SHOP_ADD_PRODUCT_CART_FAIL, total
 		}
 	}
 
 
-	return errdef.SUCCESS
+	return errdef.SUCCESS, total
 }
 
 // 获取商品购物车列表
-func (svc *ShopModule) GetProductCartList(userId string) (int, []mshop.ProductCartInfo) {
+func (svc *ShopModule) GetProductCartList(userId string) (int, []*mshop.ProductCartInfo) {
 	//offset := (page - 1) * size
 	list, err := svc.shop.GetProductCartList(userId)
 	if err != nil {
 		log.Log.Errorf("shop_trace: get product cart list fail, err:%s", err)
 		return errdef.SHOP_GET_PRODUCT_CART_FAIL, nil
 	}
+	
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*mshop.ProductCartInfo{}
+	}
 
-	for _, info := range list {
+	for _, item := range list {
+		stockInfo, err := svc.shop.GetProductSkuStock(fmt.Sprint(item.Id))
+		if err != nil {
+			log.Log.Errorf("shop_trace: get product sku stock fail, skuId:%d, err:%s", item.Id, err)
+		}
+		
+		log.Log.Infof("stockInfo:%+v", stockInfo)
+		
+		if stockInfo != nil {
+			item.Stock = stockInfo.Stock
+			item.MinBuy = stockInfo.MinBuy
+			item.MinBuy = stockInfo.MaxBuy
+		}
+		
 		now := time.Now().Unix()
-		if now >= info.StartTime && now < info.EndTime {
-			info.HasActivities = 1
-			info.RemainDuration = info.EndTime - now
+		if now >= item.StartTime && now < item.EndTime {
+			item.HasActivities = 1
+			item.RemainDuration = item.EndTime - now
 		}
 	}
 
@@ -361,4 +385,18 @@ func (svc *ShopModule) UpdateProductCart(list []*models.ProductCart) (int, []int
 	svc.engine.Commit()
 
 	return errdef.SUCCESS, []int{}
+}
+
+func (svc *ShopModule) DeleteProductCart(ids []int, userId string) int {
+	user := svc.user.FindUserByUserid(userId)
+	if user == nil {
+		return errdef.USER_NOT_EXISTS
+	}
+	
+	affected, err := svc.CleanProductCart(ids)
+	if err != nil || int(affected) != len(ids) {
+		return errdef.SHOP_DEL_PRODUCT_CART_FAIL
+	}
+	
+	return errdef.SUCCESS
 }

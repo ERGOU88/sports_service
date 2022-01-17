@@ -7,6 +7,8 @@ const (
 	ANDROID_PLATFORM    PLATFORM = iota
 	// iOS端
 	IOS_PLATFORM
+	// 小程序端
+	APPLET_PLATFORM
 	// web端
 	WEB_PLATFORM
 )
@@ -20,6 +22,8 @@ const (
 	TYPE_WEIBO     = 2
 	// QQ用户
 	TYPE_QQ        = 3
+	// 微信小程序
+	TYPE_APPLET    = 4
 )
 
 const (

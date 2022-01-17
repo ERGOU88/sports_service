@@ -227,6 +227,11 @@ func (svc *base) SetAppointmentType(appointmentType int) {
 	svc.appointment.AppointmentInfo.AppointmentType = appointmentType
 }
 
+// 预约配置id
+func (svc *base) SetAppointmentId(id int64) {
+	svc.appointment.AppointmentInfo.Id = id
+}
+
 //func (svc *base) SetStockRelatedId(relatedId int64) {
 //	svc.appointment.Stock.RelatedId = relatedId
 //}
@@ -582,6 +587,7 @@ func (svc *base) AddOrder(orderId, userId, subject string, now, productType int)
 	svc.order.Order.ProductType = productType
 	// todo: 暂时只有一个场馆
 	svc.order.Order.VenueId = 1
+	svc.order.Order.IsGift = svc.Extra.IsGift
 	// 实付金额为0 表示使用时长抵扣 或 活动免费  订单直接置为成功
 	if svc.order.Order.Amount == 0 {
 		svc.order.Order.Status = consts.ORDER_TYPE_PAID

@@ -34,11 +34,15 @@ func (m *ShopModel) UpdateUserDefaultAddr(id, userId string, isDefault int) (int
 	return engine.Cols("is_default").Update(info)
 }
 
-func (m *ShopModel) GetUserAddrById(id string) (*models.UserAddress, error) {
+func (m *ShopModel) GetUserAddr(id, userId string) (*models.UserAddress, error) {
 	addr := &models.UserAddress{}
 	engine := m.Engine
 	if id != "" {
 		engine.Where("id=?", id)
+	}
+	
+	if userId != "" {
+		engine.Where("user_id=?", userId)
 	}
 	
 	ok, err := engine.Desc("is_default").Get(addr)

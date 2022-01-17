@@ -34,6 +34,8 @@ func Router(engine *gin.Engine) {
 		shop.GET("/product/search", SearchProduct)
 		// 更新商品购物车
 		shop.POST("/update/product/cart", token.TokenAuth(), UpdateProductCart)
+		// 删除商品购物车
+		shop.POST("/delete/product/cart", token.TokenAuth(), DeleteProductCart)
 		// 下单
 		shop.POST("/place/order", token.TokenAuth(), PlaceOrder)
 		// 订单取消
@@ -42,5 +44,9 @@ func Router(engine *gin.Engine) {
 		shop.GET("/order/list", token.TokenAuth(), OrderList)
 		// 确认收货
 		shop.POST("/confirm/receipt", token.TokenAuth(), ConfirmReceipt)
+		// 删除订单
+		shop.POST("/order/delete", token.TokenAuth(), OrderDelete)
+		// 订单详情
+		shop.GET("/order/detail", token.TokenAuth(), OrderDetail)
 	}
 }

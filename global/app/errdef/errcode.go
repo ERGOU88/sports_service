@@ -221,6 +221,11 @@ const (
 	ORDER_PROCESS_FAIL           = 18014
 	ORDER_ADD_REFUND_RECORD_FAIL = 18015
 	ORDER_ADD_CARD_RECORD_FAIL   = 18016
+	ORDER_GIFT_NOT_ALLOW_RECEIVE = 18017
+	ORDER_APPOINTMENT_RECORD_FAIL= 18018
+	ORDER_GIFT_HAS_RECEIVED      = 18019
+	ORDER_GIFT_HAS_EXPIRED       = 18020
+	ORDER_GIFT_RECEIVE_FAIL      = 18021
 
 	// 大课相关错误 19001-20000
 	COURSE_NOT_EXISTS            = 19001
@@ -269,6 +274,8 @@ const (
 	SHOP_ORDER_LIST_FAIL         = 50019
 	SHOP_CONFIRM_RECEIPT_FAIL    = 50020
 	SHOP_NOT_ALLOW_CONFIRM       = 50021
+	SHOP_ORDER_DELETE_FAIL       = 50022
+	SHOP_DEL_PRODUCT_CART_FAIL   = 50023
 )
 
 var MsgFlags = map[int]string{
@@ -471,7 +478,12 @@ var MsgFlags = map[int]string{
 	ORDER_PROCESS_FAIL:          "订单处理失败",
 	ORDER_ADD_REFUND_RECORD_FAIL:"添加退款记录失败",
 	ORDER_ADD_CARD_RECORD_FAIL:  "添加会员卡记录失败",
-
+	ORDER_GIFT_NOT_ALLOW_RECEIVE:"赠品不可自己领取",
+	ORDER_APPOINTMENT_RECORD_FAIL:"获取预约记录失败",
+	ORDER_GIFT_HAS_RECEIVED:      "赠品已被领取",
+	ORDER_GIFT_HAS_EXPIRED:       "赠品已过期",
+	ORDER_GIFT_RECEIVE_FAIL:     "赠品领取失败",
+	
 	COURSE_NOT_EXISTS:           "课程不存在",
 	COURSE_TYPE_FAIL:            "课程类型错误",
 	COURSE_ID_NOT_MATCH:         "课程id不匹配",
@@ -513,7 +525,8 @@ var MsgFlags = map[int]string{
 	SHOP_ORDER_LIST_FAIL:          "获取订单列表失败",
 	SHOP_CONFIRM_RECEIPT_FAIL:     "确认收货失败",
 	SHOP_NOT_ALLOW_CONFIRM:        "订单暂不允许确认收货",
-	
+	SHOP_ORDER_DELETE_FAIL:        "订单删除失败",
+	SHOP_DEL_PRODUCT_CART_FAIL:    "删除购物车数据失败",
 }
 
 func GetMsg(code int) string {

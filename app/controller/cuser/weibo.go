@@ -29,7 +29,7 @@ func (svc *UserModule) WeiboLoginOrReg(params *muser.WeiboLoginParams) (int, str
 		// 替换成app性别标识
 		gender := svc.WeiboInterChangeGender(weiboInfo.Gender)
 		// 注册
-		if err := r.Register(svc.user, svc.social, svc.context, fmt.Sprint(params.Uid), weiboInfo.AvatarLarge,
+		if err := r.Register(svc.user, svc.social, svc.context, fmt.Sprint(params.Uid), weiboInfo.AvatarLarge, "",
 			weiboInfo.Name, consts.TYPE_WEIBO, gender); err != nil {
 			log.Log.Errorf("weibo_trace: register err:%s", err)
 			return errdef.WEIBO_REGISTER_FAIL, "", nil

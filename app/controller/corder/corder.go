@@ -20,8 +20,10 @@ import (
 	"sports_service/server/models/mcoach"
 	"sports_service/server/models/morder"
 	"sports_service/server/models/mpay"
+	"sports_service/server/models/mshop"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/mvenue"
+	"sports_service/server/models/sms"
 	"sports_service/server/tools/alipay"
 	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/tools/wechat"
@@ -40,6 +42,8 @@ type OrderModule struct {
 	venue       *mvenue.VenueModel
 	coach       *mcoach.CoachModel
 	pay         *mpay.PayModel
+	shop        *mshop.ShopModel
+	sms         *sms.SmsModel
 }
 
 func New(c *gin.Context) OrderModule {
@@ -56,6 +60,8 @@ func New(c *gin.Context) OrderModule {
 		venue: mvenue.NewVenueModel(socket),
 		coach: mcoach.NewCoachModel(socket),
 		pay: mpay.NewPayModel(socket),
+		shop: mshop.NewShop(appSocket),
+		sms: sms.NewSmsModel(),
 		engine: socket,
 	}
 }
@@ -74,10 +80,126 @@ func (svc *OrderModule) GetOrder(orderId string) (*models.VenuePayOrders, error)
 	return svc.order.Order, nil
 }
 
+
 // 支付宝通知 包含[支付成功、部分退款成功、全额退款成功]
 func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 	if err := svc.engine.Begin(); err != nil {
 		log.Log.Errorf("payNotify_trace: session begin fail, err:%s", err)
+		return errdef.ERROR
+	}
+	
+	orderId := params.Get("out_trade_no")
+	length := len(orderId)
+	switch length {
+	// 场馆订单
+	case 16:
+		return svc.AliPayNotifyByVenue(params, body)
+	// 商城订单
+	case 18:
+		return svc.AliPayNotifyByShop(params, body)
+	}
+	
+	log.Log.Errorf("order_trace: invalid orderId, orderId:%s", orderId)
+	return errdef.ERROR
+}
+
+// 支付宝通知 商城订单 [暂只有支付成功]
+func (svc *OrderModule) AliPayNotifyByShop(params url.Values, body string) int {
+	orderId := params.Get("out_trade_no")
+	order, err := svc.shop.GetOrder(orderId)
+	if order == nil || err != nil {
+		log.Log.Errorf("aliNotify_trace: get order fail, orderId:%s, err:%s", orderId, err)
+		return errdef.ERROR
+	}
+	
+	status := strings.Trim(params.Get("trade_status"), " ")
+	payTime, _ := time.ParseInLocation("2006-01-02 15:04:05", params.Get("gmt_payment"), time.Local)
+	tradeNo := params.Get("trade_no")
+	
+	switch status {
+	// 成功需区分 部分退款和支付成功
+	case consts.TradeSuccess:
+		switch order.PayStatus {
+		// 待支付状态
+		case consts.SHOP_ORDER_TYPE_WAIT:
+			amount, err := strconv.ParseFloat(strings.Trim(params.Get("total_amount"), " "), 64)
+			if err != nil {
+				log.Log.Errorf("aliNotify_trace: parse float fail, err:%s", err)
+				return errdef.ERROR
+			}
+			
+			if int(amount * 100) != order.PayAmount {
+				log.Log.Error("aliNotify_trace: amount not match, orderAmount:%d, amount:%d",
+					order.PayAmount, amount * 100)
+				return errdef.ERROR
+			}
+			
+			if err := svc.engine.Begin(); err != nil {
+				return errdef.ERROR
+			}
+			
+			condition := fmt.Sprintf("`pay_status`=%d AND `order_id`='%s'", consts.SHOP_ORDER_TYPE_WAIT, order.OrderId)
+			cols := "pay_status, transaction, pay_time, update_at"
+			order.PayStatus = consts.SHOP_ORDER_TYPE_PAID
+			now := int(time.Now().Unix())
+			order.UpdateAt = now
+			order.Transaction = tradeNo
+			order.PayTime = int(payTime.Unix())
+			// 更新订单状态
+			if _, err := svc.shop.UpdateOrderInfo(condition, cols, order); err != nil {
+				log.Log.Errorf("shop_trace: update order info fail, orderId:%s, err:%v", order.OrderId, err)
+				svc.engine.Rollback()
+				return errdef.SHOP_ORDER_UPDATE_FAIL
+			}
+			
+			list, err := svc.shop.GetOrderProductList(order.OrderId)
+			if err != nil {
+				log.Log.Errorf("shop_trace: get order product list fail, orderId:%s, err:%s", orderId, err)
+				svc.engine.Rollback()
+				return errdef.SHOP_ORDER_UPDATE_FAIL
+			}
+			
+			for _, item := range list {
+				product, err := svc.shop.GetProductSpu(fmt.Sprint(item.ProductId))
+				if err != nil || product == nil {
+					log.Log.Errorf("order_trace: get product spu fail, productId:%d,  err:%s", item.ProductId, err)
+					continue
+				}
+				
+				condition := fmt.Sprintf("id=%d", item.ProductId)
+				cols := "sale_num"
+				// 更新产品销量
+				if _, err := svc.shop.UpdateProductInfo(condition, cols, product); err != nil {
+					log.Log.Errorf("order_trace: update product info fail, productId:%d, err:%s", product.Id, err)
+					svc.engine.Rollback()
+					return errdef.SHOP_ORDER_UPDATE_FAIL
+				}
+			}
+			
+			svc.engine.Commit()
+			
+		default:
+			return errdef.ERROR
+		}
+	
+	
+	// 全额退款
+	case consts.TradeClosed:
+		log.Log.Debug("trade closed, order_id:%v", orderId)
+	case consts.WaitBuyerPay:
+		log.Log.Debug("wait buyer pay, order_id:%v", orderId)
+	case consts.TradeFinished:
+		log.Log.Debug("trade finished, order_id:%v", orderId)
+	}
+	
+	
+	return errdef.SUCCESS
+}
+
+// 支付宝通知 场馆订单包含[支付成功、部分退款成功、全额退款成功]
+func (svc *OrderModule) AliPayNotifyByVenue(params url.Values, body string) int {
+	if err := svc.engine.Begin(); err != nil {
+		log.Log.Errorf("aliNotify_trace: session begin fail, err:%s", err)
 		return errdef.ERROR
 	}
 
@@ -219,8 +341,65 @@ func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
 	return errdef.SUCCESS
 }
 
-// 微信支付回调
-func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo, refundNo string, payTm, refundTm int64, changeType int) error {
+func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo, totalFee, refundNo string, payTm, refundTm int64, changeType int) error {
+	length := len(orderId)
+	switch length {
+	// 场馆订单
+	case 16:
+		return svc.WechatPayNotifyByVenue(orderId, body, tradeNo, totalFee, refundNo, payTm, refundTm, changeType)
+	// 商城订单
+	case 18:
+		return svc.WechatPayNotifyByShop(orderId, tradeNo, totalFee, payTm)
+	}
+	
+	return nil
+}
+
+func (svc *OrderModule) WechatPayNotifyByShop(orderId, tradeNo, totalFee string, payTm int64) error {
+	order, err := svc.shop.GetOrder(orderId)
+	if order == nil || err != nil {
+		log.Log.Errorf("wxNotify_trace: get order fail, orderId:%s, err:%s", orderId, err)
+		return errors.New("order not found")
+	}
+	
+	switch order.PayStatus {
+	// 待支付状态
+	case consts.SHOP_ORDER_TYPE_WAIT:
+		amount, err := strconv.Atoi(totalFee)
+		if err != nil {
+			log.Log.Errorf("wxNotify_trace: parse float fail, err:%s", err)
+			return err
+		}
+		
+		if amount != order.PayAmount {
+			log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d",
+				order.PayAmount, amount)
+			return errors.New("amount not match")
+		}
+		
+		
+		condition := fmt.Sprintf("`pay_status`=%d AND `order_id`='%s'", consts.SHOP_ORDER_TYPE_WAIT, order.OrderId)
+		cols := "pay_status, transaction, pay_time, update_at"
+		order.PayStatus = consts.SHOP_ORDER_TYPE_PAID
+		now := int(time.Now().Unix())
+		order.UpdateAt = now
+		order.Transaction = tradeNo
+		order.PayTime = int(payTm)
+		// 更新订单状态
+		if _, err := svc.shop.UpdateOrderInfo(condition, cols, order); err != nil {
+			log.Log.Errorf("shop_trace: update order info fail, orderId:%s, err:%v", order.OrderId, err)
+			return err
+		}
+	
+	default:
+		return errors.New("invalid order type")
+	}
+	
+	return nil
+}
+
+// 微信支付/退款 回调
+func (svc *OrderModule) WechatPayNotifyByVenue(orderId, body, tradeNo, totalFee, refundNo string, payTm, refundTm int64, changeType int) error {
 	if err := svc.engine.Begin(); err != nil {
 		return err
 	}
@@ -230,6 +409,19 @@ func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo, refundNo string,
 		log.Log.Errorf("wxNotify_trace: order not exists, orderId:%s", orderId)
 		svc.engine.Rollback()
 		return errors.New("order not exists")
+	}
+	
+	fee, err := strconv.Atoi(totalFee)
+	if err != nil {
+		log.Log.Error("wxNotify_trace: amount fail, orderId:%s, err:%s", orderId, err)
+		svc.engine.Rollback()
+		return err
+	}
+	
+	if fee != svc.order.Order.Amount {
+		log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d", svc.order.Order.Amount, fee)
+		svc.engine.Rollback()
+		return errors.New("amount not match")
 	}
 
 	if err := svc.OrderProcess(orderId, body, tradeNo, payTm, changeType, svc.order.Order.RefundAmount, svc.order.Order.RefundFee); err != nil {
@@ -471,7 +663,7 @@ func (svc *OrderModule) CardOrderProcess(changeType, now int, orderId string) er
 			
 			cols := "use_user_id"
 			card.UseUserId = svc.order.Order.UserId
-			if _, err := svc.appointment.UpdateAppointmentRecordInfo(cols, card); err != nil {
+			if _, err := svc.order.UpdateCardRecordInfo(cols, card); err != nil {
 				log.Log.Errorf("payNotify_trace: update record info fail, id:%d, err:%s", card.Id, err)
 				return err
 			}
@@ -591,8 +783,8 @@ func (svc *OrderModule) GetOrderList(userId, status string, page, size int) (int
 
 // todo:
 func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.OrderInfo {
-	res := make([]*morder.OrderInfo, len(list))
-	for index, order := range list {
+	res := make([]*morder.OrderInfo, 0)
+	for _, order := range list {
 		info := new(morder.OrderInfo)
 		info.OrderType = int32(order.ProductType)
 		cstSh, _ := time.LoadLocation("Asia/Shanghai")
@@ -603,6 +795,8 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 		info.Amount = fmt.Sprintf("%.2f", float64(order.Amount)/100)
 		info.TotalAmount = order.Amount
 		info.Title = order.Subject
+		info.IsGift = order.IsGift
+		info.GiftStatus = order.GiftStatus
 		// 是否可退款
 		can, _, _, _, err := svc.CanRefund(order.Amount, order.Status, order.ProductType, order.PayTime,
 			order.PayOrderId, order.Extra)
@@ -616,6 +810,35 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 			log.Log.Errorf("order_trace: unmarshal extra fail, err:%s, orderId:%s", err, order.PayOrderId)
 			continue
 		}
+		
+		// 如果是赠品 判断是否可赠送
+		if info.IsGift == 1 && info.GiftStatus == 0 {
+			records, err := svc.appointment.GetAppointmentRecordByOrderId(order.PayOrderId)
+			if err != nil || len(records) == 0 {
+				log.Log.Errorf("order_trace: get appointment record by orderId fail, err:%s", err)
+				continue
+			}
+			
+			for _, item := range records {
+				// 结束时间 > 当前时间 则礼物已过期
+				if item.EndTm > int(time.Now().Unix()) {
+					order.GiftStatus = 1
+				}
+			}
+		}
+		
+		info.GiftStatus = order.GiftStatus
+		// 赠品已过期 更新 订单赠品状态
+		if info.GiftStatus == 1 {
+			svc.order.Order = order
+			cols := "gift_status"
+			// 更新赠品状态
+			if _, err := svc.order.UpdateOrderInfo(cols); err != nil {
+				log.Log.Errorf("order_trace: update order info fail, orderId:%s, err:%s", order.PayOrderId, err)
+				continue
+			}
+		}
+		
 		info.Count = extra.Count
 		info.ProductImg = tencentCloud.BucketURI(extra.ProductImg)
 
@@ -656,7 +879,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 
 		}
 
-		res[index] = info
+		res = append(res, info)
 	}
 
 	return res
@@ -727,6 +950,52 @@ func (svc *OrderModule) UpdateVipInfo(userId string, venueId int64, productType,
 	return nil
 }
 
+// 礼物详情
+func (svc *OrderModule) GiftDetail(orderId, userId string) (int, *mappointment.OrderResp) {
+	ok, err := svc.order.GetOrder(orderId)
+	if !ok || err != nil {
+		log.Log.Errorf("order_trace: order not exists, orderId:%s, err:%s", orderId, err)
+		return errdef.ORDER_NOT_EXISTS, nil
+	}
+	
+	if svc.order.Order.Status != 2 {
+		log.Log.Errorf("order_trace: order already delete, orderId:%s", orderId)
+		return errdef.ORDER_STATUS_FAIL , nil
+	}
+	
+	if svc.order.Order.IsGift != 1 {
+		log.Log.Errorf("order_trace: not gift, orderId:%s", orderId)
+		return errdef.ORDER_NOT_EXISTS, nil
+	}
+	
+	rsp := &mappointment.OrderResp{}
+	if err := util.JsonFast.UnmarshalFromString(svc.order.Order.Extra, rsp); err != nil {
+		log.Log.Errorf("order_trace: unmarshal extra info fail, err:%s", err)
+		return errdef.ERROR, nil
+	}
+	
+	rsp.GiftStatus = svc.order.Order.GiftStatus
+	if rsp.GiftStatus == 2 && userId == svc.order.Order.UserId {
+		records, err := svc.appointment.GetAppointmentRecordByOrderId(svc.order.Order.PayOrderId)
+		if err != nil || len(records) == 0 {
+			log.Log.Errorf("order_trace: get appointment record fail, orderId:%s", svc.order.Order.PayOrderId)
+			return errdef.ORDER_APPOINTMENT_RECORD_FAIL, rsp
+		}
+		
+		rsp.ReceiveRecord = &mappointment.ReceiveRecord{}
+		rsp.ReceiveRecord.UserId = records[0].UseUserId
+		rsp.ReceiveRecord.ReceiveTm = svc.order.Order.ReceiveTm
+		
+		useUser := svc.user.FindUserByUserid(records[0].UseUserId)
+		if useUser != nil {
+			rsp.ReceiveRecord.NickName = useUser.NickName
+			rsp.ReceiveRecord.Avatar = tencentCloud.BucketURI(useUser.Avatar)
+		}
+	}
+	
+	return errdef.SUCCESS, rsp
+}
+
 // 订单详情
 func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.OrderResp) {
 	user := svc.user.FindUserByUserid(userId)
@@ -781,6 +1050,8 @@ func (svc *OrderModule) OrderDetail(orderId, userId string) (int, *mappointment.
 	rsp.OrderDescription = "订单需知"
 	rsp.RefundFee = svc.order.Order.RefundFee
 	rsp.RefundAmount = svc.order.Order.RefundAmount
+	rsp.IsGift = svc.order.Order.IsGift
+	rsp.GiftStatus = svc.order.Order.GiftStatus
 
 	// 是否可退款
 	can, _, _, _, err := svc.CanRefund(svc.order.Order.Amount, svc.order.Order.Status, svc.order.Order.ProductType, svc.order.Order.PayTime,
@@ -1194,7 +1465,7 @@ func (svc *OrderModule) GetCouponCodeInfo(userId, orderId string) (int, *morder.
 			}
 		}
 
-		resp.ExpireTm = time.Unix(minTm + int64(extra.ExpireDuration), 0).In(cstSh).Format(consts.FORMAT_DATE)
+		resp.ExpireTm = time.Unix(minTm + extra.ExpireDuration, 0).In(cstSh).Format(consts.FORMAT_DATE)
 
 	case consts.ORDER_TYPE_EXPERIENCE_CARD:
 
@@ -1322,7 +1593,11 @@ func (svc *OrderModule) CheckOrderExpire() error {
 			svc.engine.Rollback()
 			continue
 		}
-
+		
+		if order.IsGift == 1 {
+			svc.order.Order.GiftStatus = 1
+		}
+		
 		// 更新订单状态
 		affected, err := svc.order.UpdateOrderStatus(order.PayOrderId, consts.ORDER_TYPE_PAID)
 		if affected != 1 || err != nil {
@@ -1423,4 +1698,103 @@ func (svc *OrderModule) CalculationRefundFee(amount, lastStartTime int) (int, in
 	}
 
 	return refundFee, ruleId, nil
+}
+
+// 领取赠品
+func (svc *OrderModule) ReceiveGift(param *morder.ReceiveGiftReq) int {
+	if param.UserId == "" {
+		return errdef.INVALID_PARAMS
+	}
+	
+	user := svc.user.FindUserByUserid(param.UserId)
+	if user == nil {
+		log.Log.Errorf("order_trace: user not found, userId:%s", param.UserId)
+		return errdef.USER_NOT_EXISTS
+	}
+	
+	ok, err := svc.order.GetOrder(param.OrderId)
+	if !ok || err != nil {
+		log.Log.Errorf("order_trace: order not found, orderId:%s, err:%s", param.OrderId, err)
+		return errdef.ORDER_NOT_EXISTS
+	}
+	
+	// 是否为赠品
+	if svc.order.Order.IsGift != 1 {
+		log.Log.Errorf("order_trace: not gift, orderId:%s", param.OrderId)
+		return errdef.ORDER_GIFT_NOT_ALLOW_RECEIVE
+	}
+	
+	// 赠品已过期
+	if svc.order.Order.GiftStatus == 1 {
+		log.Log.Errorf("order_trace: gitf has expired, orderId:%s", param.OrderId)
+		return errdef.ORDER_GIFT_HAS_EXPIRED
+	}
+	
+	// 赠品已被领取
+	if svc.order.Order.GiftStatus == 2 {
+		log.Log.Errorf("order_trace: gift has received, orderId:%s", param.OrderId)
+		return errdef.ORDER_GIFT_HAS_RECEIVED
+	}
+	
+	if svc.order.Order.UserId == user.UserId {
+		log.Log.Errorf("order_trace: gift not allow receive, orderId:%s", param.OrderId)
+		return errdef.ORDER_GIFT_NOT_ALLOW_RECEIVE
+	}
+	
+	records, err := svc.appointment.GetAppointmentRecordByOrderId(param.OrderId)
+	if records == nil || err != nil {
+		log.Log.Errorf("order_trace: get appointment record fail, orderId:%s, err:%s", param.OrderId, err)
+		return errdef.ORDER_APPOINTMENT_RECORD_FAIL
+	}
+	
+	if err := svc.engine.Begin(); err != nil {
+		return errdef.ERROR
+	}
+	
+	for _, item := range records {
+		if item.UseUserId != "" {
+			log.Log.Errorf("order_trace: gift has received, orderId:%s", param.OrderId)
+			svc.engine.Rollback()
+			return errdef.ORDER_GIFT_HAS_RECEIVED
+		}
+		
+		// 结束时间 > 当前时间 不可领取 赠品已过期
+		if item.EndTm > int(time.Now().Unix()) {
+			log.Log.Errorf("order_trace: gift has expired, orderId:%s", param.OrderId)
+			svc.engine.Rollback()
+			return errdef.ORDER_GIFT_HAS_EXPIRED
+		}
+		
+		cols := "use_user_id"
+		item.UseUserId = param.UserId
+		condition := fmt.Sprintf("id=%d AND use_user_id=''", item.Id)
+		// 更新使用者
+		if _, err := svc.appointment.UpdateAppointmentRecordInfo(condition, cols, item); err != nil {
+			log.Log.Errorf("order_trace: update appointment record fail, orderId:%s, useUserId:%s, err:%s",
+				item.PayOrderId, param.UserId, err)
+			svc.engine.Rollback()
+			return errdef.ORDER_GIFT_RECEIVE_FAIL
+		}
+	}
+	
+	now := int(time.Now().Unix())
+	// 状态更新为已赠送/已领取
+	svc.order.Order.GiftStatus = 2
+	svc.order.Order.UpdateAt = now
+	svc.order.Order.ReceiveTm = now
+	cols := "gift_status, update_at, receive_tm"
+	if _, err := svc.order.UpdateOrderInfo(cols); err != nil {
+		log.Log.Errorf("order_trace: update gift status fail, orderId:%s, useUserId:%s, err:%s",
+			svc.order.Order.PayOrderId, param.UserId, err)
+		svc.engine.Rollback()
+		return errdef.ORDER_GIFT_RECEIVE_FAIL
+	}
+	
+	svc.engine.Commit()
+	
+	//code := svc.sms.GetSmsCode()
+	// todo: 发送短信通知
+	
+	
+	return errdef.SUCCESS
 }

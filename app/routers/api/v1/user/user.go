@@ -505,3 +505,49 @@ func GetTencentImSign(c *gin.Context) {
 	reply.Data["detail"] = info
 	reply.Response(http.StatusOK, code)
 }
+
+func VerifyWxCode(c *gin.Context) {
+
+}
+
+func AppletLogin(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &muser.AppletLoginParam{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := cuser.New(c)
+	code, token, user := svc.AppletLoginOrReg(param)
+	reply.Data["token"] = token
+	reply.Data["user"] = user
+	reply.Response(http.StatusOK, code)
+}
+
+func BindWx(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &muser.BindWechatParam{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	userId, _ := c.Get(consts.USER_ID)
+	param.UserId = userId.(string)
+	svc := cuser.New(c)
+	reply.Response(http.StatusOK, svc.BindWechat(param))
+}
+
+func VerifyToken(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &muser.VerifyTokenParam{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("user_trace: invalid param, err:%s", err)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := cuser.New(c)
+	reply.Response(http.StatusOK, svc.VerifyToken(param))
+}
