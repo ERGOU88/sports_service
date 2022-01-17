@@ -147,36 +147,10 @@ func WechatNotify(c *gin.Context) {
 	}
 
 	orderId := bm["out_trade_no"].(string)
-
-	order, err := svc.GetOrder(orderId)
-	if order == nil || err != nil {
-		log.Log.Error("wxNotify_trace: order not found, orderId:%s, err:%s", orderId, err)
-		c.String(http.StatusBadRequest, "fail")
-		return
-	}
-
 	rsp := new(wxCli.NotifyResponse)
 	rsp.ReturnCode = gopay.SUCCESS
 	rsp.ReturnMsg = "OK"
-	if order.Status != consts.ORDER_TYPE_WAIT {
-		log.Log.Error("wxNotify_trace: order already pay, orderId:%s, err:%s", orderId, err)
-		c.String(http.StatusOK, rsp.ToXmlString())
-		return
-	}
-
 	totalFee := bm["total_fee"].(string)
-	fee, err := strconv.Atoi(totalFee)
-	if err != nil {
-		log.Log.Error("wxNotify_trace: amount fail, orderId:%s, err:%s", orderId, err)
-		c.String(http.StatusBadRequest, "fail")
-		return
-	}
-
-	if fee != order.Amount {
-		log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d", order.Amount, fee)
-		c.String(http.StatusBadRequest, "fail")
-		return
-	}
 
 	payTime, _ := time.ParseInLocation("20060102150405", bm["time_end"].(string), time.Local)
 	if err := svc.WechatPayNotify(orderId, string(body),  bm["transaction_id"].(string), totalFee,"", payTime.Unix(), 0, consts.PAY_NOTIFY); err != nil {
