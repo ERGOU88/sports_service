@@ -10,13 +10,13 @@ import (
 type ProductSimpleInfo struct {
 	Id             int    `json:"id" xorm:"not null pk autoincr comment('商品id') INT(11)"`
 	ProductName    string `json:"product_name" xorm:"not null default '' comment('商品名称') VARCHAR(255)"`
-	ProductImage   string `json:"product_image" xorm:"not null default '' comment('商品主图路径') VARCHAR(512)"`
+	ProductImage   tc.BucketURI `json:"product_image" xorm:"not null default '' comment('商品主图路径') VARCHAR(512)"`
 	Status         int    `json:"status" xorm:"not null default 0 comment('商品状态（0. 正常 1. 下架）') TINYINT(2)"`
 	IsFreeShip     int    `json:"is_free_ship" xorm:"not null default 0 comment('是否免邮 0 免邮') TINYINT(2)"`
 	Introduction   string `json:"introduction" xorm:"not null default '' comment('促销语') VARCHAR(255)"`
 	Keywords       string `json:"keywords" xorm:"not null default '' comment('关键词') VARCHAR(255)"`
 	Sortorder      int    `json:"sortorder" xorm:"not null default 0 comment('排序') index INT(11)"`
-	VideoUrl       string `json:"video_url" xorm:"not null default '' comment('视频地址') VARCHAR(512)"`
+	VideoUrl       tc.BucketURI `json:"video_url" xorm:"not null default '' comment('视频地址') VARCHAR(512)"`
 	SaleNum        int    `json:"sale_num" xorm:"not null default 0 comment('销量') INT(11)"`
 	CurPrice       int    `json:"cur_price" xorm:"not null default 0 comment('商品价格（分）') INT(10)"`
 	MarketPrice    int    `json:"market_price" xorm:"not null default 0 comment('划线价格（分）') INT(10)"`
@@ -26,7 +26,7 @@ type ProductDetailInfo struct {
 	Id              int             `json:"sku_id"`
 	ProductId       int64           `json:"product_id"`
 	Title           string          `json:"title"`
-	SkuImage        string          `json:"sku_image"`
+	SkuImage        tc.BucketURI    `json:"sku_image"`
 	SkuNo           string          `json:"sku_no"`
 	Images          []tc.BucketURI  `json:"images"`
 	CurPrice        int             `json:"cur_price"`
