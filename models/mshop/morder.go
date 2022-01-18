@@ -5,6 +5,7 @@ import (
 	"sports_service/server/global/rdskey"
 	"sports_service/server/models"
 	"errors"
+	tc "sports_service/server/tools/tencentCloud"
 )
 
 // 删除订单/取消订单/确认收货 请求参数
@@ -62,7 +63,7 @@ type Product struct {
 	Count          int    `json:"count"`
 	IsEnough       bool   `json:"is_enough" xorm:"-"`
 	CartId         int    `json:"cart_id" xorm:"-"`
-	SkuImage       string `json:"sku_image"`
+	SkuImage       tc.BucketURI `json:"sku_image"`
 	SkuName        string `json:"sku_name"`
 	ProductName    string `json:"product_name"`
 	SkuNo          string `json:"sku_no"`
