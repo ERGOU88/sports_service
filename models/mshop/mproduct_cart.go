@@ -2,7 +2,7 @@ package mshop
 
 import (
 	"sports_service/server/models"
-	//tc "sports_service/server/tools/tencentCloud"
+	tc "sports_service/server/tools/tencentCloud"
 )
 
 type ProductCartInfo struct {
@@ -10,7 +10,7 @@ type ProductCartInfo struct {
 	CartId          int             `json:"cart_id"`
 	ProductId       int64           `json:"product_id"`
 	Title           string          `json:"title"`
-	SkuImage        string          `json:"sku_image"`
+	SkuImage        tc.BucketURI    `json:"sku_image"`
 	SkuNo           string          `json:"sku_no"`
 	CurPrice        int             `json:"cur_price"`
 	MarketPrice     int             `json:"market_price"`

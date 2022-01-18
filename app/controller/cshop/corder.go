@@ -8,6 +8,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mshop"
+	tc "sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"time"
 )
@@ -233,7 +234,7 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 	
 	item.SkuName = sku.Title
 	item.SkuNo = sku.SkuNo
-	item.SkuImage = sku.SkuImage
+	item.SkuImage = tc.BucketURI(sku.SkuImage)
 	item.CurPrice = sku.CurPrice
 	item.MarketPrice = sku.MarketPrice
 	item.IsFreeShip = sku.IsFreeShip
