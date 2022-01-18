@@ -38,7 +38,7 @@ type ProductDetailInfo struct {
 	EndTime         int64           `json:"end_time"`
 	RemainDuration  int64           `json:"remain_duration"`        // 活动剩余时长
 	HasActivities   int32           `json:"has_activities"`         // 1 有活动
-	ProductDetail   tc.BucketURI    `json:"product_detail"`         // 商品详情 长图/描述
+	ProductDetail   []tc.BucketURI  `json:"product_detail"`         // 商品详情 长图/描述 多张
 	OwnSpec         []OwnSpec       `json:"own_spec"`               // 商品实体的特有规格参数
 	AfterService    string          `json:"after_service"`          // 服务
 	Specifications  []SpecInfo      `json:"specifications"`         // 全部规格参数
