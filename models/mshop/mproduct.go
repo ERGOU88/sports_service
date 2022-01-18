@@ -38,7 +38,7 @@ type ProductDetailInfo struct {
 	EndTime         int64           `json:"end_time"`
 	RemainDuration  int64           `json:"remain_duration"`        // 活动剩余时长
 	HasActivities   int32           `json:"has_activities"`         // 1 有活动
-	ProductDetail   tc.BucketURI    `json:"product_detail"`         // 商品详情 长图/描述
+	ProductDetail   []tc.BucketURI  `json:"product_detail"`         // 商品详情 长图/描述 多张
 	OwnSpec         []OwnSpec       `json:"own_spec"`               // 商品实体的特有规格参数
 	AfterService    string          `json:"after_service"`          // 服务
 	Specifications  []SpecInfo      `json:"specifications"`         // 全部规格参数
@@ -209,7 +209,7 @@ func (m *ShopModel) GetProductSpu(productId string) (*models.Products, error) {
 
 // indexes 特有规格属性在商品属性模板中的对应下标组合
 func (m *ShopModel) GetProductDetail(productId, indexes string) (*ProductDetailInfo, error) {
-	sql := "SELECT ps.*, p.specifications, p.spec_template, p.after_service, p.video_url, p.sale_num FROM product_sku AS ps " +
+	sql := "SELECT ps.*, p.specifications, p.spec_template, p.after_service, p.video_url, p.sale_num, p.product_detail FROM product_sku AS ps " +
 	"LEFT JOIN products AS p ON ps.product_id = p.id WHERE ps.status=0 AND ps.product_id=? "
 
 	if indexes != "" {
