@@ -393,7 +393,7 @@ func (svc *ShopModule) DeleteProductCart(ids []int, userId string) int {
 		return errdef.USER_NOT_EXISTS
 	}
 	
-	affected, err := svc.CleanProductCart(ids)
+	affected, err := svc.CleanProductCart(ids, userId)
 	if err != nil || int(affected) != len(ids) {
 		return errdef.SHOP_DEL_PRODUCT_CART_FAIL
 	}

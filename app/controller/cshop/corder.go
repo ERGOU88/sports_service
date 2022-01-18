@@ -108,7 +108,7 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 		
 		if len(cartIds) > 0 {
 			// 清理购物车对应的数据
-			affected, err := svc.CleanProductCart(cartIds)
+			affected, err := svc.CleanProductCart(cartIds, param.UserId)
 			if int(affected) != len(cartIds) || err != nil {
 				log.Log.Errorf("shop_trace: clean product cart fail, affected:%d, len:%d, err:%s", affected, len(cartIds), err)
 				svc.engine.Rollback()
@@ -312,8 +312,8 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 }
 
 // 购物车下单 成功时 清理购物车数据
-func (svc *ShopModule) CleanProductCart(cartIds []int) (int64, error) {
-	return svc.shop.DelProductCartByIds(cartIds)
+func (svc *ShopModule) CleanProductCart(cartIds []int, userId string) (int64, error) {
+	return svc.shop.DelProductCartByIds(cartIds, userId)
 }
 
 // 取消订单
