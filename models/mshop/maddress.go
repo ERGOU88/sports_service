@@ -57,10 +57,10 @@ func (m *ShopModel) GetUserAddr(id, userId string) (*models.UserAddress, error) 
 	return addr, nil
 }
 
-func (m *ShopModel) GetUserAddrByUserId(userId string, offset, size int) ([]models.UserAddress, error) {
-	var list []models.UserAddress
+func (m *ShopModel) GetUserAddrByUserId(userId string, offset, size int) ([]*models.UserAddress, error) {
+	var list []*models.UserAddress
 	if err := m.Engine.Where("user_id=?", userId).Limit(size, offset).Find(&list); err != nil {
-		return list, err
+		return nil, err
 	}
 
 	return list, nil
