@@ -82,6 +82,7 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 			id = ""
 		}
 		
+		log.Log.Infof("####addr_id:%s", id)
 		// 查询
 		addr, err := svc.shop.GetUserAddr(id, param.UserId)
 		if err != nil {
