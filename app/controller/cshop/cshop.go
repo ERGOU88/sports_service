@@ -151,15 +151,15 @@ func (svc *ShopModule) GetAreaConf() []*mshop.AreaInfo {
 }
 
 // 用户添加/更新 地址信息
-func (svc *ShopModule) AddOrUpdateUserAddr(info *models.UserAddress) int {
+func (svc *ShopModule) AddOrUpdateUserAddr(info *models.UserAddress) (int, int) {
 	if err := svc.engine.Begin(); err != nil {
-		return errdef.ERROR
+		return errdef.ERROR, 0
 	}
 	// 校验手机号合法性
 	if b := svc.user.CheckCellPhoneNumber(info.Mobile); !b {
 		log.Log.Errorf("shop_trace: invalid mobile num %v", info.Mobile)
 		svc.engine.Rollback()
-		return errdef.USER_INVALID_MOBILE_NUM
+		return errdef.USER_INVALID_MOBILE_NUM, 0
 	}
 
 	// 如果要将当前地址设置为默认
@@ -168,7 +168,7 @@ func (svc *ShopModule) AddOrUpdateUserAddr(info *models.UserAddress) int {
 		if err != nil {
 			log.Log.Errorf("shop_trace: get user addr by userId fail, userId:%d", info.UserId)
 			svc.engine.Rollback()
-			return errdef.SHOP_USER_ADDR_NOT_FOUND
+			return errdef.SHOP_USER_ADDR_NOT_FOUND, 0
 		}
 
 		if len(addrList) > 0 {
@@ -176,7 +176,7 @@ func (svc *ShopModule) AddOrUpdateUserAddr(info *models.UserAddress) int {
 			if _, err := svc.shop.UpdateUserDefaultAddr("", info.UserId, 0); err != nil {
 				log.Log.Errorf("shop_trace: update user default addr fail, err:%s", err)
 				svc.engine.Rollback()
-				return errdef.SHOP_UPDATE_USER_ADDR_FAIL
+				return errdef.SHOP_UPDATE_USER_ADDR_FAIL, 0
 			}
 		}
 	}
@@ -189,28 +189,28 @@ func (svc *ShopModule) AddOrUpdateUserAddr(info *models.UserAddress) int {
 		if _, err := svc.shop.AddUserAddr(info); err != nil {
 			log.Log.Errorf("shop_trace: add user addr fail, err:%s", err)
 			svc.engine.Rollback()
-			return errdef.SHOP_ADD_USER_ADDR_FAIL
+			return errdef.SHOP_ADD_USER_ADDR_FAIL, 0
 		}
 
 		svc.engine.Commit()
-		return errdef.SUCCESS
+		return errdef.SUCCESS, info.Id
 	}
 
 	addr, err := svc.shop.GetUserAddr(fmt.Sprint(info.Id), info.UserId)
 	if err != nil || addr == nil {
 		log.Log.Errorf("shop_trace: user addr not found, id:%d", info.Id)
 		svc.engine.Rollback()
-		return errdef.SHOP_USER_ADDR_NOT_FOUND
+		return errdef.SHOP_USER_ADDR_NOT_FOUND, 0
 	}
 
 	// 修改地址
 	if _, err := svc.shop.UpdateUserAddr(info); err != nil {
 		svc.engine.Rollback()
-		return errdef.SHOP_UPDATE_USER_ADDR_FAIL
+		return errdef.SHOP_UPDATE_USER_ADDR_FAIL, 0
 	}
 
 	svc.engine.Commit()
-	return errdef.SUCCESS
+	return errdef.SUCCESS, info.Id
 }
 
 func (svc *ShopModule) GetUserAddrList(page, size int, userId string) (int, []*models.UserAddress) {

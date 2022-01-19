@@ -72,7 +72,9 @@ func EditAddr(c *gin.Context) {
 	userId, _ := c.Get(consts.USER_ID)
 	params.UserId = userId.(string)
 	svc := cshop.New(c)
-	reply.Response(http.StatusOK, svc.AddOrUpdateUserAddr(params))
+	code, id := svc.AddOrUpdateUserAddr(params)
+	reply.Data["id"] = id
+	reply.Response(http.StatusOK, code)
 }
 
 func UserAddrList(c *gin.Context) {
