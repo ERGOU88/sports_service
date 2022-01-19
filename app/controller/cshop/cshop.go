@@ -1,6 +1,7 @@
 package cshop
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sports_service/server/dao"
@@ -10,9 +11,7 @@ import (
 	"sports_service/server/models"
 	"sports_service/server/models/mshop"
 	"sports_service/server/models/muser"
-	"sports_service/server/util"
 	"time"
-	"fmt"
 )
 
 type ShopModule struct {
@@ -222,9 +221,9 @@ func (svc *ShopModule) GetUserAddrList(page, size int, userId string) (int, []*m
 		return errdef.SHOP_GET_USER_ADDR_FAIL, nil
 	}
 	
-	for _, item := range addrList {
-		item.Mobile = util.HideMobileNum(item.Mobile)
-	}
+	//for _, item := range addrList {
+	//	item.Mobile = util.HideMobileNum(item.Mobile)
+	//}
 
 	return errdef.SUCCESS, addrList
 }
