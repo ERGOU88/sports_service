@@ -10,6 +10,7 @@ import (
 	"sports_service/server/models"
 	"sports_service/server/models/mshop"
 	"sports_service/server/models/muser"
+	"sports_service/server/util"
 	"time"
 	"fmt"
 )
@@ -213,12 +214,16 @@ func (svc *ShopModule) AddOrUpdateUserAddr(info *models.UserAddress) int {
 	return errdef.SUCCESS
 }
 
-func (svc *ShopModule) GetUserAddrList(page, size int, userId string) (int, []models.UserAddress) {
+func (svc *ShopModule) GetUserAddrList(page, size int, userId string) (int, []*models.UserAddress) {
 	offset := (page - 1) * size
 	addrList, err := svc.shop.GetUserAddrByUserId(userId, offset, size)
 	if err != nil {
 		log.Log.Errorf("shop_trace: get user addr by userId fail, userId:%s, err:%s", userId, err)
 		return errdef.SHOP_GET_USER_ADDR_FAIL, nil
+	}
+	
+	for _, item := range addrList {
+		item.Mobile = util.HideMobileNum(item.Mobile)
 	}
 
 	return errdef.SUCCESS, addrList
