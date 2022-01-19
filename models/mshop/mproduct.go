@@ -84,7 +84,7 @@ const (
 		"ORDER BY p.sale_num DESC, p.is_top DESC, p.is_recommend DESC, p.is_cream DESC, p.sortorder DESC, p.id DESC LIMIT ?, ?"
 )
 // 通过分类获取spu列表
-// sortType 0 销量倒序 1 价格倒序 2 价格正序
+// sortType 0 销量倒序 1 销量正序 2 价格倒序 3 价格正序
 func (m *ShopModel) GetSpuListByCategory(categoryId, sortType string, offset, size int) ([]ProductSimpleInfo, error) {
 	var list []ProductSimpleInfo
 	sql := "SELECT p.* FROM products AS p LEFT JOIN product_category_related AS pc " +
@@ -94,8 +94,10 @@ func (m *ShopModel) GetSpuListByCategory(categoryId, sortType string, offset, si
 	case "0":
 		sql += "p.sale_num DESC, "
 	case "1":
-		sql += "p.cur_price DESC, "
+		sql += "p.sale_num ASC, "
 	case "2":
+		sql += "p.cur_price DESC, "
+	case "3":
 		sql += "p.cur_price ASC, "
 	default:
 		sql += "p.sale_num DESC, "
