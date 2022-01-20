@@ -77,13 +77,18 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 	
 	switch param.ReqType {
 	case 1:
+		id := fmt.Sprint(param.UserAddrId)
+		if param.UserAddrId == 0 {
+			id = ""
+		}
+		
 		// 查询
-		addr, err := svc.shop.GetUserAddr("", param.UserId)
+		addr, err := svc.shop.GetUserAddr(id, param.UserId)
 		if err != nil {
 			log.Log.Errorf("shop_trace: get user addr by id fail, err:%s", err)
 		}
 		
-		if addr != nil && addr.IsDefault == 1 {
+		if addr != nil {
 			resp.UserAddr = addr
 			resp.UserAddr.Mobile = util.HideMobileNum(resp.UserAddr.Mobile)
 		}
