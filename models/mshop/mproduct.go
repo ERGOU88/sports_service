@@ -40,7 +40,7 @@ type ProductDetailInfo struct {
 	HasActivities   int32           `json:"has_activities"`         // 1 有活动
 	ProductDetail   []tc.BucketURI  `json:"product_detail"`         // 商品详情 长图/描述 多张
 	OwnSpec         []OwnSpec       `json:"own_spec"`               // 商品实体的特有规格参数
-	AfterService    string          `json:"after_service"`          // 服务
+	AfterService    []AfterService  `json:"after_service"`          // 服务
 	Specifications  []SpecInfo      `json:"specifications"`         // 全部规格参数
 	SpecTemplate    []SpecTemplate  `json:"spec_template"`          // 特有规格参数
 	Indexes         string          `json:"indexes"`                // 特有规格属性在商品属性模板中的对应下标组合
@@ -49,6 +49,14 @@ type ProductDetailInfo struct {
 	MinBuy          int             `json:"min_buy"`                // 起购数
 	SaleNum         int             `json:"sale_num"`               // 销量
 	ProductCartNum  int64           `json:"product_cart_num"`       // 购物车数量
+	Introduction    []string        `json:"introduction"`           // 促销语
+	Postage         int             `json:"postage"`                // 邮费
+}
+
+type AfterService struct {
+	Service    string          `json:"service"`    // 服务名称
+	Icon       tc.BucketURI    `json:"icon"`       // 图标
+	Describe   string          `json:"describe"`   // 描述
 }
 
 // 商品实体的特有规格参数
@@ -211,7 +219,7 @@ func (m *ShopModel) GetProductSpu(productId string) (*models.Products, error) {
 
 // indexes 特有规格属性在商品属性模板中的对应下标组合
 func (m *ShopModel) GetProductDetail(productId, indexes string) (*ProductDetailInfo, error) {
-	sql := "SELECT ps.*, p.specifications, p.spec_template, p.after_service, p.video_url, p.sale_num, p.product_detail FROM product_sku AS ps " +
+	sql := "SELECT ps.*, p.introduction, p.specifications, p.spec_template, p.after_service, p.video_url, p.sale_num, p.product_detail FROM product_sku AS ps " +
 	"LEFT JOIN products AS p ON ps.product_id = p.id WHERE ps.status=0 AND ps.product_id=? "
 
 	if indexes != "" {
