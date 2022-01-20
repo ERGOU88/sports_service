@@ -50,6 +50,7 @@ type ProductDetailInfo struct {
 	SaleNum         int             `json:"sale_num"`               // 销量
 	ProductCartNum  int64           `json:"product_cart_num"`       // 购物车数量
 	Introduction    []string        `json:"introduction"`           // 促销语
+	Postage         int             `json:"postage"`                // 邮费
 }
 
 type AfterService struct {
