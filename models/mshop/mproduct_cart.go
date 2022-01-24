@@ -29,8 +29,9 @@ type ProductCartInfo struct {
 	IsCheck         int             `json:"is_check"`               // 0选择 1 未选择
 }
 
-type UpdateProductCartParam struct {
+type AddOrUpdateProductCartParam struct {
 	Params []*models.ProductCart `json:"params"`
+	UserId string                `json:"user_id"`
 }
 
 type DeleteProductCartParam struct {

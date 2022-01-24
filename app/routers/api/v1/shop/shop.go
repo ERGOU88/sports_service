@@ -90,7 +90,7 @@ func UserAddrList(c *gin.Context) {
 
 func AddProductCart(c *gin.Context) {
 	reply := errdef.New(c)
-	params := &models.ProductCart{}
+	params := &mshop.AddOrUpdateProductCartParam{}
 	if err := c.BindJSON(params); err != nil {
 		log.Log.Errorf("shop_trace: invalid param, params:%+v, err:%s", params, err)
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
@@ -134,7 +134,7 @@ func SearchProduct(c *gin.Context) {
 
 func UpdateProductCart(c *gin.Context) {
 	reply := errdef.New(c)
-	param := &mshop.UpdateProductCartParam{}
+	param := &mshop.AddOrUpdateProductCartParam{}
 	if err := c.BindJSON(param); err != nil {
 		log.Log.Errorf("shop_trace: invalid param, params:%+v, err:%s", param, err)
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
