@@ -149,7 +149,7 @@ func (m *OrderModel) AddOrderProductByAppointment(orderProduct *models.VenueOrde
 // 更新订单信息
 func (m *OrderModel) UpdateOrderStatus(orderId string, status int) (int64, error) {
 	return m.Engine.Where("pay_order_id=? AND status=?", orderId, status).Cols("update_at",
-		"status", "is_callback", "pay_time", "transaction", "refund_amount", "refund_fee").Update(m.Order)
+		"status", "is_callback", "pay_time", "transaction", "refund_amount", "refund_fee", "gift_status").Update(m.Order)
 }
 
 // 通过订单id 获取订单流水信息 [会员卡类商品]

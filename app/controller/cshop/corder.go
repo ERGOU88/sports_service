@@ -413,7 +413,7 @@ func (svc *ShopModule) CancelOrderProcess(order *models.Orders) error {
 				ProductId: item.ProductId,
 			}
 			
-			if code, _ := svc.AddProductCart(info); code != errdef.SUCCESS {
+			if _, err := svc.shop.AddProductCart(info); err != nil {
 				return errors.New("add product cart fail")
 			}
 		//}
