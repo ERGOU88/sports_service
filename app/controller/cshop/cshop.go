@@ -240,6 +240,7 @@ func (svc *ShopModule) AddProductCart(param *mshop.AddOrUpdateProductCartParam) 
 			return errdef.INVALID_PARAMS, 0
 		}
 		
+		info.UserId = param.UserId
 		if _, err := svc.shop.GetProductSpu(fmt.Sprint(info.ProductId)); err != nil {
 			log.Log.Errorf("shop_trace: get product spu fail, productId:%d, err:%s", info.ProductId, err)
 			return errdef.SHOP_PRODUCT_SPU_FAIL, 0
