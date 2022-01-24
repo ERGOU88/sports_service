@@ -797,6 +797,7 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 		info.Title = order.Subject
 		info.IsGift = order.IsGift
 		info.GiftStatus = order.GiftStatus
+		info.OriginalAmount = order.OriginalAmount
 		// 是否可退款
 		can, _, _, _, err := svc.CanRefund(order.Amount, order.Status, order.ProductType, order.PayTime,
 			order.PayOrderId, order.Extra)

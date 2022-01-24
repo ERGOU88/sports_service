@@ -35,4 +35,5 @@ type Orders struct {
 	UpdateAt          int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
 	ActionType        int    `json:"action_type" xorm:"not null default 0 comment('1 商品详情页下单 2 购物车下单') TINYINT(2)"`
 	DeliveryTelephone string `json:"delivery_telephone" xorm:"not null default '0' comment('承运人电话') VARCHAR(30)"`
+	ChannelId         int    `json:"channel_id" xorm:"not null default 0 comment('购买渠道，1001 android ; 1002 ios 1003 小程序') INT(10)"`
 }

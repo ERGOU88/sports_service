@@ -24,6 +24,7 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 	resp.OrderId = util.NewShopOrderId()
 	// 默认详情页下单
 	resp.ActionType = consts.ORDER_ACTION_TYPE_DETAIL
+	resp.ChannelId = param.Channel
 	// 存储购物车id
 	cartIds := make([]int, 0)
 	for index, item := range param.Products {
@@ -180,6 +181,7 @@ func (svc *ShopModule) AddOrder(resp *mshop.OrderResp) (int64, error) {
 		PayAmount: resp.PayAmount,
 		OrderTypeName: "FPV无人机",
 		OrderType: 1001,
+		ChannelId: resp.ChannelId,
 		ActionType: resp.ActionType,
 		CreateAt: resp.CreateAt,
 		UpdateAt: resp.CreateAt,

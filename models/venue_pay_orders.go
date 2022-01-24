@@ -12,7 +12,7 @@ type VenuePayOrders struct {
 	ErrorCode      string `json:"error_code" xorm:"not null default '' comment('错误码') VARCHAR(20)"`
 	OrderType      int    `json:"order_type" xorm:"not null comment('下单方式：1001 APP下单，1002 前台购买，1003第三方推广渠道购买') index(user_id) INT(8)"`
 	PayTime        int    `json:"pay_time" xorm:"not null default 0 comment('用户支付时间') INT(11)"`
-	ChannelId      int    `json:"channel_id" xorm:"comment('购买渠道，1001 android ; 1002 ios') INT(10)"`
+	ChannelId      int    `json:"channel_id" xorm:"default 0 comment('购买渠道，1001 android ; 1002 ios') INT(10)"`
 	IsCallback     int    `json:"is_callback" xorm:"not null default 0 comment('是否接收到第三方回调 0 未接收到回调 1 已接收回调') TINYINT(1)"`
 	Subject        string `json:"subject" xorm:"not null default '' comment('商品名称') VARCHAR(150)"`
 	RefundAmount   int    `json:"refund_amount" xorm:"not null default 0 comment('退款金额（分）') INT(11)"`

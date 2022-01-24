@@ -44,6 +44,7 @@ type OrderInfo struct {
 	CanRefund          bool        `json:"can_refund"`          // 是否可退款
 	IsGift             int         `json:"is_gift"`             // 是否为赠品 1 为赠品
 	GiftStatus         int         `json:"gift_status"`         // 0未赠送 1 已过期 2 已赠送
+	OriginalAmount     int         `json:"original_amount"`     // 订单原始金额
 }
 
 // 订单退款/删除订单/取消订单
