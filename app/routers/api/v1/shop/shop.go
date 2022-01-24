@@ -173,6 +173,8 @@ func PlaceOrder(c *gin.Context) {
 	
 	userId, _ := c.Get(consts.USER_ID)
 	param.UserId = userId.(string)
+	channel, _ := c.Get(consts.CHANNEL)
+	param.Channel = channel.(int)
 	svc := cshop.New(c)
 	code, resp := svc.PlaceOrder(param)
 	reply.Data["detail"] = resp

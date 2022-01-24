@@ -20,6 +20,7 @@ type PlaceOrderReq struct {
 	UserAddrId     int               `json:"user_addr_id"`                        // 选择的地址
 	Products       []*ProductParam   `json:"products" binding:"required"`
 	ReqType        int               `json:"req_type" binding:"required"`         // 1 查询数据 2 详情页下单 3 购物车下单
+	Channel        int
 }
 
 type ProductParam struct {
@@ -53,6 +54,7 @@ type OrderResp struct {
 	DeliveryCode     string          `json:"delivery_code"`          // 运单号
 	DeliveryTelephone string         `json:"delivery_telephone"`     // 承运人电话
 	Status            int            `json:"status"`                 // 0 待支付 1 已取消 2 待发货 3 待收货 4 已完成
+	ChannelId         int            `json:"channel_id"`             // 购买渠道，1001 android ; 1002 ios 1003 小程序
 }
 
 type Product struct {

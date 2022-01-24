@@ -115,6 +115,8 @@ func getChannel(appId string) int {
 		return consts.PLT_TYPE_IOS
 	case string(consts.AND_APP_ID):
 		return consts.PLT_TYPE_ANDROID
+	case string(consts.APPLET_APP_ID):
+		return consts.PLT_TYPE_APPLET
 	}
 
 	return 0
