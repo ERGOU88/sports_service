@@ -1759,8 +1759,8 @@ func (svc *OrderModule) ReceiveGift(param *morder.ReceiveGiftReq) int {
 			return errdef.ORDER_GIFT_HAS_RECEIVED
 		}
 		
-		// 结束时间 > 当前时间 不可领取 赠品已过期
-		if item.EndTm > int(time.Now().Unix()) {
+		// 结束时间 <= 当前时间 不可领取 赠品已过期
+		if item.EndTm <= int(time.Now().Unix()) {
 			log.Log.Errorf("order_trace: gift has expired, orderId:%s", param.OrderId)
 			svc.engine.Rollback()
 			return errdef.ORDER_GIFT_HAS_EXPIRED
