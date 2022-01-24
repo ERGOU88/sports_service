@@ -252,10 +252,10 @@ func (svc *ShopModule) AddProductCart(param *mshop.AddOrUpdateProductCartParam) 
 		}
 		
 		info.CreateAt = int(time.Now().Unix())
-		condition = fmt.Sprintf("product_id=%d AND user_id=%s AND sku_id=%d", info.ProductId, info.UserId, info.SkuId)
+		condition = fmt.Sprintf("product_id=%d AND user_id='%s' AND sku_id=%d", info.ProductId, info.UserId, info.SkuId)
 		cartInfo, err := svc.shop.GetProductCart(condition)
 		if err != nil {
-			log.Log.Errorf("shop_trace: get product cart failm err:%s", err)
+			log.Log.Errorf("shop_trace: get product cart fail err:%s", err)
 			return errdef.SHOP_GET_PRODUCT_CART_FAIL, 0
 		}
 		
