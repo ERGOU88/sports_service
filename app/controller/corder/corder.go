@@ -821,8 +821,8 @@ func (svc *OrderModule) OrderInfo(list []*models.VenuePayOrders) []*morder.Order
 			}
 			
 			for _, item := range records {
-				// 结束时间 > 当前时间 则礼物已过期
-				if item.EndTm > int(time.Now().Unix()) {
+				// 结束时间 <= 当前时间 则礼物已过期
+				if item.EndTm <= int(time.Now().Unix()) {
 					order.GiftStatus = 1
 				}
 			}
