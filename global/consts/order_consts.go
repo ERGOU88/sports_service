@@ -53,9 +53,11 @@ const (
 
 // 1001表示android
 // 1002表示ios
+// 1003表示小程序
 const (
     PLT_TYPE_ANDROID = 1001
     PLT_TYPE_IOS     = 1002
+    PLT_TYPE_APPLET  = 1003
 )
 
 // 支付方式  支付宝 alipay 2 微信 weixin

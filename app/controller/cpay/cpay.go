@@ -52,7 +52,14 @@ func (svc *PayModule) InitiatePayment(param *morder.PayReqParam) (int, interface
 		log.Log.Errorf("pay_trace: user not found, userId:%s", param.UserId)
 		return errdef.USER_NOT_EXISTS, nil
 	}
-
+	
+	ok, err := svc.pay.GetPaymentChannel(param.PayType)
+	if !ok || err != nil {
+		log.Log.Errorf("pay_trace: get payment channel fail, orderId:%s, ok:%v, err:%s", param.OrderId,
+			ok, err)
+		return errdef.PAY_CHANNEL_NOT_EXISTS, nil
+	}
+	
 	length := len(param.OrderId)
 	switch length {
 	// 场馆订单
@@ -106,13 +113,6 @@ func (svc *PayModule) InitiatePayment(param *morder.PayReqParam) (int, interface
 
 // 获取支付参数
 func (svc *PayModule) GetPaymentParams(param *morder.PayReqParam) (int, interface{}) {
-	ok, err := svc.pay.GetPaymentChannel(param.PayType)
-	if !ok || err != nil {
-		log.Log.Errorf("pay_trace: get payment channel fail, orderId:%s, ok:%v, err:%s", param.OrderId,
-			ok, err)
-		return errdef.PAY_CHANNEL_NOT_EXISTS, nil
-	}
-	
 	switch svc.pay.PayChannel.Identifier {
 	case consts.ALIPAY:
 		// 支付宝
