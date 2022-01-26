@@ -428,7 +428,16 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 			return nil, errdef.POST_DETAIL_FAIL
 		}
 	}
-
+	
+	// 获取视频相关统计数据
+	info, err := svc.posting.GetPostStatistic(fmt.Sprint(post.Id))
+	if err == nil && info != nil {
+		resp.BrowseNum = info.BrowseNum
+		resp.CommentNum = info.CommentNum
+		resp.FabulousNum = info.FabulousNum
+		resp.ShareNum = info.ShareNum
+	}
+	
 	if userId == "" {
 		log.Log.Error("post_trace: user no login")
 		return resp, errdef.SUCCESS
@@ -467,15 +476,7 @@ func (svc *PostingModule) GetPostDetail(userId, postId string) (*mposting.PostDe
 			resp.IsLike = likeInfo.Status
 		}
 	}
-	// 获取视频相关统计数据
-	info, err := svc.posting.GetPostStatistic(fmt.Sprint(post.Id))
-	if err == nil && info != nil {
-		resp.BrowseNum = info.BrowseNum
-		resp.CommentNum = info.CommentNum
-		resp.FabulousNum = info.FabulousNum
-		resp.ShareNum = info.ShareNum
-	}
-
+	
 	// 帖子置顶事件
 	redismq.PushTopEventMsg(redismq.NewTopEvent(post.UserId, fmt.Sprint(post.Id), consts.EVENT_SET_TOP_POST))
 	return resp, errdef.SUCCESS
