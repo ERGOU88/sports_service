@@ -504,7 +504,7 @@ func (svc *ShopModule) OrderInfo(item models.Orders) (*mshop.OrderResp, error) {
 			// 订单状态是待支付 且 已过时长 <= 总时差
 			if duration < consts.SHOP_PAYMENT_DURATION {
 				log.Log.Debugf("order_trace: duration:%v", duration)
-				// 剩余支付时长 = 总时长[15分钟] - 已过时长
+				// 剩余支付时长 = 总时长 - 已过时长
 				info.PayDuration = consts.SHOP_PAYMENT_DURATION - duration
 			}
 		}
