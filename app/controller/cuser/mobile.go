@@ -5,7 +5,6 @@ import (
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
-	"sports_service/server/models"
 	"sports_service/server/models/muser"
 	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
@@ -13,7 +12,7 @@ import (
 )
 
 // 手机一键登陆/注册
-func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, *models.User) {
+func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, *muser.User) {
 	//mob := mobTech.NewMobTech()
 	// 校验客户端token 并从mob获取手机号码
 	//mobileNum, err := mob.FreeLogin(param.Token, param.OpToken, param.Operator)
@@ -77,10 +76,8 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 		if err := svc.user.SaveUserToken(svc.user.User.UserId, token); err != nil {
 			log.Log.Errorf("user_trace: save user token err:%s", err)
 		}
-
-		avatar := tencentCloud.BucketURI(svc.user.User.Avatar)
-		svc.user.User.Avatar = string(avatar)
-		return errdef.SUCCESS, token, svc.user.User
+		
+		return errdef.SUCCESS, token, svc.UserInfoResp()
 	}
 
 	// 登陆的时候 检查用户状态
@@ -102,5 +99,5 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 		}
 	}
 
-	return errdef.SUCCESS, token, user
+	return errdef.SUCCESS, token, svc.UserInfoResp()
 }

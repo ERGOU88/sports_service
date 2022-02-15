@@ -108,9 +108,10 @@ func (svc *UserModule) SendSmsCode(params *sms.SendSmsCodeParams) int {
 }
 
 // 短信验证码登陆
-func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string, *models.User) {
+func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string, *muser.User) {
 	if len(params.MobileNum) == 11 && params.MobileNum[0:8] == "18888888" {
-		return svc.RegisterOfficialAccount(params)
+		code, token, _ := svc.RegisterOfficialAccount(params)
+		return code, token, svc.UserInfoResp()
 	}
 
 	// 校验手机号合法性
@@ -166,9 +167,7 @@ func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string
 			log.Log.Errorf("user_trace: save user token err:%s", err)
 		}
 		
-		avatar := tencentCloud.BucketURI(svc.user.User.Avatar)
-		svc.user.User.Avatar = string(avatar)
-		return errdef.SUCCESS, token, svc.user.User
+		return errdef.SUCCESS, token, svc.UserInfoResp()
 
 	}
 
@@ -192,7 +191,7 @@ func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string
 		}
 	}
 
-	return errdef.SUCCESS, token, user
+	return errdef.SUCCESS, token, svc.UserInfoResp()
 }
 
 // todo: 临时注册官方账号 用于app内容填充 后续剔除

@@ -5,7 +5,6 @@ import (
 	"sports_service/server/global/app/errdef"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
-	"sports_service/server/models"
 	"sports_service/server/models/muser"
 	"sports_service/server/tools/tencentCloud"
 	third "sports_service/server/tools/thirdLogin"
@@ -15,7 +14,7 @@ import (
 )
 
 // 微信小程序 登陆/注册
-func (svc *UserModule) AppletLoginOrReg(param *muser.AppletLoginParam) (int, string, *models.User) {
+func (svc *UserModule) AppletLoginOrReg(param *muser.AppletLoginParam) (int, string, *muser.User) {
 	wechat := third.NewWechat()
 	//wxToken, err := svc.user.GetAppletAccessToken()
 	//if err != nil || wxToken == "" {
@@ -99,9 +98,7 @@ func (svc *UserModule) AppletLoginOrReg(param *muser.AppletLoginParam) (int, str
 			log.Log.Errorf("applet_trace: save user token err:%s", err)
 		}
 		
-		avatar := tencentCloud.BucketURI(svc.user.User.Avatar)
-		svc.user.User.Avatar = string(avatar)
-		return errdef.SUCCESS, token, svc.user.User
+		return errdef.SUCCESS, token, svc.UserInfoResp()
 	}
 	
 	has, err := svc.social.HasExistsSocialAccount(consts.TYPE_APPLET, svc.user.User.UserId)
@@ -120,8 +117,6 @@ func (svc *UserModule) AppletLoginOrReg(param *muser.AppletLoginParam) (int, str
 		return errdef.USER_FORBID_STATUS, "", nil
 	}
 	
-	avatar := tencentCloud.BucketURI(svc.user.User.Avatar)
-	svc.user.User.Avatar = string(avatar)
 	// 用户已注册过, 则直接从redis中获取token并返回
 	token, err := svc.user.GetUserToken(svc.user.User.UserId)
 	if err != nil && err == redis.ErrNil {
@@ -133,7 +128,27 @@ func (svc *UserModule) AppletLoginOrReg(param *muser.AppletLoginParam) (int, str
 		}
 	}
 	
-	return errdef.SUCCESS, token, user
+	return errdef.SUCCESS, token, svc.UserInfoResp()
+}
+
+func (svc *UserModule) UserInfoResp() *muser.User {
+	return &muser.User{
+		NickName: svc.user.User.NickName,
+		MobileNum: svc.user.User.MobileNum,
+		UserId: svc.user.User.UserId,
+		Gender: svc.user.User.Gender,
+		Born: svc.user.User.Born,
+		Age: svc.user.User.Age,
+		Avatar: tencentCloud.BucketURI(svc.user.User.Avatar),
+		Status: svc.user.User.Status,
+		LastLoginTime: svc.user.User.LastLoginTime,
+		Signature: svc.user.User.Signature,
+		DeviceType: svc.user.User.DeviceType,
+		DeviceToken: svc.user.User.DeviceToken,
+		AccountType: svc.user.User.AccountType,
+		TxAccid: svc.user.User.TxAccid,
+		TxToken: svc.user.User.TxToken,
+	}
 }
 
 // 绑定微信
