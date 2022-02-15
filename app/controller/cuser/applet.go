@@ -7,6 +7,7 @@ import (
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/muser"
+	"sports_service/server/tools/tencentCloud"
 	third "sports_service/server/tools/thirdLogin"
 	"sports_service/server/util"
 	"strings"
@@ -98,6 +99,8 @@ func (svc *UserModule) AppletLoginOrReg(param *muser.AppletLoginParam) (int, str
 			log.Log.Errorf("applet_trace: save user token err:%s", err)
 		}
 		
+		avatar := tencentCloud.BucketURI(svc.user.User.Avatar)
+		svc.user.User.Avatar = string(avatar)
 		return errdef.SUCCESS, token, svc.user.User
 	}
 	
@@ -117,6 +120,8 @@ func (svc *UserModule) AppletLoginOrReg(param *muser.AppletLoginParam) (int, str
 		return errdef.USER_FORBID_STATUS, "", nil
 	}
 	
+	avatar := tencentCloud.BucketURI(svc.user.User.Avatar)
+	svc.user.User.Avatar = string(avatar)
 	// 用户已注册过, 则直接从redis中获取token并返回
 	token, err := svc.user.GetUserToken(svc.user.User.UserId)
 	if err != nil && err == redis.ErrNil {

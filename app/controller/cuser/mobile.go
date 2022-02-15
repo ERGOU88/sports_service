@@ -78,6 +78,8 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 			log.Log.Errorf("user_trace: save user token err:%s", err)
 		}
 
+		avatar := tencentCloud.BucketURI(svc.user.User.Avatar)
+		svc.user.User.Avatar = string(avatar)
 		return errdef.SUCCESS, token, svc.user.User
 	}
 
@@ -86,7 +88,9 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 		log.Log.Errorf("user_trace: forbid status, userId:%s", user.Status)
 		return errdef.USER_FORBID_STATUS, "", nil
 	}
-
+	
+	avatar := tencentCloud.BucketURI(svc.user.User.Avatar)
+	svc.user.User.Avatar = string(avatar)
 	// 用户已注册过, 则直接从redis中获取token并返回
 	token, err := svc.user.GetUserToken(svc.user.User.UserId)
 	if err != nil && err == redis.ErrNil {

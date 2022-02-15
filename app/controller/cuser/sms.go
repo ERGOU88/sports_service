@@ -9,6 +9,7 @@ import (
 	"sports_service/server/models"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/sms"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"strings"
 	"time"
@@ -164,17 +165,22 @@ func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string
 		if err := svc.user.SaveUserToken(svc.user.User.UserId, token); err != nil {
 			log.Log.Errorf("user_trace: save user token err:%s", err)
 		}
-
+		
+		avatar := tencentCloud.BucketURI(svc.user.User.Avatar)
+		svc.user.User.Avatar = string(avatar)
 		return errdef.SUCCESS, token, svc.user.User
 
 	}
 
+	
 	// 登陆的时候 检查用户状态
 	if !svc.CheckUserStatus(svc.user.User.Status) {
 		log.Log.Errorf("user_trace: forbid status, userId:%s", svc.user.User.UserId)
 		return errdef.USER_FORBID_STATUS, "", nil
 	}
-
+	
+	avatar := tencentCloud.BucketURI(svc.user.User.Avatar)
+	svc.user.User.Avatar = string(avatar)
 	// 用户已注册过, 则直接从redis中获取token并返回
 	token, err := svc.user.GetUserToken(svc.user.User.UserId)
 	if err != nil && err == redis.ErrNil {
