@@ -68,16 +68,18 @@ type OwnSpec struct {
 // 规格信息
 type SpecInfo struct {
 	Group    string    `json:"group"`                       // 规格组名称
-	Params   []struct {                                     // 规格属性
-		Key          string     `json:"key"`                // 属性名称
-		Val          string     `json:"val"`                // 属性值
-		Searchable   int32      `json:"searchable"`         // 是否作为搜索条件  1 是
-		Global       int32      `json:"global"`             // 是否为全局属性 1 是
-		Unit         string     `json:"unit,omitempty"`     // 单位
-		Numerical    int32      `json:"numerical,omitempty"`// 参数是否为数值类型 1是
-		Icon         string     `json:"icon"`               // icon图标
-		Options      []string   `json:"options,omitempty"`  // 参数选项
-	} `json:"params"`
+	Params   []Spec    `json:"params"`
+}
+
+type Spec struct {
+	Key          string     `json:"key"`                // 属性名称
+	Val          string     `json:"val"`                // 属性值
+	Searchable   int32      `json:"searchable"`         // 是否作为搜索条件  1 是
+	Global       int32      `json:"global"`             // 是否为全局属性 1 是
+	Unit         string     `json:"unit,omitempty"`     // 单位
+	Numerical    int32      `json:"numerical,omitempty"`// 参数是否为数值类型 1是
+	Icon         string     `json:"icon"`               // icon图标
+	Options      []string   `json:"options,omitempty"`  // 参数选项
 }
 
 // 特有规格参数选项

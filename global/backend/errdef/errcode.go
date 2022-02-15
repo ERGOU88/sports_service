@@ -95,6 +95,16 @@ const (
 
 	// 18001 - 19000 赛事相关错误码
 	CONTEST_INTEGRAL_RANK_EXISTS = 18001
+	
+	// 19001 - 20000 商城相关错误码
+	SHOP_ADD_CATEGORY_FAIL       = 19001
+	SHOP_EDIT_CATEGORY_FAIL      = 19002
+	SHOP_GET_SERVICE_FAIL        = 19003
+	SHOP_ADD_SERVICE_FAIL        = 19004
+	SHOP_UPDATE_SERVICE_FAIL     = 19005
+	SHOP_ADD_CATEGORY_SPEC_FAIL  = 19006
+	SHOP_EDIT_CATEGORY_SPEC_FAIL = 19007
+	SHOP_DEL_CATEGORY_SPEC_FAIL  = 19008
 )
 
 var MsgFlags = map[int]string{
@@ -183,6 +193,15 @@ var MsgFlags = map[int]string{
 	INFORMATION_DELETE_FAIL:        "删除资讯失败",
 
 	CONTEST_INTEGRAL_RANK_EXISTS:   "选手排行数据已存在",
+	
+	SHOP_ADD_CATEGORY_FAIL:         "添加品类失败",
+	SHOP_EDIT_CATEGORY_FAIL:        "编辑品类失败",
+	SHOP_GET_SERVICE_FAIL:          "获取服务列表失败",
+	SHOP_ADD_SERVICE_FAIL:          "服务添加失败",
+	SHOP_UPDATE_SERVICE_FAIL:       "服务更新失败",
+	SHOP_ADD_CATEGORY_SPEC_FAIL:    "添加分类规格属性失败",
+	SHOP_EDIT_CATEGORY_SPEC_FAIL:   "编辑分类规格属性失败",
+	SHOP_DEL_CATEGORY_SPEC_FAIL:    "删除分类规格属性失败",
 }
 
 func GetMsg(code int) string {
