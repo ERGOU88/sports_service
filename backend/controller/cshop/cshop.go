@@ -42,17 +42,6 @@ func (svc *ShopModule) GetProductList(sortType, keyword string, page, size int) 
 	return errdef.SUCCESS, list
 }
 
-func (svc *ShopModule) GetProductListByCategory(categoryId, sortType string, page, size int) (int, []mshop.ProductSimpleInfo) {
-	offset := (page - 1) * size
-	list, err := svc.shop.GetSpuListByCategory(categoryId, sortType, offset, size)
-	if err != nil {
-		log.Log.Errorf("shop_trace: get spu list by category fail, err:%s", err)
-		return errdef.SHOP_GET_SPU_BY_CATEGORY_FAIL, nil
-	}
-	
-	return errdef.SUCCESS, list
-}
-
 func (svc *ShopModule) GetProductCategoryConf() []*mshop.Category {
 	conf := svc.shop.GetProductCategory()
 	if conf == nil {
@@ -106,6 +95,7 @@ func (svc *ShopModule) UpdateService(info *models.ShopServiceConf) int {
 	return errdef.SUCCESS
 }
 
+// 添加商品分类规格
 func (svc *ShopModule) AddCategorySpec(params *mshop.AddOrEditCategorySpecReq) int {
 	now := int(time.Now().Unix())
 	info := &models.ProductSpecification{}

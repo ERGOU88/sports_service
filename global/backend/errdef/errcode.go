@@ -105,6 +105,7 @@ const (
 	SHOP_ADD_CATEGORY_SPEC_FAIL  = 19006
 	SHOP_EDIT_CATEGORY_SPEC_FAIL = 19007
 	SHOP_DEL_CATEGORY_SPEC_FAIL  = 19008
+	SHOP_GET_ALL_SPU_FAIL        = 19009
 )
 
 var MsgFlags = map[int]string{
@@ -202,6 +203,7 @@ var MsgFlags = map[int]string{
 	SHOP_ADD_CATEGORY_SPEC_FAIL:    "添加分类规格属性失败",
 	SHOP_EDIT_CATEGORY_SPEC_FAIL:   "编辑分类规格属性失败",
 	SHOP_DEL_CATEGORY_SPEC_FAIL:    "删除分类规格属性失败",
+	SHOP_GET_ALL_SPU_FAIL:          "商品列表获取失败",
 }
 
 func GetMsg(code int) string {
