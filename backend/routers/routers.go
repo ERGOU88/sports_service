@@ -3,7 +3,7 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/routers/api/v1/shop"
+	"sports_service/server/backend/routers/api/v1/shop"
 	"sports_service/server/backend/routers/api/v1/contest"
 	"sports_service/server/backend/routers/api/v1/finance"
 	"sports_service/server/backend/routers/api/v1/pub"
