@@ -7,7 +7,7 @@ import (
 
 // 商城模块路由
 func Router(engine *gin.Engine) {
-	api := engine.Group("/api/v1")
+	api := engine.Group("/backend/v1")
 	shop := api.Group("/shop")
 	shop.Use(jwt.JwtAuth())
 	{
