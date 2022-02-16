@@ -5,8 +5,8 @@ import (
 )
 
 type AddOrEditCategorySpecReq struct {
-	CategoryId     int64    `json:"category_id"`
-	SpecInfo       []Spec   `json:"spec_info"`
+	CategoryId     int64        `json:"category_id"`
+	SpecInfo       []SpecInfo   `json:"spec_info"`
 }
 
 func (m *ShopModel) AddProductCategory(info *models.ProductCategory) (int64, error) {

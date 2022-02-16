@@ -11,6 +11,7 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/util"
 	"time"
+	"fmt"
 )
 
 type ShopModule struct {
@@ -31,12 +32,26 @@ func New(c *gin.Context) ShopModule {
 	}
 }
 
-func (svc *ShopModule) GetProductList(sortType, keyword string, page, size int) (int, []mshop.ProductSimpleInfo) {
+func (svc *ShopModule) GetProductList(sortType, keyword string, page, size int) (int, []*mshop.ProductSimpleInfo) {
 	offset := (page - 1) * size
 	list, err := svc.shop.GetAllSpu(sortType, keyword, offset, size)
 	if err != nil {
 		log.Log.Errorf("shop_trace: get all spu fail, err:%s", err)
 		return errdef.SHOP_GET_ALL_SPU_FAIL, nil
+	}
+	
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*mshop.ProductSimpleInfo{}
+	}
+	
+	for _, item := range list {
+		skuList, err := svc.shop.GetProductSkuList(fmt.Sprint(item.Id))
+		if err != nil {
+			log.Log.Errorf("shop_trace: get product sku by spuId fail, spuId:%d, err:%s", item.Id, err)
+			continue
+		}
+		
+		item.SkuNum = len(skuList)
 	}
 	
 	return errdef.SUCCESS, list

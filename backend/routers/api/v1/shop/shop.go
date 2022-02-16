@@ -100,6 +100,11 @@ func AddSpecification(c *gin.Context) {
 		return
 	}
 	
+	if params.CategoryId <= 0 || len(params.SpecInfo) == 0 {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+	
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.AddCategorySpec(params))
 }

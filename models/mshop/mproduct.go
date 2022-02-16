@@ -13,13 +13,14 @@ type ProductSimpleInfo struct {
 	ProductImage   tc.BucketURI `json:"product_image" xorm:"not null default '' comment('商品主图路径') VARCHAR(512)"`
 	Status         int    `json:"status" xorm:"not null default 0 comment('商品状态（0. 正常 1. 下架）') TINYINT(2)"`
 	IsFreeShip     int    `json:"is_free_ship" xorm:"not null default 0 comment('是否免邮 0 免邮') TINYINT(2)"`
-	Introduction   string `json:"introduction" xorm:"not null default '' comment('促销语') VARCHAR(255)"`
+	Introduction   []string `json:"introduction" xorm:"not null default '' comment('促销语') VARCHAR(255)"`
 	Keywords       string `json:"keywords" xorm:"not null default '' comment('关键词') VARCHAR(255)"`
 	Sortorder      int    `json:"sortorder" xorm:"not null default 0 comment('排序') index INT(11)"`
 	VideoUrl       tc.BucketURI `json:"video_url" xorm:"not null default '' comment('视频地址') VARCHAR(512)"`
 	SaleNum        int    `json:"sale_num" xorm:"not null default 0 comment('销量') INT(11)"`
 	CurPrice       int    `json:"cur_price" xorm:"not null default 0 comment('商品价格（分）') INT(10)"`
 	MarketPrice    int    `json:"market_price" xorm:"not null default 0 comment('划线价格（分）') INT(10)"`
+	SkuNum         int    `json:"sku_num"`
 }
 
 type ProductDetailInfo struct {
@@ -78,7 +79,7 @@ type Spec struct {
 	Global       int32      `json:"global"`             // 是否为全局属性 1 是
 	Unit         string     `json:"unit,omitempty"`     // 单位
 	Numerical    int32      `json:"numerical,omitempty"`// 参数是否为数值类型 1是
-	Icon         string     `json:"icon"`               // icon图标
+	Icon         string     `json:"icon,omitempty"`     // icon图标
 	Options      []string   `json:"options,omitempty"`  // 参数选项
 }
 
@@ -95,8 +96,8 @@ const (
 )
 // 通过分类获取spu列表
 // sortType 0 销量倒序 1 销量正序 2 价格倒序 3 价格正序
-func (m *ShopModel) GetSpuListByCategory(categoryId, sortType string, offset, size int) ([]ProductSimpleInfo, error) {
-	var list []ProductSimpleInfo
+func (m *ShopModel) GetSpuListByCategory(categoryId, sortType string, offset, size int) ([]*ProductSimpleInfo, error) {
+	var list []*ProductSimpleInfo
 	sql := "SELECT p.* FROM products AS p LEFT JOIN product_category_related AS pc " +
 		"ON p.id = pc.product_id WHERE pc.category_id = ? AND p.status = 0 AND p.is_delete = 0 ORDER BY "
 
@@ -123,8 +124,8 @@ func (m *ShopModel) GetSpuListByCategory(categoryId, sortType string, offset, si
 
 // 获取所有商品spu
 // sortType 0 销量倒序 1 销量正序 2 价格倒序 3 价格正序
-func (m *ShopModel) GetAllSpu(sortType, keyword string, offset, size int) ([]ProductSimpleInfo, error) {
-	var list []ProductSimpleInfo
+func (m *ShopModel) GetAllSpu(sortType, keyword string, offset, size int) ([]*ProductSimpleInfo, error) {
+	var list []*ProductSimpleInfo
 	engine := m.Engine.Table(&models.Products{})
 	engine.Where("status=0 AND is_delete=0")
 	if keyword != "" {
@@ -166,9 +167,9 @@ func (m *ShopModel) GetRecommendProducts(productId string, limit int) ([]Product
 }
 
 // 获取sku列表
-func (m *ShopModel) GetProductSkuList() ([]models.ProductSku, error) {
+func (m *ShopModel) GetProductSkuList(productId string) ([]models.ProductSku, error) {
 	var list []models.ProductSku
-	if err := m.Engine.Where("status=0").Desc("sortorder").Find(&list); err != nil {
+	if err := m.Engine.Where("status=0 AND product_id=?", productId).Desc("sortorder").Find(&list); err != nil {
 		return list, err
 	}
 

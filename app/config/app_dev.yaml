@@ -56,8 +56,8 @@ appleLinkPath: /data/service/fpv-app-api/config/apple-app-site-association
 certFilePath: /data/service/fpv-app-api/config/apiclient_cert.pem
 keyFilePath: /data/service/fpv-app-api/config/apiclient_key.pem
 pkcs12FilePath: /data/service/fpv-app-api/config/apiclient_cert.p12
-# 分享地址
-shareUrl: https://bluetrans.cn
+# 分享地址 h5域名
+shareUrl: http://10.1.100.229:8080/#
 ## 腾讯im SDKAppID
 #tencentImAppId: 1400570443
 ## 腾讯im 密钥
