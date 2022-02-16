@@ -57,7 +57,7 @@ certFilePath: /data/service/fpv-app-api/config/apiclient_cert.pem
 keyFilePath: /data/service/fpv-app-api/config/apiclient_key.pem
 pkcs12FilePath: /data/service/fpv-app-api/config/apiclient_cert.p12
 # 分享地址 h5域名
-shareUrl: http://10.1.100.229:8080/#
+shareUrl: http://fpv-h5-qa.bluetrans.cn/#
 ## 腾讯im SDKAppID
 #tencentImAppId: 1400570443
 ## 腾讯im 密钥
