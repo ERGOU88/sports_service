@@ -7,6 +7,7 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/backend/errdef"
 	"sports_service/server/global/backend/log"
+	"sports_service/server/global/consts"
 	"sports_service/server/models"
 	"sports_service/server/models/mshop"
 	"sports_service/server/models/muser"
@@ -120,6 +121,15 @@ func (svc *ShopModule) UpdateService(info *models.ShopServiceConf) int {
 	
 	return errdef.SUCCESS
 }
+
+func (svc *ShopModule) DelService(id string) int {
+	if _, err := svc.shop.DelService(id); err != nil {
+		return errdef.SHOP_DEL_SERVICE_FAIL
+	}
+	
+	return errdef.SUCCESS
+}
+
 
 // 添加商品分类规格
 func (svc *ShopModule) AddCategorySpec(params *mshop.AddOrEditCategorySpecReq) int {
@@ -465,6 +475,189 @@ func (svc *ShopModule) UpdateSkuListInfo(params *mshop.AddOrEditProductReq, now 
 			log.Log.Errorf("shop_trace: add related fail, err:%s", err)
 			return errdef.SHOP_ADD_RELATED_FAIL
 		}
+	}
+	
+	return errdef.SUCCESS
+}
+
+// 订单列表
+func (svc *ShopModule) OrderList(reqType, keyword string, page, size int) (int, int64, []*mshop.OrderResp) {
+	condition := svc.GetQueryCondition(reqType, keyword)
+	if condition == "" {
+		return errdef.INVALID_PARAMS, 0, nil
+	}
+	
+	offset := (page - 1) * size
+	list, err := svc.shop.GetOrderList(condition, offset, size)
+	if err != nil {
+		log.Log.Errorf("shop_trace: get order list fail, err:%s", err)
+		return errdef.SHOP_ORDER_LIST_FAIL, 0, nil
+	}
+	
+	if len(list) == 0 {
+		return errdef.SUCCESS, 0, []*mshop.OrderResp{}
+	}
+	
+	count, err := svc.shop.GetOrderTotal(condition)
+	if err != nil {
+		log.Log.Errorf("shop_trace: get order total fail, err:%s", err)
+	}
+	
+	res := make([]*mshop.OrderResp, len(list))
+	for index, item := range list {
+		info, err := svc.OrderInfo(item)
+		if err != nil {
+			log.Log.Errorf("shop_trace: get order info fail, err:%s", err)
+			return errdef.SHOP_ORDER_LIST_FAIL, 0, nil
+		}
+		
+		res[index] = info
+	}
+	
+	
+	return errdef.SUCCESS, count, res
+}
+
+// 订单信息
+func (svc *ShopModule) OrderInfo(item models.Orders) (*mshop.OrderResp, error) {
+	info := &mshop.OrderResp{}
+	if err := util.JsonFast.UnmarshalFromString(item.Extra, &info); err != nil {
+		log.Log.Errorf("shop_trace: unmarshal fail, orderId:%s, err:%s", item.OrderId, err)
+		return nil, err
+	}
+	
+	info.UserId = item.UserId
+	user := svc.user.FindUserByUserid(item.UserId)
+	if user != nil {
+		info.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
+	}
+
+	info.PayDuration = 0
+	info.Status = item.PayStatus
+	// 待支付订单 剩余支付时长
+	if item.PayStatus == consts.SHOP_ORDER_TYPE_WAIT {
+		// 已过时长 =  当前时间戳 - 订单创建时间戳
+		duration := time.Now().Unix() - int64(item.CreateAt)
+		// 订单状态是待支付 且 已过时长 <= 总时差
+		if duration < consts.SHOP_PAYMENT_DURATION {
+			log.Log.Debugf("order_trace: duration:%v", duration)
+			// 剩余支付时长 = 总时长 - 已过时长
+			info.PayDuration = consts.SHOP_PAYMENT_DURATION - duration
+		}
+	}
+	
+	if item.PayStatus == consts.SHOP_ORDER_TYPE_PAID {
+		info.Status = svc.GetDeliveryStatus(item.DeliveryStatus)
+	}
+	
+	info.PayStatus = item.PayStatus
+	info.DeliveryCode = item.DeliveryCode
+	info.DeliveryStatus = item.DeliveryStatus
+	info.DeliveryTelephone = item.DeliveryTelephone
+	info.DeliveryTypeName = item.DeliveryTypeName
+	
+	return info, nil
+}
+
+func (svc *ShopModule) GetDeliveryStatus(deliveryStatus int) int {
+	switch deliveryStatus {
+	case consts.NOT_DELIVERED:
+		return 2
+	case consts.HAS_DELIVERED:
+		return 3
+	case consts.HAS_SIGNED:
+		return 4
+	}
+	
+	return 0
+}
+
+func (svc *ShopModule) GetQueryCondition(reqType, keyword string) string {
+	var condition string
+	switch reqType {
+	// 查看全部订单
+	case "1":
+		condition = "1=1"
+	// 待付款订单
+	case "2":
+		condition = "pay_status=0"
+	// 待收货订单
+	case "3":
+		condition = "pay_status=2 AND delivery_status in(0, 1)"
+	// 已完成订单
+	case "4":
+		condition = "pay_status=2 AND delivery_status=2"
+	default:
+		return "1=1"
+	}
+	
+	if keyword != "" {
+		condition += " AND pay_order_id like '%" + keyword + "%'"
+	}
+	
+	return condition
+}
+
+// 订单确认收货
+func (svc *ShopModule) ConfirmReceipt(param *mshop.ChangeOrderReq) int {
+	order, err := svc.shop.GetOrder(param.OrderId)
+	if err != nil {
+		log.Log.Errorf("shop_trace: order not exists, orderId:%s", param.OrderId)
+		return errdef.SHOP_ORDER_NOT_EXISTS
+	}
+	
+	// 订单 != 支付成功 || 配送状态 != 已配送
+	if order.PayStatus != consts.SHOP_ORDER_TYPE_PAID || order.DeliveryStatus != consts.HAS_DELIVERED {
+		log.Log.Errorf("shop_trace: not allow confirm,orderId:%s, payStatus:%d, deliveryStatus:%d", order.OrderId,
+			order.PayStatus, order.DeliveryStatus)
+		return errdef.SHOP_NOT_ALLOW_CONFIRM
+	}
+	
+	now := int(time.Now().Unix())
+	// 支付状态=已支付 && 配送状态=已配送
+	condition := fmt.Sprintf("order_id='%s' AND pay_status=%d AND delivery_status=1", order.OrderId, consts.SHOP_ORDER_TYPE_PAID)
+	cols := "update_at, sign_time, finish_time, delivery_status"
+	order.UpdateAt = now
+	order.SignTime = now
+	// todo: 暂时已收货 即表示 已完成
+	order.FinishTime = now
+	// 配送状态 修改为 已签收
+	order.DeliveryStatus = consts.HAS_SIGNED
+	if _, err := svc.shop.UpdateOrderInfo(condition, cols, order); err != nil {
+		log.Log.Errorf("shop_trace: update order info fail, orderId:%s, err:%s", order.OrderId, err)
+		return errdef.SHOP_CONFIRM_RECEIPT_FAIL
+	}
+	
+	return errdef.SUCCESS
+}
+
+func (svc *ShopModule) DeliverProduct(param *mshop.DeliverProductReq) int {
+	order, err := svc.shop.GetOrder(param.OrderId)
+	if err != nil {
+		log.Log.Errorf("shop_trace: order not exists, orderId:%s", param.OrderId)
+		return errdef.SHOP_ORDER_NOT_EXISTS
+	}
+	
+	// 订单 != 支付成功 || 配送状态 != 未配送
+	if order.PayStatus != consts.SHOP_ORDER_TYPE_PAID || order.DeliveryStatus != consts.NOT_DELIVERED {
+		log.Log.Errorf("shop_trace: not allow deliver, orderId:%s, payStatus:%d, deliveryStatus:%d", order.OrderId,
+			order.PayStatus, order.DeliveryStatus)
+		return errdef.SHOP_NOT_ALLOW_DELIVER
+	}
+	
+	now := int(time.Now().Unix())
+	// 支付状态=已支付 && 配送状态=已配送
+	condition := fmt.Sprintf("order_id='%s' AND pay_status=%d AND delivery_status=0", order.OrderId, consts.SHOP_ORDER_TYPE_PAID)
+	cols := "update_at, delivery_code, delivery_type_name, delivery_telephone, delivery_status"
+	order.UpdateAt = now
+	order.DeliveryTelephone = param.DeliveryTelephone
+	order.DeliveryTypeName = param.DeliveryTypeName
+	order.DeliveryCode = param.DeliveryCode
+	// 配送状态 修改为 已配送
+	order.DeliveryStatus = consts.HAS_DELIVERED
+	if _, err := svc.shop.UpdateOrderInfo(condition, cols, order); err != nil {
+		log.Log.Errorf("shop_trace: update order info fail, orderId:%s, err:%s", order.OrderId, err)
+		return errdef.SHOP_CONFIRM_RECEIPT_FAIL
 	}
 	
 	return errdef.SUCCESS

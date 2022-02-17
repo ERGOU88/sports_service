@@ -34,6 +34,7 @@ type ProductParam struct {
 type OrderResp struct {
 	ClientIp         string          `json:"client_ip"`              // ip地址
 	UserId           string          `json:"user_id"`
+	MobileNum        string          `json:"mobile_num"`             // 用户电话
 	OrderId          string          `json:"order_id"`               // 订单id
 	IsEnough         bool            `json:"is_enough"`              // 库存标识 是否足够 false 库存不足
 	Total            int             `json:"total"`                  // 总件数
@@ -141,6 +142,11 @@ func (m *ShopModel) GetOrderList(condition string, offset, size int) ([]models.O
 	}
 	
 	return list, nil
+}
+
+// 获取订单总数
+func (m *ShopModel) GetOrderTotal(condition string) (int64, error) {
+	return m.Engine.Where(condition).Count(&models.Orders{})
 }
 
 // 记录需处理支付超时的订单号

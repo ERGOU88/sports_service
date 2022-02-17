@@ -10,6 +10,14 @@ type AddOrEditCategorySpecReq struct {
 	SpecInfo       []SpecInfo   `json:"spec_info"`
 }
 
+// 管理后台发货请求
+type DeliverProductReq struct {
+	OrderId           string          `json:"order_id" binding:"required"`
+	DeliveryTypeName  string          `json:"delivery_type_name" binding:"required"`     // 配送方式名称
+	DeliveryCode      string          `json:"delivery_code" binding:"required"`          // 运单号
+	DeliveryTelephone string          `json:"delivery_telephone" binding:"required"`     // 承运人电话
+}
+
 // 添加/编辑商品 请求参数
 type AddOrEditProductReq struct {
 	Id             int    `json:"id" xorm:"not null pk autoincr comment('商品id') INT(11)"`
@@ -89,6 +97,10 @@ func (m *ShopModel) GetServiceList() ([]models.ShopServiceConf, error) {
 
 func (m *ShopModel) AddService(info *models.ShopServiceConf) (int64, error) {
 	return m.Engine.InsertOne(info)
+}
+
+func (m *ShopModel) DelService(id string) (int64, error) {
+	return m.Engine.Where("id=?", id).Delete(&models.ShopServiceConf{})
 }
 
 func (m *ShopModel) UpdateService(info *models.ShopServiceConf) (int64, error) {

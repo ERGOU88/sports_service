@@ -115,6 +115,12 @@ const (
 	SHOP_UPDATE_SPU_FAIL         = 19016
 	SHOP_UPDATE_SKU_FAIL         = 19017
 	SHOP_UPDATE_SKU_STOCK_FAIL   = 19018
+	SHOP_ORDER_LIST_FAIL         = 19019
+	SHOP_CONFIRM_RECEIPT_FAIL    = 19020
+	SHOP_NOT_ALLOW_CONFIRM       = 19021
+	SHOP_ORDER_NOT_EXISTS        = 19022
+	SHOP_NOT_ALLOW_DELIVER       = 19023
+	SHOP_DEL_SERVICE_FAIL        = 19024
 )
 
 var MsgFlags = map[int]string{
@@ -222,6 +228,12 @@ var MsgFlags = map[int]string{
 	SHOP_UPDATE_SPU_FAIL:           "更新商品spu失败",
 	SHOP_UPDATE_SKU_FAIL:           "更新商品sku失败",
 	SHOP_UPDATE_SKU_STOCK_FAIL:     "更新商品sku库存失败",
+	SHOP_ORDER_LIST_FAIL:           "获取订单列表失败",
+	SHOP_CONFIRM_RECEIPT_FAIL:      "确认收货失败",
+	SHOP_NOT_ALLOW_CONFIRM:         "订单当前状态 不允许确认收货",
+	SHOP_ORDER_NOT_EXISTS:          "订单不存在/获取订单失败",
+	SHOP_NOT_ALLOW_DELIVER:         "订单当前状态 不允许发货",
+	SHOP_DEL_SERVICE_FAIL:          "删除服务失败",
 }
 
 func GetMsg(code int) string {

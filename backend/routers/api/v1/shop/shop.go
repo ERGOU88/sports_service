@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sports_service/server/backend/controller/cshop"
-	"sports_service/server/global/backend/log"
 	"sports_service/server/global/backend/errdef"
+	"sports_service/server/global/backend/log"
 	"sports_service/server/models"
 	"sports_service/server/models/mshop"
 	"sports_service/server/util"
@@ -92,6 +92,19 @@ func EditService(c *gin.Context) {
 	reply.Response(http.StatusOK, svc.UpdateService(params))
 }
 
+func DelService(c *gin.Context) {
+	reply := errdef.New(c)
+	id := c.Query("id")
+	if id == "" {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := cshop.New(c)
+	reply.Response(http.StatusOK, svc.DelService(id))
+}
+
+
 func AddSpecification(c *gin.Context) {
 	reply := errdef.New(c)
 	params := &mshop.AddOrEditCategorySpecReq{}
@@ -176,4 +189,43 @@ func EditProduct(c *gin.Context) {
 	
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.EditProduct(params))
+}
+
+func OrderList(c *gin.Context) {
+	reply := errdef.New(c)
+	reqType := c.Query("req_type")
+	keyword := c.Query("keyword")
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	
+	svc := cshop.New(c)
+	code, total, list := svc.OrderList(reqType, keyword, page, size)
+	reply.Data["total"] = total
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
+
+func DeliverProduct(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mshop.DeliverProductReq{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("shop_trace: invalid param, param:%+v, err:%s", param, err)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := cshop.New(c)
+	reply.Response(http.StatusOK, svc.DeliverProduct(param))
+}
+
+func ConfirmReceipt(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mshop.ChangeOrderReq{}
+	if err := c.BindJSON(param); err != nil {
+		log.Log.Errorf("shop_trace: invalid param, param:%+v, err:%s", param, err)
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := cshop.New(c)
+	reply.Response(http.StatusOK, svc.ConfirmReceipt(param))
 }

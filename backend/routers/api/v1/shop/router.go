@@ -24,6 +24,8 @@ func Router(engine *gin.Engine) {
 		shop.POST("/add/service", AddService)
 		// 编辑服务
 		shop.POST("/edit/service", EditService)
+		// 删除服务
+		shop.DELETE("/del/service", DelService)
 		// 添加分类规格
 		shop.POST("/add/specification", AddSpecification)
 		// 编辑分类规格
@@ -38,5 +40,11 @@ func Router(engine *gin.Engine) {
 		shop.POST("/add/product", AddProduct)
 		// 编辑商品
 		shop.POST("/edit/product", EditProduct)
+		// 订单列表
+		shop.GET("/order/list", OrderList)
+		// 发货
+		shop.POST("/deliver/product", DeliverProduct)
+		// 确认收货
+		shop.POST("/confirm/receipt", ConfirmReceipt)
 	}
 }
