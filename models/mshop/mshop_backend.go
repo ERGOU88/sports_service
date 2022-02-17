@@ -190,7 +190,7 @@ func (m *ShopModel) DelSkuByProductId(productId string) (int64, error) {
 // 管理后台获取spu列表 及总数
 func (m *ShopModel) GetSpuList(sortType, keyword string, offset, size int) ([]*ProductSimpleInfo, int64, error) {
 	var list []*ProductSimpleInfo
-	engine := m.Engine.Table(&models.Products{})
+	engine := m.Engine
 	engine.Where("is_delete=0")
 	if keyword != "" {
 		engine.Where("product_name like '%" + keyword + "%'")
@@ -210,7 +210,7 @@ func (m *ShopModel) GetSpuList(sortType, keyword string, offset, size int) ([]*P
 	}
 	
 	count, _ := engine.Count(&models.Products{})
-	if err := engine.Limit(size, offset).Find(&list); err != nil {
+	if err := engine.Table(&models.Products{}).Limit(size, offset).Find(&list); err != nil {
 		return nil, count, err
 	}
 	
