@@ -19,4 +19,5 @@ type ProductSku struct {
 	CreateAt      int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt      int    `json:"update_at" xorm:"not null default 0 comment('修改时间') INT(11)"`
 	Sortorder     int    `json:"sortorder" xorm:"not null default 0 comment('排序权重') INT(11)"`
+	IsDelete      int    `json:"is_delete" xorm:"not null default 0 comment('是否删除 0 未删除 1 已删除') TINYINT(2)"`
 }

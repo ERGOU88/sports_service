@@ -223,7 +223,7 @@ func (m *ShopModel) GetProductSpu(productId string) (*models.Products, error) {
 // indexes 特有规格属性在商品属性模板中的对应下标组合
 func (m *ShopModel) GetProductDetail(productId, indexes string) (*ProductDetailInfo, error) {
 	sql := "SELECT ps.*, p.introduction, p.specifications, p.spec_template, p.after_service, p.video_url, p.sale_num, p.product_detail FROM product_sku AS ps " +
-	"LEFT JOIN products AS p ON ps.product_id = p.id WHERE ps.status=0 AND ps.product_id=? "
+	"LEFT JOIN products AS p ON ps.product_id = p.id WHERE ps.status=0 AND ps.is_delete=0 AND ps.product_id=? "
 
 	if indexes != "" {
 		sql += fmt.Sprintf(" AND ps.indexes='%s'", indexes)

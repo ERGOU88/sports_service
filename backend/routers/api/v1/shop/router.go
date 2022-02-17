@@ -30,5 +30,13 @@ func Router(engine *gin.Engine) {
 		shop.POST("/edit/specification", EditSpecification)
 		// 删除分类规格
 		shop.DELETE("/del/specification", DelSpecification)
+		// 规格信息
+		shop.GET("/specification/info", SpecificationInfo)
+		// 分类规格列表
+		shop.GET("/specification/list", SpecificationList)
+		// 添加商品
+		shop.POST("/add/product", AddProduct)
+		// 编辑商品
+		shop.POST("/edit/product", EditProduct)
 	}
 }

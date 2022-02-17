@@ -106,6 +106,15 @@ const (
 	SHOP_EDIT_CATEGORY_SPEC_FAIL = 19007
 	SHOP_DEL_CATEGORY_SPEC_FAIL  = 19008
 	SHOP_GET_ALL_SPU_FAIL        = 19009
+	SHOP_ADD_SPU_FAIL            = 19010
+	SHOP_ADD_SKU_FAIL            = 19011
+	SHOP_ADD_SKU_STOCK_FAIL      = 19012
+	SHOP_GET_CATEGORY_FAIL       = 19013
+	SHOP_ADD_RELATED_FAIL        = 19014
+	SHOP_GET_SPEC_FAIL           = 19015
+	SHOP_UPDATE_SPU_FAIL         = 19016
+	SHOP_UPDATE_SKU_FAIL         = 19017
+	SHOP_UPDATE_SKU_STOCK_FAIL   = 19018
 )
 
 var MsgFlags = map[int]string{
@@ -204,6 +213,15 @@ var MsgFlags = map[int]string{
 	SHOP_EDIT_CATEGORY_SPEC_FAIL:   "编辑分类规格属性失败",
 	SHOP_DEL_CATEGORY_SPEC_FAIL:    "删除分类规格属性失败",
 	SHOP_GET_ALL_SPU_FAIL:          "商品列表获取失败",
+	SHOP_ADD_SPU_FAIL:              "添加商品spu失败",
+	SHOP_ADD_SKU_FAIL:              "添加商品sku失败",
+	SHOP_ADD_SKU_STOCK_FAIL:        "添加商品sku库存失败",
+	SHOP_GET_CATEGORY_FAIL:         "获取商品分类失败",
+	SHOP_ADD_RELATED_FAIL:          "添加商品分类关联失败",
+	SHOP_GET_SPEC_FAIL:             "获取规格参数失败",
+	SHOP_UPDATE_SPU_FAIL:           "更新商品spu失败",
+	SHOP_UPDATE_SKU_FAIL:           "更新商品sku失败",
+	SHOP_UPDATE_SKU_STOCK_FAIL:     "更新商品sku库存失败",
 }
 
 func GetMsg(code int) string {

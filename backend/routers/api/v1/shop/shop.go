@@ -133,3 +133,46 @@ func DelSpecification(c *gin.Context) {
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.DelCategorySpec(categoryId))
 }
+
+func SpecificationInfo(c *gin.Context) {
+	reply := errdef.New(c)
+	categoryId := c.Query("category_id")
+	svc := cshop.New(c)
+	info, code := svc.GetCategorySpec(categoryId)
+	reply.Data["detail"] = info
+	reply.Response(http.StatusOK, code)
+}
+
+func SpecificationList(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cshop.New(c)
+	code, list := svc.GetCategorySpecList()
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}
+
+func AddProduct(c *gin.Context) {
+	reply := errdef.New(c)
+	params := &mshop.AddOrEditProductReq{}
+	if err := c.BindJSON(params); err != nil {
+		log.Log.Errorf("shop_trace: invalid param, err:%s, params:%+v", err, params)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := cshop.New(c)
+	reply.Response(http.StatusOK, svc.AddProduct(params))
+}
+
+func EditProduct(c *gin.Context) {
+	reply := errdef.New(c)
+	params := &mshop.AddOrEditProductReq{}
+	if err := c.BindJSON(params); err != nil {
+		log.Log.Errorf("shop_trace: invalid param, err:%s, params:%+v", err, params)
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := cshop.New(c)
+	reply.Response(http.StatusOK, svc.EditProduct(params))
+}
