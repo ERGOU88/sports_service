@@ -21,6 +21,8 @@ type ProductSimpleInfo struct {
 	CurPrice       int    `json:"cur_price" xorm:"not null default 0 comment('商品价格（分）') INT(10)"`
 	MarketPrice    int    `json:"market_price" xorm:"not null default 0 comment('划线价格（分）') INT(10)"`
 	SkuNum         int    `json:"sku_num"`
+	CategoryId     int    `json:"category_id"`
+	CategoryName   string `json:"category_name"`
 }
 
 type ProductDetailInfo struct {

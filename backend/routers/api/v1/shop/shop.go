@@ -19,8 +19,9 @@ func ProductList(c *gin.Context) {
 	keyword := c.Query("keyword")
 	
 	svc := cshop.New(c)
-    code, list := svc.GetProductList(sortType, keyword, page, size)
+    code, count, list := svc.GetProductList(sortType, keyword, page, size)
 	reply.Data["list"] = list
+	reply.Data["total"] = count
 	reply.Response(http.StatusOK, code)
 }
 

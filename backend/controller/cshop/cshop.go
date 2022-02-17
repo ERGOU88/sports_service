@@ -32,16 +32,16 @@ func New(c *gin.Context) ShopModule {
 	}
 }
 
-func (svc *ShopModule) GetProductList(sortType, keyword string, page, size int) (int, []*mshop.ProductSimpleInfo) {
+func (svc *ShopModule) GetProductList(sortType, keyword string, page, size int) (int, int64, []*mshop.ProductSimpleInfo) {
 	offset := (page - 1) * size
-	list, err := svc.shop.GetAllSpu(sortType, keyword, offset, size)
+	list, count, err := svc.shop.GetSpuList(sortType, keyword, offset, size)
 	if err != nil {
 		log.Log.Errorf("shop_trace: get all spu fail, err:%s", err)
-		return errdef.SHOP_GET_ALL_SPU_FAIL, nil
+		return errdef.SHOP_GET_ALL_SPU_FAIL, count, nil
 	}
 	
 	if len(list) == 0 {
-		return errdef.SUCCESS, []*mshop.ProductSimpleInfo{}
+		return errdef.SUCCESS, count, []*mshop.ProductSimpleInfo{}
 	}
 	
 	for _, item := range list {
@@ -52,9 +52,20 @@ func (svc *ShopModule) GetProductList(sortType, keyword string, page, size int) 
 		}
 		
 		item.SkuNum = len(skuList)
+		condition := fmt.Sprintf("product_id=%d", item.Id)
+		related, err := svc.shop.GetProductCategoryRelated(condition)
+		if related != nil && err == nil {
+			item.CategoryId = related.CategoryId
+			item.CategoryName = related.CategoryName
+		}
 	}
 	
-	return errdef.SUCCESS, list
+	return errdef.SUCCESS, count, list
+}
+
+// 获取spu总数
+func (svc *ShopModule) GetSpuTotal() {
+
 }
 
 func (svc *ShopModule) GetProductCategoryConf() []*mshop.Category {
@@ -436,7 +447,8 @@ func (svc *ShopModule) UpdateSkuListInfo(params *mshop.AddOrEditProductReq, now 
 	}
 	
 	
-	relatedInfo, err := svc.shop.GetProductCategoryRelated(fmt.Sprint(params.Id), fmt.Sprint(params.CategoryId))
+	condition := fmt.Sprintf("product_id=%d AND category_id=%d", params.Id, params.CategoryId)
+	relatedInfo, err := svc.shop.GetProductCategoryRelated(condition)
 	if err != nil {
 		log.Log.Errorf("shop_trace: get product category related fail, err:%s", err)
 	}

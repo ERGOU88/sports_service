@@ -168,9 +168,9 @@ func (m *ShopModel) DelProductCategoryRelated(productId string) (int64, error) {
 	return m.Engine.Where("product_id=?", productId).Update(&models.ProductCategoryRelated{Status: 1})
 }
 
-func (m *ShopModel) GetProductCategoryRelated(productId, categoryId string) (*models.ProductCategoryRelated, error) {
+func (m *ShopModel) GetProductCategoryRelated(condition string) (*models.ProductCategoryRelated, error) {
 	var info *models.ProductCategoryRelated
-	ok, err := m.Engine.Where("product_id=? AND category_id=?", productId, categoryId).Get(info)
+	ok, err := m.Engine.Where(condition).Get(info)
 	if err != nil {
 		return nil, err
 	}
@@ -185,4 +185,38 @@ func (m *ShopModel) GetProductCategoryRelated(productId, categoryId string) (*mo
 // 软删除废弃的sku
 func (m *ShopModel) DelSkuByProductId(productId string) (int64, error) {
 	return m.Engine.Where("product_id=?", productId).Update(&models.ProductSku{IsDelete: 1})
+}
+
+// 管理后台获取spu列表 及总数
+func (m *ShopModel) GetSpuList(sortType, keyword string, offset, size int) ([]*ProductSimpleInfo, int64, error) {
+	var list []*ProductSimpleInfo
+	engine := m.Engine.Table(&models.Products{})
+	engine.Where("is_delete=0")
+	if keyword != "" {
+		engine.Where("product_name like '%" + keyword + "%'")
+	}
+	
+	switch sortType {
+	case "0":
+		engine.OrderBy("sale_num DESC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
+	case "1":
+		engine.OrderBy("sale_num ASC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
+	case "2":
+		engine.OrderBy("cur_price DESC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
+	case "3":
+		engine.OrderBy("cur_price ASC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
+	default:
+		engine.OrderBy("sale_num DESC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
+	}
+	
+	count, _ := engine.Count(&models.Products{})
+	if err := engine.Limit(size, offset).Find(&list); err != nil {
+		return nil, count, err
+	}
+	
+	return list, count, nil
+}
+
+func (m *ShopModel) GetSpuTotal() (int64, error) {
+	return m.Engine.Count(&models.Products{})
 }
