@@ -646,7 +646,7 @@ func (svc *ShopModule) DeliverProduct(param *mshop.DeliverProductReq) int {
 	}
 	
 	now := int(time.Now().Unix())
-	// 支付状态=已支付 && 配送状态=已配送
+	// 支付状态=已支付 && 配送状态=未配送
 	condition := fmt.Sprintf("order_id='%s' AND pay_status=%d AND delivery_status=0", order.OrderId, consts.SHOP_ORDER_TYPE_PAID)
 	cols := "update_at, delivery_code, delivery_type_name, delivery_telephone, delivery_status"
 	order.UpdateAt = now
