@@ -121,6 +121,7 @@ const (
 	SHOP_ORDER_NOT_EXISTS        = 19022
 	SHOP_NOT_ALLOW_DELIVER       = 19023
 	SHOP_DEL_SERVICE_FAIL        = 19024
+	SHOP_ADD_PRODUCT_SVC_FAIL    = 19025
 )
 
 var MsgFlags = map[int]string{
@@ -234,6 +235,7 @@ var MsgFlags = map[int]string{
 	SHOP_ORDER_NOT_EXISTS:          "订单不存在/获取订单失败",
 	SHOP_NOT_ALLOW_DELIVER:         "订单当前状态 不允许发货",
 	SHOP_DEL_SERVICE_FAIL:          "删除服务失败",
+	SHOP_ADD_PRODUCT_SVC_FAIL:      "添加商品服务失败",
 }
 
 func GetMsg(code int) string {

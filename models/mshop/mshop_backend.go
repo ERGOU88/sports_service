@@ -38,7 +38,7 @@ type AddOrEditProductReq struct {
 	IsCream        int    `json:"is_cream" xorm:"not null default 0 comment('是否精华（0: 不是 1: 是）') TINYINT(1)"`
 	Specifications []*SpecInfo     `json:"specifications" xorm:"not null default '' comment('全部规格参数数据') VARCHAR(3000)"`
 	SpecTemplate   []*SpecTemplate  `json:"spec_template" xorm:"not null default '' comment('特有规格参数及可选值信息，json格式') VARCHAR(1000)"`
-	AfterService   []string `json:"after_service" xorm:"default '' comment('售后服务') VARCHAR(1000)"`
+	AfterService   []int64 `json:"after_service" xorm:"default '' comment('售后服务') VARCHAR(1000)"`
 	CreateAt       int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt       int    `json:"update_at" xorm:"not null default 0 comment('修改时间') INT(11)"`
 	SkuList        []*ProductSkuInfo   `json:"sku_list"`
@@ -75,7 +75,7 @@ type CategorySpecInfo struct {
 	CategoryId        int64         `json:"category_id"`
 	CreateAt          int64         `json:"create_at"`
 	UpdateAt          int64         `json:"update_at"`
-	CategoryName      string        `json:"category_name"`
+	CategoryName      string        `json:"category_name" xorm:"-"`
 }
 
 
@@ -232,4 +232,14 @@ func (m *ShopModel) GetSpuList(sortType, keyword string, offset, size int) ([]*P
 
 func (m *ShopModel) GetSpuTotal() (int64, error) {
 	return m.Engine.Count(&models.Products{})
+}
+
+// 添加商品服务
+func (m *ShopModel) AddProductService(list []*models.ProductService) (int64, error) {
+	return m.Engine.InsertMulti(list)
+}
+
+// 删除商品服务
+func (m *ShopModel) DelProductService(productId string) (int64, error) {
+	return m.Engine.Where("product_id=?", productId).Delete(&models.ProductService{})
 }

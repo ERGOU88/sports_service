@@ -221,7 +221,7 @@ func (svc *ShopModule) AddProduct(params *mshop.AddOrEditProductReq) int {
 	introduction, _ := util.JsonFast.MarshalToString(params.Introduction)
 	globalSpec, _ := util.JsonFast.MarshalToString(params.Specifications)
 	spec, _ := util.JsonFast.MarshalToString(params.SpecTemplate)
-	service, _ := util.JsonFast.MarshalToString(params.AfterService)
+	//service, _ := util.JsonFast.MarshalToString(params.AfterService)
 	now := int(time.Now().Unix())
 	spu := &models.Products{
 		ProductName:  params.ProductName,
@@ -241,7 +241,7 @@ func (svc *ShopModule) AddProduct(params *mshop.AddOrEditProductReq) int {
 		IsCream: params.IsCream,
 		Specifications: globalSpec,
 		SpecTemplate: spec,
-		AfterService: service,
+		//AfterService: service,
 		CreateAt: now,
 		UpdateAt: now,
 	}
@@ -267,6 +267,24 @@ func (svc *ShopModule) AddProduct(params *mshop.AddOrEditProductReq) int {
 	if code != errdef.SUCCESS {
 		svc.engine.Rollback()
 		return code
+	}
+	
+	if len(params.AfterService) > 0 {
+		service := make([]*models.ProductService, len(params.AfterService))
+		for index, id := range params.AfterService {
+			info := &models.ProductService{
+				ProductId: spu.Id,
+				ServiceId: id,
+			}
+			
+			service[index] = info
+		}
+		
+		if _, err := svc.shop.AddProductService(service); err != nil {
+			log.Log.Errorf("shop_trace: add product service fail, err:%s", err)
+			svc.engine.Rollback()
+			return errdef.SHOP_ADD_PRODUCT_SVC_FAIL
+		}
 	}
 	
 	svc.engine.Commit()
@@ -343,7 +361,6 @@ func (svc *ShopModule) EditProduct(params *mshop.AddOrEditProductReq) int {
 	introduction, _ := util.JsonFast.MarshalToString(params.Introduction)
 	globalSpec, _ := util.JsonFast.MarshalToString(params.Specifications)
 	spec, _ := util.JsonFast.MarshalToString(params.SpecTemplate)
-	service, _ := util.JsonFast.MarshalToString(params.AfterService)
 	now := int(time.Now().Unix())
 	spu := &models.Products{
 		Id: params.Id,
@@ -364,7 +381,6 @@ func (svc *ShopModule) EditProduct(params *mshop.AddOrEditProductReq) int {
 		IsCream: params.IsCream,
 		Specifications: globalSpec,
 		SpecTemplate: spec,
-		AfterService: service,
 		CreateAt: now,
 		UpdateAt: now,
 	}
@@ -377,6 +393,30 @@ func (svc *ShopModule) EditProduct(params *mshop.AddOrEditProductReq) int {
 		log.Log.Errorf("shop_trace: update product spu fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.SHOP_UPDATE_SPU_FAIL
+	}
+	
+	if len(params.AfterService) > 0 {
+		service := make([]*models.ProductService, len(params.AfterService))
+		for index, id := range params.AfterService {
+			info := &models.ProductService{
+				ProductId: spu.Id,
+				ServiceId: id,
+			}
+			
+			service[index] = info
+		}
+		
+		if _, err := svc.shop.DelProductService(fmt.Sprint(params.Id)); err != nil {
+			log.Log.Errorf("shop_trace: del product service fail, err:%s", err)
+			svc.engine.Rollback()
+			return errdef.SHOP_ADD_PRODUCT_SVC_FAIL
+		}
+		
+		if _, err := svc.shop.AddProductService(service); err != nil {
+			log.Log.Errorf("shop_trace: add product service fail, err:%s", err)
+			svc.engine.Rollback()
+			return errdef.SHOP_ADD_PRODUCT_SVC_FAIL
+		}
 	}
 	
 	category := svc.shop.GetProductCategoryInfoById(fmt.Sprint(params.CategoryId))
