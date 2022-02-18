@@ -43,7 +43,7 @@ type ProductDetailInfo struct {
 	HasActivities   int32           `json:"has_activities"`         // 1 有活动
 	ProductDetail   []tc.BucketURI  `json:"product_detail"`         // 商品详情 长图/描述 多张
 	OwnSpec         []OwnSpec       `json:"own_spec"`               // 商品实体的特有规格参数
-	AfterService    []AfterService  `json:"after_service"`          // 服务
+	AfterService    []*AfterService `json:"after_service"`          // 服务
 	Specifications  []SpecInfo      `json:"specifications"`         // 全部规格参数
 	SpecTemplate    []SpecTemplate  `json:"spec_template"`          // 特有规格参数
 	Indexes         string          `json:"indexes"`                // 特有规格属性在商品属性模板中的对应下标组合
@@ -57,6 +57,7 @@ type ProductDetailInfo struct {
 }
 
 type AfterService struct {
+	Id         int64           `json:"id"`
 	Service    string          `json:"service"`    // 服务名称
 	Icon       tc.BucketURI    `json:"icon"`       // 图标
 	Describe   string          `json:"describe"`   // 描述
@@ -224,7 +225,7 @@ func (m *ShopModel) GetProductSpu(productId string) (*models.Products, error) {
 
 // indexes 特有规格属性在商品属性模板中的对应下标组合
 func (m *ShopModel) GetProductDetail(productId, indexes string) (*ProductDetailInfo, error) {
-	sql := "SELECT ps.*, p.introduction, p.specifications, p.spec_template, p.after_service, p.video_url, p.sale_num, p.product_detail FROM product_sku AS ps " +
+	sql := "SELECT ps.*, p.introduction, p.specifications, p.spec_template, p.video_url, p.sale_num, p.product_detail FROM product_sku AS ps " +
 	"LEFT JOIN products AS p ON ps.product_id = p.id WHERE ps.status=0 AND ps.is_delete=0 AND ps.product_id=? "
 
 	if indexes != "" {
@@ -244,6 +245,20 @@ func (m *ShopModel) GetProductDetail(productId, indexes string) (*ProductDetailI
 	}
 
 	return detail, nil
+}
+
+const (
+	GET_PRODUCT_SERVICE_INFO = "SELECT svc.service, svc.id, svc.icon, svc.describe FROM shop_service_conf AS svc " +
+		"LEFT JOIN product_service AS ps ON svc.id=ps.service_id WHERE product_id=?"
+)
+// 获取商品服务信息
+func (m *ShopModel) GetProductServiceInfo(productId string) ([]*AfterService, error) {
+	var list []*AfterService
+	if err := m.Engine.SQL(GET_PRODUCT_SERVICE_INFO, productId).Find(&list); err != nil {
+		return nil, err
+	}
+	
+	return list, nil
 }
 
 // 获取商品sku库存

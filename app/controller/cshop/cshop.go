@@ -136,6 +136,14 @@ func (svc *ShopModule) GetProductDetail(productId, indexes, userId string) (int,
 		detail.OwnSpec = make([]mshop.OwnSpec, 0)
 	}
 	
+	services, err := svc.shop.GetProductServiceInfo(fmt.Sprint(detail.ProductId))
+	if services != nil && err == nil {
+		detail.AfterService = services
+	} else {
+		log.Log.Errorf("shop_trace: get product service fail, err:%s", err)
+		detail.AfterService = []*mshop.AfterService{}
+	}
+	
 	if userId != "" {
 		count, err := svc.shop.GetProductCartNum(userId)
 		if err != nil {
