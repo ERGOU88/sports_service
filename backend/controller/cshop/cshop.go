@@ -123,10 +123,23 @@ func (svc *ShopModule) UpdateService(info *models.ShopServiceConf) int {
 }
 
 func (svc *ShopModule) DelService(id string) int {
+	if err := svc.engine.Begin(); err != nil {
+		return errdef.ERROR
+	}
+	
 	if _, err := svc.shop.DelService(id); err != nil {
+		svc.engine.Rollback()
 		return errdef.SHOP_DEL_SERVICE_FAIL
 	}
 	
+	condition := fmt.Sprintf("service_id=%s", id)
+	if _, err := svc.shop.DelProductService(condition); err != nil {
+		log.Log.Errorf("shop_trace: del product service fail, id:%s, err:%s", id, err)
+		svc.engine.Rollback()
+		return errdef.SHOP_DEL_SERVICE_FAIL
+	}
+	
+	svc.engine.Commit()
 	return errdef.SUCCESS
 }
 
@@ -406,7 +419,8 @@ func (svc *ShopModule) EditProduct(params *mshop.AddOrEditProductReq) int {
 			service[index] = info
 		}
 		
-		if _, err := svc.shop.DelProductService(fmt.Sprint(params.Id)); err != nil {
+		condition := fmt.Sprintf("product_id=%d", params.Id)
+		if _, err := svc.shop.DelProductService(condition); err != nil {
 			log.Log.Errorf("shop_trace: del product service fail, err:%s", err)
 			svc.engine.Rollback()
 			return errdef.SHOP_ADD_PRODUCT_SVC_FAIL

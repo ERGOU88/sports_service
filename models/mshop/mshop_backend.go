@@ -240,6 +240,6 @@ func (m *ShopModel) AddProductService(list []*models.ProductService) (int64, err
 }
 
 // 删除商品服务
-func (m *ShopModel) DelProductService(productId string) (int64, error) {
-	return m.Engine.Where("product_id=?", productId).Delete(&models.ProductService{})
+func (m *ShopModel) DelProductService(condition string) (int64, error) {
+	return m.Engine.Where(condition).Delete(&models.ProductService{})
 }
