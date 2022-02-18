@@ -202,6 +202,13 @@ func (svc *ShopModule) GetCategorySpecList() (int, []*mshop.CategorySpecInfo) {
 		return errdef.SUCCESS, []*mshop.CategorySpecInfo{}
 	}
 	
+	for _, item := range list {
+		category := svc.shop.GetProductCategoryInfoById(fmt.Sprint(item.CategoryId))
+		if category != nil {
+			item.CategoryName = category.CategoryName
+		}
+	}
+	
 	return errdef.SUCCESS, list
 }
 
