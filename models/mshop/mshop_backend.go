@@ -3,6 +3,7 @@ package mshop
 import (
 	"sports_service/server/models"
 	"errors"
+	"sports_service/server/tools/tencentCloud"
 )
 
 type AddOrEditCategorySpecReq struct {
@@ -50,9 +51,9 @@ type ProductSkuInfo struct {
 	Id            int    `json:"id" xorm:"not null pk autoincr comment('sku id') INT(11)"`
 	ProductId     int64  `json:"product_id" xorm:"not null comment('商品id') index BIGINT(20)"`
 	Title         string `json:"title" xorm:"not null comment('商品标题') VARCHAR(255)"`
-	SkuImage      string `json:"sku_image" xorm:"not null default '' comment('sku主图') VARCHAR(255)"`
+	SkuImage      tencentCloud.BucketURI `json:"sku_image" xorm:"not null default '' comment('sku主图') VARCHAR(255)"`
 	SkuNo         string `json:"sku_no" xorm:"not null default '' comment('商品sku编码') VARCHAR(255)"`
-	Images        []string `json:"images" xorm:"default '' comment('sku图片[多张]') VARCHAR(1000)"`
+	Images        []tencentCloud.BucketURI `json:"images" xorm:"default '' comment('sku图片[多张]') VARCHAR(1000)"`
 	CurPrice      int    `json:"cur_price" xorm:"not null default 0 comment('商品价格（分）') INT(10)"`
 	MarketPrice   int    `json:"market_price" xorm:"not null default 0 comment('划线价格（分）') INT(10)"`
 	IsFreeShip    int    `json:"is_free_ship" xorm:"not null default 0 comment('是否免邮 0 免邮') TINYINT(2)"`
@@ -68,6 +69,34 @@ type ProductSkuInfo struct {
 	Stock         int    `json:"stock"`
 	MaxBuy        int    `json:"max_buy"`
  	MinBuy        int    `json:"min_buy"`
+}
+
+// 管理后台商品详情
+type ProductDetail struct {
+	Id             int    `json:"id" xorm:"not null pk autoincr comment('商品id') INT(11)"`
+	ProductName    string `json:"product_name" xorm:"not null default '' comment('商品名称') VARCHAR(255)"`
+	ProductImage   tencentCloud.BucketURI `json:"product_image" xorm:"not null default '' comment('商品主图路径') VARCHAR(512)"`
+	ProductDetail  []tencentCloud.BucketURI `json:"product_detail" xorm:"comment('商品详情') TEXT"`
+	Status         int    `json:"status" xorm:"not null default 1 comment('商品状态（0. 正常 1. 下架）') TINYINT(2)"`
+	IsFreeShip     int    `json:"is_free_ship" xorm:"not null default 0 comment('是否免邮 0 免邮') TINYINT(2)"`
+	IsDelete       int    `json:"is_delete" xorm:"not null default 0 comment('是否已经删除') index TINYINT(4)"`
+	Introduction   []string `json:"introduction" xorm:"not null default '' comment('促销语') VARCHAR(255)"`
+	Keywords       string `json:"keywords" xorm:"not null default '' comment('关键词') VARCHAR(255)"`
+	Sortorder      int    `json:"sortorder" xorm:"not null default 0 comment('排序') index INT(11)"`
+	VideoUrl       tencentCloud.BucketURI `json:"video_url" xorm:"not null default '' comment('视频地址') VARCHAR(512)"`
+	CurPrice       int    `json:"cur_price" xorm:"not null default 0 comment('商品价格（分）') INT(10)"`
+	MarketPrice    int    `json:"market_price" xorm:"not null default 0 comment('划线价格（分）') INT(10)"`
+	IsRecommend    int    `json:"is_recommend" xorm:"not null default 0 comment('推荐（0：不推荐；1：推荐）') TINYINT(1)"`
+	IsTop          int    `json:"is_top" xorm:"not null default 0 comment('置顶（0：不置顶；1：置顶；）') TINYINT(1)"`
+	IsCream        int    `json:"is_cream" xorm:"not null default 0 comment('是否精华（0: 不是 1: 是）') TINYINT(1)"`
+	Specifications []*SpecInfo     `json:"specifications" xorm:"not null default '' comment('全部规格参数数据') VARCHAR(3000)"`
+	SpecTemplate   []*SpecTemplate  `json:"spec_template" xorm:"not null default '' comment('特有规格参数及可选值信息，json格式') VARCHAR(1000)"`
+	AfterService   []*AfterService `json:"after_service" xorm:"default '' comment('售后服务') VARCHAR(1000)"`
+	CreateAt       int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
+	UpdateAt       int    `json:"update_at" xorm:"not null default 0 comment('修改时间') INT(11)"`
+	SkuList        []*ProductSkuInfo   `json:"sku_list" xorm:"-"`
+	CategoryId     int    `json:"category_id" xorm:"-"`
+	CategoryName   string `json:"category_name" xorm:"-"`
 }
 
 type CategorySpecInfo struct {
@@ -182,7 +211,7 @@ func (m *ShopModel) DelProductCategoryRelated(productId string) (int64, error) {
 }
 
 func (m *ShopModel) GetProductCategoryRelated(condition string) (*models.ProductCategoryRelated, error) {
-	var info *models.ProductCategoryRelated
+	info := &models.ProductCategoryRelated{}
 	ok, err := m.Engine.Where(condition).Get(info)
 	if err != nil {
 		return nil, err
@@ -242,4 +271,20 @@ func (m *ShopModel) AddProductService(list []*models.ProductService) (int64, err
 // 删除商品服务
 func (m *ShopModel) DelProductService(condition string) (int64, error) {
 	return m.Engine.Where(condition).Delete(&models.ProductService{})
+}
+
+// 管理后台获取商品spu
+func (m *ShopModel) GetProductById(productId string) (*ProductDetail, error) {
+	spu := &ProductDetail{}
+	ok, err := m.Engine.Table(&models.Products{}).Where("id=?", productId).Get(spu)
+	if !ok || err != nil {
+		return nil, err
+	}
+	
+	if !ok {
+		return nil, errors.New("spu not found")
+	}
+	
+	return spu, nil
+	
 }

@@ -143,6 +143,67 @@ func (svc *ShopModule) DelService(id string) int {
 	return errdef.SUCCESS
 }
 
+// 商品详情 获取商品实体信息
+func (svc *ShopModule) GetProductDetail(productId string) (int, *mshop.ProductDetail) {
+	detail, err := svc.shop.GetProductById(productId)
+	if err != nil {
+		log.Log.Errorf("shop_trace: get product spu fail, productId:%s, err:%s", productId, err)
+		return errdef.SHOP_PRODUCT_SPU_FAIL, nil
+	}
+	
+	condition := fmt.Sprintf("product_id=%s", productId)
+	related, err := svc.shop.GetProductCategoryRelated(condition)
+	if related != nil && err == nil {
+		detail.CategoryId = related.CategoryId
+		detail.CategoryName = related.CategoryName
+	} else {
+		log.Log.Errorf("shop_trace: get product category related fail, err:%s", err)
+	}
+	
+	skuList, err := svc.shop.GetProductSkuList(fmt.Sprint(detail.Id))
+	if err != nil {
+		log.Log.Errorf("shop_trace: get product sku by spuId fail, spuId:%d, err:%s", detail.Id, err)
+		return errdef.SHOP_PRODUCT_SKU_FAIL, nil
+	}
+	
+	if skuList != nil {
+		detail.SkuList = skuList
+		for _, item := range detail.SkuList {
+			stockInfo, err := svc.shop.GetProductSkuStock(fmt.Sprint(detail.Id))
+			if err == nil {
+				item.Stock = stockInfo.Stock
+				item.MinBuy = stockInfo.MinBuy
+				item.MaxBuy = stockInfo.MaxBuy
+			}
+			
+			if item.OwnSpec == nil {
+				item.OwnSpec = make([]*mshop.OwnSpec, 0)
+			}
+		}
+		
+	} else {
+		detail.SkuList = make([]*mshop.ProductSkuInfo, 0)
+	}
+	
+	if detail.Specifications == nil {
+		detail.Specifications = make([]*mshop.SpecInfo, 0)
+	}
+	
+	if detail.SpecTemplate == nil {
+		detail.SpecTemplate = make([]*mshop.SpecTemplate, 0)
+	}
+	
+	services, err := svc.shop.GetProductServiceInfo(fmt.Sprint(detail.Id))
+	if services != nil && err == nil {
+		detail.AfterService = services
+	} else {
+		log.Log.Errorf("shop_trace: get product service fail, err:%s", err)
+		detail.AfterService = []*mshop.AfterService{}
+	}
+	
+	return errdef.SUCCESS, detail
+}
+
 
 // 添加商品分类规格
 func (svc *ShopModule) AddCategorySpec(params *mshop.AddOrEditCategorySpecReq) int {
@@ -313,7 +374,7 @@ func (svc *ShopModule) AddSkuListInfo(params *mshop.AddOrEditProductReq, product
 		sku := &models.ProductSku{
 			ProductId: int64(productId),
 			Title: item.Title,
-			SkuImage: item.SkuImage,
+			SkuImage: string(item.SkuImage),
 			SkuNo: item.SkuNo,
 			Images: images,
 			CurPrice: item.CurPrice,
@@ -483,7 +544,7 @@ func (svc *ShopModule) UpdateSkuListInfo(params *mshop.AddOrEditProductReq, now 
 		sku := &models.ProductSku{
 			ProductId: int64(params.Id),
 			Title: item.Title,
-			SkuImage: item.SkuImage,
+			SkuImage: string(item.SkuImage),
 			SkuNo: item.SkuNo,
 			Images: images,
 			CurPrice: item.CurPrice,

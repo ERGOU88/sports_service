@@ -170,9 +170,9 @@ func (m *ShopModel) GetRecommendProducts(productId string, limit int) ([]Product
 }
 
 // 获取sku列表
-func (m *ShopModel) GetProductSkuList(productId string) ([]models.ProductSku, error) {
-	var list []models.ProductSku
-	if err := m.Engine.Where("product_id=?", productId).Desc("sortorder").Find(&list); err != nil {
+func (m *ShopModel) GetProductSkuList(productId string) ([]*ProductSkuInfo, error) {
+	var list []*ProductSkuInfo
+	if err := m.Engine.Table(&models.ProductSku{}).Where("product_id=?", productId).Desc("sortorder").Find(&list); err != nil {
 		return list, err
 	}
 

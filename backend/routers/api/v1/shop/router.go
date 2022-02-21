@@ -14,6 +14,8 @@ func Router(engine *gin.Engine) {
 		shop.GET("/product/category", ProductCategory)
 		// 商品列表
 		shop.GET("/product/list", ProductList)
+		// 商品详情
+		shop.GET("/product/detail", ProductDetail)
 		// 添加分类
 		shop.POST("/add/category", AddCategory)
 		// 编辑分类

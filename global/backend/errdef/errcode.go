@@ -122,6 +122,8 @@ const (
 	SHOP_NOT_ALLOW_DELIVER       = 19023
 	SHOP_DEL_SERVICE_FAIL        = 19024
 	SHOP_ADD_PRODUCT_SVC_FAIL    = 19025
+	SHOP_PRODUCT_SPU_FAIL        = 19026
+	SHOP_PRODUCT_SKU_FAIL        = 19027
 )
 
 var MsgFlags = map[int]string{
@@ -236,6 +238,8 @@ var MsgFlags = map[int]string{
 	SHOP_NOT_ALLOW_DELIVER:         "订单当前状态 不允许发货",
 	SHOP_DEL_SERVICE_FAIL:          "删除服务失败",
 	SHOP_ADD_PRODUCT_SVC_FAIL:      "添加商品服务失败",
+	SHOP_PRODUCT_SPU_FAIL:          "商品spu信息获取失败",
+	SHOP_PRODUCT_SKU_FAIL:          "商品sku信息获取失败",
 }
 
 func GetMsg(code int) string {

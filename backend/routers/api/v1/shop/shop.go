@@ -25,6 +25,15 @@ func ProductList(c *gin.Context) {
 	reply.Response(http.StatusOK, code)
 }
 
+func ProductDetail(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := cshop.New(c)
+	id := c.Query("id")
+	code, detail := svc.GetProductDetail(id)
+	reply.Data["detail"] = detail
+	reply.Response(http.StatusOK, code)
+}
+
 func ProductCategory(c *gin.Context) {
 	reply := errdef.New(c)
 	svc := cshop.New(c)
