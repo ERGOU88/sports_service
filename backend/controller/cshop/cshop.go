@@ -677,6 +677,7 @@ func (svc *ShopModule) OrderInfo(item models.Orders) (*mshop.OrderResp, error) {
 	info.DeliveryStatus = item.DeliveryStatus
 	info.DeliveryTelephone = item.DeliveryTelephone
 	info.DeliveryTypeName = item.DeliveryTypeName
+	info.DeliveryTime = item.DeliveryTime
 	
 	return info, nil
 }

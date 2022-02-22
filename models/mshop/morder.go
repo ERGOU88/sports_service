@@ -56,6 +56,7 @@ type OrderResp struct {
 	DeliveryTelephone string         `json:"delivery_telephone"`     // 承运人电话
 	Status            int            `json:"status"`                 // 0 待支付 1 已取消 2 待发货 3 待收货 4 已完成
 	ChannelId         int            `json:"channel_id"`             // 购买渠道，1001 android ; 1002 ios 1003 小程序
+	DeliveryTime      int            `json:"delivery_time"`
 }
 
 type Product struct {
