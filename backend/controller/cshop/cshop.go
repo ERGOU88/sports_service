@@ -84,6 +84,8 @@ func (svc *ShopModule) AddCategory(params *models.ProductCategory) int {
 		return errdef.SHOP_ADD_CATEGORY_FAIL
 	}
 	
+	svc.shop.CleanCategoryInfoByMem()
+	
 	return errdef.SUCCESS
 }
 
@@ -93,6 +95,7 @@ func (svc *ShopModule) EditCategory(params *models.ProductCategory) int {
 		return errdef.SHOP_EDIT_CATEGORY_FAIL
 	}
 	
+	svc.shop.CleanCategoryInfoByMem()
 	return errdef.SUCCESS
 }
 
