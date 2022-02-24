@@ -384,6 +384,17 @@ func (svc *AdminModule) GetRoleList(page, size int) (int, []*models.SystemRole) 
 
 // 添加角色
 func (svc *AdminModule) AddRole(role *models.SystemRole) int {
+  ok, err := svc.admin.GetRoleByName(role.RoleName)
+  if ok {
+    log.Log.Errorf("admin_trace: role name has exists, roleName:%s", role.RoleName)
+    return errdef.ERROR
+  }
+  
+  if err != nil {
+    log.Log.Errorf("admin_trace: get role by name fail, err:%s", err)
+    return errdef.ERROR
+  }
+  
   if _, err := svc.admin.AddRole(role); err != nil {
     return errdef.ERROR
   }
