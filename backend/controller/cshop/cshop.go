@@ -718,7 +718,7 @@ func (svc *ShopModule) GetQueryCondition(reqType, keyword string) string {
 	}
 	
 	if keyword != "" {
-		condition += " AND pay_order_id like '%" + keyword + "%'"
+		condition += " AND order_id like '%" + keyword + "%'"
 	}
 	
 	return condition
