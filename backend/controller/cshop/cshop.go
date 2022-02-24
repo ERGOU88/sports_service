@@ -99,7 +99,7 @@ func (svc *ShopModule) EditCategory(params *models.ProductCategory) int {
 	return errdef.SUCCESS
 }
 
-func (svc *ShopModule) GetServiceList() (int, []models.ShopServiceConf) {
+func (svc *ShopModule) GetServiceList() (int, []mshop.AfterService) {
 	list, err := svc.shop.GetServiceList()
 	if err != nil {
 		log.Log.Errorf("shop_trace: get service list fail, err:%s", err)

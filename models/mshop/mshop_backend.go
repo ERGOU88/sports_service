@@ -116,9 +116,9 @@ func (m *ShopModel) UpdateProductCategory(info *models.ProductCategory) (int64, 
 	return m.Engine.Where("category_id=?", info.CategoryId).Update(info)
 }
 
-func (m *ShopModel) GetServiceList() ([]models.ShopServiceConf, error) {
-	var list []models.ShopServiceConf
-	if err := m.Engine.Find(&list); err != nil {
+func (m *ShopModel) GetServiceList() ([]AfterService, error) {
+	var list []AfterService
+	if err := m.Engine.Table(models.ShopServiceConf{}).Find(&list); err != nil {
 		return list, err
 	}
 	
