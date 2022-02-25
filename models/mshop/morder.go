@@ -35,6 +35,7 @@ type OrderResp struct {
 	ClientIp         string          `json:"client_ip"`              // ip地址
 	UserId           string          `json:"user_id"`
 	MobileNum        string          `json:"mobile_num"`             // 用户电话
+	RealMobileNum    string          `json:"real_mobile_num"`
 	OrderId          string          `json:"order_id"`               // 订单id
 	IsEnough         bool            `json:"is_enough"`              // 库存标识 是否足够 false 库存不足
 	Total            int             `json:"total"`                  // 总件数

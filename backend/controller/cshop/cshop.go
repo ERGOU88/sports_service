@@ -655,6 +655,7 @@ func (svc *ShopModule) OrderInfo(item models.Orders) (*mshop.OrderResp, error) {
 	user := svc.user.FindUserByUserid(item.UserId)
 	if user != nil {
 		info.MobileNum = util.HideMobileNum(fmt.Sprint(user.MobileNum))
+		info.RealMobileNum = fmt.Sprint(user.MobileNum)
 	}
 
 	info.PayDuration = 0
