@@ -9,6 +9,7 @@ import (
 	"sports_service/server/models"
 	"sports_service/server/models/muser"
 	"sports_service/server/models/sms"
+	"sports_service/server/tools/tencentCloud"
 	"sports_service/server/util"
 	"strings"
 	"time"
@@ -107,9 +108,10 @@ func (svc *UserModule) SendSmsCode(params *sms.SendSmsCodeParams) int {
 }
 
 // 短信验证码登陆
-func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string, *models.User) {
+func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string, *muser.User) {
 	if len(params.MobileNum) == 11 && params.MobileNum[0:8] == "18888888" {
-		return svc.RegisterOfficialAccount(params)
+		code, token, _ := svc.RegisterOfficialAccount(params)
+		return code, token, svc.UserInfoResp()
 	}
 
 	// 校验手机号合法性
@@ -164,17 +166,20 @@ func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string
 		if err := svc.user.SaveUserToken(svc.user.User.UserId, token); err != nil {
 			log.Log.Errorf("user_trace: save user token err:%s", err)
 		}
-
-		return errdef.SUCCESS, token, svc.user.User
+		
+		return errdef.SUCCESS, token, svc.UserInfoResp()
 
 	}
 
+	
 	// 登陆的时候 检查用户状态
 	if !svc.CheckUserStatus(svc.user.User.Status) {
 		log.Log.Errorf("user_trace: forbid status, userId:%s", svc.user.User.UserId)
 		return errdef.USER_FORBID_STATUS, "", nil
 	}
-
+	
+	avatar := tencentCloud.BucketURI(svc.user.User.Avatar)
+	svc.user.User.Avatar = string(avatar)
 	// 用户已注册过, 则直接从redis中获取token并返回
 	token, err := svc.user.GetUserToken(svc.user.User.UserId)
 	if err != nil && err == redis.ErrNil {
@@ -186,7 +191,7 @@ func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string
 		}
 	}
 
-	return errdef.SUCCESS, token, user
+	return errdef.SUCCESS, token, svc.UserInfoResp()
 }
 
 // todo: 临时注册官方账号 用于app内容填充 后续剔除

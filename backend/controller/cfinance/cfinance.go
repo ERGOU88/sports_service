@@ -71,7 +71,7 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 
 		extra := &mappointment.OrderResp{}
 		if err := util.JsonFast.UnmarshalFromString(item.Extra, extra); err != nil {
-
+			log.Log.Errorf("finance_trace: unmarshal order resp fail, orderId:%s, err:%s", item.PayOrderId, err)
 		}
 
 		if user := svc.user.FindUserByUserid(item.UserId); user != nil {
@@ -84,7 +84,7 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 		}
 
 		productName := svc.GetProductName(item.ProductType)
-		if extra != nil {
+		if extra.Id > 0 {
 			info.Detail = productName
 			if extra.Count > 0 {
 				info.Detail = fmt.Sprintf("%s * %d", productName, extra.Count)

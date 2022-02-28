@@ -5,7 +5,7 @@ type Products struct {
 	ProductName    string `json:"product_name" xorm:"not null default '' comment('商品名称') VARCHAR(255)"`
 	ProductImage   string `json:"product_image" xorm:"not null default '' comment('商品主图路径') VARCHAR(512)"`
 	ProductDetail  string `json:"product_detail" xorm:"comment('商品详情') TEXT"`
-	Status         int    `json:"status" xorm:"not null default 0 comment('商品状态（0. 正常 1. 下架）') TINYINT(2)"`
+	Status         int    `json:"status" xorm:"not null default 1 comment('商品状态（0. 正常 1. 下架）') TINYINT(2)"`
 	IsFreeShip     int    `json:"is_free_ship" xorm:"not null default 0 comment('是否免邮 0 免邮') TINYINT(2)"`
 	IsDelete       int    `json:"is_delete" xorm:"not null default 0 comment('是否已经删除') index TINYINT(4)"`
 	Introduction   string `json:"introduction" xorm:"not null default '' comment('促销语') VARCHAR(255)"`

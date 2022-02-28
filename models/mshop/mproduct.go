@@ -13,13 +13,16 @@ type ProductSimpleInfo struct {
 	ProductImage   tc.BucketURI `json:"product_image" xorm:"not null default '' comment('商品主图路径') VARCHAR(512)"`
 	Status         int    `json:"status" xorm:"not null default 0 comment('商品状态（0. 正常 1. 下架）') TINYINT(2)"`
 	IsFreeShip     int    `json:"is_free_ship" xorm:"not null default 0 comment('是否免邮 0 免邮') TINYINT(2)"`
-	Introduction   string `json:"introduction" xorm:"not null default '' comment('促销语') VARCHAR(255)"`
+	Introduction   []string `json:"introduction" xorm:"not null default '' comment('促销语') VARCHAR(255)"`
 	Keywords       string `json:"keywords" xorm:"not null default '' comment('关键词') VARCHAR(255)"`
 	Sortorder      int    `json:"sortorder" xorm:"not null default 0 comment('排序') index INT(11)"`
 	VideoUrl       tc.BucketURI `json:"video_url" xorm:"not null default '' comment('视频地址') VARCHAR(512)"`
 	SaleNum        int    `json:"sale_num" xorm:"not null default 0 comment('销量') INT(11)"`
 	CurPrice       int    `json:"cur_price" xorm:"not null default 0 comment('商品价格（分）') INT(10)"`
 	MarketPrice    int    `json:"market_price" xorm:"not null default 0 comment('划线价格（分）') INT(10)"`
+	SkuNum         int    `json:"sku_num"`
+	CategoryId     int    `json:"category_id"`
+	CategoryName   string `json:"category_name"`
 }
 
 type ProductDetailInfo struct {
@@ -40,7 +43,7 @@ type ProductDetailInfo struct {
 	HasActivities   int32           `json:"has_activities"`         // 1 有活动
 	ProductDetail   []tc.BucketURI  `json:"product_detail"`         // 商品详情 长图/描述 多张
 	OwnSpec         []OwnSpec       `json:"own_spec"`               // 商品实体的特有规格参数
-	AfterService    []AfterService  `json:"after_service"`          // 服务
+	AfterService    []*AfterService `json:"after_service"`          // 服务
 	Specifications  []SpecInfo      `json:"specifications"`         // 全部规格参数
 	SpecTemplate    []SpecTemplate  `json:"spec_template"`          // 特有规格参数
 	Indexes         string          `json:"indexes"`                // 特有规格属性在商品属性模板中的对应下标组合
@@ -54,6 +57,7 @@ type ProductDetailInfo struct {
 }
 
 type AfterService struct {
+	Id         int64           `json:"id"`
 	Service    string          `json:"service"`    // 服务名称
 	Icon       tc.BucketURI    `json:"icon"`       // 图标
 	Describe   string          `json:"describe"`   // 描述
@@ -68,16 +72,18 @@ type OwnSpec struct {
 // 规格信息
 type SpecInfo struct {
 	Group    string    `json:"group"`                       // 规格组名称
-	Params   []struct {                                     // 规格属性
-		Key          string     `json:"key"`                // 属性名称
-		Val          string     `json:"val"`                // 属性值
-		Searchable   int32      `json:"searchable"`         // 是否作为搜索条件  1 是
-		Global       int32      `json:"global"`             // 是否为全局属性 1 是
-		Unit         string     `json:"unit,omitempty"`     // 单位
-		Numerical    int32      `json:"numerical,omitempty"`// 参数是否为数值类型 1是
-		Icon         string     `json:"icon"`               // icon图标
-		Options      []string   `json:"options,omitempty"`  // 参数选项
-	} `json:"params"`
+	Params   []Spec    `json:"params"`
+}
+
+type Spec struct {
+	Key          string     `json:"key"`                // 属性名称
+	Val          string     `json:"val"`                // 属性值
+	Searchable   int32      `json:"searchable"`         // 是否作为搜索条件  1 是
+	Global       int32      `json:"global"`             // 是否为全局属性 1 是
+	Unit         string     `json:"unit,omitempty"`     // 单位
+	Numerical    int32      `json:"numerical,omitempty"`// 参数是否为数值类型 1是
+	Icon         string     `json:"icon,omitempty"`     // icon图标
+	Options      []string   `json:"options,omitempty"`  // 参数选项
 }
 
 // 特有规格参数选项
@@ -93,8 +99,8 @@ const (
 )
 // 通过分类获取spu列表
 // sortType 0 销量倒序 1 销量正序 2 价格倒序 3 价格正序
-func (m *ShopModel) GetSpuListByCategory(categoryId, sortType string, offset, size int) ([]ProductSimpleInfo, error) {
-	var list []ProductSimpleInfo
+func (m *ShopModel) GetSpuListByCategory(categoryId, sortType string, offset, size int) ([]*ProductSimpleInfo, error) {
+	var list []*ProductSimpleInfo
 	sql := "SELECT p.* FROM products AS p LEFT JOIN product_category_related AS pc " +
 		"ON p.id = pc.product_id WHERE pc.category_id = ? AND p.status = 0 AND p.is_delete = 0 ORDER BY "
 
@@ -121,8 +127,8 @@ func (m *ShopModel) GetSpuListByCategory(categoryId, sortType string, offset, si
 
 // 获取所有商品spu
 // sortType 0 销量倒序 1 销量正序 2 价格倒序 3 价格正序
-func (m *ShopModel) GetAllSpu(sortType, keyword string, offset, size int) ([]ProductSimpleInfo, error) {
-	var list []ProductSimpleInfo
+func (m *ShopModel) GetAllSpu(sortType, keyword string, offset, size int) ([]*ProductSimpleInfo, error) {
+	var list []*ProductSimpleInfo
 	engine := m.Engine.Table(&models.Products{})
 	engine.Where("status=0 AND is_delete=0")
 	if keyword != "" {
@@ -164,9 +170,9 @@ func (m *ShopModel) GetRecommendProducts(productId string, limit int) ([]Product
 }
 
 // 获取sku列表
-func (m *ShopModel) GetProductSkuList() ([]models.ProductSku, error) {
-	var list []models.ProductSku
-	if err := m.Engine.Where("status=0").Desc("sortorder").Find(&list); err != nil {
+func (m *ShopModel) GetProductSkuList(productId string) ([]*ProductSkuInfo, error) {
+	var list []*ProductSkuInfo
+	if err := m.Engine.Table(&models.ProductSku{}).Where("product_id=?", productId).Desc("sortorder").Find(&list); err != nil {
 		return list, err
 	}
 
@@ -219,8 +225,8 @@ func (m *ShopModel) GetProductSpu(productId string) (*models.Products, error) {
 
 // indexes 特有规格属性在商品属性模板中的对应下标组合
 func (m *ShopModel) GetProductDetail(productId, indexes string) (*ProductDetailInfo, error) {
-	sql := "SELECT ps.*, p.introduction, p.specifications, p.spec_template, p.after_service, p.video_url, p.sale_num, p.product_detail FROM product_sku AS ps " +
-	"LEFT JOIN products AS p ON ps.product_id = p.id WHERE ps.status=0 AND ps.product_id=? "
+	sql := "SELECT ps.*, p.introduction, p.specifications, p.spec_template, p.video_url, p.sale_num, p.product_detail FROM product_sku AS ps " +
+	"LEFT JOIN products AS p ON ps.product_id = p.id WHERE ps.status=0 AND ps.is_delete=0 AND ps.product_id=? "
 
 	if indexes != "" {
 		sql += fmt.Sprintf(" AND ps.indexes='%s'", indexes)
@@ -239,6 +245,20 @@ func (m *ShopModel) GetProductDetail(productId, indexes string) (*ProductDetailI
 	}
 
 	return detail, nil
+}
+
+const (
+	GET_PRODUCT_SERVICE_INFO = "SELECT svc.service, svc.id, svc.icon, svc.describe FROM shop_service_conf AS svc " +
+		"LEFT JOIN product_service AS ps ON svc.id=ps.service_id WHERE product_id=?"
+)
+// 获取商品服务信息
+func (m *ShopModel) GetProductServiceInfo(productId string) ([]*AfterService, error) {
+	var list []*AfterService
+	if err := m.Engine.SQL(GET_PRODUCT_SERVICE_INFO, productId).Find(&list); err != nil {
+		return nil, err
+	}
+	
+	return list, nil
 }
 
 // 获取商品sku库存

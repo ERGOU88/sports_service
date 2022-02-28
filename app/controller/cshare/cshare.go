@@ -395,6 +395,34 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 }
 
 // todo: 生成分享链接
+// shareType  1 微信 2 qq 3 微博
+// contentType 1 视频 2 帖子 3 咨询 4 商品
 func (svc *ShareModule) GenShareUrl(userId, contentType, contentId, shareType string) string {
-	return config.Global.ShareUrl
+	switch shareType {
+	case "1":
+		return svc.GenUrlByContentType("", contentType, contentId)
+	case "2", "3":
+		return svc.GenUrlByContentType(config.Global.ShareUrl, contentType, contentId)
+	}
+	
+	return ""
+}
+
+// 视频   /pages/home/video?id=579
+// 帖子   /pages/community/community?id=52
+// 资讯   /pages/information/information?id=52
+// 商品   /pages/mall/productDetails?id=5
+func (svc *ShareModule) GenUrlByContentType(host string, contentType string, contentId string) string {
+	switch contentType {
+	case "1":
+		return fmt.Sprintf("%s/pages/home/video?id=%s", host, contentId)
+	case "2":
+		return fmt.Sprintf("%s/pages/community/community?id=%s", host, contentId)
+	case "3":
+		return fmt.Sprintf("%s/pages/information/information?id=%s", host, contentId)
+	case "4":
+		return fmt.Sprintf("%s/pages/mall/productDetails?id=%s", host, contentId)
+	}
+	
+	return ""
 }

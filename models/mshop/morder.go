@@ -34,6 +34,8 @@ type ProductParam struct {
 type OrderResp struct {
 	ClientIp         string          `json:"client_ip"`              // ip地址
 	UserId           string          `json:"user_id"`
+	MobileNum        string          `json:"mobile_num"`             // 用户电话
+	RealMobileNum    string          `json:"real_mobile_num"`
 	OrderId          string          `json:"order_id"`               // 订单id
 	IsEnough         bool            `json:"is_enough"`              // 库存标识 是否足够 false 库存不足
 	Total            int             `json:"total"`                  // 总件数
@@ -55,6 +57,7 @@ type OrderResp struct {
 	DeliveryTelephone string         `json:"delivery_telephone"`     // 承运人电话
 	Status            int            `json:"status"`                 // 0 待支付 1 已取消 2 待发货 3 待收货 4 已完成
 	ChannelId         int            `json:"channel_id"`             // 购买渠道，1001 android ; 1002 ios 1003 小程序
+	DeliveryTime      int            `json:"delivery_time"`
 }
 
 type Product struct {
@@ -141,6 +144,11 @@ func (m *ShopModel) GetOrderList(condition string, offset, size int) ([]models.O
 	}
 	
 	return list, nil
+}
+
+// 获取订单总数
+func (m *ShopModel) GetOrderTotal(condition string) (int64, error) {
+	return m.Engine.Where(condition).Count(&models.Orders{})
 }
 
 // 记录需处理支付超时的订单号
