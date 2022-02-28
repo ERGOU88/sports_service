@@ -103,9 +103,8 @@ func (svc *AdminModule) ForbidAdminUser(username string, status int) int {
   if admin == nil {
     return errdef.ADMIN_NOT_EXISTS
   }
-
-  admin.Status = status
-  if _, err := svc.admin.UpdateAdminUser(admin); err != nil {
+  
+  if _, err := svc.admin.UpdateAdminStatus(admin.UserId, status); err != nil {
     return errdef.ERROR
   }
 
