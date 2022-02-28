@@ -184,6 +184,7 @@ func (svc *VenueModule) GetRefundRules() (int, []*models.VenueRefundRules) {
 
 func (svc *VenueModule) AddMark(param *mvenue.AddMarkParam) int {
 	if _, err := svc.venue.AddMark(param.Conf); err != nil {
+		log.Log.Errorf("venue_trace: add mark fail, err:%s", err)
 		return errdef.ERROR
 	}
 	

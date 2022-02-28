@@ -51,10 +51,10 @@ const (
 	MAX_SIGNATURE_LEN = 140
 )
 
-// 用户状态 0 正常 1 封禁
+// 用户状态 1 正常 -1 封禁
 const (
-	USER_NORMAL = 0
-	USER_FORBID = 1
+	USER_NORMAL = 1
+	USER_FORBID = -1
 )
 
 // 后台用户列表排序 0 按注册时间倒序 1 关注数 2 粉丝数 3 发布数 4 浏览数 5 点赞数 6 收藏数 7 评论数 8 弹幕数
