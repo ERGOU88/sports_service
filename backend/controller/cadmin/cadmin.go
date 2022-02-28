@@ -202,7 +202,7 @@ func (svc *AdminModule) AdminLogin(params *madmin.AdminRegOrLoginParams) (int, s
     return errdef.ADMIN_NOT_EXISTS, "", nil
   }
 
-  if admin.Status == 1 {
+  if admin.Status == consts.USER_FORBID {
     return errdef.ADMIN_STATUS_FORBID, "", nil
   }
 
