@@ -95,6 +95,35 @@ const (
 
 	// 18001 - 19000 赛事相关错误码
 	CONTEST_INTEGRAL_RANK_EXISTS = 18001
+	
+	// 19001 - 20000 商城相关错误码
+	SHOP_ADD_CATEGORY_FAIL       = 19001
+	SHOP_EDIT_CATEGORY_FAIL      = 19002
+	SHOP_GET_SERVICE_FAIL        = 19003
+	SHOP_ADD_SERVICE_FAIL        = 19004
+	SHOP_UPDATE_SERVICE_FAIL     = 19005
+	SHOP_ADD_CATEGORY_SPEC_FAIL  = 19006
+	SHOP_EDIT_CATEGORY_SPEC_FAIL = 19007
+	SHOP_DEL_CATEGORY_SPEC_FAIL  = 19008
+	SHOP_GET_ALL_SPU_FAIL        = 19009
+	SHOP_ADD_SPU_FAIL            = 19010
+	SHOP_ADD_SKU_FAIL            = 19011
+	SHOP_ADD_SKU_STOCK_FAIL      = 19012
+	SHOP_GET_CATEGORY_FAIL       = 19013
+	SHOP_ADD_RELATED_FAIL        = 19014
+	SHOP_GET_SPEC_FAIL           = 19015
+	SHOP_UPDATE_SPU_FAIL         = 19016
+	SHOP_UPDATE_SKU_FAIL         = 19017
+	SHOP_UPDATE_SKU_STOCK_FAIL   = 19018
+	SHOP_ORDER_LIST_FAIL         = 19019
+	SHOP_CONFIRM_RECEIPT_FAIL    = 19020
+	SHOP_NOT_ALLOW_CONFIRM       = 19021
+	SHOP_ORDER_NOT_EXISTS        = 19022
+	SHOP_NOT_ALLOW_DELIVER       = 19023
+	SHOP_DEL_SERVICE_FAIL        = 19024
+	SHOP_ADD_PRODUCT_SVC_FAIL    = 19025
+	SHOP_PRODUCT_SPU_FAIL        = 19026
+	SHOP_PRODUCT_SKU_FAIL        = 19027
 )
 
 var MsgFlags = map[int]string{
@@ -183,6 +212,34 @@ var MsgFlags = map[int]string{
 	INFORMATION_DELETE_FAIL:        "删除资讯失败",
 
 	CONTEST_INTEGRAL_RANK_EXISTS:   "选手排行数据已存在",
+	
+	SHOP_ADD_CATEGORY_FAIL:         "添加品类失败",
+	SHOP_EDIT_CATEGORY_FAIL:        "编辑品类失败",
+	SHOP_GET_SERVICE_FAIL:          "获取服务列表失败",
+	SHOP_ADD_SERVICE_FAIL:          "服务添加失败",
+	SHOP_UPDATE_SERVICE_FAIL:       "服务更新失败",
+	SHOP_ADD_CATEGORY_SPEC_FAIL:    "添加分类规格属性失败",
+	SHOP_EDIT_CATEGORY_SPEC_FAIL:   "编辑分类规格属性失败",
+	SHOP_DEL_CATEGORY_SPEC_FAIL:    "删除分类规格属性失败",
+	SHOP_GET_ALL_SPU_FAIL:          "商品列表获取失败",
+	SHOP_ADD_SPU_FAIL:              "添加商品spu失败",
+	SHOP_ADD_SKU_FAIL:              "添加商品sku失败",
+	SHOP_ADD_SKU_STOCK_FAIL:        "添加商品sku库存失败",
+	SHOP_GET_CATEGORY_FAIL:         "获取商品分类失败",
+	SHOP_ADD_RELATED_FAIL:          "添加商品分类关联失败",
+	SHOP_GET_SPEC_FAIL:             "获取规格参数失败",
+	SHOP_UPDATE_SPU_FAIL:           "更新商品spu失败",
+	SHOP_UPDATE_SKU_FAIL:           "更新商品sku失败",
+	SHOP_UPDATE_SKU_STOCK_FAIL:     "更新商品sku库存失败",
+	SHOP_ORDER_LIST_FAIL:           "获取订单列表失败",
+	SHOP_CONFIRM_RECEIPT_FAIL:      "确认收货失败",
+	SHOP_NOT_ALLOW_CONFIRM:         "订单当前状态 不允许确认收货",
+	SHOP_ORDER_NOT_EXISTS:          "订单不存在/获取订单失败",
+	SHOP_NOT_ALLOW_DELIVER:         "订单当前状态 不允许发货",
+	SHOP_DEL_SERVICE_FAIL:          "删除服务失败",
+	SHOP_ADD_PRODUCT_SVC_FAIL:      "添加商品服务失败",
+	SHOP_PRODUCT_SPU_FAIL:          "商品spu信息获取失败",
+	SHOP_PRODUCT_SKU_FAIL:          "商品sku信息获取失败",
 }
 
 func GetMsg(code int) string {

@@ -34,7 +34,7 @@ func New(c *gin.Context) ShopModule {
 	}
 }
 
-func (svc *ShopModule) GetProducts(categoryId, sortType string, page, size int) (int, []mshop.ProductSimpleInfo) {
+func (svc *ShopModule) GetProducts(categoryId, sortType string, page, size int) (int, []*mshop.ProductSimpleInfo) {
 	if categoryId == "0" {
 		return svc.GetProductList(sortType, "", page, size)
 	}
@@ -42,23 +42,31 @@ func (svc *ShopModule) GetProducts(categoryId, sortType string, page, size int) 
 	return svc.GetProductListByCategory(categoryId, sortType,  page, size)
 }
 
-func (svc *ShopModule) GetProductList(sortType, keyword string, page, size int) (int, []mshop.ProductSimpleInfo) {
+func (svc *ShopModule) GetProductList(sortType, keyword string, page, size int) (int, []*mshop.ProductSimpleInfo) {
 	offset := (page - 1) * size
 	list, err := svc.shop.GetAllSpu(sortType, keyword, offset, size)
 	if err != nil {
 		log.Log.Errorf("shop_trace: get all spu fail, err:%s", err)
 		return errdef.SHOP_GET_ALL_SPU_FAIL, nil
 	}
+	
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*mshop.ProductSimpleInfo{}
+	}
 
 	return errdef.SUCCESS, list
 }
 
-func (svc *ShopModule) GetProductListByCategory(categoryId, sortType string, page, size int) (int, []mshop.ProductSimpleInfo) {
+func (svc *ShopModule) GetProductListByCategory(categoryId, sortType string, page, size int) (int, []*mshop.ProductSimpleInfo) {
 	offset := (page - 1) * size
 	list, err := svc.shop.GetSpuListByCategory(categoryId, sortType, offset, size)
 	if err != nil {
 		log.Log.Errorf("shop_trace: get spu list by category fail, err:%s", err)
 		return errdef.SHOP_GET_SPU_BY_CATEGORY_FAIL, nil
+	}
+	
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*mshop.ProductSimpleInfo{}
 	}
 
 	return errdef.SUCCESS, list
@@ -126,6 +134,14 @@ func (svc *ShopModule) GetProductDetail(productId, indexes, userId string) (int,
 	
 	if detail.OwnSpec == nil {
 		detail.OwnSpec = make([]mshop.OwnSpec, 0)
+	}
+	
+	services, err := svc.shop.GetProductServiceInfo(fmt.Sprint(detail.ProductId))
+	if services != nil && err == nil {
+		detail.AfterService = services
+	} else {
+		log.Log.Errorf("shop_trace: get product service fail, err:%s", err)
+		detail.AfterService = []*mshop.AfterService{}
 	}
 	
 	if userId != "" {
@@ -317,14 +333,14 @@ func (svc *ShopModule) GetProductCartList(userId string) (int, []*mshop.ProductC
 	return errdef.SUCCESS, list
 }
 
-func (svc *ShopModule) SearchProduct(sortType, keyword string, page, size int) (int, []mshop.ProductSimpleInfo) {
+func (svc *ShopModule) SearchProduct(sortType, keyword string, page, size int) (int, []*mshop.ProductSimpleInfo) {
 	if keyword == "" {
-		return errdef.SUCCESS, []mshop.ProductSimpleInfo{}
+		return errdef.SUCCESS, []*mshop.ProductSimpleInfo{}
 	}
 
 	code, list := svc.GetProductList(sortType, keyword, page, size)
 	if list == nil {
-		return code, []mshop.ProductSimpleInfo{}
+		return code, []*mshop.ProductSimpleInfo{}
 	}
 	
 	return code, list

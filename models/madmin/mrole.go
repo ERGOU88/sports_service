@@ -26,3 +26,7 @@ func (m *AdminModel) GetRoleList(offset, size int) ([]*models.SystemRole, error)
 func (m *AdminModel) GetRole(roleId string) (bool, error) {
 	return m.Engine.Where("role_id=?", roleId).Get(m.Role)
 }
+
+func (m *AdminModel) GetRoleByName(roleName string) (bool, error) {
+	return m.Engine.Where("role_name=?", roleName).Get(m.Role)
+}
