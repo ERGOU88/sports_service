@@ -442,7 +442,7 @@ func (svc *ContestModule) GetIntegralRanking(contestId string, page, size int) (
 	for index, item := range list {
 		item.Ranking = offset + index
 		item.TotalIntegralStr = fmt.Sprintf("%.3f", float64(item.TotalIntegral) / 1000)
-		item.BestScoreStr = fmt.Sprintf("%.3f", float64(item.BestScore) / 1000)
+		item.BestScoreStr = util.ResolveTimeByMilliSecond(item.BestScore)
 		item.TotalIntegral = 0
 		item.BestScore = 0
 	}
