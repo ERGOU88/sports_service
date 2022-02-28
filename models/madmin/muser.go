@@ -28,7 +28,7 @@ func (m *AdminModel) UpdateAdminUser(admin *models.SystemUser) (int64, error) {
 }
 
 func (m *AdminModel) UpdateAdminStatus(userId, status int) (int64, error) {
-	return m.Engine.Where("user_id=?", userId).Update(&models.SystemUser{Status: status})
+	return m.Engine.Where("user_id=?", userId).Cols("status").Update(&models.SystemUser{Status: status})
 }
 
 // 通过用户名 查询 管理员
