@@ -359,6 +359,7 @@ func (svc *VideoModule) EditVideoSubareaConf(param *mvideo.AddSubarea) int {
   svc.video.Subarea.UpdateAt = int(time.Now().Unix())
   svc.video.Subarea.SysId = param.SysId
   svc.video.Subarea.SysUser = param.SysUser
+  svc.video.Subarea.SubareaName = param.Name
   svc.video.Subarea.Id = param.Id
   log.Log.Infof("param.Id:%d", param.Id)
   svc.video.Subarea.Status = param.Status
