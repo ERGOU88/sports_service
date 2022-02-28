@@ -19,7 +19,7 @@ type SystemUser struct {
 	CreateBy    int       `json:"create_by" xorm:"not null default 0 comment('创建者id') INT(11)"`
 	UpdateBy    int       `json:"update_by" xorm:"not null default 0 comment('更新者id') INT(11)"`
 	Remark      string    `json:"remark" xorm:"not null default '' comment('备注') VARCHAR(255)"`
-	Status      int       `json:"status" xorm:"not null default 0 comment('0 正常 1 封禁') TINYINT(1)"`
+	Status      int       `json:"status" xorm:"not null default 1 comment('1 正常 -1 封禁') TINYINT(1)"`
 	CreateAt    time.Time `json:"create_at" xorm:"TIMESTAMP"`
 	UpdateAt    time.Time `json:"update_at" xorm:"TIMESTAMP"`
 	AccountType int       `json:"account_type" xorm:"not null default 0 comment('0 域账号 1 自定义账号') TINYINT(1)"`
