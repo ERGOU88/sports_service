@@ -297,9 +297,9 @@ func (svc *OrderModule) AliPayNotifyByVenue(params url.Values, body string) int 
 			return errdef.ERROR
 		}
 
-		if int(refundAmount* 100) != order.RefundAmount {
+		if int(refundAmount * 100) != order.RefundAmount {
 			log.Log.Errorf("aliNotify_trace: refundAmount not match, refundAmount:%d, order.RefundAmount:%d",
-				refundAmount* 100, order.RefundAmount)
+				refundAmount * 100, order.RefundAmount)
 			svc.engine.Rollback()
 			return errdef.ERROR
 		}
