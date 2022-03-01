@@ -180,15 +180,15 @@ func (m *ContestModel) GetScheduleDetail(contestId, scheduleId string) ([]*model
 const (
 	GET_SCHEDULE_DETAIL_BY_SCORE = "SELECT p.id AS player_id, p.name AS player_name, p.photo, cs.* FROM fpv_contest_player_information AS p " +
 		"LEFT JOIN fpv_contest_schedule_detail AS cs ON p.id = cs.player_id AND cs.contest_id=? AND cs.schedule_id=? " +
-		" WHERE p.status = 0 ORDER BY cs.id DESC, cs.score is null, cs.score ASC, ISNULL(cs.ranking),cs.ranking ASC, p.id ASC"
+		" WHERE p.status = 0 ORDER BY cs.score is null, cs.score ASC,cs.id DESC, ISNULL(cs.ranking),cs.ranking ASC, p.id ASC"
 
 	GET_SCHEDULE_DETAIL_BY_GROUP = "SELECT cs.*, p.id AS player_id, p.name AS player_name, p.photo FROM " +
 		"fpv_contest_schedule_detail AS cs LEFT JOIN fpv_contest_player_information AS p " +
-		"ON cs.player_id=p.id WHERE cs.contest_id=? AND cs.schedule_id=? ORDER BY cs.id DESC, group_num ASC, score ASC"
+		"ON cs.player_id=p.id WHERE cs.contest_id=? AND cs.schedule_id=? ORDER BY score ASC, cs.id DESC, group_num ASC"
 
 	GET_SCHEDULE_DETAIL_BY_BACKEND = "SELECT p.id AS player_id, p.name AS player_name, p.photo, cs.* FROM " +
 		"fpv_contest_schedule_detail AS cs LEFT JOIN fpv_contest_player_information AS p ON p.id = cs.player_id " +
-		"AND cs.contest_id=? AND cs.schedule_id=? WHERE p.status = 0 ORDER BY cs.id DESC, cs.score is null, cs.score ASC, " +
+		"AND cs.contest_id=? AND cs.schedule_id=? WHERE p.status = 0 ORDER BY cs.score is null, cs.score ASC, cs.id DESC, " +
 		"ISNULL(cs.ranking),cs.ranking ASC, p.id ASC"
 
 
