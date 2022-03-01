@@ -545,6 +545,7 @@ func (svc *ShopModule) UpdateSkuListInfo(params *mshop.AddOrEditProductReq, now 
 		ownSpec, _ := util.JsonFast.MarshalToString(item.OwnSpec)
 		
 		sku := &models.ProductSku{
+			Id: item.Id,
 			ProductId: int64(params.Id),
 			Title: item.Title,
 			SkuImage: string(item.SkuImage),
