@@ -276,10 +276,28 @@ func (m *ShopModel) GetProductSkuStock(skuId string) (*models.ProductSkuStock, e
 	return stock, nil
 }
 
-const (
-	UPDATE_PRODUCT_SKU_STOCK = "UPDATE `product_sku_stock` SET `stock`= `stock`-? WHERE sku_id=? AND stock >= ? AND stock > 0"
-)
+//const (
+//	UPDATE_PRODUCT_SKU_STOCK = "UPDATE `product_sku_stock` SET `stock`= `stock`-? WHERE sku_id=? AND stock >= ? AND stock > 0"
+//)
 // 更新商品sku库存
+//func (m *ShopModel) UpdateProductSkuStock(skuId string, count int) (int64, error) {
+//	res, err := m.Engine.Exec(UPDATE_PRODUCT_SKU_STOCK, count, skuId, count)
+//	if err != nil {
+//		return 0, err
+//	}
+//
+//	affected, err := res.RowsAffected()
+//	if err != nil {
+//		return 0, err
+//	}
+//
+//	return affected, nil
+//}
+
+const (
+	UPDATE_PRODUCT_SKU_STOCK = "UPDATE `product_sku_stock` SET `purchased_num`= `purchased_num`+ ? WHERE sku_id=? AND " +
+		"`stock` >= `purchased_num`+ ? AND `purchased_num` + ? >= 0 LIMIT 1"
+)
 func (m *ShopModel) UpdateProductSkuStock(skuId string, count int) (int64, error) {
 	res, err := m.Engine.Exec(UPDATE_PRODUCT_SKU_STOCK, count, skuId, count)
 	if err != nil {
