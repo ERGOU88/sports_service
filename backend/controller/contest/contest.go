@@ -217,6 +217,8 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 		// key 选手id
 		if _, ok :=  mp[item.PlayerId]; !ok {
 			detail := &mcontest.ScheduleListDetailResp{}
+			detail.GroupName = item.GroupName
+			detail.GroupNum = item.GroupNum
 			detail.Id = item.Id
 			detail.PlayerId = item.PlayerId
 			detail.PlayerName = item.PlayerName

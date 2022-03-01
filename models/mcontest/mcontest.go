@@ -70,6 +70,8 @@ type ScheduleListDetailResp struct {
 	RoundOneScore      string    `json:"round_one_score"`
 	RoundTwoScore      string    `json:"round_two_score"`
 	RoundThreeScore    string    `json:"round_three_score"`
+	GroupName          string    `json:"group_name"`
+	GroupNum           int       `json:"group_num"`
 }
 
 // 赛程分组详情返回数据
