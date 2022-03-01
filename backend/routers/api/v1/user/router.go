@@ -20,6 +20,8 @@ func Router(engine *gin.Engine) {
 		user.GET("/official/list", OfficialUserList)
 		// 添加官方用户
 		user.POST("/add", AddOfficialUser)
+		// 编辑官方用户信息
+		user.POST("/edit", EditOfficialUser)
 	}
 }
 

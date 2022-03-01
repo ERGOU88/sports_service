@@ -313,7 +313,7 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 	
 	if affected != 1 {
 		item.IsEnough = false
-		item.Count = stockInfo.Stock
+		item.Count = stockInfo.Stock - stockInfo.PurchasedNum
 	}
 	
 	return errdef.SUCCESS

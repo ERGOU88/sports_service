@@ -363,6 +363,10 @@ func (m *UserModel) AddUser() error {
 	return nil
 }
 
+func (m *UserModel) UpdateUser() (int64, error) {
+	return m.Engine.Update(m.User)
+}
+
 // 昵称是否重复
 func (m *UserModel) IsRepeatOfNickName(nickName, userId string) bool {
 	count, _ := m.Engine.Where("nick_name = ? and user_id != ?", nickName, userId).Count(&models.User{})
@@ -672,6 +676,11 @@ func (m *UserModel) GetOfficialUsers(offset, size int) ([]*OfficialUserInfo, err
 	}
 
 	return list, nil
+}
+
+// 官方用户总数
+func (m *UserModel) GetOfficialUserTotal() (int64, error) {
+	return m.Engine.Where("account_type=1").Count(&models.User{})
 }
 
 // 获取小程序全局唯一后台接口调用凭据
