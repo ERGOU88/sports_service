@@ -276,7 +276,7 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 	
 	item.MaxBuy = stockInfo.MaxBuy
 	item.MinBuy = stockInfo.MinBuy
-	item.Stock = stockInfo.Stock
+	item.Stock = stockInfo.Stock - stockInfo.PurchasedNum
 	// 默认可够买
 	item.CanBuy = true
 	if item.Count > stockInfo.MaxBuy && stockInfo.MaxBuy > 0 {
