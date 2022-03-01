@@ -328,6 +328,8 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 
 				if item.Ranking > 0 {
 					detail.Ranking = item.Ranking - 1
+				} else {
+					detail.Ranking = index
 				}
 				
 				detail.Index = index
