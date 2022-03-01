@@ -47,6 +47,7 @@ type AddOrEditProductReq struct {
 	IsReset        bool   `json:"is_reset"`     // 是否重置sku
 }
 
+// 商品sku
 type ProductSkuInfo struct {
 	Id            int    `json:"id" xorm:"not null pk autoincr comment('sku id') INT(11)"`
 	ProductId     int64  `json:"product_id" xorm:"not null comment('商品id') index BIGINT(20)"`
