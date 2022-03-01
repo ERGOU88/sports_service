@@ -60,6 +60,7 @@ func OfficialUserList(c *gin.Context) {
 	svc := cuser.New(c)
 	code, list := svc.GetOfficialUsers(page, size)
 	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetOfficialUserTotal()
 	reply.Response(http.StatusOK, code)
 }
 
@@ -72,6 +73,18 @@ func AddOfficialUser(c *gin.Context) {
 	}
 
 	param.RegIp = c.ClientIP()
+	svc := cuser.New(c)
+	reply.Response(http.StatusOK, svc.AddOfficialUser(param))
+}
+
+func EditOfficialUser(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &models.User{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
 	svc := cuser.New(c)
 	reply.Response(http.StatusOK, svc.AddOfficialUser(param))
 }
