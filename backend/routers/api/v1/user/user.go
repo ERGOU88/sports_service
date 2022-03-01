@@ -86,5 +86,5 @@ func EditOfficialUser(c *gin.Context) {
 	}
 	
 	svc := cuser.New(c)
-	reply.Response(http.StatusOK, svc.AddOfficialUser(param))
+	reply.Response(http.StatusOK, svc.EditOfficialUser(param))
 }
