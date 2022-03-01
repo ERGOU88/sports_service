@@ -217,6 +217,9 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 		// key 选手id
 		if _, ok :=  mp[item.PlayerId]; !ok {
 			detail := &mcontest.ScheduleListDetailResp{}
+			detail.GroupName = item.GroupName
+			detail.GroupNum = item.GroupNum
+			detail.NumInGroup = item.NumInGroup
 			detail.Id = item.Id
 			detail.PlayerId = item.PlayerId
 			detail.PlayerName = item.PlayerName
@@ -227,10 +230,12 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 			detail.BestScore = util.ResolveTimeByMilliSecond(item.Score)
 			if item.Rounds == 1 {
 				detail.RoundOneScore = util.ResolveTimeByMilliSecond(item.Score)
+				detail.RoundOneIntegral = item.ReceiveIntegral
 			}
 
 			if item.Rounds == 2 {
 				detail.RoundTwoScore = util.ResolveTimeByMilliSecond(item.Score)
+				detail.RoundTwoIntegral = item.ReceiveIntegral
 			}
 
 			if item.Rounds == 3 {
@@ -243,10 +248,12 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 		} else {
 			if item.Rounds == 1 {
 				mp[item.PlayerId].RoundOneScore = util.ResolveTimeByMilliSecond(item.Score)
+				mp[item.PlayerId].RoundOneIntegral = item.ReceiveIntegral
 			}
 
 			if item.Rounds == 2 {
 				mp[item.PlayerId].RoundTwoScore = util.ResolveTimeByMilliSecond(item.Score)
+				mp[item.PlayerId].RoundTwoIntegral = item.ReceiveIntegral
 			}
 
 			if item.Rounds == 3 {
