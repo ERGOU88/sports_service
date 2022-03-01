@@ -2,13 +2,13 @@ package job
 
 import (
 	"errors"
-	"sports_service/server/models/mshop"
+	"fmt"
 	"sports_service/server/dao"
 	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/global/rdskey"
+	"sports_service/server/models/mshop"
 	"time"
-	"fmt"
 )
 
 // 检测商城订单 支付是否超时（5min）
@@ -102,6 +102,22 @@ func shopOrderTimeOut(orderId string) error {
 		log.Log.Errorf("shopJob_trace: update order status fail, orderId:%s, err:%s", orderId, err)
 		session.Rollback()
 		return errors.New("update order status fail")
+	}
+	
+	list, err := shopModel.GetOrderProductList(order.OrderId)
+	if err != nil {
+		log.Log.Errorf("shopJob_trace: get order product list fail, orderId:%s, err:%s", order.OrderId, err)
+		session.Rollback()
+		return err
+	}
+	
+	for _, item := range list {
+		// 归还冻结库存
+		if _, err := shopModel.UpdateProductSkuStock(fmt.Sprint(item.SkuId), item.Count * -1) ; err != nil {
+			log.Log.Errorf("shop_trace: update product sku stock info fail, skuId:%d, err:%s", item.SkuId, err)
+			session.Rollback()
+			return err
+		}
 	}
 	
 	
