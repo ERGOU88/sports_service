@@ -212,6 +212,7 @@ type OfficialUserInfo struct {
 	Id          int64     `json:"id"`
 	UserId      string    `json:"user_id"`
 	NickName    string    `json:"nick_name"`
+	Avatar      tencentCloud.BucketURI `json:"avatar"`
 	MobileNum   int       `json:"mobile_num"`
 	PubVideoNum int64     `json:"pub_video_num"`
 	PubPostNum  int64     `json:"pub_post_num"`
@@ -364,7 +365,7 @@ func (m *UserModel) AddUser() error {
 }
 
 func (m *UserModel) UpdateUser() (int64, error) {
-	return m.Engine.Update(m.User)
+	return m.Engine.Where("id=?", m.User.Id).Update(m.User)
 }
 
 // 昵称是否重复
@@ -670,7 +671,7 @@ func (m *UserModel) AddActivityRecord(userId string, now, activityType int) (int
 // 获取官方用户列表
 func (m *UserModel) GetOfficialUsers(offset, size int) ([]*OfficialUserInfo, error) {
 	var list []*OfficialUserInfo
-	if err := m.Engine.SQL("SELECT user_id, nick_name, mobile_num, id FROM user " +
+	if err := m.Engine.SQL("SELECT user_id, nick_name, mobile_num, id, avatar FROM user " +
 		"WHERE account_type=1 ORDER BY id DESC LIMIT ?, ?", offset, size).Find(&list); err != nil {
 		return nil, err
 	}
