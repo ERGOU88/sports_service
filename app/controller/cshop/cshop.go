@@ -119,7 +119,7 @@ func (svc *ShopModule) GetProductDetail(productId, indexes, userId string) (int,
 
 	stockInfo, err := svc.shop.GetProductSkuStock(fmt.Sprint(detail.Id))
 	if err == nil {
-		detail.Stock = stockInfo.Stock
+		detail.Stock = stockInfo.Stock - stockInfo.PurchasedNum
 		detail.MinBuy = stockInfo.MinBuy
 		detail.MaxBuy = stockInfo.MaxBuy
 	}
