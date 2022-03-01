@@ -212,7 +212,7 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 	}
 
 	mp := make(map[int64]*mcontest.ScheduleListDetailResp)
-	ranking := 0
+	num := 0
 	for _, item := range list {
 		// key 选手id
 		if _, ok :=  mp[item.PlayerId]; !ok {
@@ -242,8 +242,8 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 				detail.RoundThreeScore = util.ResolveTimeByMilliSecond(item.Score)
 			}
 
-			detail.Ranking = ranking
-			ranking++
+			detail.Ranking = item.Ranking
+			num++
 			mp[item.PlayerId] = detail
 		} else {
 			if item.Rounds == 1 {
@@ -265,7 +265,7 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 	}
 
 	// 防止数组越界
-	if ranking > len(mp) {
+	if num > len(mp) {
 		return errdef.ERROR, nil
 	}
 

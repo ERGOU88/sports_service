@@ -302,7 +302,7 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 		}
 
 		mp := make(map[int64]*mcontest.ScheduleListDetailResp)
-		ranking := 0
+		num := 0
 		for _, item := range list {
 			// key 选手id
 			if _, ok :=  mp[item.PlayerId]; !ok {
@@ -326,8 +326,8 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 					detail.RoundThreeScore = util.ResolveTimeByMilliSecond(item.Score)
 				}
 
-				detail.Ranking = ranking
-				ranking++
+				detail.Ranking = item.Ranking - 1
+				num++
 				mp[item.PlayerId] = detail
 			} else {
 				if item.Rounds == 1 {
@@ -345,7 +345,7 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 		}
 
 		// 防止数组越界
-		if ranking > len(mp) {
+		if num > len(mp) {
 			return errdef.CONTEST_PROMOTION_INFO_FAIL, nil
 		}
 
