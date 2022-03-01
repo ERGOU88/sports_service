@@ -364,7 +364,7 @@ func (m *UserModel) AddUser() error {
 }
 
 func (m *UserModel) UpdateUser() (int64, error) {
-	return m.Engine.Update(m.User)
+	return m.Engine.Where("id=?", m.User.Id).Update(m.User)
 }
 
 // 昵称是否重复
