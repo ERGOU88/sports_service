@@ -219,6 +219,7 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 			detail := &mcontest.ScheduleListDetailResp{}
 			detail.GroupName = item.GroupName
 			detail.GroupNum = item.GroupNum
+			detail.NumInGroup = item.NumInGroup
 			detail.Id = item.Id
 			detail.PlayerId = item.PlayerId
 			detail.PlayerName = item.PlayerName
