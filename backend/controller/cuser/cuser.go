@@ -237,6 +237,15 @@ func (svc *UserModule) GetOfficialUsers(page, size int) (int, []*muser.OfficialU
 	return errdef.SUCCESS, list
 }
 
+func (svc *UserModule) GetOfficialUserTotal() int64 {
+	total, err := svc.user.GetOfficialUserTotal()
+	if err != nil {
+		return 0
+	}
+	
+	return total
+}
+
 // 添加官方用户
 func (svc *UserModule) AddOfficialUser(param *models.User) int {
 	now := int(time.Now().Unix())
@@ -251,5 +260,18 @@ func (svc *UserModule) AddOfficialUser(param *models.User) int {
 		return errdef.ERROR
 	}
 
+	return errdef.SUCCESS
+}
+
+// 编辑官方用户
+func (svc *UserModule) EditOfficialUser(param *models.User) int {
+	now := int(time.Now().Unix())
+	param.UpdateAt = now
+	svc.user.User = param
+	if _, err := svc.user.UpdateUser(); err != nil {
+		log.Log.Errorf("user_trace: update user fail, err:%s", err)
+		return errdef.ERROR
+	}
+	
 	return errdef.SUCCESS
 }
