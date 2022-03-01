@@ -51,6 +51,7 @@ type ScheduleDetail struct {
 	ContestId  int    `json:"contest_id"`
 	BeginTm    int    `json:"begin_tm"`
 	EndTm      int    `json:"end_tm"`
+	ReceiveIntegral int `json:"receive_integral"`
 }
 
 
@@ -70,6 +71,8 @@ type ScheduleListDetailResp struct {
 	RoundOneScore      string    `json:"round_one_score"`
 	RoundTwoScore      string    `json:"round_two_score"`
 	RoundThreeScore    string    `json:"round_three_score"`
+	RoundOneIntegral   int       `json:"round_one_integral"`
+	RoundTwoIntegral   int       `json:"round_two_integral"`
 	GroupName          string    `json:"group_name"`
 	GroupNum           int       `json:"group_num"`
 	NumInGroup         int       `json:"num_in_group"`
