@@ -67,6 +67,7 @@ type ScheduleListDetailResp struct {
 	ContestId  int    `json:"contest_id"`
 	Ranking    int    `json:"ranking"`
 	Ids        []int64 `json:"ids,omitempty"`
+	Index      int     `json:"index"`
 
 	BestScore          string    `json:"best_score"`
 	RoundOneScore      string    `json:"round_one_score"`
