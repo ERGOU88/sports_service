@@ -52,6 +52,7 @@ type ScheduleDetail struct {
 	BeginTm    int    `json:"begin_tm"`
 	EndTm      int    `json:"end_tm"`
 	ReceiveIntegral int `json:"receive_integral"`
+	Ranking   int     `json:"ranking"`
 }
 
 
@@ -66,6 +67,7 @@ type ScheduleListDetailResp struct {
 	ContestId  int    `json:"contest_id"`
 	Ranking    int    `json:"ranking"`
 	Ids        []int64 `json:"ids,omitempty"`
+	Index      int     `json:"index"`
 
 	BestScore          string    `json:"best_score"`
 	RoundOneScore      string    `json:"round_one_score"`
@@ -186,7 +188,7 @@ func (m *ContestModel) GetScheduleDetail(contestId, scheduleId string) ([]*model
 const (
 	GET_SCHEDULE_DETAIL_BY_SCORE = "SELECT p.id AS player_id, p.name AS player_name, p.photo, cs.* FROM fpv_contest_player_information AS p " +
 		"LEFT JOIN fpv_contest_schedule_detail AS cs ON p.id = cs.player_id AND cs.contest_id=? AND cs.schedule_id=? " +
-		" WHERE p.status = 0 ORDER BY cs.score is null, cs.score ASC,cs.id DESC, ISNULL(cs.ranking),cs.ranking ASC, p.id ASC"
+		" WHERE p.status = 0 ORDER BY ISNULL(cs.ranking),cs.ranking ASC,cs.score is null, cs.score ASC,cs.id DESC, p.id ASC"
 
 	GET_SCHEDULE_DETAIL_BY_GROUP = "SELECT cs.*, p.id AS player_id, p.name AS player_name, p.photo FROM " +
 		"fpv_contest_schedule_detail AS cs LEFT JOIN fpv_contest_player_information AS p " +
@@ -194,8 +196,8 @@ const (
 
 	GET_SCHEDULE_DETAIL_BY_BACKEND = "SELECT p.id AS player_id, p.name AS player_name, p.photo, cs.* FROM " +
 		"fpv_contest_schedule_detail AS cs LEFT JOIN fpv_contest_player_information AS p ON p.id = cs.player_id " +
-		"AND cs.contest_id=? AND cs.schedule_id=? WHERE p.status = 0 ORDER BY cs.score is null, cs.score ASC, cs.id DESC, " +
-		"ISNULL(cs.ranking),cs.ranking ASC, p.id ASC"
+		"AND cs.contest_id=? AND cs.schedule_id=? WHERE p.status = 0 ORDER BY ISNULL(cs.ranking),cs.ranking ASC,cs.score is null, cs.score ASC, cs.id DESC, " +
+		" p.id ASC"
 
 
 )

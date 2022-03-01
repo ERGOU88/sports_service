@@ -218,12 +218,20 @@ func ResolveTimeByMilliSecond(seconds int) string {
   if minute > 0 {
 
     res += fmt.Sprintf("%d′", minute)
+  } else {
+    res += "0′"
   }
 
-  res += fmt.Sprintf("%d″", second)
+  if second > 0 {
+    res += fmt.Sprintf("%d″", second)
+  } else {
+    res += "0″"
+  }
 
   if milliSecond > 0 {
     res += fmt.Sprintf("%d", milliSecond)
+  } else {
+    res += "000"
   }
 
   return res
