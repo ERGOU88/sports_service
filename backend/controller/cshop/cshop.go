@@ -172,7 +172,7 @@ func (svc *ShopModule) GetProductDetail(productId string) (int, *mshop.ProductDe
 	if skuList != nil {
 		detail.SkuList = skuList
 		for _, item := range detail.SkuList {
-			stockInfo, err := svc.shop.GetProductSkuStock(fmt.Sprint(detail.Id))
+			stockInfo, err := svc.shop.GetProductSkuStock(fmt.Sprint(item.Id))
 			if err == nil {
 				item.Stock = stockInfo.Stock
 				item.MinBuy = stockInfo.MinBuy
