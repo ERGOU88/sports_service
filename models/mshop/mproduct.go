@@ -299,7 +299,7 @@ const (
 		"`stock` >= `purchased_num`+ ? AND `purchased_num` + ? >= 0 LIMIT 1"
 )
 func (m *ShopModel) UpdateProductSkuStock(skuId string, count int) (int64, error) {
-	res, err := m.Engine.Exec(UPDATE_PRODUCT_SKU_STOCK, count, skuId, count)
+	res, err := m.Engine.Exec(UPDATE_PRODUCT_SKU_STOCK, count, skuId, count, count)
 	if err != nil {
 		return 0, err
 	}
