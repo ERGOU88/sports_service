@@ -17,6 +17,10 @@ type baseInfo struct {
 	T                int       `json:"t"`
 }
 
+type AddLiveDataParam struct {
+	List []*models.FpvContestScheduleLiveData `json:"list"`
+}
+
 // 推流/断流/流录制 回调信息
 type StreamCallbackInfo struct {
 	baseInfo
@@ -235,4 +239,18 @@ func (m *ContestModel) GetLiveCount() int64 {
 	}
 	
 	return count
+}
+
+func (m *ContestModel) AddLiveData(list []*models.FpvContestScheduleLiveData) (int64, error) {
+	return m.Engine.InsertMulti(list)
+}
+
+func (m *ContestModel) GetLiveDataById(liveId string) ([]*models.FpvContestScheduleLiveData, error) {
+	var list []*models.FpvContestScheduleLiveData
+	if err := m.Engine.Where("status=0 AND live_id=?", liveId).Asc("ranking").Find(&list); err != nil {
+		return list, err
+	}
+	
+	return list, nil
+	
 }

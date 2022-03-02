@@ -440,3 +440,35 @@ func (svc *ContestModule) GetContestLiveList(page, size int) (int, []*mcontest.V
 func (svc *ContestModule) GetContestLiveCount() int64 {
 	return svc.contest.GetLiveCount()
 }
+
+func (svc *ContestModule) AddLiveData(param *mcontest.AddLiveDataParam) int {
+	now := int(time.Now().Unix())
+	for _, item := range param.List {
+		item.CreateAt = now
+		ok, err := svc.contest.GetPlayerInfoById(fmt.Sprint(item.PlayerId))
+		if ok && err == nil {
+			item.Photo = svc.contest.PlayerInfo.Photo
+			item.Gender = svc.contest.PlayerInfo.Gender
+			item.Name = svc.contest.PlayerInfo.Name
+		}
+	}
+	
+	if _, err := svc.contest.AddLiveData(param.List); err != nil {
+		return errdef.ERROR
+	}
+	
+	return errdef.SUCCESS
+}
+
+func (svc *ContestModule) GetContestLiveData(liveId string) (int, []*models.FpvContestScheduleLiveData) {
+	list, err := svc.contest.GetLiveDataById(liveId)
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+	
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*models.FpvContestScheduleLiveData{}
+	}
+	
+	return errdef.SUCCESS, list
+}
