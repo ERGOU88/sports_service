@@ -401,7 +401,7 @@ func (svc *PostModule) GetApplyCreamCount() int64 {
 
 // 板块列表
 func (svc *PostModule) GetSectionList() (int, []*models.CommunitySection) {
-	list, err := svc.community.GetAllSection()
+	list, err := svc.community.GetAllSection("")
 	if err != nil {
 		return errdef.ERROR, nil
 	}
