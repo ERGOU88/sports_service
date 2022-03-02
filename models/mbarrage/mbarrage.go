@@ -80,7 +80,7 @@ type VideoBarrageInfo struct {
 // 后台分页获取 视频弹幕 列表
 func (m *BarrageModel) GetVideoBarrageList(offset, size int) []*VideoBarrageInfo {
   sql := "SELECT vb.*, v.title, v.video_addr FROM video_barrage AS vb LEFT JOIN videos AS v ON vb.video_id=v.video_id " +
-  	"WHERE vb.barrage_type=0 GROUP BY vb.id LIMIT ?, ?"
+  	"WHERE vb.barrage_type=0 GROUP BY vb.id ORDER BY vb.id DESC LIMIT ?, ?"
   var list []*VideoBarrageInfo
   if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
       log.Log.Errorf("barrage_trace: get video barrage list by sort, err:%s", err)
@@ -93,7 +93,7 @@ func (m *BarrageModel) GetVideoBarrageList(offset, size int) []*VideoBarrageInfo
 // 后台分页获取 直播弹幕 列表
 func (m *BarrageModel) GetLiveBarrageList(offset, size int) []*models.VideoBarrage {
 	var list []*models.VideoBarrage
-	if err := m.Engine.Where("barrage_type=1").Limit(size, offset).Find(&list); err != nil {
+	if err := m.Engine.Where("barrage_type=1").Desc("id").Limit(size, offset).Find(&list); err != nil {
 		return []*models.VideoBarrage{}
 	}
 
