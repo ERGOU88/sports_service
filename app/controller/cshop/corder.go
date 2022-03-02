@@ -25,6 +25,7 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 	// 默认详情页下单
 	resp.ActionType = consts.ORDER_ACTION_TYPE_DETAIL
 	resp.ChannelId = param.Channel
+	resp.IsEnough = true
 	// 存储购物车id
 	cartIds := make([]int, 0)
 	for index, item := range param.Products {
@@ -62,7 +63,6 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 			return code, nil
 		}
 		
-		resp.IsEnough = true
 		if info.IsEnough == false {
 			resp.IsEnough = false
 		}
