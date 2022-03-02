@@ -82,9 +82,9 @@ func (m *CommunityModel) GetTopicByIds(ids []string) ([]*models.CommunityTopic, 
 }
 
 // 获取社区所有板块
-func (m *CommunityModel) GetAllSection() ([]*models.CommunitySection, error) {
+func (m *CommunityModel) GetAllSection(condition string) ([]*models.CommunitySection, error) {
 	var list []*models.CommunitySection
-	if err := m.Engine.Where("status=1").Desc("sortorder").Find(&list); err != nil {
+	if err := m.Engine.Where(condition).Desc("sortorder").Find(&list); err != nil {
 		return nil, err
 	}
 

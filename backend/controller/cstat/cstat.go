@@ -341,7 +341,7 @@ func (svc *StatModule) VideoResultInfo(days, pubType int, data []*mstat.Stat, ma
 				
 			}
 		} else {
-			sections, err := svc.community.GetAllSection()
+			sections, err := svc.community.GetAllSection("")
 			if err != nil {
 				log.Log.Errorf("stat_trace: get all section fail, err:%s", err)
 				break
@@ -417,7 +417,7 @@ func (svc *StatModule) ResultInfo(days, pubType int, data []*mstat.Stat, maxDate
 
 			}
 		} else {
-			sections, err := svc.community.GetAllSection()
+			sections, err := svc.community.GetAllSection("")
 			if err != nil {
 				log.Log.Errorf("stat_trace: get all section fail, err:%s", err)
 				break
