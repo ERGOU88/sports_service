@@ -80,6 +80,12 @@ func (svc *VenueModule) GetVenueList() (int, []*VenueInfoRes) {
 			PromotionPic: tencentCloud.BucketURI(item.PromotionPic),
 		}
 		
+		info.MarkList = make([]*models.VenueRecommendConf, 0)
+		info.MarkList, err = svc.venue.MarkList(fmt.Sprint(info.Id))
+		if err != nil {
+			info.MarkList = []*models.VenueRecommendConf{}
+		}
+		
 		if err = util.JsonFast.UnmarshalFromString(item.VenueImages, &info.VenueImages); err != nil {
 			log.Log.Errorf("venue_trace: image unmarshal fail, err:%s", err)
 		}
