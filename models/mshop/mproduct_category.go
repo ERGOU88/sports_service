@@ -101,13 +101,13 @@ func (m *ShopModel) CleanCategoryInfoByMem() {
 
 // 从内存读取分类 （第一次请求 内存没有 则从数据库load到内存）
 func (m *ShopModel) GetProductCategory() []*Category {
-	if len(categoryList) == 0 {
+	//if len(categoryList) == 0 {
 		var err error
 		err, categoryList = m.LoadCategoryInfoByDb()
 		if err != nil {
 			return []*Category{}
 		}
-	}
+	//}
 
 	return categoryList
 }
