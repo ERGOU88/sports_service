@@ -40,6 +40,7 @@ type VenueInfoRes struct {
 	TotalSales    int64    `json:"total_sales"`    // 销售总额
 	OrderNum      int64    `json:"order_num"`      // 订单数量（成功订单）
 	TotalRefund   int64    `json:"total_refund"`   // 退款总额
+	MarkList      []*models.VenueRecommendConf  `json:"mark_list"`
 }
 
 func New(c *gin.Context) *VenueModule {
@@ -133,6 +134,11 @@ func (svc *VenueModule) GetVenueInfo(id string) (*VenueInfoRes, error) {
 		Services: svc.venue.Venue.Services,
 		Instructions: svc.venue.Venue.Instructions,
 		PromotionPic: tencentCloud.BucketURI(svc.venue.Venue.PromotionPic),
+	}
+	
+	info.MarkList, err = svc.venue.MarkList(fmt.Sprint(info.Id))
+	if err != nil {
+		info.MarkList = make([]*models.VenueRecommendConf, 0)
 	}
 
 	if err = util.JsonFast.UnmarshalFromString(svc.venue.Venue.VenueImages, &info.VenueImages); err != nil {

@@ -121,7 +121,7 @@ func (m *PostingModel) GetApplyCreamCount() (int64, error) {
 
 // 更新申精状态
 func (m *PostingModel) UpdateApplyCreamStatus(id int64) (int64, error) {
-	return m.Engine.Where("id=?", id).Cols("status").Update(m.ApplyCream)
+	return m.Engine.Where("post_id=?", id).Cols("status").Update(m.ApplyCream)
 }
 
 // 批量编辑
