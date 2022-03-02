@@ -49,7 +49,7 @@ func (m *VenueModel) DelMark(ids []int) (int64, error) {
 
 func (m *VenueModel) MarkList(venueId string) ([]*models.VenueRecommendConf, error) {
 	var list []*models.VenueRecommendConf
-	if err := m.Engine.Where("venue_id=?", venueId).Find(&list); err != nil {
+	if err := m.Engine.Where("venue_id=? AND status=0", venueId).Find(&list); err != nil {
 		return nil, err
 	}
 	
