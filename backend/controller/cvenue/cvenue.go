@@ -136,9 +136,10 @@ func (svc *VenueModule) GetVenueInfo(id string) (*VenueInfoRes, error) {
 		PromotionPic: tencentCloud.BucketURI(svc.venue.Venue.PromotionPic),
 	}
 	
+	info.MarkList = make([]*models.VenueRecommendConf, 0)
 	info.MarkList, err = svc.venue.MarkList(fmt.Sprint(info.Id))
 	if err != nil {
-		info.MarkList = make([]*models.VenueRecommendConf, 0)
+		info.MarkList = []*models.VenueRecommendConf{}
 	}
 
 	if err = util.JsonFast.UnmarshalFromString(svc.venue.Venue.VenueImages, &info.VenueImages); err != nil {
