@@ -791,3 +791,56 @@ func (svc *ShopModule) DeliverProduct(param *mshop.DeliverProductReq) int {
 	
 	return errdef.SUCCESS
 }
+
+func (svc *ShopModule) OrderCallback(orderId string) int {
+	if err := svc.engine.Begin(); err != nil {
+		return errdef.ERROR
+	}
+	
+	order, err := svc.shop.GetOrder(orderId)
+	if err != nil {
+		return errdef.SHOP_ORDER_NOT_EXISTS
+	}
+	
+	condition := fmt.Sprintf("`pay_status`=%d AND `order_id`='%s'", consts.SHOP_ORDER_TYPE_WAIT, order.OrderId)
+	cols := "pay_status, transaction, pay_time, update_at"
+	order.PayStatus = consts.SHOP_ORDER_TYPE_PAID
+	now := int(time.Now().Unix())
+	order.UpdateAt = now
+	// 复核的订单 第三方交易号 为原始订单号
+	order.Transaction = order.OrderId
+	order.PayTime = now
+	// 更新订单状态
+	if _, err := svc.shop.UpdateOrderInfo(condition, cols, order); err != nil {
+		log.Log.Errorf("shop_trace: update order info fail, orderId:%s, err:%v", order.OrderId, err)
+		svc.engine.Rollback()
+		return errdef.ERROR
+	}
+	
+	list, err := svc.shop.GetOrderProductList(order.OrderId)
+	if err != nil {
+		log.Log.Errorf("shop_trace: get order product list fail, orderId:%s, err:%s", orderId, err)
+		svc.engine.Rollback()
+		return errdef.ERROR
+	}
+	
+	for _, item := range list {
+		product, err := svc.shop.GetProductSpu(fmt.Sprint(item.ProductId))
+		if err != nil || product == nil {
+			log.Log.Errorf("order_trace: get product spu fail, productId:%d,  err:%s", item.ProductId, err)
+			continue
+		}
+		
+		condition := fmt.Sprintf("id=%d", item.ProductId)
+		cols := "sale_num"
+		// 更新产品销量
+		if _, err := svc.shop.UpdateProductInfo(condition, cols, product); err != nil {
+			log.Log.Errorf("order_trace: update product info fail, productId:%d, err:%s", product.Id, err)
+			svc.engine.Rollback()
+			return errdef.ERROR
+		}
+	}
+	
+	svc.engine.Commit()
+	return errdef.SUCCESS
+}

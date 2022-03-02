@@ -442,6 +442,11 @@ func (svc *ContestModule) GetContestLiveCount() int64 {
 }
 
 func (svc *ContestModule) AddLiveData(param *mcontest.AddLiveDataParam) int {
+	if err := svc.engine.Begin(); err != nil {
+		return errdef.ERROR
+	}
+	
+	var liveId int64
 	now := int(time.Now().Unix())
 	for _, item := range param.List {
 		item.CreateAt = now
@@ -451,12 +456,21 @@ func (svc *ContestModule) AddLiveData(param *mcontest.AddLiveDataParam) int {
 			item.Gender = svc.contest.PlayerInfo.Gender
 			item.Name = svc.contest.PlayerInfo.Name
 		}
+		
+		liveId = item.LiveId
 	}
 	
-	if _, err := svc.contest.AddLiveData(param.List); err != nil {
+	if _, err := svc.contest.DelLiveDataById(fmt.Sprint(liveId)); err != nil {
+		svc.engine.Rollback()
 		return errdef.ERROR
 	}
 	
+	if _, err := svc.contest.AddLiveData(param.List); err != nil {
+		svc.engine.Rollback()
+		return errdef.ERROR
+	}
+	
+	svc.engine.Commit()
 	return errdef.SUCCESS
 }
 

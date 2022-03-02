@@ -241,6 +241,10 @@ func (m *ContestModel) GetLiveCount() int64 {
 	return count
 }
 
+func (m *ContestModel) DelLiveDataById(liveId string) (int64, error) {
+	return m.Engine.Where("live_id=?", liveId).Delete(&models.FpvContestScheduleLiveData{})
+}
+
 func (m *ContestModel) AddLiveData(list []*models.FpvContestScheduleLiveData) (int64, error) {
 	return m.Engine.InsertMulti(list)
 }
