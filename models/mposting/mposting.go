@@ -373,8 +373,8 @@ func (m *PostingModel) GetPostNumByTopic(topicId string) (int64, error) {
 
 const (
 	GET_POST_LIST_BY_SECTION = "SELECT p.*, ps.fabulous_num, ps.browse_num, ps.share_num, ps.comment_num, ps.heat_num FROM " +
-		"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 AND p.section_id=? AND p.is_top=0 " +
-		" ORDER BY p.is_cream DESC, p.id DESC LIMIT ?, ?"
+		"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 AND p.section_id=? " +
+		" ORDER BY p.is_top DESC, p.id DESC LIMIT ?, ?"
 )
 // 通过板块id 获取帖子列表
 func (m *PostingModel) GetPostListBySectionId(sectionId string, offset, size int) ([]*PostDetailInfo, error) {
@@ -391,13 +391,13 @@ func (m *PostingModel) GetPostListBySectionId(sectionId string, offset, size int
 func (m *PostingModel) GetPostListByTopicId(topicId, sortHot string, offset, size int) ([]*PostDetailInfo, error) {
 	var list []*PostDetailInfo
 	sql := "SELECT p.*,ps.* FROM `posting_info` AS p LEFT JOIN `posting_topic` as pt ON p.id=pt.posting_id " +
-		"LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 AND pt.topic_id=? AND p.is_top=0 ORDER BY "
+		"LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id WHERE p.status=1 AND pt.topic_id=?  ORDER BY "
 
 	if sortHot == consts.POST_SORT_HOT {
 		sql += "ps.`heat_num` DESC, "
 	}
 
-	sql += "sortorder DESC, id DESC LIMIT ?, ?"
+	sql += "p.is_top DESC, p.sortorder DESC, p.id DESC LIMIT ?, ?"
 
 	if err := m.Engine.SQL(sql, topicId, offset, size).Find(&list); err != nil {
 		return nil, err
