@@ -107,7 +107,8 @@ func (svc *CommunityModule) GetCommunityTopics(sectionId, isHot string, page, si
 
 // 获取社区板块
 func (svc *CommunityModule) GetCommunitySections() (int, []*mcommunity.CommunitySectionInfo) {
-	list, err := svc.community.GetAllSection()
+	condition := "status=1"
+	list, err := svc.community.GetAllSection(condition)
 	if list == nil || err != nil {
 		return errdef.COMMUNITY_SECTIONS_FAIL, []*mcommunity.CommunitySectionInfo{}
 	}
