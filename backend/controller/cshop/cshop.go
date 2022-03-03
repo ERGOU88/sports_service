@@ -99,7 +99,13 @@ func (svc *ShopModule) AddCategory(params *models.ProductCategory) int {
 }
 
 func (svc *ShopModule) EditCategory(params *models.ProductCategory) int {
-	if _, err := svc.shop.UpdateProductCategory(params.CategoryId, util.StructToMap(params)); err != nil {
+	str, _ := util.JsonFast.MarshalToString(params)
+	mp, err := util.JsonStringToMap(str)
+	if err != nil {
+		return errdef.ERROR
+	}
+	
+	if _, err := svc.shop.UpdateProductCategory(params.CategoryId, mp); err != nil {
 		log.Log.Errorf("shop_trace: update category fail, err:%s", err)
 		return errdef.SHOP_EDIT_CATEGORY_FAIL
 	}
@@ -475,8 +481,13 @@ func (svc *ShopModule) EditProduct(params *mshop.AddOrEditProductReq) int {
 		return errdef.ERROR
 	}
 	
-	mp := util.StructToMap(spu)
-	log.Log.Errorf("mp:%+v", mp)
+	str, _ := util.JsonFast.MarshalToString(spu)
+	mp, err := util.JsonStringToMap(str)
+	if err != nil {
+		svc.engine.Rollback()
+		return errdef.ERROR
+	}
+	
 	if _, err := svc.shop.UpdateProductSpu(fmt.Sprint(spu.Id), mp); err != nil {
 		log.Log.Errorf("shop_trace: update product spu fail, err:%s", err)
 		svc.engine.Rollback()
