@@ -99,7 +99,7 @@ func (svc *ShopModule) AddCategory(params *models.ProductCategory) int {
 }
 
 func (svc *ShopModule) EditCategory(params *models.ProductCategory) int {
-	if _, err := svc.shop.UpdateProductCategory(params); err != nil {
+	if _, err := svc.shop.UpdateProductCategory(params.CategoryId, util.StructToMap(params)); err != nil {
 		log.Log.Errorf("shop_trace: update category fail, err:%s", err)
 		return errdef.SHOP_EDIT_CATEGORY_FAIL
 	}
@@ -475,7 +475,8 @@ func (svc *ShopModule) EditProduct(params *mshop.AddOrEditProductReq) int {
 		return errdef.ERROR
 	}
 	
-	if _, err := svc.shop.UpdateProductSpu(spu); err != nil {
+	mp := util.StructToMap(spu)
+	if _, err := svc.shop.UpdateProductSpu(fmt.Sprint(spu.Id), mp); err != nil {
 		log.Log.Errorf("shop_trace: update product spu fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.SHOP_UPDATE_SPU_FAIL
