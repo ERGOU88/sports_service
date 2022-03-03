@@ -120,10 +120,10 @@ func (c *AliPayClient) TradeRefund() (*alipay.TradeRefundResponse, error) {
 }
 
 // 交易查询
-func (c *AliPayClient) TradeQuery(orderId string) (*alipay.TradeQueryResponse, error) {
+func (c *AliPayClient) TradeQuery() (*alipay.TradeQueryResponse, error) {
 	// 请求参数
 	body := make(gopay.BodyMap)
-	body.Set("out_trade_no", orderId)
+	body.Set("out_trade_no", c.OutTradeNo)
 	
 	// 查询订单
 	aliRsp, err := c.Client.TradeQuery(body)

@@ -268,3 +268,18 @@ func (c *WechatPayClient) TradeNativePay() (map[string]interface{}, error) {
 	
 	return mp, nil
 }
+
+func (c *WechatPayClient) TradeQuery() (*wechat.QueryOrderResponse, gopay.BodyMap, error) {
+	// 初始化参数结构体
+	bm := make(gopay.BodyMap)
+	bm.Set("out_trade_no", c.OutTradeNo).
+		Set("nonce_str", util.GetRandomString(32)).
+		Set("sign_type", wechat.SignType_MD5)
+	
+	wxRsp, resBm, err := c.Client.QueryOrder(bm)
+	if err != nil {
+		return nil, nil, err
+	}
+	
+	return wxRsp, resBm, nil
+}

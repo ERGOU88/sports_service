@@ -9,11 +9,15 @@ import (
 	"sports_service/server/global/backend/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models"
+	"sports_service/server/models/mpay"
 	"sports_service/server/models/mshop"
 	"sports_service/server/models/muser"
+	"sports_service/server/tools/wechat"
 	"sports_service/server/util"
+	"strconv"
+	"strings"
 	"time"
-	//"sports_service/server/tools/alipay"
+	"sports_service/server/tools/alipay"
 )
 
 type ShopModule struct {
@@ -21,15 +25,19 @@ type ShopModule struct {
 	engine      *xorm.Session
 	user        *muser.UserModel
 	shop        *mshop.ShopModel
+	pay         *mpay.PayModel
 }
 
 func New(c *gin.Context) ShopModule {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
+	venueSocket := dao.AppEngine.NewSession()
+	defer socket.Close()
 	return ShopModule{
 		context: c,
 		user: muser.NewUserModel(socket),
 		shop: mshop.NewShop(socket),
+		pay: mpay.NewPayModel(venueSocket),
 		engine: socket,
 	}
 }
@@ -793,18 +801,89 @@ func (svc *ShopModule) DeliverProduct(param *mshop.DeliverProductReq) int {
 	return errdef.SUCCESS
 }
 
-func (svc *ShopModule) OrderCallback(orderId string) {
-	//alipay := alipay.NewAliPay()
-}
-
-func (svc *ShopModule) SetOrderSuccess(orderId string) int {
-	if err := svc.engine.Begin(); err != nil {
+func (svc *ShopModule) OrderCallback(orderId string) int {
+	order, err := svc.shop.GetOrder(orderId)
+	if err != nil || order.PayStatus != consts.SHOP_ORDER_TYPE_WAIT {
+		return errdef.SHOP_ORDER_NOT_EXISTS
+	}
+	
+	ok, err := svc.pay.GetPaymentChannel(order.PayChannelId)
+	if !ok || err != nil {
+		log.Log.Errorf("order_trace: get payment channel fail, orderId:%s, ok:%v, err:%s", order.OrderId,
+			ok, err)
 		return errdef.ERROR
 	}
 	
-	order, err := svc.shop.GetOrder(orderId)
-	if err != nil {
-		return errdef.SHOP_ORDER_NOT_EXISTS
+	switch svc.pay.PayChannel.Identifier {
+	case "alipay":
+		alipayCli := alipay.NewAliPay(true, svc.pay.PayChannel.AppId, svc.pay.PayChannel.PrivateKey)
+		alipayCli.OutTradeNo = order.OrderId
+		rsp, err := alipayCli.TradeQuery()
+		if err != nil {
+			log.Log.Errorf("order_trace: alipay trade query fail, orderId:%s, err:%s", order.OrderId, err)
+			return errdef.ERROR
+		}
+		
+		amount, err := strconv.ParseFloat(strings.Trim(rsp.Response.TotalAmount, " "), 64)
+		if err != nil {
+			log.Log.Errorf("order_trace: parse float fail, err:%s", err)
+			return errdef.ERROR
+		}
+		
+		if int(amount * 100) != order.PayAmount {
+			log.Log.Error("order_trace: amount not match, orderAmount:%d, amount:%d",
+				order.PayAmount, amount * 100)
+			return errdef.ERROR
+		}
+		
+		if rsp.Response.Code != "10000" || rsp.Response.TradeStatus != consts.TradeSuccess {
+			log.Log.Errorf("order_trace: request fail, orderId:%s, response:%+v", order.OrderId, rsp.Response)
+			return errdef.ERROR
+		}
+		
+		order.Transaction = rsp.Response.TradeNo
+		payTime, _ := time.ParseInLocation("2006-01-02 15:04:05", rsp.Response.SendPayDate, time.Local)
+		order.PayTime = int(payTime.Unix())
+		
+	case "weixin":
+		wxCli := wechat.NewWechatPay(true, svc.pay.PayChannel.AppId, svc.pay.PayChannel.AppKey, svc.pay.PayChannel.AppSecret)
+		wxCli.OutTradeNo = order.OrderId
+		rsp, _, err := wxCli.TradeQuery()
+		if err != nil {
+			log.Log.Errorf("order_trace: wx trade query fail, orderId:%s, err:%s", order.OrderId, err)
+			return errdef.ERROR
+		}
+		
+		totalFee, err := strconv.Atoi(rsp.TotalFee)
+		if err != nil {
+			return errdef.ERROR
+		}
+		
+		if order.PayAmount != totalFee {
+			log.Log.Error("order_trace: amount not match, orderAmount:%d, amount:%d",
+				order.PayAmount, rsp.TotalFee)
+			return errdef.ERROR
+		}
+		
+		if rsp.ReturnCode != "SUCCESS" || rsp.ResultCode != "SUCCESS" || rsp.TradeState != "SUCCESS" {
+			log.Log.Errorf("order_trace: request fail, orderId:%s, response:%+v", order.OrderId, rsp)
+			return errdef.ERROR
+		}
+		
+		order.Transaction = rsp.TransactionId
+		payTime, _ := time.ParseInLocation("20060102150405", rsp.TimeEnd, time.Local)
+		order.PayTime = int(payTime.Unix())
+		
+	default:
+		return errdef.ERROR
+	}
+	
+	return svc.SetOrderSuccess(order)
+}
+
+func (svc *ShopModule) SetOrderSuccess(order *models.Orders) int {
+	if err := svc.engine.Begin(); err != nil {
+		return errdef.ERROR
 	}
 	
 	condition := fmt.Sprintf("`pay_status`=%d AND `order_id`='%s'", consts.SHOP_ORDER_TYPE_WAIT, order.OrderId)
@@ -812,9 +891,6 @@ func (svc *ShopModule) SetOrderSuccess(orderId string) int {
 	order.PayStatus = consts.SHOP_ORDER_TYPE_PAID
 	now := int(time.Now().Unix())
 	order.UpdateAt = now
-	// 复核的订单 第三方交易号 为原始订单号
-	order.Transaction = order.OrderId
-	order.PayTime = now
 	// 更新订单状态
 	if _, err := svc.shop.UpdateOrderInfo(condition, cols, order); err != nil {
 		log.Log.Errorf("shop_trace: update order info fail, orderId:%s, err:%v", order.OrderId, err)
@@ -824,7 +900,7 @@ func (svc *ShopModule) SetOrderSuccess(orderId string) int {
 	
 	list, err := svc.shop.GetOrderProductList(order.OrderId)
 	if err != nil {
-		log.Log.Errorf("shop_trace: get order product list fail, orderId:%s, err:%s", orderId, err)
+		log.Log.Errorf("shop_trace: get order product list fail, orderId:%s, err:%s", order.OrderId, err)
 		svc.engine.Rollback()
 		return errdef.ERROR
 	}
