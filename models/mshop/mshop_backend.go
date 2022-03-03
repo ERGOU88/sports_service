@@ -113,8 +113,8 @@ func (m *ShopModel) AddProductCategory(info *models.ProductCategory) (int64, err
 	return m.Engine.InsertOne(info)
 }
 
-func (m *ShopModel) UpdateProductCategory(info *models.ProductCategory) (int64, error) {
-	return m.Engine.Where("category_id=?", info.CategoryId).Update(info)
+func (m *ShopModel) UpdateProductCategory(id int, mp map[string]interface{}) (int64, error) {
+	return m.Engine.Where("category_id=?", id).Update(mp)
 }
 
 func (m *ShopModel) GetServiceList() ([]AfterService, error) {
@@ -179,8 +179,8 @@ func (m *ShopModel) AddProductSpu(spu *models.Products) (int64, error) {
 }
 
 // 更新商品spu
-func (m *ShopModel) UpdateProductSpu(spu *models.Products) (int64, error) {
-	return m.Engine.Where("id=?", spu.Id).Update(spu)
+func (m *ShopModel) UpdateProductSpu(id string, mp map[string]interface{}) (int64, error) {
+	return m.Engine.Table(&models.Products{}).Where("id=?", id).Update(mp)
 }
 
 // 添加商品sku
