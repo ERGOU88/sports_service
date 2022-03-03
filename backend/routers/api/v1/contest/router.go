@@ -44,6 +44,10 @@ func Router(engine *gin.Engine) {
 		contest.DELETE("/del/live", DelContestLive)
 		// 赛事直播列表
 		contest.GET("/live/list", ContestLiveList)
+		// 添加直播相关赛事数据
+		contest.POST("/add/live/data", AddLiveData)
+		// 获取直播相关赛事数据
+		contest.GET("/live/data/list", LiveDataList)
 
 	}
 }

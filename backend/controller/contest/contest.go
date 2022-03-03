@@ -440,3 +440,49 @@ func (svc *ContestModule) GetContestLiveList(page, size int) (int, []*mcontest.V
 func (svc *ContestModule) GetContestLiveCount() int64 {
 	return svc.contest.GetLiveCount()
 }
+
+func (svc *ContestModule) AddLiveData(param *mcontest.AddLiveDataParam) int {
+	if err := svc.engine.Begin(); err != nil {
+		return errdef.ERROR
+	}
+	
+	var liveId int64
+	now := int(time.Now().Unix())
+	for _, item := range param.List {
+		item.CreateAt = now
+		ok, err := svc.contest.GetPlayerInfoById(fmt.Sprint(item.PlayerId))
+		if ok && err == nil {
+			item.Photo = svc.contest.PlayerInfo.Photo
+			item.Gender = svc.contest.PlayerInfo.Gender
+			item.Name = svc.contest.PlayerInfo.Name
+		}
+		
+		liveId = item.LiveId
+	}
+	
+	if _, err := svc.contest.DelLiveDataById(fmt.Sprint(liveId)); err != nil {
+		svc.engine.Rollback()
+		return errdef.ERROR
+	}
+	
+	if _, err := svc.contest.AddLiveData(param.List); err != nil {
+		svc.engine.Rollback()
+		return errdef.ERROR
+	}
+	
+	svc.engine.Commit()
+	return errdef.SUCCESS
+}
+
+func (svc *ContestModule) GetContestLiveData(liveId string) (int, []*models.FpvContestScheduleLiveData) {
+	list, err := svc.contest.GetLiveDataById(liveId)
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+	
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*models.FpvContestScheduleLiveData{}
+	}
+	
+	return errdef.SUCCESS, list
+}
