@@ -48,5 +48,7 @@ func Router(engine *gin.Engine) {
 		shop.POST("/deliver/product", DeliverProduct)
 		// 确认收货
 		shop.POST("/confirm/receipt", ConfirmReceipt)
+		// 订单回调 [掉单时 人工操作]
+		shop.POST("/order/callback", OrderCallback)
 	}
 }

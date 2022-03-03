@@ -83,10 +83,10 @@ func (svc *OrderModule) GetOrder(orderId string) (*models.VenuePayOrders, error)
 
 // 支付宝通知 包含[支付成功、部分退款成功、全额退款成功]
 func (svc *OrderModule) AliPayNotify(params url.Values, body string) int {
-	if err := svc.engine.Begin(); err != nil {
-		log.Log.Errorf("payNotify_trace: session begin fail, err:%s", err)
-		return errdef.ERROR
-	}
+	//if err := svc.engine.Begin(); err != nil {
+	//	log.Log.Errorf("payNotify_trace: session begin fail, err:%s", err)
+	//	return errdef.ERROR
+	//}
 	
 	orderId := params.Get("out_trade_no")
 	length := len(orderId)
@@ -134,7 +134,7 @@ func (svc *OrderModule) AliPayNotifyByShop(params url.Values, body string) int {
 				return errdef.ERROR
 			}
 			
-			if err := svc.engine.Begin(); err != nil {
+			if err := svc.shop.Engine.Begin(); err != nil {
 				return errdef.ERROR
 			}
 			
@@ -148,14 +148,14 @@ func (svc *OrderModule) AliPayNotifyByShop(params url.Values, body string) int {
 			// 更新订单状态
 			if _, err := svc.shop.UpdateOrderInfo(condition, cols, order); err != nil {
 				log.Log.Errorf("shop_trace: update order info fail, orderId:%s, err:%v", order.OrderId, err)
-				svc.engine.Rollback()
+				svc.shop.Engine.Rollback()
 				return errdef.SHOP_ORDER_UPDATE_FAIL
 			}
 			
 			list, err := svc.shop.GetOrderProductList(order.OrderId)
 			if err != nil {
 				log.Log.Errorf("shop_trace: get order product list fail, orderId:%s, err:%s", orderId, err)
-				svc.engine.Rollback()
+				svc.shop.Engine.Rollback()
 				return errdef.SHOP_ORDER_UPDATE_FAIL
 			}
 			
@@ -171,12 +171,12 @@ func (svc *OrderModule) AliPayNotifyByShop(params url.Values, body string) int {
 				// 更新产品销量
 				if _, err := svc.shop.UpdateProductInfo(condition, cols, product); err != nil {
 					log.Log.Errorf("order_trace: update product info fail, productId:%d, err:%s", product.Id, err)
-					svc.engine.Rollback()
+					svc.shop.Engine.Rollback()
 					return errdef.SHOP_ORDER_UPDATE_FAIL
 				}
 			}
 			
-			svc.engine.Commit()
+			svc.shop.Engine.Commit()
 			
 		default:
 			return errdef.ERROR

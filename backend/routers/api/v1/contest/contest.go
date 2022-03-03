@@ -206,3 +206,23 @@ func ContestLiveList(c *gin.Context) {
 	reply.Data["total"] = svc.GetContestLiveCount()
 	reply.Response(http.StatusOK, code)
 }
+
+func AddLiveData(c *gin.Context) {
+	reply := errdef.New(c)
+	param := &mcontest.AddLiveDataParam{}
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
+		return
+	}
+	
+	svc := contest.New(c)
+	reply.Response(http.StatusOK, svc.AddLiveData(param))
+}
+
+func LiveDataList(c *gin.Context) {
+	reply := errdef.New(c)
+	svc := contest.New(c)
+	code, list := svc.GetContestLiveData(c.Query("live_id"))
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
+}

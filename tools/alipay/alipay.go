@@ -2,12 +2,12 @@ package alipay
 
 import (
 	"crypto"
+	"errors"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/alipay"
 	"sports_service/server/app/config"
 	"sports_service/server/global/app/log"
 	"sports_service/server/util"
-	"errors"
 )
 
 const (
@@ -116,5 +116,20 @@ func (c *AliPayClient) TradeRefund() (*alipay.TradeRefundResponse, error) {
 		return nil, errors.New("refund fail")
 	}
 
+	return aliRsp, nil
+}
+
+// 交易查询
+func (c *AliPayClient) TradeQuery() (*alipay.TradeQueryResponse, error) {
+	// 请求参数
+	body := make(gopay.BodyMap)
+	body.Set("out_trade_no", c.OutTradeNo)
+	
+	// 查询订单
+	aliRsp, err := c.Client.TradeQuery(body)
+	if err != nil {
+		return aliRsp, err
+	}
+	
 	return aliRsp, nil
 }
