@@ -112,6 +112,15 @@ func (m *ShopModel) GetProductCategory() []*Category {
 	return categoryList
 }
 
+func (m *ShopModel) GetProductCategoryByBackend() (error, []*Category) {
+	var list []*Category
+	if err := m.Engine.Table(&models.ProductCategory{}).Find(&list); err != nil {
+		return err, nil
+	}
+	
+	return nil, list
+}
+
 const (
 	QUERY_PARENT_CATEGORY = "SELECT * FROM `product_category` WHERE `pid` = 0 AND is_show=0 ORDER BY sortorder DESC"
 )
