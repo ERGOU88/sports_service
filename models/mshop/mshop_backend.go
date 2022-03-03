@@ -120,7 +120,7 @@ func (m *ShopModel) AddProductCategory(info *models.ProductCategory) (int64, err
 }
 
 func (m *ShopModel) UpdateProductCategory(id int, mp map[string]interface{}) (int64, error) {
-	return m.Engine.Where("category_id=?", id).Update(mp)
+	return m.Engine.Table(&models.ProductCategory{}).Where("category_id=?", id).Update(mp)
 }
 
 func (m *ShopModel) GetServiceList() ([]AfterService, error) {
