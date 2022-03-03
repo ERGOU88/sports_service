@@ -241,15 +241,15 @@ func (m *ShopModel) GetSpuList(sortType, keyword string, offset, size int) ([]*P
 	
 	switch sortType {
 	case "0":
-		engine.OrderBy("sale_num DESC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
+		engine.OrderBy("id DESC, sale_num DESC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
 	case "1":
-		engine.OrderBy("sale_num ASC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
+		engine.OrderBy("id DESC, sale_num ASC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
 	case "2":
-		engine.OrderBy("cur_price DESC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
+		engine.OrderBy("id DESC, cur_price DESC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
 	case "3":
-		engine.OrderBy("cur_price ASC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
+		engine.OrderBy("id DESC, cur_price ASC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
 	default:
-		engine.OrderBy("sale_num DESC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
+		engine.OrderBy("id DESC, sale_num DESC, is_top DESC, is_recommend DESC, is_cream DESC, sortorder DESC")
 	}
 	
 	count, _ := engine.Count(&models.Products{})
