@@ -79,8 +79,8 @@ func (svc *ShopModule) GetSpuTotal() {
 }
 
 func (svc *ShopModule) GetProductCategoryConf() []*mshop.Category {
-	conf := svc.shop.GetProductCategory()
-	if conf == nil {
+	err, conf := svc.shop.GetProductCategoryByBackend()
+	if err != nil || conf == nil {
 		return []*mshop.Category{}
 	}
 	
