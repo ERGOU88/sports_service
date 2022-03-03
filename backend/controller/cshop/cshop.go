@@ -803,8 +803,12 @@ func (svc *ShopModule) DeliverProduct(param *mshop.DeliverProductReq) int {
 
 func (svc *ShopModule) OrderCallback(orderId string) int {
 	order, err := svc.shop.GetOrder(orderId)
-	if err != nil || order.PayStatus != consts.SHOP_ORDER_TYPE_WAIT {
+	if err != nil || order == nil  {
 		return errdef.SHOP_ORDER_NOT_EXISTS
+	}
+	
+	if order.PayStatus != consts.SHOP_ORDER_TYPE_WAIT && order.PayStatus != consts.SHOP_ORDER_TYPE_UNPAID {
+		return errdef.ERROR
 	}
 	
 	ok, err := svc.pay.GetPaymentChannel(order.PayChannelId)
