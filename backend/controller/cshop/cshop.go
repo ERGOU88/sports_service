@@ -476,6 +476,7 @@ func (svc *ShopModule) EditProduct(params *mshop.AddOrEditProductReq) int {
 	}
 	
 	mp := util.StructToMap(spu)
+	log.Log.Errorf("mp:%+v", mp)
 	if _, err := svc.shop.UpdateProductSpu(fmt.Sprint(spu.Id), mp); err != nil {
 		log.Log.Errorf("shop_trace: update product spu fail, err:%s", err)
 		svc.engine.Rollback()
