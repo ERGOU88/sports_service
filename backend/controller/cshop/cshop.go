@@ -99,7 +99,13 @@ func (svc *ShopModule) AddCategory(params *models.ProductCategory) int {
 }
 
 func (svc *ShopModule) EditCategory(params *models.ProductCategory) int {
-	if _, err := svc.shop.UpdateProductCategory(params); err != nil {
+	str, _ := util.JsonFast.MarshalToString(params)
+	mp, err := util.JsonStringToMap(str)
+	if err != nil {
+		return errdef.ERROR
+	}
+	
+	if _, err := svc.shop.UpdateProductCategory(params.CategoryId, mp); err != nil {
 		log.Log.Errorf("shop_trace: update category fail, err:%s", err)
 		return errdef.SHOP_EDIT_CATEGORY_FAIL
 	}
@@ -475,7 +481,14 @@ func (svc *ShopModule) EditProduct(params *mshop.AddOrEditProductReq) int {
 		return errdef.ERROR
 	}
 	
-	if _, err := svc.shop.UpdateProductSpu(spu); err != nil {
+	str, _ := util.JsonFast.MarshalToString(spu)
+	mp, err := util.JsonStringToMap(str)
+	if err != nil {
+		svc.engine.Rollback()
+		return errdef.ERROR
+	}
+	
+	if _, err := svc.shop.UpdateProductSpu(fmt.Sprint(spu.Id), mp); err != nil {
 		log.Log.Errorf("shop_trace: update product spu fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.SHOP_UPDATE_SPU_FAIL
@@ -803,8 +816,12 @@ func (svc *ShopModule) DeliverProduct(param *mshop.DeliverProductReq) int {
 
 func (svc *ShopModule) OrderCallback(orderId string) int {
 	order, err := svc.shop.GetOrder(orderId)
-	if err != nil || order.PayStatus != consts.SHOP_ORDER_TYPE_WAIT {
+	if err != nil || order == nil  {
 		return errdef.SHOP_ORDER_NOT_EXISTS
+	}
+	
+	if order.PayStatus != consts.SHOP_ORDER_TYPE_WAIT && order.PayStatus != consts.SHOP_ORDER_TYPE_UNPAID {
+		return errdef.ERROR
 	}
 	
 	ok, err := svc.pay.GetPaymentChannel(order.PayChannelId)
