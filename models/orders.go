@@ -10,7 +10,7 @@ type Orders struct {
 	PayStatus         int    `json:"pay_status" xorm:"not null default 0 comment('支付状态 0 待付款 1 已超时/已取消 2 已付款') index TINYINT(2)"`
 	DeliveryStatus    int    `json:"delivery_status" xorm:"not null default 0 comment('配送状态 0 未配送 1 已配送 2 已签收') TINYINT(2)"`
 	RefundStatus      int    `json:"refund_status" xorm:"not null default 0 comment('退款状态 0 未退款 1 退款中 2 已退款') TINYINT(2)"`
-	PayType           int    `json:"pay_type" xorm:"not null default 0 comment('支付方式 2001 支付宝 3001微信') INT(8)"`
+	PayChannelId      int    `json:"pay_channel_id" xorm:"not null default 0 comment('支付渠道id') INT(10)"`
 	DeliveryType      int    `json:"delivery_type" xorm:"not null default 0 comment('配送方式') INT(10)"`
 	DeliveryTypeName  string `json:"delivery_type_name" xorm:"not null default '' comment('配送方式名称') VARCHAR(50)"`
 	UserId            string `json:"user_id" xorm:"not null default '' comment('买家uid') VARCHAR(60)"`

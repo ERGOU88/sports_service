@@ -187,7 +187,7 @@ func (svc *PayModule) UpdateOrderPayTypeByShop(order *models.Orders) (int64, err
 	order.PayStatus = consts.SHOP_ORDER_TYPE_PAID
 	now := int(time.Now().Unix())
 	order.UpdateAt = now
-	order.PayType = svc.pay.PayChannel.Id
+	order.PayChannelId = svc.pay.PayChannel.Id
 	// 更新订单状态
 	return svc.shop.UpdateOrderInfo(condition, cols, order)
 }

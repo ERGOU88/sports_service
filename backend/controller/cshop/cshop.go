@@ -13,6 +13,7 @@ import (
 	"sports_service/server/models/muser"
 	"sports_service/server/util"
 	"time"
+	//"sports_service/server/tools/alipay"
 )
 
 type ShopModule struct {
@@ -792,7 +793,11 @@ func (svc *ShopModule) DeliverProduct(param *mshop.DeliverProductReq) int {
 	return errdef.SUCCESS
 }
 
-func (svc *ShopModule) OrderCallback(orderId string) int {
+func (svc *ShopModule) OrderCallback(orderId string) {
+	//alipay := alipay.NewAliPay()
+}
+
+func (svc *ShopModule) SetOrderSuccess(orderId string) int {
 	if err := svc.engine.Begin(); err != nil {
 		return errdef.ERROR
 	}

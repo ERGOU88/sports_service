@@ -248,6 +248,6 @@ func OrderCallback(c *gin.Context) {
 		return
 	}
 	
-	svc := cshop.New(c)
-	reply.Response(http.StatusOK, svc.OrderCallback(param.OrderId))
+	//svc := cshop.New(c)
+	//reply.Response(http.StatusOK, svc.OrderCallback(param.OrderId))
 }
