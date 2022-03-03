@@ -56,7 +56,7 @@ func AddCategory(c *gin.Context) {
 
 func EditCategory(c *gin.Context) {
 	reply := errdef.New(c)
-	params := &models.ProductCategory{}
+	params := &mshop.ProductCategory{}
 	if err := c.BindJSON(params); err != nil {
 		log.Log.Errorf("shop_trace: invalid param, err:%s, params:%+v", err, params)
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)

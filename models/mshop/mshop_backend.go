@@ -108,13 +108,19 @@ type CategorySpecInfo struct {
 	CategoryName      string        `json:"category_name" xorm:"-"`
 }
 
+type ProductCategory struct {
+	CategoryId   int    `json:"category_id" xorm:"not null pk autoincr comment('分类id') INT(11)"`
+	CategoryName string `json:"category_name" xorm:"not null default '' comment('分类名称') VARCHAR(50)"`
+	IsShow       int    `json:"is_show" xorm:"not null default 0 comment('是否显示（0显示  1不显示）') INT(11)"`
+	Sortorder    int    `json:"sortorder" xorm:"not null default 0 comment('排序') INT(11)"`
+}
 
 func (m *ShopModel) AddProductCategory(info *models.ProductCategory) (int64, error) {
 	return m.Engine.InsertOne(info)
 }
 
 func (m *ShopModel) UpdateProductCategory(id int, mp map[string]interface{}) (int64, error) {
-	return m.Engine.Where("category_id=?", id).Update(mp)
+	return m.Engine.Table(&models.ProductCategory{}).Where("category_id=?", id).Update(mp)
 }
 
 func (m *ShopModel) GetServiceList() ([]AfterService, error) {

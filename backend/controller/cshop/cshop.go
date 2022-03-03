@@ -98,7 +98,7 @@ func (svc *ShopModule) AddCategory(params *models.ProductCategory) int {
 	return errdef.SUCCESS
 }
 
-func (svc *ShopModule) EditCategory(params *models.ProductCategory) int {
+func (svc *ShopModule) EditCategory(params *mshop.ProductCategory) int {
 	str, _ := util.JsonFast.MarshalToString(params)
 	mp, err := util.JsonStringToMap(str)
 	if err != nil {
