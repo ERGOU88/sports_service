@@ -584,7 +584,13 @@ func (svc *ShopModule) UpdateSkuListInfo(params *mshop.AddOrEditProductReq, now 
 		}
 		
 		
-		if _, err := svc.shop.UpdateProductSku(sku); err != nil {
+		str, _ := util.JsonFast.MarshalToString(sku)
+		mp, err := util.JsonStringToMap(str)
+		if err != nil {
+			return errdef.ERROR
+		}
+		
+		if _, err := svc.shop.UpdateProductSku(fmt.Sprint(sku.Id), mp); err != nil {
 			log.Log.Errorf("shop_trace: update product sku fail, err:%s", err)
 			return errdef.SHOP_UPDATE_SKU_FAIL
 		}
