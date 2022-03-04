@@ -73,6 +73,7 @@ type Product struct {
 	SkuName        string `json:"sku_name"`
 	ProductName    string `json:"product_name"`
 	SkuNo          string `json:"sku_no"`
+	Status         int    `json:"status"`                  // 0有效 1无效
 	CurPrice       int    `json:"cur_price" xorm:"-"`
 	MarketPrice    int    `json:"market_price" xorm:"-"`
 	IsFreeShip     int    `json:"is_free_ship" xorm:"-"`

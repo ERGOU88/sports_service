@@ -116,7 +116,32 @@ func (svc *ShopModule) GetProductDetail(productId, indexes, userId string) (int,
 		detail.HasActivities = 1
 		detail.RemainDuration = detail.EndTime - now
 	}
-
+	
+	skuList, err := svc.shop.GetProductSkuList(fmt.Sprint(productId))
+	if err != nil {
+		log.Log.Errorf("shop_trace: get product sku by spuId fail, spuId:%d, err:%s", productId, err)
+		return errdef.SHOP_PRODUCT_SKU_FAIL, nil
+	}
+	
+	if skuList != nil {
+		detail.SkuList = skuList
+		for _, item := range detail.SkuList {
+			stockInfo, err := svc.shop.GetProductSkuStock(fmt.Sprint(item.Id))
+			if err == nil {
+				item.Stock = stockInfo.Stock
+				item.MinBuy = stockInfo.MinBuy
+				item.MaxBuy = stockInfo.MaxBuy
+			}
+			
+			if item.OwnSpec == nil {
+				item.OwnSpec = make([]*mshop.OwnSpec, 0)
+			}
+		}
+		
+	} else {
+		detail.SkuList = make([]*mshop.ProductSkuInfo, 0)
+	}
+	
 	stockInfo, err := svc.shop.GetProductSkuStock(fmt.Sprint(detail.Id))
 	if err == nil {
 		detail.Stock = stockInfo.Stock - stockInfo.PurchasedNum
@@ -321,6 +346,10 @@ func (svc *ShopModule) GetProductCartList(userId string) (int, []*mshop.ProductC
 			item.Stock = stockInfo.Stock
 			item.MinBuy = stockInfo.MinBuy
 			item.MinBuy = stockInfo.MaxBuy
+		}
+		
+		if item.IsDelete == 1 {
+			item.Status = 1
 		}
 		
 		now := time.Now().Unix()
