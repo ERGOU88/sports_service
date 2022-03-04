@@ -168,6 +168,7 @@ func (svc *OrderModule) AliPayNotifyByShop(params url.Values, body string) int {
 				
 				condition := fmt.Sprintf("id=%d", item.ProductId)
 				cols := "sale_num"
+				product.SaleNum += item.Count
 				// 更新产品销量
 				if _, err := svc.shop.UpdateProductInfo(condition, cols, product); err != nil {
 					log.Log.Errorf("order_trace: update product info fail, productId:%d, err:%s", product.Id, err)
@@ -356,9 +357,14 @@ func (svc *OrderModule) WechatPayNotify(orderId, body, tradeNo, totalFee, refund
 }
 
 func (svc *OrderModule) WechatPayNotifyByShop(orderId, tradeNo, totalFee string, payTm int64) error {
+	if err := svc.shop.Engine.Begin(); err != nil {
+		return err
+	}
+	
 	order, err := svc.shop.GetOrder(orderId)
 	if order == nil || err != nil {
 		log.Log.Errorf("wxNotify_trace: get order fail, orderId:%s, err:%s", orderId, err)
+		svc.shop.Engine.Rollback()
 		return errors.New("order not found")
 	}
 	
@@ -368,12 +374,14 @@ func (svc *OrderModule) WechatPayNotifyByShop(orderId, tradeNo, totalFee string,
 		amount, err := strconv.Atoi(totalFee)
 		if err != nil {
 			log.Log.Errorf("wxNotify_trace: parse float fail, err:%s", err)
+			svc.shop.Engine.Rollback()
 			return err
 		}
 		
 		if amount != order.PayAmount {
 			log.Log.Error("wxNotify_trace: amount not match, orderAmount:%d, amount:%d",
 				order.PayAmount, amount)
+			svc.shop.Engine.Rollback()
 			return errors.New("amount not match")
 		}
 		
@@ -388,8 +396,36 @@ func (svc *OrderModule) WechatPayNotifyByShop(orderId, tradeNo, totalFee string,
 		// 更新订单状态
 		if _, err := svc.shop.UpdateOrderInfo(condition, cols, order); err != nil {
 			log.Log.Errorf("shop_trace: update order info fail, orderId:%s, err:%v", order.OrderId, err)
+			svc.shop.Engine.Rollback()
 			return err
 		}
+		
+		list, err := svc.shop.GetOrderProductList(order.OrderId)
+		if err != nil {
+			log.Log.Errorf("shop_trace: get order product list fail, orderId:%s, err:%s", orderId, err)
+			svc.shop.Engine.Rollback()
+			return err
+		}
+		
+		for _, item := range list {
+			product, err := svc.shop.GetProductSpu(fmt.Sprint(item.ProductId))
+			if err != nil || product == nil {
+				log.Log.Errorf("order_trace: get product spu fail, productId:%d,  err:%s", item.ProductId, err)
+				continue
+			}
+			
+			condition := fmt.Sprintf("id=%d", item.ProductId)
+			cols := "sale_num"
+			product.SaleNum += item.Count
+			// 更新产品销量
+			if _, err := svc.shop.UpdateProductInfo(condition, cols, product); err != nil {
+				log.Log.Errorf("order_trace: update product info fail, productId:%d, err:%s", product.Id, err)
+				svc.shop.Engine.Rollback()
+				return err
+			}
+		}
+		
+		svc.shop.Engine.Commit()
 	
 	default:
 		return errors.New("invalid order type")
