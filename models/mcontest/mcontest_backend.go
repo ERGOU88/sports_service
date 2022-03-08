@@ -87,7 +87,7 @@ func (m *ContestModel) UpdateContestGroup(group *models.FpvContestScheduleGroup)
 // 获取赛事 赛程组别配置信息
 func (m *ContestModel) GetContestGroupList(offset, size int, scheduleId, contestId string) ([]*models.FpvContestScheduleGroup, error) {
 	var list []*models.FpvContestScheduleGroup
-    m.Engine.Where("status=0")
+    m.Engine.Where("status=1")
 	if scheduleId != "" {
 		m.Engine.Where("schedule_id=?", scheduleId)
 	}
