@@ -11,4 +11,5 @@ type FpvContestScheduleGroup struct {
 	Status         int    `json:"status" xorm:"not null default 1 comment('1表示正常 -1表示废弃') TINYINT(1)"`
 	CreateAt       int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
 	UpdateAt       int    `json:"update_at" xorm:"not null default 0 comment('修改时间') INT(11)"`
+	BeginTm        int    `json:"begin_tm" xorm:"not null default 0 comment('分组赛事开始时间') INT(11)"`
 }
