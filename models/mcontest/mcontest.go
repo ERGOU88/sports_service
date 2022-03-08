@@ -78,6 +78,7 @@ type ScheduleListDetailResp struct {
 	GroupName          string    `json:"group_name"`
 	GroupNum           int       `json:"group_num"`
 	NumInGroup         int       `json:"num_in_group"`
+	BeginTm            int       `json:"begin_tm"`
 }
 
 // 赛程分组详情返回数据
