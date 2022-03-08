@@ -194,7 +194,7 @@ func (svc *ConfigModule) SetSortByHotSearch(params *mvideo.SetSortParams) int {
 
 // 热搜内容设置状态
 func (svc *ConfigModule) SetStatusByHotSearch(params *mvideo.SetStatusParams) int {
-	if params.Status != 0 && params.Status != 1 {
+	if params.Status != -1 && params.Status != 1 {
 		return errdef.INVALID_PARAMS
 	}
 
