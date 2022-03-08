@@ -101,9 +101,9 @@ func (svc *ContestModule) EditContestGroup(group *models.FpvContestScheduleGroup
 }
 
 // 获取赛事分组配置列表
-func (svc *ContestModule) GetContestGroupList(page, size int, scheduleId, contestId string) (int, []*models.FpvContestScheduleGroup) {
+func (svc *ContestModule) GetContestGroupList(page, size int, scheduleId, contestId, status string) (int, []*models.FpvContestScheduleGroup) {
 	offset := (page - 1) * size
-	list, err := svc.contest.GetContestGroupList(offset, size, scheduleId, contestId)
+	list, err := svc.contest.GetContestGroupList(offset, size, scheduleId, contestId, status)
 	if err != nil {
 		return errdef.ERROR, nil
 	}
