@@ -54,6 +54,7 @@ type ProductDetailInfo struct {
 	ProductCartNum  int64           `json:"product_cart_num"`       // 购物车数量
 	Introduction    []string        `json:"introduction"`           // 促销语
 	Postage         int             `json:"postage"`                // 邮费
+	SkuList         []*ProductSkuInfo `json:"sku_list"`
 }
 
 type AfterService struct {
@@ -172,7 +173,7 @@ func (m *ShopModel) GetRecommendProducts(productId string, limit int) ([]Product
 // 获取sku列表
 func (m *ShopModel) GetProductSkuList(productId string) ([]*ProductSkuInfo, error) {
 	var list []*ProductSkuInfo
-	if err := m.Engine.Table(&models.ProductSku{}).Where("product_id=?", productId).Desc("sortorder").Find(&list); err != nil {
+	if err := m.Engine.Table(&models.ProductSku{}).Where("product_id=? AND is_delete = 0", productId).Desc("sortorder").Find(&list); err != nil {
 		return list, err
 	}
 

@@ -27,6 +27,8 @@ type ProductCartInfo struct {
 	MinBuy          int             `json:"min_buy"`                // 起购数
 	Count           int             `json:"count"`                  // 当前数量
 	IsCheck         int             `json:"is_check"`               // 0选择 1 未选择
+	Status          int             `json:"status"`                 // 0有效 1 无效
+	IsDelete        int             `json:"is_delete"`              // 1 软删除
 }
 
 type AddOrUpdateProductCartParam struct {

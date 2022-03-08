@@ -10,7 +10,7 @@ type User struct {
 	Born          string `json:"born" xorm:"not null default '' comment('出生日期') VARCHAR(128)"`
 	Age           int    `json:"age" xorm:"not null default 0 comment('年龄') INT(3)"`
 	Avatar        string `json:"avatar" xorm:"not null default '' comment('头像') VARCHAR(300)"`
-	Status        int    `json:"status" xorm:"default 0 comment('0 正常 1 封禁') TINYINT(1)"`
+	Status        int    `json:"status" xorm:"default 0 comment('1 正常 -1 封禁') TINYINT(1)"`
 	LastLoginTime int    `json:"last_login_time" xorm:"comment('最后登录时间') INT(11)"`
 	Signature     string `json:"signature" xorm:"not null default '' comment('签名') VARCHAR(200)"`
 	DeviceType    int    `json:"device_type" xorm:"comment('设备类型 0 android 1 iOS 2 小程序 3 web') TINYINT(2)"`

@@ -31,7 +31,7 @@ type AddPackageParams struct {
   Size            string     `json:"size"  binding:"required"`             // 包大小
   ByteSize        int        `json:"byte_size"`                            // 字节大小
   IsForce         int32      `json:"is_force" `                            // 是否强更 0 不需要强更 1 需要强更
-  Status          int32      `json:"status"`                               // 0 可用 1 不可用
+  Status          int32      `json:"status"`                               // 1 可用 -1 不可用
   Platform        int32      `json:"platform"`                             // 0 android 1 ios
   UpgradeUrl      string     `json:"upgrade_url"  binding:"required"`      // 新包地址
   Describe        string     `json:"describe"`                             // 版本说明
@@ -46,7 +46,7 @@ type UpdatePackageParams struct {
   Size            string     `json:"size"  binding:"required"`             // 包大小
   ByteSize        int        `json:"byte_size"`                            // 字节大小
   IsForce         int32      `json:"is_force"`                             // 是否强更 0 不需要强更 1 需要强更
-  Status          int32      `json:"status"`                               // 0 可用 1 不可用
+  Status          int32      `json:"status"`                               // 1 可用 -1 不可用
   Platform        int32      `json:"platform"`                             // 0 android 1 ios
   UpgradeUrl      string     `json:"upgrade_url"  binding:"required"`      // 新包地址
   Describe        string     `json:"describe"`                             // 版本说明

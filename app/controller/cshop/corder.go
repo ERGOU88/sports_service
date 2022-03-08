@@ -239,6 +239,7 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 		return errdef.SHOP_PRODUCT_SKU_FAIL
 	}
 	
+	item.Status = sku.Status
 	item.SkuName = sku.Title
 	item.SkuNo = sku.SkuNo
 	item.SkuImage = tc.BucketURI(sku.SkuImage)
@@ -309,6 +310,10 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 	if err != nil {
 		log.Log.Errorf("shop_trace: update product sku stock fail, skuId:%s, err:%s", item.SkuId, err)
 		return errdef.ERROR
+	}
+	
+	if item.Status == 1 {
+		item.IsEnough = false
 	}
 	
 	if affected != 1 {

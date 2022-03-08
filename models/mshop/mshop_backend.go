@@ -195,8 +195,8 @@ func (m *ShopModel) AddProductSku(sku *models.ProductSku) (int64, error) {
 }
 
 // 更新商品sku
-func (m *ShopModel) UpdateProductSku(sku *models.ProductSku) (int64, error) {
-	return m.Engine.Where("id=?", sku.Id).Update(sku)
+func (m *ShopModel) UpdateProductSku(id string, mp map[string]interface{}) (int64, error) {
+	return m.Engine.Table(&models.ProductSku{}).Where("id=?", id).Update(mp)
 }
 
 // 添加商品sku库存
@@ -233,7 +233,7 @@ func (m *ShopModel) GetProductCategoryRelated(condition string) (*models.Product
 
 // 软删除废弃的sku
 func (m *ShopModel) DelSkuByProductId(productId string) (int64, error) {
-	return m.Engine.Where("product_id=?", productId).Update(&models.ProductSku{IsDelete: 1})
+	return m.Engine.Where("product_id=?", productId).Update(&models.ProductSku{IsDelete: 1, Status:1})
 }
 
 // 管理后台获取spu列表 及总数
