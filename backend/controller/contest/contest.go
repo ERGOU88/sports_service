@@ -227,6 +227,7 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 			detail.ScheduleId = item.ScheduleId
 			detail.IsWin = item.IsWin
 			detail.Photo = item.Photo
+			detail.BeginTm = item.BeginTm
 			detail.BestScore = util.ResolveTimeByMilliSecond(item.Score)
 			if item.Rounds == 1 {
 				detail.RoundOneScore = util.ResolveTimeByMilliSecond(item.Score)
