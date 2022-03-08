@@ -117,7 +117,7 @@ func (m *ConfigModel) GetPackageDetailByVersion(plt int32, versionCode string) *
 // 获取最新包信息
 func (m *ConfigModel) GetLatestPackageInfo(plt int32) *models.AppVersionControl {
   m.VersionControl = new(models.AppVersionControl)
-  ok, err := m.Engine.Where("platform=? AND status=0", plt).Desc("version_code").Limit(1).Get(m.VersionControl)
+  ok, err := m.Engine.Where("platform=? AND status=1", plt).Desc("version_code").Limit(1).Get(m.VersionControl)
   if !ok || err != nil {
     log.Log.Errorf("configure_trace: get latest package fail, plt:%d err:%s", plt, err)
     return nil
