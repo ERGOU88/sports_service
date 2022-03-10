@@ -116,8 +116,8 @@ func (svc *ContestModule) GetContestGroupList(page, size int, scheduleId, contes
 }
 
 // 获取赛事分组总数
-func (svc *ContestModule) GetContestGroupCount(scheduleId, contestId string) int64 {
-	return svc.contest.GetContestGroupCount(scheduleId, contestId)
+func (svc *ContestModule) GetContestGroupCount(scheduleId, contestId, status string) int64 {
+	return svc.contest.GetContestGroupCount(scheduleId, contestId, status)
 }
 
 // 获取赛程信息

@@ -107,8 +107,11 @@ func (m *ContestModel) GetContestGroupList(offset, size int, scheduleId, contest
 }
 
 // 获取赛程组别总数
-func (m *ContestModel) GetContestGroupCount(scheduleId, contestId string) int64 {
-	m.Engine.Where("status=0")
+func (m *ContestModel) GetContestGroupCount(scheduleId, contestId, status string) int64 {
+	if status != "" {
+		m.Engine.Where("status=?", status)
+	}
+	
 	if scheduleId != "" {
 		m.Engine.Where("schedule_id=?", scheduleId)
 	}
