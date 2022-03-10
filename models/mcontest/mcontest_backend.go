@@ -99,7 +99,7 @@ func (m *ContestModel) GetContestGroupList(offset, size int, scheduleId, contest
 		m.Engine.Where("contest_id=?", contestId)
 	}
 
-	if err := m.Engine.Asc("order").Limit(size, offset).Find(&list); err != nil {
+	if err := m.Engine.Desc("id").Limit(size, offset).Find(&list); err != nil {
 		return nil, err
 	}
 
