@@ -14,6 +14,7 @@ import (
 	"sports_service/server/app/routers/api/v1/comment"
 	"sports_service/server/app/routers/api/v1/community"
 	"sports_service/server/app/routers/api/v1/contest"
+	"sports_service/server/app/routers/api/v1/course"
 	"sports_service/server/app/routers/api/v1/doc"
 	"sports_service/server/app/routers/api/v1/information"
 	"sports_service/server/app/routers/api/v1/like"
@@ -102,4 +103,6 @@ func InitRouters(engine *gin.Engine) {
 	live.Router(engine)
 	// 商城模块
 	shop.Router(engine)
+	// 课程模块
+	course.Router(engine)
 }

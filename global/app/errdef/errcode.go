@@ -276,6 +276,14 @@ const (
 	SHOP_NOT_ALLOW_CONFIRM       = 50021
 	SHOP_ORDER_DELETE_FAIL       = 50022
 	SHOP_DEL_PRODUCT_CART_FAIL   = 50023
+	
+	// 教育相关错误码 60001-70000
+	EDU_COURSE_NOT_EXISTS        = 60001
+    EDU_COURSE_VIDEO_NOT_EXISTS  = 60002
+    EDU_COURSE_NOT_HAVE_ACCESS   = 60003
+    EDU_COURSE_SAVE_STUDY_RECORD = 60004
+    EDU_COURSE_PURCHASE_FAIL     = 60005
+    EDU_COURSE_RECORD_STUDY_VIDEO= 60006
 )
 
 var MsgFlags = map[int]string{
@@ -527,6 +535,13 @@ var MsgFlags = map[int]string{
 	SHOP_NOT_ALLOW_CONFIRM:        "订单暂不允许确认收货",
 	SHOP_ORDER_DELETE_FAIL:        "订单删除失败",
 	SHOP_DEL_PRODUCT_CART_FAIL:    "删除购物车数据失败",
+	
+	EDU_COURSE_NOT_EXISTS:         "课程不存在",
+	EDU_COURSE_VIDEO_NOT_EXISTS:   "课程视频不存在",
+	EDU_COURSE_NOT_HAVE_ACCESS:    "无权访问该视频",
+	EDU_COURSE_SAVE_STUDY_RECORD:  "保存用户课程学习记录失败",
+	EDU_COURSE_PURCHASE_FAIL:      "购买课程失败",
+	EDU_COURSE_RECORD_STUDY_VIDEO: "记录用户学习课程视频信息失败",
 }
 
 func GetMsg(code int) string {
