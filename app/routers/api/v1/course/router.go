@@ -2,6 +2,7 @@ package course
 
 import (
 	"github.com/gin-gonic/gin"
+	"sports_service/server/middleware/token"
 )
 
 // 课程模块路由
@@ -20,10 +21,10 @@ func Router(engine *gin.Engine) {
 		// 获取某一课时视频
 		course.GET("/video", CourseVideo)
 		// 客户端埋点 点击立即学习
-		course.POST("/click/learn", ClickLearn)
+		course.POST("/click/learn", token.TokenAuth(), ClickLearn)
 		// 用户学习的课程记录
-		course.GET("/user/learn/record", UserLearnRecord)
+		course.GET("/user/learn/record", token.TokenAuth(), UserLearnRecord)
 		// 客户端埋点 记录用户学习课程视频数据
-		course.POST("/study/video/record", UserStudyVideoInfo)
+		course.POST("/study/video/record", token.TokenAuth(), UserStudyVideoInfo)
 	}
 }

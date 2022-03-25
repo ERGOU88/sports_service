@@ -252,10 +252,10 @@ func (svc *CourseModule) GetCourseDetailInfo(userId, courseId string) *medu.Cour
 
 // 获取课程某一课时视频信息
 func (svc *CourseModule) GetCourseVideoInfo(userId, courseId, id string) (int, *medu.CourseVideoInfo) {
-	if userId == "" {
-		log.Log.Error("course_trace: need login")
-		return errdef.USER_NO_LOGIN, nil
-	}
+	//if userId == "" {
+	//	log.Log.Error("course_trace: need login")
+	//	return errdef.USER_NO_LOGIN, nil
+	//}
 	
 	// 查看课程是否存在
 	course := svc.edu.GetCourseById(courseId)
@@ -550,4 +550,8 @@ func (svc *CourseModule) CourseSearch(userId, name string, page, size int) []*me
 	}
 	
 	return res
+}
+
+func (svc *CourseModule) GetCourseCategory() []*models.CourseCategoryConfig {
+	return svc.edu.GetCourseCategoryByLevel()
 }

@@ -89,13 +89,14 @@ func CourseDetail(c *gin.Context) {
 // 课程视频
 func CourseVideo(c *gin.Context) {
 	reply := errdef.New(c)
-	userId, _ := c.Get(consts.USER_ID)
+	//userId, _ := c.Get(consts.USER_ID)
+	userId := c.Query("user_id")
 	courseId := c.Query("course_id")
 	// 课程视频id
 	id := c.Query("id")
 	
 	svc := course.New(c)
-	syscode, videoInfo := svc.GetCourseVideoInfo(userId.(string), courseId, id)
+	syscode, videoInfo := svc.GetCourseVideoInfo(userId, courseId, id)
 	if syscode != errdef.SUCCESS {
 		reply.Response(http.StatusOK, syscode)
 		return
@@ -234,5 +235,9 @@ func UserStudyVideoInfo(c *gin.Context) {
 }
 
 func CourseCategoryConfig(c *gin.Context) {
-
+	reply := errdef.New(c)
+	
+	svc := course.New(c)
+	reply.Data["list"] = svc.GetCourseCategory()
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
