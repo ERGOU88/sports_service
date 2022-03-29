@@ -283,7 +283,7 @@ func (svc *CourseModule) GetCourseVideoInfo(userId, courseId, id string) (int, *
 	// 课程免费 / 该课程视频免费 / 用户为vip且课程针对vip免费 / 用户为vip且该课时针对vip免费 返回课程视频数据
 	if course.IsFree == consts.COURSE_IS_FREE || videoInfo.IsFree == consts.COURSE_VIDEO_IS_FREE ||
 		hasPurchase == consts.COURSE_HAS_PURCHASED &&
-		videoInfo.VipIsFree == consts.COURSE_VIDEO_IS_FREE_BY_VIP && course.VipIsFree == consts.COURSE_IS_FREE_BY_VIP {
+			videoInfo.VipIsFree == consts.COURSE_VIDEO_IS_FREE_BY_VIP && course.VipIsFree == consts.COURSE_IS_FREE_BY_VIP {
 		videoInfo.VideoAddr = svc.edu.AntiStealingLink(videoInfo.VideoAddr)
 		if videoInfo.PlayInfo != nil {
 			for _, video := range videoInfo.PlayInfo {
@@ -554,4 +554,56 @@ func (svc *CourseModule) CourseSearch(userId, name string, page, size int) []*me
 
 func (svc *CourseModule) GetCourseCategory() []*models.CourseCategoryConfig {
 	return svc.edu.GetCourseCategoryByLevel()
+}
+
+func (svc *CourseModule) RecommendCourse(userId, courseId string) (int, []*medu.CourseInfoResp) {
+	list, err := svc.edu.GetRecommendCourse(courseId, 4)
+	if err != nil {
+		return errdef.ERROR, nil
+	}
+	
+	if len(list) == 0 {
+		return errdef.SUCCESS, []*medu.CourseInfoResp{}
+	}
+	
+	res := make([]*medu.CourseInfoResp, len(list))
+	for index, val := range list {
+		info := new(medu.CourseInfoResp)
+		info.Id = val.Id
+		info.VipIsFree = val.VipIsFree
+		info.Title = val.Title
+		info.Sortorder = val.Sortorder
+		info.SaiCoin = fmt.Sprintf("%.2f", float64(val.SaiCoin)/100)
+		info.IsRecommend = val.IsRecommend
+		info.IsFree = val.IsFree
+		info.Status = val.Status
+		info.CreateAt = val.CreateAt
+		info.Describe = val.Describe
+		info.Icon = val.Icon
+		info.PromotionPic = val.PromotionPic
+		info.TeacherName = val.TeacherName
+		info.TeacherPhoto = val.TeacherPhoto
+		info.TeacherTitle = val.TeacherTitle
+		info.IsTop = val.IsTop
+		
+		now := int(time.Now().Unix())
+		// 是否在活动时间内 1为 已开启活动
+		if now > val.EventStartTime && now < val.EventEndTime {
+			info.HasActivity = consts.COURSE_HAS_ACTIVITY
+			info.EventSaiCoin = fmt.Sprintf("%.2f", float64(val.EventSaiCoin)/100)
+		}
+		
+		if userId != "" {
+			// 当前用户是否已购买该课程
+		}
+		
+		// 学习该课程的用户总数
+		info.StudyNum = svc.edu.GetTotalStudyNumById(fmt.Sprint(val.Id))
+		// 获取成功购买当前课程的用户数量
+		//info.StudyNum = svc.order.GetPurchaseCourseNum(fmt.Sprint(val.Id))
+		
+		res[index] = info
+	}
+	
+	return errdef.SUCCESS, res
 }

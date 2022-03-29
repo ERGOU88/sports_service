@@ -4,11 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sports_service/server/app/controller/course"
+	"sports_service/server/global/app/errdef"
+	"sports_service/server/global/app/log"
 	"sports_service/server/global/consts"
 	"sports_service/server/models/medu"
 	"sports_service/server/util"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
 )
 
 // @Summary 获取某一分类下的课程列表 (ok)
@@ -240,4 +240,28 @@ func CourseCategoryConfig(c *gin.Context) {
 	svc := course.New(c)
 	reply.Data["list"] = svc.GetCourseCategory()
 	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+// 搜索课程
+func CourseSearch(c *gin.Context) {
+	reply := errdef.New(c)
+	name := c.Query("name")
+	userId := c.Query("user_id")
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	
+	svc := course.New(c)
+	list := svc.CourseSearch(userId, name, page, size)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}
+
+func RecommendCourse(c *gin.Context) {
+	reply := errdef.New(c)
+	curCourseId := c.DefaultQuery("course_id", "0")
+	userId := c.Query("user_id")
+	
+	svc := course.New(c)
+	code, list := svc.RecommendCourse(userId, curCourseId)
+	reply.Data["list"] = list
+	reply.Response(http.StatusOK, code)
 }

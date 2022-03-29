@@ -438,6 +438,21 @@ func (m *EduModel) GetStudyTotalCourse(userId string) int64 {
 }
 
 const (
+	GET_RECOMMEND_COURSE = "SELECT DISTINCT(c.id), c.* FROM `course_detail` AS c JOIN (SELECT RAND() * " +
+		"((SELECT MAX(id) FROM `course_detail`)-(SELECT MIN(id) FROM `course_detail`)) + (SELECT MIN(id) FROM `course_detail`) AS id) AS c2 " +
+		"WHERE c.id >= c2.id-1 AND c.id != ? AND c.status=0 ORDER BY c.id LIMIT ?"
+)
+func (m *EduModel) GetRecommendCourse(courseId string, limit int) ([]*models.CourseDetail, error) {
+	var list []*models.CourseDetail
+	if err := m.Engine.SQL(GET_RECOMMEND_COURSE, courseId, limit).Find(&list); err != nil {
+		return list, err
+	}
+	
+	return list, nil
+}
+
+
+const (
 	LINK_KEY  = "MgbbCBVMhIwJCi9gnhhj"
 	EXPIRE_TM = 3600 * 3
 )
