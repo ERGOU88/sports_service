@@ -20,6 +20,7 @@ import (
 	"sports_service/server/backend/routers/api/v1/notify"
 	"sports_service/server/global/consts"
 	"sports_service/server/backend/routers/api/v1/configure"
+	"sports_service/server/backend/routers/api/v1/course"
 	"sports_service/server/middleware"
 	"sports_service/server/global/backend/log"
 	"sports_service/server/backend/routers/api/v1/stat"
@@ -70,4 +71,6 @@ func InitRouters(engine *gin.Engine) {
 	pub.Router(engine)
 	// 商城模块
 	shop.Router(engine)
+	// 教育课程
+	course.Router(engine)
 }

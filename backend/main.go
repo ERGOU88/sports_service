@@ -8,6 +8,7 @@ import (
 	"sports_service/server/dao"
 	"sports_service/server/global/backend/log"
 	"sports_service/server/global/consts"
+	"sports_service/server/job"
 	"sports_service/server/log/zap"
 	"sports_service/server/models/pprof"
 	"sports_service/server/tools/im"
@@ -103,7 +104,20 @@ func init() {
 	setupRunMode()
 	// 初始化腾讯im、live
 	setupTencentService()
+	// 本地运行时 不执行定时任务
+	if config.Global.Mode != string(consts.ModeLocal) {
+		// 任务
+		setupJob()
+	}
 }
+
+// 任务列表
+func setupJob() {
+	/*----后台上传课程视频任务----*/
+	go job.CourseVideoEventsJob()
+	/*----后台上传课程视频任务----*/
+}
+
 
 // @title 电竞社区平台（后台）
 // @version 1.0

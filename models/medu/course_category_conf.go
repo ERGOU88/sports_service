@@ -62,6 +62,14 @@ func (m *EduModel) AddCourseCategory() error {
 	return nil
 }
 
+func (m *EduModel) UpdateCourseCategory() error {
+	if _, err := m.Engine.Where("id=?", m.CourseCategory.Id).Update(m.CourseCategory); err != nil {
+		return err
+	}
+	
+	return nil
+}
+
 // 通过分类id获取课程分类信息
 func (m *EduModel) GetCourseCategoryById(id string) *models.CourseCategoryConfig {
 	m.CourseCategory = new(models.CourseCategoryConfig)

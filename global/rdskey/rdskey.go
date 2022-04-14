@@ -50,6 +50,10 @@ const (
 	SHOP_ORDER_EXPIRE         = SUGAR + "shop_order_expire"                        // 需处理支付超时的商城订单
 	
 	WECHAT_ACCESS_TOKEN       = SUGAR + "wx_access_token"                          // 微信授权令牌
+	
+	COURSE_VIDEO_UPLOAD_TASK  = SUGAR + "course_video_upload_task_%d"              // 记录课程视频任务id 对应的 腾讯云文件id {拼接任务id（唯一）}
+	COURSE_VIDEO_UPLOAD_USER  = SUGAR + "course_video_upload_user_%s"              // 记录课程视频任务id 对应的 后台管理员 {拼接管理员id}
+
 )
 
 // make redis key
