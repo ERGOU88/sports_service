@@ -545,6 +545,8 @@ func (svc *CourseModule) AddCourseCategory(category *models.CourseCategoryConfig
 		return errdef.ERROR
 	}
 	
+	svc.course.DelAllCourseCategoryByMem()
+	svc.course.CleanCourseCategoryByMem()
 	return errdef.SUCCESS
 }
 
@@ -554,5 +556,7 @@ func (svc *CourseModule) EditCourseCategory(category *models.CourseCategoryConfi
 		return errdef.ERROR
 	}
 	
+	svc.course.DelAllCourseCategoryByMem()
+	svc.course.CleanCourseCategoryByMem()
 	return errdef.SUCCESS
 }
