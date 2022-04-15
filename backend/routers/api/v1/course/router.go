@@ -22,11 +22,11 @@ func Router(engine *gin.Engine) {
 		// 设置首页推荐（课程）
 		course.POST("/set/homepage/recommend", SetHomePageRecommend)
 		// 课程分类
-		course.GET("/course/category", CourseCategory)
+		course.GET("/category", CourseCategory)
 		// 添加课程分类
-		course.POST("/add/course/category", AddCourseCategory)
+		course.POST("/add/category", AddCourseCategory)
 		// 编辑课程分类
-		course.POST("/edit/course/category", EditCourseCategory)
+		course.POST("/edit/category", EditCourseCategory)
 	}
 }
 
