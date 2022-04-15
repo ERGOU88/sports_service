@@ -550,7 +550,7 @@ func (svc *CourseModule) AddCourseCategory(category *models.CourseCategoryConfig
 
 func (svc *CourseModule) EditCourseCategory(category *models.CourseCategoryConfig) int {
 	svc.course.CourseCategory = category
-	if err := svc.course.AddCourseCategory(); err != nil {
+	if err := svc.course.UpdateCourseCategory(); err != nil {
 		return errdef.ERROR
 	}
 	
