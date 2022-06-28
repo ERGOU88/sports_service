@@ -3,29 +3,34 @@ pprofAddr: :12002
 mode: prod
 mysql:
   main:
-    master: fpv_app:ZPXWe5OjbAJmNBQk@tcp(120.92.141.106:33497)/fpv-app-api?charset=utf8mb4
+    master: fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
     slave:
-      - fpv_app:ZPXWe5OjbAJmNBQk@tcp(120.92.141.106:33497)/fpv-app-api?charset=utf8mb4
-      - fpv_app:ZPXWe5OjbAJmNBQk@tcp(120.92.141.106:33497)/fpv-app-api?charset=utf8mb4
-      - fpv_app:ZPXWe5OjbAJmNBQk@tcp(120.92.141.106:33497)/fpv-app-api?charset=utf8mb4
+      - fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
+      - fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
+      - fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
+    logPath: /data/logs/fpv-app-api/db/db_fpv_%s.log
   venue:
-    master: venue:umgSL4PTXyn2Z9li@tcp(120.92.141.106:33497)/venue?charset=utf8mb4
+    master: venue:4QutVx9oZ7Gq5Xwl@tcp(10.5.0.235:35706)/venue?charset=utf8mb4
     slave:
-      - venue:umgSL4PTXyn2Z9li@tcp(120.92.141.106:33497)/venue?charset=utf8mb4
-      - venue:umgSL4PTXyn2Z9li@tcp(120.92.141.106:33497)/venue?charset=utf8mb4
-      - venue:umgSL4PTXyn2Z9li@tcp(120.92.141.106:33497)/venue?charset=utf8mb4
+      - venue:4QutVx9oZ7Gq5Xwl@tcp(10.5.0.235:35706)/venue?charset=utf8mb4
+      - venue:4QutVx9oZ7Gq5Xwl@tcp(10.5.0.235:35706)/venue?charset=utf8mb4
+      - venue:4QutVx9oZ7Gq5Xwl@tcp(10.5.0.235:35706)/venue?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
+    logPath: /data/logs/fpv-app-api/db/db_venue_%s.log
 redis:
   main:
     master:
-      ip: 192.168.0.218
+      #ip: 10.6.1.111
+      #ip: 192.168.0.218
+      ip: 10.5.0.88
       port: 6379
 
     slave:
-      - ip: 192.168.0.218
+      #- ip: 10.6.1.111
+      - ip: 10.5.0.88
         port: 6379
 
     dboption:
@@ -33,7 +38,8 @@ redis:
         name:
         maxIdle: 128
         maxActive: 128
-redisPassword: o6DPVfuCAUwOgrNM
+#redisPassword: eiMWaYbnNvT7sr5k
+redisPassword: yN1MnL8O7DfS3aBh
 nsqAddr: 127.0.0.1:4150
 fileAddr: http://192.168.50.148:13002/upload/
 amqpDsn: amqp://admin:admin@127.0.0.1:5672
