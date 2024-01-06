@@ -1,53 +1,51 @@
-publicAddr: :9001
+publicAddr: :11001
 pprofAddr: :12001
 mode: prod
 mysql:
   main:
-    master: fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
+    master: root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
     slave:
-      - fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
-      - fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
-      - fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
-    logPath: /data/logs/fpv-app-api/db/db_fpv_%s.log
+    logPath: /data/logs/fpv-backend-api/db/db_fpv_%s.log
   venue:
-    master: venue:4QutVx9oZ7Gq5Xwl@tcp(10.5.0.235:35706)/venue?charset=utf8mb4
+    master: root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
     slave:
-      - venue:4QutVx9oZ7Gq5Xwl@tcp(10.5.0.235:35706)/venue?charset=utf8mb4
-      - venue:4QutVx9oZ7Gq5Xwl@tcp(10.5.0.235:35706)/venue?charset=utf8mb4
-      - venue:4QutVx9oZ7Gq5Xwl@tcp(10.5.0.235:35706)/venue?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
-    logPath: /data/logs/fpv-app-api/db/db_venue_%s.log
+    logPath: /data/logs/fpv-backend-api/db/db_venue_%s.log
+
 redis:
   main:
     master:
-      #ip: 10.6.1.111
-      #ip: 192.168.0.218
-      ip: 10.5.0.88
-      port: 6379
+      ip: 127.0.0.1
+      port: 6378
 
     slave:
-      #- ip: 10.6.1.111
-      - ip: 10.5.0.88
-        port: 6379
+      - ip: 127.0.0.1
+        port: 6378
 
     dboption:
       - dbid: 0
         name:
         maxIdle: 128
         maxActive: 128
-#redisPassword: eiMWaYbnNvT7sr5k
 redisPassword: yN1MnL8O7DfS3aBh
+
 amqpDsn: amqp://admin:admin@127.0.0.1:5672
-staticDomain: https://fpv-web.bluetrans.cn
+staticDomain: http://127.0.0.1:11001
 ## 微信支付 回调地址
-wechatNotifyUrl: https://fpv-app-api.bluetrans.cn/api/v1/pay/wechat/notify
+wechatNotifyUrl: http://127.0.0.1:11001/api/v1/pay/wechat/notify
 ## 微信退款回调地址
-wechatRefundNotify: https://fpv-app-api.bluetrans.cn/api/v1/pay/wechat/refund
+wechatRefundNotify: http://127.0.0.1:11001/api/v1/pay/wechat/refund
 ## 支付宝 回调地址
-alipayNotifyUrl: https://fpv-app-api.bluetrans.cn/api/v1/pay/alipay/notify
+alipayNotifyUrl: http://127.0.0.1:11001/api/v1/pay/alipay/notify
 # 苹果
 appleLinkPath: /data/service/fpv-app-api/config/apple-app-site-association
 # 微信证书
@@ -55,13 +53,13 @@ certFilePath: /data/service/fpv-app-api/config/apiclient_cert.pem
 keyFilePath: /data/service/fpv-app-api/config/apiclient_key.pem
 pkcs12FilePath: /data/service/fpv-app-api/config/apiclient_cert.p12
 # 分享地址 todo: 暂时使用qa域名
-shareUrl: http://fpv-h5-qa.bluetrans.cn/#
+shareUrl: http://127.0.0.1:11001/#
 # 腾讯im SDKAppID
-tencentImAppId: 1400576334
+tencentImAppId: 123456
 # 腾讯im 密钥
-tencentImSecret: 080789c06a28b355e1ec94b97ad61edc4eb887275e68fa0046f5659cead396e7
+tencentImSecret: 123456
 # 腾讯im 管理员
-tencentImIdentifier: bluetrans
+tencentImIdentifier: admin
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
   path: /data/logs/fpv-app-api/app_server_%s.log

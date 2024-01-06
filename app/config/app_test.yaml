@@ -3,37 +3,40 @@ pprofAddr: :12001
 mode: test
 mysql:
   main:
-    master: root:root@2020@tcp(10.6.176.147:3306)/sports_service?charset=utf8mb4
+    master: root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
     slave:
-      - root:root@2020@tcp(10.6.176.147:3306)/sports_service?charset=utf8mb4
-      - root:root@2020@tcp(10.6.176.147:3306)/sports_service?charset=utf8mb4
-      - root:root@2020@tcp(10.6.176.147:3306)/sports_service?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
+    logPath: /data/logs/fpv-backend-api/db/db_fpv_%s.log
   venue:
-    master: root:root@2020@tcp(10.6.176.147:3306)/sports_service?charset=utf8mb4
+    master: root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
     slave:
-      - root:root@2020@tcp(10.6.176.147:3306)/sports_service?charset=utf8mb4
-      - root:root@2020@tcp(10.6.176.147:3306)/sports_service?charset=utf8mb4
-      - root:root@2020@tcp(10.6.176.147:3306)/sports_service?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
+    logPath: /data/logs/fpv-backend-api/db/db_venue_%s.log
+
 redis:
   main:
     master:
       ip: 127.0.0.1
-      port: 7916
+      port: 6378
 
     slave:
       - ip: 127.0.0.1
-        port: 7916
+        port: 6378
 
     dboption:
       - dbid: 0
         name:
         maxIdle: 128
         maxActive: 128
-redisPassword: n8R39KbtEfCEfyIk
+redisPassword: yN1MnL8O7DfS3aBh
 
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:

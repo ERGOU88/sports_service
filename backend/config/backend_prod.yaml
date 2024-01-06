@@ -3,52 +3,49 @@ pprofAddr: :12002
 mode: prod
 mysql:
   main:
-    master: fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
+    master: root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
     slave:
-      - fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
-      - fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
-      - fpv_app_api:KOGDHjAgk2tho1sq@tcp(10.5.0.235:35706)/fpv_app_api?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
-    logPath: /data/logs/fpv-app-api/db/db_fpv_%s.log
+    logPath: /data/logs/fpv-backend-api/db/db_fpv_%s.log
   venue:
-    master: venue:4QutVx9oZ7Gq5Xwl@tcp(10.5.0.235:35706)/venue?charset=utf8mb4
+    master: root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
     slave:
-      - venue:4QutVx9oZ7Gq5Xwl@tcp(10.5.0.235:35706)/venue?charset=utf8mb4
-      - venue:4QutVx9oZ7Gq5Xwl@tcp(10.5.0.235:35706)/venue?charset=utf8mb4
-      - venue:4QutVx9oZ7Gq5Xwl@tcp(10.5.0.235:35706)/venue?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
-    logPath: /data/logs/fpv-app-api/db/db_venue_%s.log
+    logPath: /data/logs/fpv-backend-api/db/db_venue_%s.log
+
 redis:
   main:
     master:
-      #ip: 10.6.1.111
-      #ip: 192.168.0.218
-      ip: 10.5.0.88
-      port: 6379
+      ip: 127.0.0.1
+      port: 6378
 
     slave:
-      #- ip: 10.6.1.111
-      - ip: 10.5.0.88
-        port: 6379
+      - ip: 127.0.0.1
+        port: 6378
 
     dboption:
       - dbid: 0
         name:
         maxIdle: 128
         maxActive: 128
-#redisPassword: eiMWaYbnNvT7sr5k
 redisPassword: yN1MnL8O7DfS3aBh
 nsqAddr: 127.0.0.1:4150
-fileAddr: http://192.168.50.148:13002/upload/
+fileAddr: http://127.0.0.1:13002/upload/
 amqpDsn: amqp://admin:admin@127.0.0.1:5672
 # 腾讯im SDKAppID
-tencentImAppId: 1400576334
+tencentImAppId: 123456
 # 腾讯im 密钥
-tencentImSecret: 080789c06a28b355e1ec94b97ad61edc4eb887275e68fa0046f5659cead396e7
+tencentImSecret: 123456
 # 腾讯im 管理员
-tencentImIdentifier: bluetrans
+tencentImIdentifier: admin
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
   path: /data/logs/fpv-backend-api/backend_server_%s.log

@@ -3,31 +3,32 @@ pprofAddr: :12001
 mode: dev
 mysql:
   main:
-    master: root:bluetrans888@tcp(10.1.3.12:3306)/sports_service?charset=utf8mb4
+    master: root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
     slave:
-      - root:bluetrans888@tcp(10.1.3.12:3306)/sports_service?charset=utf8mb4
-      - root:bluetrans888@tcp(10.1.3.12:3306)/sports_service?charset=utf8mb4
-      - root:bluetrans888@tcp(10.1.3.12:3306)/sports_service?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
-    logPath: /data/logs/fpv-app-api/db/db_fpv_%s.log
+    logPath: /data/logs/fpv-backend-api/db/db_fpv_%s.log
   venue:
-    master: root:bluetrans888@tcp(10.1.3.12:3306)/venue?charset=utf8mb4
+    master: root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
     slave:
-      - root:bluetrans888@tcp(10.1.3.12:3306)/venue?charset=utf8mb4
-      - root:bluetrans888@tcp(10.1.3.12:3306)/venue?charset=utf8mb4
-      - root:bluetrans888@tcp(10.1.3.12:3306)/venue?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/venue?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
-    logPath: /data/logs/fpv-app-api/db/db_venue_%s.log
+    logPath: /data/logs/fpv-backend-api/db/db_venue_%s.log
+
 redis:
   main:
     master:
-      ip: 10.1.3.12
+      ip: 127.0.0.1
       port: 6378
 
     slave:
-      - ip: 10.1.3.12
+      - ip: 127.0.0.1
         port: 6378
 
     dboption:
@@ -35,7 +36,7 @@ redis:
         name:
         maxIdle: 128
         maxActive: 128
-redisPassword:
+redisPassword: yN1MnL8O7DfS3aBh
 
 ## 开放平台appid
 wechatAppid: wx9306bf43be47830b
@@ -43,13 +44,13 @@ wechatAppid: wx9306bf43be47830b
 wechatSecret: 3af44d06170ecdab4b49d1c70268c71f
 nsqAddr: 127.0.0.1:4150
 amqpDsn: amqp://admin:admin@127.0.0.1:5672
-staticDomain: https://fpv-web-qa.bluetrans.cn
+staticDomain: http://127.0.0.1:11001
 ## 微信支付 回调地址
-wechatNotifyUrl: https://fpv-app-api.bluetrans.cn/api/v1/pay/wechat/notify
+wechatNotifyUrl: http://127.0.0.1:11001/api/v1/pay/wechat/notify
 ## 微信退款回调地址
-wechatRefundNotify: https://fpv-app-api.bluetrans.cn/api/v1/pay/wechat/refund
+wechatRefundNotify: http://127.0.0.1:11001/api/v1/pay/wechat/refund
 ## 支付宝 回调地址
-alipayNotifyUrl: https://fpv-app-api.bluetrans.cn/api/v1/pay/alipay/notify
+alipayNotifyUrl: http://127.0.0.1:11001/api/v1/pay/alipay/notify
 # 苹果
 appleLinkPath: /data/service/fpv-app-api/config/apple-app-site-association
 # 微信证书
@@ -57,17 +58,13 @@ certFilePath: /data/service/fpv-app-api/config/apiclient_cert.pem
 keyFilePath: /data/service/fpv-app-api/config/apiclient_key.pem
 pkcs12FilePath: /data/service/fpv-app-api/config/apiclient_cert.p12
 # 分享地址 h5域名
-shareUrl: http://fpv-h5-qa.bluetrans.cn/#
-## 腾讯im SDKAppID
-#tencentImAppId: 1400570443
-## 腾讯im 密钥
-#tencentImSecret: a6380a7413ed7fdcfac951b9c5fde542c661864c596a4aa7bc1d15c87df5b1f7
+shareUrl: http://127.0.0.1:11001/#
 # 腾讯im SDKAppID
-tencentImAppId: 1400576334
+tencentImAppId: 123456
 # 腾讯im 密钥
-tencentImSecret: 080789c06a28b355e1ec94b97ad61edc4eb887275e68fa0046f5659cead396e7
+tencentImSecret: 123456
 # 腾讯im 管理员
-tencentImIdentifier: bluetrans
+tencentImIdentifier: admin
 ## 日志等级 0 debug 1 info 2 warn 3 error
 log:
   path: ./log/app_server_%s.log

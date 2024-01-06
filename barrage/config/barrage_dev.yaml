@@ -8,26 +8,27 @@ log:
   showColor: true
 nsqAddr: 127.0.0.1:4150
 maxMsgCacheLen: 10000
-kafkaAddr: 10.6.30.199:9092
+kafkaAddr: 127.0.0.1:9092
 kafkaTopic: test1
 mysql:
   main:
-    master: root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4
+    master: root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
     slave:
-      - root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4
-      - root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4
-      - root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
+      - root:123456@tcp(127.0.0.1:3306)/sports_service?charset=utf8mb4
     maxIdle: 128
     maxActive: 128
+    logPath: /data/logs/fpv-backend-api/db/db_fpv_%s.log
 
 redis:
   main:
     master:
-      ip: 192.168.5.12
+      ip: 127.0.0.1
       port: 6378
 
     slave:
-      - ip: 192.168.5.12
+      - ip: 127.0.0.1
         port: 6378
 
     dboption:
@@ -35,6 +36,6 @@ redis:
         name:
         maxIdle: 128
         maxActive: 128
-redisPassword:
+redisPassword: yN1MnL8O7DfS3aBh
 
 debug: true
