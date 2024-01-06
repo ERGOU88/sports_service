@@ -280,3 +280,16 @@ func AddRole(c *gin.Context) {
 	reply.Data["role_name"] = param.RoleName
 	reply.Response(http.StatusOK, code)
 }
+
+func LoginCode(c *gin.Context) {
+	reply := errdef.New(c)
+	id, info, err := util.CreateCode("string")
+	if err != nil {
+		reply.Response(http.StatusOK, errdef.ADMIN_GET_CODE_FAIL)
+		return
+	}
+
+	reply.Data["base64captcha"] = info
+	reply.Data["id"] = id
+	reply.Response(http.StatusOK, errdef.SUCCESS)
+}

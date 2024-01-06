@@ -7,7 +7,6 @@ import (
 )
 
 type LdapService struct {
-
 }
 
 func NewAdModel() *LdapService {
@@ -15,11 +14,11 @@ func NewAdModel() *LdapService {
 }
 
 const (
-	URL         = "adfs.bluetrans.cn"
-	PORT        = 5389
-	USER_NAME   = "bluetrans"
-	PASSWORD    = "bluetrans2021"
-	BASE_DN     = "dc=bluetrans,dc=local"
+	URL       = "ldap.baidu.cn"
+	PORT      = 5389
+	USER_NAME = "username"
+	PASSWORD  = "password"
+	BASE_DN   = "dc=xxxx,dc=local"
 )
 
 func (m *LdapService) CheckLogin(name, password string) (string, error) {

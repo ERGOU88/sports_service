@@ -6,6 +6,8 @@ import "sports_service/models"
 type AdminRegOrLoginParams struct {
 	UserName string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
+	Code     string `json:"code"`
+	Id       string `json:"id"`
 }
 
 // 禁用/解禁 管理员

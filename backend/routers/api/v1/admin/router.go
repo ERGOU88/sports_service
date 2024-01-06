@@ -47,5 +47,7 @@ func Router(engine *gin.Engine) {
 		admin.GET("/menu/detail", MenuDetail)
 		// 菜单列表
 		admin.GET("/menu/list", MenuList)
+		// 登录验证码
+		admin.GET("/login/code", LoginCode)
 	}
 }

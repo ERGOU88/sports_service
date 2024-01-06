@@ -197,6 +197,11 @@ func (svc *AdminModule) GetRoleMenuList(roleId string) (int, []*models.SystemRol
 
 // 管理员登陆 todo:rbac
 func (svc *AdminModule) AdminLogin(params *madmin.AdminRegOrLoginParams) (int, string, []*models.SystemRoleMenu) {
+	if b := util.VerifyCaptcha(params.Id, strings.ToLower(params.Code)); !b {
+		log.Log.Errorf("admin_trace: verify captCha fail, bool:%v", b)
+		return errdef.ADMIN_VERIFY_CODE_FAIL, "", nil
+	}
+
 	admin := svc.admin.FindAdminUserByName(params.UserName)
 	if admin == nil {
 		return errdef.ADMIN_NOT_EXISTS, "", nil
