@@ -4,43 +4,43 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mcommunity"
-	"sports_service/server/models/mposting"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	redismq "sports_service/server/redismq/event"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
-	"sports_service/server/global/backend/log"
+	"sports_service/dao"
+	"sports_service/global/backend/errdef"
+	"sports_service/global/backend/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mattention"
+	"sports_service/models/mcommunity"
+	"sports_service/models/mposting"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	redismq "sports_service/redismq/event"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"time"
 )
 
 type PostModule struct {
-	context      *gin.Context
-	engine       *xorm.Session
-	post         *mposting.PostingModel
-	attention    *mattention.AttentionModel
-	user         *muser.UserModel
-	video        *mvideo.VideoModel
-	community    *mcommunity.CommunityModel
+	context   *gin.Context
+	engine    *xorm.Session
+	post      *mposting.PostingModel
+	attention *mattention.AttentionModel
+	user      *muser.UserModel
+	video     *mvideo.VideoModel
+	community *mcommunity.CommunityModel
 }
 
 func New(c *gin.Context) PostModule {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return PostModule{
-		context: c,
-		post: mposting.NewPostingModel(socket),
+		context:   c,
+		post:      mposting.NewPostingModel(socket),
 		attention: mattention.NewAttentionModel(socket),
-		user: muser.NewUserModel(socket),
-		video: mvideo.NewVideoModel(socket),
+		user:      muser.NewUserModel(socket),
+		video:     mvideo.NewVideoModel(socket),
 		community: mcommunity.NewCommunityModel(socket),
-		engine: socket,
+		engine:    socket,
 	}
 }
 
@@ -224,7 +224,7 @@ func (svc *PostModule) GetPostList(page, size int, status, title string) (int, [
 		}
 
 		item.Topics, err = svc.post.GetPostTopic(fmt.Sprint(item.Id))
-		if item.Topics == nil || err != nil  {
+		if item.Topics == nil || err != nil {
 			item.Topics = []*models.PostingTopic{}
 		}
 
@@ -265,9 +265,9 @@ func (svc *PostModule) AddSection(param *mcommunity.AddSection) int {
 func (svc *PostModule) EditSection(param *mcommunity.AddSection) int {
 	mp := map[string]interface{}{
 		"section_name": param.SectionName,
-		"sortorder": param.Sortorder,
-		"update_at": int(time.Now().Unix()),
-		"status": param.Status,
+		"sortorder":    param.Sortorder,
+		"update_at":    int(time.Now().Unix()),
+		"status":       param.Status,
 	}
 	if _, err := svc.community.UpdateSectionInfo(param.Id, mp); err != nil {
 		log.Log.Errorf("post_trace: add section fail, err:%s", err)
@@ -280,7 +280,7 @@ func (svc *PostModule) EditSection(param *mcommunity.AddSection) int {
 // 软删除 将板块隐藏
 func (svc *PostModule) DelSection(param *mcommunity.DelSection) int {
 	//svc.community.CommunitySection.Status = 2
-	mp := map[string]interface{}{"status":2}
+	mp := map[string]interface{}{"status": 2}
 	if _, err := svc.community.UpdateSectionInfo(param.Id, mp); err != nil {
 		log.Log.Errorf("post_trace: del section fail, err:%s", err)
 		return errdef.POST_DEL_SECTION_FAIL
@@ -307,14 +307,14 @@ func (svc *PostModule) AddTopic(param *mcommunity.AddTopic) int {
 
 func (svc *PostModule) UpdateTopic(param *mcommunity.AddTopic) int {
 	mp := map[string]interface{}{
-		"status": param.Status,
-		"cover": param.Cover,
-		"update_at": time.Now().Unix(),
-		"sortorder": param.Sortorder,
+		"status":     param.Status,
+		"cover":      param.Cover,
+		"update_at":  time.Now().Unix(),
+		"sortorder":  param.Sortorder,
 		"topic_name": param.TopicName,
-		"describe": param.Describe,
+		"describe":   param.Describe,
 		"section_id": param.SectionId,
-		"is_hot": param.IsHot,
+		"is_hot":     param.IsHot,
 	}
 
 	if _, err := svc.community.UpdateTopicInfo(param.Id, mp); err != nil {
@@ -326,7 +326,7 @@ func (svc *PostModule) UpdateTopic(param *mcommunity.AddTopic) int {
 
 func (svc *PostModule) DelTopic(param *mcommunity.DelTopic) int {
 	mp := map[string]interface{}{
-		"status": 2,
+		"status":    2,
 		"update_at": int(time.Now().Unix()),
 	}
 	if _, err := svc.community.UpdateTopicInfo(param.Id, mp); err != nil {
@@ -457,7 +457,7 @@ func (svc *PostModule) BatchEditPostInfo(param *mposting.BatchEditParam) int {
 			return errdef.ERROR
 		}
 
-		list := make([]*models.PostingTopic, len(param.Ids) * len(param.TopicIds))
+		list := make([]*models.PostingTopic, len(param.Ids)*len(param.TopicIds))
 		i := 0
 		now := int(time.Now().Unix())
 		for _, postId := range param.Ids {
@@ -471,9 +471,9 @@ func (svc *PostModule) BatchEditPostInfo(param *mposting.BatchEditParam) int {
 
 				list[i] = &models.PostingTopic{
 					PostingId: postId,
-					TopicId: int(topicId),
+					TopicId:   int(topicId),
 					TopicName: topic.TopicName,
-					UpdateAt: now,
+					UpdateAt:  now,
 				}
 
 				i++

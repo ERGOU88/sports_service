@@ -1,168 +1,168 @@
 package muser
 
 import (
-  "fmt"
-  "github.com/go-xorm/xorm"
-  "regexp"
-  "sports_service/server/dao"
-  "sports_service/server/global/app/log"
-  "sports_service/server/global/consts"
-  "sports_service/server/global/rdskey"
-  "sports_service/server/models"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
-  "strings"
-  "time"
+	"fmt"
+	"github.com/go-xorm/xorm"
+	"regexp"
+	"sports_service/dao"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/global/rdskey"
+	"sports_service/models"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
+	"strings"
+	"time"
 )
 
 type UserModel struct {
-	User    *models.User
-	Engine  *xorm.Session
+	User   *models.User
+	Engine *xorm.Session
 	*base
 }
 
 type TencentImUser struct {
-	UserId      string    `json:"user_id"`
-	NickName    string    `json:"nick_name"`
-	Avatar      tencentCloud.BucketURI    `json:"avatar"`
-	Sign        string    `json:"sign"`
+	UserId   string                 `json:"user_id"`
+	NickName string                 `json:"nick_name"`
+	Avatar   tencentCloud.BucketURI `json:"avatar"`
+	Sign     string                 `json:"sign"`
 }
 
 func NewUserModel(engine *xorm.Session) *UserModel {
 	return &UserModel{
-		User: new(models.User),
+		User:   new(models.User),
 		Engine: engine,
 	}
 }
 
 // 后台封禁用户请求参数
 type ForbidUserParam struct {
-	Id        string       `json:"id"`
+	Id string `json:"id"`
 }
 
 // 后台解封用户请求参数
 type UnForbidUserParam struct {
-	Id        string      `json:"id"`
+	Id string `json:"id"`
 }
 
 // 用户信息（后台）
 type UserInfo struct {
-	Id            int64  `json:"id" example:"1000000000000"`
-	UserId        string `json:"user_id" example:"2009011314521111"`
+	Id            int64                  `json:"id" example:"1000000000000"`
+	UserId        string                 `json:"user_id" example:"2009011314521111"`
 	Avatar        tencentCloud.BucketURI `json:"avatar" example:"头像地址"`
-	MobileNum     int64  `json:"mobile_num" example:"13177656222"`
-	NickName      string `json:"nick_name" example:"昵称 陈二狗"`
-	Gender        int32  `json:"gender" example:"0"`
-	Signature     string `json:"signature" example:"个性签名"`
-	Status        int32  `json:"status" example:"0"`
-	IsAnchor      int32  `json:"is_anchor" example:"0"`
+	MobileNum     int64                  `json:"mobile_num" example:"13177656222"`
+	NickName      string                 `json:"nick_name" example:"昵称 陈二狗"`
+	Gender        int32                  `json:"gender" example:"0"`
+	Signature     string                 `json:"signature" example:"个性签名"`
+	Status        int32                  `json:"status" example:"0"`
+	IsAnchor      int32                  `json:"is_anchor" example:"0"`
 	BackgroundImg tencentCloud.BucketURI `json:"background_img" example:"背景图"`
-	Born          string `json:"born" example:"出生日期"`
-	Age           int    `json:"age" example:"27"`
-	Country       int32  `json:"country" example:"0"`
-	CountryCn     string `json:"country_cn" example:"中国"`
-	RegIp         string `json:"reg_ip" example:"192.168.0.108"`
-	LastLoginTime int    `json:"last_login_time" example:"1600000000"`
-	Platform      int    `json:"platform" example:"0"`
-	UserType      int32  `json:"user_type" example:"0"`
+	Born          string                 `json:"born" example:"出生日期"`
+	Age           int                    `json:"age" example:"27"`
+	Country       int32                  `json:"country" example:"0"`
+	CountryCn     string                 `json:"country_cn" example:"中国"`
+	RegIp         string                 `json:"reg_ip" example:"192.168.0.108"`
+	LastLoginTime int                    `json:"last_login_time" example:"1600000000"`
+	Platform      int                    `json:"platform" example:"0"`
+	UserType      int32                  `json:"user_type" example:"0"`
 
-	TotalBeLiked     int64  `json:"total_beLiked" example:"100"`     // 被点赞数
-	TotalFans        int64  `json:"total_fans" example:"100"`        // 粉丝数
-	TotalAttention   int64  `json:"total_attention" example:"100"`   // 关注数
-	TotalCollect     int64  `json:"total_collect" example:"100"`     // 收藏的视频数
-	TotalPublish     int64  `json:"total_publish" example:"100"`     // 发布的视频数
-	TotalLikes       int64  `json:"total_likes" example:"100"`       // 点赞的视频数
-	TotalComment     int64  `json:"total_comment" example:"100"`     // 总评价数
-	TotalBrowse      int64  `json:"total_browse" example:"100"`      // 总浏览数
-	TotalBarrage     int64  `json:"total_barrage" example:"100"`     // 总弹幕数
-	TotalPubPost     int64  `json:"total_pub_post"`                  // 总发布帖子数
-	TotalOrder       int64  `json:"total_order"`                     // 总订单
-	TotalConsume     int64  `json:"total_consume"`                   // 消费总额
+	TotalBeLiked   int64 `json:"total_beLiked" example:"100"`   // 被点赞数
+	TotalFans      int64 `json:"total_fans" example:"100"`      // 粉丝数
+	TotalAttention int64 `json:"total_attention" example:"100"` // 关注数
+	TotalCollect   int64 `json:"total_collect" example:"100"`   // 收藏的视频数
+	TotalPublish   int64 `json:"total_publish" example:"100"`   // 发布的视频数
+	TotalLikes     int64 `json:"total_likes" example:"100"`     // 点赞的视频数
+	TotalComment   int64 `json:"total_comment" example:"100"`   // 总评价数
+	TotalBrowse    int64 `json:"total_browse" example:"100"`    // 总浏览数
+	TotalBarrage   int64 `json:"total_barrage" example:"100"`   // 总弹幕数
+	TotalPubPost   int64 `json:"total_pub_post"`                // 总发布帖子数
+	TotalOrder     int64 `json:"total_order"`                   // 总订单
+	TotalConsume   int64 `json:"total_consume"`                 // 消费总额
 }
 
 // 用户简单信息返回
 type UserInfoResp struct {
-	UserId        string `json:"user_id" example:"2009011314521111"`
+	UserId        string                 `json:"user_id" example:"2009011314521111"`
 	Avatar        tencentCloud.BucketURI `json:"avatar" example:"头像地址"`
-	MobileNum     int64  `json:"mobile_num" example:"13177656222"`
-	NickName      string `json:"nick_name" example:"昵称 陈二狗"`
-	Gender        int32  `json:"gender" example:"0"`
-	Signature     string `json:"signature" example:"个性签名"`
-	Status        int32  `json:"status" example:"0"`
-	IsAnchor      int32  `json:"is_anchor" example:"0"`
-	BackgroundImg string `json:"background_img" example:"背景图"`
-	Born          string `json:"born" example:"出生日期"`
-	Age           int    `json:"age" example:"27"`
-	UserType      int    `json:"user_type" example:"0"`
-	Country       int32  `json:"country" example:"0"`
-	CountryName   string `json:"country_name"`
-	IsAttention   int32  `json:"is_attention" example:"0"`
-	IsReplyFocus  int32  `json:"is_reply_focus"`               // 对方是否关注
+	MobileNum     int64                  `json:"mobile_num" example:"13177656222"`
+	NickName      string                 `json:"nick_name" example:"昵称 陈二狗"`
+	Gender        int32                  `json:"gender" example:"0"`
+	Signature     string                 `json:"signature" example:"个性签名"`
+	Status        int32                  `json:"status" example:"0"`
+	IsAnchor      int32                  `json:"is_anchor" example:"0"`
+	BackgroundImg string                 `json:"background_img" example:"背景图"`
+	Born          string                 `json:"born" example:"出生日期"`
+	Age           int                    `json:"age" example:"27"`
+	UserType      int                    `json:"user_type" example:"0"`
+	Country       int32                  `json:"country" example:"0"`
+	CountryName   string                 `json:"country_name"`
+	IsAttention   int32                  `json:"is_attention" example:"0"`
+	IsReplyFocus  int32                  `json:"is_reply_focus"` // 对方是否关注
 }
 
 // 个人空间用户信息
 type UserZoneInfoResp struct {
-	TotalBeLiked     int64  `json:"total_beLiked" example:"100"`     // 被点赞数
-	TotalFans        int64  `json:"total_fans" example:"100"`        // 粉丝数
-	TotalAttention   int64  `json:"total_attention" example:"100"`   // 关注数
-	TotalCollect     int64  `json:"total_collect" example:"100"`     // 收藏的作品数
-	TotalPublish     int64  `json:"total_publish" example:"100"`     // 发布的作品数
-	TotalLikes       int64  `json:"total_likes" example:"100"`       // 点赞的作品数
+	TotalBeLiked   int64 `json:"total_beLiked" example:"100"`   // 被点赞数
+	TotalFans      int64 `json:"total_fans" example:"100"`      // 粉丝数
+	TotalAttention int64 `json:"total_attention" example:"100"` // 关注数
+	TotalCollect   int64 `json:"total_collect" example:"100"`   // 收藏的作品数
+	TotalPublish   int64 `json:"total_publish" example:"100"`   // 发布的作品数
+	TotalLikes     int64 `json:"total_likes" example:"100"`     // 点赞的作品数
 }
 
 type User struct {
-	NickName      string `json:"nick_name" xorm:"not null default '' comment('昵称') VARCHAR(45)"`
-	MobileNum     int64  `json:"mobile_num" xorm:"not null comment('手机号码') unique BIGINT(20)"`
-	UserId        string `json:"user_id" xorm:"not null comment('用户id') unique VARCHAR(60)"`
-	Gender        int    `json:"gender" xorm:"not null default 0 comment('性别 0人妖 1男性 2女性') TINYINT(1)"`
-	Born          string `json:"born" xorm:"not null default '' comment('出生日期') VARCHAR(128)"`
-	Age           int    `json:"age" xorm:"not null default 0 comment('年龄') INT(3)"`
+	NickName      string                 `json:"nick_name" xorm:"not null default '' comment('昵称') VARCHAR(45)"`
+	MobileNum     int64                  `json:"mobile_num" xorm:"not null comment('手机号码') unique BIGINT(20)"`
+	UserId        string                 `json:"user_id" xorm:"not null comment('用户id') unique VARCHAR(60)"`
+	Gender        int                    `json:"gender" xorm:"not null default 0 comment('性别 0人妖 1男性 2女性') TINYINT(1)"`
+	Born          string                 `json:"born" xorm:"not null default '' comment('出生日期') VARCHAR(128)"`
+	Age           int                    `json:"age" xorm:"not null default 0 comment('年龄') INT(3)"`
 	Avatar        tencentCloud.BucketURI `json:"avatar" xorm:"not null default '' comment('头像') VARCHAR(300)"`
-	Status        int    `json:"status" xorm:"default 0 comment('0 正常 1 封禁') TINYINT(1)"`
-	LastLoginTime int    `json:"last_login_time" xorm:"comment('最后登录时间') INT(11)"`
-	Signature     string `json:"signature" xorm:"not null default '' comment('签名') VARCHAR(200)"`
-	DeviceType    int    `json:"device_type" xorm:"comment('设备类型 0 android 1 iOS 2 小程序 3 web') TINYINT(2)"`
-	City          string `json:"city" xorm:"not null default '' comment('城市') VARCHAR(64)"`
-	IsAnchor      int    `json:"is_anchor" xorm:"not null default 0 comment('0不是主播 1为主播') TINYINT(1)"`
+	Status        int                    `json:"status" xorm:"default 0 comment('0 正常 1 封禁') TINYINT(1)"`
+	LastLoginTime int                    `json:"last_login_time" xorm:"comment('最后登录时间') INT(11)"`
+	Signature     string                 `json:"signature" xorm:"not null default '' comment('签名') VARCHAR(200)"`
+	DeviceType    int                    `json:"device_type" xorm:"comment('设备类型 0 android 1 iOS 2 小程序 3 web') TINYINT(2)"`
+	City          string                 `json:"city" xorm:"not null default '' comment('城市') VARCHAR(64)"`
+	IsAnchor      int                    `json:"is_anchor" xorm:"not null default 0 comment('0不是主播 1为主播') TINYINT(1)"`
 	BackgroundImg tencentCloud.BucketURI `json:"background_img" xorm:"not null default '' comment('背景图') VARCHAR(255)"`
-	Title         string `json:"title" xorm:"not null default '' comment('称号/特殊身份') VARCHAR(255)"`
-	UserType      int    `json:"user_type" xorm:"not null default 0 comment('用户类型 0 手机号 1 微信 2 QQ 3 微博') TINYINT(2)"`
-	Country       int    `json:"country" xorm:"not null default 0 comment('国家') INT(3)"`
-	DeviceToken   string `json:"device_token" xorm:"not null default '' comment('设备token') VARCHAR(100)"`
-	AccountType   int    `json:"account_type" xorm:"not null default 0 comment('账号类型 0 普通用户 1 官方账号') TINYINT(2)"`
-	TxAccid       string `json:"tx_accid" xorm:"not null default '' comment('accid（腾讯im 唯一标识)') VARCHAR(60)"`
-	TxToken       string `json:"tx_token" xorm:"not null default '' comment('token（腾讯im）') VARCHAR(300)"`
+	Title         string                 `json:"title" xorm:"not null default '' comment('称号/特殊身份') VARCHAR(255)"`
+	UserType      int                    `json:"user_type" xorm:"not null default 0 comment('用户类型 0 手机号 1 微信 2 QQ 3 微博') TINYINT(2)"`
+	Country       int                    `json:"country" xorm:"not null default 0 comment('国家') INT(3)"`
+	DeviceToken   string                 `json:"device_token" xorm:"not null default '' comment('设备token') VARCHAR(100)"`
+	AccountType   int                    `json:"account_type" xorm:"not null default 0 comment('账号类型 0 普通用户 1 官方账号') TINYINT(2)"`
+	TxAccid       string                 `json:"tx_accid" xorm:"not null default '' comment('accid（腾讯im 唯一标识)') VARCHAR(60)"`
+	TxToken       string                 `json:"tx_token" xorm:"not null default '' comment('token（腾讯im）') VARCHAR(300)"`
 }
 
 // 用户搜索
 type UserSearchResults struct {
-	UserId        string `json:"user_id" example:"2009011314521111"`
+	UserId        string                 `json:"user_id" example:"2009011314521111"`
 	Avatar        tencentCloud.BucketURI `json:"avatar" example:"头像地址"`
-	NickName      string `json:"nick_name" example:"昵称 陈二狗"`
-	Gender        int32  `json:"gender" example:"0"`
-	Signature     string `json:"signature" example:"个性签名"`
-	Status        int32  `json:"status" example:"0"`
-	IsAnchor      int32  `json:"is_anchor" example:"0"`
+	NickName      string                 `json:"nick_name" example:"昵称 陈二狗"`
+	Gender        int32                  `json:"gender" example:"0"`
+	Signature     string                 `json:"signature" example:"个性签名"`
+	Status        int32                  `json:"status" example:"0"`
+	IsAnchor      int32                  `json:"is_anchor" example:"0"`
 	BackgroundImg tencentCloud.BucketURI `json:"background_img" example:"背景图"`
-	Born          string `json:"born" example:"出生日期"`
-	Age           int    `json:"age" example:"27"`
-	IsAttention   int32  `json:"is_attention"  example:"1"`
-	WorksNum      int64  `json:"works_num" example:"100"`                          // 作品数
-	FansNum       int64  `json:"fans_num"  example:"100"`                          // 粉丝数
+	Born          string                 `json:"born" example:"出生日期"`
+	Age           int                    `json:"age" example:"27"`
+	IsAttention   int32                  `json:"is_attention"  example:"1"`
+	WorksNum      int64                  `json:"works_num" example:"100"` // 作品数
+	FansNum       int64                  `json:"fans_num"  example:"100"` // 粉丝数
 }
 
 // 登陆请求所需的参数
 type LoginParams struct {
-	Platform  int      `json:"platform" example:"0"`                                // 平台 0 android 1 iOS 2 web
+	Platform int `json:"platform" example:"0"` // 平台 0 android 1 iOS 2 web
 	//Token     string   `binding:"required" json:"token" example:"客户端token"`
-	OpToken   string   `binding:"required" json:"op_token" example:"客户端返回的运营商token"`
-	Operator  string   `binding:"required" json:"operator" example:"客户端返回的运营商，CMCC:中国移动通信, CUCC:中国联通通讯, CTCC:中国电信"`
+	OpToken  string `binding:"required" json:"op_token" example:"客户端返回的运营商token"`
+	Operator string `binding:"required" json:"operator" example:"客户端返回的运营商，CMCC:中国移动通信, CUCC:中国联通通讯, CTCC:中国电信"`
 }
 
 // 修改用户信息请求参数
 type EditUserInfoParams struct {
 	Avatar    string `json:"avatar" example:"1"`            // 头像地址（暂时仅支持更换系统默认头像）
-	NickName  string `json:"nick_name" example:"陈二狗"`     // 昵称
+	NickName  string `json:"nick_name" example:"陈二狗"`       // 昵称
 	Born      string `json:"born" example:"1993-06-20"`     // 出生年月
 	Gender    int32  `json:"gender" example:"1"`            // 性别 1 男 2 女
 	CountryId int32  `json:"country_id" example:"1"`        // 国家id
@@ -171,65 +171,65 @@ type EditUserInfoParams struct {
 
 // 用户卡包信息
 type UserKabawInfo struct {
-	StartTm         int64  `json:"start_tm"`       // 会员开始时间
-	EndTm           int64  `json:"end_tm"`         // 会员结束时间
-	QrCodeInfo      string `json:"qr_code_info"`   // 二维码信息
-	VipName         string `json:"vip_name"`       // 会员名称
-	RemainDuration  int64  `json:"remain_duration"`// 剩余时长
-	Tips            string `json:"tips"`           // 提示
-	IsVip           bool   `json:"is_vip"`         // 是否会员
-	HasExpire       bool   `json:"has_expire"`     // 会员是否过期 true 过期
-	VenueName       string `json:"venue_name"`     // 场馆名称
-	VipImage        tencentCloud.BucketURI `json:"vip_image"`      // 会员图片
+	StartTm        int64                  `json:"start_tm"`        // 会员开始时间
+	EndTm          int64                  `json:"end_tm"`          // 会员结束时间
+	QrCodeInfo     string                 `json:"qr_code_info"`    // 二维码信息
+	VipName        string                 `json:"vip_name"`        // 会员名称
+	RemainDuration int64                  `json:"remain_duration"` // 剩余时长
+	Tips           string                 `json:"tips"`            // 提示
+	IsVip          bool                   `json:"is_vip"`          // 是否会员
+	HasExpire      bool                   `json:"has_expire"`      // 会员是否过期 true 过期
+	VenueName      string                 `json:"venue_name"`      // 场馆名称
+	VipImage       tencentCloud.BucketURI `json:"vip_image"`       // 会员图片
 }
 
 // 用户反馈请求参数
 type FeedbackParam struct {
 	Phone    string `binding:"required" json:"phone" example:"手机号"`
-	Describe string `json:"describe" example:"问题描述"`                              // 反馈内容
-	Problem  string `binding:"required" json:"problem" example:"遇到的问题"`           // 遇到的问题
-	Pics     string `json:"pics" example:"图片列表"`                                  // 图片（多张逗号分隔）
+	Describe string `json:"describe" example:"问题描述"`                    // 反馈内容
+	Problem  string `binding:"required" json:"problem" example:"遇到的问题"` // 遇到的问题
+	Pics     string `json:"pics" example:"图片列表"`                        // 图片（多张逗号分隔）
 }
 
 // 更新腾讯im签名参数
 type UpdateTencentImSign struct {
-	UserId    string   `json:"user_id"`    // 用户id
+	UserId string `json:"user_id"` // 用户id
 }
 
 // 个人空间 用户信息请求参数
 type UserZoneInfoParam struct {
-	UserId  string `json:"user_id"`            // 用户userid
+	UserId string `json:"user_id"` // 用户userid
 }
 
 // 绑定设备token
 type BindDeviceTokenParam struct {
-  DeviceToken       string     `json:"device_token" binding:"required"`    // 设备token（推送）
-  Platform          int        `json:"platform"`                           // 平台 0 android 1 ios 2 web
+	DeviceToken string `json:"device_token" binding:"required"` // 设备token（推送）
+	Platform    int    `json:"platform"`                        // 平台 0 android 1 ios 2 web
 }
 
 // 管理后台 官方用户返回信息
 type OfficialUserInfo struct {
-	Id          int64     `json:"id"`
-	UserId      string    `json:"user_id"`
-	NickName    string    `json:"nick_name"`
+	Id          int64                  `json:"id"`
+	UserId      string                 `json:"user_id"`
+	NickName    string                 `json:"nick_name"`
 	Avatar      tencentCloud.BucketURI `json:"avatar"`
-	MobileNum   int       `json:"mobile_num"`
-	PubVideoNum int64     `json:"pub_video_num"`
-	PubPostNum  int64     `json:"pub_post_num"`
-	PubInfoNum  int64     `json:"pub_info_num"`   // 发布资讯数
+	MobileNum   int                    `json:"mobile_num"`
+	PubVideoNum int64                  `json:"pub_video_num"`
+	PubPostNum  int64                  `json:"pub_post_num"`
+	PubInfoNum  int64                  `json:"pub_info_num"` // 发布资讯数
 }
 
 type DefaultAvatar struct {
-	Id        int64  `json:"id" xorm:"pk autoincr comment('主键id') BIGINT(20)"`
+	Id        int64                  `json:"id" xorm:"pk autoincr comment('主键id') BIGINT(20)"`
 	Avatar    tencentCloud.BucketURI `json:"avatar" xorm:"not null comment('头像地址') VARCHAR(128)"`
-	Sortorder int    `json:"sortorder" xorm:"not null default 0 comment('排序权重') INT(11)"`
-	CreateAt  int    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
-	UpdateAt  int    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
-	Status    int    `json:"status" xorm:"not null default 0 comment('0展示 1不展示') TINYINT(1)"`
+	Sortorder int                    `json:"sortorder" xorm:"not null default 0 comment('排序权重') INT(11)"`
+	CreateAt  int                    `json:"create_at" xorm:"not null default 0 comment('创建时间') INT(11)"`
+	UpdateAt  int                    `json:"update_at" xorm:"not null default 0 comment('更新时间') INT(11)"`
+	Status    int                    `json:"status" xorm:"not null default 0 comment('0展示 1不展示') TINYINT(1)"`
 }
 
-
 var validPhone = regexp.MustCompile(`^1\d{10}$`)
+
 // 检验手机号
 func (m *UserModel) CheckCellPhoneNumber(mobileNum string) bool {
 	return validPhone.MatchString(mobileNum)
@@ -284,73 +284,73 @@ func (m *UserModel) GetUserList(offset, size int) []*models.User {
 
 // 根据用户id、手机号查询用户(后台用户列表排序 0 按注册时间倒序 1 关注数 2 粉丝数 3 发布数 4 浏览数 5 点赞数 6 收藏数 7 评论数 8 弹幕数)
 func (m *UserModel) GetUserListBySort(userId, mobileNum, sortType, condition string, offset, size int) []*UserInfo {
-  sql := "SELECT u.*, total_attention, total_fans, tu.total_be_liked, total_likes, total_collect, total_publish, " +
-    "total_barrage, total_comment, total_browse from user as u " +
-    "LEFT JOIN (select ua.attention_uid, ua.user_id, count(ua.id) as total_attention from user_attention as ua " +
-    "where ua.status=1 group by ua.attention_uid) as ua on u.user_id=ua.attention_uid " +
-    "LEFT JOIN (select ua.attention_uid, ua.user_id, count(ua.user_id) as total_fans from user_attention as ua " +
-    "where ua.status=1 group by ua.user_id) as ua2 on u.user_id=ua2.user_id  " +
-    "LEFT JOIN (select tu.to_user_id, tu.user_id, count(tu.id) as total_be_liked from thumbs_up as tu " +
-    "where tu.status=1 group by tu.to_user_id) as tu on u.user_id=tu.to_user_id  " +
-    "LEFT JOIN (select tu.to_user_id, tu.user_id, count(tu.id) as total_likes from thumbs_up as tu " +
-    "where tu.status=1 group by tu.user_id) as tu2 on u.user_id=tu2.user_id  " +
-    "LEFT JOIN (select cr.user_id, count(cr.id) as total_collect from collect_record as cr " +
-    "where cr.status=1 group by cr.user_id) as cr on u.user_id=cr.user_id " +
-    "LEFT JOIN (select v.user_id, count(v.video_id) as total_publish from videos as v " +
-    " group by v.user_id) as v on u.user_id=v.user_id " +
-    "LEFT JOIN (select vb.user_id, count(vb.id) as total_barrage from video_barrage as vb " +
-    "group by vb.user_id) as vb on u.user_id=vb.user_id  " +
-    "LEFT JOIN (select vc.user_id, count(vc.id) as total_comment from video_comment as vc " +
-    "WHERE vc.status=1 group by vc.user_id) as vc on u.user_id=vc.user_id " +
-    "LEFT JOIN (select ubr.user_id, count(ubr.id) as total_browse from user_browse_record as ubr " +
-    "group by ubr.user_id) as ubr on u.user_id=ubr.user_id "
+	sql := "SELECT u.*, total_attention, total_fans, tu.total_be_liked, total_likes, total_collect, total_publish, " +
+		"total_barrage, total_comment, total_browse from user as u " +
+		"LEFT JOIN (select ua.attention_uid, ua.user_id, count(ua.id) as total_attention from user_attention as ua " +
+		"where ua.status=1 group by ua.attention_uid) as ua on u.user_id=ua.attention_uid " +
+		"LEFT JOIN (select ua.attention_uid, ua.user_id, count(ua.user_id) as total_fans from user_attention as ua " +
+		"where ua.status=1 group by ua.user_id) as ua2 on u.user_id=ua2.user_id  " +
+		"LEFT JOIN (select tu.to_user_id, tu.user_id, count(tu.id) as total_be_liked from thumbs_up as tu " +
+		"where tu.status=1 group by tu.to_user_id) as tu on u.user_id=tu.to_user_id  " +
+		"LEFT JOIN (select tu.to_user_id, tu.user_id, count(tu.id) as total_likes from thumbs_up as tu " +
+		"where tu.status=1 group by tu.user_id) as tu2 on u.user_id=tu2.user_id  " +
+		"LEFT JOIN (select cr.user_id, count(cr.id) as total_collect from collect_record as cr " +
+		"where cr.status=1 group by cr.user_id) as cr on u.user_id=cr.user_id " +
+		"LEFT JOIN (select v.user_id, count(v.video_id) as total_publish from videos as v " +
+		" group by v.user_id) as v on u.user_id=v.user_id " +
+		"LEFT JOIN (select vb.user_id, count(vb.id) as total_barrage from video_barrage as vb " +
+		"group by vb.user_id) as vb on u.user_id=vb.user_id  " +
+		"LEFT JOIN (select vc.user_id, count(vc.id) as total_comment from video_comment as vc " +
+		"WHERE vc.status=1 group by vc.user_id) as vc on u.user_id=vc.user_id " +
+		"LEFT JOIN (select ubr.user_id, count(ubr.id) as total_browse from user_browse_record as ubr " +
+		"group by ubr.user_id) as ubr on u.user_id=ubr.user_id "
 
-   if userId != "" {
-     sql += fmt.Sprintf("WHERE u.user_id=%s ", userId)
-   }
+	if userId != "" {
+		sql += fmt.Sprintf("WHERE u.user_id=%s ", userId)
+	}
 
-   if mobileNum != "" {
-     sql += fmt.Sprintf("WHERE u.mobile_num=%s ", mobileNum)
-   }
+	if mobileNum != "" {
+		sql += fmt.Sprintf("WHERE u.mobile_num=%s ", mobileNum)
+	}
 
-   switch condition {
-   case consts.USER_SORT_BY_TIME:
-     sql += "ORDER BY u.create_at "
-   case consts.USER_SORT_BY_ATTENTION:
-     sql += "ORDER BY total_attention "
-   case consts.USER_SORT_BY_FANS:
-     sql += "ORDER BY total_fans "
-   case consts.USER_SORT_BY_PUBLISH:
-     sql += "ORDER BY total_publish "
-   case consts.USER_SORT_BY_BROWSE:
-     sql += "ORDER BY total_browse "
-   case consts.USER_SORT_BY_LIKE:
-     sql += "ORDER BY total_likes "
-   case consts.USER_SORT_BY_COLLECT:
-     sql += "ORDER BY total_collect "
-   case consts.USER_SORT_BY_COMMENT:
-     sql += "ORDER BY total_comment "
-   case consts.USER_SORT_BY_BARRAGE:
-     sql += "ORDER BY total_barrage "
-   default:
-     sql += "ORDER BY u.create_at "
-   }
+	switch condition {
+	case consts.USER_SORT_BY_TIME:
+		sql += "ORDER BY u.create_at "
+	case consts.USER_SORT_BY_ATTENTION:
+		sql += "ORDER BY total_attention "
+	case consts.USER_SORT_BY_FANS:
+		sql += "ORDER BY total_fans "
+	case consts.USER_SORT_BY_PUBLISH:
+		sql += "ORDER BY total_publish "
+	case consts.USER_SORT_BY_BROWSE:
+		sql += "ORDER BY total_browse "
+	case consts.USER_SORT_BY_LIKE:
+		sql += "ORDER BY total_likes "
+	case consts.USER_SORT_BY_COLLECT:
+		sql += "ORDER BY total_collect "
+	case consts.USER_SORT_BY_COMMENT:
+		sql += "ORDER BY total_comment "
+	case consts.USER_SORT_BY_BARRAGE:
+		sql += "ORDER BY total_barrage "
+	default:
+		sql += "ORDER BY u.create_at "
+	}
 
-   // 1 正序 默认倒序
-   if sortType == "1" {
-     sql += "ASC "
-   } else {
-     sql += "DESC "
-   }
+	// 1 正序 默认倒序
+	if sortType == "1" {
+		sql += "ASC "
+	} else {
+		sql += "DESC "
+	}
 
-   sql += "LIMIT ?, ?"
-   var list []*UserInfo
-   if err := m.Engine.Table(&models.User{}).SQL(sql, offset, size).Find(&list); err != nil {
-     log.Log.Errorf("user_trace: get user list by sort, err:%s", err)
-     return []*UserInfo{}
-   }
+	sql += "LIMIT ?, ?"
+	var list []*UserInfo
+	if err := m.Engine.Table(&models.User{}).SQL(sql, offset, size).Find(&list); err != nil {
+		log.Log.Errorf("user_trace: get user list by sort, err:%s", err)
+		return []*UserInfo{}
+	}
 
-   return list
+	return list
 
 }
 
@@ -383,7 +383,7 @@ func (m *UserModel) UpdateUserInfo() error {
 	if _, err := m.Engine.Where("id=?", m.User.Id).
 		Cols("avatar, nick_name, born, age, gender, country, signature, update_at").
 		Update(m.User); err != nil {
-			return err
+		return err
 	}
 
 	return nil
@@ -391,7 +391,7 @@ func (m *UserModel) UpdateUserInfo() error {
 
 // 更新用户信息
 func (m *UserModel) UpdateUserInfos(condition, cols string) (int64, error) {
-  return m.Engine.Where(condition).Cols(cols).Update(m.User)
+	return m.Engine.Where(condition).Cols(cols).Update(m.User)
 }
 
 // 更新用户状态
@@ -413,7 +413,6 @@ func (m *UserModel) GetWorldInfo() []*models.WorldMap {
 
 	return list
 }
-
 
 // 通过id获取世界信息（暂时只有国家）
 func (m *UserModel) GetWorldInfoById(id int32) *models.WorldMap {
@@ -446,11 +445,11 @@ type AddSystemAvatarParams struct {
 func (m *UserModel) AddSystemAvatar(params *AddSystemAvatarParams) error {
 	now := int(time.Now().Unix())
 	info := &models.DefaultAvatar{
-		Avatar:  params.Avatar,
-		CreateAt: now,
-		UpdateAt: now,
+		Avatar:    params.Avatar,
+		CreateAt:  now,
+		UpdateAt:  now,
 		Sortorder: params.Sortorder,
-		Status: 0,
+		Status:    0,
 	}
 
 	if _, err := m.Engine.InsertOne(info); err != nil {
@@ -462,8 +461,9 @@ func (m *UserModel) AddSystemAvatar(params *AddSystemAvatarParams) error {
 
 // 删除系统头像 请求参数
 type DelSystemAvatarParam struct {
-	Id      string    `json:"id"`
+	Id string `json:"id"`
 }
+
 // 删除系统头像
 func (m *UserModel) DelSystemAvatar(id string) error {
 	if _, err := m.Engine.Where("id=?", id).Delete(&models.DefaultAvatar{}); err != nil {
@@ -516,12 +516,12 @@ func (m *UserModel) SearchUser(name string, offset, size int) []*UserSearchResul
 
 // 获取用户总数
 func (m *UserModel) GetUserTotalCount() int64 {
-  count, err := m.Engine.Count(&models.User{})
-  if err != nil {
-    return 0
-  }
+	count, err := m.Engine.Count(&models.User{})
+	if err != nil {
+		return 0
+	}
 
-  return count
+	return count
 }
 
 // 设置注册ip
@@ -556,7 +556,7 @@ func (m *UserModel) SetUserDeviceType(utype int) {
 
 // 设置设备token
 func (m *UserModel) SetDeviceToken(deviceToken string) {
-  m.User.DeviceToken = deviceToken
+	m.User.DeviceToken = deviceToken
 }
 
 // 设备类型
@@ -576,7 +576,7 @@ func (m *UserModel) SetStatus(status int) {
 
 // 设置创建时间
 func (m *UserModel) SetCreateAt(tm int64) {
-	m.User.CreateAt= int(tm)
+	m.User.CreateAt = int(tm)
 }
 
 // 设置更新时间
@@ -659,9 +659,9 @@ func (m *UserModel) TokenValid(account, password, hashcode string) (b bool) {
 // 添加活跃记录
 func (m *UserModel) AddActivityRecord(userId string, now, activityType int) (int64, error) {
 	record := &models.UserActivityRecord{
-		UserId: userId,
-		CreateAt: now,
-		UpdateAt: now,
+		UserId:       userId,
+		CreateAt:     now,
+		UpdateAt:     now,
 		ActivityType: activityType,
 	}
 
@@ -671,7 +671,7 @@ func (m *UserModel) AddActivityRecord(userId string, now, activityType int) (int
 // 获取官方用户列表
 func (m *UserModel) GetOfficialUsers(offset, size int) ([]*OfficialUserInfo, error) {
 	var list []*OfficialUserInfo
-	if err := m.Engine.SQL("SELECT user_id, nick_name, mobile_num, id, avatar FROM user " +
+	if err := m.Engine.SQL("SELECT user_id, nick_name, mobile_num, id, avatar FROM user "+
 		"WHERE account_type=1 ORDER BY id DESC LIMIT ?, ?", offset, size).Find(&list); err != nil {
 		return nil, err
 	}

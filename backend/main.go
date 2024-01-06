@@ -4,17 +4,17 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"sports_service/server/backend/config"
-	"sports_service/server/dao"
-	"sports_service/server/global/backend/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/job"
-	"sports_service/server/log/zap"
-	"sports_service/server/models/pprof"
-	"sports_service/server/tools/im"
-	"sports_service/server/tools/live"
-	"sports_service/server/util"
-	"sports_service/server/backend/routers"
+	"sports_service/backend/config"
+	"sports_service/backend/routers"
+	"sports_service/dao"
+	"sports_service/global/backend/log"
+	"sports_service/global/consts"
+	"sports_service/job"
+	"sports_service/log/zap"
+	"sports_service/models/pprof"
+	"sports_service/tools/im"
+	"sports_service/tools/live"
+	"sports_service/util"
 )
 
 var (
@@ -117,7 +117,6 @@ func setupJob() {
 	go job.CourseVideoEventsJob()
 	/*----后台上传课程视频任务----*/
 }
-
 
 // @title 电竞社区平台（后台）
 // @version 1.0

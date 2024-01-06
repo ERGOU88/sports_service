@@ -2,7 +2,7 @@ package shop
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/jwt"
+	"sports_service/middleware/jwt"
 )
 
 // 商城模块路由

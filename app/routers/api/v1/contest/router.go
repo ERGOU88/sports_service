@@ -2,7 +2,7 @@ package contest
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/sign"
+	"sports_service/middleware/sign"
 )
 
 // 赛事模块路由

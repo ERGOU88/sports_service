@@ -1,43 +1,43 @@
 package mposting
 
 import (
-	"sports_service/server/models"
 	"fmt"
-	"sports_service/server/tools/tencentCloud"
+	"sports_service/models"
+	"sports_service/tools/tencentCloud"
 )
 
 type AudiPostParam struct {
-	Id       string     `json:"id"`
-	Status   int        `json:"status"`
+	Id     string `json:"id"`
+	Status int    `json:"status"`
 }
 
 type SettingParam struct {
-	SettingType   int   `json:"setting_type"` // 1 精华 2 置顶
-	ActionType    int   `json:"action_type"`  // 1 设置 0 取消
-	Id            int64 `json:"id"`           // 帖子id
+	SettingType int   `json:"setting_type"` // 1 精华 2 置顶
+	ActionType  int   `json:"action_type"`  // 1 设置 0 取消
+	Id          int64 `json:"id"`           // 帖子id
 }
 
 // 批量修改帖子数据
 type BatchEditParam struct {
-	EditType   int32       `json:"edit_type" binding:"required"` // 1 编辑帖子标题 2 编辑帖子板块 3 编辑帖子话题
-	Ids        []int64     `json:"ids" binding:"required"`       // 帖子id
-	Title      string      `json:"title"`
-	SectionId  int         `json:"section_id"`
-	TopicIds   []int64     `json:"topic_ids"`
+	EditType  int32   `json:"edit_type" binding:"required"` // 1 编辑帖子标题 2 编辑帖子板块 3 编辑帖子话题
+	Ids       []int64 `json:"ids" binding:"required"`       // 帖子id
+	Title     string  `json:"title"`
+	SectionId int     `json:"section_id"`
+	TopicIds  []int64 `json:"topic_ids"`
 }
 
 type TopicInfo struct {
-	Id        int    `json:"id"`
-	TopicName string `json:"topic_name"`
-	Sortorder int    `json:"sortorder"`
-	Status    int    `json:"status"`
-	IsHot     int    `json:"is_hot"`
-	CreateAt  int    `json:"create_at"`
-	UpdateAt  int    `json:"update_at"`
+	Id        int                    `json:"id"`
+	TopicName string                 `json:"topic_name"`
+	Sortorder int                    `json:"sortorder"`
+	Status    int                    `json:"status"`
+	IsHot     int                    `json:"is_hot"`
+	CreateAt  int                    `json:"create_at"`
+	UpdateAt  int                    `json:"update_at"`
 	Cover     tencentCloud.BucketURI `json:"cover"`
-	Describe  string `json:"describe"`
-	SectionId int    `json:"section_id"`
-	PostNum   int64  `json:"post_num"`
+	Describe  string                 `json:"describe"`
+	SectionId int                    `json:"section_id"`
+	PostNum   int64                  `json:"post_num"`
 }
 
 // todo: 后台查询帖子审核列表时 需过滤掉发布的视频 以及 帖子审核通过时 需给up主的粉丝们发推送通知
@@ -56,6 +56,7 @@ const (
 		"`posting_info` AS p LEFT JOIN `posting_statistic` as ps ON p.id=ps.posting_id " +
 		" ORDER BY p.is_cream DESC, p.is_top DESC, p.id DESC LIMIT ?, ?"
 )
+
 // 获取帖子列表 [管理后台]
 func (m *PostingModel) GetPostList(offset, size int, status, title string) ([]*PostDetailInfo, error) {
 	sql := "SELECT p.*, ps.fabulous_num, ps.browse_num, ps.share_num, ps.comment_num, ps.heat_num FROM " +
@@ -72,7 +73,7 @@ func (m *PostingModel) GetPostList(offset, size int, status, title string) ([]*P
 		sql += " AND p.title Like '%" + title + "%' "
 	}
 
-	sql +=  fmt.Sprintf(" ORDER BY p.is_cream DESC, p.is_top DESC, p.id DESC LIMIT %d, %d", offset, size)
+	sql += fmt.Sprintf(" ORDER BY p.is_cream DESC, p.is_top DESC, p.id DESC LIMIT %d, %d", offset, size)
 	var list []*PostDetailInfo
 	if err := m.Engine.SQL(sql).Find(&list); err != nil {
 		return nil, err
@@ -104,6 +105,7 @@ const (
 	GET_APPLY_CREAM_LIST = " SELECT p.* FROM posting_apply_cream AS pac LEFT JOIN posting_info AS p ON pac.post_id=p.id " +
 		"WHERE pac.status=0 AND p.status=1 ORDER BY pac.id DESC LIMIT ?,?"
 )
+
 func (m *PostingModel) GetApplyCreamList(offset, size int) ([]*PostDetailInfo, error) {
 	var list []*PostDetailInfo
 	if err := m.Engine.SQL(GET_APPLY_CREAM_LIST, offset, size).Find(&list); err != nil {
@@ -112,7 +114,6 @@ func (m *PostingModel) GetApplyCreamList(offset, size int) ([]*PostDetailInfo, e
 
 	return list, nil
 }
-
 
 func (m *PostingModel) GetApplyCreamCount() (int64, error) {
 	sql := "SELECT p.* FROM posting_apply_cream AS pac LEFT JOIN posting_info AS p ON pac.post_id=p.id WHERE pac.status=0"

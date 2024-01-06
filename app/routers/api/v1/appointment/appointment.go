@@ -3,11 +3,11 @@ package appointment
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/cappointment"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mappointment"
+	"sports_service/app/controller/cappointment"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mappointment"
 	"strconv"
 )
 
@@ -63,7 +63,6 @@ func AppointmentTimeOptions(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-
 
 	coachId, err := strconv.Atoi(c.DefaultQuery("coach_id", "0"))
 	if err != nil {
@@ -172,19 +171,19 @@ func AppointmentDetail(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	id, err := strconv.Atoi(c.Query("id"))
 	if err != nil {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	dateId, err := strconv.Atoi(c.Query("date_id"))
 	if err != nil {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	var i cappointment.IAppointment
 	factory := &cappointment.AppointmentFactory{}
 	i = factory.Create(queryType, c)
@@ -192,7 +191,7 @@ func AppointmentDetail(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	syscode, resp := cappointment.GetAppointmentDetail(i, dateId, id)
 	reply.Data["detail"] = resp
 	reply.Response(http.StatusOK, syscode)

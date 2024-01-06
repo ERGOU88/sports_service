@@ -3,13 +3,13 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/cuser"
-	_ "sports_service/server/app/routers/api/v1/swag"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/sms"
+	"sports_service/app/controller/cuser"
+	_ "sports_service/app/routers/api/v1/swag"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/muser"
+	"sports_service/models/sms"
 )
 
 // @Summary 获取短信验证码 (ok)
@@ -418,7 +418,6 @@ func BindDeviceToken(c *gin.Context) {
 	reply.Response(http.StatusOK, syscode)
 }
 
-
 // 版本更新(load数据库)
 func VersionUp(c *gin.Context) {
 	reply := errdef.New(c)
@@ -517,7 +516,7 @@ func AppletLogin(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cuser.New(c)
 	code, token, user := svc.AppletLoginOrReg(param)
 	reply.Data["token"] = token
@@ -532,7 +531,7 @@ func BindWx(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	userId, _ := c.Get(consts.USER_ID)
 	param.UserId = userId.(string)
 	svc := cuser.New(c)
@@ -547,7 +546,7 @@ func VerifyToken(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cuser.New(c)
 	reply.Response(http.StatusOK, svc.VerifyToken(param))
 }

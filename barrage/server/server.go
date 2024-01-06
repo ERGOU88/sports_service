@@ -1,15 +1,15 @@
 package main
 
 import (
-	"sports_service/server/global/consts"
-	pbBarrage "sports_service/server/proto/barrage"
-	"sports_service/server/tools/nsq"
 	"fmt"
-	"time"
 	"github.com/golang/protobuf/proto"
+	"sports_service/global/consts"
+	pbBarrage "sports_service/proto/barrage"
+	"sports_service/tools/nsq"
+	"time"
 )
 
-func main () {
+func main() {
 	nsq.ConnectNsqProduct("127.0.0.1:4150")
 	// 正在看视频
 	FakeWatchingVideo()
@@ -19,9 +19,9 @@ func main () {
 
 func FakeWatchingVideo() {
 	watch := pbBarrage.ReqWatchVideo{
-		Xid: "1",
+		Xid:     "1",
 		VideoId: "59",
-		Uid: "1",
+		Uid:     "1",
 	}
 
 	bts, err := proto.Marshal(&watch)
@@ -31,8 +31,8 @@ func FakeWatchingVideo() {
 
 	msg := &pbBarrage.Message{
 		MsgType: pbBarrage.MessageType_TYPE_WATCH_VIDEO,
-		MsgId: "1",
-		Body: bts,
+		MsgId:   "1",
+		Body:    bts,
 	}
 
 	data, err := proto.Marshal(msg)
@@ -47,13 +47,13 @@ func FakeWatchingVideo() {
 
 func FakeBarrage() {
 	barrage := &pbBarrage.BarrageMessage{
-		Xid:"1",
+		Xid: "1",
 		Barrage: &pbBarrage.BarrageInfo{
-			Uid: "1",
-			Content: "弹幕001",
-			VideoId: "59",
+			Uid:         "1",
+			Content:     "弹幕001",
+			VideoId:     "59",
 			CurDuration: 30,
-			SendTime: time.Now().Unix(),
+			SendTime:    time.Now().Unix(),
 		},
 	}
 
@@ -64,8 +64,8 @@ func FakeBarrage() {
 
 	msg := &pbBarrage.Message{
 		MsgType: pbBarrage.MessageType_TYPE_BARRAGE,
-		MsgId: "1",
-		Body: bts,
+		MsgId:   "1",
+		Body:    bts,
 	}
 
 	data, err := proto.Marshal(msg)

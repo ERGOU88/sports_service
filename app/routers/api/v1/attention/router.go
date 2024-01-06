@@ -2,8 +2,8 @@ package attention
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/sign"
-	"sports_service/server/middleware/token"
+	"sports_service/middleware/sign"
+	"sports_service/middleware/token"
 )
 
 // 关注模块路由
@@ -22,4 +22,3 @@ func Router(engine *gin.Engine) {
 		attention.GET("/fans", FansList)
 	}
 }
-

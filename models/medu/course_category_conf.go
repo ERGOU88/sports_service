@@ -1,11 +1,11 @@
 package medu
 
 import (
-	"sports_service/server/models"
-	"sync"
 	"fmt"
 	"reflect"
-	"sports_service/server/global/app/log"
+	"sports_service/global/app/log"
+	"sports_service/models"
+	"sync"
 )
 
 // 课程分类
@@ -23,14 +23,14 @@ type CourseCategory struct {
 
 // 添加课程分类请求参数
 type AddCourseCategoryParam struct {
-	Name         string    `json:"name"`           // 分类名称
-	Icon         string    `json:"icon"`           // icon
-	Sortorder    int       `json:"sortorder"`      // 权重
+	Name      string `json:"name"`      // 分类名称
+	Icon      string `json:"icon"`      // icon
+	Sortorder int    `json:"sortorder"` // 权重
 }
 
 // 删除课程分类请求参数
 type DelCourseCategoryParam struct {
-	Id      string    `json:"id"`                  // 分类id
+	Id string `json:"id"` // 分类id
 }
 
 var courseCategory []*CourseCategory
@@ -49,7 +49,7 @@ func (m *EduModel) DelCourseCategory(id string) error {
 	if _, err := m.Engine.Where("id=?", id).Delete(&models.CourseCategoryConfig{}); err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -58,7 +58,7 @@ func (m *EduModel) AddCourseCategory() error {
 	if _, err := m.Engine.Insert(m.CourseCategory); err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -66,7 +66,7 @@ func (m *EduModel) UpdateCourseCategory() error {
 	if _, err := m.Engine.Where("id=?", m.CourseCategory.Id).Update(m.CourseCategory); err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -78,7 +78,7 @@ func (m *EduModel) GetCourseCategoryById(id string) *models.CourseCategoryConfig
 		log.Log.Errorf("configure_trace: get course category info by id err:%s", err)
 		return nil
 	}
-	
+
 	return m.CourseCategory
 }
 
@@ -87,7 +87,7 @@ func (m *EduModel) IsExistsCourseCategory(id string) bool {
 	if _, ok := courseCategoryMp[id]; !ok {
 		return false
 	}
-	
+
 	return true
 }
 
@@ -102,7 +102,7 @@ func (m *EduModel) GetCourseCategoryByMem(id string) *CourseCategory {
 	if !ok {
 		return nil
 	}
-	
+
 	return category
 }
 
@@ -112,7 +112,7 @@ func (m *EduModel) GetCourseCategoryNameByMem(id string) string {
 	if ok {
 		return category.Name
 	}
-	
+
 	return ""
 }
 
@@ -135,16 +135,16 @@ func (m *EduModel) AddCourseCategoryByMem() {
 	courseMutex.Lock()
 	defer courseMutex.Unlock()
 	info := &CourseCategory{
-		CreateAt: m.CourseCategory.CreateAt,
-		Icon: m.CourseCategory.Icon,
-		Id: m.CourseCategory.Id,
-		Name: m.CourseCategory.Name,
-		Pid: m.CourseCategory.Pid,
+		CreateAt:  m.CourseCategory.CreateAt,
+		Icon:      m.CourseCategory.Icon,
+		Id:        m.CourseCategory.Id,
+		Name:      m.CourseCategory.Name,
+		Pid:       m.CourseCategory.Pid,
 		Sortorder: m.CourseCategory.Sortorder,
-		Status: m.CourseCategory.Status,
-		UpdateAt: m.CourseCategory.UpdateAt,
+		Status:    m.CourseCategory.Status,
+		UpdateAt:  m.CourseCategory.UpdateAt,
 	}
-	
+
 	courseCategoryMp[fmt.Sprint(m.CourseCategory.Id)] = info
 }
 
@@ -158,7 +158,7 @@ func (m *EduModel) GetCourseCategoryList() []*CourseCategory {
 			return []*CourseCategory{}
 		}
 	}
-	
+
 	log.Log.Debugf("load mem")
 	return courseCategory
 }
@@ -169,7 +169,7 @@ func (m *EduModel) GetCourseCategoryByLevel() []*models.CourseCategoryConfig {
 	if err := m.Engine.Where("pid != 0").Desc("sortorder").Find(&list); err != nil {
 		return nil
 	}
-	
+
 	return list
 }
 
@@ -183,18 +183,18 @@ func (m *EduModel) LoadCourseCategoryByDb() (error, []*CourseCategory) {
 	var info []*CourseCategory
 	// 定义指针切片返回控制器
 	var res []*CourseCategory
-	
+
 	// 找出所有1级类别
 	if err := m.Engine.Table(&models.CourseCategoryConfig{}).SQL(QUERY_PARENT_COURSE_CATEGORY).Find(&info); err != nil {
 		log.Log.Errorf("configure_trace: get consultant category info by db err:%s", err)
 		return err, nil
 	}
-	
+
 	// 判断是否存在数据 存在 则进行树状图重构
 	if reflect.ValueOf(info).IsValid() {
 		res = m.courseTree(info)
 	}
-	
+
 	return nil, res
 }
 
@@ -209,7 +209,7 @@ func (m *EduModel) FindSubCourseCategoryByPid(category *CourseCategory) ([]*Cour
 		log.Log.Errorf("configure_trace: get child category info err:%s", err)
 		return []*CourseCategory{}, err
 	}
-	
+
 	return child, nil
 }
 
@@ -225,19 +225,17 @@ func (m *EduModel) courseTree(info []*CourseCategory) []*CourseCategory {
 			if err != nil || len(child) == 0 {
 				continue
 			}
-			
+
 			// 将子类别的数据循环赋值
 			for k2, _ := range child {
 				info[k].Child = append(info[k].Child, child[k2])
 			}
-			
+
 			// 将刚刚查询出来的子类别进行递归 查询出三级,四级...子类
 			m.courseTree(child)
 		}
-		
+
 	}
-	
+
 	return info
 }
-
-

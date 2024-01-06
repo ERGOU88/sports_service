@@ -3,7 +3,7 @@ package mobTech
 import (
 	"errors"
 	"log"
-	"sports_service/server/util"
+	"sports_service/util"
 	"time"
 )
 
@@ -21,8 +21,8 @@ type Data struct {
 
 // mob一键登陆返回值
 type FreeLoginRes struct {
-	IsValid        int32      `json:"isValid"`        // 验证状态，1:成功, 2:失败
-	Phone          string     `json:"phone"`          // 返回手机号
+	IsValid int32  `json:"isValid"` // 验证状态，1:成功, 2:失败
+	Phone   string `json:"phone"`   // 返回手机号
 }
 
 // 实栗
@@ -81,5 +81,3 @@ func (mob *MobTech) FreeLogin(token, opToken, operator string) (string, error) {
 
 	return res.Phone, nil
 }
-
-

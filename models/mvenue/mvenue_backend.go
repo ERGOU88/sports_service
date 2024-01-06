@@ -1,23 +1,23 @@
 package mvenue
 
-import "sports_service/server/models"
+import "sports_service/models"
 
 type AddMarkParam struct {
-	Conf []*models.VenueRecommendConf  `json:"conf"`
+	Conf []*models.VenueRecommendConf `json:"conf"`
 }
 
 // 添加店长
 type VenueAdminParam struct {
-	Mobile    int64  `json:"mobile" binding:"required"`
-	Name      string `json:"name" binding:"required"`
-	Username  string `json:"username" binding:"required"`
-	Password  string `json:"password" binding:"required"`
-	Status    int    `json:"status"`
-	VenueId   int64  `json:"venue_id"`
+	Mobile   int64  `json:"mobile" binding:"required"`
+	Name     string `json:"name" binding:"required"`
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+	Status   int    `json:"status"`
+	VenueId  int64  `json:"venue_id"`
 }
 
 type DelMarkParam struct {
-	Ids  []int    `json:"ids"`
+	Ids []int `json:"ids"`
 }
 
 // 通过场馆id 获取场馆所有商品
@@ -52,7 +52,7 @@ func (m *VenueModel) MarkList(venueId string) ([]*models.VenueRecommendConf, err
 	if err := m.Engine.Where("venue_id=? AND status=0", venueId).Find(&list); err != nil {
 		return nil, err
 	}
-	
+
 	return list, nil
 }
 
@@ -70,6 +70,6 @@ func (m *VenueModel) VenueManagerList(offset, size int) ([]*models.VenueAdminist
 	if err := m.Engine.Where("roles=?", "ROLE_ADMIN").Limit(size, offset).Find(&list); err != nil {
 		return nil, err
 	}
-	
+
 	return list, nil
 }

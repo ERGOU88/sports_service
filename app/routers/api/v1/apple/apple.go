@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
-	"sports_service/server/app/config"
-	"sports_service/server/global/app/log"
+	"sports_service/app/config"
+	"sports_service/global/app/log"
 )
 
 func AppleLink(c *gin.Context) {

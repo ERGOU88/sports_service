@@ -3,9 +3,9 @@ package information
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/cinformation"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/util"
+	"sports_service/app/controller/cinformation"
+	"sports_service/global/app/errdef"
+	"sports_service/util"
 )
 
 func InformationList(c *gin.Context) {

@@ -1,7 +1,7 @@
 package tencentCloud
 
 import (
-	"sports_service/server/global/consts"
+	"sports_service/global/consts"
 	"testing"
 )
 

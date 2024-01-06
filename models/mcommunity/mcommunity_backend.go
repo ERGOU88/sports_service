@@ -1,6 +1,6 @@
 package mcommunity
 
-import "sports_service/server/models"
+import "sports_service/models"
 
 // 添加板块
 type AddSection struct {
@@ -11,22 +11,22 @@ type AddSection struct {
 }
 
 type DelSection struct {
-	Id        int    `json:"id"`
+	Id int `json:"id"`
 }
 
 type AddTopic struct {
-	Id        int       `json:"id"`
-	TopicName string    `json:"topic_name"`
-	Sortorder int       `json:"sortorder"`
-	Cover     string    `json:"cover"`
-	Describe  string    `json:"describe"`
-	Status    int       `json:"status"`
-	IsHot     int       `json:"is_hot"`
-	SectionId int       `json:"section_id"`
+	Id        int    `json:"id"`
+	TopicName string `json:"topic_name"`
+	Sortorder int    `json:"sortorder"`
+	Cover     string `json:"cover"`
+	Describe  string `json:"describe"`
+	Status    int    `json:"status"`
+	IsHot     int    `json:"is_hot"`
+	SectionId int    `json:"section_id"`
 }
 
 type DelTopic struct {
-	Id       int    `json:"id"`
+	Id int `json:"id"`
 }
 
 func (m *CommunityModel) SectionTableName() string {

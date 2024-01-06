@@ -3,11 +3,11 @@ package share
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/cshare"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mshare"
+	"sports_service/app/controller/cshare"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mshare"
 )
 
 // @Summary 分享 (ok)

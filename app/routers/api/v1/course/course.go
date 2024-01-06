@@ -3,12 +3,12 @@ package course
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/course"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/medu"
-	"sports_service/server/util"
+	"sports_service/app/controller/course"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/medu"
+	"sports_service/util"
 )
 
 // @Summary 获取某一分类下的课程列表 (ok)
@@ -63,7 +63,7 @@ func CourseDetail(c *gin.Context) {
 	reply := errdef.New(c)
 	courseId := c.Query("course_id")
 	userId := c.Query("user_id")
-	
+
 	svc := course.New(c)
 	detail := svc.GetCourseDetailInfo(userId, courseId)
 	reply.Data["detail"] = detail
@@ -94,14 +94,14 @@ func CourseVideo(c *gin.Context) {
 	courseId := c.Query("course_id")
 	// 课程视频id
 	id := c.Query("id")
-	
+
 	svc := course.New(c)
 	syscode, videoInfo := svc.GetCourseVideoInfo(userId, courseId, id)
 	if syscode != errdef.SUCCESS {
 		reply.Response(http.StatusOK, syscode)
 		return
 	}
-	
+
 	reply.Data["video_info"] = videoInfo
 	reply.Response(http.StatusOK, syscode)
 }
@@ -131,7 +131,7 @@ func ClickLearn(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.SUCCESS)
 		return
 	}
-	
+
 	svc := course.New(c)
 	syscode := svc.UserClickLearn(userId.(string), param.CourseId)
 	reply.Response(http.StatusOK, syscode)
@@ -159,7 +159,7 @@ func UserLearnRecord(c *gin.Context) {
 	reply := errdef.New(c)
 	userId, _ := c.Get(consts.USER_ID)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
-	
+
 	svc := course.New(c)
 	list := svc.GetUserLearnRecord(userId.(string), page, size)
 	reply.Data["list"] = list
@@ -228,7 +228,7 @@ func UserStudyVideoInfo(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := course.New(c)
 	syscode := svc.RecordUserStudyVideoInfo(userId.(string), params)
 	reply.Response(http.StatusOK, syscode)
@@ -236,7 +236,7 @@ func UserStudyVideoInfo(c *gin.Context) {
 
 func CourseCategoryConfig(c *gin.Context) {
 	reply := errdef.New(c)
-	
+
 	svc := course.New(c)
 	reply.Data["list"] = svc.GetCourseCategory()
 	reply.Response(http.StatusOK, errdef.SUCCESS)
@@ -248,7 +248,7 @@ func CourseSearch(c *gin.Context) {
 	name := c.Query("name")
 	userId := c.Query("user_id")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
-	
+
 	svc := course.New(c)
 	list := svc.CourseSearch(userId, name, page, size)
 	reply.Data["list"] = list
@@ -259,7 +259,7 @@ func RecommendCourse(c *gin.Context) {
 	reply := errdef.New(c)
 	curCourseId := c.DefaultQuery("course_id", "0")
 	userId := c.Query("user_id")
-	
+
 	svc := course.New(c)
 	code, list := svc.RecommendCourse(userId, curCourseId)
 	reply.Data["list"] = list

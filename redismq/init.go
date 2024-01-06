@@ -1,7 +1,7 @@
 package redismq
 
 import (
-	"sports_service/server/redismq/achieve/event"
+	"sports_service/redismq/achieve/event"
 )
 
 func InitRedisMq() {

@@ -5,41 +5,41 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"sort"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mbanner"
-	"sports_service/server/models/mcommunity"
-	"sports_service/server/models/mcontest"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mbanner"
+	"sports_service/models/mcommunity"
+	"sports_service/models/mcontest"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"time"
 )
 
 type ContestModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	user        *muser.UserModel
-	banner      *mbanner.BannerModel
-	contest     *mcontest.ContestModel
-	community   *mcommunity.CommunityModel
-	video       *mvideo.VideoModel
+	context   *gin.Context
+	engine    *xorm.Session
+	user      *muser.UserModel
+	banner    *mbanner.BannerModel
+	contest   *mcontest.ContestModel
+	community *mcommunity.CommunityModel
+	video     *mvideo.VideoModel
 }
 
 func New(c *gin.Context) ContestModule {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return ContestModule{
-		context: c,
-		user: muser.NewUserModel(socket),
-		banner: mbanner.NewBannerMolde(socket),
-		contest: mcontest.NewContestModel(socket),
+		context:   c,
+		user:      muser.NewUserModel(socket),
+		banner:    mbanner.NewBannerMolde(socket),
+		contest:   mcontest.NewContestModel(socket),
 		community: mcommunity.NewCommunityModel(socket),
-		video: mvideo.NewVideoModel(socket),
-		engine: socket,
+		video:     mvideo.NewVideoModel(socket),
+		engine:    socket,
 	}
 }
 
@@ -98,7 +98,6 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 		}
 	}
 
-
 	mp := make(map[string]*mcontest.ContestLiveInfo)
 	var (
 		pullUpTm, pullDownTm, index int
@@ -114,9 +113,9 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 			}
 
 			detail = &mcontest.ContestLiveInfo{
-				Date: date,
-				Week: util.GetWeekCn(int(tm.Weekday())),
-				Index: index,
+				Date:     date,
+				Week:     util.GetWeekCn(int(tm.Weekday())),
+				Index:    index,
 				LiveInfo: make([]*mcontest.LiveInfo, 0),
 			}
 
@@ -129,22 +128,22 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 		}
 
 		live := &mcontest.LiveInfo{
-			Id: item.Id,
-			UserId: item.UserId,
-			RoomId: item.RoomId,
-			GroupId: item.GroupId,
-			Cover: tencentCloud.BucketURI(item.Cover),
-			RtmpAddr: item.RtmpAddr,
-			HlsAddr: item.HlsAddr,
-			FlvAddr: item.FlvAddr,
-			PlayTime: item.PlayTime,
-			Title: item.Title,
-			Subhead: item.Subhead,
+			Id:         item.Id,
+			UserId:     item.UserId,
+			RoomId:     item.RoomId,
+			GroupId:    item.GroupId,
+			Cover:      tencentCloud.BucketURI(item.Cover),
+			RtmpAddr:   item.RtmpAddr,
+			HlsAddr:    item.HlsAddr,
+			FlvAddr:    item.FlvAddr,
+			PlayTime:   item.PlayTime,
+			Title:      item.Title,
+			Subhead:    item.Subhead,
 			HighLights: item.HighLights,
-			Describe: item.Describe,
-			Tags: item.Tags,
-			LiveType: item.LiveType,
-			Status: item.Status,
+			Describe:   item.Describe,
+			Tags:       item.Tags,
+			LiveType:   item.LiveType,
+			Status:     item.Status,
 			// 默认无回放
 			HasReplay: 2,
 		}
@@ -155,7 +154,7 @@ func (svc *ContestModule) GetLiveList(queryType, pullType, ts string, page, size
 		}
 
 		// 下拉加载 使用最小时间 拉取历史数据
- 		if pullDownTm == 0 ||  item.PlayTime < pullDownTm {
+		if pullDownTm == 0 || item.PlayTime < pullDownTm {
 			pullDownTm = item.PlayTime
 		}
 
@@ -210,16 +209,16 @@ func (svc *ContestModule) GetLiveReplayInfo(id int64, live *mcontest.LiveInfo) {
 	if ok {
 		live.HasReplay = 1
 		replay := &mcontest.LiveReplayInfo{
-			Id: svc.contest.VideoLiveReplay.Id,
-			Size: svc.contest.VideoLiveReplay.Size,
-			LiveId: svc.contest.VideoLiveReplay.LiveId,
-			Describe: svc.contest.VideoLiveReplay.Describe,
-			Duration: svc.contest.VideoLiveReplay.Duration,
-			CreateAt: svc.contest.VideoLiveReplay.CreateAt,
+			Id:          svc.contest.VideoLiveReplay.Id,
+			Size:        svc.contest.VideoLiveReplay.Size,
+			LiveId:      svc.contest.VideoLiveReplay.LiveId,
+			Describe:    svc.contest.VideoLiveReplay.Describe,
+			Duration:    svc.contest.VideoLiveReplay.Duration,
+			CreateAt:    svc.contest.VideoLiveReplay.CreateAt,
 			HistoryAddr: svc.video.AntiStealingLink(svc.contest.VideoLiveReplay.HistoryAddr),
-			Title: svc.contest.VideoLiveReplay.Title,
-			Subhead: svc.contest.VideoLiveReplay.Subhead,
-			PlayNum: svc.contest.VideoLiveReplay.PlayNum,
+			Title:       svc.contest.VideoLiveReplay.Title,
+			Subhead:     svc.contest.VideoLiveReplay.Subhead,
+			PlayNum:     svc.contest.VideoLiveReplay.PlayNum,
 		}
 
 		if svc.contest.VideoLiveReplay.PlayInfo != "" {
@@ -263,10 +262,10 @@ func (svc *ContestModule) GetScheduleInfo() (int, *mcontest.ContestInfo) {
 	resp.ContestName = svc.contest.Contest.ContestName
 	for index, item := range schedule {
 		info := &mcontest.ScheduleInfo{
-			ScheduleId: item.Id,
+			ScheduleId:   item.Id,
 			ScheduleName: item.ScheduleName,
-			Description: item.ScheduleDescription,
-			ShowType: item.ShowType,
+			Description:  item.ScheduleDescription,
+			ShowType:     item.ShowType,
 		}
 
 		resp.ScheduleList[index] = info
@@ -305,7 +304,7 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 		index := 0
 		for _, item := range list {
 			// key 选手id
-			if _, ok :=  mp[item.PlayerId]; !ok {
+			if _, ok := mp[item.PlayerId]; !ok {
 				detail := &mcontest.ScheduleListDetailResp{}
 				detail.PlayerId = item.PlayerId
 				detail.PlayerName = item.PlayerName
@@ -331,7 +330,7 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 				} else {
 					detail.Ranking = index
 				}
-				
+
 				detail.Index = index
 				index++
 				mp[item.PlayerId] = detail
@@ -365,7 +364,7 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 		return errdef.SUCCESS, resp
 
 	// 分组竞技/总决赛 展现形式
-	case 2,3:
+	case 2, 3:
 		playerMp := make(map[int64]bool, 0)
 		list, err := svc.contest.GetScheduleDetailInfo(2, contestId, scheduleId)
 		if err != nil {
@@ -384,8 +383,8 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 
 			var detail *mcontest.ScheduleGroupDetailResp
 			// key 分组id
-			if _, ok :=  mp[item.GroupNum]; !ok {
-				detail = &mcontest.ScheduleGroupDetailResp{Player:  make([]mcontest.PlayerInfoResp, 0),
+			if _, ok := mp[item.GroupNum]; !ok {
+				detail = &mcontest.ScheduleGroupDetailResp{Player: make([]mcontest.PlayerInfoResp, 0),
 					Winner: make([]mcontest.PlayerInfoResp, 0)}
 				detail.GroupNum = item.GroupNum
 				detail.ScheduleId = item.ScheduleId
@@ -398,19 +397,19 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 			}
 
 			player := mcontest.PlayerInfoResp{
-				Id: item.Id,
-				PlayerId: item.PlayerId,
+				Id:         item.Id,
+				PlayerId:   item.PlayerId,
 				PlayerName: item.PlayerName,
-				Photo: item.Photo,
-				IsWin: item.IsWin,
-				Score: util.ResolveTimeByMilliSecond(item.Score),
+				Photo:      item.Photo,
+				IsWin:      item.IsWin,
+				Score:      util.ResolveTimeByMilliSecond(item.Score),
 				NumInGroup: item.NumInGroup,
-				Integral: "0",
+				Integral:   "0",
 			}
 
 			ok, err := svc.contest.GetTotalIntegralByPlayer(fmt.Sprint(item.ContestId), fmt.Sprint(item.PlayerId))
 			if ok && err == nil {
-				player.Integral = fmt.Sprintf("%.3f", float64(svc.contest.IntegralRanking.TotalIntegral) / 1000)
+				player.Integral = fmt.Sprintf("%.3f", float64(svc.contest.IntegralRanking.TotalIntegral)/1000)
 			}
 
 			mp[item.GroupNum].Player = append(mp[item.GroupNum].Player, player)
@@ -432,7 +431,6 @@ func (svc *ContestModule) GetPromotionInfo(contestId, scheduleId string) (int, i
 	return errdef.ERROR, nil
 }
 
-
 // 获取赛事选手积分排行
 func (svc *ContestModule) GetIntegralRanking(contestId string, page, size int) (int, []*mcontest.IntegralRanking) {
 	offset := (page - 1) * size
@@ -447,7 +445,7 @@ func (svc *ContestModule) GetIntegralRanking(contestId string, page, size int) (
 
 	for index, item := range list {
 		item.Ranking = offset + index
-		item.TotalIntegralStr = fmt.Sprintf("%.3f", float64(item.TotalIntegral) / 1000)
+		item.TotalIntegralStr = fmt.Sprintf("%.3f", float64(item.TotalIntegral)/1000)
 		item.BestScoreStr = util.ResolveTimeByMilliSecond(item.BestScore)
 		item.TotalIntegral = 0
 		item.BestScore = 0
@@ -487,16 +485,16 @@ func (svc *ContestModule) GetLiveScheduleData(liveId string, page, size int) (in
 	resp := make([]*mcontest.LiveSchedulePlayerData, len(list))
 	for index, item := range list {
 		info := &mcontest.LiveSchedulePlayerData{
-			Id: item.Id,
-			ContestId: item.ContestId,
-			ScheduleId: item.ScheduleId,
-			PlayerId: item.PlayerId,
-			LiveId: item.LiveId,
-			RoundsNum: item.RoundsNum,
-			Ranking: index+1,
+			Id:               item.Id,
+			ContestId:        item.ContestId,
+			ScheduleId:       item.ScheduleId,
+			PlayerId:         item.PlayerId,
+			LiveId:           item.LiveId,
+			RoundsNum:        item.RoundsNum,
+			Ranking:          index + 1,
 			IntervalDuration: fmt.Sprintf("%.3f", float64(item.IntervalDuration)/1000),
-			TopSpeed: fmt.Sprintf("%.3f", float64(item.IntervalDuration)/1000),
-			ReceiveIntegral: fmt.Sprintf("%.3f", float64(item.ReceiveIntegral)/1000),
+			TopSpeed:         fmt.Sprintf("%.3f", float64(item.IntervalDuration)/1000),
+			ReceiveIntegral:  fmt.Sprintf("%.3f", float64(item.ReceiveIntegral)/1000),
 		}
 
 		ok, err := svc.contest.GetPlayerInfoById(fmt.Sprint(info.PlayerId))

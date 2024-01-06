@@ -1,9 +1,9 @@
 package mvideo
 
 import (
-	"sports_service/server/dao"
-	"sports_service/server/global/consts"
-	"sports_service/server/global/rdskey"
+	"sports_service/dao"
+	"sports_service/global/consts"
+	"sports_service/global/rdskey"
 )
 
 // 设置[视频、帖子等] 审核模式 1 人工 + AI 2 人工

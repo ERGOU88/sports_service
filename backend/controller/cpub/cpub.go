@@ -5,25 +5,25 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/backend/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mbanner"
-	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mcommunity"
-	"sports_service/server/models/minformation"
-	"sports_service/server/models/mlabel"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/mnotify"
-	"sports_service/server/models/mposting"
-	"sports_service/server/models/msection"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	cloud "sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/backend/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mattention"
+	"sports_service/models/mbanner"
+	"sports_service/models/mcollect"
+	"sports_service/models/mcommunity"
+	"sports_service/models/minformation"
+	"sports_service/models/mlabel"
+	"sports_service/models/mlike"
+	"sports_service/models/mnotify"
+	"sports_service/models/mposting"
+	"sports_service/models/msection"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	cloud "sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"strconv"
 	"strings"
 	"time"
@@ -108,7 +108,7 @@ func (svc *PubModule) RecordPubVideoInfo(params *mvideo.VideoPublishParams) int 
 
 // 生成视频信息标签
 func (svc *PubModule) genVideoTag(videoId int64, info string, pubType int) string {
-	return fmt.Sprintf("%d__%s__%d",videoId, info, pubType)
+	return fmt.Sprintf("%d__%s__%d", videoId, info, pubType)
 }
 
 // 用户发布视频
@@ -117,7 +117,7 @@ func (svc *PubModule) genVideoTag(videoId int64, info string, pubType int) strin
 func (svc *PubModule) UserPublishVideo(userId string, params *mvideo.VideoPublishParams) error {
 	var (
 		subarea *models.VideoSubarea
-		err error
+		err     error
 	)
 
 	// 视频所属分区
@@ -265,7 +265,6 @@ func (svc *PubModule) GetProcedureByBiteRate(biteRate int64) string {
 	if biteRate > 1000 && biteRate < 1800 {
 		return consts.VOD_PROCEDURE_TRANSCODE_1
 	}
-
 
 	return consts.VOD_PROCEDURE_NAME
 }
@@ -419,7 +418,7 @@ func (svc *PubModule) PubInformation(param *models.Information) int {
 	if _, err := svc.information.AddInformation(param); err != nil {
 		return errdef.ERROR
 	}
-	
+
 	svc.information.Statistic.NewsId = param.Id
 	svc.information.Statistic.CreateAt = now
 	svc.information.Statistic.UpdateAt = now
@@ -438,10 +437,10 @@ func (svc *PubModule) GetHomepageSectionInfo(sectionType string) (int, []*models
 	if err != nil {
 		return errdef.ERROR, nil
 	}
-	
+
 	if list == nil {
 		return errdef.SUCCESS, []*models.RecommendInfoSection{}
 	}
-	
+
 	return errdef.SUCCESS, list
 }

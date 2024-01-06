@@ -1,20 +1,20 @@
 package mvideo
 
 import (
-	"sports_service/server/models"
+	"sports_service/models"
 )
 
 type AddSubarea struct {
-	Name      string    `json:"name"`
-	SortOrder int       `json:"sortorder"`
-	SysId     int       `json:"sys_id"`
-	SysUser   string    `json:"sys_user"`
-	Id        int       `json:"id"`
-	Status    int       `json:"status"`
+	Name      string `json:"name"`
+	SortOrder int    `json:"sortorder"`
+	SysId     int    `json:"sys_id"`
+	SysUser   string `json:"sys_user"`
+	Id        int    `json:"id"`
+	Status    int    `json:"status"`
 }
 
 type DelSubarea struct {
-	Id      int     `json:"id"`
+	Id int `json:"id"`
 }
 
 func (m *VideoModel) AddSubArea() (int64, error) {

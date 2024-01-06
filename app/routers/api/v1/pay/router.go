@@ -2,8 +2,8 @@ package pay
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/sign"
-	"sports_service/server/middleware/token"
+	"sports_service/middleware/sign"
+	"sports_service/middleware/token"
 )
 
 // 支付模块路由
@@ -23,4 +23,3 @@ func Router(engine *gin.Engine) {
 		//pay.POST("/applet/trade", sign.CheckSign(), token.TokenAuth(), AppletPay)
 	}
 }
-

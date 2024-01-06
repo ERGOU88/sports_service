@@ -1,6 +1,6 @@
 package madmin
 
-import "sports_service/server/models"
+import "sports_service/models"
 
 // 获取角色可查看的菜单
 func (m *AdminModel) GetRoleMenu(roleId string) ([]*models.SystemRoleMenu, error) {
@@ -13,7 +13,7 @@ func (m *AdminModel) GetRoleMenu(roleId string) ([]*models.SystemRoleMenu, error
 }
 
 type AddRoleMenuParam struct {
-	Menus      []*models.SystemRoleMenu   `json:"menus"`
+	Menus []*models.SystemRoleMenu `json:"menus"`
 }
 
 // 添加角色可查看的菜单
@@ -32,7 +32,7 @@ func (m *AdminModel) HasExistsRoleMenu(roleId, menuId int) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	
+
 	return ok, nil
 }
 

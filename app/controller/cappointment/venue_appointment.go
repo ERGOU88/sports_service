@@ -4,24 +4,24 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mappointment"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvenue"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mappointment"
+	"sports_service/models/muser"
+	"sports_service/models/mvenue"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"time"
 )
 
 type VenueAppointmentModule struct {
-	context         *gin.Context
-	engine          *xorm.Session
-	user            *muser.UserModel
-	venue           *mvenue.VenueModel
+	context *gin.Context
+	engine  *xorm.Session
+	user    *muser.UserModel
+	venue   *mvenue.VenueModel
 	*base
 }
 
@@ -53,8 +53,8 @@ func (svc *VenueAppointmentModule) Options(relatedId int64) (int, interface{}) {
 	res := make([]*mappointment.Options, len(list))
 	for index, item := range list {
 		info := &mappointment.Options{
-			Id: item.Id,
-			Name: item.VenueName,
+			Id:           item.Id,
+			Name:         item.VenueName,
 			Instructions: item.Instructions,
 		}
 
@@ -110,7 +110,6 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 		svc.engine.Rollback()
 		return errdef.VENUE_NOT_EXISTS, nil
 	}
-
 
 	orderId := util.NewOrderId()
 	now := int(time.Now().Unix())
@@ -189,7 +188,7 @@ func (svc *VenueAppointmentModule) Appointment(params *mappointment.AppointmentR
 
 	svc.Extra.OrderId = orderId
 	svc.Extra.PayDuration = consts.PAYMENT_DURATION
-    // 超时
+	// 超时
 	//redismq.PushOrderEventMsg(redismq.NewOrderEvent(user.UserId, svc.Extra.OrderId, int64(svc.order.Order.CreateAt) + svc.Extra.PayDuration,
 	//	consts.ORDER_EVENT_VENUE_TIME_OUT))
 	return errdef.SUCCESS, svc.Extra
@@ -246,8 +245,8 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 		info.Labels = make([]*mappointment.LabelInfo, len(labels))
 		for key, val := range labels {
 			label := &mappointment.LabelInfo{
-				UserId: val.UserId,
-				LabelId: val.LabelId,
+				UserId:    val.UserId,
+				LabelId:   val.LabelId,
 				LabelName: val.LabelName,
 			}
 
@@ -315,7 +314,6 @@ func (svc *VenueAppointmentModule) AppointmentOptions() (int, interface{}) {
 		res = append(res, info)
 	}
 
-
 	return errdef.SUCCESS, res
 }
 
@@ -359,7 +357,7 @@ func (svc *VenueAppointmentModule) VipDeductionProcess(userId string, list []*mo
 		}
 
 		// 是否足够抵扣
-		affected, err := svc.appointment.UpdateVenueVipInfo(val.Duration * -1, val.VenueId, userId)
+		affected, err := svc.appointment.UpdateVenueVipInfo(val.Duration*-1, val.VenueId, userId)
 		if err != nil {
 			log.Log.Errorf("venue_trace: update vip duration fail, err:%s", err)
 			return err

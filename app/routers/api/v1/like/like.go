@@ -3,13 +3,13 @@ package like
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/clike"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mlike"
-	"sports_service/server/util"
-	_ "sports_service/server/models/mvideo"
+	"sports_service/app/controller/clike"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mlike"
+	_ "sports_service/models/mvideo"
+	"sports_service/util"
 )
 
 // @Summary 视频点赞 (ok)
@@ -304,7 +304,6 @@ func CancelLikeForPost(c *gin.Context) {
 	reply.Response(http.StatusOK, syscode)
 }
 
-
 // 资讯点赞
 func GiveLikeForInformation(c *gin.Context) {
 	reply := errdef.New(c)
@@ -350,4 +349,3 @@ func CancelLikeForInformation(c *gin.Context) {
 	syscode := svc.CancelLikeForInformation(userId.(string), param.ComposeId)
 	reply.Response(http.StatusOK, syscode)
 }
-

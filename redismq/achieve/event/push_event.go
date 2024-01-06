@@ -3,20 +3,20 @@ package event
 import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/global/rdskey"
-	"sports_service/server/models"
-	"sports_service/server/models/mcomment"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/mnotify"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/umeng"
-	"sports_service/server/redismq/protocol"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/global/rdskey"
+	"sports_service/models"
+	"sports_service/models/mcomment"
+	"sports_service/models/mlike"
+	"sports_service/models/mnotify"
+	"sports_service/models/muser"
+	"sports_service/models/umeng"
+	producer "sports_service/redismq/event"
+	"sports_service/redismq/protocol"
+	"sports_service/util"
 	"time"
-	producer "sports_service/server/redismq/event"
 )
 
 func LoopPopStatEvent() {
@@ -34,7 +34,6 @@ func LoopPopStatEvent() {
 		if len(values) < 2 {
 			log.Log.Errorf("redisMq_trace: invalid values, len:%d, values:%+v", len(values), values)
 		}
-
 
 		bts, ok := values[1].([]byte)
 		if !ok {
@@ -176,7 +175,7 @@ func handleEvent(event protocol.Event) error {
 		content = fmt.Sprintf("%s 在某视频评论中@了你 戳我～👇👇", info.NickName)
 		msgType = int32(consts.MSG_TYPE_VIDEO_COMMENT_AT_NOTIFY)
 		pushSet = setting.CommentPushSet
-    // 帖子点赞
+		// 帖子点赞
 	case consts.POST_LIKE_MSG:
 		content = fmt.Sprintf("%s 赞了你的帖子", info.NickName)
 		msgType = int32(consts.MSG_TYPE_POST_LIKE_NOTIFY)
@@ -247,5 +246,3 @@ func PushNotify(user *models.User, title, content, cover string, msgType int32, 
 		}
 	}
 }
-
-

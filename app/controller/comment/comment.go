@@ -4,23 +4,23 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mcomment"
-	"sports_service/server/models/mconfigure"
-	"sports_service/server/models/minformation"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/mposting"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	redismq "sports_service/server/redismq/event"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mattention"
+	"sports_service/models/mcollect"
+	"sports_service/models/mcomment"
+	"sports_service/models/mconfigure"
+	"sports_service/models/minformation"
+	"sports_service/models/mlike"
+	"sports_service/models/mposting"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	redismq "sports_service/redismq/event"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"time"
 )
 
@@ -42,16 +42,16 @@ func New(c *gin.Context) CommentModule {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return CommentModule{
-		context: c,
-		comment: mcomment.NewCommentModel(socket),
-		user: muser.NewUserModel(socket),
-		video: mvideo.NewVideoModel(socket),
-		like: mlike.NewLikeModel(socket),
-		attention: mattention.NewAttentionModel(socket),
-		post: mposting.NewPostingModel(socket),
+		context:     c,
+		comment:     mcomment.NewCommentModel(socket),
+		user:        muser.NewUserModel(socket),
+		video:       mvideo.NewVideoModel(socket),
+		like:        mlike.NewLikeModel(socket),
+		attention:   mattention.NewAttentionModel(socket),
+		post:        mposting.NewPostingModel(socket),
 		information: minformation.NewInformationModel(socket),
-		config: mconfigure.NewConfigModel(socket),
-		engine: socket,
+		config:      mconfigure.NewConfigModel(socket),
+		engine:      socket,
 	}
 }
 
@@ -102,8 +102,8 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 
 	now := int(time.Now().Unix())
 	var (
-		cover, toUserId string
-		msgType int32
+		cover, toUserId      string
+		msgType              int32
 		commentId, composeId int64
 	)
 
@@ -129,7 +129,7 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 
 		// 查找视频是否存在
 		video := svc.video.FindVideoById(fmt.Sprint(params.ComposeId))
-		if video == nil  {
+		if video == nil {
 			log.Log.Errorf("comment_trace: video not found, videoId:%d", params.ComposeId)
 			svc.engine.Rollback()
 			return errdef.VIDEO_NOT_EXISTS, nil
@@ -192,7 +192,6 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 			svc.engine.Rollback()
 			return errdef.POST_NOT_EXISTS, nil
 		}
-
 
 		// 状态 != 1 (1为帖子审核成功)
 		if fmt.Sprint(post.Status) != consts.POST_AUDIT_SUCCESS {
@@ -331,7 +330,6 @@ func (svc *CommentModule) V2PublishComment(userId string, params *mcomment.V2Pub
 		svc.engine.Rollback()
 		return errdef.COMMENT_PUBLISH_FAIL, nil
 	}
-
 
 	svc.engine.Commit()
 
@@ -499,9 +497,9 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 
 	var (
 		cover, toUserId, content string
-		msgType int32
-		commentId, composeId int64
-		atType int
+		msgType                  int32
+		commentId, composeId     int64
+		atType                   int
 	)
 	now := int(time.Now().Unix())
 	resp := &mcomment.ReplyComment{}
@@ -518,7 +516,7 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 
 		// 查找视频是否存在
 		video := svc.video.FindVideoById(fmt.Sprint(replyInfo.VideoId))
-		if video == nil  {
+		if video == nil {
 			log.Log.Errorf("comment_trace: video not found, videoId:%d", replyInfo.VideoId)
 			svc.engine.Rollback()
 			return errdef.VIDEO_NOT_EXISTS, nil
@@ -688,7 +686,6 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 		// 帖子置顶事件
 		redismq.PushTopEventMsg(redismq.NewTopEvent(post.UserId, fmt.Sprint(post.Id), consts.EVENT_SET_TOP_POST))
 
-
 	case consts.COMMENT_TYPE_INFORMATION:
 		// 查询被回复的评论是否存在
 		replyInfo := svc.comment.GetInformationCommentById(fmt.Sprint(params.ReplyId))
@@ -820,7 +817,6 @@ func (svc *CommentModule) PublishReply(userId string, params *mcomment.ReplyComm
 			return errdef.COMMENT_REPLY_FAIL, nil
 		}
 	}
-
 
 	svc.engine.Commit()
 	// 视频/帖子 回复推送
@@ -1363,7 +1359,6 @@ func (svc *CommentModule) GetCommentsByLiked(userId, composeId string, zanType, 
 			item.HasMore = 1
 		}
 
-
 		//user := new(tmpUser)
 		//user.NickName = item.UserName
 		//user.Avatar = item.Avatar
@@ -1466,7 +1461,7 @@ func (svc *CommentModule) GetCommentReplyList(userId, composeId, commentId strin
 
 	var (
 		replyList []*mcomment.ReplyComment
-		content string
+		content   string
 	)
 
 	offset := (page - 1) * size
@@ -1589,15 +1584,15 @@ func (svc *CommentModule) GetFirstComment(userId, commentId string) *mcomment.Co
 		if comment != nil {
 			// todo:
 			first = &mcomment.CommentList{
-				Id: comment.Id,
-				LikeNum:  svc.like.GetLikeNumByType(comment.Id, consts.TYPE_VIDEO_COMMENT),
-				IsTop: comment.IsTop,
+				Id:           comment.Id,
+				LikeNum:      svc.like.GetLikeNumByType(comment.Id, consts.TYPE_VIDEO_COMMENT),
+				IsTop:        comment.IsTop,
 				CommentLevel: comment.CommentLevel,
-				Content: comment.Content,
-				CreateAt: comment.CreateAt,
-				Status: comment.Status,
-				VideoId: comment.VideoId,
-				ReplyNum:  svc.comment.GetTotalReplyByVideoComment(fmt.Sprint(comment.Id)),
+				Content:      comment.Content,
+				CreateAt:     comment.CreateAt,
+				Status:       comment.Status,
+				VideoId:      comment.VideoId,
+				ReplyNum:     svc.comment.GetTotalReplyByVideoComment(fmt.Sprint(comment.Id)),
 			}
 
 			user := svc.user.FindUserByUserid(comment.UserId)
@@ -1678,7 +1673,6 @@ func (svc *CommentModule) AddCommentReport(params *mcomment.CommentReportParam) 
 			return errdef.COMMENT_NOT_FOUND
 		}
 	}
-
 
 	svc.comment.Report.UserId = params.UserId
 	svc.comment.Report.CommentId = params.CommentId

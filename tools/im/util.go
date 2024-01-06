@@ -7,16 +7,16 @@ import (
 	"io/ioutil"
 	"log"
 	"net/url"
-	"sports_service/server/util"
+	"sports_service/util"
 )
 
 const (
 	// 根据运行环境 走配置
-	TX_IM_APP_ID    = 1400576334
-	TX_IM_APP_KEY   = "080789c06a28b355e1ec94b97ad61edc4eb887275e68fa0046f5659cead396e7"
+	TX_IM_APP_ID  = 1400576334
+	TX_IM_APP_KEY = "080789c06a28b355e1ec94b97ad61edc4eb887275e68fa0046f5659cead396e7"
 	// 控制台配置的管理员
-	TX_IDENTIFIER   = "bluetrans"
-	TX_IM_HOST      = "https://console.tim.qq.com"
+	TX_IDENTIFIER = "bluetrans"
+	TX_IM_HOST    = "https://console.tim.qq.com"
 )
 
 // 生成签名

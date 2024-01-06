@@ -3,12 +3,12 @@ package pub
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/backend/controller/cpub"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/global/backend/log"
-	"sports_service/server/models"
-	"sports_service/server/models/mposting"
-	"sports_service/server/models/mvideo"
+	"sports_service/backend/controller/cpub"
+	"sports_service/global/backend/errdef"
+	"sports_service/global/backend/log"
+	"sports_service/models"
+	"sports_service/models/mposting"
+	"sports_service/models/mvideo"
 	"strconv"
 )
 

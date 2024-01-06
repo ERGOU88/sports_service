@@ -2,10 +2,10 @@ package tencentCloud
 
 import (
 	"encoding/json"
-	"net/url"
-	"sports_service/server/util"
-	"time"
 	"fmt"
+	"net/url"
+	"sports_service/util"
+	"time"
 )
 
 type BucketURI string
@@ -18,7 +18,7 @@ func (uri BucketURI) String() string {
 	if err != nil {
 		return ""
 	}
-	
+
 	now := time.Now().Unix()
 	sign := util.Md5String(fmt.Sprintf("%s%s%d", CDN_SECRET, u.Path, now))
 	return fmt.Sprintf("%s%s?sign=%s&t=%d", CDN_HOST, u.Path, sign, now)

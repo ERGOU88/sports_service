@@ -2,9 +2,8 @@ package video
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/jwt"
-
-	//"sports_service/server/middleware/jwt"
+	"sports_service/middleware/jwt"
+	//"sports_service/middleware/jwt"
 )
 
 // 视频点播模块后台路由

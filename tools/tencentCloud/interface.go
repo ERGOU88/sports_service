@@ -1,7 +1,7 @@
 package tencentCloud
 
 import (
-	"sports_service/server/util"
+	"sports_service/util"
 )
 
 type TencentCloudParam interface {

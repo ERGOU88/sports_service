@@ -3,13 +3,13 @@ package cshop
 import (
 	"errors"
 	"fmt"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mshop"
-	tc "sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mshop"
+	tc "sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"time"
 )
 
@@ -17,7 +17,7 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 	if err := svc.engine.Begin(); err != nil {
 		return errdef.ERROR, nil
 	}
-	
+
 	resp := &mshop.OrderResp{Products: make([]*mshop.Product, len(param.Products))}
 	resp.UserId = param.UserId
 	resp.ClientIp = param.ClientIp
@@ -38,7 +38,7 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 				svc.engine.Rollback()
 				return errdef.SHOP_GET_PRODUCT_CART_FAIL, nil
 			}
-			
+
 			if cart.SkuId != item.SkuId || cart.ProductId != item.ProductId {
 				log.Log.Errorf("shop_trace: invalid cartId, cartId:%d", item.CartId)
 				svc.engine.Rollback()
@@ -48,25 +48,25 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 			resp.ActionType = consts.ORDER_ACTION_TYPE_CART
 			cartIds = append(cartIds, cart.Id)
 		}
-		
+
 		info := &mshop.Product{
-			SkuId: item.SkuId,
+			SkuId:     item.SkuId,
 			ProductId: item.ProductId,
-			Count: item.Count,
-			CartId:  item.CartId,
-			UserId: resp.UserId,
-			OrderId: resp.OrderId,
+			Count:     item.Count,
+			CartId:    item.CartId,
+			UserId:    resp.UserId,
+			OrderId:   resp.OrderId,
 		}
-		
+
 		if code := svc.OrderProcess(info); code != errdef.SUCCESS {
 			svc.engine.Rollback()
 			return code, nil
 		}
-		
+
 		if info.IsEnough == false {
 			resp.IsEnough = false
 		}
-		
+
 		resp.Total += info.Count
 		resp.PayAmount += info.PayAmount
 		resp.OrderAmount += info.OrderAmount
@@ -75,25 +75,25 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 		resp.ProductAmount += info.ProductAmount
 		resp.Products[index] = info
 	}
-	
+
 	switch param.ReqType {
 	case 1:
 		id := fmt.Sprint(param.UserAddrId)
 		if param.UserAddrId == 0 {
 			id = ""
 		}
-		
+
 		// 查询
 		addr, err := svc.shop.GetUserAddr(id, param.UserId)
 		if err != nil {
 			log.Log.Errorf("shop_trace: get user addr by id fail, err:%s", err)
 		}
-		
+
 		if addr != nil {
 			resp.UserAddr = addr
 			resp.UserAddr.Mobile = util.HideMobileNum(resp.UserAddr.Mobile)
 		}
-		
+
 		// 事务回滚
 		svc.engine.Rollback()
 	case 2, 3:
@@ -104,15 +104,15 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 			svc.engine.Rollback()
 			return errdef.SHOP_USER_ADDR_NOT_FOUND, nil
 		}
-		
+
 		resp.UserAddr = addr
 		resp.UserAddr.Mobile = util.HideMobileNum(resp.UserAddr.Mobile)
-		
+
 		if !resp.IsEnough {
 			svc.engine.Rollback()
 			return errdef.SHOP_SKU_STOCK_NOT_ENOUGH, resp
 		}
-		
+
 		if len(cartIds) > 0 {
 			// 清理购物车对应的数据
 			affected, err := svc.CleanProductCart(cartIds, param.UserId)
@@ -122,7 +122,7 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 				return errdef.SHOP_PLACE_ORDER_FAIL, nil
 			}
 		}
-		
+
 		now := time.Now()
 		resp.CreateAt = int(now.Unix())
 		resp.CreateTm = now.Format(consts.FORMAT_TM)
@@ -135,58 +135,57 @@ func (svc *ShopModule) PlaceOrder(param *mshop.PlaceOrderReq) (int, *mshop.Order
 			svc.engine.Rollback()
 			return errdef.SHOP_PLACE_ORDER_FAIL, nil
 		}
-		
+
 		affected, err := svc.AddOrderProduct(resp.Products)
 		if int(affected) != len(resp.Products) || err != nil {
 			log.Log.Errorf("shop_trace: add order product fail, affected:%d, len:%d, err:%s", affected, len(cartIds), err)
 			svc.engine.Rollback()
 			return errdef.SHOP_PLACE_ORDER_FAIL, nil
 		}
-		
+
 		if _, err := svc.AddBuyerDeliveryInfo(resp); err != nil {
 			log.Log.Errorf("shop_trace: add buyer delivery info fail, err:%s", err)
 			svc.engine.Rollback()
 			return errdef.SHOP_PLACE_ORDER_FAIL, nil
 		}
-		
+
 		if _, err := svc.shop.RecordOrderId(resp.OrderId); err != nil {
 			log.Log.Errorf("shop_trace: record orderId fail, orderId:%s, err:%s", resp.OrderId, err)
 			svc.engine.Rollback()
 			return errdef.SHOP_PLACE_ORDER_FAIL, nil
 		}
-		
+
 		svc.engine.Commit()
 	default:
 		log.Log.Errorf("shop_trace: invalid reqType, reqType:%d", param.ReqType)
 		svc.engine.Rollback()
 		return errdef.INVALID_PARAMS, nil
 	}
-	
-	
+
 	return errdef.SUCCESS, resp
 }
 
 // 添加订单
 func (svc *ShopModule) AddOrder(resp *mshop.OrderResp) (int64, error) {
 	str, _ := util.JsonFast.MarshalToString(resp)
-	
+
 	order := &models.Orders{
-		OrderId:  resp.OrderId,
-		Extra: str,
-		UserId: resp.UserId,
-		ProductAmount: resp.ProductAmount,
+		OrderId:        resp.OrderId,
+		Extra:          str,
+		UserId:         resp.UserId,
+		ProductAmount:  resp.ProductAmount,
 		DeliveryAmount: resp.DeliveryAmount,
-		OrderAmount: resp.OrderAmount,
+		OrderAmount:    resp.OrderAmount,
 		DiscountAmount: resp.DiscountAmount,
-		PayAmount: resp.PayAmount,
-		OrderTypeName: "FPV无人机",
-		OrderType: 1001,
-		ChannelId: resp.ChannelId,
-		ActionType: resp.ActionType,
-		CreateAt: resp.CreateAt,
-		UpdateAt: resp.CreateAt,
+		PayAmount:      resp.PayAmount,
+		OrderTypeName:  "FPV无人机",
+		OrderType:      1001,
+		ChannelId:      resp.ChannelId,
+		ActionType:     resp.ActionType,
+		CreateAt:       resp.CreateAt,
+		UpdateAt:       resp.CreateAt,
 	}
-	
+
 	return svc.shop.AddOrder(order)
 }
 
@@ -197,24 +196,24 @@ func (svc *ShopModule) AddOrderProduct(products []*mshop.Product) (int64, error)
 // 添加买家配送信息
 func (svc *ShopModule) AddBuyerDeliveryInfo(resp *mshop.OrderResp) (int64, error) {
 	info := &models.BuyerDeliveryInfo{
-		OrderId: resp.OrderId,
-		UserId: resp.UserId,
-		Name: resp.UserAddr.Name,
-		Mobile: resp.UserAddr.Mobile,
-		Telephone: resp.UserAddr.Telephone,
-		ProvinceCode: resp.UserAddr.ProvinceCode,
-		CityCode: resp.UserAddr.CityCode,
-		DistrictCode: resp.UserAddr.DistrictCode,
+		OrderId:       resp.OrderId,
+		UserId:        resp.UserId,
+		Name:          resp.UserAddr.Name,
+		Mobile:        resp.UserAddr.Mobile,
+		Telephone:     resp.UserAddr.Telephone,
+		ProvinceCode:  resp.UserAddr.ProvinceCode,
+		CityCode:      resp.UserAddr.CityCode,
+		DistrictCode:  resp.UserAddr.DistrictCode,
 		CommunityCode: resp.UserAddr.CommunityCode,
-		Address: resp.UserAddr.Address,
-		FullAddress: resp.UserAddr.FullAddress,
-		Longitude: resp.UserAddr.Longitude,
-		Latitude: resp.UserAddr.Latitude,
-		BuyerIp: resp.ClientIp,
-		CreateAt: resp.CreateAt,
-		UpdateAt: resp.CreateAt,
+		Address:       resp.UserAddr.Address,
+		FullAddress:   resp.UserAddr.FullAddress,
+		Longitude:     resp.UserAddr.Longitude,
+		Latitude:      resp.UserAddr.Latitude,
+		BuyerIp:       resp.ClientIp,
+		CreateAt:      resp.CreateAt,
+		UpdateAt:      resp.CreateAt,
 	}
-	
+
 	return svc.shop.AddBuyerDeliveryInfo(info)
 }
 
@@ -223,22 +222,22 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 	if item.Count <= 0 {
 		return errdef.INVALID_PARAMS
 	}
-	
+
 	product, err := svc.shop.GetProductSpu(fmt.Sprint(item.ProductId))
 	if err != nil {
 		log.Log.Errorf("shop_trace: get product spu fail, productId:%d, err:%s", item.ProductId, err)
 		return errdef.SHOP_PRODUCT_SPU_FAIL
 	}
-	
+
 	item.ProductName = product.ProductName
-	
+
 	condition := fmt.Sprintf("id=%d AND product_id=%d", item.SkuId, item.ProductId)
 	sku, err := svc.shop.GetProductSku(condition)
 	if err != nil {
 		log.Log.Errorf("shop_trace: get product sku by id fail, skuId:%d, err:%s", item.SkuId, err)
 		return errdef.SHOP_PRODUCT_SKU_FAIL
 	}
-	
+
 	item.Status = sku.Status
 	item.SkuName = sku.Title
 	item.SkuNo = sku.SkuNo
@@ -255,12 +254,12 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 		item.HasActivities = 1
 		item.RemainDuration = item.EndTime - now
 	}
-	
+
 	if sku.IsFreeShip == 1 {
 		// todo: 不包邮的情况 记录邮费
 		item.DeliveryAmount = 0
 	}
-	
+
 	if sku.OwnSpec != "" {
 		if err = util.JsonFast.UnmarshalFromString(sku.OwnSpec, &item.SkuSpec); err != nil {
 			log.Log.Errorf("shop_trace: unmarshal own spec fail, skuId:%d, err:%s", item.SkuId, err)
@@ -268,13 +267,13 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 	} else {
 		item.SkuSpec = make([]mshop.OwnSpec, 0)
 	}
-	
+
 	stockInfo, err := svc.shop.GetProductSkuStock(fmt.Sprint(item.SkuId))
 	if err != nil {
 		log.Log.Errorf("shop_trace: get product sku stock fail, skuId:%d, err:%s", item.SkuId, err)
 		return errdef.ERROR
 	}
-	
+
 	item.MaxBuy = stockInfo.MaxBuy
 	item.MinBuy = stockInfo.MinBuy
 	item.Stock = stockInfo.Stock - stockInfo.PurchasedNum
@@ -284,12 +283,12 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 		item.Count = stockInfo.MaxBuy
 		item.CanBuy = false
 	}
-	
+
 	if item.Count < stockInfo.MinBuy {
 		item.Count = stockInfo.MinBuy
 		item.CanBuy = false
 	}
-	
+
 	price := item.CurPrice
 	// 有活动
 	if item.HasActivities == 1 {
@@ -311,16 +310,16 @@ func (svc *ShopModule) OrderProcess(item *mshop.Product) int {
 		log.Log.Errorf("shop_trace: update product sku stock fail, skuId:%s, err:%s", item.SkuId, err)
 		return errdef.ERROR
 	}
-	
+
 	if item.Status == 1 {
 		item.IsEnough = false
 	}
-	
+
 	if affected != 1 {
 		item.IsEnough = false
 		item.Count = stockInfo.Stock - stockInfo.PurchasedNum
 	}
-	
+
 	return errdef.SUCCESS
 }
 
@@ -338,34 +337,34 @@ func (svc *ShopModule) OrderCancel(param *mshop.ChangeOrderReq) int {
 	if err := svc.engine.Begin(); err != nil {
 		return errdef.ERROR
 	}
-	
+
 	user := svc.user.FindUserByUserid(param.UserId)
 	if user == nil {
 		log.Log.Errorf("shop_trace: user not exists, userId:%s", param.UserId)
 		svc.engine.Rollback()
 		return errdef.USER_NOT_EXISTS
 	}
-	
+
 	order, err := svc.shop.GetOrder(param.OrderId)
 	if err != nil {
 		log.Log.Errorf("shop_trace: order not exists, orderId:%s", param.OrderId)
 		svc.engine.Rollback()
 		return errdef.SHOP_ORDER_NOT_EXISTS
 	}
-	
+
 	if order.UserId != user.UserId {
 		log.Log.Errorf("shop_trace: user not match, userId:%s, curUser:%s", order.UserId, user.UserId)
 		svc.engine.Rollback()
 		return errdef.SHOP_ORDER_CANCEL_FAIL
 	}
-	
+
 	// 只有待支付状态订单可以取消
 	if order.PayStatus != consts.SHOP_ORDER_TYPE_WAIT {
 		log.Log.Errorf("shop_trace: order not allow cancel, orderId:%s, status:%d", order.OrderId, order.PayStatus)
 		svc.engine.Rollback()
 		return errdef.SHOP_ORDER_NOT_ALLOW_CANCEL
 	}
-	
+
 	condition := fmt.Sprintf("`pay_status`=%d AND `order_id`='%s'", consts.SHOP_ORDER_TYPE_WAIT, order.OrderId)
 	cols := "pay_status, close_time, update_at"
 	order.PayStatus = consts.SHOP_ORDER_TYPE_UNPAID
@@ -378,13 +377,13 @@ func (svc *ShopModule) OrderCancel(param *mshop.ChangeOrderReq) int {
 		svc.engine.Rollback()
 		return errdef.SHOP_ORDER_UPDATE_FAIL
 	}
-	
+
 	if err := svc.CancelOrderProcess(order); err != nil {
 		log.Log.Errorf("shop_trace: cancel order fail, err:%s", err)
 		svc.engine.Rollback()
 		return errdef.SHOP_ORDER_CANCEL_FAIL
 	}
-	
+
 	svc.engine.Commit()
 	return errdef.SUCCESS
 }
@@ -397,34 +396,33 @@ func (svc *ShopModule) CancelOrderProcess(order *models.Orders) error {
 		log.Log.Errorf("shop_trace: get order products by orderId fail, orderId:%s, err:%s", order.OrderId, err)
 		return err
 	}
-	
+
 	for _, item := range list {
 		// 归还商品sku库存
-		affected, err := svc.shop.UpdateProductSkuStock(fmt.Sprint(item.SkuId), item.Count * -1)
+		affected, err := svc.shop.UpdateProductSkuStock(fmt.Sprint(item.SkuId), item.Count*-1)
 		if affected != 1 || err != nil {
 			log.Log.Errorf("shop_trace: update stock info fail, orderId:%s, err:%s, affected:%d, skuId:%s",
 				order.OrderId, err, affected, item.SkuId)
 			return errors.New("update stock info fail")
 		}
-		
-	
+
 		// 详情页下单 取消订单时 需添加到购物车
 		//if order.ActionType == consts.ORDER_ACTION_TYPE_DETAIL {
-			info := &models.ProductCart{
-				UserId:    order.UserId,
-				SkuId:     item.SkuId,
-				Count:     item.Count,
-				IsCheck:   0,
-				ProductId: item.ProductId,
-			}
-			
-			if _, err := svc.shop.AddProductCart(info); err != nil {
-				return errors.New("add product cart fail")
-			}
+		info := &models.ProductCart{
+			UserId:    order.UserId,
+			SkuId:     item.SkuId,
+			Count:     item.Count,
+			IsCheck:   0,
+			ProductId: item.ProductId,
+		}
+
+		if _, err := svc.shop.AddProductCart(info); err != nil {
+			return errors.New("add product cart fail")
+		}
 		//}
-		
+
 	}
-	
+
 	return nil
 }
 
@@ -433,27 +431,27 @@ func (svc *ShopModule) OrderList(userId, reqType string, page, size int) (int, [
 	if userId == "" {
 		return errdef.USER_NOT_EXISTS, nil
 	}
-	
+
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		return errdef.USER_NOT_EXISTS, nil
 	}
-	
+
 	condition := svc.GetQueryCondition(reqType, userId)
 	if condition == "" {
 		return errdef.INVALID_PARAMS, nil
 	}
-	
+
 	offset := (page - 1) * size
 	list, err := svc.shop.GetOrderList(condition, offset, size)
 	if err != nil {
 		log.Log.Errorf("shop_trace: get order list fail, err:%s", err)
 		return errdef.SHOP_ORDER_LIST_FAIL, nil
 	}
-	
+
 	if len(list) == 0 {
 		return errdef.SUCCESS, []*mshop.OrderResp{}
 	}
-	
+
 	res := make([]*mshop.OrderResp, len(list))
 	for index, item := range list {
 		info, err := svc.OrderInfo(item)
@@ -461,11 +459,10 @@ func (svc *ShopModule) OrderList(userId, reqType string, page, size int) (int, [
 			log.Log.Errorf("shop_trace: get order info fail, err:%s", err)
 			return errdef.SHOP_ORDER_LIST_FAIL, nil
 		}
-		
+
 		res[index] = info
 	}
-	
-	
+
 	return errdef.SUCCESS, res
 }
 
@@ -473,57 +470,57 @@ func (svc *ShopModule) OrderDetail(userId, orderId string) (int, *mshop.OrderRes
 	if userId == "" {
 		return errdef.USER_NOT_EXISTS, nil
 	}
-	
+
 	if user := svc.user.FindUserByUserid(userId); user == nil {
 		return errdef.USER_NOT_EXISTS, nil
 	}
-	
+
 	order, err := svc.shop.GetOrder(orderId)
 	if err != nil {
 		return errdef.SHOP_ORDER_NOT_EXISTS, nil
 	}
-	
+
 	res, err := svc.OrderInfo(*order)
 	if err != nil {
 		log.Log.Errorf("shop_trace: get order info fail, err:%s", err)
 		return errdef.SHOP_ORDER_LIST_FAIL, nil
 	}
-	
+
 	return errdef.SUCCESS, res
 }
 
 // 订单信息
 func (svc *ShopModule) OrderInfo(item models.Orders) (*mshop.OrderResp, error) {
-		info := &mshop.OrderResp{}
-		if err := util.JsonFast.UnmarshalFromString(item.Extra, &info); err != nil {
-			log.Log.Errorf("shop_trace: unmarshal fail, orderId:%s, err:%s", item.OrderId, err)
-			return nil, err
+	info := &mshop.OrderResp{}
+	if err := util.JsonFast.UnmarshalFromString(item.Extra, &info); err != nil {
+		log.Log.Errorf("shop_trace: unmarshal fail, orderId:%s, err:%s", item.OrderId, err)
+		return nil, err
+	}
+
+	info.PayDuration = 0
+	info.Status = item.PayStatus
+	// 待支付订单 剩余支付时长
+	if item.PayStatus == consts.SHOP_ORDER_TYPE_WAIT {
+		// 已过时长 =  当前时间戳 - 订单创建时间戳
+		duration := time.Now().Unix() - int64(item.CreateAt)
+		// 订单状态是待支付 且 已过时长 <= 总时差
+		if duration < consts.SHOP_PAYMENT_DURATION {
+			log.Log.Debugf("order_trace: duration:%v", duration)
+			// 剩余支付时长 = 总时长 - 已过时长
+			info.PayDuration = consts.SHOP_PAYMENT_DURATION - duration
 		}
-		
-		info.PayDuration = 0
-		info.Status = item.PayStatus
-		// 待支付订单 剩余支付时长
-		if item.PayStatus == consts.SHOP_ORDER_TYPE_WAIT {
-			// 已过时长 =  当前时间戳 - 订单创建时间戳
-			duration := time.Now().Unix() - int64(item.CreateAt)
-			// 订单状态是待支付 且 已过时长 <= 总时差
-			if duration < consts.SHOP_PAYMENT_DURATION {
-				log.Log.Debugf("order_trace: duration:%v", duration)
-				// 剩余支付时长 = 总时长 - 已过时长
-				info.PayDuration = consts.SHOP_PAYMENT_DURATION - duration
-			}
-		}
-		
-		if item.PayStatus == consts.SHOP_ORDER_TYPE_PAID {
-			info.Status = svc.GetDeliveryStatus(item.DeliveryStatus)
-		}
-		
-		info.PayStatus = item.PayStatus
-		info.DeliveryCode = item.DeliveryCode
-		info.DeliveryStatus = item.DeliveryStatus
-		info.DeliveryTelephone = item.DeliveryTelephone
-		info.DeliveryTypeName = item.DeliveryTypeName
-	
+	}
+
+	if item.PayStatus == consts.SHOP_ORDER_TYPE_PAID {
+		info.Status = svc.GetDeliveryStatus(item.DeliveryStatus)
+	}
+
+	info.PayStatus = item.PayStatus
+	info.DeliveryCode = item.DeliveryCode
+	info.DeliveryStatus = item.DeliveryStatus
+	info.DeliveryTelephone = item.DeliveryTelephone
+	info.DeliveryTypeName = item.DeliveryTypeName
+
 	return info, nil
 }
 
@@ -536,7 +533,7 @@ func (svc *ShopModule) GetDeliveryStatus(deliveryStatus int) int {
 	case consts.HAS_SIGNED:
 		return 4
 	}
-	
+
 	return 0
 }
 
@@ -558,7 +555,7 @@ func (svc *ShopModule) GetQueryCondition(reqType, userId string) string {
 	default:
 		return ""
 	}
-	
+
 	return condition
 }
 
@@ -569,25 +566,25 @@ func (svc *ShopModule) ConfirmReceipt(param *mshop.ChangeOrderReq) int {
 		log.Log.Errorf("shop_trace: user not exists, userId:%s", param.UserId)
 		return errdef.USER_NOT_EXISTS
 	}
-	
+
 	order, err := svc.shop.GetOrder(param.OrderId)
 	if err != nil {
 		log.Log.Errorf("shop_trace: order not exists, orderId:%s", param.OrderId)
 		return errdef.SHOP_ORDER_NOT_EXISTS
 	}
-	
+
 	if order.UserId != user.UserId {
 		log.Log.Errorf("shop_trace: user not match, userId:%s, curUser:%s", order.UserId, user.UserId)
 		return errdef.SHOP_CONFIRM_RECEIPT_FAIL
 	}
-	
+
 	// 订单 != 支付成功 || 配送状态 != 已配送
 	if order.PayStatus != consts.SHOP_ORDER_TYPE_PAID || order.DeliveryStatus != consts.HAS_DELIVERED {
 		log.Log.Errorf("shop_trace: not allow confirm,orderId:%s, payStatus:%d, deliveryStatus:%d", order.OrderId,
 			order.PayStatus, order.DeliveryStatus)
 		return errdef.SHOP_NOT_ALLOW_CONFIRM
 	}
-	
+
 	now := int(time.Now().Unix())
 	// 支付状态=已支付 && 配送状态=已配送
 	condition := fmt.Sprintf("order_id='%s' AND pay_status=%d AND delivery_status=1", order.OrderId, consts.SHOP_ORDER_TYPE_PAID)
@@ -602,7 +599,7 @@ func (svc *ShopModule) ConfirmReceipt(param *mshop.ChangeOrderReq) int {
 		log.Log.Errorf("shop_trace: update order info fail, orderId:%s, err:%s", order.OrderId, err)
 		return errdef.SHOP_CONFIRM_RECEIPT_FAIL
 	}
-	
+
 	return errdef.SUCCESS
 }
 
@@ -613,23 +610,23 @@ func (svc *ShopModule) DeleteOrder(param *mshop.ChangeOrderReq) int {
 		log.Log.Errorf("shop_trace: user not exists, userId:%s", param.UserId)
 		return errdef.USER_NOT_EXISTS
 	}
-	
+
 	order, err := svc.shop.GetOrder(param.OrderId)
 	if err != nil {
 		log.Log.Errorf("shop_trace: order not exists, orderId:%s", param.OrderId)
 		return errdef.SHOP_ORDER_NOT_EXISTS
 	}
-	
+
 	if order.UserId != user.UserId {
 		log.Log.Errorf("order_trace: user not match, userId:%s, curUser:%s", order.UserId, user.UserId)
 		return errdef.SHOP_ORDER_DELETE_FAIL
 	}
-	
+
 	// 已支付 且 未完成的订单 不能删除
 	if order.PayStatus == consts.SHOP_ORDER_TYPE_PAID && order.DeliveryStatus != consts.HAS_SIGNED {
 		return errdef.SHOP_ORDER_DELETE_FAIL
 	}
-	
+
 	condition := fmt.Sprintf("order_id='%s'", order.OrderId)
 	order.IsDelete = 1
 	order.UpdateAt = int(time.Now().Unix())
@@ -639,6 +636,6 @@ func (svc *ShopModule) DeleteOrder(param *mshop.ChangeOrderReq) int {
 		log.Log.Errorf("shop_trace: update order info fail, err:%s, affected:%d", err, affected)
 		return errdef.SHOP_ORDER_DELETE_FAIL
 	}
-	
+
 	return errdef.SUCCESS
 }

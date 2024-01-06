@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mbarrage"
-	"sports_service/server/models/mcomment"
-	"sports_service/server/models/minformation"
-	"sports_service/server/models/mposting"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
+	"sports_service/dao"
+	"sports_service/global/backend/errdef"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mbarrage"
+	"sports_service/models/mcomment"
+	"sports_service/models/minformation"
+	"sports_service/models/mposting"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
 	"strconv"
 )
 
@@ -32,21 +32,21 @@ func New(c *gin.Context) CommentModule {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return CommentModule{
-		context: c,
-		comment: mcomment.NewCommentModel(socket),
-		video: mvideo.NewVideoModel(socket),
-		barrage: mbarrage.NewBarrageModel(socket),
-		user: muser.NewUserModel(socket),
-		post: mposting.NewPostingModel(socket),
+		context:     c,
+		comment:     mcomment.NewCommentModel(socket),
+		video:       mvideo.NewVideoModel(socket),
+		barrage:     mbarrage.NewBarrageModel(socket),
+		user:        muser.NewUserModel(socket),
+		post:        mposting.NewPostingModel(socket),
 		information: minformation.NewInformationModel(socket),
-		engine: socket,
+		engine:      socket,
 	}
 }
 
 // 获取后台视频评论列表
 func (svc *CommentModule) GetVideoComments(queryId, sortType, condition string, page, size int) ([]*mcomment.VideoCommentInfo, int64) {
 	var (
-		total int64
+		total           int64
 		userId, videoId string
 	)
 	if queryId != "" {
@@ -70,7 +70,7 @@ func (svc *CommentModule) GetVideoComments(queryId, sortType, condition string, 
 		}
 
 		// 都不存在
-		if user == nil && video == nil  {
+		if user == nil && video == nil {
 			return []*mcomment.VideoCommentInfo{}, total
 		}
 
@@ -140,7 +140,7 @@ func (svc *CommentModule) GetPostComments(queryId, sortType, condition string, p
 		}
 
 		// 都不存在
-		if user == nil && post == nil  {
+		if user == nil && post == nil {
 			return []*mcomment.PostingCommentInfo{}, total
 		}
 
@@ -160,7 +160,7 @@ func (svc *CommentModule) GetPostComments(queryId, sortType, condition string, p
 // 获取后台资讯评论列表
 func (svc *CommentModule) GetInformationComments(queryId, sortType, condition string, page, size int) ([]*mcomment.InformationCommentInfo, int64) {
 	var (
-		total int64
+		total          int64
 		userId, newsId string
 	)
 	if queryId != "" {
@@ -183,7 +183,7 @@ func (svc *CommentModule) GetInformationComments(queryId, sortType, condition st
 		}
 
 		// 都不存在
-		if user == nil && svc.information.Information == nil  {
+		if user == nil && svc.information.Information == nil {
 			return []*mcomment.InformationCommentInfo{}, total
 		}
 
@@ -288,7 +288,6 @@ func (svc *CommentModule) DelVideoComments(param *mcomment.DelCommentParam) int 
 		return errdef.COMMENT_DELETE_FAIL
 	}
 
-
 	//commentIds := svc.comment.GetVideoReplyIdsById(param.ComposeId)
 	//ids := make([]string, 0)
 	//// 递归查询
@@ -332,16 +331,16 @@ func (svc *CommentModule) GetBarrageList(barrageType string, page, size int) []*
 		res := make([]*mbarrage.VideoBarrageInfo, len(list))
 		for index, item := range list {
 			info := &mbarrage.VideoBarrageInfo{
-				Id: item.Id,
-				VideoId: item.VideoId,
+				Id:               item.Id,
+				VideoId:          item.VideoId,
 				VideoCurDuration: item.VideoCurDuration,
-				Content: item.Content,
-				UserId: item.UserId,
-				Color: item.Color,
-				Font: item.Font,
-				BarrageType: item.BarrageType,
-				Location: item.Location,
-				SendTime: item.SendTime,
+				Content:          item.Content,
+				UserId:           item.UserId,
+				Color:            item.Color,
+				Font:             item.Font,
+				BarrageType:      item.BarrageType,
+				Location:         item.Location,
+				SendTime:         item.SendTime,
 			}
 
 			res[index] = info

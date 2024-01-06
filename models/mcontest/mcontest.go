@@ -2,83 +2,82 @@ package mcontest
 
 import (
 	"github.com/go-xorm/xorm"
-	"sports_service/server/models"
-	"sports_service/server/tools/tencentCloud"
+	"sports_service/models"
+	"sports_service/tools/tencentCloud"
 )
 
 // 赛事
 type ContestModel struct {
-	Engine              *xorm.Session
-	VideoLive           *models.VideoLive
-	VideoLiveReplay     *models.VideoLiveReplay
-	Schedule            *models.FpvContestSchedule
-	Contest             *models.FpvContestInfo
-	IntegralRanking     *models.FpvContestPlayerIntegralRanking
-	PlayerInfo          *models.FpvContestPlayerInformation
-	ScheduleDetail      *models.FpvContestScheduleDetail
-	ScheduleLiveData    *models.FpvContestScheduleLiveData
+	Engine           *xorm.Session
+	VideoLive        *models.VideoLive
+	VideoLiveReplay  *models.VideoLiveReplay
+	Schedule         *models.FpvContestSchedule
+	Contest          *models.FpvContestInfo
+	IntegralRanking  *models.FpvContestPlayerIntegralRanking
+	PlayerInfo       *models.FpvContestPlayerInformation
+	ScheduleDetail   *models.FpvContestScheduleDetail
+	ScheduleLiveData *models.FpvContestScheduleLiveData
 }
 
 // 赛事信息[包含赛程]
 type ContestInfo struct {
-	ContestId      int       `json:"contest_id"`
-	ContestName    string    `json:"contest_name"`
+	ContestId   int    `json:"contest_id"`
+	ContestName string `json:"contest_name"`
 
-	ScheduleList   []*ScheduleInfo `json:"schedule_info"`          // 赛程列表
+	ScheduleList []*ScheduleInfo `json:"schedule_info"` // 赛程列表
 }
 
 // 赛程信息
 type ScheduleInfo struct {
-	ScheduleId     int       `json:"schedule_id"`
-	ScheduleName   string    `json:"schedule_name"`
-	Description    string    `json:"description"`
-	ShowType       int       `json:"show_type"`
+	ScheduleId   int    `json:"schedule_id"`
+	ScheduleName string `json:"schedule_name"`
+	Description  string `json:"description"`
+	ShowType     int    `json:"show_type"`
 }
 
 // 赛程详情
 type ScheduleDetail struct {
-	Id         int64  `json:"id"`
-	ScheduleId int    `json:"schedule_id"`
-	Rounds     int    `json:"rounds"`
-	GroupNum   int    `json:"group_num"`
-	GroupName  string `json:"group_name"`
-	PlayerId   int64  `json:"player_id"`
-	PlayerName string `json:"name"`
-	Photo      tencentCloud.BucketURI `json:"photo"`
-	Score      int    `json:"score"`
-	IsWin      int    `json:"is_win"`
-	NumInGroup int    `json:"num_in_group"`
-	ContestId  int    `json:"contest_id"`
-	BeginTm    int    `json:"begin_tm"`
-	EndTm      int    `json:"end_tm"`
-	ReceiveIntegral int `json:"receive_integral"`
-	Ranking   int     `json:"ranking"`
+	Id              int64                  `json:"id"`
+	ScheduleId      int                    `json:"schedule_id"`
+	Rounds          int                    `json:"rounds"`
+	GroupNum        int                    `json:"group_num"`
+	GroupName       string                 `json:"group_name"`
+	PlayerId        int64                  `json:"player_id"`
+	PlayerName      string                 `json:"name"`
+	Photo           tencentCloud.BucketURI `json:"photo"`
+	Score           int                    `json:"score"`
+	IsWin           int                    `json:"is_win"`
+	NumInGroup      int                    `json:"num_in_group"`
+	ContestId       int                    `json:"contest_id"`
+	BeginTm         int                    `json:"begin_tm"`
+	EndTm           int                    `json:"end_tm"`
+	ReceiveIntegral int                    `json:"receive_integral"`
+	Ranking         int                    `json:"ranking"`
 }
-
 
 // 赛程列表详情返回数据
 type ScheduleListDetailResp struct {
-	Id         int64  `json:"id,omitempty"`
-	ScheduleId int    `json:"schedule_id"`
-	PlayerId   int64  `json:"player_id"`
-	PlayerName string `json:"player_name"`
+	Id         int64                  `json:"id,omitempty"`
+	ScheduleId int                    `json:"schedule_id"`
+	PlayerId   int64                  `json:"player_id"`
+	PlayerName string                 `json:"player_name"`
 	Photo      tencentCloud.BucketURI `json:"photo"`
-	IsWin      int    `json:"is_win"`
-	ContestId  int    `json:"contest_id"`
-	Ranking    int    `json:"ranking"`
-	Ids        []int64 `json:"ids,omitempty"`
-	Index      int     `json:"index"`
+	IsWin      int                    `json:"is_win"`
+	ContestId  int                    `json:"contest_id"`
+	Ranking    int                    `json:"ranking"`
+	Ids        []int64                `json:"ids,omitempty"`
+	Index      int                    `json:"index"`
 
-	BestScore          string    `json:"best_score"`
-	RoundOneScore      string    `json:"round_one_score"`
-	RoundTwoScore      string    `json:"round_two_score"`
-	RoundThreeScore    string    `json:"round_three_score"`
-	RoundOneIntegral   int       `json:"round_one_integral"`
-	RoundTwoIntegral   int       `json:"round_two_integral"`
-	GroupName          string    `json:"group_name"`
-	GroupNum           int       `json:"group_num"`
-	NumInGroup         int       `json:"num_in_group"`
-	BeginTm            int       `json:"begin_tm"`
+	BestScore        string `json:"best_score"`
+	RoundOneScore    string `json:"round_one_score"`
+	RoundTwoScore    string `json:"round_two_score"`
+	RoundThreeScore  string `json:"round_three_score"`
+	RoundOneIntegral int    `json:"round_one_integral"`
+	RoundTwoIntegral int    `json:"round_two_integral"`
+	GroupName        string `json:"group_name"`
+	GroupNum         int    `json:"group_num"`
+	NumInGroup       int    `json:"num_in_group"`
+	BeginTm          int    `json:"begin_tm"`
 }
 
 // 赛程分组详情返回数据
@@ -91,64 +90,64 @@ type ScheduleGroupDetailResp struct {
 	BeginTm    string `json:"begin_tm"`
 	//EndTm      string `json:"end_tm"`
 
-	Player     []PlayerInfoResp  `json:"player"`
-	Winner     []PlayerInfoResp  `json:"winner"`
+	Player []PlayerInfoResp `json:"player"`
+	Winner []PlayerInfoResp `json:"winner"`
 }
 
 // 赛程分组详情返回数据
 type PlayerInfoResp struct {
-	Id         int64  `json:"id,omitempty"`
-	PlayerId   int64  `json:"player_id"`
-	PlayerName string `json:"player_name"`
+	Id         int64                  `json:"id,omitempty"`
+	PlayerId   int64                  `json:"player_id"`
+	PlayerName string                 `json:"player_name"`
 	Photo      tencentCloud.BucketURI `json:"photo"`
-	IsWin      int    `json:"is_win"`
-	Score      string `json:"score"`
-	NumInGroup int    `json:"num_in_group"`
-	Integral   string `json:"integral"`
+	IsWin      int                    `json:"is_win"`
+	Score      string                 `json:"score"`
+	NumInGroup int                    `json:"num_in_group"`
+	Integral   string                 `json:"integral"`
 }
 
 type IntegralRanking struct {
-	Id         int    `json:"id"`
-	PlayerId   int64  `json:"player_id"`
-	PlayerName string `json:"player_name"`
+	Id         int                    `json:"id"`
+	PlayerId   int64                  `json:"player_id"`
+	PlayerName string                 `json:"player_name"`
 	Photo      tencentCloud.BucketURI `json:"photo"`
-	ContestId  int    `json:"contest_id"`
+	ContestId  int                    `json:"contest_id"`
 
-	Ranking            int       `json:"ranking"`
-	TotalIntegral      int       `json:"integral,omitempty"`
-	BestScore          int       `json:"score,omitempty"`
+	Ranking       int `json:"ranking"`
+	TotalIntegral int `json:"integral,omitempty"`
+	BestScore     int `json:"score,omitempty"`
 
-	TotalIntegralStr   string    `json:"total_integral"`
-	BestScoreStr       string    `json:"best_score"`
+	TotalIntegralStr string `json:"total_integral"`
+	BestScoreStr     string `json:"best_score"`
 }
 
 // 赛程直播 选手竞赛数据
 type LiveSchedulePlayerData struct {
-	Id               int64    `json:"id"`
-	ContestId        int      `json:"contest_id"`
-	ScheduleId       int      `json:"schedule_id"`
-	PlayerId         int64    `json:"player_id"`
-	PlayerName       string   `json:"player_name"`
-	Photo            tencentCloud.BucketURI   `json:"photo"`
-	LiveId           int64    `json:"live_id"`
-	RoundsNum        int      `json:"rounds_num"`
-	IntervalDuration string   `json:"interval_duration"`
-	TopSpeed         string   `json:"top_speed"`
-	ReceiveIntegral  string   `json:"receive_integral"`
-	Ranking          int      `json:"ranking"`
+	Id               int64                  `json:"id"`
+	ContestId        int                    `json:"contest_id"`
+	ScheduleId       int                    `json:"schedule_id"`
+	PlayerId         int64                  `json:"player_id"`
+	PlayerName       string                 `json:"player_name"`
+	Photo            tencentCloud.BucketURI `json:"photo"`
+	LiveId           int64                  `json:"live_id"`
+	RoundsNum        int                    `json:"rounds_num"`
+	IntervalDuration string                 `json:"interval_duration"`
+	TopSpeed         string                 `json:"top_speed"`
+	ReceiveIntegral  string                 `json:"receive_integral"`
+	Ranking          int                    `json:"ranking"`
 }
 
 // 实例
 func NewContestModel(engine *xorm.Session) *ContestModel {
 	return &ContestModel{
-		Engine: engine,
-		VideoLive: new(models.VideoLive),
-		VideoLiveReplay: new(models.VideoLiveReplay),
-		Schedule: new(models.FpvContestSchedule),
-		Contest: new(models.FpvContestInfo),
-		IntegralRanking: new(models.FpvContestPlayerIntegralRanking),
-		PlayerInfo: new(models.FpvContestPlayerInformation),
-		ScheduleDetail: new(models.FpvContestScheduleDetail),
+		Engine:           engine,
+		VideoLive:        new(models.VideoLive),
+		VideoLiveReplay:  new(models.VideoLiveReplay),
+		Schedule:         new(models.FpvContestSchedule),
+		Contest:          new(models.FpvContestInfo),
+		IntegralRanking:  new(models.FpvContestPlayerIntegralRanking),
+		PlayerInfo:       new(models.FpvContestPlayerInformation),
+		ScheduleDetail:   new(models.FpvContestScheduleDetail),
 		ScheduleLiveData: new(models.FpvContestScheduleLiveData),
 	}
 }
@@ -199,16 +198,15 @@ const (
 		"fpv_contest_schedule_detail AS cs LEFT JOIN fpv_contest_player_information AS p ON p.id = cs.player_id " +
 		"AND cs.contest_id=? AND cs.schedule_id=? WHERE p.status = 0 ORDER BY ISNULL(cs.ranking),cs.ranking ASC,cs.score is null, cs.score ASC, cs.id DESC, " +
 		" p.id ASC"
-
-
 )
+
 // 获取赛程信息[成绩正序]
 func (m *ContestModel) GetScheduleDetailInfo(showType int, contestId, scheduleId string) ([]*ScheduleDetail, error) {
 	sql := GET_SCHEDULE_DETAIL_BY_SCORE
 	if showType == 2 {
 		sql = GET_SCHEDULE_DETAIL_BY_GROUP
 	}
- 
+
 	if showType == 3 {
 		sql = GET_SCHEDULE_DETAIL_BY_BACKEND
 	}
@@ -233,10 +231,11 @@ const (
 		"ON p.id = rk.player_id AND rk.contest_id=? " +
 		"WHERE p.status = 0 ORDER BY rk.total_integral DESC, ISNULL(rk.ranking),rk.ranking ASC, p.id ASC LIMIT ?, ?"
 )
+
 // 通过赛事id 获取选手积分排行
 func (m *ContestModel) GetIntegralRankingByContestId(contestId string, offset, size int) ([]*IntegralRanking, error) {
 	var list []*IntegralRanking
-	if err := m.Engine.SQL(GET_INTEGRAL_RANKING, contestId, offset,size).Find(&list); err != nil {
+	if err := m.Engine.SQL(GET_INTEGRAL_RANKING, contestId, offset, size).Find(&list); err != nil {
 		return nil, err
 	}
 
@@ -259,6 +258,7 @@ const (
 		"AND rounds_num=(select max(rounds_num) from fpv_contest_schedule_live_data) ORDER BY receive_integral DESC" +
 		" LIMIT ?, ?"
 )
+
 // 赛程直播 选手竞赛数据
 func (m *ContestModel) GetLiveSchedulePlayerData(liveId string, offset, size int) ([]*models.FpvContestScheduleLiveData, error) {
 	var list []*models.FpvContestScheduleLiveData

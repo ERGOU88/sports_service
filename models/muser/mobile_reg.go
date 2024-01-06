@@ -3,11 +3,11 @@ package muser
 import (
 	"errors"
 	"fmt"
-	"sports_service/server/dao"
-	"sports_service/server/global/consts"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/rdskey"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/global/rdskey"
+	"sports_service/util"
 	"strconv"
 	"time"
 )
@@ -33,7 +33,7 @@ func (r *mobileRegister) Register(u *UserModel, platform int, mobileNum, clientI
 	key := rdskey.MakeKey(rdskey.LOGIN_REPEAT, consts.TYPE_MOBILE, mobileNum)
 	// 验证重复注册
 	ok, err := IsReapeat(key)
-	if !ok || err != nil{
+	if !ok || err != nil {
 		log.Log.Errorf("reg_trace: repeat register mobile num %s", mobileNum)
 		return errors.New("repeat register")
 	}
@@ -81,8 +81,8 @@ func (r *mobileRegister) newDefaultNickName(mobileNum int64) string {
 	str := fmt.Sprint(mobileNum)
 	length := len(str)
 	// 手机号后4位
-	str = str[len(str)-4: length]
-	return  fmt.Sprintf("用户%d%s", util.GenerateRandnum(10000, 99999), str)
+	str = str[len(str)-4 : length]
+	return fmt.Sprintf("用户%d%s", util.GenerateRandnum(10000, 99999), str)
 }
 
 // 验证重复

@@ -2,13 +2,13 @@ package cuser
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"sports_service/server/global/consts"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/models"
-	"sports_service/server/models/muser"
-	"sports_service/server/global/app/log"
-	"sports_service/server/util"
-	third "sports_service/server/tools/thirdLogin"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/muser"
+	third "sports_service/tools/thirdLogin"
+	"sports_service/util"
 	"time"
 )
 
@@ -87,13 +87,13 @@ func (svc *UserModule) WechatLoginOrReg(code string) (int, string, *models.User)
 		return errdef.USER_GET_INFO_FAIL, "", nil
 	}
 
-  // 登陆的时候 检查用户状态
-  if !svc.CheckUserStatus(user.Status) {
-    log.Log.Errorf("user_trace: forbid status, userId:%s", user.UserId)
-    return errdef.USER_FORBID_STATUS, "", nil
-  }
+	// 登陆的时候 检查用户状态
+	if !svc.CheckUserStatus(user.Status) {
+		log.Log.Errorf("user_trace: forbid status, userId:%s", user.UserId)
+		return errdef.USER_FORBID_STATUS, "", nil
+	}
 
-  // 用户已注册过, 则直接从redis中获取token并返回
+	// 用户已注册过, 则直接从redis中获取token并返回
 	token, err := svc.user.GetUserToken(user.UserId)
 	if err != nil && err == redis.ErrNil {
 		// redis 没有，重新生成token

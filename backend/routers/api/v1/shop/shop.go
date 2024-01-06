@@ -3,23 +3,23 @@ package shop
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/backend/controller/cshop"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/global/backend/log"
-	"sports_service/server/models"
-	"sports_service/server/models/mshop"
-	"sports_service/server/util"
+	"sports_service/backend/controller/cshop"
+	"sports_service/global/backend/errdef"
+	"sports_service/global/backend/log"
+	"sports_service/models"
+	"sports_service/models/mshop"
+	"sports_service/util"
 )
 
 func ProductList(c *gin.Context) {
 	reply := errdef.New(c)
-	
+
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	sortType := c.DefaultQuery("sort_type", "0")
 	keyword := c.Query("keyword")
-	
+
 	svc := cshop.New(c)
-    code, count, list := svc.GetProductList(sortType, keyword, page, size)
+	code, count, list := svc.GetProductList(sortType, keyword, page, size)
 	reply.Data["list"] = list
 	reply.Data["total"] = count
 	reply.Response(http.StatusOK, code)
@@ -49,7 +49,7 @@ func AddCategory(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.AddCategory(params))
 }
@@ -62,7 +62,7 @@ func EditCategory(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.EditCategory(params))
 }
@@ -83,7 +83,7 @@ func AddService(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.AddService(params))
 }
@@ -96,7 +96,7 @@ func EditService(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.UpdateService(params))
 }
@@ -108,11 +108,10 @@ func DelService(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.DelService(id))
 }
-
 
 func AddSpecification(c *gin.Context) {
 	reply := errdef.New(c)
@@ -122,12 +121,12 @@ func AddSpecification(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	if params.CategoryId <= 0 || len(params.SpecInfo) == 0 {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.AddCategorySpec(params))
 }
@@ -140,7 +139,7 @@ func EditSpecification(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.EditCategorySpec(params))
 }
@@ -152,7 +151,7 @@ func DelSpecification(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.DelCategorySpec(categoryId))
 }
@@ -182,7 +181,7 @@ func AddProduct(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.AddProduct(params))
 }
@@ -195,7 +194,7 @@ func EditProduct(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.EditProduct(params))
 }
@@ -205,7 +204,7 @@ func OrderList(c *gin.Context) {
 	reqType := c.Query("req_type")
 	keyword := c.Query("keyword")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
-	
+
 	svc := cshop.New(c)
 	code, total, list := svc.OrderList(reqType, keyword, page, size)
 	reply.Data["total"] = total
@@ -221,7 +220,7 @@ func DeliverProduct(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.DeliverProduct(param))
 }
@@ -234,7 +233,7 @@ func ConfirmReceipt(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.ConfirmReceipt(param))
 }
@@ -247,7 +246,7 @@ func OrderCallback(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cshop.New(c)
 	reply.Response(http.StatusOK, svc.OrderCallback(param.OrderId))
 }

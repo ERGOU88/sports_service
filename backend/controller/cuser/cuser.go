@@ -1,27 +1,27 @@
 package cuser
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/backend/log"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mbarrage"
-	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mcomment"
-	"sports_service/server/models/minformation"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/morder"
-	"sports_service/server/models/mposting"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	"sports_service/server/tools/tencentCloud"
+	"sports_service/dao"
+	"sports_service/global/backend/errdef"
+	"sports_service/global/backend/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mattention"
+	"sports_service/models/mbarrage"
+	"sports_service/models/mcollect"
+	"sports_service/models/mcomment"
+	"sports_service/models/minformation"
+	"sports_service/models/mlike"
+	"sports_service/models/morder"
+	"sports_service/models/mposting"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	"sports_service/tools/tencentCloud"
 	"strconv"
 	"time"
-	"fmt"
 )
 
 type UserModule struct {
@@ -45,25 +45,25 @@ func New(c *gin.Context) UserModule {
 	venueSocket := dao.VenueEngine.NewSession()
 	defer venueSocket.Close()
 	return UserModule{
-		context: c,
-		user: muser.NewUserModel(socket),
-		attention: mattention.NewAttentionModel(socket),
-		like: mlike.NewLikeModel(socket),
-		collect: mcollect.NewCollectModel(socket),
-		video: mvideo.NewVideoModel(socket),
-		comment: mcomment.NewCommentModel(socket),
-		barrage: mbarrage.NewBarrageModel(socket),
-		post: mposting.NewPostingModel(socket),
+		context:     c,
+		user:        muser.NewUserModel(socket),
+		attention:   mattention.NewAttentionModel(socket),
+		like:        mlike.NewLikeModel(socket),
+		collect:     mcollect.NewCollectModel(socket),
+		video:       mvideo.NewVideoModel(socket),
+		comment:     mcomment.NewCommentModel(socket),
+		barrage:     mbarrage.NewBarrageModel(socket),
+		post:        mposting.NewPostingModel(socket),
 		information: minformation.NewInformationModel(socket),
-		order: morder.NewOrderModel(venueSocket),
-		engine: socket,
+		order:       morder.NewOrderModel(venueSocket),
+		engine:      socket,
 	}
 }
 
 // 后台获取用户列表 todo:增加排序
 func (svc *UserModule) GetUserListBySort(queryId, sortType, condition string, page, size int) ([]*muser.UserInfo, int64) {
 	var (
-		total int64
+		total             int64
 		userId, mobileNum string
 	)
 	if queryId != "" {
@@ -82,11 +82,11 @@ func (svc *UserModule) GetUserListBySort(queryId, sortType, condition string, pa
 		user = svc.user.FindUserByPhone(queryId)
 		if user != nil {
 			mobileNum = fmt.Sprint(user.MobileNum)
-			total =1
+			total = 1
 		}
 
 		// 都不存在
-		if userId == "" && mobileNum == ""  {
+		if userId == "" && mobileNum == "" {
 			return []*muser.UserInfo{}, total
 		}
 
@@ -134,23 +134,23 @@ func (svc *UserModule) GetUserList(page, size int) []*muser.UserInfo {
 	res := make([]*muser.UserInfo, len(list))
 	for index, info := range list {
 		resp := &muser.UserInfo{
-			UserId: info.UserId,
-			Avatar:  tencentCloud.BucketURI(info.Avatar),
-			MobileNum: info.MobileNum,
-			NickName: info.NickName,
-			Gender: int32(info.Gender),
-			Signature: info.Signature,
-			Status: int32(info.Status),
-			IsAnchor: int32(info.IsAnchor),
+			UserId:        info.UserId,
+			Avatar:        tencentCloud.BucketURI(info.Avatar),
+			MobileNum:     info.MobileNum,
+			NickName:      info.NickName,
+			Gender:        int32(info.Gender),
+			Signature:     info.Signature,
+			Status:        int32(info.Status),
+			IsAnchor:      int32(info.IsAnchor),
 			BackgroundImg: tencentCloud.BucketURI(info.BackgroundImg),
-			Born: info.Born,
-			Age: info.Age,
-			Country: int32(info.Country),
-			RegIp: info.RegIp,
+			Born:          info.Born,
+			Age:           info.Age,
+			Country:       int32(info.Country),
+			RegIp:         info.RegIp,
 			LastLoginTime: info.LastLoginTime,
-			Platform: info.DeviceType,
-			UserType: int32(info.UserType),
-			Id: info.Id,
+			Platform:      info.DeviceType,
+			UserType:      int32(info.UserType),
+			Id:            info.Id,
 			// 被点赞总数
 			TotalBeLiked: svc.like.GetUserTotalBeLiked(info.UserId),
 			// 用户关注总数
@@ -242,7 +242,7 @@ func (svc *UserModule) GetOfficialUserTotal() int64 {
 	if err != nil {
 		return 0
 	}
-	
+
 	return total
 }
 
@@ -272,6 +272,6 @@ func (svc *UserModule) EditOfficialUser(param *models.User) int {
 		log.Log.Errorf("user_trace: update user fail, err:%s", err)
 		return errdef.ERROR
 	}
-	
+
 	return errdef.SUCCESS
 }

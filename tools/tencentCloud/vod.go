@@ -11,18 +11,18 @@ import (
 	tms "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/tms/v20200713"
 	vod "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/vod/v20180717"
 	vodSdk "github.com/tencentyun/vod-go-sdk"
-	"sports_service/server/app/config"
-	"sports_service/server/util"
-	"time"
+	"sports_service/app/config"
+	"sports_service/util"
 	"strings"
+	"time"
 )
 
 // 透传数据
 type SourceContext struct {
-	UserId    string   `json:"user_id"`   // 用户id
-	TaskId    int64    `json:"task_id"`   // 任务id
-	Tm        int64    `json:"tm"`        // 任务开始时间
-	Mode      string   `json:"mode"`      // 环境
+	UserId string `json:"user_id"` // 用户id
+	TaskId int64  `json:"task_id"` // 任务id
+	Tm     int64  `json:"tm"`      // 任务开始时间
+	Mode   string `json:"mode"`    // 环境
 }
 
 // 生成上传签名 todo: 任务流模版名  procedure
@@ -32,9 +32,9 @@ func (tc *TencentCloud) GenerateSign(userId, procedure string, taskId int64) str
 	random := util.GetXID()
 	sourceContext := &SourceContext{
 		UserId: userId,
-		TaskId:	taskId,
-		Tm: time.Now().Unix(),
-		Mode: config.Global.Mode,
+		TaskId: taskId,
+		Tm:     time.Now().Unix(),
+		Mode:   config.Global.Mode,
 	}
 
 	context, _ := util.JsonFast.Marshal(sourceContext)
@@ -54,7 +54,7 @@ func (tc *TencentCloud) generateHmacSHA1(original string) []byte {
 }
 
 // 主动拉取事件通知
-func (tc *TencentCloud) PullEvents() (*vod.PullEventsResponse, error){
+func (tc *TencentCloud) PullEvents() (*vod.PullEventsResponse, error) {
 	credential := common.NewCredential(
 		tc.secretId,
 		tc.secretKey,
@@ -160,7 +160,7 @@ func (tc *TencentCloud) TextModeration(content string) (bool, string, error) {
 	// Suggestion Block：建议打击，Review：建议复审，Normal：建议通过。
 	if *response.Response.Suggestion == "Block" {
 		//fmt.Printf("Content Not Pass, Label:%s, Suggestion:%s, Content:%s",
-			//*response.Response.Label, *response.Response.Suggestion, content)
+		//*response.Response.Label, *response.Response.Suggestion, content)
 		if len(response.Response.Keywords) > 0 {
 			for _, str := range response.Response.Keywords {
 				content = strings.Replace(content, *str, "***", -1)

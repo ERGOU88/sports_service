@@ -5,38 +5,38 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mcomment"
-	"sports_service/server/models/minformation"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/mnotify"
-	"sports_service/server/models/mposting"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mattention"
+	"sports_service/models/mcollect"
+	"sports_service/models/mcomment"
+	"sports_service/models/minformation"
+	"sports_service/models/mlike"
+	"sports_service/models/mnotify"
+	"sports_service/models/mposting"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"strconv"
 	"strings"
 	"time"
 )
 
 type NotifyModule struct {
-	context    *gin.Context
-	engine     *xorm.Session
-	notify     *mnotify.NotifyModel
-	like       *mlike.LikeModel
-	collect    *mcollect.CollectModel
-	video      *mvideo.VideoModel
-	user       *muser.UserModel
-	comment    *mcomment.CommentModel
-	attention  *mattention.AttentionModel
-	post       *mposting.PostingModel
+	context     *gin.Context
+	engine      *xorm.Session
+	notify      *mnotify.NotifyModel
+	like        *mlike.LikeModel
+	collect     *mcollect.CollectModel
+	video       *mvideo.VideoModel
+	user        *muser.UserModel
+	comment     *mcomment.CommentModel
+	attention   *mattention.AttentionModel
+	post        *mposting.PostingModel
 	information *minformation.InformationModel
 }
 
@@ -44,17 +44,17 @@ func New(c *gin.Context) NotifyModule {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return NotifyModule{
-		context: c,
-		notify: mnotify.NewNotifyModel(socket),
-		like: mlike.NewLikeModel(socket),
-		collect: mcollect.NewCollectModel(socket),
-		video: mvideo.NewVideoModel(socket),
-		user: muser.NewUserModel(socket),
-		comment: mcomment.NewCommentModel(socket),
-		attention: mattention.NewAttentionModel(socket),
-		post: mposting.NewPostingModel(socket),
+		context:     c,
+		notify:      mnotify.NewNotifyModel(socket),
+		like:        mlike.NewLikeModel(socket),
+		collect:     mcollect.NewCollectModel(socket),
+		video:       mvideo.NewVideoModel(socket),
+		user:        muser.NewUserModel(socket),
+		comment:     mcomment.NewCommentModel(socket),
+		attention:   mattention.NewAttentionModel(socket),
+		post:        mposting.NewPostingModel(socket),
 		information: minformation.NewInformationModel(socket),
-		engine: socket,
+		engine:      socket,
 	}
 }
 
@@ -113,7 +113,6 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 				}
 			}
 
-
 		// 被点赞的帖子
 		case consts.TYPE_POSTS:
 			info.Type = consts.TYPE_POSTS
@@ -142,7 +141,6 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 					}
 				}
 			}
-
 
 		// 被点赞的视频评论
 		case consts.TYPE_VIDEO_COMMENT:
@@ -185,7 +183,6 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 						info.BrowseNum = statistic.BrowseNum
 					}
 				}
-
 
 			}
 
@@ -277,7 +274,6 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 			}
 		}
 
-
 		var userList []*models.User
 		userIds := strings.Split(liked.UserId, ",")
 		lenth := len(userIds)
@@ -291,10 +287,10 @@ func (svc *NotifyModule) GetNewBeLikedList(userId string, page, size int) []inte
 
 		for _, user := range userList {
 			info.UserList = append(info.UserList, &mlike.LikedUserInfo{
-				UserId: user.UserId,
+				UserId:   user.UserId,
 				NickName: user.NickName,
-				Avatar: tencentCloud.BucketURI(user.Avatar),
-				OpTm:  liked.CreateAt,
+				Avatar:   tencentCloud.BucketURI(user.Avatar),
+				OpTm:     liked.CreateAt,
 			})
 		}
 
@@ -374,10 +370,10 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 					//userMp[fmt.Sprintf("%s_%d", user.UserId, liked.TypeId)] = user
 
 					vlikeMap[video.VideoId] = append(vlikeMap[video.VideoId], &mlike.LikedUserInfo{
-						UserId: user.UserId,
-						Avatar: tencentCloud.BucketURI(user.Avatar),
+						UserId:   user.UserId,
+						Avatar:   tencentCloud.BucketURI(user.Avatar),
 						NickName: user.NickName,
-						OpTm: liked.CreateAt,
+						OpTm:     liked.CreateAt,
 					})
 
 				}
@@ -393,10 +389,10 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 				// 点赞用户
 				if user := svc.user.FindUserByUserid(liked.UserId); user != nil {
 					clikeMap[comment.Id] = append(clikeMap[comment.Id], &mlike.LikedUserInfo{
-						UserId: user.UserId,
-						Avatar: tencentCloud.BucketURI(user.Avatar),
+						UserId:   user.UserId,
+						Avatar:   tencentCloud.BucketURI(user.Avatar),
 						NickName: user.NickName,
-						OpTm: liked.CreateAt,
+						OpTm:     liked.CreateAt,
 					})
 
 				}
@@ -452,7 +448,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 					lenth := len(users)
 					if lenth >= 2 {
 						// 最多取两个 取最新
-						info.UserList = users[lenth - 2:]
+						info.UserList = users[lenth-2:]
 						// 返回最新的点赞时间
 						info.OpTime = users[0].OpTm
 					} else {
@@ -512,7 +508,7 @@ func (svc *NotifyModule) GetBeLikedList(userId string, page, size int) []interfa
 					lenth := len(users)
 					if lenth >= 2 {
 						// 最多取两个 取最新
-						info.UserList = users[lenth - 2:]
+						info.UserList = users[lenth-2:]
 						// 返回最新的点赞时间
 						info.OpTime = users[0].OpTm
 					} else {
@@ -706,7 +702,6 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 			}
 
 			res[index] = info
-
 
 		// 视频直接评论/回复 composeId 存储视频评论/回复id
 		case consts.TYPE_VIDEO_COMMENT:
@@ -1058,7 +1053,7 @@ func (svc *NotifyModule) GetReceiveAtNotify(userId string, page, size int) ([]in
 func (svc *NotifyModule) GetUnreadTotalNum(userId string) *mnotify.HomePageNotify {
 	resp := &mnotify.HomePageNotify{
 		UnBrowsedNum: 0,
-		UnreadNum: 0,
+		UnreadNum:    0,
 	}
 
 	if user := svc.user.FindUserByUserid(userId); user == nil {

@@ -2,16 +2,16 @@ package main
 
 import (
 	"crypto/md5"
-	"github.com/gorilla/websocket"
-	"github.com/gorilla/mux"
-	"net/http"
 	"fmt"
-	"os"
-	"sports_service/server/global/consts"
-	pbBarrage "sports_service/server/proto/barrage"
-	"time"
-	"sports_service/server/util"
 	"github.com/golang/protobuf/proto"
+	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
+	"net/http"
+	"os"
+	"sports_service/global/consts"
+	pbBarrage "sports_service/proto/barrage"
+	"sports_service/util"
+	"time"
 )
 
 const (
@@ -28,7 +28,7 @@ const (
 var running = false
 
 var upgrader = websocket.Upgrader{
-	ReadBufferSize: READ_BUF_SIZE,
+	ReadBufferSize:  READ_BUF_SIZE,
 	WriteBufferSize: WRITE_BUF_SIZE,
 	CheckOrigin: func(r *http.Request) bool {
 		return true
@@ -82,7 +82,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleSocketConn(webConn *websocket.Conn) {
-	defer func(){
+	defer func() {
 		webConn.Close()
 	}()
 
@@ -102,7 +102,7 @@ func handleSocketConn(webConn *websocket.Conn) {
 	// 将所有写操作串行到一个 goroutine 中
 	go writeRoutine(webConn, user)
 
-	EndReadLoop: // 结束读routine标示
+EndReadLoop: // 结束读routine标示
 	// Read Routine
 	for {
 		// 心跳重置过期时间
@@ -136,12 +136,11 @@ func handleSocketConn(webConn *websocket.Conn) {
 	DelUser(user.Xid)
 }
 
-
 func writeRoutine(webConn *websocket.Conn, user *User) {
 	var msg *pbBarrage.Message
 	for {
 		select {
-		case msg = <- user.WriteChanel:
+		case msg = <-user.WriteChanel:
 			if data, err := proto.Marshal(msg); err == nil {
 				if err := webConn.WriteMessage(websocket.BinaryMessage, data); err != nil {
 					fmt.Println("\nwrite message err:", err)
@@ -149,7 +148,7 @@ func writeRoutine(webConn *websocket.Conn, user *User) {
 					return
 				}
 			}
-		case <- user.Finish:
+		case <-user.Finish:
 			// 读操作已检测到异常
 			webConn.Close()
 			return
@@ -157,7 +156,6 @@ func writeRoutine(webConn *websocket.Conn, user *User) {
 		}
 	}
 }
-
 
 var WsKey = map[string]string{
 	string(consts.APPLET_APP_ID): "PlvZrGmBKGuQPXVb",
@@ -176,7 +174,7 @@ func auth(webConn *websocket.Conn) string {
 	if err != nil || msgType != websocket.BinaryMessage {
 		fmt.Printf("\nread msg err:%v, msgType:%d", err, msgType)
 		res = &pbBarrage.ResConnMessage{
-			Code: pbBarrage.RetCode_CODE_FAIL,
+			Code:    pbBarrage.RetCode_CODE_FAIL,
 			Content: fmt.Sprintf("Read Msg Error %v", err),
 		}
 
@@ -187,7 +185,7 @@ func auth(webConn *websocket.Conn) string {
 	if err := proto.Unmarshal(readMsg, &msg); err != nil {
 		fmt.Printf("proto.Unmarshal msg err:%v", err)
 		res = &pbBarrage.ResConnMessage{
-			Code: pbBarrage.RetCode_CODE_FAIL,
+			Code:    pbBarrage.RetCode_CODE_FAIL,
 			Content: fmt.Sprintf("Unmarshal Msg Error %v", err),
 		}
 
@@ -197,7 +195,7 @@ func auth(webConn *websocket.Conn) string {
 	if msg.MsgType != pbBarrage.MessageType_TYPE_CONN {
 		fmt.Printf("invalid msg type: %v", msg.MsgType)
 		res = &pbBarrage.ResConnMessage{
-			Code: pbBarrage.RetCode_CODE_FAIL,
+			Code:    pbBarrage.RetCode_CODE_FAIL,
 			Content: fmt.Sprintf("Invalid Type %v ", msg.MsgType),
 		}
 
@@ -207,7 +205,7 @@ func auth(webConn *websocket.Conn) string {
 	connReq := pbBarrage.ReqConnMessage{}
 	if err := proto.Unmarshal(msg.Body, &connReq); err != nil {
 		res = &pbBarrage.ResConnMessage{
-			Code: pbBarrage.RetCode_CODE_FAIL,
+			Code:    pbBarrage.RetCode_CODE_FAIL,
 			Content: "Unmarshal Body Error",
 		}
 
@@ -218,7 +216,7 @@ func auth(webConn *websocket.Conn) string {
 		connReq.Secret == "" {
 		fmt.Println("invalid param")
 		res = &pbBarrage.ResConnMessage{
-			Code: pbBarrage.RetCode_CODE_FAIL,
+			Code:    pbBarrage.RetCode_CODE_FAIL,
 			Content: "Invalid Param",
 		}
 
@@ -228,16 +226,15 @@ func auth(webConn *websocket.Conn) string {
 	str := fmt.Sprintf("AppId=%s&Timestamp=%s&Version=%s&Secret=%s", connReq.AppId, connReq.Timestamp, connReq.Version, connReq.Secret)
 	if b := verifySign(str, connReq.AppId, connReq.Sign); !b {
 		res = &pbBarrage.ResConnMessage{
-			Code: pbBarrage.RetCode_CODE_FAIL,
+			Code:    pbBarrage.RetCode_CODE_FAIL,
 			Content: "Sign Not Match",
 		}
 
 		return ""
 	}
 
-
 	res = &pbBarrage.ResConnMessage{
-		Code: pbBarrage.RetCode_CODE_SUCCESS,
+		Code:    pbBarrage.RetCode_CODE_SUCCESS,
 		Content: "Success",
 	}
 
@@ -252,9 +249,9 @@ func connMsgResponse(webConn *websocket.Conn, res *pbBarrage.ResConnMessage) {
 	}
 
 	msg := pbBarrage.Message{
-		MsgId: fmt.Sprint(util.GetSnowId()),
+		MsgId:   fmt.Sprint(util.GetSnowId()),
 		MsgType: pbBarrage.MessageType_TYPE_CONN_RES,
-		Body: bts,
+		Body:    bts,
 	}
 
 	if data, err := proto.Marshal(&msg); err == nil {
@@ -290,8 +287,3 @@ func getWsKey(appId string) string {
 
 	return ""
 }
-
-
-
-
-

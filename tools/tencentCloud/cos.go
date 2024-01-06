@@ -2,15 +2,15 @@ package tencentCloud
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"github.com/tencentyun/cos-go-sdk-v5"
 	"github.com/tencentyun/cos-go-sdk-v5/debug"
 	sts "github.com/tencentyun/qcloud-cos-sts-sdk/go"
 	"net/http"
 	"net/url"
-	"sports_service/server/util"
+	"sports_service/util"
 	"time"
-	"errors"
-	"fmt"
 )
 
 // 获取腾讯对象存储临时通行证
@@ -20,20 +20,20 @@ func (tc *TencentCloud) GetCosTempAccess(region, uploadType string) (map[string]
 		tc.secretKey,
 		nil,
 	)
-	
+
 	var (
 		resource, imgDir, videoDir, dir, bucket, cdnHost string
 	)
 	switch uploadType {
 	case "public":
-		resource = 	"qcs::cos:" + region + ":uid/" + APPID + ":" + PUBLIC_BUCKET + "/*"
+		resource = "qcs::cos:" + region + ":uid/" + APPID + ":" + PUBLIC_BUCKET + "/*"
 		dir = ""
 		imgDir = "/images"
 		videoDir = "/videos"
 		bucket = PUBLIC_BUCKET
 		cdnHost = PUBLIC_HOST
 	case "private":
-		resource = 	"qcs::cos:" + region + ":uid/" + APPID + ":" + BUCKET + "/" + CRPATH + "/*"
+		resource = "qcs::cos:" + region + ":uid/" + APPID + ":" + BUCKET + "/" + CRPATH + "/*"
 		dir = CRPATH
 		imgDir = CRPATH + "/images"
 		videoDir = CRPATH + "/videos"
@@ -100,7 +100,7 @@ func (tc *TencentCloud) RecognitionImage(baseUrl, path string) (*cos.ImageRecogn
 	b := &cos.BaseURL{BucketURL: u}
 	c := cos.NewClient(b, &http.Client{
 		Transport: &cos.AuthorizationTransport{
-			SecretID: tc.secretId,
+			SecretID:  tc.secretId,
 			SecretKey: tc.secretKey,
 			Transport: &debug.DebugRequestTransport{
 				RequestHeader:  true,
@@ -146,12 +146,13 @@ const (
 	CDN_SECRET = "DjL77HnpevmDlNrR2ACvjn60N1"
 	CDN_HOST   = "https://resource-cos.bluetrans.cn"
 )
+
 func (tc *TencentCloud) GenCdnUrl(baseUrl string) (string, error) {
 	u, err := url.Parse(baseUrl)
 	if err != nil {
 		return "", err
 	}
-	
+
 	now := time.Now().Unix()
 	sign := util.Md5String(fmt.Sprintf("%s%s%d", CDN_SECRET, u.Path, now))
 	return fmt.Sprintf("%s%s?sign=%s&t=%d", CDN_HOST, u.Path, sign, now), nil

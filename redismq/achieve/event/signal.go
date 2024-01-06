@@ -3,7 +3,7 @@ package event
 import (
 	"os"
 	"os/signal"
-	"sports_service/server/global/app/log"
+	"sports_service/global/app/log"
 	"syscall"
 )
 

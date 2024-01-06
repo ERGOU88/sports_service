@@ -3,11 +3,11 @@ package comment
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/backend/controller/comment"
-	"sports_service/server/global/backend/errdef"
-  "sports_service/server/models/mbarrage"
-  "sports_service/server/models/mcomment"
-	"sports_service/server/util"
+	"sports_service/backend/controller/comment"
+	"sports_service/global/backend/errdef"
+	"sports_service/models/mbarrage"
+	"sports_service/models/mcomment"
+	"sports_service/util"
 )
 
 // 获取视频评论列表（后台）
@@ -41,33 +41,33 @@ func DelComments(c *gin.Context) {
 
 // 弹幕列表
 func BarrageList(c *gin.Context) {
-  reply := errdef.New(c)
-  page, size := util.PageInfo(c.Query("page"), c.Query("size"))
-  barrageType := c.DefaultQuery("barrage_type", "0")
+	reply := errdef.New(c)
+	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
+	barrageType := c.DefaultQuery("barrage_type", "0")
 
-  svc := comment.New(c)
-  list := svc.GetBarrageList(barrageType, page, size)
-  reply.Data["list"] = list
-  reply.Data["total"] = svc.GetVideoBarrageTotal(barrageType)
-  reply.Response(http.StatusOK, errdef.SUCCESS)
+	svc := comment.New(c)
+	list := svc.GetBarrageList(barrageType, page, size)
+	reply.Data["list"] = list
+	reply.Data["total"] = svc.GetVideoBarrageTotal(barrageType)
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
 // 删除视频/直播 弹幕
 func DelVideoBarrage(c *gin.Context) {
-  reply := errdef.New(c)
-  param := new(mbarrage.DelBarrageParam)
-  if err := c.BindJSON(param); err != nil {
-    reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
-    return
-  }
+	reply := errdef.New(c)
+	param := new(mbarrage.DelBarrageParam)
+	if err := c.BindJSON(param); err != nil {
+		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
+		return
+	}
 
-  svc := comment.New(c)
-  if err := svc.DelVideoBarrage(param); err != nil {
-    reply.Response(http.StatusOK, errdef.VIDEO_BARRAGE_DELETE_FAIL)
-    return
-  }
+	svc := comment.New(c)
+	if err := svc.DelVideoBarrage(param); err != nil {
+		reply.Response(http.StatusOK, errdef.VIDEO_BARRAGE_DELETE_FAIL)
+		return
+	}
 
-  reply.Response(http.StatusOK, errdef.SUCCESS)
+	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
 // 获取帖子评论列表（后台）

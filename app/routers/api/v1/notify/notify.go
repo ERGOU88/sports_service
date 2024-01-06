@@ -3,13 +3,13 @@ package notify
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/cnotify"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mnotify"
-	"sports_service/server/util"
-	_"sports_service/server/models"
+	"sports_service/app/controller/cnotify"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	_ "sports_service/models"
+	"sports_service/models/mnotify"
+	"sports_service/util"
 )
 
 // @Summary 系统通知设置 (ok)

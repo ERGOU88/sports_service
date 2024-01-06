@@ -2,15 +2,15 @@ package tencentCloud
 
 import (
 	//"crypto/md5"
+	"crypto/sha256"
 	"encoding/hex"
+	"errors"
+	"fmt"
 	"github.com/parnurzeal/gorequest"
 	"io/ioutil"
 	"log"
-	"errors"
-	"fmt"
-	"sports_service/server/util"
+	"sports_service/util"
 	"time"
-	"crypto/sha256"
 )
 
 const (
@@ -21,9 +21,9 @@ const (
 
 // 返回的结构
 type Response struct {
-	Result    int         `json:"result"`   // 0表示成功，非0表示失败
- 	Errmsg    string      `json:"errmsg"`   // 错误信息
-	Mobile    string      `json:"mobile"`   // 手机号码
+	Result int    `json:"result"` // 0表示成功，非0表示失败
+	Errmsg string `json:"errmsg"` // 错误信息
+	Mobile string `json:"mobile"` // 手机号码
 }
 
 // 一键登录 校验客户端token 获取手机号码
@@ -33,13 +33,13 @@ func (tc *TencentCloud) FreeLogin(token, carrier, nationcode string) (string, er
 	random := util.GetXID()
 	tm := time.Now().Unix()
 	data := map[string]interface{}{
-		"sdkappid":  TENCENT_SDK_APP_ID,
-		"sig":       tc.generateSign(tm, random),
-		"carrier":   carrier,
-		"token":     token,
-		"random":    random,
+		"sdkappid":   TENCENT_SDK_APP_ID,
+		"sig":        tc.generateSign(tm, random),
+		"carrier":    carrier,
+		"token":      token,
+		"random":     random,
 		"nationcode": nationcode,
-		"time":  tm,
+		"time":       tm,
 	}
 
 	postBody, err := tc.HttpPostBody(fmt.Sprintf(TENCENT_NVS_URL, TENCENT_SDK_APP_ID, random), data)

@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/cposting"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mposting"
-	"sports_service/server/util"
+	"sports_service/app/controller/cposting"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mposting"
+	"sports_service/util"
 )
 
 // /api/v1/post/publish

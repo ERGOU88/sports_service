@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"github.com/tidwall/gjson"
 	"net/http"
-	"sports_service/server/tools/goNotify/util"
+	"sports_service/tools/goNotify/util"
 	"strconv"
 	"strings"
 	"time"

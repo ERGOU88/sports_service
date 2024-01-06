@@ -1,21 +1,21 @@
 package event
 
 import (
+	"errors"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/global/rdskey"
-	"sports_service/server/models/mconfigure"
-	"sports_service/server/models/minformation"
-	"sports_service/server/models/mposting"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	"sports_service/server/redismq/protocol"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/global/rdskey"
+	"sports_service/models/mconfigure"
+	"sports_service/models/minformation"
+	"sports_service/models/mposting"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	"sports_service/redismq/protocol"
+	"sports_service/util"
 	"time"
-	"errors"
 )
 
 // 作品是否置顶
@@ -34,7 +34,6 @@ func LoopPopTopEvent() {
 		if len(values) < 2 {
 			log.Log.Errorf("redisMq_trace: invalid values, len:%d, values:%+v", len(values), values)
 		}
-
 
 		bts, ok := values[1].([]byte)
 		if !ok {
@@ -107,7 +106,6 @@ func handleTopEvent(event protocol.Event) error {
 			}
 		}
 
-
 	case consts.EVENT_SET_TOP_POST:
 		pmodel := mposting.NewPostingModel(session)
 		post, err := pmodel.GetPostById(info.Id)
@@ -154,8 +152,6 @@ func handleTopEvent(event protocol.Event) error {
 			}
 		}
 	}
-
-
 
 	return nil
 }

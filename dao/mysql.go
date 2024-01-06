@@ -1,15 +1,15 @@
 package dao
 
 import (
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	rotatelogs "github.com/lestrrat/go-file-rotatelogs"
 	"io"
-	"sports_service/server/global/consts"
+	"sports_service/global/consts"
 	"time"
-	"fmt"
 	//"github.com/arthurkiller/rollingwriter"
-	//"sports_service/server/app/config"
+	//"sports_service/app/config"
 )
 
 var (
@@ -58,7 +58,6 @@ func ConnectDbs(masterDsn, logPath, mode string, slaveDsn []string, maxIdle, max
 		return nil, err
 	}
 
-
 	engineGroup.SetLogger(xorm.NewSimpleLogger(getWriter(logPath)))
 	if mode != string(consts.ModeProd) {
 		engineGroup.ShowSQL(true)
@@ -75,8 +74,8 @@ func getWriter(filename string) io.Writer {
 	hook, err := rotatelogs.New(
 		fmt.Sprintf(filename, "%Y%m%d"),
 		//rotatelogs.WithLinkName(filename),
-		rotatelogs.WithMaxAge(time.Hour * 24 * 90),
-		rotatelogs.WithRotationTime(time.Hour * 24),
+		rotatelogs.WithMaxAge(time.Hour*24*90),
+		rotatelogs.WithRotationTime(time.Hour*24),
 	)
 
 	if err != nil {

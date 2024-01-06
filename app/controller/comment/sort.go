@@ -1,7 +1,7 @@
 package comment
 
 import (
-	"sports_service/server/models/mcomment"
+	"sports_service/models/mcomment"
 )
 
 type SortComment []*mcomment.CommentList
@@ -22,6 +22,3 @@ func (cm SortComment) Swap(i, j int) {
 	cm[i], cm[j] = cm[j], cm[i]
 	return
 }
-
-
-

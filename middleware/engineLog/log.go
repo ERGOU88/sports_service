@@ -2,12 +2,12 @@ package engineLog
 
 import (
 	"fmt"
-	"io/ioutil"
-	"sports_service/server/log"
-	"time"
 	"github.com/gin-gonic/gin"
-	"sports_service/server/log/smartLog"
+	"io/ioutil"
+	"sports_service/log"
+	"sports_service/log/smartLog"
 	"strings"
+	"time"
 )
 
 var (

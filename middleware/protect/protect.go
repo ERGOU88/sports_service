@@ -3,7 +3,7 @@ package protect
 import (
 	"github.com/gin-gonic/gin"
 	"runtime"
-	"sports_service/server/global/app/log"
+	"sports_service/global/app/log"
 )
 
 // 捕获错误

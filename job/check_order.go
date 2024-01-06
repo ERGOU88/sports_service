@@ -5,14 +5,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
 	"net/http/httptest"
-	"sports_service/server/app/controller/corder"
-	"sports_service/server/models/mappointment"
+	"sports_service/app/controller/corder"
+	"sports_service/models/mappointment"
 	//"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/global/rdskey"
-	"sports_service/server/models/morder"
+	"sports_service/dao"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/global/rdskey"
+	"sports_service/models/morder"
 	"time"
 )
 
@@ -23,7 +23,7 @@ func CheckOrder() {
 
 	for {
 		select {
-		case <- ticker.C:
+		case <-ticker.C:
 			checkOrderTimeOut()
 			checkOrderExpire()
 		}
@@ -98,7 +98,7 @@ func orderTimeOut(orderId string) error {
 	loc, _ := time.LoadLocation("Asia/Shanghai")
 	now := int(time.Now().In(loc).Unix())
 	// 如果当前时间 < 超时处理时间 不处理
-	if now < orderModel.Order.CreateAt + consts.PAYMENT_DURATION {
+	if now < orderModel.Order.CreateAt+consts.PAYMENT_DURATION {
 		log.Log.Errorf("orderJob_trace: now < processTm, orderId:%s, now:%d, createAt:%d", orderId,
 			now, orderModel.Order.CreateAt)
 		session.Rollback()
@@ -126,7 +126,7 @@ func orderTimeOut(orderId string) error {
 
 	switch orderModel.Order.ProductType {
 	// 预约类型的订单 需修改预约相关数据
-	case consts.ORDER_TYPE_APPOINTMENT_VENUE,consts.ORDER_TYPE_APPOINTMENT_COACH,consts.ORDER_TYPE_APPOINTMENT_COURSE:
+	case consts.ORDER_TYPE_APPOINTMENT_VENUE, consts.ORDER_TYPE_APPOINTMENT_COACH, consts.ORDER_TYPE_APPOINTMENT_COURSE:
 		if err := updateAppointmentInfo(session, orderId, now); err != nil {
 			log.Log.Errorf("orderJob_trace: update appointment info fail, err:%s", err)
 			session.Rollback()
@@ -161,7 +161,7 @@ func updateAppointmentInfo(session *xorm.Session, orderId string, now int) error
 		switch record.AppointmentType {
 		case consts.APPOINTMENT_VENUE:
 			// 归还场馆预约对应节点的冻结库存
-			affected, err := amodel.RevertStockNum(record.TimeNode, record.Date,  record.PurchasedNum * -1, now,
+			affected, err := amodel.RevertStockNum(record.TimeNode, record.Date, record.PurchasedNum*-1, now,
 				record.AppointmentType, int(record.VenueId))
 			if affected != 1 || err != nil {
 				log.Log.Errorf("orderJob_trace: update stock info fail, orderId:%s, err:%s, affected:%d, id:%d", orderId, err, affected, record.Id)
@@ -185,9 +185,9 @@ func updateAppointmentInfo(session *xorm.Session, orderId string, now int) error
 				return errors.New("update label status fail")
 			}
 
-		case consts.APPOINTMENT_COACH,consts.APPOINTMENT_COURSE:
+		case consts.APPOINTMENT_COACH, consts.APPOINTMENT_COURSE:
 			// 归还课程对应节点的冻结库存
-			affected, err := amodel.RevertCourseStockNum(record.TimeNode, record.Date,  record.PurchasedNum * -1, now,
+			affected, err := amodel.RevertCourseStockNum(record.TimeNode, record.Date, record.PurchasedNum*-1, now,
 				record.AppointmentType, int(record.VenueId), int(record.CourseId), int(record.CoachId))
 			if affected != 1 || err != nil {
 				log.Log.Errorf("orderJob_trace: update stock info fail, orderId:%s, err:%s, affected:%d, id:%d", orderId, err, affected, record.Id)
@@ -203,7 +203,6 @@ func updateAppointmentInfo(session *xorm.Session, orderId string, now int) error
 	//	log.Log.Errorf("payNotify_trace: update order product status fail, err:%s, orderId:%s", err, orderId)
 	//	return err
 	//}
-
 
 	return nil
 }

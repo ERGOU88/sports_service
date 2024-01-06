@@ -3,14 +3,14 @@ package medu
 import (
 	"database/sql"
 	"fmt"
-	"sports_service/server/dao"
-	"sports_service/server/global/rdskey"
-	"sports_service/server/models"
+	"sports_service/dao"
+	"sports_service/global/rdskey"
+	"sports_service/models"
 )
 
 // 添加课程请求参数
 type AddCourseArgs struct {
-	Title            string `json:"title" binding:"required"`                 //
+	Title            string `json:"title" binding:"required"` //
 	Describe         string `json:"describe" binding:"required"`
 	SaiCoin          int    `json:"sai_coin"`
 	EventSaiCoin     int    `json:"event_sai_coin"`
@@ -26,14 +26,14 @@ type AddCourseArgs struct {
 	VipIsFree        int    `json:"vip_is_free"`
 	AreasOfExpertise string `json:"areas_of_expertise" binding:"required"`
 	CourseCategory   string `json:"course_category" binding:"required"`
-	
-	Videos           []*CourseVideos  `json:"videos" binding:"required"`     // 课程视频列表
+
+	Videos []*CourseVideos `json:"videos" binding:"required"` // 课程视频列表
 }
 
 // 更新课程请求参数
 type UpdateCourseArgs struct {
 	Id               int64  `json:"id" binding:"required"`
-	Title            string `json:"title" binding:"required"`                 //
+	Title            string `json:"title" binding:"required"` //
 	Describe         string `json:"describe" binding:"required"`
 	SaiCoin          int    `json:"sai_coin"`
 	EventSaiCoin     int    `json:"event_sai_coin"`
@@ -49,17 +49,17 @@ type UpdateCourseArgs struct {
 	VipIsFree        int    `json:"vip_is_free"`
 	AreasOfExpertise string `json:"areas_of_expertise" binding:"required"`
 	CourseCategory   string `json:"course_category" binding:"required"`
-	
-	Videos           []*CourseVideos  `json:"videos"`           // 新加的课程视频
+
+	Videos []*CourseVideos `json:"videos"` // 新加的课程视频
 }
 
 // 课程详情数据(管理后台)
 type CourseDetail struct {
 	CreateAt       int    `json:"create_at"`
-	Describe       string `json:"describe"`           // 课程描述
-	EventSaiCoin   string `json:"event_sai_coin"`     // 活动价格
+	Describe       string `json:"describe"`       // 课程描述
+	EventSaiCoin   string `json:"event_sai_coin"` // 活动价格
 	Icon           string `json:"icon"`
-	Id             int64  `json:"id"`                 // 课程id
+	Id             int64  `json:"id"` // 课程id
 	IsRecommend    int    `json:"is_recommend"`
 	IsTop          int    `json:"is_top"`
 	PromotionPic   string `json:"promotion_pic"`
@@ -71,15 +71,15 @@ type CourseDetail struct {
 	TeacherTitle   string `json:"teacher_title"`
 	Title          string `json:"title"`
 	VipIsFree      int    `json:"vip_is_free"`
-	HasActivity    int32  `json:"has_activity"`        // 是否开启活动 1 有 0 无
-	VideoTotal     int    `json:"video_total"`         // 课时总数
-	EventStartTime int    `json:"event_start_time"`    // 活动开始时间
-	EventEndTime   int    `json:"event_end_time"`      // 活动结束时间
-	
-	CategoryName      []*CategoryInfo `json:"category_name,omitempty"`    // 分类名称
-	TeacherDescribe   string                   `json:"teacher_describe"`      // 老师简介
-	CourseVideos      []*CourseVideoSimple     `json:"course_videos"`         // 课程视频信息
-	AreasOfExpertise  string                   `json:"areas_of_expertise"`    // 老师擅长领域
+	HasActivity    int32  `json:"has_activity"`     // 是否开启活动 1 有 0 无
+	VideoTotal     int    `json:"video_total"`      // 课时总数
+	EventStartTime int    `json:"event_start_time"` // 活动开始时间
+	EventEndTime   int    `json:"event_end_time"`   // 活动结束时间
+
+	CategoryName     []*CategoryInfo      `json:"category_name,omitempty"` // 分类名称
+	TeacherDescribe  string               `json:"teacher_describe"`        // 老师简介
+	CourseVideos     []*CourseVideoSimple `json:"course_videos"`           // 课程视频信息
+	AreasOfExpertise string               `json:"areas_of_expertise"`      // 老师擅长领域
 }
 
 // 透传数据
@@ -90,23 +90,23 @@ type SourceContext struct {
 
 // 课程视频
 type CourseVideos struct {
-	TaskId        int64  `json:"task_id" binding:"required"`
-	Title         string `json:"title" binding:"required"`
-	VideoAddr     string `json:"video_addr" binding:"required"`
-	FileOrder     int    `json:"file_order" binding:"required"`
-	TxFileId      string `json:"tx_file_id" binding:"required"`
+	TaskId    int64  `json:"task_id" binding:"required"`
+	Title     string `json:"title" binding:"required"`
+	VideoAddr string `json:"video_addr" binding:"required"`
+	FileOrder int    `json:"file_order" binding:"required"`
+	TxFileId  string `json:"tx_file_id" binding:"required"`
 }
 
 // 课程视频信息
 type CourseVideoSimple struct {
-	CourseId      int64  `json:"course_id"`           // 课程id
-	FileOrder     int    `json:"file_order"`          // 文件序列
-	Id            int64  `json:"id"`                  // 视频id
-	IsFree        int    `json:"is_free"`             // 是否免费 0 收费 1 免费
-	Title         string `json:"title"`               // 课程视频标题
-	VideoDuration int    `json:"video_duration"`      // 课程视频时长（毫秒）
-	VipIsFree     int    `json:"vip_is_free"`         // 会员是否免费 0 收费 1 免费
-	VideoAddr     string `json:"video_addr"`          // 视频链接
+	CourseId      int64  `json:"course_id"`      // 课程id
+	FileOrder     int    `json:"file_order"`     // 文件序列
+	Id            int64  `json:"id"`             // 视频id
+	IsFree        int    `json:"is_free"`        // 是否免费 0 收费 1 免费
+	Title         string `json:"title"`          // 课程视频标题
+	VideoDuration int    `json:"video_duration"` // 课程视频时长（毫秒）
+	VipIsFree     int    `json:"vip_is_free"`    // 会员是否免费 0 收费 1 免费
+	VideoAddr     string `json:"video_addr"`     // 视频链接
 }
 
 // 设置首页推荐（课程）
@@ -122,6 +122,7 @@ const (
 		"`is_top`, `vip_is_free`, `areas_of_expertise`, `status`, `create_at`, `update_at`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, " +
 		"?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 )
+
 // 添加课程
 func (m *EduModel) AddCourse() (sql.Result, error) {
 	return m.Engine.Exec(ADD_COURSE, m.Course.Title, m.Course.Describe, m.Course.SaiCoin, m.Course.EventSaiCoin, m.Course.EventStartTime,
@@ -132,8 +133,9 @@ func (m *EduModel) AddCourse() (sql.Result, error) {
 
 // 删除课程请求参数
 type DelCourseParam struct {
-	Id      int64     `json:"id" binding:"required"`  // 课程详情表 数据id
+	Id int64 `json:"id" binding:"required"` // 课程详情表 数据id
 }
+
 // 删除课程
 func (m *EduModel) DelCourse(id int64) (int64, error) {
 	return m.Engine.ID(id).Delete(&models.CourseDetail{})
@@ -145,7 +147,7 @@ func (m *EduModel) GetCourseVideoSimpleInfo(courseId string) []*CourseVideoSimpl
 	if err := m.Engine.Table("course_videos").Where("course_id=? AND status=0", courseId).Asc("file_order").Find(&list); err != nil {
 		return nil
 	}
-	
+
 	return list
 }
 
@@ -167,7 +169,7 @@ func (m *EduModel) AddCourseCategorys(infos []*models.CourseCategory) (int64, er
 // 记录任务id -> 腾讯文件id
 func (m *EduModel) RecordUploadFileId(fileId string, taskId int64) error {
 	rds := dao.NewRedisDao()
-	return rds.SETEX(rdskey.MakeKey(rdskey.COURSE_VIDEO_UPLOAD_TASK, taskId), rdskey.KEY_EXPIRE_DAY * 3, fileId)
+	return rds.SETEX(rdskey.MakeKey(rdskey.COURSE_VIDEO_UPLOAD_TASK, taskId), rdskey.KEY_EXPIRE_DAY*3, fileId)
 }
 
 // 通过任务id 获取 腾讯文件id
@@ -201,7 +203,7 @@ func (m *EduModel) GetCourseVideoByFileId(fileId string) *models.CourseVideos {
 	if !ok || err != nil {
 		return nil
 	}
-	
+
 	return m.Videos
 }
 
@@ -210,7 +212,7 @@ func (m *EduModel) UpdateCourseVideoPlayInfo(id string) error {
 	if _, err := m.Engine.Where("id=?", id).Cols("play_info", "status").Update(m.Videos); err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -231,7 +233,7 @@ func (m *EduModel) GetAllCourse(offset, size int) []*models.CourseDetail {
 	if err := m.Engine.Desc("is_recommend", "sortorder", "id").Limit(size, offset).Find(&list); err != nil {
 		return nil
 	}
-	
+
 	return list
 }
 
@@ -246,7 +248,7 @@ func (m *EduModel) GetCourseTotalCount() int64 {
 	if err != nil {
 		return 0
 	}
-	
+
 	return count
 }
 
@@ -257,7 +259,7 @@ func (m *EduModel) SearchCourseList(name string, offset, size int) []*models.Cou
 	if err := m.Engine.SQL(sql, offset, size).Find(&list); err != nil {
 		return nil
 	}
-	
+
 	return list
 }
 
@@ -265,15 +267,15 @@ func (m *EduModel) SearchCourseList(name string, offset, size int) []*models.Cou
 func (m *EduModel) GetCourseTotalBySearch(name string) int64 {
 	sql := "SELECT count(1) as total FROM `course_detail` WHERE title like '%" + name + "%' OR id like '%" + name + "%'"
 	type tmp struct {
-		Total  int64   `json:"total"`
+		Total int64 `json:"total"`
 	}
-	
+
 	info := new(tmp)
 	ok, err := m.Engine.Table(&models.CourseDetail{}).SQL(sql).Get(info)
 	if !ok || err != nil {
 		return 0
 	}
-	
+
 	return info.Total
 }
 
@@ -288,7 +290,7 @@ func (m *EduModel) GetCourseCategoryId(courseId string) []string {
 	if err := m.Engine.Table(&models.CourseCategory{}).Where("course_id=?", courseId).Cols("cate_id").Find(&ids); err != nil {
 		return nil
 	}
-	
+
 	return ids
 }
 
@@ -306,4 +308,3 @@ func (m *EduModel) DelCourseVideosById(courseId int64) (int64, error) {
 func (m *EduModel) DelCourseStudyRecord(courseId int64) (int64, error) {
 	return m.Engine.Where("course_id=?", courseId).Delete(&models.CourseStudyRecord{})
 }
-

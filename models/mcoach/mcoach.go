@@ -1,98 +1,97 @@
 package mcoach
 
 import (
-	"github.com/go-xorm/xorm"
-	"sports_service/server/models"
 	"fmt"
-	"sports_service/server/tools/tencentCloud"
+	"github.com/go-xorm/xorm"
+	"sports_service/models"
+	"sports_service/tools/tencentCloud"
 )
 
 type CoachModel struct {
-	Coach       *models.VenueCoachDetail
-	Engine      *xorm.Session
-	Labels      *models.VenueCoachLabelConfig
-	CoachScore  *models.VenueCoachScore
-	Evaluate    *models.VenueUserEvaluateRecord
+	Coach      *models.VenueCoachDetail
+	Engine     *xorm.Session
+	Labels     *models.VenueCoachLabelConfig
+	CoachScore *models.VenueCoachScore
+	Evaluate   *models.VenueUserEvaluateRecord
 }
 
 type CoachInfo struct {
-	Id           int64      `json:"id"`
-	Cover        tencentCloud.BucketURI     `json:"cover"`
-	Name         string     `json:"name"`
-	Designation  string     `json:"designation"`
+	Id          int64                  `json:"id"`
+	Cover       tencentCloud.BucketURI `json:"cover"`
+	Name        string                 `json:"name"`
+	Designation string                 `json:"designation"`
 }
 
 type CoachDetail struct {
-	Id                int64   `json:"id"`
-	Title             string  `json:"title"`
-	Name              string  `json:"name"`
-	Address           string  `json:"address"`
-	Designation       string  `json:"designation"`
-	Describe          string  `json:"describe"`
-	AreasOfExpertise  string  `json:"areas_of_expertise"`
-	Cover             tencentCloud.BucketURI  `json:"cover"`
-	Avatar            tencentCloud.BucketURI  `json:"avatar"`
-	Score             string  `json:"score"`
-	TotalNum          int     `json:"total_num"`
-	Courses           []*CourseInfo    `json:"courses"`
+	Id               int64                  `json:"id"`
+	Title            string                 `json:"title"`
+	Name             string                 `json:"name"`
+	Address          string                 `json:"address"`
+	Designation      string                 `json:"designation"`
+	Describe         string                 `json:"describe"`
+	AreasOfExpertise string                 `json:"areas_of_expertise"`
+	Cover            tencentCloud.BucketURI `json:"cover"`
+	Avatar           tencentCloud.BucketURI `json:"avatar"`
+	Score            string                 `json:"score"`
+	TotalNum         int                    `json:"total_num"`
+	Courses          []*CourseInfo          `json:"courses"`
 }
 
 type CourseInfo struct {
-	Id             int64  `json:"id"`
-	CoachId        int64  `json:"coach_id"`
-	Subhead        string `json:"subhead"`
-	ClassPeriod    int    `json:"class_period"`
-	Title          string `json:"title"`
-	Describe       string `json:"describe"`
-	Price          int    `json:"price"`
-	PromotionPic   tencentCloud.BucketURI `json:"promotion_pic"`
-	Icon           string `json:"icon"`
-	CourseType     int    `json:"course_type"`
-	PeriodNum      int    `json:"period_num"`
-	VenueId        int    `json:"venue_id"`
+	Id           int64                  `json:"id"`
+	CoachId      int64                  `json:"coach_id"`
+	Subhead      string                 `json:"subhead"`
+	ClassPeriod  int                    `json:"class_period"`
+	Title        string                 `json:"title"`
+	Describe     string                 `json:"describe"`
+	Price        int                    `json:"price"`
+	PromotionPic tencentCloud.BucketURI `json:"promotion_pic"`
+	Icon         string                 `json:"icon"`
+	CourseType   int                    `json:"course_type"`
+	PeriodNum    int                    `json:"period_num"`
+	VenueId      int                    `json:"venue_id"`
 
-	CostDescription    string       `json:"cost_description"`     // 费用说明
-	Instructions       string       `json:"instructions"`         // 购买须知
+	CostDescription string `json:"cost_description"` // 费用说明
+	Instructions    string `json:"instructions"`     // 购买须知
 }
 
 // 评价列表返回数据
 type EvaluateResp struct {
-	List     []*EvaluateInfo   `json:"list"`
-
+	List []*EvaluateInfo `json:"list"`
 }
 
 // 评价信息
 type EvaluateInfo struct {
-	Id        int64        `json:"id"`
+	Id int64 `json:"id"`
 	//UserId    string       `json:"user_id"`
 	//NickName  string       `json:"nick_name"`
-	Avatar    tencentCloud.BucketURI     `json:"avatar"`
-	CoachId   int64       `json:"coach_id"`
-	Star      int          `json:"star"`
-	Content   string       `json:"content"`
-	Labels    []*LabelInfo `json:"labels"`
+	Avatar  tencentCloud.BucketURI `json:"avatar"`
+	CoachId int64                  `json:"coach_id"`
+	Star    int                    `json:"star"`
+	Content string                 `json:"content"`
+	Labels  []*LabelInfo           `json:"labels"`
 }
 
 type LabelInfo struct {
-	Id          int64     `json:"id"`
-	LabelName   string    `json:"label_name"`
+	Id        int64  `json:"id"`
+	LabelName string `json:"label_name"`
 }
 
 type PubEvaluateParam struct {
-	CoachId     int64          `binding:"required" json:"coach_id"`
-	OrderId     string         `binding:"required" json:"order_id"`
-	Star        int            `binding:"required" json:"star"`
-	Content     string         `json:"content"`                        // 暂时无评价内容
-	LabelIds    []interface{}  `json:"label_ids"`
+	CoachId  int64         `binding:"required" json:"coach_id"`
+	OrderId  string        `binding:"required" json:"order_id"`
+	Star     int           `binding:"required" json:"star"`
+	Content  string        `json:"content"` // 暂时无评价内容
+	LabelIds []interface{} `json:"label_ids"`
 }
 
 func NewCoachModel(engine *xorm.Session) *CoachModel {
 	return &CoachModel{
-		Coach: new(models.VenueCoachDetail),
-		Labels: new(models.VenueCoachLabelConfig),
+		Coach:      new(models.VenueCoachDetail),
+		Labels:     new(models.VenueCoachLabelConfig),
 		CoachScore: new(models.VenueCoachScore),
-		Evaluate: new(models.VenueUserEvaluateRecord),
-		Engine: engine,
+		Evaluate:   new(models.VenueUserEvaluateRecord),
+		Engine:     engine,
 	}
 }
 
@@ -107,11 +106,12 @@ const (
 		"AS va LEFT JOIN venue_coach_detail AS vc ON va.coach_id=vc.id WHERE va.appointment_type=1 GROUP BY " +
 		"va.coach_id ORDER BY va.id DESC LIMIT ?, ?"
 )
+
 // 通过课程id、私教类型 获取老师列表
 func (m *CoachModel) GetCoachList(offset, size int) ([]*models.VenueCoachDetail, error) {
 	var list []*models.VenueCoachDetail
 	if err := m.Engine.SQL(GET_COACH_LIST, offset, size).Find(&list); err != nil {
-		return nil , err
+		return nil, err
 	}
 
 	return list, nil

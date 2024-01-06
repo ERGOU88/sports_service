@@ -2,7 +2,7 @@ package stat
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/jwt"
+	"sports_service/middleware/jwt"
 )
 
 // 统计模块
@@ -17,4 +17,3 @@ func Router(engine *gin.Engine) {
 		stat.GET("/ecological/info", EcologicalInfo)
 	}
 }
-

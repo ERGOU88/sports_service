@@ -1,48 +1,48 @@
 package csearch
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/mposting"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mattention"
+	"sports_service/models/mcollect"
+	"sports_service/models/mlike"
+	"sports_service/models/mposting"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"time"
-	"fmt"
 )
 
 type SearchModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	collect     *mcollect.CollectModel
-	user        *muser.UserModel
-	video       *mvideo.VideoModel
-	attention   *mattention.AttentionModel
-	like        *mlike.LikeModel
-	post        *mposting.PostingModel
+	context   *gin.Context
+	engine    *xorm.Session
+	collect   *mcollect.CollectModel
+	user      *muser.UserModel
+	video     *mvideo.VideoModel
+	attention *mattention.AttentionModel
+	like      *mlike.LikeModel
+	post      *mposting.PostingModel
 }
 
 func New(c *gin.Context) SearchModule {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return SearchModule{
-		context: c,
-		collect: mcollect.NewCollectModel(socket),
-		user: muser.NewUserModel(socket),
-		video: mvideo.NewVideoModel(socket),
+		context:   c,
+		collect:   mcollect.NewCollectModel(socket),
+		user:      muser.NewUserModel(socket),
+		video:     mvideo.NewVideoModel(socket),
 		attention: mattention.NewAttentionModel(socket),
-		like: mlike.NewLikeModel(socket),
-		post: mposting.NewPostingModel(socket),
-		engine: socket,
+		like:      mlike.NewLikeModel(socket),
+		post:      mposting.NewPostingModel(socket),
+		engine:    socket,
 	}
 }
 
@@ -88,7 +88,7 @@ func (svc *SearchModule) ColligateSearch(userId, name string) ([]*mvideo.VideoDe
 
 // 推荐视频 默认取两条
 func (svc *SearchModule) RecommendVideo() []*mvideo.VideoDetailInfo {
-	if svc.video.GetVideoTotalCount("") - 10 <= 0 {
+	if svc.video.GetVideoTotalCount("")-10 <= 0 {
 		return []*mvideo.VideoDetailInfo{}
 	}
 
@@ -111,7 +111,6 @@ func (svc *SearchModule) RecommendVideo() []*mvideo.VideoDetailInfo {
 
 	return videos
 }
-
 
 // 视频搜索 todo: 限制搜索的字符数
 func (svc *SearchModule) VideoSearch(userId, name, sort, sortType, duration, publishTime string, page, size int) []*mvideo.VideoDetailInfo {
@@ -313,7 +312,7 @@ func (svc *SearchModule) LabelSearch(userId string, labelId string, page, size i
 
 // 获取热门搜索（后台配置的结果集）
 func (svc *SearchModule) GetHotSearch() []*models.HotSearch {
-	return  svc.video.GetHotSearch()
+	return svc.video.GetHotSearch()
 }
 
 // 历史搜索记录
@@ -418,11 +417,11 @@ func (svc *SearchModule) GetPublishTimeCondition(publishTime string) int64 {
 	case string(consts.UNLIMITED_TIME):
 		return 0
 	case string(consts.A_DAY):
-		return time.Now().Unix() - 60 * 60 *24
+		return time.Now().Unix() - 60*60*24
 	case string(consts.A_WEEK):
-		return time.Now().Unix() - 60 * 60 * 24 * 7
+		return time.Now().Unix() - 60*60*24*7
 	case string(consts.HALF_A_YEAR):
-		return time.Now().Unix() - 365 / 2 * 24 * 60 * 60
+		return time.Now().Unix() - 365/2*24*60*60
 	}
 
 	return 0
@@ -471,7 +470,7 @@ func (svc *SearchModule) PostSearch(userId, name string, page, size int) []*mpos
 		return []*mposting.PostDetailInfo{}
 	}
 
-	if len(list) == 0  {
+	if len(list) == 0 {
 		return []*mposting.PostDetailInfo{}
 	}
 
@@ -514,7 +513,6 @@ func (svc *SearchModule) PostSearch(userId, name string, page, size int) []*mpos
 			item.Avatar = tencentCloud.BucketURI(user.Avatar)
 			item.Nickname = user.NickName
 		}
-
 
 		item.Content = ""
 

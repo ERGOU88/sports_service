@@ -1,49 +1,49 @@
 package swag
 
 import (
-  "sports_service/server/models"
-  "sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
+	"sports_service/models"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
 )
 
 // swagger api文档（登陆接口返回数据）
 type LoginSwag struct {
-	Token string        `json:"token"`      // token
-	User  *User         `json:"user_info"`  // 用户信息
+	Token string `json:"token"`     // token
+	User  *User  `json:"user_info"` // 用户信息
 }
 
 // swag文档展示
 type ZoneInfoSwag struct {
-	UserInfoResp     *muser.UserInfoResp       `json:"user_info"`
-	UserZoneInfoResp *UserZoneInfoResp         `json:"zone_info"`
+	UserInfoResp     *muser.UserInfoResp `json:"user_info"`
+	UserZoneInfoResp *UserZoneInfoResp   `json:"zone_info"`
 }
 
 // swag文档展示（综合搜索结果）
 type ColligateSearchSwag struct {
-	UserList      []*muser.UserSearchResults `json:"user_list"`
-	VideoList     []*mvideo.VideoDetailInfo  `json:"video_list"`
+	UserList  []*muser.UserSearchResults `json:"user_list"`
+	VideoList []*mvideo.VideoDetailInfo  `json:"video_list"`
 }
 
 // swag文档展示（客户端初始化返回数据）
 type ClientInitSwag struct {
-  Secret        string                      `json:"secret" example:"密钥"`
-  AvatarList    []models.DefaultAvatar      `json:"avatar_list"`
-  WorldList     []models.WorldMap           `json:"world_list"`
-  LabelList     []models.VideoLabelConfig   `json:"label_list"`
-  LoginTreaty   string                      `json:"login_treaty" example:"登陆协议h5页"`
-  UploadTreaty  string                      `json:"upload_treaty" example:"上传协议h5页"`
-  FaqH5         string                      `json:"faq_h5" example:"常见问题h5页"`
-  About         string                      `json:"about" example:"关于h5页"`
+	Secret       string                    `json:"secret" example:"密钥"`
+	AvatarList   []models.DefaultAvatar    `json:"avatar_list"`
+	WorldList    []models.WorldMap         `json:"world_list"`
+	LabelList    []models.VideoLabelConfig `json:"label_list"`
+	LoginTreaty  string                    `json:"login_treaty" example:"登陆协议h5页"`
+	UploadTreaty string                    `json:"upload_treaty" example:"上传协议h5页"`
+	FaqH5        string                    `json:"faq_h5" example:"常见问题h5页"`
+	About        string                    `json:"about" example:"关于h5页"`
 }
 
 // 个人空间用户信息
 type UserZoneInfoResp struct {
-	TotalBeLiked     int64  `json:"totalBeLiked" example:"100"`     // 被点赞数
-	TotalFans        int64  `json:"totalFans" example:"100"`        // 粉丝数
-	TotalAttention   int64  `json:"totalAttention" example:"100"`   // 关注数
-	TotalCollect     int64  `json:"totalCollect" example:"100"`     // 收藏的作品数
-	TotalPublish     int64  `json:"totalPublish" example:"100"`     // 发布的作品数
-	TotalLikes       int64  `json:"totalLikes" example:"100"`       // 点赞的作品数
+	TotalBeLiked   int64 `json:"totalBeLiked" example:"100"`   // 被点赞数
+	TotalFans      int64 `json:"totalFans" example:"100"`      // 粉丝数
+	TotalAttention int64 `json:"totalAttention" example:"100"` // 关注数
+	TotalCollect   int64 `json:"totalCollect" example:"100"`   // 收藏的作品数
+	TotalPublish   int64 `json:"totalPublish" example:"100"`   // 发布的作品数
+	TotalLikes     int64 `json:"totalLikes" example:"100"`     // 点赞的作品数
 }
 
 type User struct {

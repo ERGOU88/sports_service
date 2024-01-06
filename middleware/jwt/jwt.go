@@ -6,8 +6,8 @@ import (
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/global/backend/log"
+	"sports_service/global/backend/errdef"
+	"sports_service/global/backend/log"
 	"strings"
 )
 
@@ -135,4 +135,3 @@ func Put(c *gin.Context, secret string, kvs ...JwtInfo) (string, error) {
 	c.Header("Authorization", tokenString)
 	return tokenString, nil
 }
-

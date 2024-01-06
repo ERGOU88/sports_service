@@ -1,8 +1,8 @@
 package mshop
 
 import (
-	"sports_service/server/models"
 	"errors"
+	"sports_service/models"
 )
 
 func (m *ShopModel) AddUserAddr(addr *models.UserAddress) (int64, error) {
@@ -40,11 +40,11 @@ func (m *ShopModel) GetUserAddr(id, userId string) (*models.UserAddress, error) 
 	if id != "" {
 		engine.Where("id=?", id)
 	}
-	
+
 	if userId != "" {
 		engine.Where("user_id=?", userId)
 	}
-	
+
 	ok, err := engine.Desc("is_default").Get(addr)
 	if err != nil {
 		return nil, err

@@ -2,15 +2,15 @@ package sms
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math/rand"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/global/rdskey"
-	"sports_service/server/tools/tencentCloud"
+	"sports_service/dao"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/global/rdskey"
+	"sports_service/tools/tencentCloud"
 	"time"
-	"errors"
 )
 
 var (
@@ -18,20 +18,19 @@ var (
 )
 
 type SmsModel struct {
-
 }
 
 // 发送短信验证码请求参数
 type SendSmsCodeParams struct {
-	SendType       string     `json:"send_type" binding:"required"`    // 短信类型 1 账户登陆/注册
-	MobileNum      string     `json:"mobile_num" binding:"required"`   // 手机号码
+	SendType  string `json:"send_type" binding:"required"`  // 短信类型 1 账户登陆/注册
+	MobileNum string `json:"mobile_num" binding:"required"` // 手机号码
 }
 
 // 手机验证码登陆 请求参数
 type SmsCodeLoginParams struct {
-	MobileNum      string     `binding:"required" json:"mobile_num"`   // 手机号码
-	Code           string     `binding:"required" json:"code"`         // 手机验证码
-	Platform       int        `json:"platform"`     // 平台 0 android 1 iOS 2 web
+	MobileNum string `binding:"required" json:"mobile_num"` // 手机号码
+	Code      string `binding:"required" json:"code"`       // 手机验证码
+	Platform  int    `json:"platform"`                      // 平台 0 android 1 iOS 2 web
 }
 
 // 实栗
@@ -58,7 +57,7 @@ func (m *SmsModel) GetSendMod(sendType string) string {
 }
 
 const (
-  TEMPLATE_CODE = "SMS_000042"             // fpv短信模版code
+	TEMPLATE_CODE = "SMS_000042" // fpv短信模版code
 )
 
 // 已废弃
@@ -97,16 +96,16 @@ func (m *SmsModel) Send(mobileNum, code string) error {
 }
 
 type TemplateParams struct {
-  Code       string    `json:"code"`
+	Code string `json:"code"`
 }
 
 func (m *SmsModel) GetTemplateParams(code string) string {
-  params := &TemplateParams{
-    Code:   code,
-  }
+	params := &TemplateParams{
+		Code: code,
+	}
 
-  bts, _ := json.Marshal(params)
-  return string(bts)
+	bts, _ := json.Marshal(params)
+	return string(bts)
 }
 
 // 获取24小时内发送短信的限制数量
@@ -118,7 +117,7 @@ func (m *SmsModel) GetSendSmsLimitNum(mobileNum string) (int, error) {
 
 // 增加已发短信的数量（24小时内限制十条）
 func (m *SmsModel) IncrSendSmsNum(mobileNum string) error {
-	key :=  rdskey.MakeKey(rdskey.SMS_INTERVAL_NUM, time.Now().Format("2006-01-02"), mobileNum)
+	key := rdskey.MakeKey(rdskey.SMS_INTERVAL_NUM, time.Now().Format("2006-01-02"), mobileNum)
 	rds := dao.NewRedisDao()
 	_, err := rds.INCR(key)
 	return err
@@ -126,7 +125,7 @@ func (m *SmsModel) IncrSendSmsNum(mobileNum string) error {
 
 // 记录短信验证码次数的key设置过期
 func (m *SmsModel) SetSmsIntervalExpire(mobileNum string) (int, error) {
-	key :=  rdskey.MakeKey(rdskey.SMS_INTERVAL_NUM, time.Now().Format("2006-01-02"), mobileNum)
+	key := rdskey.MakeKey(rdskey.SMS_INTERVAL_NUM, time.Now().Format("2006-01-02"), mobileNum)
 	rds := dao.NewRedisDao()
 	return rds.EXPIRE(key, rdskey.KEY_EXPIRE_DAY)
 }
@@ -135,7 +134,7 @@ func (m *SmsModel) SetSmsIntervalExpire(mobileNum string) (int, error) {
 func (m *SmsModel) SaveSmsCodeByRds(sendType, mobileNum, code string) error {
 	key := rdskey.MakeKey(rdskey.SMS_CODE, sendType, mobileNum)
 	rds := dao.NewRedisDao()
-	return rds.SETEX(key, rdskey.KEY_EXPIRE_MIN * 5, code)
+	return rds.SETEX(key, rdskey.KEY_EXPIRE_MIN*5, code)
 }
 
 // 如果redis能获取到 说明验证码未过期
@@ -174,4 +173,3 @@ func (m *SmsModel) DelSmsIntervalTmKey(sendType, mobileNum string) error {
 	_, err := rds.Del(key)
 	return err
 }
-

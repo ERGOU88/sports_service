@@ -1,29 +1,30 @@
 package mshop
 
 import (
-	"sports_service/server/dao"
-	"sports_service/server/models"
-	"sync"
-	"reflect"
 	"fmt"
+	"reflect"
+	"sports_service/dao"
+	"sports_service/models"
+	"sync"
 )
 
 // 商品分类列表信息
 type Category struct {
-	CategoryId   int    `json:"category_id"`
-	CategoryName string `json:"category_name"`
-	ShortName    string `json:"short_name"`
-	Pid          int    `json:"pid"`
-	Level        int    `json:"level"`
-	IsShow       int    `json:"is_show"`
-	Sortorder    int    `json:"sortorder"`
-	Image        string `json:"image"`
-	Keywords     string `json:"keywords"`
-	Description  string `json:"description"`
-	Child        []*Category   `json:"child" xorm:"-"` // 子分类信息
+	CategoryId   int         `json:"category_id"`
+	CategoryName string      `json:"category_name"`
+	ShortName    string      `json:"short_name"`
+	Pid          int         `json:"pid"`
+	Level        int         `json:"level"`
+	IsShow       int         `json:"is_show"`
+	Sortorder    int         `json:"sortorder"`
+	Image        string      `json:"image"`
+	Keywords     string      `json:"keywords"`
+	Description  string      `json:"description"`
+	Child        []*Category `json:"child" xorm:"-"` // 子分类信息
 }
 
 var categoryList []*Category
+
 // categoryId -> Category
 var categoryMp map[string]*Category
 
@@ -102,11 +103,11 @@ func (m *ShopModel) CleanCategoryInfoByMem() {
 // 从内存读取分类 （第一次请求 内存没有 则从数据库load到内存）
 func (m *ShopModel) GetProductCategory() []*Category {
 	//if len(categoryList) == 0 {
-		var err error
-		err, categoryList = m.LoadCategoryInfoByDb()
-		if err != nil {
-			return []*Category{}
-		}
+	var err error
+	err, categoryList = m.LoadCategoryInfoByDb()
+	if err != nil {
+		return []*Category{}
+	}
 	//}
 
 	return categoryList
@@ -117,7 +118,7 @@ func (m *ShopModel) GetProductCategoryByBackend() (error, []*Category) {
 	if err := m.Engine.Table(&models.ProductCategory{}).Find(&list); err != nil {
 		return err, nil
 	}
-	
+
 	return nil, list
 }
 
@@ -169,7 +170,7 @@ func (m *ShopModel) tree(info []*Category) []*Category {
 			child, err := m.FindSubCategoryByPid(v)
 			if err != nil || len(child) == 0 {
 				if v.Pid == 1 {
-					info = append(info[:k], info[k + 1:]...)
+					info = append(info[:k], info[k+1:]...)
 				}
 
 				continue
@@ -187,4 +188,3 @@ func (m *ShopModel) tree(info []*Category) []*Category {
 
 	return info
 }
-

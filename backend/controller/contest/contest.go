@@ -1,24 +1,24 @@
 package contest
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/models"
-	"sports_service/server/models/mcontest"
-	"sports_service/server/global/backend/log"
-	"sports_service/server/tools/im"
-	"sports_service/server/tools/live"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/backend/errdef"
+	"sports_service/global/backend/log"
+	"sports_service/models"
+	"sports_service/models/mcontest"
+	"sports_service/tools/im"
+	"sports_service/tools/live"
+	"sports_service/util"
 	"time"
-	"fmt"
 )
 
 type ContestModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	contest     *mcontest.ContestModel
+	context *gin.Context
+	engine  *xorm.Session
+	contest *mcontest.ContestModel
 }
 
 func New(c *gin.Context) ContestModule {
@@ -27,7 +27,7 @@ func New(c *gin.Context) ContestModule {
 	return ContestModule{
 		context: c,
 		contest: mcontest.NewContestModel(socket),
-		engine: socket,
+		engine:  socket,
 	}
 }
 
@@ -154,19 +154,19 @@ func (svc *ContestModule) AddContestScheduleDetail(param *mcontest.AddScheduleDe
 		list := make([]*models.FpvContestScheduleDetail, svc.contest.Schedule.RoundsNum)
 		for round := 0; round < svc.contest.Schedule.RoundsNum; round++ {
 			detail := &models.FpvContestScheduleDetail{
-				Rounds: round+1,
+				Rounds:     round + 1,
 				ScheduleId: param.ScheduleId,
-				GroupNum: param.GroupNum,
-				GroupName: param.GroupName,
+				GroupNum:   param.GroupNum,
+				GroupName:  param.GroupName,
 				NumInGroup: param.NumInGroup,
-				PlayerId: param.PlayerId,
-				BeginTm: param.BeginTm,
-				EndTm: param.EndTm,
-				IsWin: param.IsWin,
-				CreateAt: now,
-				UpdateAt: now,
-				Ranking: param.Ranking,
-				ContestId: svc.contest.Contest.Id,
+				PlayerId:   param.PlayerId,
+				BeginTm:    param.BeginTm,
+				EndTm:      param.EndTm,
+				IsWin:      param.IsWin,
+				CreateAt:   now,
+				UpdateAt:   now,
+				Ranking:    param.Ranking,
+				ContestId:  svc.contest.Contest.Id,
 			}
 
 			if round == 0 {
@@ -215,7 +215,7 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 	index := 0
 	for _, item := range list {
 		// key 选手id
-		if _, ok :=  mp[item.PlayerId]; !ok {
+		if _, ok := mp[item.PlayerId]; !ok {
 			detail := &mcontest.ScheduleListDetailResp{}
 			detail.GroupName = item.GroupName
 			detail.GroupNum = item.GroupNum
@@ -262,7 +262,7 @@ func (svc *ContestModule) GetContestScheduleDetailList(scheduleId string) (int, 
 				mp[item.PlayerId].RoundThreeScore = util.ResolveTimeByMilliSecond(item.Score)
 			}
 		}
-		
+
 		mp[item.PlayerId].Ids = append(mp[item.PlayerId].Ids, item.Id)
 	}
 
@@ -285,7 +285,7 @@ func (svc *ContestModule) DelScheduleDetail(ids []int) int {
 	if _, err := svc.contest.DelScheduleDetail(ids); err != nil {
 		return errdef.ERROR
 	}
-	
+
 	return errdef.SUCCESS
 }
 
@@ -296,7 +296,7 @@ func (svc *ContestModule) SetIntegralRanking(info *models.FpvContestPlayerIntegr
 	if ok && err == nil {
 		info.ContestId = svc.contest.Contest.Id
 	}
-	
+
 	ok, err = svc.contest.GetIntegralRankingByPlayerId(fmt.Sprint(svc.contest.Contest.Id), fmt.Sprint(info.PlayerId))
 	if ok && err == nil {
 		return errdef.CONTEST_INTEGRAL_RANK_EXISTS
@@ -308,7 +308,6 @@ func (svc *ContestModule) SetIntegralRanking(info *models.FpvContestPlayerIntegr
 
 	return errdef.SUCCESS
 }
-
 
 func (svc *ContestModule) UpdateIntegralRanking(info *models.FpvContestPlayerIntegralRanking) int {
 	// 最新赛事
@@ -342,7 +341,7 @@ func (svc *ContestModule) GetIntegralRankingList(page, size int) (int, []*mconte
 	}
 
 	for _, item := range list {
-		item.TotalIntegralStr = fmt.Sprintf("%.3f", float64(item.TotalIntegral) / 1000)
+		item.TotalIntegralStr = fmt.Sprintf("%.3f", float64(item.TotalIntegral)/1000)
 		item.BestScoreStr = util.ResolveTimeByMilliSecond(item.BestScore)
 		item.TotalIntegral = 0
 		item.BestScore = 0
@@ -357,12 +356,12 @@ func (svc *ContestModule) GetIntegralRankingTotal() int64 {
 	if !ok || err != nil {
 		return 0
 	}
-	
+
 	count, err := svc.contest.GetIntegralRankingTotal(fmt.Sprint(svc.contest.Contest.Id))
 	if err != nil {
 		return 0
 	}
-	
+
 	return count
 }
 
@@ -391,7 +390,7 @@ func (svc *ContestModule) AddContestLive(info *models.VideoLive) int {
 
 	duration := info.PlayTime - now
 	// todo: 过期时间待确认
-	expireTm := int64(duration + 86400 * 30)
+	expireTm := int64(duration + 86400*30)
 	roomId := fmt.Sprint(util.GetXID())
 	info.RoomId = roomId
 	info.PushStreamUrl, info.PushStreamKey = live.Live.GenPushStream(roomId, expireTm)
@@ -414,7 +413,6 @@ func (svc *ContestModule) UpdateContestLive(live *models.VideoLive) int {
 
 	return errdef.SUCCESS
 }
-
 
 func (svc *ContestModule) DelContestLive(id string) int {
 	if _, err := svc.contest.DelContestLive(id); err != nil {
@@ -446,7 +444,7 @@ func (svc *ContestModule) AddLiveData(param *mcontest.AddLiveDataParam) int {
 	if err := svc.engine.Begin(); err != nil {
 		return errdef.ERROR
 	}
-	
+
 	var liveId int64
 	now := int(time.Now().Unix())
 	for _, item := range param.List {
@@ -457,20 +455,20 @@ func (svc *ContestModule) AddLiveData(param *mcontest.AddLiveDataParam) int {
 			item.Gender = svc.contest.PlayerInfo.Gender
 			item.Name = svc.contest.PlayerInfo.Name
 		}
-		
+
 		liveId = item.LiveId
 	}
-	
+
 	if _, err := svc.contest.DelLiveDataById(fmt.Sprint(liveId)); err != nil {
 		svc.engine.Rollback()
 		return errdef.ERROR
 	}
-	
+
 	if _, err := svc.contest.AddLiveData(param.List); err != nil {
 		svc.engine.Rollback()
 		return errdef.ERROR
 	}
-	
+
 	svc.engine.Commit()
 	return errdef.SUCCESS
 }
@@ -480,10 +478,10 @@ func (svc *ContestModule) GetContestLiveData(liveId string) (int, []*models.FpvC
 	if err != nil {
 		return errdef.ERROR, nil
 	}
-	
+
 	if len(list) == 0 {
 		return errdef.SUCCESS, []*models.FpvContestScheduleLiveData{}
 	}
-	
+
 	return errdef.SUCCESS, list
 }

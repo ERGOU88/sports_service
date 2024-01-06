@@ -1,17 +1,17 @@
 package token
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/garyburd/redigo/redis"
-	"net/http"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/muser"
-	"strings"
-	"sports_service/server/global/app/log"
-	"time"
 	"fmt"
+	"github.com/garyburd/redigo/redis"
+	"github.com/gin-gonic/gin"
+	"net/http"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/muser"
+	"strings"
+	"time"
 )
 
 // token校验
@@ -100,7 +100,6 @@ func RecordInfo(userid, path string) {
 	if _, err := umodel.UpdateUserInfos(condition, cols); err != nil {
 		log.Log.Errorf("token_trace: update login time fail, userId:%s, err:%s", userid, err)
 	}
-
 
 	if _, err := umodel.AddActivityRecord(userid, now, activityType); err != nil {
 		log.Log.Errorf("token_trace: record activity user fail, userId:%s, err:%s", userid, err)

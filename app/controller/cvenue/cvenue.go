@@ -1,47 +1,47 @@
 package cvenue
 
 import (
+	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"errors"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mappointment"
-	"sports_service/server/models/morder"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvenue"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mappointment"
+	"sports_service/models/morder"
+	"sports_service/models/muser"
+	"sports_service/models/mvenue"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"strconv"
-	"fmt"
 	"strings"
 	"time"
 )
 
 type VenueModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	venue       *mvenue.VenueModel
-	order       *morder.OrderModel
-	user        *muser.UserModel
+	context *gin.Context
+	engine  *xorm.Session
+	venue   *mvenue.VenueModel
+	order   *morder.OrderModel
+	user    *muser.UserModel
 }
 
 type VenueInfoRes struct {
-	Id            int64    `json:"id"`
-	VenueName     string   `json:"venue_name"`
-	Address       string   `json:"address"`
-	Describe      string   `json:"describe"`
-	Telephone     string   `json:"telephone"`
+	Id            int64                    `json:"id"`
+	VenueName     string                   `json:"venue_name"`
+	Address       string                   `json:"address"`
+	Describe      string                   `json:"describe"`
+	Telephone     string                   `json:"telephone"`
 	VenueImages   []tencentCloud.BucketURI `json:"venue_images"`
-	BusinessHours string   `json:"business_hours"`
-	Services      string   `json:"services"`
-	Longitude     float64  `json:"longitude"`
-	Latitude      float64  `json:"latitude"`
-	Status        int      `json:"status"`
-	ImageNum      int      `json:"image_num"`
+	BusinessHours string                   `json:"business_hours"`
+	Services      string                   `json:"services"`
+	Longitude     float64                  `json:"longitude"`
+	Latitude      float64                  `json:"latitude"`
+	Status        int                      `json:"status"`
+	ImageNum      int                      `json:"image_num"`
 }
 
 func New(c *gin.Context) *VenueModule {
@@ -53,7 +53,7 @@ func New(c *gin.Context) *VenueModule {
 		context: c,
 		venue:   mvenue.NewVenueModel(venueSocket),
 		order:   morder.NewOrderModel(venueSocket),
-		user: muser.NewUserModel(appSocket),
+		user:    muser.NewUserModel(appSocket),
 		engine:  venueSocket,
 	}
 }
@@ -72,14 +72,14 @@ func (svc *VenueModule) GetHomePageInfo(venueId int64) (int, *VenueInfoRes, []*m
 	}
 
 	res := &VenueInfoRes{
-		Id: venueInfo.Id,
-		VenueName: venueInfo.VenueName,
-		Address: venueInfo.Address,
-		Describe: venueInfo.Describe,
-		Telephone: venueInfo.Telephone,
+		Id:            venueInfo.Id,
+		VenueName:     venueInfo.VenueName,
+		Address:       venueInfo.Address,
+		Describe:      venueInfo.Describe,
+		Telephone:     venueInfo.Telephone,
 		BusinessHours: venueInfo.BusinessHours,
-		Services: venueInfo.Services,
-		Status: svc.IsOpen(time.Now().Format(consts.FORMAT_DATE), venueInfo.BusinessHours),
+		Services:      venueInfo.Services,
+		Status:        svc.IsOpen(time.Now().Format(consts.FORMAT_DATE), venueInfo.BusinessHours),
 	}
 
 	if err = util.JsonFast.UnmarshalFromString(venueInfo.VenueImages, &res.VenueImages); err != nil {
@@ -154,17 +154,17 @@ func (svc *VenueModule) GetVenueProducts(venueId int64) ([]*mvenue.VenueProduct,
 	res := make([]*mvenue.VenueProduct, len(list))
 	for index, val := range list {
 		info := &mvenue.VenueProduct{
-			Id:  val.Id,
-			Icon: tencentCloud.BucketURI(val.Icon),
-			ProductName: val.ProductName,
-			ProductType: val.ProductType,
+			Id:                val.Id,
+			Icon:              tencentCloud.BucketURI(val.Icon),
+			ProductName:       val.ProductName,
+			ProductType:       val.ProductType,
 			EffectiveDuration: val.EffectiveDuration,
-			Describe: val.Describe,
-			Instructions: val.Instructions,
-			Image: tencentCloud.BucketURI(val.Image),
-			RealAmount: val.RealAmount,
-			CurAmount: val.CurAmount,
-			VenueId: val.VenueId,
+			Describe:          val.Describe,
+			Instructions:      val.Instructions,
+			Image:             tencentCloud.BucketURI(val.Image),
+			RealAmount:        val.RealAmount,
+			CurAmount:         val.CurAmount,
+			VenueId:           val.VenueId,
 		}
 
 		svc.order.OrderProduct.ProductType = val.ProductType
@@ -177,7 +177,7 @@ func (svc *VenueModule) GetVenueProducts(venueId int64) ([]*mvenue.VenueProduct,
 		// 如果定价 >= 售价 则表示有折扣
 		if val.RealAmount >= val.CurAmount {
 			info.HasDiscount = 1
-		    info.DiscountAmount = val.DiscountAmount
+			info.DiscountAmount = val.DiscountAmount
 			info.DiscountRate = val.DiscountRate
 		}
 
@@ -195,7 +195,7 @@ func (svc *VenueModule) PurchaseVipCard(param *mvenue.PurchaseVipCardParam) (int
 	}
 
 	if err := svc.engine.Begin(); err != nil {
-		log.Log.Errorf("venue_trace: session begin fail, err:%s", err )
+		log.Log.Errorf("venue_trace: session begin fail, err:%s", err)
 		return errdef.ERROR, nil
 	}
 

@@ -3,13 +3,13 @@ package cappointment
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/go-sql-driver/mysql"
 	"net/http/httptest"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
-	"sports_service/server/models"
+	"sports_service/dao"
+	"sports_service/global/app/log"
+	"sports_service/models"
 	"testing"
 	"time"
-	"github.com/go-sql-driver/mysql"
 )
 
 func init() {
@@ -31,14 +31,14 @@ func TestAddStock(t *testing.T) {
 	now := int(time.Now().Unix())
 	data := make([]*models.VenueAppointmentStock, 1)
 	info := &models.VenueAppointmentStock{
-		Date: "2021-08-10",
-		TimeNode: "18:00-19:00",
-		QuotaNum: 5,
-		PurchasedNum: 2,
+		Date:            "2021-08-10",
+		TimeNode:        "18:00-19:00",
+		QuotaNum:        5,
+		PurchasedNum:    2,
 		AppointmentType: 0,
-		VenueId: 1,
-		CreateAt: now,
-		UpdateAt: now,
+		VenueId:         1,
+		CreateAt:        now,
+		UpdateAt:        now,
 	}
 
 	//
@@ -50,7 +50,6 @@ func TestAddStock(t *testing.T) {
 	var myerr *mysql.MySQLError
 	t.Logf("err:%s, affected:%d, now:%d, b:%v, %#v, num:%d", err, affected, now, errors.As(err, &myerr), err, myerr.Number)
 }
-
 
 func TestUpdateStock(t *testing.T) {
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())

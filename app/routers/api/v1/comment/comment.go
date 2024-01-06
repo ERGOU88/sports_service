@@ -3,12 +3,12 @@ package comment
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/comment"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mcomment"
-	"sports_service/server/util"
+	"sports_service/app/controller/comment"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mcomment"
+	"sports_service/util"
 	"strconv"
 )
 

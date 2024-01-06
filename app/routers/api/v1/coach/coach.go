@@ -3,12 +3,12 @@ package coach
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/coach"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mcoach"
-	"sports_service/server/util"
+	"sports_service/app/controller/coach"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mcoach"
+	"sports_service/util"
 )
 
 func CoachList(c *gin.Context) {
@@ -52,7 +52,6 @@ func CoachEvaluate(c *gin.Context) {
 	reply.Data["total_num"] = total
 	reply.Response(http.StatusOK, code)
 }
-
 
 func CoachEvaluateConf(c *gin.Context) {
 	reply := errdef.New(c)

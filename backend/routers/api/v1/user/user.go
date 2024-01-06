@@ -3,11 +3,11 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/backend/controller/cuser"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/models"
-	"sports_service/server/models/muser"
-	"sports_service/server/util"
+	"sports_service/backend/controller/cuser"
+	"sports_service/global/backend/errdef"
+	"sports_service/models"
+	"sports_service/models/muser"
+	"sports_service/util"
 )
 
 // 获取用户列表
@@ -84,7 +84,7 @@ func EditOfficialUser(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cuser.New(c)
 	reply.Response(http.StatusOK, svc.EditOfficialUser(param))
 }

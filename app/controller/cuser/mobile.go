@@ -2,12 +2,12 @@ package cuser
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/muser"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/muser"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"time"
 )
 
@@ -76,7 +76,7 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 		if err := svc.user.SaveUserToken(svc.user.User.UserId, token); err != nil {
 			log.Log.Errorf("user_trace: save user token err:%s", err)
 		}
-		
+
 		return errdef.SUCCESS, token, svc.UserInfoResp()
 	}
 
@@ -85,7 +85,7 @@ func (svc *UserModule) MobileLoginOrReg(param *muser.LoginParams) (int, string, 
 		log.Log.Errorf("user_trace: forbid status, userId:%s", user.Status)
 		return errdef.USER_FORBID_STATUS, "", nil
 	}
-	
+
 	avatar := tencentCloud.BucketURI(svc.user.User.Avatar)
 	svc.user.User.Avatar = string(avatar)
 	// 用户已注册过, 则直接从redis中获取token并返回

@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mappointment"
-	"sports_service/server/models/morder"
-	"sports_service/server/models/mvenue"
-	"sports_service/server/util"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mappointment"
+	"sports_service/models/morder"
+	"sports_service/models/mvenue"
+	"sports_service/util"
 	"strings"
 	"time"
 )
@@ -23,21 +23,21 @@ type base struct {
 	DateId      int
 	Extra       *mappointment.OrderResp
 	// 预约流水map key 预约时间配置id
-	recordMp    map[int64][]*models.VenueAppointmentRecord
+	recordMp map[int64][]*models.VenueAppointmentRecord
 	// 订单商品流水map key 预约时间配置id
-	orderMp     map[int64]*models.VenueOrderProductInfo
-	venue       *mvenue.VenueModel
+	orderMp map[int64]*models.VenueOrderProductInfo
+	venue   *mvenue.VenueModel
 }
 
 func New(socket *xorm.Session) *base {
 	return &base{
-		Engine: socket,
+		Engine:      socket,
 		appointment: mappointment.NewAppointmentModel(socket),
-		order: morder.NewOrderModel(socket),
-		Extra:  &mappointment.OrderResp{TimeNodeInfo: make([]*mappointment.TimeNodeInfo, 0)},
-		recordMp: make(map[int64][]*models.VenueAppointmentRecord),
-		orderMp: make(map[int64]*models.VenueOrderProductInfo),
-		venue:   mvenue.NewVenueModel(socket),
+		order:       morder.NewOrderModel(socket),
+		Extra:       &mappointment.OrderResp{TimeNodeInfo: make([]*mappointment.TimeNodeInfo, 0)},
+		recordMp:    make(map[int64][]*models.VenueAppointmentRecord),
+		orderMp:     make(map[int64]*models.VenueOrderProductInfo),
+		venue:       mvenue.NewVenueModel(socket),
 	}
 }
 
@@ -49,9 +49,9 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 	date := ""
 	for index, v := range list {
 		info := &mappointment.WeekInfo{
-			Id: v.Id,
-			Week: v.Week,
-			Date: v.Date,
+			Id:     v.Id,
+			Week:   v.Week,
+			Date:   v.Date,
 			WeekCn: v.WeekCn,
 		}
 
@@ -115,9 +115,9 @@ func (svc *base) AppointmentDateInfo(days, appointmentType int) interface{} {
 	}
 
 	dateInfo := &mappointment.DateInfo{
-		List: res,
-		Id: id,
-		Week: week,
+		List:   res,
+		Id:     id,
+		Week:   week,
 		WeekCn: util.GetWeekCn(week),
 		DateCn: date,
 	}
@@ -271,7 +271,7 @@ func (svc *base) GetDateById(id int, formatType string) string {
 	curTime := time.Now()
 
 	if id >= 1 {
-		date = curTime.AddDate(0, 0, id - 1).Format(formatType)
+		date = curTime.AddDate(0, 0, id-1).Format(formatType)
 	}
 
 	return date
@@ -318,23 +318,23 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 
 	log.Log.Infof("#######item:%+v", item)
 	info := &mappointment.OptionsInfo{
-		CurAmount: item.CurAmount,
-		TimeNode: item.TimeNode,
-		DurationCn: util.ResolveTime(item.Duration),
-		Duration: item.Duration,
-		RealAmount: item.RealAmount,
-		QuotaNum: item.QuotaNum,
-		RecommendType: item.RecommendTag,
+		CurAmount:       item.CurAmount,
+		TimeNode:        item.TimeNode,
+		DurationCn:      util.ResolveTime(item.Duration),
+		Duration:        item.Duration,
+		RealAmount:      item.RealAmount,
+		QuotaNum:        item.QuotaNum,
+		RecommendType:   item.RecommendTag,
 		AppointmentType: item.AppointmentType,
-		WeekNum: item.WeekNum,
-		AmountCn: fmt.Sprintf("%.2f", float64(item.CurAmount)/100),
-		Id: item.Id,
-		IsExpire: isExpire,
-		StartTm: start,
-		EndTm: end,
-		Date: fmt.Sprintf("%s %s", date, item.TimeNode),
-		CoachId: item.CoachId,
-		VenueId: item.VenueId,
+		WeekNum:         item.WeekNum,
+		AmountCn:        fmt.Sprintf("%.2f", float64(item.CurAmount)/100),
+		Id:              item.Id,
+		IsExpire:        isExpire,
+		StartTm:         start,
+		EndTm:           end,
+		Date:            fmt.Sprintf("%s %s", date, item.TimeNode),
+		CoachId:         item.CoachId,
+		VenueId:         item.VenueId,
 	}
 
 	switch info.AppointmentType {
@@ -350,7 +350,7 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 		info.DiscountAmount = item.DiscountAmount
 		if item.DiscountAmount > 0 {
 			info.HasDiscount = 1
-			if item.DiscountRate % 10 == 0 {
+			if item.DiscountRate%10 == 0 {
 				info.RateCn = fmt.Sprintf("%d折券", item.DiscountRate/10)
 			} else {
 				info.RateCn = fmt.Sprintf("%.1f折券", float64(item.DiscountRate)/10)
@@ -377,7 +377,7 @@ func (svc *base) SetAppointmentOptionsRes(date string, item *models.VenueAppoint
 	return info
 }
 
-func (svc *base) GetAppointmentConf(id int64) error  {
+func (svc *base) GetAppointmentConf(id int64) error {
 	ok, err := svc.appointment.GetAppointmentConfById(fmt.Sprint(id))
 	if err != nil || !ok {
 		return errors.New("get appointment fail")
@@ -406,19 +406,19 @@ func (svc *base) QueryStockInfo(date string) (bool, error) {
 
 func (svc *base) SetOrderProductInfo(orderId string, now, count int, productId int64) *models.VenueOrderProductInfo {
 	return &models.VenueOrderProductInfo{
-		ProductId:   productId,
-		ProductType: svc.Extra.OrderType,
+		ProductId:       productId,
+		ProductType:     svc.Extra.OrderType,
 		ProductCategory: svc.GetAppointmentCategory(svc.Extra.OrderType),
-		Count:       count,
-		RealAmount:  svc.appointment.AppointmentInfo.RealAmount,
-		CurAmount:   svc.appointment.AppointmentInfo.CurAmount,
-		DiscountRate: svc.appointment.AppointmentInfo.DiscountRate,
-		DiscountAmount: svc.appointment.AppointmentInfo.DiscountAmount,
-		VenueId: svc.appointment.AppointmentInfo.VenueId,
-		Amount: svc.appointment.AppointmentInfo.CurAmount * count,
-		CreateAt: now,
-		UpdateAt: now,
-		PayOrderId: orderId,
+		Count:           count,
+		RealAmount:      svc.appointment.AppointmentInfo.RealAmount,
+		CurAmount:       svc.appointment.AppointmentInfo.CurAmount,
+		DiscountRate:    svc.appointment.AppointmentInfo.DiscountRate,
+		DiscountAmount:  svc.appointment.AppointmentInfo.DiscountAmount,
+		VenueId:         svc.appointment.AppointmentInfo.VenueId,
+		Amount:          svc.appointment.AppointmentInfo.CurAmount * count,
+		CreateAt:        now,
+		UpdateAt:        now,
+		PayOrderId:      orderId,
 	}
 }
 
@@ -438,24 +438,24 @@ func (svc *base) SetAppointmentRecordInfo(userId, date, orderId string, now, cou
 	startTm, endTm, id int64) {
 	for i := 0; i < count; i++ {
 		recordInfo := &models.VenueAppointmentRecord{
-			UserId: userId,
-			VenueId: svc.appointment.AppointmentInfo.VenueId,
-			CourseId: svc.appointment.AppointmentInfo.CourseId,
+			UserId:          userId,
+			VenueId:         svc.appointment.AppointmentInfo.VenueId,
+			CourseId:        svc.appointment.AppointmentInfo.CourseId,
 			AppointmentType: svc.appointment.AppointmentInfo.AppointmentType,
-			TimeNode: svc.appointment.AppointmentInfo.TimeNode,
-			Date: date,
-			PayOrderId: orderId,
-			CreateAt: now,
-			UpdateAt: now,
-			PurchasedNum: 1,
-			CoachId: svc.appointment.AppointmentInfo.CoachId,
-			SingleDuration: svc.appointment.AppointmentInfo.Duration,
-			UnitDuration: svc.appointment.AppointmentInfo.UnitDuration,
-			UnitPrice: svc.appointment.AppointmentInfo.UnitPrice,
-			StartTm: int(startTm),
-			EndTm: int(endTm),
-			AppointmentId: svc.appointment.AppointmentInfo.Id,
-			Status: 1,
+			TimeNode:        svc.appointment.AppointmentInfo.TimeNode,
+			Date:            date,
+			PayOrderId:      orderId,
+			CreateAt:        now,
+			UpdateAt:        now,
+			PurchasedNum:    1,
+			CoachId:         svc.appointment.AppointmentInfo.CoachId,
+			SingleDuration:  svc.appointment.AppointmentInfo.Duration,
+			UnitDuration:    svc.appointment.AppointmentInfo.UnitDuration,
+			UnitPrice:       svc.appointment.AppointmentInfo.UnitPrice,
+			StartTm:         int(startTm),
+			EndTm:           int(endTm),
+			AppointmentId:   svc.appointment.AppointmentInfo.Id,
+			Status:          1,
 		}
 
 		if len(seatInfo) > 0 {
@@ -564,7 +564,6 @@ func (svc *base) AddOrderProducts() error {
 			return errors.New("add order product fail, count not match~")
 		}
 	}
-
 
 	return nil
 }
@@ -788,7 +787,6 @@ func (svc *base) AppointmentProcess(userId, orderId string, relatedId int64, wee
 			return err
 		}
 
-
 		var b bool
 		// 默认该节点库存足够
 		item.IsEnough = true
@@ -865,7 +863,7 @@ func (svc *base) GetQueryStockCondition(date string) (string, error) {
 		condition = fmt.Sprintf("appointment_type=%d AND venue_id=%d AND date='%s' AND time_node='%s'",
 			svc.appointment.AppointmentInfo.AppointmentType, svc.appointment.AppointmentInfo.VenueId, date,
 			svc.appointment.AppointmentInfo.TimeNode)
-	case consts.APPOINTMENT_COACH,consts.APPOINTMENT_COURSE:
+	case consts.APPOINTMENT_COACH, consts.APPOINTMENT_COURSE:
 		condition = fmt.Sprintf("venue_id=%d AND appointment_type=%d AND course_id=%d AND coach_id=%d AND date='%s' AND time_node='%s'",
 			svc.appointment.AppointmentInfo.VenueId, svc.appointment.AppointmentInfo.AppointmentType, svc.appointment.AppointmentInfo.CourseId,
 			svc.appointment.AppointmentInfo.CoachId, date, svc.appointment.AppointmentInfo.TimeNode)
@@ -882,13 +880,13 @@ func (svc *base) AddLabels(list []*models.VenuePersonalLabelConf, date, userId, 
 	labels := make([]*models.VenueUserLabel, len(list))
 	for k, v := range list {
 		label := &models.VenueUserLabel{
-			Date: date,
-			TimeNode: svc.appointment.AppointmentInfo.TimeNode,
-			UserId: userId,
-			LabelId: v.Id,
-			LabelName: v.LabelName,
-			VenueId: relatedId,
-			LabelType: labelType,
+			Date:       date,
+			TimeNode:   svc.appointment.AppointmentInfo.TimeNode,
+			UserId:     userId,
+			LabelId:    v.Id,
+			LabelName:  v.LabelName,
+			VenueId:    relatedId,
+			LabelType:  labelType,
 			PayOrderId: orderId,
 		}
 

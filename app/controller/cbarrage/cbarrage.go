@@ -4,41 +4,41 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mbarrage"
-	"sports_service/server/models/mconfigure"
-	"sports_service/server/models/mcontest"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	"sports_service/server/tools/tencentCloud"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mbarrage"
+	"sports_service/models/mconfigure"
+	"sports_service/models/mcontest"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	"sports_service/tools/tencentCloud"
 	"time"
 )
 
 type BarrageModule struct {
-	context    *gin.Context
-	engine     *xorm.Session
-	user       *muser.UserModel
-	video      *mvideo.VideoModel
-	barrage    *mbarrage.BarrageModel
-	contest    *mcontest.ContestModel
-	config     *mconfigure.ConfigModel
+	context *gin.Context
+	engine  *xorm.Session
+	user    *muser.UserModel
+	video   *mvideo.VideoModel
+	barrage *mbarrage.BarrageModel
+	contest *mcontest.ContestModel
+	config  *mconfigure.ConfigModel
 }
 
 func New(c *gin.Context) BarrageModule {
-    socket := dao.AppEngine.NewSession()
+	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return BarrageModule{
 		context: c,
-		user: muser.NewUserModel(socket),
-		video: mvideo.NewVideoModel(socket),
+		user:    muser.NewUserModel(socket),
+		video:   mvideo.NewVideoModel(socket),
 		barrage: mbarrage.NewBarrageModel(socket),
 		contest: mcontest.NewContestModel(socket),
-		config: mconfigure.NewConfigModel(socket),
-		engine: socket,
+		config:  mconfigure.NewConfigModel(socket),
+		engine:  socket,
 	}
 }
 
@@ -217,5 +217,5 @@ func (svc *BarrageModule) GetVideoBarrageList(videoId, barrageType, minDuration,
 
 // 获取用户视频弹幕总数
 func (svc *BarrageModule) GetUserTotalVideoBarrage(userId string) int64 {
-  return svc.barrage.GetUserTotalVideoBarrage(userId)
+	return svc.barrage.GetUserTotalVideoBarrage(userId)
 }

@@ -6,23 +6,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"os"
 	"os/signal"
-	"sports_service/server/app/config"
-	"sports_service/server/app/routers"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/job"
-	"sports_service/server/log/zap"
-	"sports_service/server/models/mlabel"
-	"sports_service/server/models/mshop"
-	"sports_service/server/models/pprof"
-	"sports_service/server/nsqlx"
-	"sports_service/server/rabbitmq"
-	"sports_service/server/redismq"
-	"sports_service/server/tools/im"
-	"sports_service/server/tools/live"
-	"sports_service/server/tools/nsq"
-	"sports_service/server/util"
+	"sports_service/app/config"
+	"sports_service/app/routers"
+	"sports_service/dao"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/job"
+	"sports_service/log/zap"
+	"sports_service/models/mlabel"
+	"sports_service/models/mshop"
+	"sports_service/models/pprof"
+	"sports_service/nsqlx"
+	"sports_service/rabbitmq"
+	"sports_service/redismq"
+	"sports_service/tools/im"
+	"sports_service/tools/live"
+	"sports_service/tools/nsq"
+	"sports_service/util"
 	"syscall"
 )
 
@@ -105,11 +105,11 @@ func setupJob() {
 	/*----检测订单超时----*/
 	go job.CheckOrder()
 	/*----检测订单超时----*/
-	
+
 	/*----检测商城订单超时----*/
 	go job.CheckShopOrder()
 	/*----检测商城订单超时----*/
-	
+
 	/*----刷新小程序全局唯一后台接口调用凭据----*/
 	go job.FlushAppletAccessToken()
 	/*----刷新小程序全局唯一后台接口调用凭据----*/
@@ -119,6 +119,7 @@ func setupJob() {
 func setupNsqProduct() {
 	nsq.ConnectNsqProduct(config.Global.NsqAddr)
 }
+
 // 初始化nsql消费者
 func setupNsqConsumer() {
 	go nsqlx.InitNsqConsumer()
@@ -318,4 +319,3 @@ func main() {
 		return
 	}
 }
-

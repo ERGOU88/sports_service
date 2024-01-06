@@ -1,29 +1,31 @@
 package mshop
 
 import (
-	"sports_service/server/dao"
-	"sports_service/server/global/rdskey"
-	"sports_service/server/models"
-	"sports_service/server/util"
-	"sync"
-	"reflect"
 	"fmt"
+	"reflect"
+	"sports_service/dao"
+	"sports_service/global/rdskey"
+	"sports_service/models"
+	"sports_service/util"
+	"sync"
 )
 
 // 全国地址信息
 type AreaInfo struct {
-	Code    int64         `json:"code" xorm:"not null pk comment('区划代码') BIGINT(12)"`
-	Name    string        `json:"name" xorm:"not null default '' comment('名称') index VARCHAR(128)"`
-	Level   int           `json:"level" xorm:"not null comment('级别1-5,省市县镇村') index TINYINT(1)"`
-	Pcode   int64         `json:"pcode" xorm:"comment('父级区划代码') index BIGINT(12)"`
-	Child   []*AreaInfo   `json:"child" xorm:"-"` // 子地区信息
+	Code  int64       `json:"code" xorm:"not null pk comment('区划代码') BIGINT(12)"`
+	Name  string      `json:"name" xorm:"not null default '' comment('名称') index VARCHAR(128)"`
+	Level int         `json:"level" xorm:"not null comment('级别1-5,省市县镇村') index TINYINT(1)"`
+	Pcode int64       `json:"pcode" xorm:"comment('父级区划代码') index BIGINT(12)"`
+	Child []*AreaInfo `json:"child" xorm:"-"` // 子地区信息
 }
 
 var areaList []*AreaInfo
+
 // code -> AreaInfo
 var areaMp map[string]*AreaInfo
 
 var areaMutex sync.Mutex
+
 func init() {
 	areaMp = make(map[string]*AreaInfo)
 }
@@ -136,7 +138,7 @@ func (m *ShopModel) GetArea() []*AreaInfo {
 	if err == nil {
 		m.SetAreaInfoToRds(str)
 	}
-	
+
 	mpStr, err := util.JsonFast.MarshalToString(areaMp)
 	if err == nil {
 		m.SetAreaMpToRds(mpStr)
@@ -217,7 +219,7 @@ func (m *ShopModel) trees(info []*AreaInfo) []*AreaInfo {
 			child, err := m.FindSubAreaByCode(v)
 			if err != nil || len(child) == 0 {
 				if v.Level == 1 {
-					info = append(info[:k], info[k + 1:]...)
+					info = append(info[:k], info[k+1:]...)
 				}
 
 				continue
@@ -235,4 +237,3 @@ func (m *ShopModel) trees(info []*AreaInfo) []*AreaInfo {
 
 	return info
 }
-

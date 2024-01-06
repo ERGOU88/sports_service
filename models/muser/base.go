@@ -1,21 +1,20 @@
 package muser
 
 import (
-	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/tools/im"
-	"sports_service/server/util"
-	"github.com/gin-gonic/gin"
-	"sports_service/server/global/rdskey"
-	"fmt"
-	"time"
 	"errors"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"sports_service/dao"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/global/rdskey"
+	"sports_service/models"
+	"sports_service/tools/im"
+	"sports_service/util"
+	"time"
 )
 
 type base struct {
-
 }
 
 // 获取版本号
@@ -64,8 +63,8 @@ func (m *base) IncrNickNameNum() (int64, error) {
 }
 
 type tcyAddResult struct {
-	sig   string
-	err   error
+	sig string
+	err error
 }
 
 // 注册腾讯云im用户，返回sig
@@ -91,9 +90,9 @@ func (m *base) tcyAddUser(u *models.User) chan tcyAddResult {
 // 注册
 func (m *base) Register(u *UserModel, s *SocialModel, c *gin.Context, unionId, avatar, nickName, openId string, socialType, gender int) error {
 	key := rdskey.MakeKey(rdskey.LOGIN_REPEAT, socialType, unionId)
-	ok, err:= IsReapeat(key)
+	ok, err := IsReapeat(key)
 	if err != nil {
-		log.Log.Errorf("social_trace: redis err %s",err)
+		log.Log.Errorf("social_trace: redis err %s", err)
 		return err
 	}
 
@@ -102,7 +101,7 @@ func (m *base) Register(u *UserModel, s *SocialModel, c *gin.Context, unionId, a
 		return errors.New("social_trace: 用户重复注册")
 	}
 
-	rds:=dao.NewRedisDao()
+	rds := dao.NewRedisDao()
 	rds.EXPIRE64(key, rdskey.KEY_EXPIRE_MIN)
 	m.newUser(u, c, avatar, nickName, gender, socialType)
 	m.NewSocialAccount(s, socialType, u.User.UserId, unionId, openId)
@@ -160,27 +159,27 @@ func (m *base) setDefaultInfo(u *UserModel, avatar string, gender int) {
 
 // uid 8位
 func (m *base) getUserID() string {
-  uid := fmt.Sprint(util.GetXID())
-  if len(uid) == 8 {
-    return uid
-  }
+	uid := fmt.Sprint(util.GetXID())
+	if len(uid) == 8 {
+		return uid
+	}
 
-  rds := dao.NewRedisDao()
-  ok, err := rds.EXISTS(rdskey.USER_ID_INCR)
-  if err != nil {
-    log.Log.Errorf("user_trace: uid incr err:%s", err)
-    return uid
-  }
+	rds := dao.NewRedisDao()
+	ok, err := rds.EXISTS(rdskey.USER_ID_INCR)
+	if err != nil {
+		log.Log.Errorf("user_trace: uid incr err:%s", err)
+		return uid
+	}
 
-  if !ok {
-    rds.Set(rdskey.USER_ID_INCR, 10240102)
-  }
+	if !ok {
+		rds.Set(rdskey.USER_ID_INCR, 10240102)
+	}
 
-  num := util.GenerateRandnum(1, 33)
-  incrUid, err := rds.INCRBY(rdskey.USER_ID_INCR, int64(num))
-  if err != nil {
-    log.Log.Errorf("user_trace: uid incr err:%s", err)
-  }
+	num := util.GenerateRandnum(1, 33)
+	incrUid, err := rds.INCRBY(rdskey.USER_ID_INCR, int64(num))
+	if err != nil {
+		log.Log.Errorf("user_trace: uid incr err:%s", err)
+	}
 
-  return fmt.Sprint(incrUid)
+	return fmt.Sprint(incrUid)
 }

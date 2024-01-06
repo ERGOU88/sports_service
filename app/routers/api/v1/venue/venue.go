@@ -2,13 +2,13 @@ package venue
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/util"
 	"net/http"
-	"sports_service/server/app/controller/cvenue"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mvenue"
+	"sports_service/app/controller/cvenue"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mvenue"
+	"sports_service/util"
 	"strconv"
 )
 

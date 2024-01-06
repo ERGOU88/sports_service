@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/global/backend/log"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mcontest"
-	"sports_service/server/models/minformation"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/msection"
-	"sports_service/server/models/muser"
-	"sports_service/server/tools/tencentCloud"
+	"sports_service/dao"
+	"sports_service/global/backend/errdef"
+	"sports_service/global/backend/log"
+	"sports_service/models/mattention"
+	"sports_service/models/mcollect"
+	"sports_service/models/mcontest"
+	"sports_service/models/minformation"
+	"sports_service/models/mlike"
+	"sports_service/models/msection"
+	"sports_service/models/muser"
+	"sports_service/tools/tencentCloud"
 )
 
 type InformationModule struct {
@@ -33,15 +33,15 @@ func New(c *gin.Context) InformationModule {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return InformationModule{
-		context: c,
-		user: muser.NewUserModel(socket),
+		context:     c,
+		user:        muser.NewUserModel(socket),
 		information: minformation.NewInformationModel(socket),
-		attention: mattention.NewAttentionModel(socket),
-		like: mlike.NewLikeModel(socket),
-		collect: mcollect.NewCollectModel(socket),
-		section: msection.NewSectionModel(socket),
-		contest: mcontest.NewContestModel(socket),
-		engine: socket,
+		attention:   mattention.NewAttentionModel(socket),
+		like:        mlike.NewLikeModel(socket),
+		collect:     mcollect.NewCollectModel(socket),
+		section:     msection.NewSectionModel(socket),
+		contest:     mcontest.NewContestModel(socket),
+		engine:      socket,
 	}
 }
 
@@ -62,16 +62,16 @@ func (svc *InformationModule) GetInformationList(page, size int) (int, []*minfor
 	resp := make([]*minformation.InformationResp, len(list))
 	for index, information := range list {
 		info := &minformation.InformationResp{
-			Id: information.Id,
-			Cover:  tencentCloud.BucketURI(information.Cover),
-			Title: information.Title,
+			Id:       information.Id,
+			Cover:    tencentCloud.BucketURI(information.Cover),
+			Title:    information.Title,
 			CreateAt: information.CreateAt,
 			//JumpUrl: information.JumpUrl,
-			UserId: information.UserId,
-			Content: information.Content,
-			Describe: information.Describe,
-			PubType: information.PubType,
-			Status: information.Status,
+			UserId:    information.UserId,
+			Content:   information.Content,
+			Describe:  information.Describe,
+			PubType:   information.PubType,
+			Status:    information.Status,
 			RelatedId: information.RelatedId,
 		}
 

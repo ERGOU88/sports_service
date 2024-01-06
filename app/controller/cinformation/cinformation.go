@@ -4,19 +4,19 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mconfigure"
-	"sports_service/server/models/minformation"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/muser"
-	redismq "sports_service/server/redismq/event"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mattention"
+	"sports_service/models/mcollect"
+	"sports_service/models/mconfigure"
+	"sports_service/models/minformation"
+	"sports_service/models/mlike"
+	"sports_service/models/muser"
+	redismq "sports_service/redismq/event"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"time"
 )
 
@@ -35,14 +35,14 @@ func New(c *gin.Context) InformationModule {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return InformationModule{
-		context: c,
-		user: muser.NewUserModel(socket),
+		context:     c,
+		user:        muser.NewUserModel(socket),
 		information: minformation.NewInformationModel(socket),
-		attention: mattention.NewAttentionModel(socket),
-		like: mlike.NewLikeModel(socket),
-		collect: mcollect.NewCollectModel(socket),
-		config: mconfigure.NewConfigModel(socket),
-		engine: socket,
+		attention:   mattention.NewAttentionModel(socket),
+		like:        mlike.NewLikeModel(socket),
+		collect:     mcollect.NewCollectModel(socket),
+		config:      mconfigure.NewConfigModel(socket),
+		engine:      socket,
 	}
 }
 
@@ -67,9 +67,9 @@ func (svc *InformationModule) GetInformationList(userId, liveId string, page, si
 	resp := make([]*minformation.InformationResp, len(list))
 	for index, information := range list {
 		info := &minformation.InformationResp{
-			Id: information.Id,
-			Cover: tencentCloud.BucketURI(information.Cover),
-			Title: information.Title,
+			Id:       information.Id,
+			Cover:    tencentCloud.BucketURI(information.Cover),
+			Title:    information.Title,
 			CreateAt: information.CreateAt,
 			//JumpUrl: information.JumpUrl,
 			UserId: information.UserId,
@@ -131,12 +131,12 @@ func (svc *InformationModule) GetInformationDetail(id, userId string) (int, *min
 	}
 
 	resp := &minformation.InformationResp{
-		Id: svc.information.Information.Id,
-		Cover: tencentCloud.BucketURI(svc.information.Information.Cover),
-		Title: svc.information.Information.Title,
+		Id:       svc.information.Information.Id,
+		Cover:    tencentCloud.BucketURI(svc.information.Information.Cover),
+		Title:    svc.information.Information.Title,
 		CreateAt: svc.information.Information.CreateAt,
 		//JumpUrl: svc.information.Information.JumpUrl,
-		UserId: svc.information.Information.UserId,
+		UserId:  svc.information.Information.UserId,
 		Content: util.RenderNode(node),
 	}
 

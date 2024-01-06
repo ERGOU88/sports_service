@@ -2,15 +2,15 @@ package thirdLogin
 
 import (
 	"encoding/json"
-	"log"
-	"net/url"
-	"github.com/parnurzeal/gorequest"
 	"errors"
 	"fmt"
-	log2 "sports_service/server/global/app/log"
+	"github.com/parnurzeal/gorequest"
+	"log"
+	"net/url"
+	log2 "sports_service/global/app/log"
 )
 
-type Wechat struct {}
+type Wechat struct{}
 
 type AccessToken struct {
 	AccessToken  string `json:"access_token"`
@@ -36,31 +36,31 @@ type WechatUserInfo struct {
 }
 
 type AppletAccessToken struct {
-	Errcode      int      `json:"errcode"`    //
-	Errmsg       string   `json:"errmsg"`     //
-	ExpiresIn    int64    `json:"expires_in"`
-	AccessToken  string   `json:"access_token"`
+	Errcode     int    `json:"errcode"` //
+	Errmsg      string `json:"errmsg"`  //
+	ExpiresIn   int64  `json:"expires_in"`
+	AccessToken string `json:"access_token"`
 }
 
 // 微信用户手机信息
 type WechatPhoneInfo struct {
-	Errcode      int      `json:"errcode"`    //
-	Errmsg       string   `json:"errmsg"`     //
-	PhoneInfo    PhoneInfo `json:"phone_info"`
+	Errcode   int       `json:"errcode"` //
+	Errmsg    string    `json:"errmsg"`  //
+	PhoneInfo PhoneInfo `json:"phone_info"`
 }
 
 type PhoneInfo struct {
-	PhoneNumber       string   `json:"phoneNumber"`       // 用户绑定的手机号（国外手机号会有区号）
-	PurePhoneNumber   string   `json:"purePhoneNumber"`   // 没有区号的手机号
-	CountryCode       string   `json:"countryCode"`       // 区号
+	PhoneNumber     string `json:"phoneNumber"`     // 用户绑定的手机号（国外手机号会有区号）
+	PurePhoneNumber string `json:"purePhoneNumber"` // 没有区号的手机号
+	CountryCode     string `json:"countryCode"`     // 区号
 }
 
 type AppletCode2SessionResp struct {
-	Errcode      int      `json:"errcode"`    //
-	Errmsg       string   `json:"errmsg"`     //
-	SessionKey   string   `json:"session_key"`         // 会话密钥
-	Openid       string   `json:"openid"`              // 用户唯一标识
-	Unionid      string   `json:"unionid"`             // 用户在开放平台的唯一标识符
+	Errcode    int    `json:"errcode"`     //
+	Errmsg     string `json:"errmsg"`      //
+	SessionKey string `json:"session_key"` // 会话密钥
+	Openid     string `json:"openid"`      // 用户唯一标识
+	Unionid    string `json:"unionid"`     // 用户在开放平台的唯一标识符
 }
 
 type AppletUserInfo struct {
@@ -97,7 +97,7 @@ func (wx *Wechat) GetWechatAccessToken(code string) *AccessToken {
 		log2.Log.Errorf("get access token failed, err:%+v", errs)
 		return nil
 	}
-	
+
 	log.Printf("err body: %s, resp: %+v", string(body), resp)
 	//if accessToken.Unionid == "" {
 	//	log.Printf("err body: %s, resp: %+v", string(body), resp)
@@ -144,16 +144,16 @@ func (wx *Wechat) GetAppletAccessToken() *AppletAccessToken {
 		log.Printf("get wxinfo err %+v", errs)
 		return nil
 	}
-	
+
 	log.Println("\ninfo: ", info)
 	log.Println("\nresp: ", resp)
 	log.Println("\nbody: ", string(body))
-	
+
 	if info.Errcode != 0 || resp.StatusCode != 200 {
 		log.Printf("wx_trace: request failed, errCode:%d, statusCode:%d", info.Errcode, resp.StatusCode)
 		return nil
 	}
-	
+
 	return &info
 }
 
@@ -162,9 +162,9 @@ func (wx *Wechat) DecryptPhoneData(phoneData, sessionKey, iv string) (string, er
 	if err != nil {
 		return "", err
 	}
-	
+
 	log2.Log.Infof("decrypt:%s", string(decrypt))
-	
+
 	info := PhoneInfo{}
 	err = json.Unmarshal(decrypt, &info)
 	if err != nil {
@@ -179,24 +179,24 @@ func (wx *Wechat) GetUserPhoneNumber(code, accessToken string) (string, error) {
 	v := url.Values{}
 	v.Set("access_token", accessToken)
 	mp := map[string]interface{}{"code": code}
-	
+
 	info := WechatPhoneInfo{}
-	resp, body, errs := gorequest.New().Post(WECHAT_USER_MOBILE_URL + v.Encode()).
+	resp, body, errs := gorequest.New().Post(WECHAT_USER_MOBILE_URL+v.Encode()).
 		Set("Content-Type", "application/json; charset=utf-8").SendMap(mp).EndStruct(&info)
 	if errs != nil {
 		log.Printf("get wxinfo err %+v", errs)
 		return "", errs[0]
 	}
-	
+
 	log.Println("\ninfo: ", info)
 	log.Println("\nresp: ", resp)
 	log.Println("\nbody: ", string(body))
-	
+
 	if info.Errcode != 0 || resp.StatusCode != 200 {
 		log.Printf("wx_trace: request failed, errCode:%d, statusCode:%d", info.Errcode, resp.StatusCode)
 		return "", errors.New("request failed")
 	}
-	
+
 	return info.PhoneInfo.PurePhoneNumber, nil
 }
 
@@ -216,16 +216,16 @@ func (wx *Wechat) AppletCode2Session(code string) (*AppletCode2SessionResp, erro
 		log.Printf("%+v", errs)
 		return nil, errs[0]
 	}
-	
+
 	log.Println("\ninfo: ", info)
 	log.Println("\nresp: ", resp)
 	log.Println("\nbody: ", string(body))
-	
+
 	if info.Errcode != 0 || resp.StatusCode != 200 {
 		log.Printf("wx_trace: request failed, errCode:%d, statusCode:%d", info.Errcode, resp.StatusCode)
 		return nil, errors.New("request failed")
 	}
-	
+
 	return &info, nil
 }
 
@@ -234,30 +234,29 @@ func (wx *Wechat) DecryptAppletUserInfo(encryptData, sessionKey, iv string) (*Ap
 	if err != nil {
 		return nil, err
 	}
-	
+
 	userInfo := &AppletUserInfo{}
 	err = json.Unmarshal(decrypt, userInfo)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	if userInfo.Watermark == nil {
 		err = errors.New(fmt.Sprintf("wx login err:%s", "Watermark wrong nil"))
 		return nil, err
 	}
-	
+
 	appId, ok := userInfo.Watermark["appid"]
 	if !ok {
 		err = errors.New(fmt.Sprintf("wx login err:%s", "Watermark wrong app id not found"))
 		return nil, err
 	}
-	
+
 	appId = fmt.Sprintf("%v", appId)
 	if appId != APPLET_APPID {
 		err = errors.New(fmt.Sprintf("wx login err:%s", "Watermark wrong app id not match"))
 		return nil, err
 	}
-	
-	
+
 	return userInfo, nil
 }

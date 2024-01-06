@@ -1,11 +1,11 @@
 package mcollect
 
 import (
-	"github.com/go-xorm/xorm"
-	"sports_service/server/global/app/log"
-	"sports_service/server/models"
-	"time"
 	"fmt"
+	"github.com/go-xorm/xorm"
+	"sports_service/global/app/log"
+	"sports_service/models"
+	"time"
 )
 
 type CollectModel struct {
@@ -15,17 +15,17 @@ type CollectModel struct {
 
 // 添加收藏请求参数
 type AddCollectParam struct {
-	VideoId       int64     `binding:"required" json:"video_id" example:"10001"`       // 收藏的视频id
+	VideoId int64 `binding:"required" json:"video_id" example:"10001"` // 收藏的视频id
 }
 
 // 取消收藏请求参数
 type CancelCollectParam struct {
-	VideoId       int64     `binding:"required" json:"video_id" example:"10001"`       // 取消收藏的视频id
+	VideoId int64 `binding:"required" json:"video_id" example:"10001"` // 取消收藏的视频id
 }
 
 // 删除收藏记录请求参数
 type DeleteCollectParam struct {
-	ComposeIds        []string     `binding:"required" json:"compose_ids"`           // 作品id列表
+	ComposeIds []string `binding:"required" json:"compose_ids"` // 作品id列表
 }
 
 // 实栗
@@ -78,6 +78,7 @@ type CollectVideosInfo struct {
 	ComposeId int64 `json:"compose_id"`
 	UpdateAt  int   `json:"update_at"`
 }
+
 // 获取收藏的作品id列表
 func (m *CollectModel) GetCollectList(userId string, offset, size int) []*CollectVideosInfo {
 	var list []*CollectVideosInfo
@@ -95,13 +96,13 @@ func (m *CollectModel) GetCollectList(userId string, offset, size int) []*Collec
 
 // 通过id列表删除收藏记录
 func (m *CollectModel) DeleteCollectByIds(userId string, ids string) error {
-  var sql string
-  if ids == "-1" {
-    // -1 删除所有收藏的视频
-    sql = fmt.Sprintf("DELETE FROM `collect_record` WHERE `user_id`=%s AND compose_type = 0", userId)
-  } else {
-    sql = fmt.Sprintf("DELETE FROM `collect_record` WHERE `user_id`=%s AND compose_id in(%s)", userId,  ids)
-  }
+	var sql string
+	if ids == "-1" {
+		// -1 删除所有收藏的视频
+		sql = fmt.Sprintf("DELETE FROM `collect_record` WHERE `user_id`=%s AND compose_type = 0", userId)
+	} else {
+		sql = fmt.Sprintf("DELETE FROM `collect_record` WHERE `user_id`=%s AND compose_id in(%s)", userId, ids)
+	}
 
 	if _, err := m.Engine.Exec(sql); err != nil {
 		return err

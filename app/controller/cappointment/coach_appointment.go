@@ -4,25 +4,25 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mappointment"
-	"sports_service/server/models/mcoach"
-	"sports_service/server/models/mcourse"
-	"sports_service/server/models/muser"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mappointment"
+	"sports_service/models/mcoach"
+	"sports_service/models/mcourse"
+	"sports_service/models/muser"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"time"
 )
 
 type CoachAppointmentModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	user        *muser.UserModel
-	course      *mcourse.CourseModel
-	coach       *mcoach.CoachModel
+	context *gin.Context
+	engine  *xorm.Session
+	user    *muser.UserModel
+	course  *mcourse.CourseModel
+	coach   *mcoach.CoachModel
 	*base
 }
 
@@ -58,8 +58,8 @@ func (svc *CoachAppointmentModule) Options(relatedId int64) (int, interface{}) {
 	res := make([]*mappointment.Options, len(list))
 	for index, item := range list {
 		info := &mappointment.Options{
-			Id: item.Id,
-			Name: item.Title,
+			Id:           item.Id,
+			Name:         item.Title,
 			Instructions: "预约须知",
 		}
 
@@ -240,7 +240,6 @@ func (svc *CoachAppointmentModule) AppointmentOptions() (int, interface{}) {
 		res = append(res, info)
 	}
 
-
 	return errdef.SUCCESS, res
 }
 
@@ -252,5 +251,3 @@ func (svc *CoachAppointmentModule) AppointmentDetail() (int, interface{}) {
 func (svc *CoachAppointmentModule) AppointmentDate() (int, interface{}) {
 	return errdef.SUCCESS, svc.AppointmentDateInfo(6, consts.APPOINTMENT_COACH)
 }
-
-

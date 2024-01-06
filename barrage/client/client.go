@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/url"
-	pbBarrage "sports_service/server/proto/barrage"
+	pbBarrage "sports_service/proto/barrage"
 	"sync/atomic"
 	"time"
 )
@@ -48,11 +48,11 @@ func FakeClient() {
 
 	defer c.Close()
 	req := pbBarrage.ReqConnMessage{
-		AppId:  "mj4mQaop",
-		Secret: "adf4OisG",
+		AppId:     "mj4mQaop",
+		Secret:    "adf4OisG",
 		Timestamp: "1588888888",
-		Version: "1.1.0",
-		Sign: "72fbf038825db3acfd89506d9dc91c42",
+		Version:   "1.1.0",
+		Sign:      "72fbf038825db3acfd89506d9dc91c42",
 	}
 
 	bts, err := proto.Marshal(&req)
@@ -61,9 +61,9 @@ func FakeClient() {
 	}
 
 	xx := pbBarrage.Message{
-		MsgId: "1",
+		MsgId:   "1",
 		MsgType: pbBarrage.MessageType_TYPE_CONN,
-		Body: bts,
+		Body:    bts,
 	}
 
 	fmt.Println(xx)
@@ -90,9 +90,9 @@ func FakeClient() {
 		for {
 			time.Sleep(100 * time.Second)
 			xx2 := pbBarrage.Message{
-				MsgId: "1",
+				MsgId:   "1",
 				MsgType: pbBarrage.MessageType_TYPE_HEART_BEAT,
-				Body: hb,
+				Body:    hb,
 			}
 
 			fmt.Println(xx2)

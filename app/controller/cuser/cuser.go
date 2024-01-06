@@ -1,50 +1,50 @@
 package cuser
 
 import (
+	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/global/rdskey"
-	"sports_service/server/models"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mconfigure"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/mnotify"
-	"sports_service/server/models/morder"
-	"sports_service/server/models/mposting"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvenue"
-	"sports_service/server/models/mvideo"
-	"sports_service/server/models/sms"
-	"sports_service/server/tools/im"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/global/rdskey"
+	"sports_service/models"
+	"sports_service/models/mattention"
+	"sports_service/models/mcollect"
+	"sports_service/models/mconfigure"
+	"sports_service/models/mlike"
+	"sports_service/models/mnotify"
+	"sports_service/models/morder"
+	"sports_service/models/mposting"
+	"sports_service/models/muser"
+	"sports_service/models/mvenue"
+	"sports_service/models/mvideo"
+	"sports_service/models/sms"
+	"sports_service/tools/im"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"strings"
 	"time"
 	"unicode"
-	"fmt"
 )
 
 type UserModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	user        *muser.UserModel
-	social      *muser.SocialModel
-	notify      *mnotify.NotifyModel
-	attention   *mattention.AttentionModel
-	like        *mlike.LikeModel
-	collect     *mcollect.CollectModel
-	video       *mvideo.VideoModel
-	sms         *sms.SmsModel
-	configure   *mconfigure.ConfigModel
-	venue       *mvenue.VenueModel
-	order       *morder.OrderModel
-	post        *mposting.PostingModel
+	context   *gin.Context
+	engine    *xorm.Session
+	user      *muser.UserModel
+	social    *muser.SocialModel
+	notify    *mnotify.NotifyModel
+	attention *mattention.AttentionModel
+	like      *mlike.LikeModel
+	collect   *mcollect.CollectModel
+	video     *mvideo.VideoModel
+	sms       *sms.SmsModel
+	configure *mconfigure.ConfigModel
+	venue     *mvenue.VenueModel
+	order     *morder.OrderModel
+	post      *mposting.PostingModel
 }
 
 func New(c *gin.Context) UserModule {
@@ -54,20 +54,20 @@ func New(c *gin.Context) UserModule {
 	venueSocket := dao.VenueEngine.NewSession()
 	defer venueSocket.Close()
 	return UserModule{
-		context: c,
-		user: muser.NewUserModel(socket),
-		social: muser.NewSocialPlatform(socket),
-		notify: mnotify.NewNotifyModel(socket),
+		context:   c,
+		user:      muser.NewUserModel(socket),
+		social:    muser.NewSocialPlatform(socket),
+		notify:    mnotify.NewNotifyModel(socket),
 		attention: mattention.NewAttentionModel(socket),
-		like: mlike.NewLikeModel(socket),
-		collect: mcollect.NewCollectModel(socket),
-		video: mvideo.NewVideoModel(socket),
-		post: mposting.NewPostingModel(socket),
-		sms: sms.NewSmsModel(),
+		like:      mlike.NewLikeModel(socket),
+		collect:   mcollect.NewCollectModel(socket),
+		video:     mvideo.NewVideoModel(socket),
+		post:      mposting.NewPostingModel(socket),
+		sms:       sms.NewSmsModel(),
 		configure: mconfigure.NewConfigModel(socket),
-		venue: mvenue.NewVenueModel(venueSocket),
-		order: morder.NewOrderModel(venueSocket),
-		engine: socket,
+		venue:     mvenue.NewVenueModel(venueSocket),
+		order:     morder.NewOrderModel(venueSocket),
+		engine:    socket,
 	}
 }
 
@@ -81,19 +81,19 @@ func (svc *UserModule) GetUserInfoByUserid(userId string) (int, *muser.UserInfoR
 
 	// 重新组装返回数据
 	resp := &muser.UserInfoResp{
-		UserId: info.UserId,
-		Avatar: tencentCloud.BucketURI(info.Avatar),
-		MobileNum: info.MobileNum,
-		NickName: info.NickName,
-		Gender: int32(info.Gender),
-		Signature: info.Signature,
-		Status: int32(info.Status),
-		IsAnchor: int32(info.IsAnchor),
+		UserId:        info.UserId,
+		Avatar:        tencentCloud.BucketURI(info.Avatar),
+		MobileNum:     info.MobileNum,
+		NickName:      info.NickName,
+		Gender:        int32(info.Gender),
+		Signature:     info.Signature,
+		Status:        int32(info.Status),
+		IsAnchor:      int32(info.IsAnchor),
 		BackgroundImg: info.BackgroundImg,
-		Born: info.Born,
-		Age: info.Age,
-		UserType: info.UserType,
-		Country: int32(info.Country),
+		Born:          info.Born,
+		Age:           info.Age,
+		UserType:      info.UserType,
+		Country:       int32(info.Country),
 	}
 
 	// 查看国家是否存在
@@ -241,19 +241,19 @@ func (svc *UserModule) GetUserZoneInfo(userId, toUserId string) (int, *muser.Use
 
 	// 重新组装返回数据
 	resp := &muser.UserInfoResp{
-		UserId: info.UserId,
-		Avatar: tencentCloud.BucketURI(info.Avatar),
-		MobileNum: info.MobileNum,
-		NickName: info.NickName,
-		Gender: int32(info.Gender),
-		Signature: info.Signature,
-		Status: int32(info.Status),
-		IsAnchor: int32(info.IsAnchor),
+		UserId:        info.UserId,
+		Avatar:        tencentCloud.BucketURI(info.Avatar),
+		MobileNum:     info.MobileNum,
+		NickName:      info.NickName,
+		Gender:        int32(info.Gender),
+		Signature:     info.Signature,
+		Status:        int32(info.Status),
+		IsAnchor:      int32(info.IsAnchor),
 		BackgroundImg: info.BackgroundImg,
-		Born: info.Born,
-		Age: info.Age,
-		UserType: info.UserType,
-		Country: int32(info.Country),
+		Born:          info.Born,
+		Age:           info.Age,
+		UserType:      info.UserType,
+		Country:       int32(info.Country),
 	}
 
 	// 查看国家是否存在
@@ -362,7 +362,7 @@ func (svc *UserModule) GetStrLen(r []rune) int {
 		letterlen++
 	}
 
-	length := letterlen + wordlen * 2
+	length := letterlen + wordlen*2
 	return length
 }
 
@@ -412,7 +412,7 @@ func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
 			//	kabaw.VipName = svc.venue.Product.ProductName
 			//}
 
-            kabaw.VipName = "会员卡"
+			kabaw.VipName = "会员卡"
 			kabaw.VipImage = consts.VENUE_VIP_IMAGE
 			kabaw.IsVip = true
 
@@ -427,7 +427,7 @@ func (svc *UserModule) GetKabawInfo(userId string) (int, *muser.UserKabawInfo) {
 		}
 	}
 
-	if err := svc.order.SaveQrCodeInfo(kabaw.QrCodeInfo, userId, rdskey.KEY_EXPIRE_MIN * 60); err != nil {
+	if err := svc.order.SaveQrCodeInfo(kabaw.QrCodeInfo, userId, rdskey.KEY_EXPIRE_MIN*60); err != nil {
 		log.Log.Errorf("user_trace: save qrcode kabaw info fail, userId:%s, err:%s", userId, err)
 		return errdef.VENUE_VIP_INFO_FAIL, nil
 	}
@@ -460,7 +460,7 @@ func (svc *UserModule) UpdateTencentImSignByUser(userId string) (int, string) {
 		return errdef.USER_NOT_EXISTS, ""
 	}
 
-	sig, err := im.Im.GenSig(userId, 3600 * 24 * 90)
+	sig, err := im.Im.GenSig(userId, 3600*24*90)
 	if err != nil {
 		return errdef.USER_GEN_IM_SIGN_FAIL, ""
 	}
@@ -492,10 +492,10 @@ func (svc *UserModule) AddGuestByTencentIm() (int, *muser.TencentImUser) {
 	}
 
 	info := &muser.TencentImUser{
-		UserId: userId,
-		Avatar: tencentCloud.BucketURI(avatar),
+		UserId:   userId,
+		Avatar:   tencentCloud.BucketURI(avatar),
 		NickName: nickName,
-		Sign: sign,
+		Sign:     sign,
 	}
 
 	svc.SaveGuestInfo(info)
@@ -547,7 +547,7 @@ func (svc *UserModule) GetTencentImSignByGuest(action int) (int, *muser.TencentI
 
 	// action == 2 签名过期 重新生成
 	if action == 2 {
-		sig, err := im.Im.GenSig(imUser.UserId, 3600 * 24 * 90)
+		sig, err := im.Im.GenSig(imUser.UserId, 3600*24*90)
 		if err != nil {
 			return errdef.USER_GEN_IM_SIGN_FAIL, nil
 		}
@@ -582,9 +582,9 @@ func (svc *UserModule) GetTencentImSignByUser(userId string) (int, *muser.Tencen
 	if user.TxAccid != "" && user.TxToken != "" {
 		info := &muser.TencentImUser{
 			NickName: user.NickName,
-			Avatar: tencentCloud.BucketURI(user.Avatar),
-			UserId: user.TxAccid,
-			Sign: user.TxToken,
+			Avatar:   tencentCloud.BucketURI(user.Avatar),
+			UserId:   user.TxAccid,
+			Sign:     user.TxToken,
 		}
 
 		return errdef.SUCCESS, info
@@ -609,9 +609,9 @@ func (svc *UserModule) GetTencentImSignByUser(userId string) (int, *muser.Tencen
 
 	info := &muser.TencentImUser{
 		NickName: user.NickName,
-		Avatar: tencentCloud.BucketURI(user.Avatar),
-		UserId: user.TxAccid,
-		Sign: user.TxToken,
+		Avatar:   tencentCloud.BucketURI(user.Avatar),
+		UserId:   user.TxAccid,
+		Sign:     user.TxToken,
 	}
 
 	return errdef.SUCCESS, info

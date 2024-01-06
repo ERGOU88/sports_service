@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/cvideo"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mvideo"
-	_ "sports_service/server/models/mlabel"
-	cloud "sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
-	_ "sports_service/server/models"
-	"sports_service/server/tools/tencentCloud/vod"
+	"sports_service/app/controller/cvideo"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	_ "sports_service/models"
+	_ "sports_service/models/mlabel"
+	"sports_service/models/mvideo"
+	cloud "sports_service/tools/tencentCloud"
+	"sports_service/tools/tencentCloud/vod"
+	"sports_service/util"
 	"strconv"
 )
 
@@ -438,7 +438,6 @@ func EventCallback(c *gin.Context) {
 		return
 	}
 
-
 }
 
 // 用户上传自定义标签
@@ -521,7 +520,7 @@ func TestUpload(c *gin.Context) {
 	}
 
 	client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, consts.VOD_API_DOMAIN)
-	resp, err := client.Upload(taskId,"202009101933004667", "", "/Users/jelly/go/src/sports_service/server/tools/tencentCloud/test.mp4",
+	resp, err := client.Upload(taskId, "202009101933004667", "", "/Users/jelly/go/src/sports_service/tools/tencentCloud/test.mp4",
 		"ap-shanghai", consts.VOD_PROCEDURE_NAME)
 	if err != nil {
 		fmt.Printf("upload err:%s", err)
@@ -541,7 +540,6 @@ func TestUpload(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.VIDEO_PUBLISH_FAIL)
 		return
 	}
-
 
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
@@ -672,5 +670,3 @@ func SectionRecommendInfo(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
-
-

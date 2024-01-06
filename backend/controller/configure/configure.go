@@ -3,44 +3,44 @@ package configure
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mbanner"
-	"sports_service/server/models/mconfigure"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	"sports_service/server/tools/tencentCloud"
+	"sports_service/dao"
+	"sports_service/global/backend/errdef"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mbanner"
+	"sports_service/models/mconfigure"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	"sports_service/tools/tencentCloud"
 	"time"
 )
 
 type ConfigModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	banner      *mbanner.BannerModel
-	user        *muser.UserModel
-	video       *mvideo.VideoModel
-	configure   *mconfigure.ConfigModel
+	context   *gin.Context
+	engine    *xorm.Session
+	banner    *mbanner.BannerModel
+	user      *muser.UserModel
+	video     *mvideo.VideoModel
+	configure *mconfigure.ConfigModel
 }
 
 func New(c *gin.Context) ConfigModule {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return ConfigModule{
-		context: c,
-		banner: mbanner.NewBannerMolde(socket),
-		user: muser.NewUserModel(socket),
-		video: mvideo.NewVideoModel(socket),
+		context:   c,
+		banner:    mbanner.NewBannerMolde(socket),
+		user:      muser.NewUserModel(socket),
+		video:     mvideo.NewVideoModel(socket),
 		configure: mconfigure.NewConfigModel(socket),
-		engine: socket,
+		engine:    socket,
 	}
 }
 
 // 后台添加banner
 func (svc *ConfigModule) AddBanner(params *mbanner.AddBannerParams) int {
 	now := int(time.Now().Unix())
-	if params.EndTime - params.StartTime < 1800 ||
+	if params.EndTime-params.StartTime < 1800 ||
 		params.EndTime <= params.StartTime ||
 		params.EndTime <= now {
 		return errdef.CONFIG_INVALID_END_TIME
@@ -71,7 +71,7 @@ func (svc *ConfigModule) AddBanner(params *mbanner.AddBannerParams) int {
 // 后台更新banner
 func (svc *ConfigModule) UpdateBanner(params *mbanner.UpdateBannerParams) int {
 	now := int(time.Now().Unix())
-	if params.EndTime - params.StartTime < 1800 ||
+	if params.EndTime-params.StartTime < 1800 ||
 		params.EndTime <= params.StartTime ||
 		params.EndTime <= now {
 		return errdef.CONFIG_INVALID_END_TIME
@@ -96,7 +96,6 @@ func (svc *ConfigModule) UpdateBanner(params *mbanner.UpdateBannerParams) int {
 
 	return errdef.SUCCESS
 }
-
 
 // 后台删除banner
 func (svc *ConfigModule) DelBanner(param *mbanner.DelBannerParam) int {
@@ -223,7 +222,7 @@ func (svc *ConfigModule) AddNewPackage(param *mconfigure.AddPackageParams) int {
 	svc.configure.VersionControl.VersionName = param.VersionName
 	svc.configure.VersionControl.Describe = param.Describe
 	svc.configure.VersionControl.ByteSize = param.ByteSize
-	
+
 	// 添加新包
 	affected, err := svc.configure.AddNewPackage()
 	if affected != 1 || err != nil {

@@ -1,8 +1,8 @@
 package log
 
 import (
-	"sports_service/server/log"
-	"sports_service/server/log/default"
+	"sports_service/log"
+	"sports_service/log/default"
 )
 
 func init() {
@@ -13,4 +13,3 @@ var (
 	// Log 第三方日志接口
 	Log log.ILogger
 )
-

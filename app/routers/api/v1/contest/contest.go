@@ -3,9 +3,9 @@ package contest
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/contest"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/util"
+	"sports_service/app/controller/contest"
+	"sports_service/global/app/errdef"
+	"sports_service/util"
 )
 
 func BannerList(c *gin.Context) {
@@ -33,7 +33,7 @@ func LiveList(c *gin.Context) {
 func RecommendLive(c *gin.Context) {
 	reply := errdef.New(c)
 	svc := contest.New(c)
-	code, list, _, _ := svc.GetLiveList("1", "", "",  1, 2)
+	code, list, _, _ := svc.GetLiveList("1", "", "", 1, 2)
 	reply.Data["list"] = list
 	reply.Data["count"] = svc.GetLiveCount()
 	reply.Response(http.StatusOK, code)
@@ -85,4 +85,3 @@ func LiveScheduleData(c *gin.Context) {
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, code)
 }
-

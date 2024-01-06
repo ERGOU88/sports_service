@@ -1,8 +1,8 @@
 package cappointment
 
 import (
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mappointment"
+	"sports_service/global/consts"
+	"sports_service/models/mappointment"
 )
 
 type IAppointment interface {
@@ -77,6 +77,3 @@ func GetAppointmentDate(i IAppointment, queryType, relatedId, coachId int) (int,
 
 	return i.AppointmentDate()
 }
-
-
-

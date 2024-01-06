@@ -1,17 +1,17 @@
 package main
 
 import (
-	"github.com/golang/protobuf/proto"
-	"sports_service/server/global/consts"
-	"sports_service/server/global/rdskey"
-	pbBarrage "sports_service/server/proto/barrage"
-	"sports_service/server/tools/nsq"
-	nsqsvc "github.com/nsqio/go-nsq"
-	"sports_service/server/barrage/config"
-	"fmt"
-	"time"
 	"errors"
-	"sports_service/server/dao"
+	"fmt"
+	"github.com/golang/protobuf/proto"
+	nsqsvc "github.com/nsqio/go-nsq"
+	"sports_service/barrage/config"
+	"sports_service/dao"
+	"sports_service/global/consts"
+	"sports_service/global/rdskey"
+	pbBarrage "sports_service/proto/barrage"
+	"sports_service/tools/nsq"
+	"time"
 )
 
 var msgCh = make(chan *pbBarrage.Message, config.Global.MaxMsgCacheLen)
@@ -78,7 +78,7 @@ func handle(event *pbBarrage.Message) error {
 func ReadChanelMessage() {
 	var msg *pbBarrage.Message
 	for {
-		msg = <- msgCh
+		msg = <-msgCh
 		if msg == nil {
 			continue
 		}
@@ -109,7 +109,6 @@ func ReadChanelMessage() {
 		// 广播消息
 		case pbBarrage.MessageType_TYPE_BROADCAST:
 			// todo:
-
 
 		// 观看视频消息
 		case pbBarrage.MessageType_TYPE_WATCH_VIDEO:
@@ -159,4 +158,3 @@ func delWatchUserByVideoId(videoId, xid string) (int, error) {
 	rds := dao.NewRedisDao()
 	return rds.SREM(rdskey.MakeKey(rdskey.USER_WATCHING_VIDEO, videoId), xid)
 }
-

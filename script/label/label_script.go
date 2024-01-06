@@ -1,18 +1,18 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http/httptest"
-	"sports_service/server/dao"
-	"sports_service/server/models"
-	"sports_service/server/models/mlabel"
-	"sports_service/server/models/mvideo"
-	"sports_service/server/util"
+	"sports_service/app/controller/cvideo"
+	"sports_service/dao"
+	"sports_service/global/app/log"
+	"sports_service/models"
+	"sports_service/models/mlabel"
+	"sports_service/models/mvideo"
+	"sports_service/util"
 	"strings"
 	"time"
-	"sports_service/server/app/controller/cvideo"
-	"sports_service/server/global/app/log"
-	"fmt"
 )
 
 func init() {
@@ -40,7 +40,6 @@ func AddVideoLabels() {
 	if vlist == nil {
 		return
 	}
-
 
 	for _, video := range vlist {
 		lmodel := mlabel.NewLabelModel(session)

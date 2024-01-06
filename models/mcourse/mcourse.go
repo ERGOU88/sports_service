@@ -2,14 +2,14 @@ package mcourse
 
 import (
 	"github.com/go-xorm/xorm"
-	"sports_service/server/models"
-	"sports_service/server/models/mcoach"
+	"sports_service/models"
+	"sports_service/models/mcoach"
 )
 
 type CourseModel struct {
-	Course    *models.VenueCourseDetail
-	Engine    *xorm.Session
-	Labels    *models.VenueUserLabel
+	Course *models.VenueCourseDetail
+	Engine *xorm.Session
+	Labels *models.VenueUserLabel
 }
 
 func NewCourseModel(engine *xorm.Session) *CourseModel {
@@ -40,6 +40,7 @@ const (
 		"AS va LEFT JOIN venue_course_detail AS vc ON va.course_id=vc.id WHERE va.appointment_type=2 GROUP BY " +
 		"va.course_id ORDER BY va.id DESC"
 )
+
 // 获取大课列表
 func (m *CourseModel) GetCourseList() ([]*mcoach.CourseInfo, error) {
 	var list []*mcoach.CourseInfo
@@ -60,12 +61,12 @@ func (m *CourseModel) GetCourseList() ([]*mcoach.CourseInfo, error) {
 //	return list, nil
 //}
 
-
 const (
 	GET_COURSE_BY_COACH_ID = "SELECT va.course_id, va.coach_id, va.cur_amount AS price, va.venue_id, va.period_num, va.duration AS " +
 		"class_period, vc.* FROM venue_appointment_info AS va LEFT JOIN venue_course_detail AS vc ON va.course_id=vc.id " +
 		"WHERE va.appointment_type=1 AND va.coach_id=? GROUP BY va.course_id ORDER BY va.id DESC"
 )
+
 // 通过私教id获取 私教的课程
 func (m *CourseModel) GetCourseByCoachId(coachId string) ([]*mcoach.CourseInfo, error) {
 	var list []*mcoach.CourseInfo

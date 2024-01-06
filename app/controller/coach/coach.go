@@ -4,30 +4,30 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mappointment"
-	"sports_service/server/models/mcoach"
-	"sports_service/server/models/mcourse"
-	"sports_service/server/models/morder"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvenue"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mappointment"
+	"sports_service/models/mcoach"
+	"sports_service/models/mcourse"
+	"sports_service/models/morder"
+	"sports_service/models/muser"
+	"sports_service/models/mvenue"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"time"
 )
 
 type CoachModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	coach       *mcoach.CoachModel
-	course      *mcourse.CourseModel
-	user        *muser.UserModel
-	order       *morder.OrderModel
-	venue       *mvenue.VenueModel
+	context *gin.Context
+	engine  *xorm.Session
+	coach   *mcoach.CoachModel
+	course  *mcourse.CourseModel
+	user    *muser.UserModel
+	order   *morder.OrderModel
+	venue   *mvenue.VenueModel
 }
 
 func New(c *gin.Context) *CoachModule {
@@ -62,9 +62,9 @@ func (svc *CoachModule) GetCoachList(page, size int) (int, []*mcoach.CoachInfo) 
 	res := make([]*mcoach.CoachInfo, len(list))
 	for index, item := range list {
 		info := &mcoach.CoachInfo{
-			Id:   item.Id,
-			Cover: tencentCloud.BucketURI(item.Cover),
-			Name: item.Name,
+			Id:          item.Id,
+			Cover:       tencentCloud.BucketURI(item.Cover),
+			Name:        item.Name,
 			Designation: item.Designation,
 		}
 
@@ -82,14 +82,14 @@ func (svc *CoachModule) GetCoachDetail(coachId string) (int, *mcoach.CoachDetail
 	}
 
 	res := &mcoach.CoachDetail{
-		Id: svc.coach.Coach.Id,
-		Title: svc.coach.Coach.Title,
-		Name: svc.coach.Coach.Name,
-		Designation: svc.coach.Coach.Designation,
-		Describe: svc.coach.Coach.Describe,
+		Id:               svc.coach.Coach.Id,
+		Title:            svc.coach.Coach.Title,
+		Name:             svc.coach.Coach.Name,
+		Designation:      svc.coach.Coach.Designation,
+		Describe:         svc.coach.Coach.Describe,
 		AreasOfExpertise: svc.coach.Coach.AreasOfExpertise,
-		Cover: tencentCloud.BucketURI(svc.coach.Coach.Cover),
-		Avatar: tencentCloud.BucketURI(svc.coach.Coach.Avatar),
+		Cover:            tencentCloud.BucketURI(svc.coach.Coach.Cover),
+		Avatar:           tencentCloud.BucketURI(svc.coach.Coach.Avatar),
 	}
 
 	ok, err = svc.venue.GetVenueInfoById(fmt.Sprint(svc.course.Course.VenueId))
@@ -109,7 +109,6 @@ func (svc *CoachModule) GetCoachDetail(coachId string) (int, *mcoach.CoachDetail
 	} else {
 		res.Courses = make([]*mcoach.CourseInfo, 0)
 	}
-
 
 	return errdef.SUCCESS, res
 }
@@ -137,9 +136,9 @@ func (svc *CoachModule) GetEvaluateList(coachId string, page, size int) (int, []
 			Id: item.Id,
 			//UserId: item.UserId,
 			CoachId: item.CoachId,
-			Star: item.Star,
+			Star:    item.Star,
 			Content: item.Content,
-			Avatar: consts.EVALUATE_DEFAULT_AVATAR,
+			Avatar:  consts.EVALUATE_DEFAULT_AVATAR,
 		}
 
 		//if user := svc.user.FindUserByUserid(item.UserId); user != nil {
@@ -197,7 +196,6 @@ func (svc *CoachModule) PubEvaluate(userId string, param *mcoach.PubEvaluatePara
 		svc.engine.Rollback()
 		return errdef.COACH_ORDER_NOT_EXISTS
 	}
-
 
 	products, err := svc.order.GetOrderProductsById(svc.order.Order.PayOrderId)
 	if len(products) == 0 || err != nil {
@@ -298,8 +296,8 @@ func (svc *CoachModule) GetCoachScore(coachId string) (totalNum int, score float
 		totalNum = 0
 		score = 0
 	} else {
-		totalNum =  svc.coach.CoachScore.TotalNum
-		score = util.TruncFloat(float64(svc.coach.CoachScore.TotalScore) / float64(svc.coach.CoachScore.TotalNum), 1)
+		totalNum = svc.coach.CoachScore.TotalNum
+		score = util.TruncFloat(float64(svc.coach.CoachScore.TotalScore)/float64(svc.coach.CoachScore.TotalNum), 1)
 	}
 
 	return

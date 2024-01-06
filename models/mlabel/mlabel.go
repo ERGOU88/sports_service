@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	"reflect"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
-	"sports_service/server/models"
+	"sports_service/dao"
+	"sports_service/global/app/log"
+	"sports_service/models"
 	"sync"
 )
 
 type LabelModel struct {
-	Engine         *xorm.Session
-	VideoLabels    *models.VideoLabelConfig
+	Engine      *xorm.Session
+	VideoLabels *models.VideoLabelConfig
 }
 
 // 标签列表信息
@@ -30,16 +30,16 @@ type VideoLabel struct {
 
 // 添加视频标签请求参数
 type AddVideoLabelParam struct {
-	LabelName    string    `json:"label_name"`     // 视频标签名称
-	Icon         string    `json:"icon"`           // icon
-	Sortorder    int       `json:"sortorder"`      // 权重
-	LabelId      int       `json:"label_id"`       // 视频标签id
-	Status       int       `json:"status"`         // 状态
+	LabelName string `json:"label_name"` // 视频标签名称
+	Icon      string `json:"icon"`       // icon
+	Sortorder int    `json:"sortorder"`  // 权重
+	LabelId   int    `json:"label_id"`   // 视频标签id
+	Status    int    `json:"status"`     // 状态
 }
 
 // 删除视频标签请求参数
 type DelVideoLabelParam struct {
-	LabelId      string    `json:"label_id"`       // 视频标签id
+	LabelId string `json:"label_id"` // 视频标签id
 }
 
 var videoLabels []*VideoLabel
@@ -63,7 +63,7 @@ func InitLabelList() {
 // 实栗
 func NewLabelModel(engine *xorm.Session) *LabelModel {
 	return &LabelModel{
-		Engine: engine,
+		Engine:      engine,
 		VideoLabels: new(models.VideoLabelConfig),
 	}
 }
@@ -152,7 +152,7 @@ func (m *LabelModel) DelLabelInfoByMem(labelId string) {
 
 // 修改频率低的数据 直接清理内存数据 下次从数据库load内存
 func (m *LabelModel) CleanLabelInfoByMem() {
-  videoLabels = nil
+	videoLabels = nil
 }
 
 // 添加标签信息（内存）
@@ -160,14 +160,14 @@ func (m *LabelModel) AddLabelInfoByMem() {
 	mutex.Lock()
 	defer mutex.Unlock()
 	info := &VideoLabel{
-		CreateAt: m.VideoLabels.CreateAt,
-		Icon: m.VideoLabels.Icon,
-		LabelId: m.VideoLabels.LabelId,
+		CreateAt:  m.VideoLabels.CreateAt,
+		Icon:      m.VideoLabels.Icon,
+		LabelId:   m.VideoLabels.LabelId,
 		LabelName: m.VideoLabels.LabelName,
-		Pid: m.VideoLabels.Pid,
+		Pid:       m.VideoLabels.Pid,
 		Sortorder: m.VideoLabels.Sortorder,
-		Status: m.VideoLabels.Status,
-		UpdateAt: m.VideoLabels.UpdateAt,
+		Status:    m.VideoLabels.Status,
+		UpdateAt:  m.VideoLabels.UpdateAt,
 	}
 
 	labelMp[fmt.Sprint(m.VideoLabels.LabelId)] = info
@@ -176,7 +176,7 @@ func (m *LabelModel) AddLabelInfoByMem() {
 // 从内存读取视频标签 （第一次请求 内存没有 则从数据库load到内存）
 func (m *LabelModel) GetVideoLabelList() []*VideoLabel {
 	if len(videoLabels) == 0 {
-	  log.Log.Debugf("load mysql")
+		log.Log.Debugf("load mysql")
 		var err error
 		err, videoLabels = m.LoadLabelsInfoByDb()
 		if err != nil {
@@ -237,7 +237,7 @@ func (m *LabelModel) tree(info []*VideoLabel) []*VideoLabel {
 			child, err := m.FindSubLabelsByPid(v)
 			if err != nil || len(child) == 0 {
 				if v.Pid == 1 {
-					info = append(info[:k], info[k + 1:]...)
+					info = append(info[:k], info[k+1:]...)
 				}
 
 				continue

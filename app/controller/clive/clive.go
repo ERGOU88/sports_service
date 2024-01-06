@@ -1,23 +1,23 @@
 package clive
 
 import (
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/tools/live"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/models/mcontest"
-	"sports_service/server/global/consts"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mcontest"
+	"sports_service/tools/live"
 	"strconv"
 	"time"
-	"fmt"
 )
 
 type LiveModule struct {
-	context    *gin.Context
-	engine     *xorm.Session
-	contest    *mcontest.ContestModel
+	context *gin.Context
+	engine  *xorm.Session
+	contest *mcontest.ContestModel
 }
 
 func New(c *gin.Context) LiveModule {
@@ -26,7 +26,7 @@ func New(c *gin.Context) LiveModule {
 	return LiveModule{
 		context: c,
 		contest: mcontest.NewContestModel(socket),
-		engine: socket,
+		engine:  socket,
 	}
 }
 
@@ -117,7 +117,7 @@ func (svc *LiveModule) GenCallbackSign(t int) string {
 }
 
 // 校验回调参数信息
-func (svc *LiveModule) ValidateParamInfo(params *mcontest.StreamCallbackInfo ) int {
+func (svc *LiveModule) ValidateParamInfo(params *mcontest.StreamCallbackInfo) int {
 	sign := svc.GenCallbackSign(params.T)
 	if sign != params.Sign {
 		log.Log.Errorf("live_trace: sign not match, sign:%s, param sign:%s", sign, params.Sign)

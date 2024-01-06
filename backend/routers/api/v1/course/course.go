@@ -3,12 +3,12 @@ package course
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/backend/controller/course"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/global/backend/log"
-	"sports_service/server/models"
-	"sports_service/server/models/medu"
-	"sports_service/server/util"
+	"sports_service/backend/controller/course"
+	"sports_service/global/backend/errdef"
+	"sports_service/global/backend/log"
+	"sports_service/models"
+	"sports_service/models/medu"
+	"sports_service/util"
 )
 
 // 添加课程
@@ -20,7 +20,7 @@ func AddCourse(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := course.New(c)
 	syscode := svc.AddCourse(args)
 	reply.Response(http.StatusOK, syscode)
@@ -35,7 +35,7 @@ func UpdateCourse(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := course.New(c)
 	syscode := svc.UpdateCourse(args)
 	reply.Response(http.StatusOK, syscode)
@@ -44,12 +44,12 @@ func UpdateCourse(c *gin.Context) {
 // 获取上传签名（腾讯云）
 func UploadSign(c *gin.Context) {
 	reply := errdef.New(c)
-	
+
 	svc := course.New(c)
 	syscode, sign, taskId := svc.GetUploadSign()
 	reply.Data["sign"] = sign
 	reply.Data["task_id"] = taskId
-	
+
 	log.Log.Errorf("#####taskId:%s", taskId)
 	reply.Response(http.StatusOK, syscode)
 }
@@ -63,7 +63,7 @@ func DelCourse(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := course.New(c)
 	syscode := svc.DelCourse(arg.Id)
 	reply.Response(http.StatusOK, syscode)
@@ -74,7 +74,7 @@ func GetCourseList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	name := c.Query("name")
-	
+
 	svc := course.New(c)
 	list, total := svc.GetCourseList(name, page, size)
 	reply.Data["list"] = list
@@ -101,7 +101,7 @@ func SetHomePageRecommend(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := course.New(c)
 	syscode := svc.SetHomePageRecommend(param)
 	reply.Response(http.StatusOK, syscode)
@@ -123,7 +123,7 @@ func AddCourseCategory(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := course.New(c)
 	reply.Response(http.StatusOK, svc.AddCourseCategory(params))
 }
@@ -135,7 +135,7 @@ func EditCourseCategory(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := course.New(c)
 	reply.Response(http.StatusOK, svc.EditCourseCategory(params))
 }

@@ -3,12 +3,12 @@ package contest
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/models"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/global/backend/log"
-	"sports_service/server/backend/controller/contest"
-	"sports_service/server/models/mcontest"
-	"sports_service/server/util"
+	"sports_service/backend/controller/contest"
+	"sports_service/global/backend/errdef"
+	"sports_service/global/backend/log"
+	"sports_service/models"
+	"sports_service/models/mcontest"
+	"sports_service/util"
 )
 
 func AddPlayer(c *gin.Context) {
@@ -124,7 +124,7 @@ func DelScheduleDetail(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := contest.New(c)
 	reply.Response(http.StatusOK, svc.DelScheduleDetail(infoIds))
 }
@@ -163,7 +163,6 @@ func IntegralRankingList(c *gin.Context) {
 	reply.Data["total"] = svc.GetIntegralRankingTotal()
 	reply.Response(http.StatusOK, code)
 }
-
 
 func AddContestLive(c *gin.Context) {
 	reply := errdef.New(c)
@@ -215,7 +214,7 @@ func AddLiveData(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := contest.New(c)
 	reply.Response(http.StatusOK, svc.AddLiveData(param))
 }

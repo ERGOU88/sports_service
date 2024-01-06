@@ -2,7 +2,7 @@ package contest
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/jwt"
+	"sports_service/middleware/jwt"
 )
 
 func Router(engine *gin.Engine) {

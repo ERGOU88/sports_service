@@ -2,8 +2,8 @@ package coach
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/sign"
-	"sports_service/server/middleware/token"
+	"sports_service/middleware/sign"
+	"sports_service/middleware/token"
 )
 
 // 私教模块路由
@@ -16,7 +16,7 @@ func Router(engine *gin.Engine) {
 		coach.GET("/list", CoachList)
 		// 私教详情
 		coach.GET("/detail", CoachDetail)
-        // 评价列表
+		// 评价列表
 		coach.GET("/evaluate/list", CoachEvaluate)
 		// 评价配置
 		coach.GET("/evaluate/conf", CoachEvaluateConf)

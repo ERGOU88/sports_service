@@ -2,31 +2,31 @@ package mattention
 
 import (
 	"github.com/go-xorm/xorm"
-	"sports_service/server/global/app/log"
-	"sports_service/server/models"
-	"sports_service/server/tools/tencentCloud"
+	"sports_service/global/app/log"
+	"sports_service/models"
+	"sports_service/tools/tencentCloud"
 	"time"
 )
 
 type AttentionModel struct {
-	UserAttention    *models.UserAttention
-	Engine           *xorm.Session
+	UserAttention *models.UserAttention
+	Engine        *xorm.Session
 }
 
 // 添加关注请求参数
 type AddAttentionParam struct {
-	UserId       string     `binding:"required" json:"user_id" example:"需关注的用户id"`     // 需关注的用户id
+	UserId string `binding:"required" json:"user_id" example:"需关注的用户id"` // 需关注的用户id
 }
 
 // 取消关注请求参数
 type CancelAttentionParam struct {
-	UserId       string     `binding:"required" json:"user_id" example:"被取消关注的用户id"`  // 被取消关注的用户id
+	UserId string `binding:"required" json:"user_id" example:"被取消关注的用户id"` // 被取消关注的用户id
 }
 
 func NewAttentionModel(engine *xorm.Session) *AttentionModel {
 	return &AttentionModel{
 		UserAttention: new(models.UserAttention),
-		Engine: engine,
+		Engine:        engine,
 	}
 }
 
@@ -35,7 +35,7 @@ func (m *AttentionModel) GetAttentionInfo(attentionUid, userId string) *models.U
 	m.UserAttention = new(models.UserAttention)
 	ok, err := m.Engine.Where("attention_uid=? AND user_id=?", attentionUid, userId).Get(m.UserAttention)
 	if !ok || err != nil {
-	  log.Log.Errorf("attention_trace: get attention info err:%s, ok:%v", err, ok)
+		log.Log.Errorf("attention_trace: get attention info err:%s, ok:%v", err, ok)
 		return nil
 	}
 
@@ -110,29 +110,28 @@ func (m *AttentionModel) GetTotalFans(userId string) int64 {
 	return total
 }
 
-
 // 用户搜索联系人（关注/粉丝）
 type SearchContactRes struct {
-	UserId        string `json:"user_id" example:"2009011314521111"`
+	UserId        string                 `json:"user_id" example:"2009011314521111"`
 	Avatar        tencentCloud.BucketURI `json:"avatar" example:"头像地址"`
-	NickName      string `json:"nick_name" example:"昵称 陈二狗"`
-	Gender        int32  `json:"gender" example:"0"`
-	Signature     string `json:"signature" example:"个性签名"`
-	Status        int32  `json:"status" example:"0"`
-	IsAnchor      int32  `json:"is_anchor" example:"0"`
+	NickName      string                 `json:"nick_name" example:"昵称 陈二狗"`
+	Gender        int32                  `json:"gender" example:"0"`
+	Signature     string                 `json:"signature" example:"个性签名"`
+	Status        int32                  `json:"status" example:"0"`
+	IsAnchor      int32                  `json:"is_anchor" example:"0"`
 	BackgroundImg tencentCloud.BucketURI `json:"background_img" example:"背景图"`
-	Born          string `json:"born" example:"出生日期"`
-	Age           int    `json:"age" example:"27"`
-	IsAttention   int32  `json:"is_attention"  example:"0"`
+	Born          string                 `json:"born" example:"出生日期"`
+	Age           int                    `json:"age" example:"27"`
+	IsAttention   int32                  `json:"is_attention"  example:"0"`
 }
 
 // 搜索关注的用户
 func (m *AttentionModel) SearchAttentionUser(userId, name string, offset, size int) []*SearchContactRes {
 	sql := "SELECT u.*, ua.`status` as is_attention FROM user_attention AS ua INNER JOIN user as u " +
 		"ON u.`user_id` = ua.`user_id` " +
-		 "WHERE ua.`attention_uid`= ? AND ua.`status`=1 " +
-    "AND u.nick_name LIKE '%" + name + "%' OR u.`user_id` LIKE '%" + name + "%' AND u.`status`=0 " +
-	  "ORDER BY ua.`id` DESC LIMIT ?, ?"
+		"WHERE ua.`attention_uid`= ? AND ua.`status`=1 " +
+		"AND u.nick_name LIKE '%" + name + "%' OR u.`user_id` LIKE '%" + name + "%' AND u.`status`=0 " +
+		"ORDER BY ua.`id` DESC LIMIT ?, ?"
 	var list []*SearchContactRes
 	if err := m.Engine.SQL(sql, userId, offset, size).Find(&list); err != nil {
 		log.Log.Errorf("search attention user err:%s", err)
@@ -144,11 +143,11 @@ func (m *AttentionModel) SearchAttentionUser(userId, name string, offset, size i
 
 // 搜索粉丝
 func (m *AttentionModel) SearchFans(userId, name string, offset, size int) []*SearchContactRes {
-	sql :=  "SELECT u.*, ua.`status` as is_attention FROM user_attention AS ua INNER JOIN user as u " +
+	sql := "SELECT u.*, ua.`status` as is_attention FROM user_attention AS ua INNER JOIN user as u " +
 		"ON u.`user_id` = ua.`attention_uid` " +
 		"WHERE ua.`user_id` = ? AND ua.`status`=1 " +
-    "AND u.nick_name LIKE '%" + name + "%' " +
-    "OR u.`user_id` LIKE '%" + name + "%' AND u.`status`=0 " +
+		"AND u.nick_name LIKE '%" + name + "%' " +
+		"OR u.`user_id` LIKE '%" + name + "%' AND u.`status`=0 " +
 		"ORDER BY ua.id DESC LIMIT ?, ?"
 	var list []*SearchContactRes
 	if err := m.Engine.SQL(sql, userId, offset, size).Find(&list); err != nil {
@@ -158,4 +157,3 @@ func (m *AttentionModel) SearchFans(userId, name string, offset, size int) []*Se
 
 	return list
 }
-

@@ -2,9 +2,9 @@ package stat
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/backend/controller/cstat"
-	"sports_service/server/global/backend/errdef"
 	"net/http"
+	"sports_service/backend/controller/cstat"
+	"sports_service/global/backend/errdef"
 )
 
 func HomePageInfo(c *gin.Context) {

@@ -3,10 +3,10 @@ package live
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/clive"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/models/mcontest"
+	"sports_service/app/controller/clive"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/models/mcontest"
 )
 
 func PushStreamCallback(c *gin.Context) {

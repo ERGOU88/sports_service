@@ -1,12 +1,12 @@
 package mcomment
 
 import (
-	"github.com/go-xorm/xorm"
-	"sports_service/server/global/backend/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
 	"fmt"
-	"sports_service/server/tools/tencentCloud"
+	"github.com/go-xorm/xorm"
+	"sports_service/global/backend/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/tools/tencentCloud"
 )
 
 type CommentModel struct {
@@ -21,120 +21,119 @@ type CommentModel struct {
 
 // 评论列表 [视频/帖子]
 type CommentList struct {
-	Id                  int64               `json:"id" example:"1000000000"`                      // 评论id
-	IsTop               int                 `json:"is_top"  example:"1"`                          // 置顶状态 1 置顶 0 不置顶
-	Avatar              tencentCloud.BucketURI              `json:"avatar"  example:"用户头像"`                    // 用户头像
-	UserId              string              `json:"user_id" example:"用户id"`                     // 用户id
-	UserName            string              `json:"user_name" example:"用户昵称"`                  // 用户名称
-	CommentLevel        int                 `json:"comment_level" example:"1"`                    // 评论等级[1 一级评论 默认 ，2 二级评论]
-	Content             string              `json:"content"  example:"评论的内容"`                 // 评论内容
-	CreateAt            int                 `json:"create_at" example:"1600000000"`              // 创建时间
-	Status              int                 `json:"status" example:"0"`                          // 状态 1 有效 0 逻辑删除
-	VideoId             int64               `json:"video_id,omitempty" example:"1000000000"`     // 视频id
-	PostId              int64               `json:"post_id,omitempty"`                           // 帖子ID
-	NewsId              int64               `json:"news_id,omitempty"`                           // 资讯id
-	ReplyList           []*ReplyComment     `json:"reply_list"`                                  // 回复列表
-	LikeNum             int64               `json:"like_num" example:"100"`                      // 点赞数
-	IsAttention         int                 `json:"is_attention" example:"0"`                    // 是否关注
-	ReplyNum            int64               `json:"reply_num" example:"100"`                     // 总回复数
-	IsLike              int                 `json:"is_like" example:"0"`                         // 是否点赞
-	HasMore             int                 `json:"has_more" example:"0"`                        // 是否显示更多 0 不展示  1 展示
+	Id           int64                  `json:"id" example:"1000000000"`                 // 评论id
+	IsTop        int                    `json:"is_top"  example:"1"`                     // 置顶状态 1 置顶 0 不置顶
+	Avatar       tencentCloud.BucketURI `json:"avatar"  example:"用户头像"`                  // 用户头像
+	UserId       string                 `json:"user_id" example:"用户id"`                  // 用户id
+	UserName     string                 `json:"user_name" example:"用户昵称"`                // 用户名称
+	CommentLevel int                    `json:"comment_level" example:"1"`               // 评论等级[1 一级评论 默认 ，2 二级评论]
+	Content      string                 `json:"content"  example:"评论的内容"`                // 评论内容
+	CreateAt     int                    `json:"create_at" example:"1600000000"`          // 创建时间
+	Status       int                    `json:"status" example:"0"`                      // 状态 1 有效 0 逻辑删除
+	VideoId      int64                  `json:"video_id,omitempty" example:"1000000000"` // 视频id
+	PostId       int64                  `json:"post_id,omitempty"`                       // 帖子ID
+	NewsId       int64                  `json:"news_id,omitempty"`                       // 资讯id
+	ReplyList    []*ReplyComment        `json:"reply_list"`                              // 回复列表
+	LikeNum      int64                  `json:"like_num" example:"100"`                  // 点赞数
+	IsAttention  int                    `json:"is_attention" example:"0"`                // 是否关注
+	ReplyNum     int64                  `json:"reply_num" example:"100"`                 // 总回复数
+	IsLike       int                    `json:"is_like" example:"0"`                     // 是否点赞
+	HasMore      int                    `json:"has_more" example:"0"`                    // 是否显示更多 0 不展示  1 展示
 }
 
 // 回复评论的内容
 type ReplyComment struct {
-	Id                   int64               `json:"id" example:"1600000000"`                          // 评论id
-	IsTop                int                 `json:"is_top" example:"1"`                               // 置顶状态 1 置顶 0 不置顶
-	Avatar               tencentCloud.BucketURI              `json:"avatar" xorm:"-" example:"头像"`                             // 用户头像
-	UserId               string              `json:"user_id" example:"用户id"`                          // 用户id
-	UserName             string              `json:"user_name" xorm:"-" example:"用户昵称"`                       // 用户名称
-	CommentLevel         int                 `json:"comment_level" example:"1"`                         // 评论等级[1 一级评论 默认 ，2 二级评论]
-	Content              string              `json:"content" example:"评论内容"`                          // 评论内容
-	CreateAt             int                 `json:"create_at" example:"1600000000"`                    // 创建时间
-	ParentCommentId      int64               `json:"parent_comment_id" example:"1000000000"`            // 父评论id
-	ParentCommentUserId  string              `json:"parent_comment_user_id" example:"父评论的用户id"`     // 父评论的用户id
-	ReplyCommentId       int64               `json:"reply_comment_id" example:"1000000000"`             // 被回复的评论id
-	ReplyCommentUserId   string              `json:"reply_comment_user_id" example:"被回复的评论用户id"`   // 被回复的评论用户id
-	ReplyCommentUserName string              `json:"reply_comment_user_name" example:"被回复评论的用户昵称"`// 被回复评论的用户昵称
-	ReplyCommentAvatar   tencentCloud.BucketURI             `json:"reply_comment_avatar" example:"被回复评论的用户头像"`   // 被回复评论的用户头像
-	ReplyContent         string              `json:"reply_content"  example:"被回复的内容"`                // 被回复的内容
-	Status               int                 `json:"status" example:"1"`                                 // 状态 1 有效 0 逻辑删除
-	VideoId              int64               `json:"video_id,omitempty" example:"1000000000"`            // 视频id
-	PostId               int64               `json:"post_id,omitempty" example:"1000000000"`             // 帖子id
-	NewsId               int64               `json:"news_id,omitempty"`                                  // 资讯id
-	LikeNum              int64               `json:"like_num" example:"100"`                             // 点赞数
-	IsAttention          int                 `json:"is_attention" example:"0"`                           // 是否关注
-	IsLike               int                 `json:"is_like" example:"0"`                                // 是否点赞
-	IsAt                 int                 `json:"is_at" example:"0"`                                  // 是否为@消息 0不是@消息 1是
+	Id                   int64                  `json:"id" example:"1600000000"`                      // 评论id
+	IsTop                int                    `json:"is_top" example:"1"`                           // 置顶状态 1 置顶 0 不置顶
+	Avatar               tencentCloud.BucketURI `json:"avatar" xorm:"-" example:"头像"`                 // 用户头像
+	UserId               string                 `json:"user_id" example:"用户id"`                       // 用户id
+	UserName             string                 `json:"user_name" xorm:"-" example:"用户昵称"`            // 用户名称
+	CommentLevel         int                    `json:"comment_level" example:"1"`                    // 评论等级[1 一级评论 默认 ，2 二级评论]
+	Content              string                 `json:"content" example:"评论内容"`                       // 评论内容
+	CreateAt             int                    `json:"create_at" example:"1600000000"`               // 创建时间
+	ParentCommentId      int64                  `json:"parent_comment_id" example:"1000000000"`       // 父评论id
+	ParentCommentUserId  string                 `json:"parent_comment_user_id" example:"父评论的用户id"`    // 父评论的用户id
+	ReplyCommentId       int64                  `json:"reply_comment_id" example:"1000000000"`        // 被回复的评论id
+	ReplyCommentUserId   string                 `json:"reply_comment_user_id" example:"被回复的评论用户id"`   // 被回复的评论用户id
+	ReplyCommentUserName string                 `json:"reply_comment_user_name" example:"被回复评论的用户昵称"` // 被回复评论的用户昵称
+	ReplyCommentAvatar   tencentCloud.BucketURI `json:"reply_comment_avatar" example:"被回复评论的用户头像"`    // 被回复评论的用户头像
+	ReplyContent         string                 `json:"reply_content"  example:"被回复的内容"`              // 被回复的内容
+	Status               int                    `json:"status" example:"1"`                           // 状态 1 有效 0 逻辑删除
+	VideoId              int64                  `json:"video_id,omitempty" example:"1000000000"`      // 视频id
+	PostId               int64                  `json:"post_id,omitempty" example:"1000000000"`       // 帖子id
+	NewsId               int64                  `json:"news_id,omitempty"`                            // 资讯id
+	LikeNum              int64                  `json:"like_num" example:"100"`                       // 点赞数
+	IsAttention          int                    `json:"is_attention" example:"0"`                     // 是否关注
+	IsLike               int                    `json:"is_like" example:"0"`                          // 是否点赞
+	IsAt                 int                    `json:"is_at" example:"0"`                            // 是否为@消息 0不是@消息 1是
 }
 
 // 视频评论数据（后台展示）
 type VideoCommentInfo struct {
-	Id            int64                 `json:"id"`              // 评论id
-	VideoId       int64                 `json:"video_id"`        // 视频id
-	Title         string                `json:"title"`           // 标题
-	Describe      string                `json:"describe"`        // 描述
-	Cover         string                `json:"cover"`           // 封面
-	VideoAddr     string                `json:"video_addr"`      // 视频地址
-	VideoDuration int                   `json:"video_duration"`  // 视频时长
-	VideoWidth    int64                 `json:"video_width"`     // 视频宽
-	VideoHeight   int64                 `json:"video_height"`    // 视频高
-	Status        int32                 `json:"status"`          // 评论状态 (1 有效 0 逻辑删除)
-	UserId        string                `json:"user_id"`         // 用户id
-	Content       string                `json:"content"`         // 评论/回复的内容
-	CreateAt      int                   `json:"create_at"`       // 用户评论的时间
-	CommentLevel  int                   `json:"comment_level"`   // 1 为评论 2 为回复
-	LikeNum       int64                 `json:"like_num"`        // 点赞数
-	ReplyNum      int64                 `json:"reply_num"`       // 当前评论的回复数
+	Id            int64  `json:"id"`             // 评论id
+	VideoId       int64  `json:"video_id"`       // 视频id
+	Title         string `json:"title"`          // 标题
+	Describe      string `json:"describe"`       // 描述
+	Cover         string `json:"cover"`          // 封面
+	VideoAddr     string `json:"video_addr"`     // 视频地址
+	VideoDuration int    `json:"video_duration"` // 视频时长
+	VideoWidth    int64  `json:"video_width"`    // 视频宽
+	VideoHeight   int64  `json:"video_height"`   // 视频高
+	Status        int32  `json:"status"`         // 评论状态 (1 有效 0 逻辑删除)
+	UserId        string `json:"user_id"`        // 用户id
+	Content       string `json:"content"`        // 评论/回复的内容
+	CreateAt      int    `json:"create_at"`      // 用户评论的时间
+	CommentLevel  int    `json:"comment_level"`  // 1 为评论 2 为回复
+	LikeNum       int64  `json:"like_num"`       // 点赞数
+	ReplyNum      int64  `json:"reply_num"`      // 当前评论的回复数
 }
-
 
 // 发布评论请求参数
 type PublishCommentParams struct {
-	VideoId          int64       `binding:"required" json:"video_id"`      // 视频id
-	Content          string      `binding:"required" json:"content"`       // 评论的内容
+	VideoId int64  `binding:"required" json:"video_id"` // 视频id
+	Content string `binding:"required" json:"content"`  // 评论的内容
 }
 
 // 新版发布评论请求参数
 type V2PubCommentParams struct {
-	ComposeId       int64        `binding:"required" json:"compose_id"`    // 作品id 视频/帖子id
-	Content         string       `binding:"required" json:"content"`       // 评论的内容
-	CommentType     int          `binding:"required" json:"comment_type"`  // 评论的类型 1视频 2帖子 3资讯
-	AtInfo          []string     `json:"at_info"`                          // @信息 [用户uid]
+	ComposeId   int64    `binding:"required" json:"compose_id"`   // 作品id 视频/帖子id
+	Content     string   `binding:"required" json:"content"`      // 评论的内容
+	CommentType int      `binding:"required" json:"comment_type"` // 评论的类型 1视频 2帖子 3资讯
+	AtInfo      []string `json:"at_info"`                         // @信息 [用户uid]
 }
 
 // 回复评论请求参数
 type ReplyCommentParams struct {
-	ComposeId        int64       `binding:"required" json:"compose_id"`    // 视频/帖子id
-	Content          string      `binding:"required" json:"content"`       // 评论的内容
-	ReplyId          int64       `binding:"required" json:"reply_id"`      // 被回复的评论id
-	CommentType      int         `json:"comment_type"`                     // 评论的类型 1视频 2帖子 3资讯
-	AtInfo           []string    `json:"at_info"`                          // @信息 [用户uid]
+	ComposeId   int64    `binding:"required" json:"compose_id"` // 视频/帖子id
+	Content     string   `binding:"required" json:"content"`    // 评论的内容
+	ReplyId     int64    `binding:"required" json:"reply_id"`   // 被回复的评论id
+	CommentType int      `json:"comment_type"`                  // 评论的类型 1视频 2帖子 3资讯
+	AtInfo      []string `json:"at_info"`                       // @信息 [用户uid]
 }
 
 // 后台删除评论
 type DelCommentParam struct {
-	CommentId      string     `binding:"required" json:"comment_id"`       // 评论id
-	CommentType    int32      `json:"comment_type"`                        // 评论类型 0 视频 1 帖子 2 资讯
-	UserId         string     `json:"user_id"`
+	CommentId   string `binding:"required" json:"comment_id"` // 评论id
+	CommentType int32  `json:"comment_type"`                  // 评论类型 0 视频 1 帖子 2 资讯
+	UserId      string `json:"user_id"`
 }
 
 // 评论举报
 type CommentReportParam struct {
-	CommentId    int64      `json:"comment_id" binding:"required"`
-	UserId       string     `json:"user_id"`
-	Reason       string     `json:"reason"`
-	CommentType  int        `json:"comment_type"`                    // 1 视频评论 2 帖子评论
+	CommentId   int64  `json:"comment_id" binding:"required"`
+	UserId      string `json:"user_id"`
+	Reason      string `json:"reason"`
+	CommentType int    `json:"comment_type"` // 1 视频评论 2 帖子评论
 }
 
 // 实栗
 func NewCommentModel(engine *xorm.Session) *CommentModel {
 	return &CommentModel{
-		Engine:       engine,
-		VideoComment: new(models.VideoComment),
-		ReceiveAt:    new(models.ReceivedAt),
-		Report:       new(models.CommentReport),
-		PostComment:  new(models.PostingComment),
+		Engine:             engine,
+		VideoComment:       new(models.VideoComment),
+		ReceiveAt:          new(models.ReceivedAt),
+		Report:             new(models.CommentReport),
+		PostComment:        new(models.PostingComment),
 		InformationComment: new(models.InformationComment),
 	}
 }
@@ -458,7 +457,6 @@ func (m *CommentModel) GetTotalReplyByInformationComment(commentId string) int64
 
 }
 
-
 // 后台获取视频评论列表（查询所有 或 用户id或视频id进行查询 可通过 1 时间、 2 点赞数、 3 回复数排序 默认时间倒序）
 func (m *CommentModel) GetVideoCommentsBySort(userId, videoId, sortType, condition string, offset, size int) []*VideoCommentInfo {
 	sql := "SELECT vc.*, count(distinct(tu.Id)) AS like_num, count(vc2.id) AS reply_num FROM video_comment AS vc " +
@@ -506,15 +504,15 @@ func (m *CommentModel) GetVideoCommentsBySort(userId, videoId, sortType, conditi
 
 // 帖子评论数据（后台展示）
 type PostingCommentInfo struct {
-	Id            int64                 `json:"id"`              // 评论id
-    PostId        int64                 `json:"post_id"`         // 帖子id
-	Status        int32                 `json:"status"`          // 评论状态 (1 有效 0 逻辑删除)
-	UserId        string                `json:"user_id"`         // 用户id
-	Content       string                `json:"content"`         // 评论/回复的内容
-	CreateAt      int                   `json:"create_at"`       // 用户评论的时间
-	CommentLevel  int                   `json:"comment_level"`   // 1 为评论 2 为回复
-	LikeNum       int64                 `json:"like_num"`        // 点赞数
-	ReplyNum      int64                 `json:"reply_num"`       // 当前评论的回复数
+	Id           int64  `json:"id"`            // 评论id
+	PostId       int64  `json:"post_id"`       // 帖子id
+	Status       int32  `json:"status"`        // 评论状态 (1 有效 0 逻辑删除)
+	UserId       string `json:"user_id"`       // 用户id
+	Content      string `json:"content"`       // 评论/回复的内容
+	CreateAt     int    `json:"create_at"`     // 用户评论的时间
+	CommentLevel int    `json:"comment_level"` // 1 为评论 2 为回复
+	LikeNum      int64  `json:"like_num"`      // 点赞数
+	ReplyNum     int64  `json:"reply_num"`     // 当前评论的回复数
 }
 
 // 后台获取帖子评论列表（查询所有 或 用户id或帖子id进行查询 可通过 1 时间、 2 点赞数、 3 回复数排序 默认时间倒序）
@@ -564,15 +562,15 @@ func (m *CommentModel) GetPostCommentsBySort(userId, postId, sortType, condition
 
 // 资讯评论数据（后台展示）
 type InformationCommentInfo struct {
-	Id            int64                 `json:"id"`              // 评论id
-	NewsId        int64                 `json:"news_id"`         // 资讯id
-	Status        int32                 `json:"status"`          // 评论状态 (1 有效 0 逻辑删除)
-	UserId        string                `json:"user_id"`         // 用户id
-	Content       string                `json:"content"`         // 评论/回复的内容
-	CreateAt      int                   `json:"create_at"`       // 用户评论的时间
-	CommentLevel  int                   `json:"comment_level"`   // 1 为评论 2 为回复
-	LikeNum       int64                 `json:"like_num"`        // 点赞数
-	ReplyNum      int64                 `json:"reply_num"`       // 当前评论的回复数
+	Id           int64  `json:"id"`            // 评论id
+	NewsId       int64  `json:"news_id"`       // 资讯id
+	Status       int32  `json:"status"`        // 评论状态 (1 有效 0 逻辑删除)
+	UserId       string `json:"user_id"`       // 用户id
+	Content      string `json:"content"`       // 评论/回复的内容
+	CreateAt     int    `json:"create_at"`     // 用户评论的时间
+	CommentLevel int    `json:"comment_level"` // 1 为评论 2 为回复
+	LikeNum      int64  `json:"like_num"`      // 点赞数
+	ReplyNum     int64  `json:"reply_num"`     // 当前评论的回复数
 }
 
 // 后台获取资讯评论列表（查询所有 或 用户id或资讯id进行查询 可通过 1 时间、 2 点赞数、 3 回复数排序 默认时间倒序）
@@ -619,7 +617,6 @@ func (m *CommentModel) GetInformationCommentsBySort(userId, postId, sortType, co
 
 	return list
 }
-
 
 // 获取视频评论总数
 func (m *CommentModel) GetVideoCommentTotal() int64 {

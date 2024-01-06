@@ -2,11 +2,11 @@ package event
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/rdskey"
-	"sports_service/server/redismq/protocol"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/log"
+	"sports_service/global/rdskey"
+	"sports_service/redismq/protocol"
+	"sports_service/util"
 	"time"
 )
 
@@ -17,7 +17,7 @@ func PushEventMsg(msg []byte) {
 	conn := dao.RedisPool().Get()
 	defer conn.Close()
 
-	if _, err := redis.Int(conn.Do("LPUSH", rdskey.MSG_PUSH_EVENT_KEY, msg)); err != nil  {
+	if _, err := redis.Int(conn.Do("LPUSH", rdskey.MSG_PUSH_EVENT_KEY, msg)); err != nil {
 		log.Log.Infof("event_trace: msg push fail, err:%s", err)
 	}
 
@@ -38,7 +38,7 @@ func NewEvent(toUserId, composeId, nickname, cover, content string, eventType in
 	data.Content = content
 	data.ComposeId = composeId
 
-	msg , _ := util.JsonFast.Marshal(data)
+	msg, _ := util.JsonFast.Marshal(data)
 	event.Data = msg
 	b, err := util.JsonFast.Marshal(event)
 	if err != nil {
@@ -47,4 +47,3 @@ func NewEvent(toUserId, composeId, nickname, cover, content string, eventType in
 
 	return b
 }
-

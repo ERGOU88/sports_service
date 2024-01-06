@@ -3,12 +3,12 @@ package barrage
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/cbarrage"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mbarrage"
-	_ "sports_service/server/models"
+	"sports_service/app/controller/cbarrage"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	_ "sports_service/models"
+	"sports_service/models/mbarrage"
 )
 
 // @Summary 发送视频弹幕 (ok)
@@ -80,9 +80,9 @@ func VideoBarrage(c *gin.Context) {
 	// 获取视频/直播/直播回放 弹幕列表
 	syscode, list := svc.GetVideoBarrageList(videoId, barrageType, minDuration, maxDuration)
 	if syscode != errdef.SUCCESS {
-	  reply.Response(http.StatusOK, errdef.BARRAGE_VIDEO_LIST_FAIL)
-	  return
-  }
+		reply.Response(http.StatusOK, errdef.BARRAGE_VIDEO_LIST_FAIL)
+		return
+	}
 
 	reply.Data["list"] = list
 	reply.Response(http.StatusOK, syscode)

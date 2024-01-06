@@ -1,10 +1,10 @@
 package main
 
 import (
-	pbBarrage "sports_service/server/proto/barrage"
-	"sports_service/server/util"
-	"sync"
 	"fmt"
+	pbBarrage "sports_service/proto/barrage"
+	"sports_service/util"
+	"sync"
 )
 
 var userMap map[string]*User
@@ -34,9 +34,9 @@ func DelUser(xid string) {
 // 广播消息 消息id 统一 -1
 func Broadcast(body []byte) {
 	msg := &pbBarrage.Message{
-		MsgId: "-1",
+		MsgId:   "-1",
 		MsgType: pbBarrage.MessageType_TYPE_BROADCAST,
-		Body: body,
+		Body:    body,
 	}
 	var user *User
 	userMutex.RLock()
@@ -52,9 +52,9 @@ func Broadcast(body []byte) {
 // 推送消息
 func PushMessage(xid string, body []byte, msgType pbBarrage.MessageType) {
 	msg := &pbBarrage.Message{
-		MsgId: fmt.Sprint(util.GetSnowId()),
+		MsgId:   fmt.Sprint(util.GetSnowId()),
 		MsgType: msgType,
-		Body: body,
+		Body:    body,
 	}
 
 	userMutex.RLock()
@@ -85,5 +85,3 @@ func KickAllUser() {
 	}
 	userMutex.Unlock()
 }
-
-

@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	pbBarrage "sports_service/server/proto/barrage"
+	pbBarrage "sports_service/proto/barrage"
 )
 
 type User struct {
-	Xid         string                         // 链接唯一标示（非用户真实id）
-	WriteChanel chan   *pbBarrage.Message      // 用于序列化所有写入的数据包
-	Finish      chan   int
+	Xid         string                  // 链接唯一标示（非用户真实id）
+	WriteChanel chan *pbBarrage.Message // 用于序列化所有写入的数据包
+	Finish      chan int
 }
 
 func NewUser(xid string) *User {
@@ -35,6 +35,3 @@ func (u *User) Close() {
 	default:
 	}
 }
-
-
-

@@ -7,14 +7,14 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"sports_service/server/app/controller/corder"
-	"sports_service/server/app/controller/cpay"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/morder"
-	"sports_service/server/tools/wechat"
-	"sports_service/server/util"
+	"sports_service/app/controller/corder"
+	"sports_service/app/controller/cpay"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/morder"
+	"sports_service/tools/wechat"
+	"sports_service/util"
 	"strconv"
 	"time"
 )
@@ -86,7 +86,6 @@ func AliPayNotify(c *gin.Context) {
 	c.String(http.StatusOK, "success")
 }
 
-
 type WXPayNotify struct {
 	ReturnCode    string `json:"return_code"`
 	ReturnMsg     string `json:"return_msg"`
@@ -153,7 +152,7 @@ func WechatNotify(c *gin.Context) {
 	totalFee := bm["total_fee"].(string)
 
 	payTime, _ := time.ParseInLocation("20060102150405", bm["time_end"].(string), time.Local)
-	if err := svc.WechatPayNotify(orderId, string(body),  bm["transaction_id"].(string), totalFee,"", payTime.Unix(), 0, consts.PAY_NOTIFY); err != nil {
+	if err := svc.WechatPayNotify(orderId, string(body), bm["transaction_id"].(string), totalFee, "", payTime.Unix(), 0, consts.PAY_NOTIFY); err != nil {
 		log.Log.Errorf("wxNotify_trace: order process fail, err:%s", err)
 		c.String(http.StatusInternalServerError, "fail")
 		return
@@ -241,7 +240,7 @@ func AppletPay(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	userId, _ := c.Get(consts.USER_ID)
 	param.UserId = userId.(string)
 	param.Platform = 1
@@ -250,7 +249,7 @@ func AppletPay(c *gin.Context) {
 	if code == errdef.SUCCESS {
 		reply.Data["pay_param"] = payParam
 	}
-	
+
 	reply.Response(http.StatusOK, code)
 }
 
@@ -262,7 +261,7 @@ func H5Pay(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	userId, _ := c.Get(consts.USER_ID)
 	param.UserId = userId.(string)
 	param.Platform = 1
@@ -271,6 +270,6 @@ func H5Pay(c *gin.Context) {
 	if code == errdef.SUCCESS {
 		reply.Data["pay_param"] = payParam
 	}
-	
+
 	reply.Response(http.StatusOK, code)
 }

@@ -1,10 +1,10 @@
 package doc
 
 import (
-	"sports_service/server/global/app/errdef"
 	"github.com/gin-gonic/gin"
 	"html/template"
-  "sports_service/server/global/consts"
+	"sports_service/global/app/errdef"
+	"sports_service/global/consts"
 )
 
 func ApiCode(c *gin.Context) {
@@ -79,7 +79,7 @@ table.dataintable tr:nth-child(even) {
 }
 
 func NotifyDoc(c *gin.Context) {
-  const tpl = `
+	const tpl = `
 <!DOCTYPE html>
 <html lang="en">
  <head>
@@ -136,15 +136,15 @@ table.dataintable tr:nth-child(even) {
  </body>
 </html>
 `
-  type lists struct {
-    Codes map[consts.MessageType]string
-  }
+	type lists struct {
+		Codes map[consts.MessageType]string
+	}
 
-  t, _ := template.New("webpage").Parse(tpl)
-  data := lists{
-    Codes: consts.NotifyDoc,
-  }
-  c.Header("Content-Type", "text/html; charset=utf-8")
+	t, _ := template.New("webpage").Parse(tpl)
+	data := lists{
+		Codes: consts.NotifyDoc,
+	}
+	c.Header("Content-Type", "text/html; charset=utf-8")
 
-  _ = t.Execute(c.Writer, data)
+	_ = t.Execute(c.Writer, data)
 }

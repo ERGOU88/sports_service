@@ -5,10 +5,10 @@
 package zlog
 
 import (
-	"sports_service/server/log/smartLog"
 	"fmt"
 	"github.com/go-xorm/core"
 	"go.uber.org/zap"
+	"sports_service/log/smartLog"
 )
 
 type SimpleZapLogger struct {

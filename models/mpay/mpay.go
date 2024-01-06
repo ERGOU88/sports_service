@@ -2,17 +2,17 @@ package mpay
 
 import (
 	"github.com/go-xorm/xorm"
-	"sports_service/server/models"
+	"sports_service/models"
 )
 
 type PayModel struct {
-	Engine           *xorm.Session
-	PayChannel       *models.VenuePaymentChannel
+	Engine     *xorm.Session
+	PayChannel *models.VenuePaymentChannel
 }
 
 func NewPayModel(engine *xorm.Session) *PayModel {
 	return &PayModel{
-		Engine: engine,
+		Engine:     engine,
 		PayChannel: new(models.VenuePaymentChannel),
 	}
 }
@@ -22,4 +22,3 @@ func (m *PayModel) GetPaymentChannel(payChannelId int) (bool, error) {
 	m.PayChannel = new(models.VenuePaymentChannel)
 	return m.Engine.Where("status=0 AND id=?", payChannelId).Get(m.PayChannel)
 }
-

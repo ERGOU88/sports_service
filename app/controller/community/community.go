@@ -1,48 +1,48 @@
 package community
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mcommunity"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/mposting"
-	"fmt"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mattention"
+	"sports_service/models/mcommunity"
+	"sports_service/models/mlike"
+	"sports_service/models/mposting"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"strings"
 )
 
 type CommunityModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	community   *mcommunity.CommunityModel
-	post        *mposting.PostingModel
-	user        *muser.UserModel
-	attention   *mattention.AttentionModel
-	like        *mlike.LikeModel
-	video       *mvideo.VideoModel
+	context   *gin.Context
+	engine    *xorm.Session
+	community *mcommunity.CommunityModel
+	post      *mposting.PostingModel
+	user      *muser.UserModel
+	attention *mattention.AttentionModel
+	like      *mlike.LikeModel
+	video     *mvideo.VideoModel
 }
 
 func New(c *gin.Context) CommunityModule {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return CommunityModule{
-		context: c,
+		context:   c,
 		community: mcommunity.NewCommunityModel(socket),
-		post: mposting.NewPostingModel(socket),
-		user: muser.NewUserModel(socket),
+		post:      mposting.NewPostingModel(socket),
+		user:      muser.NewUserModel(socket),
 		attention: mattention.NewAttentionModel(socket),
-		like: mlike.NewLikeModel(socket),
-		video: mvideo.NewVideoModel(socket),
-		engine: socket,
+		like:      mlike.NewLikeModel(socket),
+		video:     mvideo.NewVideoModel(socket),
+		engine:    socket,
 	}
 }
 
@@ -86,12 +86,12 @@ func (svc *CommunityModule) GetCommunityTopics(sectionId, isHot string, page, si
 	res := make([]*mcommunity.CommunityTopicInfo, len(list))
 	for index, item := range list {
 		info := &mcommunity.CommunityTopicInfo{
-			Id: item.Id,
+			Id:        item.Id,
 			TopicName: item.TopicName,
-			IsHot: item.IsHot,
+			IsHot:     item.IsHot,
 		}
 
-		num, err :=  svc.post.GetPostNumByTopic(fmt.Sprint(item.Id))
+		num, err := svc.post.GetPostNumByTopic(fmt.Sprint(item.Id))
 		if err != nil {
 			log.Log.Errorf("community_trace: get post num by topic fail, err:%s", err)
 		}
@@ -100,7 +100,6 @@ func (svc *CommunityModule) GetCommunityTopics(sectionId, isHot string, page, si
 
 		res[index] = info
 	}
-
 
 	return errdef.SUCCESS, res
 }
@@ -116,7 +115,7 @@ func (svc *CommunityModule) GetCommunitySections() (int, []*mcommunity.Community
 	res := make([]*mcommunity.CommunitySectionInfo, len(list))
 	for index, item := range list {
 		info := &mcommunity.CommunitySectionInfo{
-			Id: item.Id,
+			Id:          item.Id,
 			SectionName: item.SectionName,
 		}
 
@@ -132,7 +131,7 @@ func (svc *CommunityModule) GetCommunitySections() (int, []*mcommunity.Community
 
 // 获取板块下的帖子数
 func (svc *CommunityModule) GetPostNumBySection(sectionId string) int64 {
-	num, err :=  svc.post.GetPostNumBySection(sectionId)
+	num, err := svc.post.GetPostNumBySection(sectionId)
 	if err != nil {
 		log.Log.Errorf("community_trace: get post num by section fail, err:%s", err)
 		return 0
@@ -149,14 +148,14 @@ func (svc *CommunityModule) GetCommunityTopicById(id string) (int, *mcommunity.C
 	}
 
 	res := &mcommunity.CommunityTopicInfo{
-		Id: info.Id,
+		Id:        info.Id,
 		TopicName: info.TopicName,
-		IsHot: info.IsHot,
-		Cover: tencentCloud.BucketURI(info.Cover),
-		Describe: info.Describe,
+		IsHot:     info.IsHot,
+		Cover:     tencentCloud.BucketURI(info.Cover),
+		Describe:  info.Describe,
 	}
 
-	num, err :=  svc.post.GetPostNumByTopic(fmt.Sprint(info.Id))
+	num, err := svc.post.GetPostNumByTopic(fmt.Sprint(info.Id))
 	if err != nil {
 		log.Log.Errorf("community_trace: get post num by topic fail, err:%s", err)
 	}
@@ -224,10 +223,9 @@ func (svc *CommunityModule) GetPostDetailByList(userId string, list []*mposting.
 	for _, item := range list {
 		var err error
 		item.Topics, err = svc.post.GetPostTopic(fmt.Sprint(item.Id))
-		if item.Topics == nil || err != nil  {
+		if item.Topics == nil || err != nil {
 			item.Topics = []*models.PostingTopic{}
 		}
-
 
 		user := svc.user.FindUserByUserid(item.UserId)
 		if user != nil {

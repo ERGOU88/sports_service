@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
+	"sports_service/app/config"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
 	"strings"
-	"sports_service/server/app/config"
 )
 
 var AppInfo = map[string]string{
@@ -45,7 +45,7 @@ func CheckSign() gin.HandlerFunc {
 		}
 
 		log.Log.Errorf("sign_trace: path:%s, match: %d", path, strings.Compare(path, "/api/v1/client/init"))
-		if !strings.Contains(path, "/api/v1/client/init")  {
+		if !strings.Contains(path, "/api/v1/client/init") {
 			log.Log.Infof("sign_trace: add secret, secret:%s", secret)
 			str = fmt.Sprintf("%s&Secret=%s", str, secret)
 		}
@@ -108,7 +108,6 @@ func getAppKey(appId string) string {
 	return ""
 }
 
-
 func getChannel(appId string) int {
 	switch appId {
 	case string(consts.IOS_APP_ID):
@@ -121,5 +120,3 @@ func getChannel(appId string) int {
 
 	return 0
 }
-
-

@@ -4,46 +4,46 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mconfigure"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	redismq "sports_service/server/redismq/event"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mattention"
+	"sports_service/models/mcollect"
+	"sports_service/models/mconfigure"
+	"sports_service/models/mlike"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	redismq "sports_service/redismq/event"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"strings"
 	"time"
 )
 
 type CollectModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	collect     *mcollect.CollectModel
-	user        *muser.UserModel
-	video       *mvideo.VideoModel
-	attention   *mattention.AttentionModel
-	like        *mlike.LikeModel
-	config      *mconfigure.ConfigModel
+	context   *gin.Context
+	engine    *xorm.Session
+	collect   *mcollect.CollectModel
+	user      *muser.UserModel
+	video     *mvideo.VideoModel
+	attention *mattention.AttentionModel
+	like      *mlike.LikeModel
+	config    *mconfigure.ConfigModel
 }
 
 func New(c *gin.Context) CollectModule {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return CollectModule{
-		context: c,
-		collect: mcollect.NewCollectModel(socket),
-		user: muser.NewUserModel(socket),
-		video: mvideo.NewVideoModel(socket),
+		context:   c,
+		collect:   mcollect.NewCollectModel(socket),
+		user:      muser.NewUserModel(socket),
+		video:     mvideo.NewVideoModel(socket),
 		attention: mattention.NewAttentionModel(socket),
-		like: mlike.NewLikeModel(socket),
-		config: mconfigure.NewConfigModel(socket),
-		engine: socket,
+		like:      mlike.NewLikeModel(socket),
+		config:    mconfigure.NewConfigModel(socket),
+		engine:    socket,
 	}
 }
 
@@ -81,7 +81,7 @@ func (svc *CollectModule) AddCollect(userId string, videoId int64) int {
 		return errdef.COLLECT_ALREADY_EXISTS
 	}
 
-	now :=  int(time.Now().Unix())
+	now := int(time.Now().Unix())
 	score := svc.config.GetActionScore(int(consts.WORK_TYPE_VIDEO), consts.ACTION_TYPE_COLLECT)
 	// 更新视频收藏总计 +1
 	if err := svc.video.UpdateVideoCollectNum(videoId, now, consts.CONFIRM_OPERATE, score); err != nil {
@@ -159,10 +159,10 @@ func (svc *CollectModule) CancelCollect(userId string, videoId int64) int {
 		return errdef.COLLECT_REPEAT_CANCEL
 	}
 
-	now :=  int(time.Now().Unix())
+	now := int(time.Now().Unix())
 	score := svc.config.GetActionScore(int(consts.WORK_TYPE_VIDEO), consts.ACTION_TYPE_COLLECT)
 	// 更新视频收藏总计 -1
-	if err := svc.video.UpdateVideoCollectNum(videoId, now, consts.CANCEL_OPERATE, score * -1); err != nil {
+	if err := svc.video.UpdateVideoCollectNum(videoId, now, consts.CANCEL_OPERATE, score*-1); err != nil {
 		log.Log.Errorf("collect_trace: update video collect num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.COLLECT_CANCEL_FAIL
@@ -272,4 +272,3 @@ func (svc *CollectModule) DeleteCollectByIds(userId string, param *mcollect.Dele
 
 	return errdef.SUCCESS
 }
-

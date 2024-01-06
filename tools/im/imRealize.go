@@ -4,33 +4,33 @@ import (
 	"errors"
 	"fmt"
 	"github.com/tencentyun/tls-sig-api-v2-golang/tencentyun"
-	"sports_service/server/util"
+	"sports_service/util"
 )
 
 type imRealize struct {
-	ImAppId     int
-	ImAppKey    string
-	Identifier  string
+	ImAppId    int
+	ImAppKey   string
+	Identifier string
 }
 
 var Im ImInterface
 var (
 	// 导入用户 [单个]
-	addUserUrl      = "/v4/im_open_login_svc/account_import"
+	addUserUrl = "/v4/im_open_login_svc/account_import"
 	// 设置资料
-	portraitSetUrl  = "/v4/profile/portrait_set"
-    // 创建群组
-	createGroupUrl  = "/v4/group_open_http_svc/create_group"
+	portraitSetUrl = "/v4/profile/portrait_set"
+	// 创建群组
+	createGroupUrl = "/v4/group_open_http_svc/create_group"
 	// 获取直播群在线人数
 	getOnlineNumUrl = "/v4/group_open_http_svc/get_online_member_num"
 )
 
 type (
 	BaseResponse struct {
-		ActionStatus string `json:"ActionStatus"`    // OK 表示处理成功，FAIL 表示失败
-		ErrorCode int `json:"ErrorCode"`
-		ErrorInfo string `json:"ErrorInfo"`          // 0表示成功，非0表示失败
-		GroupId   string `json:"GroupId"`            // 群id
+		ActionStatus string `json:"ActionStatus"` // OK 表示处理成功，FAIL 表示失败
+		ErrorCode    int    `json:"ErrorCode"`
+		ErrorInfo    string `json:"ErrorInfo"` // 0表示成功，非0表示失败
+		GroupId      string `json:"GroupId"`   // 群id
 	}
 
 	Response struct {
@@ -44,8 +44,8 @@ const (
 
 func NewImRealize(appId int, appKey, identifier string) *imRealize {
 	return &imRealize{
-		ImAppId: appId,
-		ImAppKey: appKey,
+		ImAppId:    appId,
+		ImAppKey:   appKey,
 		Identifier: identifier,
 	}
 }
@@ -56,7 +56,7 @@ func (im *imRealize) AddUser(userId, name, avatar string) (string, error) {
 		return "", err
 	}
 
-	userSig, err := im.GenSig(userId, EXPIRE_TM_DAY * 90)
+	userSig, err := im.GenSig(userId, EXPIRE_TM_DAY*90)
 	if err != nil {
 		return "", err
 	}
@@ -64,8 +64,8 @@ func (im *imRealize) AddUser(userId, name, avatar string) (string, error) {
 	url := GenRequestUrl(im.ImAppId, im.Identifier, sig, addUserUrl)
 	param := map[string]interface{}{
 		"Identifier": userId,
-		"Nick": name,
-		"FaceUrl": avatar,
+		"Nick":       name,
+		"FaceUrl":    avatar,
 	}
 
 	resp, err := HttpPostBody(url, param)
@@ -103,11 +103,11 @@ func (im *imRealize) CreateGroup(groupType, owner, name, introduction, notificat
 	url := GenRequestUrl(im.ImAppId, im.Identifier, sig, createGroupUrl)
 	param := map[string]interface{}{
 		"Owner_Account": owner,
-		"Type": groupType,
-		"FaceUrl": faceUrl,
-		"Name": name,
-		"Introduction": introduction,
-		"Notification": notification,
+		"Type":          groupType,
+		"FaceUrl":       faceUrl,
+		"Name":          name,
+		"Introduction":  introduction,
+		"Notification":  notification,
 	}
 
 	resp, err := HttpPostBody(url, param)

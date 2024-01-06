@@ -5,67 +5,67 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mbanner"
-	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mconfigure"
-	"sports_service/server/models/minformation"
-	"sports_service/server/models/mlabel"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/mnotify"
-	"sports_service/server/models/mposting"
-	"sports_service/server/models/msection"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	redismq "sports_service/server/redismq/event"
-	cloud "sports_service/server/tools/tencentCloud"
-	"sports_service/server/tools/tencentCloud/vod"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mattention"
+	"sports_service/models/mbanner"
+	"sports_service/models/mcollect"
+	"sports_service/models/mconfigure"
+	"sports_service/models/minformation"
+	"sports_service/models/mlabel"
+	"sports_service/models/mlike"
+	"sports_service/models/mnotify"
+	"sports_service/models/mposting"
+	"sports_service/models/msection"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	redismq "sports_service/redismq/event"
+	cloud "sports_service/tools/tencentCloud"
+	"sports_service/tools/tencentCloud/vod"
+	"sports_service/util"
 	"strconv"
 	"strings"
 	"time"
 )
 
 type VideoModule struct {
-	context      *gin.Context
-	engine       *xorm.Session
-	video        *mvideo.VideoModel
-	user         *muser.UserModel
-	attention    *mattention.AttentionModel
-	banner       *mbanner.BannerModel
-	like         *mlike.LikeModel
-	collect      *mcollect.CollectModel
-	label        *mlabel.LabelModel
-	notify       *mnotify.NotifyModel
-	post         *mposting.PostingModel
-	section      *msection.SectionModel
-	information  *minformation.InformationModel
-	config       *mconfigure.ConfigModel
+	context     *gin.Context
+	engine      *xorm.Session
+	video       *mvideo.VideoModel
+	user        *muser.UserModel
+	attention   *mattention.AttentionModel
+	banner      *mbanner.BannerModel
+	like        *mlike.LikeModel
+	collect     *mcollect.CollectModel
+	label       *mlabel.LabelModel
+	notify      *mnotify.NotifyModel
+	post        *mposting.PostingModel
+	section     *msection.SectionModel
+	information *minformation.InformationModel
+	config      *mconfigure.ConfigModel
 }
 
 func New(c *gin.Context) VideoModule {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return VideoModule{
-		context: c,
-		video: mvideo.NewVideoModel(socket),
-		user: muser.NewUserModel(socket),
-		attention: mattention.NewAttentionModel(socket),
-		banner: mbanner.NewBannerMolde(socket),
-		like: mlike.NewLikeModel(socket),
-		collect: mcollect.NewCollectModel(socket),
-		label: mlabel.NewLabelModel(socket),
-		notify: mnotify.NewNotifyModel(socket),
-		post: mposting.NewPostingModel(socket),
-		section: msection.NewSectionModel(socket),
+		context:     c,
+		video:       mvideo.NewVideoModel(socket),
+		user:        muser.NewUserModel(socket),
+		attention:   mattention.NewAttentionModel(socket),
+		banner:      mbanner.NewBannerMolde(socket),
+		like:        mlike.NewLikeModel(socket),
+		collect:     mcollect.NewCollectModel(socket),
+		label:       mlabel.NewLabelModel(socket),
+		notify:      mnotify.NewNotifyModel(socket),
+		post:        mposting.NewPostingModel(socket),
+		section:     msection.NewSectionModel(socket),
 		information: minformation.NewInformationModel(socket),
-		config: mconfigure.NewConfigModel(socket),
-		engine: socket,
+		config:      mconfigure.NewConfigModel(socket),
+		engine:      socket,
 	}
 }
 
@@ -140,7 +140,7 @@ func (svc *VideoModule) RecordPubVideoInfo(userId string, params *mvideo.VideoPu
 
 // 生成视频信息标签
 func (svc *VideoModule) genVideoTag(videoId int64, info string, pubType int) string {
-	return fmt.Sprintf("%d__%s__%d",videoId, info, pubType)
+	return fmt.Sprintf("%d__%s__%d", videoId, info, pubType)
 }
 
 // 用户发布视频
@@ -156,7 +156,7 @@ func (svc *VideoModule) UserPublishVideo(userId string, params *mvideo.VideoPubl
 	//}
 	var (
 		subarea *models.VideoSubarea
-		err error
+		err     error
 	)
 
 	// 视频所属分区
@@ -638,17 +638,17 @@ func (svc *VideoModule) GetStatisticTab(info *models.VideoStatistic) string {
 	//}
 	mp := util.NewIntMap(4)
 	// key 统计相关分数  val 统计类型 0 点赞 1 收藏 2 弹幕 3 评论
-	mp.Insert(info.FabulousNum * 2, 0)
-	mp.Insert(info.CollectNum * 5, 1)
-	mp.Insert(info.BarrageNum * 10, 2)
-	mp.Insert(info.CommentNum * 10, 3)
+	mp.Insert(info.FabulousNum*2, 0)
+	mp.Insert(info.CollectNum*5, 1)
+	mp.Insert(info.BarrageNum*10, 2)
+	mp.Insert(info.CommentNum*10, 3)
 	key, val, b := mp.GetByOrderIndex(mp.Size() - 1)
 	if b {
 		// 0 点赞 1 收藏 2 弹幕 3 评论
 		switch val {
 		case 0:
 			// 总数 = 总分/2
-			num := key/2
+			num := key / 2
 			chinese := util.TransferChinese(num)
 			if chinese == "0" {
 				statisticsTab = ""
@@ -658,7 +658,7 @@ func (svc *VideoModule) GetStatisticTab(info *models.VideoStatistic) string {
 
 		case 1:
 			// 总数 = 总分/5
-			num := key/5
+			num := key / 5
 			chinese := util.TransferChinese(num)
 			if chinese == "0" {
 				statisticsTab = ""
@@ -668,7 +668,7 @@ func (svc *VideoModule) GetStatisticTab(info *models.VideoStatistic) string {
 
 		case 2:
 			// 总数 = 总分/10
-			num := key/10
+			num := key / 10
 			chinese := util.TransferChinese(num)
 			if chinese == "0" {
 				statisticsTab = ""
@@ -678,7 +678,7 @@ func (svc *VideoModule) GetStatisticTab(info *models.VideoStatistic) string {
 
 		case 3:
 			// 总数 = 总分/10
-			num := key/10
+			num := key / 10
 			chinese := util.TransferChinese(num)
 			if chinese == "0" {
 				statisticsTab = ""
@@ -1075,7 +1075,6 @@ func (svc *VideoModule) GetProcedureByBiteRate(biteRate int64) string {
 		return consts.VOD_PROCEDURE_TRANSCODE_1
 	}
 
-
 	return consts.VOD_PROCEDURE_NAME
 }
 
@@ -1102,7 +1101,6 @@ func (svc *VideoModule) EventCallback(params *vod.EventNotify) int {
 			log.Log.Errorf("video_trace: user not found, userId:%s", userId)
 			return errdef.USER_NOT_EXISTS
 		}
-
 
 	}
 
@@ -1181,7 +1179,7 @@ func (svc *VideoModule) RecordPlayDuration(params *mvideo.PlayDurationParams) in
 		return errdef.VIDEO_NOT_EXISTS
 	}
 
-	totalDuration := video.VideoDuration/1000
+	totalDuration := video.VideoDuration / 1000
 	if totalDuration < params.Duration {
 		log.Log.Errorf("video_trace: invalid play duration, videoId:%s, videoDuration:%d, palyDuration:%d", params.VideoId, totalDuration, params.Duration)
 		return errdef.VIDEO_INVALID_PLAY_DURATION
@@ -1198,7 +1196,7 @@ func (svc *VideoModule) RecordPlayDuration(params *mvideo.PlayDurationParams) in
 		svc.video.PlayRecord.TotalDuration = totalDuration
 		svc.video.PlayRecord.UserId = params.UserId
 		svc.video.PlayRecord.CreateAt = int(now)
-		svc.video.PlayRecord.CurProgress = fmt.Sprintf("%.2f", float64(params.Duration) / float64(totalDuration))
+		svc.video.PlayRecord.CurProgress = fmt.Sprintf("%.2f", float64(params.Duration)/float64(totalDuration))
 		if err := svc.video.AddUserPlayDurationRecord(); err != nil {
 			log.Log.Errorf("video_trace: add user play duration record err:%s", err)
 			return errdef.VIDEO_RECORD_PLAY_DURATION
@@ -1208,7 +1206,7 @@ func (svc *VideoModule) RecordPlayDuration(params *mvideo.PlayDurationParams) in
 		// 存在 则 更新时长
 		record.PlayDuration = params.Duration
 		record.UpdateAt = int(now)
-		record.CurProgress = fmt.Sprintf("%.2f", float64(params.Duration) / float64(totalDuration))
+		record.CurProgress = fmt.Sprintf("%.2f", float64(params.Duration)/float64(totalDuration))
 		if err := svc.video.UpdateUserPlayDurationRecord(); err != nil {
 			log.Log.Errorf("video_trace: update user play duration record err:%s", err)
 			return errdef.VIDEO_RECORD_PLAY_DURATION
@@ -1402,7 +1400,7 @@ func (svc *VideoModule) GetRecommendInfoBySection(userId, sectionId string, page
 			item.Nickname = user.NickName
 			item.Avatar = cloud.BucketURI(user.Avatar)
 		}
-		
+
 		var likeType int
 		switch item.ContentType {
 		case 1:
@@ -1410,7 +1408,7 @@ func (svc *VideoModule) GetRecommendInfoBySection(userId, sectionId string, page
 			if item.Labels == nil {
 				item.Labels = []*models.VideoLabels{}
 			}
-			
+
 			// 获取统计标签
 			info := svc.video.GetVideoStatistic(fmt.Sprint(item.Id))
 			if info != nil {
@@ -1431,13 +1429,13 @@ func (svc *VideoModule) GetRecommendInfoBySection(userId, sectionId string, page
 				item.CommentNum = svc.information.Statistic.CommentNum
 				item.FabulousNum = svc.information.Statistic.FabulousNum
 			}
-			
+
 			client := cloud.New(consts.TX_CLOUD_SECRET_ID, consts.TX_CLOUD_SECRET_KEY, "")
 			item.Cover, err = client.GenCdnUrl(item.Cover)
 			if err != nil {
 				log.Log.Errorf("video_trace: gen cdn url fail, err:%s", err)
 			}
-			
+
 			likeType = consts.LIKE_TYPE_INFORMATION
 		}
 

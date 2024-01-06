@@ -3,13 +3,13 @@ package attention
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/cattention"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mattention"
-	"sports_service/server/util"
-	_ "sports_service/server/models/muser"
+	"sports_service/app/controller/cattention"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mattention"
+	_ "sports_service/models/muser"
+	"sports_service/util"
 )
 
 // @Summary 关注用户 (ok)

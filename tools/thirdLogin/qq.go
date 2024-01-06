@@ -11,11 +11,11 @@ import (
 	"io/ioutil"
 	"log"
 	"net/url"
-	"sports_service/server/util"
+	"sports_service/util"
 	"strings"
 )
 
-type QQ struct {}
+type QQ struct{}
 
 func NewQQ() *QQ {
 	return &QQ{}
@@ -24,22 +24,22 @@ func NewQQ() *QQ {
 type QQUnionid struct {
 	ClientId string `json:"client_id"`
 	OpenId   string `json:"openid"`
-	Unionid  string `json:"unionid"`     // 关联id
+	Unionid  string `json:"unionid"` // 关联id
 }
 
 type QQUserInfo struct {
-	Ret                int    `json:"ret"`                // 返回码
-	Msg                string `json:"msg"`                // 如果ret<0，会有相应的错误信息提示，返回数据全部用UTF-8编码。
-	Nickname           string `json:"nickname"`           // 用户在QQ空间的昵称。
-	Gender             string `json:"gender"`             // 性别。 如果获取不到则默认返回”男”
-	Country            string `json:"country"`            // 国家（当pf=qzone、pengyou或qplus时返回）。
-	Province           string `json:"province"`           // 省（当pf=qzone、pengyou或qplus时返回）。
-	City               string `json:"city"`               // 市（当pf=qzone、pengyou或qplus时返回）。
-	Figureurl          string `json:"figureurl"`          // 大小为30×30像素的QQ空间头像URL。
-	IsYellowVip        int    `json:"is_yellow_vip"`      // 标识用户是否为黄钻用户（0：不是；1：是）。
-	IsYellowYearVip    int    `json:"is_yellow_year_vip"` // 标识是否为年费黄钻用户（0：不是； 1：是）
-	YellowVipLevel     int    `json:"yellow_vip_level"`   // 黄钻等级
-	IsYellowHighVip    int    `json:"is_yellow_high_vip"` // 是否为豪华版黄钻用户（0：不是； 1：是）。（当pf=qzone、pengyou或qplus时返回）
+	Ret             int    `json:"ret"`                // 返回码
+	Msg             string `json:"msg"`                // 如果ret<0，会有相应的错误信息提示，返回数据全部用UTF-8编码。
+	Nickname        string `json:"nickname"`           // 用户在QQ空间的昵称。
+	Gender          string `json:"gender"`             // 性别。 如果获取不到则默认返回”男”
+	Country         string `json:"country"`            // 国家（当pf=qzone、pengyou或qplus时返回）。
+	Province        string `json:"province"`           // 省（当pf=qzone、pengyou或qplus时返回）。
+	City            string `json:"city"`               // 市（当pf=qzone、pengyou或qplus时返回）。
+	Figureurl       string `json:"figureurl"`          // 大小为30×30像素的QQ空间头像URL。
+	IsYellowVip     int    `json:"is_yellow_vip"`      // 标识用户是否为黄钻用户（0：不是；1：是）。
+	IsYellowYearVip int    `json:"is_yellow_year_vip"` // 标识是否为年费黄钻用户（0：不是； 1：是）
+	YellowVipLevel  int    `json:"yellow_vip_level"`   // 黄钻等级
+	IsYellowHighVip int    `json:"is_yellow_high_vip"` // 是否为豪华版黄钻用户（0：不是； 1：是）。（当pf=qzone、pengyou或qplus时返回）
 }
 
 // 获取QQ关联id

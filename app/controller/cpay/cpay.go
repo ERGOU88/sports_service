@@ -1,33 +1,33 @@
 package cpay
 
 import (
+	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/app/config"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/morder"
-	"fmt"
-	"sports_service/server/models/mpay"
-	"sports_service/server/models/mshop"
-	"sports_service/server/models/muser"
-	"sports_service/server/tools/alipay"
-	"sports_service/server/tools/wechat"
+	"sports_service/app/config"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/morder"
+	"sports_service/models/mpay"
+	"sports_service/models/mshop"
+	"sports_service/models/muser"
+	"sports_service/tools/alipay"
+	"sports_service/tools/wechat"
 	"time"
-	"errors"
 )
 
 type PayModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	order       *morder.OrderModel
-	user        *muser.UserModel
-	pay         *mpay.PayModel
-	shop        *mshop.ShopModel
-	social      *muser.SocialModel
+	context *gin.Context
+	engine  *xorm.Session
+	order   *morder.OrderModel
+	user    *muser.UserModel
+	pay     *mpay.PayModel
+	shop    *mshop.ShopModel
+	social  *muser.SocialModel
 }
 
 func New(c *gin.Context) PayModule {
@@ -37,12 +37,12 @@ func New(c *gin.Context) PayModule {
 	defer appSocket.Close()
 	return PayModule{
 		context: c,
-		order: morder.NewOrderModel(venueSocket),
-		user: muser.NewUserModel(appSocket),
-		pay: mpay.NewPayModel(venueSocket),
-		shop: mshop.NewShop(appSocket),
-		social: muser.NewSocialPlatform(appSocket),
-		engine: venueSocket,
+		order:   morder.NewOrderModel(venueSocket),
+		user:    muser.NewUserModel(appSocket),
+		pay:     mpay.NewPayModel(venueSocket),
+		shop:    mshop.NewShop(appSocket),
+		social:  muser.NewSocialPlatform(appSocket),
+		engine:  venueSocket,
 	}
 }
 
@@ -52,14 +52,14 @@ func (svc *PayModule) InitiatePayment(param *morder.PayReqParam) (int, interface
 		log.Log.Errorf("pay_trace: user not found, userId:%s", param.UserId)
 		return errdef.USER_NOT_EXISTS, nil
 	}
-	
+
 	ok, err := svc.pay.GetPaymentChannel(param.PayType)
 	if !ok || err != nil {
 		log.Log.Errorf("pay_trace: get payment channel fail, orderId:%s, ok:%v, err:%s", param.OrderId,
 			ok, err)
 		return errdef.PAY_CHANNEL_NOT_EXISTS, nil
 	}
-	
+
 	length := len(param.OrderId)
 	switch length {
 	// 场馆订单
@@ -69,22 +69,22 @@ func (svc *PayModule) InitiatePayment(param *morder.PayReqParam) (int, interface
 			log.Log.Errorf("pay_trace: order not found, orderId:%s", param.OrderId)
 			return errdef.ORDER_NOT_EXISTS, nil
 		}
-		
+
 		param.Subject = svc.order.Order.Subject
 		param.Amount = svc.order.Order.Amount
 		param.CreateAt = svc.order.Order.CreateAt
-		
+
 		// 订单如果不是待支付状态
 		if svc.order.Order.Status != consts.ORDER_TYPE_WAIT {
 			log.Log.Errorf("pay_trace: order status fail, orderId:%s, status:%d", param.OrderId, svc.order.Order.Status)
 			return errdef.ORDER_NOT_EXISTS, nil
 		}
-		
+
 		if _, err = svc.UpdateOrderPayTypeByVenue(param.OrderId); err != nil {
 			log.Log.Errorf("pay_trace: update order payType fail, orderId:%s, err:%s", param.OrderId, err)
 			return errdef.ORDER_UPDATE_FAIL, nil
 		}
-		
+
 	// 商城订单
 	case 18:
 		order, err := svc.shop.GetOrder(param.OrderId)
@@ -92,16 +92,16 @@ func (svc *PayModule) InitiatePayment(param *morder.PayReqParam) (int, interface
 			log.Log.Errorf("pay_trace: shop order not found, orderId:%s, err:%s", param.OrderId, err)
 			return errdef.SHOP_ORDER_NOT_EXISTS, nil
 		}
-		
+
 		param.Subject = order.OrderTypeName
 		param.Amount = order.PayAmount
 		param.CreateAt = order.CreateAt
-		
+
 		if order.PayStatus != consts.SHOP_ORDER_TYPE_WAIT {
 			log.Log.Errorf("pay_trace: shop order status fail, orderId:%s, status:%d", param.OrderId, order.PayStatus)
 			return errdef.SHOP_ORDER_NOT_EXISTS, nil
 		}
-		
+
 		if _, err := svc.UpdateOrderPayTypeByShop(order); err != nil {
 			log.Log.Errorf("pay_trace: update order payType fail, orderId:%s, err:%s", param.OrderId, err)
 			return errdef.SHOP_ORDER_UPDATE_FAIL, nil
@@ -121,12 +121,12 @@ func (svc *PayModule) GetPaymentParams(param *morder.PayReqParam) (int, interfac
 			log.Log.Errorf("pay_trace: get alipay param fail, orderId:%s, err:%s", param.OrderId, err)
 			return errdef.PAY_ALI_PARAM_FAIL, nil
 		}
-		
+
 		info := make(map[string]interface{}, 0)
 		info["sign"] = payParam
-		
+
 		return errdef.SUCCESS, info
-	
+
 	case consts.WEICHAT:
 		openId := ""
 		switch param.Platform {
@@ -138,7 +138,7 @@ func (svc *PayModule) GetPaymentParams(param *morder.PayReqParam) (int, interfac
 				log.Log.Errorf("pay_trace: get wechatPay param fail, orderId:%s, err:%s", param.OrderId, err)
 				return errdef.PAY_WX_PARAM_FAIL, nil
 			}
-			
+
 			return errdef.SUCCESS, mp
 		// 小程序
 		case 1:
@@ -146,14 +146,14 @@ func (svc *PayModule) GetPaymentParams(param *morder.PayReqParam) (int, interfac
 			if ok && err == nil {
 				openId = svc.social.SocialAccount.OpenId
 			}
-			
+
 			// 微信
 			mp, err := svc.WechatPay(wechat.APPLET_APPID, svc.pay.PayChannel.AppKey, svc.pay.PayChannel.AppSecret, openId, param)
 			if err != nil {
 				log.Log.Errorf("pay_trace: get wechatPay param fail, orderId:%s, err:%s", param.OrderId, err)
 				return errdef.PAY_WX_PARAM_FAIL, nil
 			}
-			
+
 			return errdef.SUCCESS, mp
 		case 2:
 			mp, err := svc.WechatPay(svc.pay.PayChannel.AppId, svc.pay.PayChannel.AppKey, svc.pay.PayChannel.AppSecret, openId, param)
@@ -161,14 +161,14 @@ func (svc *PayModule) GetPaymentParams(param *morder.PayReqParam) (int, interfac
 				log.Log.Errorf("pay_trace: get wechatPay param fail, orderId:%s, err:%s", param.OrderId, err)
 				return errdef.PAY_WX_PARAM_FAIL, nil
 			}
-			
+
 			return errdef.SUCCESS, mp
 		}
-		
+
 	default:
 		log.Log.Errorf("pay_trace: unsupported payType:%d", param.PayType)
 	}
-	
+
 	return errdef.PAY_INVALID_TYPE, nil
 }
 
@@ -198,7 +198,7 @@ func (svc *PayModule) AliPay(appId, privateKey string, param *morder.PayReqParam
 	client.OutTradeNo = param.OrderId
 	client.TotalAmount = fmt.Sprintf("%.2f", float64(param.Amount)/100)
 	client.Subject = param.Subject
-	client.TimeExpire = time.Unix(int64(param.CreateAt + consts.PAYMENT_DURATION), 0).In(cstSh).Format(consts.FORMAT_TM)
+	client.TimeExpire = time.Unix(int64(param.CreateAt+consts.PAYMENT_DURATION), 0).In(cstSh).Format(consts.FORMAT_TM)
 	payParam, err := client.TradeAppPay()
 	if err != nil {
 		return "", err
@@ -217,8 +217,8 @@ func (svc *PayModule) WechatPay(appId, merchantId, secret, openId string, param 
 	client.OpenId = openId
 	client.CreateIp = svc.context.ClientIP()
 	client.TimeStart = time.Unix(int64(param.CreateAt), 0).In(cstSh).Format(consts.FORMAT_WX_TM)
-	client.TimeExpire = time.Unix(int64(param.CreateAt + consts.PAYMENT_DURATION), 0).In(cstSh).Format(consts.FORMAT_WX_TM)
-	
+	client.TimeExpire = time.Unix(int64(param.CreateAt+consts.PAYMENT_DURATION), 0).In(cstSh).Format(consts.FORMAT_WX_TM)
+
 	// 小程序支付
 	switch param.Platform {
 	case 0:
@@ -227,8 +227,8 @@ func (svc *PayModule) WechatPay(appId, merchantId, secret, openId string, param 
 		return client.TradeJsAPIPay()
 	case 2:
 		return client.TradeH5Pay()
-		
+
 	}
-	
+
 	return nil, errors.New("invalid platform")
 }

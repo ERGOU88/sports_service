@@ -1,18 +1,18 @@
 package mvideo
 
 import (
-	"sports_service/server/models"
+	"sports_service/models"
 )
 
 // 创建专辑请求参数
 type CreateAlbumParam struct {
-	AlbumName     string    `binding:"required" json:"album_name"`    // 专辑名称
+	AlbumName string `binding:"required" json:"album_name"` // 专辑名称
 }
 
 // 视频添加到专辑中
 type AddVideoToAlbumParam struct {
-	VideoId       string    `binding:"required" json:"video_id"`     // 视频id
-	AlbumId       string    `binding:"required" json:"album_id"`     // 专辑id
+	VideoId string `binding:"required" json:"video_id"` // 视频id
+	AlbumId string `binding:"required" json:"album_id"` // 专辑id
 }
 
 // 创建视频专辑

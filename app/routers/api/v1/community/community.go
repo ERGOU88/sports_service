@@ -3,10 +3,10 @@ package community
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/community"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/consts"
-	"sports_service/server/util"
+	"sports_service/app/controller/community"
+	"sports_service/global/app/errdef"
+	"sports_service/global/consts"
+	"sports_service/util"
 )
 
 // /api/v1/community/section/list
@@ -29,7 +29,7 @@ func CommunityTopics(c *gin.Context) {
 	//isHot := c.Query("is_hot")
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	svc := community.New(c)
-	code, list := svc. GetTopicListOrderByPostNum(page, size)
+	code, list := svc.GetTopicListOrderByPostNum(page, size)
 	if code == errdef.SUCCESS {
 		reply.Data["list"] = list
 	}
@@ -67,7 +67,6 @@ func SectionPostList(c *gin.Context) {
 	svc := community.New(c)
 	code, list := svc.GetPostListBySection(page, size, userId, sectionId)
 	reply.Data["list"] = list
-
 
 	_, topicList := svc.GetCommunityTopics(sectionId, consts.POST_SORT_HOT, 1, 4)
 	reply.Data["topic_list"] = topicList

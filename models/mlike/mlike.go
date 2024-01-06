@@ -2,137 +2,138 @@ package mlike
 
 import (
 	"github.com/go-xorm/xorm"
-	"sports_service/server/global/app/log"
-	"sports_service/server/models"
-	"sports_service/server/tools/tencentCloud"
+	"sports_service/global/app/log"
+	"sports_service/models"
+	"sports_service/tools/tencentCloud"
 	"time"
 )
 
 type LikeModel struct {
-	Like         *models.ThumbsUp
-	Engine       *xorm.Session
+	Like   *models.ThumbsUp
+	Engine *xorm.Session
 }
 
 // 添加点赞请求参数
 type GiveLikeParam struct {
-	ComposeId   int64  `binding:"required" json:"compose_id" example:"10000000000"`      // 点赞的视频/评论/帖子/资讯 id
-	CommentType int64  `json:"comment_type"`                                             // 1视频评论 2帖子评论 3 资讯评论
+	ComposeId   int64 `binding:"required" json:"compose_id" example:"10000000000"` // 点赞的视频/评论/帖子/资讯 id
+	CommentType int64 `json:"comment_type"`                                        // 1视频评论 2帖子评论 3 资讯评论
 }
 
 // 取消点赞请求参数
 type CancelLikeParam struct {
-	ComposeId   int64 `binding:"required" json:"compose_id" example:"10000000000"`       // 取消点赞的视频/评论/帖子/资讯 id
-	CommentType int64  `json:"comment_type"`                                             // 1视频评论 2帖子评论 3 资讯评论
+	ComposeId   int64 `binding:"required" json:"compose_id" example:"10000000000"` // 取消点赞的视频/评论/帖子/资讯 id
+	CommentType int64 `json:"comment_type"`                                        // 1视频评论 2帖子评论 3 资讯评论
 }
 
 // 被点赞的视频信息
 type BeLikedVideoInfo struct {
-	ComposeId     int64                 `json:"compose_id"`      // 作品id
-	Title         string                `json:"title"`           // 标题
-	Describe      string                `json:"describe"`        // 描述
-	Cover         string                `json:"cover"`           // 封面
-	VideoAddr     string                `json:"video_addr"`      // 视频地址
-	VideoDuration int                   `json:"video_duration"`  // 视频时长
-	VideoWidth    int64                 `json:"video_width"`     // 视频宽
-	VideoHeight   int64                 `json:"video_height"`    // 视频高
-	CreateAt      int                   `json:"create_at"`       // 视频创建时间
-	BarrageNum    int                   `json:"barrage_num"`     // 弹幕数
-	BrowseNum     int                   `json:"browse_num"`      // 浏览数（播放数）
+	ComposeId     int64  `json:"compose_id"`     // 作品id
+	Title         string `json:"title"`          // 标题
+	Describe      string `json:"describe"`       // 描述
+	Cover         string `json:"cover"`          // 封面
+	VideoAddr     string `json:"video_addr"`     // 视频地址
+	VideoDuration int    `json:"video_duration"` // 视频时长
+	VideoWidth    int64  `json:"video_width"`    // 视频宽
+	VideoHeight   int64  `json:"video_height"`   // 视频高
+	CreateAt      int    `json:"create_at"`      // 视频创建时间
+	BarrageNum    int    `json:"barrage_num"`    // 弹幕数
+	BrowseNum     int    `json:"browse_num"`     // 浏览数（播放数）
 	//ToUserId      string                `json:"to_user_id"`      // 被点赞的用户id
 	//ToUserName    string                `json:"to_user_name"`    // 被点赞的用户昵称
-	NickNames    []string `json:"nick_names"`     // 点赞用户昵称（多个）
-	TotalLikeNum int      `json:"total_like_num"` // 总点赞数
-	Avatar       tencentCloud.BucketURI   `json:"avatar"`         // 最近点赞的用户头像
-	OpTime       int      `json:"op_time"`        // 用户点赞操作时间
-	Type         int      `json:"type"`           // 类型 1 视频 2 帖子 3 评论
+	NickNames    []string               `json:"nick_names"`     // 点赞用户昵称（多个）
+	TotalLikeNum int                    `json:"total_like_num"` // 总点赞数
+	Avatar       tencentCloud.BucketURI `json:"avatar"`         // 最近点赞的用户头像
+	OpTime       int                    `json:"op_time"`        // 用户点赞操作时间
+	Type         int                    `json:"type"`           // 类型 1 视频 2 帖子 3 评论
 }
 
 // todo: 后续使用
 // 点赞的用户信息
 type ZanUserInfo struct {
-	UserId        string                `json:"user_id"`         // 点赞的用户id
-	Avatar        tencentCloud.BucketURI                `json:"avatar"`          // 点赞用户头像
-	Nickname      string                `json:"nick_name"`       // 点赞的用户昵称
+	UserId   string                 `json:"user_id"`   // 点赞的用户id
+	Avatar   tencentCloud.BucketURI `json:"avatar"`    // 点赞用户头像
+	Nickname string                 `json:"nick_name"` // 点赞的用户昵称
 }
 
 // 点赞用户信息
 type LikedUserInfo struct {
-	UserId      string   `json:"user_id"`
-	NickName    string   `json:"nick_name"`
-	Avatar      tencentCloud.BucketURI   `json:"avatar"`
-	OpTm        int      `json:"op_tm"`       // 用户点赞时间
+	UserId   string                 `json:"user_id"`
+	NickName string                 `json:"nick_name"`
+	Avatar   tencentCloud.BucketURI `json:"avatar"`
+	OpTm     int                    `json:"op_tm"` // 用户点赞时间
 }
 
 // 被点赞的信息
 type BeLikedInfo struct {
-	ComposeId     int64                 `json:"compose_id"`                   // 作品id 视频id/评论id/帖子id/资讯id
-	Title         string                `json:"title"`                        // 标题
-	Describe      string                `json:"describe"`                     // 描述
-	Cover         string                `json:"cover"`                        // 封面
-	VideoAddr     string                `json:"video_addr,omitempty"`         // 视频地址
-	VideoDuration int                   `json:"video_duration,omitempty"`     // 视频时长
-	VideoWidth    int64                 `json:"video_width,omitempty"`        // 视频宽
-	VideoHeight   int64                 `json:"video_height,omitempty"`       // 视频高
-	CreateAt      int                   `json:"create_at"`                    // 创建时间
-	BarrageNum    int                   `json:"barrage_num,omitempty"`        // 弹幕数
-	BrowseNum     int                   `json:"browse_num,omitempty"`         // 浏览数（播放数）
+	ComposeId     int64  `json:"compose_id"`               // 作品id 视频id/评论id/帖子id/资讯id
+	Title         string `json:"title"`                    // 标题
+	Describe      string `json:"describe"`                 // 描述
+	Cover         string `json:"cover"`                    // 封面
+	VideoAddr     string `json:"video_addr,omitempty"`     // 视频地址
+	VideoDuration int    `json:"video_duration,omitempty"` // 视频时长
+	VideoWidth    int64  `json:"video_width,omitempty"`    // 视频宽
+	VideoHeight   int64  `json:"video_height,omitempty"`   // 视频高
+	CreateAt      int    `json:"create_at"`                // 创建时间
+	BarrageNum    int    `json:"barrage_num,omitempty"`    // 弹幕数
+	BrowseNum     int    `json:"browse_num,omitempty"`     // 浏览数（播放数）
 	//UserId        string                `json:"user_id"`                    // 点赞的用户id
 	//Avatars       []string              `json:"avatars"`                    // 点赞用户头像
 	//Nicknames     []string              `json:"nick_name"`                  // 点赞的用户昵称
-	TotalLikeNum  int                   `json:"total_like_num,omitempty"`     // 总点赞数
-	UserList      []*LikedUserInfo      `json:"user_list"`                    // 点赞的用户列表
+	TotalLikeNum int              `json:"total_like_num,omitempty"` // 总点赞数
+	UserList     []*LikedUserInfo `json:"user_list"`                // 点赞的用户列表
 	//ToUserId      string                `json:"to_user_id"`                 // 被点赞的用户id
 	//ToUserAvatar  string                `json:"avatar"`                     // 被点赞用户头像
 	//ToUserName    string                `json:"to_user_name"`               // 被点赞的用户昵称
-	Content       string                `json:"content,omitempty"`            // 被点赞的评论内容
-	OpTime        int                   `json:"op_time"`                      // 用户点赞操作时间
-	Type          int                   `json:"type"`                         // 类型 1 视频 2 帖子 3 视频评论 4 帖子评论
-	JumpVideoId   int64                 `json:"jump_video_id,omitempty"`      // 跳转所需视频id
-	JumpPostId    int64                 `json:"jump_post_id,omitempty"`       // 跳转所需帖子id
-	Status        int                   `json:"status"`                       // 状态 3 删除
-	IsDelete      bool                  `json:"is_delete"`                    // true已删除
+	Content     string `json:"content,omitempty"`       // 被点赞的评论内容
+	OpTime      int    `json:"op_time"`                 // 用户点赞操作时间
+	Type        int    `json:"type"`                    // 类型 1 视频 2 帖子 3 视频评论 4 帖子评论
+	JumpVideoId int64  `json:"jump_video_id,omitempty"` // 跳转所需视频id
+	JumpPostId  int64  `json:"jump_post_id,omitempty"`  // 跳转所需帖子id
+	Status      int    `json:"status"`                  // 状态 3 删除
+	IsDelete    bool   `json:"is_delete"`               // true已删除
 
-	ParentCommentId  int64              `json:"parent_comment_id,omitempty"`  // 父级评论id
-	JumpInformationId int64             `json:"jump_information_id,omitempty"`// 跳转所需资讯id
+	ParentCommentId   int64 `json:"parent_comment_id,omitempty"`   // 父级评论id
+	JumpInformationId int64 `json:"jump_information_id,omitempty"` // 跳转所需资讯id
 }
 
 // 被点赞的评论信息
 type BeLikedCommentInfo struct {
-	ComposeId     int64                 `json:"compose_id"`      // 作品id
-	Title         string                `json:"title"`           // 标题
-	Describe      string                `json:"describe"`        // 描述
-	Cover         string                `json:"cover"`           // 封面
-	VideoAddr     string                `json:"video_addr"`      // 视频地址
-	VideoDuration int                   `json:"video_duration"`  // 视频时长
-	VideoWidth    int64                 `json:"video_width"`     // 视频宽
-	VideoHeight   int64                 `json:"video_height"`    // 视频高
-	CreateAt      int                   `json:"create_at"`       // 视频创建时间
-	BarrageNum    int                   `json:"barrage_num"`     // 弹幕数
-	BrowseNum     int                   `json:"browse_num"`      // 浏览数（播放数）
+	ComposeId     int64  `json:"compose_id"`     // 作品id
+	Title         string `json:"title"`          // 标题
+	Describe      string `json:"describe"`       // 描述
+	Cover         string `json:"cover"`          // 封面
+	VideoAddr     string `json:"video_addr"`     // 视频地址
+	VideoDuration int    `json:"video_duration"` // 视频时长
+	VideoWidth    int64  `json:"video_width"`    // 视频宽
+	VideoHeight   int64  `json:"video_height"`   // 视频高
+	CreateAt      int    `json:"create_at"`      // 视频创建时间
+	BarrageNum    int    `json:"barrage_num"`    // 弹幕数
+	BrowseNum     int    `json:"browse_num"`     // 浏览数（播放数）
 	//UserId        string                `json:"user_id"`         // 点赞的用户id
-	Avatar       tencentCloud.BucketURI                `json:"avatar"`          // 点赞用户头像
-	Nicknames     []string              `json:"nick_name"`       // 点赞的用户昵称
-	TotalLikeNum  int                   `json:"total_like_num"`  // 总点赞数
+	Avatar       tencentCloud.BucketURI `json:"avatar"`         // 点赞用户头像
+	Nicknames    []string               `json:"nick_name"`      // 点赞的用户昵称
+	TotalLikeNum int                    `json:"total_like_num"` // 总点赞数
 	//ToUserId      string                `json:"to_user_id"`      // 被点赞的用户id
 	//ToUserAvatar  string                `json:"avatar"`          // 被点赞用户头像
 	//ToUserName    string                `json:"to_user_name"`    // 被点赞的用户昵称
-	Content       string                `json:"content"`         // 被点赞的评论内容
-	OpTime        int                   `json:"op_time"`         // 用户点赞操作时间
-	Type          int                   `json:"type"`            // 类型 1 视频 2 帖子 3 评论
+	Content string `json:"content"` // 被点赞的评论内容
+	OpTime  int    `json:"op_time"` // 用户点赞操作时间
+	Type    int    `json:"type"`    // 类型 1 视频 2 帖子 3 评论
 }
 
 // 实栗
 func NewLikeModel(engine *xorm.Session) *LikeModel {
 	return &LikeModel{
-		Like: new(models.ThumbsUp),
+		Like:   new(models.ThumbsUp),
 		Engine: engine,
 	}
 }
 
 type LikeVideosInfo struct {
-	TypeId   int64    `json:"type_id"`      // 视频id
-	CreateAt int      `json:"create_at"`    // 点赞时间
+	TypeId   int64 `json:"type_id"`   // 视频id
+	CreateAt int   `json:"create_at"` // 点赞时间
 }
+
 // 获取用户点赞的视频id列表
 func (m *LikeModel) GetUserLikeVideos(userId string, offset, size int) []*LikeVideosInfo {
 	var list []*LikeVideosInfo
@@ -189,6 +190,7 @@ const (
 	QUERY_BE_LIKED_LIST = "SELECT GROUP_CONCAT(tu.user_id) AS user_id, tu.* FROM `thumbs_up` AS tu WHERE tu.`status` = 1 " +
 		"AND tu.to_user_id=? GROUP BY `type_id`, `zan_type` ORDER BY tu.`create_at` DESC, tu.`id` DESC LIMIT ?, ?"
 )
+
 // 获取用户被点赞的记录 包含 视频、评论等 所有数据 相同的视频/评论点赞 整合为一条数据
 func (m *LikeModel) GetNewBeLikedList(toUserId string, offset, size int) []*models.ThumbsUp {
 	var list []*models.ThumbsUp

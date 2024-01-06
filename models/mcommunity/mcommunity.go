@@ -2,30 +2,30 @@ package mcommunity
 
 import (
 	"github.com/go-xorm/xorm"
-	"sports_service/server/models"
-	"sports_service/server/tools/tencentCloud"
+	"sports_service/models"
+	"sports_service/tools/tencentCloud"
 )
 
 // 社区模块
 type CommunityModel struct {
-	Engine              *xorm.Session
-	CommunitySection    *models.CommunitySection
-	CommunityTopic      *models.CommunityTopic
+	Engine           *xorm.Session
+	CommunitySection *models.CommunitySection
+	CommunityTopic   *models.CommunityTopic
 }
 
 // 社区话题信息
 type CommunityTopicInfo struct {
-	Id        int    `json:"id"`
-	TopicName string `json:"topic_name"`
-	IsHot     int    `json:"is_hot"`
+	Id        int                    `json:"id"`
+	TopicName string                 `json:"topic_name"`
+	IsHot     int                    `json:"is_hot"`
 	Cover     tencentCloud.BucketURI `json:"cover,omitempty"`
-	Describe  string `json:"describe,omitempty"`
-	PostNum   int64  `json:"post_num"`      // 帖子数量
-	Sortorder int    `json:"sortorder"`
-	Status    int    `json:"status"`
-	CreateAt  int    `json:"create_at"`
-	UpdateAt  int    `json:"update_at"`
-	SectionId int    `json:"section_id"`
+	Describe  string                 `json:"describe,omitempty"`
+	PostNum   int64                  `json:"post_num"` // 帖子数量
+	Sortorder int                    `json:"sortorder"`
+	Status    int                    `json:"status"`
+	CreateAt  int                    `json:"create_at"`
+	UpdateAt  int                    `json:"update_at"`
+	SectionId int                    `json:"section_id"`
 }
 
 // 社区板块信息
@@ -38,9 +38,9 @@ type CommunitySectionInfo struct {
 // 社区实栗
 func NewCommunityModel(engine *xorm.Session) *CommunityModel {
 	return &CommunityModel{
-		Engine: engine,
+		Engine:           engine,
 		CommunitySection: new(models.CommunitySection),
-		CommunityTopic: new(models.CommunityTopic),
+		CommunityTopic:   new(models.CommunityTopic),
 	}
 }
 
@@ -120,6 +120,7 @@ const (
 		"topic_id FROM posting_topic as pt WHERE pt.status=1 GROUP BY pt.`topic_id`) AS pt ON ct.id=pt.topic_id " +
 		"ORDER BY pt.post_num DESC, ct.sortorder DESC, ct.id DESC LIMIT ?, ?"
 )
+
 // 获取话题列表 [按话题下的帖子数量排序]
 func (m *CommunityModel) GetTopicListOrderByPostNum(offset, size int) ([]*CommunityTopicInfo, error) {
 	var list []*CommunityTopicInfo

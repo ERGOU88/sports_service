@@ -4,29 +4,29 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/global/backend/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mappointment"
-	"sports_service/server/models/morder"
-	"sports_service/server/models/mpay"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvenue"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/backend/errdef"
+	"sports_service/global/backend/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mappointment"
+	"sports_service/models/morder"
+	"sports_service/models/mpay"
+	"sports_service/models/muser"
+	"sports_service/models/mvenue"
+	"sports_service/util"
 	"strings"
 	"time"
 )
 
 // todo:
 type FinanceModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	user        *muser.UserModel
-	order       *morder.OrderModel
-	venue       *mvenue.VenueModel
-	pay         *mpay.PayModel
+	context *gin.Context
+	engine  *xorm.Session
+	user    *muser.UserModel
+	order   *morder.OrderModel
+	venue   *mvenue.VenueModel
+	pay     *mpay.PayModel
 }
 
 func New(c *gin.Context) FinanceModule {
@@ -37,11 +37,11 @@ func New(c *gin.Context) FinanceModule {
 	defer venueSocket.Close()
 	return FinanceModule{
 		context: c,
-		user: muser.NewUserModel(appSocket),
-		order: morder.NewOrderModel(venueSocket),
-		venue: mvenue.NewVenueModel(venueSocket),
-		pay: mpay.NewPayModel(venueSocket),
-		engine: venueSocket,
+		user:    muser.NewUserModel(appSocket),
+		order:   morder.NewOrderModel(venueSocket),
+		venue:   mvenue.NewVenueModel(venueSocket),
+		pay:     mpay.NewPayModel(venueSocket),
+		engine:  venueSocket,
 	}
 }
 
@@ -57,16 +57,15 @@ func (svc *FinanceModule) GetOrderList(page, size int) (int, []*morder.OrderReco
 		return errdef.SUCCESS, []*morder.OrderRecord{}
 	}
 
-
 	res := make([]*morder.OrderRecord, len(list))
 	for index, item := range list {
 		info := &morder.OrderRecord{
-			Id:  item.Id,
-			PayOrderId: item.PayOrderId,
+			Id:             item.Id,
+			PayOrderId:     item.PayOrderId,
 			OriginalAmount: fmt.Sprintf("%.2f", float64(item.OriginalAmount)/100),
-			CreateAt: time.Unix(int64(item.CreateAt), 0).Format(consts.FORMAT_TM),
-			Amount: fmt.Sprintf("%.2f", float64(item.Amount)/100),
-			Status: item.Status,
+			CreateAt:       time.Unix(int64(item.CreateAt), 0).Format(consts.FORMAT_TM),
+			Amount:         fmt.Sprintf("%.2f", float64(item.Amount)/100),
+			Status:         item.Status,
 		}
 
 		extra := &mappointment.OrderResp{}
@@ -181,8 +180,8 @@ func (svc *FinanceModule) GetRefundRecordTotal() int64 {
 
 // 获取订单收益流水[已成功/已付款]
 func (svc *FinanceModule) GetRevenueFlow(queryMinDate, queryMaxDate, orderId string, page, size int) (int, int64, []morder.OrderRecord) {
-	minDate := time.Now().Format(consts. FORMAT_DATE)
-	maxDate := time.Now().Format(consts. FORMAT_DATE)
+	minDate := time.Now().Format(consts.FORMAT_DATE)
+	maxDate := time.Now().Format(consts.FORMAT_DATE)
 	if queryMinDate != "" && queryMaxDate != "" {
 		minDate = queryMinDate
 		maxDate = queryMaxDate
@@ -202,12 +201,12 @@ func (svc *FinanceModule) GetRevenueFlow(queryMinDate, queryMaxDate, orderId str
 	for _, item := range list {
 		statusCn, amountCn := svc.GetOrderStatusCn(item)
 		info := morder.OrderRecord{
-			Id:    item.Id,
+			Id:         item.Id,
 			PayOrderId: item.PayOrderId,
-			CreateAt: time.Unix(int64(item.CreateAt), 0).Format(consts.FORMAT_TM),
-			Amount: amountCn,
-		    StatusCn: statusCn,
-		    Status: item.Status,
+			CreateAt:   time.Unix(int64(item.CreateAt), 0).Format(consts.FORMAT_TM),
+			Amount:     amountCn,
+			StatusCn:   statusCn,
+			Status:     item.Status,
 		}
 
 		if item.ProductType == 5102 {
@@ -286,7 +285,7 @@ func (svc *FinanceModule) GetProductName(productType int) string {
 	case consts.ORDER_TYPE_SETTLEMENT:
 		productName = "线下结算"
 	default:
-	   productName = "实物商品"
+		productName = "实物商品"
 	}
 
 	return productName
@@ -314,7 +313,7 @@ func (svc *FinanceModule) GetTotalRevenue(minDate, maxDate string) int64 {
 }
 
 // 财务首页 顶部统计
-func (svc *FinanceModule) TopStat() (int, *morder.OrderStat){
+func (svc *FinanceModule) TopStat() (int, *morder.OrderStat) {
 	// 总销售额
 	totalSales, err := svc.order.GetTotalRevenue("", "")
 	if err != nil {
@@ -326,13 +325,12 @@ func (svc *FinanceModule) TopStat() (int, *morder.OrderStat){
 	}
 	orderStat.TopInfo["total_sales"] = totalSales
 
-	today := time.Now().Format(consts. FORMAT_DATE)
+	today := time.Now().Format(consts.FORMAT_DATE)
 	todaySales, err := svc.order.GetTotalRevenue(today, today)
 	if err != nil {
 		return errdef.ERROR, orderStat
 	}
 	orderStat.TopInfo["today_sales"] = todaySales
-
 
 	yesterday := time.Now().AddDate(0, 0, -1).Format(consts.FORMAT_DATE)
 	yesterdaySales, err := svc.order.GetTotalRevenue(yesterday, yesterday)
@@ -376,7 +374,6 @@ func (svc *FinanceModule) TopStat() (int, *morder.OrderStat){
 	orderStat.TopInfo["yesterday_order"] = yesterdayOrder
 	orderStat.TopInfo["order_rate"] = svc.GetRingRatio(todayOrder, yesterdayOrder)
 
-
 	week := time.Now().AddDate(0, 0, -6).Format(consts.FORMAT_DATE)
 	weekOrder, err := svc.order.GetOrderNum(week, today)
 	if err != nil {
@@ -392,13 +389,13 @@ func (svc *FinanceModule) TopStat() (int, *morder.OrderStat){
 	weekUser, err := svc.order.GetVenueNewUsers(weekDay.Format(consts.FORMAT_DATE), today, "")
 	if err == nil && weekUser != nil {
 		weekNewUser = len(weekUser)
-		orderStat.TopInfo["week_new_users"] = fmt.Sprintf("%.2f", float64(weekNewUser) / 7)
+		orderStat.TopInfo["week_new_users"] = fmt.Sprintf("%.2f", float64(weekNewUser)/7)
 		// 之前是否已成为场馆用户
 		beforeUser, err := svc.order.GetVenueNewUsers("",
 			weekDay.AddDate(0, 0, -1).Format(consts.FORMAT_DATE), strings.Join(weekUser, ","))
 		if err == nil && beforeUser != nil {
 			weekNewUser = len(weekUser) - len(beforeUser)
-			orderStat.TopInfo["week_new_users"] = fmt.Sprintf("%.2f", float64(weekNewUser) / 7)
+			orderStat.TopInfo["week_new_users"] = fmt.Sprintf("%.2f", float64(weekNewUser)/7)
 		}
 	}
 
@@ -410,7 +407,7 @@ func (svc *FinanceModule) TopStat() (int, *morder.OrderStat){
 		lastWeekDay.Format(consts.FORMAT_DATE), "")
 	if err == nil && lastWeekUser != nil {
 		lastWeekNewUser = len(lastWeekUser)
-		orderStat.TopInfo["last_week_new_users"] = fmt.Sprintf("%.2f", float64(lastWeekNewUser) / 7)
+		orderStat.TopInfo["last_week_new_users"] = fmt.Sprintf("%.2f", float64(lastWeekNewUser)/7)
 		// 之前是否已成为场馆用户
 		beforeUser, err := svc.order.GetVenueNewUsers("",
 			lastWeekDay.AddDate(0, 0, -8).Format(consts.FORMAT_DATE), strings.Join(lastWeekUser, ","))
@@ -418,7 +415,7 @@ func (svc *FinanceModule) TopStat() (int, *morder.OrderStat){
 		if err == nil && beforeUser != nil {
 			lastWeekNewUser = len(lastWeekUser) - len(beforeUser)
 			// 7日平均
-			orderStat.TopInfo["last_week_new_users"] = fmt.Sprintf("%.2f", float64(lastWeekNewUser) / 7)
+			orderStat.TopInfo["last_week_new_users"] = fmt.Sprintf("%.2f", float64(lastWeekNewUser)/7)
 		}
 	}
 
@@ -430,8 +427,8 @@ func (svc *FinanceModule) TopStat() (int, *morder.OrderStat){
 // 获取图表统计数据
 func (svc *FinanceModule) GetChartStat(queryMinDate, queryMaxDate string) (int, map[string]interface{}) {
 	days := 6
-	minDate := time.Now().AddDate(0, 0, -days).Format(consts. FORMAT_DATE)
-	maxDate := time.Now().Format(consts. FORMAT_DATE)
+	minDate := time.Now().AddDate(0, 0, -days).Format(consts.FORMAT_DATE)
+	maxDate := time.Now().Format(consts.FORMAT_DATE)
 	if queryMinDate != "" && queryMaxDate != "" {
 		minDate = queryMinDate
 		maxDate = queryMaxDate
@@ -513,21 +510,20 @@ func (svc *FinanceModule) GetChartStat(queryMinDate, queryMaxDate string) (int, 
 	}, morder.ResultList{
 		Title: "私教预约",
 		List:  svc.ResultInfoByDate(salesByProduct, days, consts.ORDER_TYPE_APPOINTMENT_COACH, 1, maxDate),
-	},morder.ResultList{
+	}, morder.ResultList{
 		Title: "实体商品",
 		List:  svc.ResultInfoByDate(salesByProduct, days, consts.ORDER_TYPE_PHYSICAL_GOODS, 1, maxDate),
-	},morder.ResultList{
+	}, morder.ResultList{
 		Title: "卡类商品[次卡/月卡/季卡/半年卡/年卡]",
 		List:  svc.ResultInfoByDate(salesByProduct, days, 2000, 1, maxDate),
 	})
 
 	result["sales_result_list"] = salesResultList
 
-
 	var payChannelResultList []morder.ResultList
 	payChannelResultList = append(payChannelResultList, morder.ResultList{
 		Title: "收款总额",
-		List: svc.ResultInfoByDate(salesByDate, days, 0, 0, maxDate),
+		List:  svc.ResultInfoByDate(salesByDate, days, 0, 0, maxDate),
 	}, morder.ResultList{
 		Title: "支付宝支付",
 		List:  svc.ResultInfoByDate(salesByDate, days, 1, 2, maxDate),
@@ -543,7 +539,7 @@ func (svc *FinanceModule) GetChartStat(queryMinDate, queryMaxDate string) (int, 
 	var orderResultList []morder.ResultList
 	orderResultList = append(orderResultList, morder.ResultList{
 		Title: "订单均价",
-		List: svc.ResultInfoByDate(salesByDate, days, 0, 3, maxDate),
+		List:  svc.ResultInfoByDate(salesByDate, days, 0, 3, maxDate),
 	})
 
 	result["order_result_list"] = orderResultList
@@ -553,17 +549,16 @@ func (svc *FinanceModule) GetChartStat(queryMinDate, queryMaxDate string) (int, 
 
 // 获取环比
 func (svc *FinanceModule) GetRingRatio(current, before int64) string {
-	if current > 0 && before> 0 || current == 0 && before > 0 {
+	if current > 0 && before > 0 || current == 0 && before > 0 {
 		return fmt.Sprintf("%.0f%s", (float64(current)/float64(before)-1)*100, "%")
 	}
 
 	if current > 0 && before == 0 || current == 0 && before == 0 {
-		 return "--%"
+		return "--%"
 	}
 
 	return ""
 }
-
 
 func (svc *FinanceModule) ResultInfoByDate(data []*morder.SalesDetail, days, condition, queryType int, maxDate string) map[string]interface{} {
 	mapList := make(map[string]interface{})
@@ -587,7 +582,7 @@ func (svc *FinanceModule) ResultInfoByDate(data []*morder.SalesDetail, days, con
 			// 通过商品类型查询
 			case 1:
 				// 卡类 包含 次卡/月卡/季卡/年卡 需叠加
-				if v.ProductType >=2000 && v.ProductType < 3000 && condition == 2000 {
+				if v.ProductType >= 2000 && v.ProductType < 3000 && condition == 2000 {
 					if val, ok := mapList[date]; ok {
 						mapList[date] = val.(int) + v.TotalSales
 						continue

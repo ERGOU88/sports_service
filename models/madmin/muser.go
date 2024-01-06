@@ -1,17 +1,17 @@
 package madmin
 
-import "sports_service/server/models"
+import "sports_service/models"
 
 // 后台用户注册/登陆请求参数 （todo: 注册为测试使用）
 type AdminRegOrLoginParams struct {
-	UserName     string       `json:"username" binding:"required"`
-	Password     string       `json:"password" binding:"required"`
+	UserName string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 // 禁用/解禁 管理员
 type ForbidAdmin struct {
-	UserName     string       `json:"username" binding:"required"`
-	Status       int          `json:"status" binding:"required"`
+	UserName string `json:"username" binding:"required"`
+	Status   int    `json:"status" binding:"required"`
 }
 
 // 添加后台用户
@@ -49,4 +49,3 @@ func (m *AdminModel) GetAdminUserList(offset, size int) ([]*models.SystemUser, e
 
 	return list, nil
 }
-

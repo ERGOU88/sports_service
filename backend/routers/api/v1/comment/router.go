@@ -2,7 +2,7 @@ package comment
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/jwt"
+	"sports_service/middleware/jwt"
 )
 
 // 评论模块后台路由

@@ -3,11 +3,11 @@ package venue
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/backend/controller/cvenue"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/models"
-	"sports_service/server/models/mvenue"
-	"sports_service/server/util"
+	"sports_service/backend/controller/cvenue"
+	"sports_service/global/backend/errdef"
+	"sports_service/models"
+	"sports_service/models/mvenue"
+	"sports_service/util"
 )
 
 func VenueList(c *gin.Context) {
@@ -85,7 +85,7 @@ func AddMark(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cvenue.New(c)
 	reply.Response(http.StatusOK, svc.AddMark(param))
 }
@@ -97,7 +97,7 @@ func DelMark(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cvenue.New(c)
 	reply.Response(http.StatusOK, svc.DelMark(param))
 }
@@ -118,7 +118,7 @@ func AddStoreManager(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cvenue.New(c)
 	reply.Response(http.StatusOK, svc.AddStoreManager(param))
 }
@@ -130,7 +130,7 @@ func EditStoreManager(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cvenue.New(c)
 	reply.Response(http.StatusOK, svc.EditStoreManage(param))
 }
@@ -138,7 +138,7 @@ func EditStoreManager(c *gin.Context) {
 func StoreManagerList(c *gin.Context) {
 	reply := errdef.New(c)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
-	
+
 	svc := cvenue.New(c)
 	code, list := svc.StoreManageList(page, size)
 	reply.Data["list"] = list

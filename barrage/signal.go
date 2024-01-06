@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"sports_service/server/tools/nsq"
+	"sports_service/tools/nsq"
 	"syscall"
 )
 

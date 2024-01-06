@@ -1,9 +1,9 @@
 package doc
 
 import (
-	"sports_service/server/global/backend/errdef"
 	"github.com/gin-gonic/gin"
 	"html/template"
+	"sports_service/global/backend/errdef"
 )
 
 func ApiCode(c *gin.Context) {

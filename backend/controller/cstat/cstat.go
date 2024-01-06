@@ -1,32 +1,32 @@
 package cstat
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/global/backend/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mcommunity"
-	"sports_service/server/models/morder"
-	"sports_service/server/models/mposting"
-	"sports_service/server/models/mstat"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/backend/errdef"
+	"sports_service/global/backend/log"
+	"sports_service/global/consts"
+	"sports_service/models/mcommunity"
+	"sports_service/models/morder"
+	"sports_service/models/mposting"
+	"sports_service/models/mstat"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	"sports_service/util"
 	"time"
-	"fmt"
 )
 
 type StatModule struct {
-	context      *gin.Context
-	engine       *xorm.Session
-	post         *mposting.PostingModel
-	user         *muser.UserModel
-	video        *mvideo.VideoModel
-	community    *mcommunity.CommunityModel
-	stat         *mstat.StatModel
-	order        *morder.OrderModel
+	context   *gin.Context
+	engine    *xorm.Session
+	post      *mposting.PostingModel
+	user      *muser.UserModel
+	video     *mvideo.VideoModel
+	community *mcommunity.CommunityModel
+	stat      *mstat.StatModel
+	order     *morder.OrderModel
 }
 
 func New(c *gin.Context) StatModule {
@@ -35,14 +35,14 @@ func New(c *gin.Context) StatModule {
 	venueSocket := dao.VenueEngine.NewSession()
 	defer venueSocket.Close()
 	return StatModule{
-		context: c,
-		post: mposting.NewPostingModel(socket),
-		user: muser.NewUserModel(socket),
-		video: mvideo.NewVideoModel(socket),
+		context:   c,
+		post:      mposting.NewPostingModel(socket),
+		user:      muser.NewUserModel(socket),
+		video:     mvideo.NewVideoModel(socket),
 		community: mcommunity.NewCommunityModel(socket),
-		stat: mstat.NewStatModel(socket),
-		order: morder.NewOrderModel(venueSocket),
-		engine: socket,
+		stat:      mstat.NewStatModel(socket),
+		order:     morder.NewOrderModel(venueSocket),
+		engine:    socket,
 	}
 }
 
@@ -50,7 +50,7 @@ func New(c *gin.Context) StatModule {
 func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, mstat.HomePageInfo) {
 	days := 11
 	minDate := time.Now().AddDate(0, 0, -days).Format(consts.FORMAT_DATE)
-	maxDate := time.Now().Format(consts. FORMAT_DATE)
+	maxDate := time.Now().Format(consts.FORMAT_DATE)
 	if queryMinDate != "" && queryMaxDate != "" {
 		minDate = queryMinDate
 		maxDate = queryMaxDate
@@ -70,7 +70,7 @@ func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, 
 		log.Log.Infof("##########days:%d", days)
 	}
 
-	today := time.Now().Format(consts. FORMAT_DATE)
+	today := time.Now().Format(consts.FORMAT_DATE)
 	// 日活
 	dau, err := svc.stat.GetDAUByDate(today)
 	if err != nil {
@@ -120,14 +120,14 @@ func (svc *StatModule) GetHomePageInfo(queryMinDate, queryMaxDate string) (int, 
 	homepageInfo.TopInfo["new_users"] = newUsers.Count
 	homepageInfo.TopInfo["total_order"] = totalOrder
 	homepageInfo.TopInfo["daily_loyalty_users"] = dailyLoyaltyUsers
-	
+
 	dauList, err := svc.stat.GetDAUByDays(minDate, maxDate)
 	if err != nil {
 		log.Log.Errorf("stat_trace: get dau by days fail, err:%s", err)
 		return errdef.ERROR, homepageInfo
 	}
 
-	homepageInfo.DauList =  svc.ResultInfoByDate(dauList, days, maxDate)
+	homepageInfo.DauList = svc.ResultInfoByDate(dauList, days, maxDate)
 
 	newUserList, err := svc.stat.GetNetAdditionByDays(minDate, maxDate)
 	if err != nil {
@@ -191,7 +191,7 @@ func (svc *StatModule) GetVideoSubareaStat() (int, map[string]interface{}) {
 	mp["title"] = "视频各分区发布数据"
 
 	for _, item := range subareaStat {
-		item.Rate = fmt.Sprintf("%.2f%s", float64(item.Count) / float64(total) * 100, "%")
+		item.Rate = fmt.Sprintf("%.2f%s", float64(item.Count)/float64(total)*100, "%")
 		if item.Id == 0 {
 			item.Name = "其他"
 			continue
@@ -226,7 +226,7 @@ func (svc *StatModule) GetPostSectionStat() (int, map[string]interface{}) {
 	mp["title"] = "帖子各板块发布数据"
 
 	for _, item := range sectionStat {
-		item.Rate = fmt.Sprintf("%.2f%s", float64(item.Count) / float64(total) * 100, "%")
+		item.Rate = fmt.Sprintf("%.2f%s", float64(item.Count)/float64(total)*100, "%")
 		if item.Id == 0 {
 			item.Name = "其他"
 			continue
@@ -247,7 +247,7 @@ func (svc *StatModule) GetPostSectionStat() (int, map[string]interface{}) {
 func (svc *StatModule) PublishPostDaily(queryMinDate, queryMaxDate string) (int, map[int64]*PublishStat) {
 	days := 5
 	minDate := time.Now().AddDate(0, 0, -days).Format(consts.FORMAT_DATE)
-	maxDate := time.Now().Format(consts. FORMAT_DATE)
+	maxDate := time.Now().Format(consts.FORMAT_DATE)
 	if queryMinDate != "" && queryMaxDate != "" {
 		minDate = queryMinDate
 		maxDate = queryMaxDate
@@ -272,15 +272,14 @@ func (svc *StatModule) PublishPostDaily(queryMinDate, queryMaxDate string) (int,
 		return errdef.ERROR, nil
 	}
 
-	return  errdef.SUCCESS, svc.ResultInfo(days, 2, stat, maxDate)
+	return errdef.SUCCESS, svc.ResultInfo(days, 2, stat, maxDate)
 }
-
 
 // 各分区每日发布视频统计
 func (svc *StatModule) PublishVideoDaily(queryMinDate, queryMaxDate string) (int, map[int64]*PublishStat) {
 	days := 5
 	minDate := time.Now().AddDate(0, 0, -days).Format(consts.FORMAT_DATE)
-	maxDate := time.Now().Format(consts. FORMAT_DATE)
+	maxDate := time.Now().Format(consts.FORMAT_DATE)
 	if queryMinDate != "" && queryMaxDate != "" {
 		minDate = queryMinDate
 		maxDate = queryMaxDate
@@ -305,13 +304,13 @@ func (svc *StatModule) PublishVideoDaily(queryMinDate, queryMaxDate string) (int
 		return errdef.ERROR, nil
 	}
 
-	return  errdef.SUCCESS, svc.ResultInfo(days, 1, stat, maxDate)
+	return errdef.SUCCESS, svc.ResultInfo(days, 1, stat, maxDate)
 
 }
 
 type PublishStat struct {
-	Title string             `json:"title"`
-	List  map[string]int64   `json:"list"`
+	Title string           `json:"title"`
+	List  map[string]int64 `json:"list"`
 }
 
 func (svc *StatModule) VideoResultInfo(days, pubType int, data []*mstat.Stat, maxDate string) map[int64]*PublishStat {
@@ -320,7 +319,7 @@ func (svc *StatModule) VideoResultInfo(days, pubType int, data []*mstat.Stat, ma
 	if err != nil {
 		return nil
 	}
-	
+
 	for i := 0; i <= days; i++ {
 		date := max.AddDate(0, 0, -i).Format("2006-01-02")
 		if len(data) > 0 {
@@ -334,11 +333,11 @@ func (svc *StatModule) VideoResultInfo(days, pubType int, data []*mstat.Stat, ma
 							Title: v.Name,
 							List:  make(map[string]int64),
 						}
-						
+
 						list[v.Id].List[date] = v.Count
 					}
 				}
-				
+
 			}
 		} else {
 			sections, err := svc.community.GetAllSection("")
@@ -346,7 +345,7 @@ func (svc *StatModule) VideoResultInfo(days, pubType int, data []*mstat.Stat, ma
 				log.Log.Errorf("stat_trace: get all section fail, err:%s", err)
 				break
 			}
-			
+
 			for _, v := range sections {
 				vs, ok := list[int64(v.Id)]
 				if ok {
@@ -356,36 +355,36 @@ func (svc *StatModule) VideoResultInfo(days, pubType int, data []*mstat.Stat, ma
 						Title: v.SectionName,
 						List:  make(map[string]int64),
 					}
-					
+
 					list[int64(v.Id)].List[date] = 0
 				}
 			}
 		}
-		
+
 	}
-	
+
 	list[1000] = &PublishStat{
 		Title: "总数",
 		List:  make(map[string]int64),
 	}
 	//mp := make(map[string]int64, days-1)
-	
+
 	for k, v := range list {
 		for i := 0; i <= days; i++ {
 			date := max.AddDate(0, 0, -i).Format("2006-01-02")
 			if _, ok := v.List[date]; !ok {
 				list[k].List[date] = 0
 			}
-			
+
 			if pubType == 1 {
 				list[1000].List[date] = svc.stat.GetDailyPublishVideoByDate(date)
 			} else {
 				list[1000].List[date] = svc.stat.GetDailyPublishPostByDate(date)
 			}
-			
+
 		}
 	}
-	
+
 	return list
 }
 
@@ -445,7 +444,7 @@ func (svc *StatModule) ResultInfo(days, pubType int, data []*mstat.Stat, maxDate
 		List:  make(map[string]int64),
 	}
 	//mp := make(map[string]int64, days-1)
-	
+
 	for k, v := range list {
 		for i := 0; i <= days; i++ {
 			date := max.AddDate(0, 0, -i).Format("2006-01-02")
@@ -468,7 +467,7 @@ func (svc *StatModule) ResultInfo(days, pubType int, data []*mstat.Stat, maxDate
 // 每日帖子发布总数
 func (svc *StatModule) DailyTotalPost(queryMinDate, queryMaxDate string) (int, map[string]interface{}) {
 	minDate := time.Now().AddDate(0, 0, -11).Format(consts.FORMAT_DATE)
-	maxDate := time.Now().Format(consts. FORMAT_DATE)
+	maxDate := time.Now().Format(consts.FORMAT_DATE)
 	if queryMinDate != "" && queryMaxDate != "" {
 		minDate = queryMinDate
 		maxDate = queryMaxDate
@@ -485,13 +484,13 @@ func (svc *StatModule) DailyTotalPost(queryMinDate, queryMaxDate string) (int, m
 // 每日视频发布总数
 func (svc *StatModule) DailyTotalVideo(queryMinDate, queryMaxDate string) (int, map[string]interface{}) {
 	minDate := time.Now().AddDate(0, 0, -11).Format(consts.FORMAT_DATE)
-	maxDate := time.Now().Format(consts. FORMAT_DATE)
+	maxDate := time.Now().Format(consts.FORMAT_DATE)
 	if queryMinDate != "" && queryMaxDate != "" {
 		minDate = queryMinDate
 		maxDate = queryMaxDate
 	}
 
-	stat, err := svc.stat. GetTotalDailyPublishByVideo(minDate, maxDate)
+	stat, err := svc.stat.GetTotalDailyPublishByVideo(minDate, maxDate)
 	if err != nil {
 		return errdef.ERROR, nil
 	}

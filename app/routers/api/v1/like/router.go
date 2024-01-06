@@ -2,8 +2,8 @@ package like
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/sign"
-	"sports_service/server/middleware/token"
+	"sports_service/middleware/sign"
+	"sports_service/middleware/token"
 )
 
 // 点赞模块路由
@@ -24,13 +24,13 @@ func Router(engine *gin.Engine) {
 		like.POST("/comment", token.TokenAuth(), GiveLikeForVideoComment)
 		// 视频/帖子/资讯 评论取消点赞
 		like.POST("/comment/cancel", token.TokenAuth(), CancelLikeForVideoComment)
-        // 帖子点赞
+		// 帖子点赞
 		like.POST("/post", token.TokenAuth(), GiveLikeForPost)
 		// 帖子取消点赞
 		like.POST("/post/cancel", token.TokenAuth(), CancelLikeForPost)
 		// 资讯点赞
 		like.POST("/information", token.TokenAuth(), GiveLikeForInformation)
-        // 资讯取消点赞
+		// 资讯取消点赞
 		like.POST("/information/cancel", token.TokenAuth(), CancelLikeForInformation)
 	}
 }

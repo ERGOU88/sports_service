@@ -1,6 +1,6 @@
 package madmin
 
-import "sports_service/server/models"
+import "sports_service/models"
 
 func (m *AdminModel) AddRole(role *models.SystemRole) (int64, error) {
 	return m.Engine.InsertOne(role)

@@ -2,21 +2,21 @@ package muser
 
 import (
 	"github.com/go-xorm/xorm"
-	"sports_service/server/global/app/log"
-	"sports_service/server/models"
+	"sports_service/global/app/log"
+	"sports_service/models"
 )
 
 // 社交平台账户
 type SocialModel struct {
-	SocialAccount   *models.SocialAccountLogin
-	Engine          *xorm.Session
+	SocialAccount *models.SocialAccountLogin
+	Engine        *xorm.Session
 }
 
 // 实例
 func NewSocialPlatform(engine *xorm.Session) *SocialModel {
 	return &SocialModel{
 		SocialAccount: &models.SocialAccountLogin{},
-		Engine: engine,
+		Engine:        engine,
 	}
 }
 
@@ -75,6 +75,6 @@ func (m *SocialModel) HasExistsSocialAccount(socialType int, userId string) (boo
 	return m.Engine.Where("social_type=? AND user_id=?", socialType, userId).Exist(&models.SocialAccountLogin{})
 }
 
-func (m *SocialModel) GetSocialAccount(socialType int, userId string)  (bool, error) {
+func (m *SocialModel) GetSocialAccount(socialType int, userId string) (bool, error) {
 	return m.Engine.Where("social_type=? AND user_id=?", socialType, userId).Get(m.SocialAccount)
 }

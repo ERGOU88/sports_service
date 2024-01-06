@@ -3,13 +3,13 @@ package shop
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/cshop"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mshop"
-	"sports_service/server/util"
+	"sports_service/app/controller/cshop"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mshop"
+	"sports_service/util"
 )
 
 func ProductList(c *gin.Context) {
@@ -155,7 +155,7 @@ func DeleteProductCart(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	userId, _ := c.Get(consts.USER_ID)
 	svc := cshop.New(c)
 	code := svc.DeleteProductCart(param.Ids, userId.(string))
@@ -170,7 +170,7 @@ func PlaceOrder(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	userId, _ := c.Get(consts.USER_ID)
 	param.UserId = userId.(string)
 	channel, _ := c.Get(consts.CHANNEL)
@@ -189,7 +189,7 @@ func OrderCancel(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	userId, _ := c.Get(consts.USER_ID)
 	param.UserId = userId.(string)
 	svc := cshop.New(c)
@@ -201,7 +201,7 @@ func OrderList(c *gin.Context) {
 	userId, _ := c.Get(consts.USER_ID)
 	page, size := util.PageInfo(c.Query("page"), c.Query("size"))
 	reqType := c.Query("req_type")
-	
+
 	svc := cshop.New(c)
 	code, list := svc.OrderList(userId.(string), reqType, page, size)
 	reply.Data["list"] = list
@@ -216,7 +216,7 @@ func ConfirmReceipt(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	userId, _ := c.Get(consts.USER_ID)
 	param.UserId = userId.(string)
 	svc := cshop.New(c)
@@ -232,7 +232,7 @@ func OrderDelete(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	userId, _ := c.Get(consts.USER_ID)
 	svc := cshop.New(c)
 	param.UserId = userId.(string)
@@ -244,11 +244,10 @@ func OrderDetail(c *gin.Context) {
 	reply := errdef.New(c)
 	orderId := c.Query("order_id")
 	userId, _ := c.Get(consts.USER_ID)
-	
+
 	svc := cshop.New(c)
 	code, detail := svc.OrderDetail(userId.(string), orderId)
-	
-	
+
 	reply.Data["detail"] = detail
 	reply.Response(http.StatusOK, code)
 }

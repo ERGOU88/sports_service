@@ -1,7 +1,7 @@
 package contest
 
 import (
-	"sports_service/server/models/mcontest"
+	"sports_service/models/mcontest"
 )
 
 type SortContestLive []*mcontest.ContestLiveInfo
@@ -22,7 +22,3 @@ func (cl SortContestLive) Swap(i, j int) {
 	cl[i], cl[j] = cl[j], cl[i]
 	return
 }
-
-
-
-

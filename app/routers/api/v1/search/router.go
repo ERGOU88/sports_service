@@ -2,8 +2,8 @@ package search
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/sign"
-	"sports_service/server/middleware/token"
+	"sports_service/middleware/sign"
+	"sports_service/middleware/token"
 )
 
 // 搜索模块路由
@@ -28,10 +28,9 @@ func Router(engine *gin.Engine) {
 		search.GET("/fans", token.TokenAuth(), FansSearch)
 		// 清空用户搜索历史
 		search.POST("/clean/history", token.TokenAuth(), CleanHistorySearch)
-        // 搜索帖子
+		// 搜索帖子
 		search.GET("/posting", PostingSearch)
 		// 推荐视频
 		search.GET("/recommend/video", RecommendVideo)
 	}
 }
-

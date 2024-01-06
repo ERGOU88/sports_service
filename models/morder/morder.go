@@ -1,89 +1,89 @@
 package morder
 
 import (
-	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/rdskey"
-	"sports_service/server/models"
 	"fmt"
-	"sports_service/server/tools/tencentCloud"
+	"github.com/go-xorm/xorm"
+	"sports_service/dao"
+	"sports_service/global/rdskey"
+	"sports_service/models"
+	"sports_service/tools/tencentCloud"
 )
 
 // 支付请求参数
 type PayReqParam struct {
-	PayType   int     `binding:"required" json:"pay_type"`     // 1 支付宝 2 微信 3 钱包 4 苹果内购
-	OrderId   string  `binding:"required" json:"order_id"`     // 订单id
-	UserId    string
-	Platform  int     // 0 app  1 小程序 2 h5
-	Subject   string
-	Amount    int
-	CreateAt  int
+	PayType  int    `binding:"required" json:"pay_type"` // 1 支付宝 2 微信 3 钱包 4 苹果内购
+	OrderId  string `binding:"required" json:"order_id"` // 订单id
+	UserId   string
+	Platform int // 0 app  1 小程序 2 h5
+	Subject  string
+	Amount   int
+	CreateAt int
 }
 
 // 领取赠品请求参数
 type ReceiveGiftReq struct {
-	OrderId   string  `binding:"required" json:"order_id"`     // 订单id
-	UserId    string  `json:"user_id"`
+	OrderId string `binding:"required" json:"order_id"` // 订单id
+	UserId  string `json:"user_id"`
 }
 
 // 订单信息
 type OrderInfo struct {
-	CreatAt            string      `json:"creat_at"`            // 订单创建时间
-	OrderType          int32       `json:"order_type"`          // 订单商品类型 1001 场馆预约 2101 临时卡 2201 次卡 2311 月卡 2321 季卡 2331 半年卡 2341 年卡 3001 私教（教练）订单 3002 课程订单 4001 充值订单
-	OrderStatus        int32       `json:"order_status"`        // 订单状态 0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 退款失败
-	Title              string      `json:"title"`               // 标题
-	Amount             string      `json:"amount"`              // 金额
-	TotalAmount        int         `json:"total_amount"`        // 总金额
-	Duration           int64       `json:"duration"`            // 剩余支付时长
-	UserId             string      `json:"user_id"`
-	OrderId            string      `json:"order_id"`            // 订单id
-	Count              int         `json:"count"`
-	ProductImg         tencentCloud.BucketURI      `json:"product_img"`
-	HasEvaluate        bool        `json:"has_evaluate"`        // 是否评价
-	TimeNode           string      `json:"time_node,omitempty"` // 预约的时间节点
-	CanRefund          bool        `json:"can_refund"`          // 是否可退款
-	IsGift             int         `json:"is_gift"`             // 是否为赠品 1 为赠品
-	GiftStatus         int         `json:"gift_status"`         // 0未赠送 1 已过期 2 已赠送
-	OriginalAmount     int         `json:"original_amount"`     // 订单原始金额
+	CreatAt        string                 `json:"creat_at"`     // 订单创建时间
+	OrderType      int32                  `json:"order_type"`   // 订单商品类型 1001 场馆预约 2101 临时卡 2201 次卡 2311 月卡 2321 季卡 2331 半年卡 2341 年卡 3001 私教（教练）订单 3002 课程订单 4001 充值订单
+	OrderStatus    int32                  `json:"order_status"` // 订单状态 0 待支付 1 订单超时/未支付/已取消 2 已支付 3 已完成  4 退款中 5 已退款 6 退款失败
+	Title          string                 `json:"title"`        // 标题
+	Amount         string                 `json:"amount"`       // 金额
+	TotalAmount    int                    `json:"total_amount"` // 总金额
+	Duration       int64                  `json:"duration"`     // 剩余支付时长
+	UserId         string                 `json:"user_id"`
+	OrderId        string                 `json:"order_id"` // 订单id
+	Count          int                    `json:"count"`
+	ProductImg     tencentCloud.BucketURI `json:"product_img"`
+	HasEvaluate    bool                   `json:"has_evaluate"`        // 是否评价
+	TimeNode       string                 `json:"time_node,omitempty"` // 预约的时间节点
+	CanRefund      bool                   `json:"can_refund"`          // 是否可退款
+	IsGift         int                    `json:"is_gift"`             // 是否为赠品 1 为赠品
+	GiftStatus     int                    `json:"gift_status"`         // 0未赠送 1 已过期 2 已赠送
+	OriginalAmount int                    `json:"original_amount"`     // 订单原始金额
 }
 
 // 订单退款/删除订单/取消订单
 type ChangeOrder struct {
-	OrderId    string  `binding:"required" json:"order_id"`     // 订单id
-	UserId     string  `json:"user_id"`
+	OrderId string `binding:"required" json:"order_id"` // 订单id
+	UserId  string `json:"user_id"`
 }
 
 // 券码信息
 type CouponCodeInfo struct {
-	Code        string `json:"code"`
-	VenueName   string `json:"venue_name"`
-	Subject     string `json:"subject"`
-	TotalAmount int    `json:"total_amount"`
-	Count       int    `json:"count"`
-	ExpireTm    string `json:"expire_tm"`
-	QrCodeInfo  string `json:"qr_code_info"`
-	QrCodeExpireDuration int64 `json:"qr_code_expire_duration"`
+	Code                 string `json:"code"`
+	VenueName            string `json:"venue_name"`
+	Subject              string `json:"subject"`
+	TotalAmount          int    `json:"total_amount"`
+	Count                int    `json:"count"`
+	ExpireTm             string `json:"expire_tm"`
+	QrCodeInfo           string `json:"qr_code_info"`
+	QrCodeExpireDuration int64  `json:"qr_code_expire_duration"`
 }
 
 type OrderModel struct {
-	Engine         *xorm.Session
-	Order          *models.VenuePayOrders
-	OrderProduct   *models.VenueOrderProductInfo
-	Record         *models.VenueAppointmentRecord
-	Notify         *models.VenuePayNotify
-	RefundRecord   *models.VenueRefundRecord
-	CardRecord     *models.VenueCardRecord
+	Engine       *xorm.Session
+	Order        *models.VenuePayOrders
+	OrderProduct *models.VenueOrderProductInfo
+	Record       *models.VenueAppointmentRecord
+	Notify       *models.VenuePayNotify
+	RefundRecord *models.VenueRefundRecord
+	CardRecord   *models.VenueCardRecord
 }
 
 func NewOrderModel(engine *xorm.Session) *OrderModel {
 	return &OrderModel{
-		Engine: engine,
-		Order: new(models.VenuePayOrders),
+		Engine:       engine,
+		Order:        new(models.VenuePayOrders),
 		OrderProduct: new(models.VenueOrderProductInfo),
-		Record: new(models.VenueAppointmentRecord),
-		Notify: new(models.VenuePayNotify),
+		Record:       new(models.VenueAppointmentRecord),
+		Notify:       new(models.VenuePayNotify),
 		RefundRecord: new(models.VenueRefundRecord),
-		CardRecord: new(models.VenueCardRecord),
+		CardRecord:   new(models.VenueCardRecord),
 	}
 }
 
@@ -92,7 +92,6 @@ func (m *OrderModel) GetCardRecordByOrderId(orderId string) (bool, error) {
 	m.CardRecord = new(models.VenueCardRecord)
 	return m.Engine.Where("pay_order_id=?", orderId).Get(m.CardRecord)
 }
-
 
 // 更新会员卡流水记录信息
 func (m *OrderModel) UpdateCardRecordInfo(cols string, record *models.VenueCardRecord) (int64, error) {

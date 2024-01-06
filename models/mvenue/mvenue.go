@@ -2,8 +2,8 @@ package mvenue
 
 import (
 	"github.com/go-xorm/xorm"
-	"sports_service/server/models"
-	"sports_service/server/tools/tencentCloud"
+	"sports_service/models"
+	"sports_service/tools/tencentCloud"
 )
 
 type VenueModel struct {
@@ -17,37 +17,37 @@ type VenueModel struct {
 
 // 购买次卡/月卡/季卡/年卡 请求参数
 type PurchaseVipCardParam struct {
-	ProductId    int64  `binding:"required" json:"product_id"`   // 商品ID
-	Count        int    `binding:"required" json:"count"`        // 购买数量
-	UserId       string `json:"user_id"`
-	VenueId      int64  `binding:"required" json:"venue_id" `    // 场馆id
-	ChannelId    int    `json:"channel_id"`                      // android/ios
+	ProductId int64  `binding:"required" json:"product_id"` // 商品ID
+	Count     int    `binding:"required" json:"count"`      // 购买数量
+	UserId    string `json:"user_id"`
+	VenueId   int64  `binding:"required" json:"venue_id" ` // 场馆id
+	ChannelId int    `json:"channel_id"`                   // android/ios
 }
 
 // 场馆商品
 type VenueProduct struct {
-	Id                int64  `json:"id"`                   // 商品id
-	ProductName       string `json:"product_name"`
-	ProductType       int    `json:"product_type"`
-	EffectiveDuration int64  `json:"effective_duration"`   // 有效时长 例如体验卡 15/h
-	RealAmount        int    `json:"real_amount"`          // 定价
-	CurAmount         int    `json:"cur_amount"`           // 售价
-	DiscountRate      int    `json:"discount_rate"`        // 折扣率
-	DiscountAmount    int    `json:"discount_amount"`      // 优惠金额
-	HasDiscount       int32  `json:"has_discount"`         // 是否打折 0 未打折 1 打折
-	VenueId           int64  `json:"venue_id"`             // 场馆id
-	Sales             int64  `json:"sales"`                // 销量
-	Icon              tencentCloud.BucketURI `json:"icon"`                 // 商品icon
-	Image             tencentCloud.BucketURI `json:"image"`                // 商品图片
-	Describe          string `json:"describe"`             // 商品介绍
-	Title             string `json:"title"`                // 商品简介
-	Instructions      string `json:"instructions"`         // 购买须知
+	Id                int64                  `json:"id"` // 商品id
+	ProductName       string                 `json:"product_name"`
+	ProductType       int                    `json:"product_type"`
+	EffectiveDuration int64                  `json:"effective_duration"` // 有效时长 例如体验卡 15/h
+	RealAmount        int                    `json:"real_amount"`        // 定价
+	CurAmount         int                    `json:"cur_amount"`         // 售价
+	DiscountRate      int                    `json:"discount_rate"`      // 折扣率
+	DiscountAmount    int                    `json:"discount_amount"`    // 优惠金额
+	HasDiscount       int32                  `json:"has_discount"`       // 是否打折 0 未打折 1 打折
+	VenueId           int64                  `json:"venue_id"`           // 场馆id
+	Sales             int64                  `json:"sales"`              // 销量
+	Icon              tencentCloud.BucketURI `json:"icon"`               // 商品icon
+	Image             tencentCloud.BucketURI `json:"image"`              // 商品图片
+	Describe          string                 `json:"describe"`           // 商品介绍
+	Title             string                 `json:"title"`              // 商品简介
+	Instructions      string                 `json:"instructions"`       // 购买须知
 }
 
 type VenueEntryOrExitRecords struct {
 	Id         int64  `json:"id"`
 	UserId     string `json:"user_id"`
-	ActionType int    `json:"action_type"`    // 1 进场 2 出场
+	ActionType int    `json:"action_type"` // 1 进场 2 出场
 	VenueName  string `json:"venue_name"`
 	VenueId    int64  `json:"venue_id"`
 	Status     int    `json:"status"`
@@ -57,12 +57,12 @@ type VenueEntryOrExitRecords struct {
 
 func NewVenueModel(engine *xorm.Session) *VenueModel {
 	return &VenueModel{
-		Venue: new(models.VenueInfo),
+		Venue:     new(models.VenueInfo),
 		Recommend: new(models.VenueRecommendConf),
-		Product: new(models.VenueProductInfo),
-		Vip: new(models.VenueVipInfo),
-		Record: new(models.VenueEntryOrExitRecords),
-		Engine: engine,
+		Product:   new(models.VenueProductInfo),
+		Vip:       new(models.VenueVipInfo),
+		Record:    new(models.VenueEntryOrExitRecords),
+		Engine:    engine,
 	}
 }
 

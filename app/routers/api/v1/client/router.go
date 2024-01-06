@@ -1,8 +1,8 @@
 package client
 
 import (
-  "github.com/gin-gonic/gin"
-  "sports_service/server/middleware/sign"
+	"github.com/gin-gonic/gin"
+	"sports_service/middleware/sign"
 )
 
 func Router(engine *gin.Engine) {

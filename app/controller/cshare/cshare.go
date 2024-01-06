@@ -4,22 +4,22 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/app/config"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mcommunity"
-	"sports_service/server/models/mconfigure"
-	"sports_service/server/models/minformation"
-	"sports_service/server/models/mposting"
-	"sports_service/server/models/mshare"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	redismq "sports_service/server/redismq/event"
-	cloud "sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/app/config"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mcommunity"
+	"sports_service/models/mconfigure"
+	"sports_service/models/minformation"
+	"sports_service/models/mposting"
+	"sports_service/models/mshare"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	redismq "sports_service/redismq/event"
+	cloud "sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"time"
 )
 
@@ -39,15 +39,15 @@ func New(c *gin.Context) ShareModule {
 	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return ShareModule{
-		context: c,
-		user: muser.NewUserModel(socket),
-		posting: mposting.NewPostingModel(socket),
-		video: mvideo.NewVideoModel(socket),
-		community: mcommunity.NewCommunityModel(socket),
-		share: mshare.NewShareModel(socket),
+		context:     c,
+		user:        muser.NewUserModel(socket),
+		posting:     mposting.NewPostingModel(socket),
+		video:       mvideo.NewVideoModel(socket),
+		community:   mcommunity.NewCommunityModel(socket),
+		share:       mshare.NewShareModel(socket),
 		information: minformation.NewInformationModel(socket),
-		config: mconfigure.NewConfigModel(socket),
-		engine: socket,
+		config:      mconfigure.NewConfigModel(socket),
+		engine:      socket,
 	}
 }
 
@@ -62,7 +62,7 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 
 	switch params.SharePlatform {
 	// 分享/转发 到微信、微博、qq todo: 记录即可
-	case consts.SHARE_PLATFORM_WECHAT,consts.SHARE_PLATFORM_WEIBO,consts.SHARE_PLATFORM_QQ:
+	case consts.SHARE_PLATFORM_WECHAT, consts.SHARE_PLATFORM_WEIBO, consts.SHARE_PLATFORM_QQ:
 		switch params.ShareType {
 		case consts.SHARE_VIDEO:
 			video := svc.video.FindVideoById(fmt.Sprint(params.ComposeId))
@@ -179,15 +179,15 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 			}
 
 			shareInfo := &mshare.ShareVideoInfo{
-				VideoId: video.VideoId,
-				Title: video.Title,
-				Describe: video.Describe,
-				Cover: video.Cover,
-				VideoAddr: video.VideoAddr,
+				VideoId:       video.VideoId,
+				Title:         video.Title,
+				Describe:      video.Describe,
+				Cover:         video.Cover,
+				VideoAddr:     video.VideoAddr,
 				VideoDuration: video.VideoDuration,
-				CreateAt: video.CreateAt,
-				UserId: video.UserId,
-				Size: video.Size,
+				CreateAt:      video.CreateAt,
+				UserId:        video.UserId,
+				Size:          video.Size,
 				//Labels:	svc.video.GetVideoLabels(fmt.Sprint(video.VideoId)),
 			}
 
@@ -239,14 +239,14 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 			}
 
 			shareInfo := &mshare.SharePostInfo{
-				PostId: post.Id,
+				PostId:      post.Id,
 				PostingType: post.PostingType,
-				Topics: topics,
+				Topics:      topics,
 				ContentType: post.ContentType,
-				Title: post.Title,
-				Describe: post.Describe,
-				Content: post.Content,
-				UserId: post.UserId,
+				Title:       post.Title,
+				Describe:    post.Describe,
+				Content:     post.Content,
+				UserId:      post.UserId,
 			}
 
 			up := svc.user.FindUserByUserid(post.UserId)
@@ -318,7 +318,6 @@ func (svc *ShareModule) ShareData(params *mshare.ShareParams) int {
 
 			}
 		}
-
 
 		svc.posting.Posting.Id = 0
 		svc.posting.Posting.SectionId = section.Id
@@ -404,7 +403,7 @@ func (svc *ShareModule) GenShareUrl(userId, contentType, contentId, shareType st
 	case "2", "3":
 		return svc.GenUrlByContentType(config.Global.ShareUrl, contentType, contentId)
 	}
-	
+
 	return ""
 }
 
@@ -423,6 +422,6 @@ func (svc *ShareModule) GenUrlByContentType(host string, contentType string, con
 	case "4":
 		return fmt.Sprintf("%s/pages/mall/productDetails?id=%s", host, contentId)
 	}
-	
+
 	return ""
 }

@@ -1,6 +1,6 @@
 package mposting
 
-import "sports_service/server/models"
+import "sports_service/models"
 
 // 添加申精记录
 func (m *PostingModel) AddApplyCreamRecord() (int64, error) {
@@ -17,4 +17,3 @@ func (m *PostingModel) GetApplyCreamRecord(postId string) (*models.PostingApplyC
 
 	return m.ApplyCream, nil
 }
-

@@ -3,14 +3,14 @@ package search
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/csearch"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/consts"
-	"sports_service/server/util"
-	_ "sports_service/server/app/routers/api/v1/swag"
-	_ "sports_service/server/models/muser"
-	_ "sports_service/server/models/mvideo"
-	_ "sports_service/server/models/mattention"
+	"sports_service/app/controller/csearch"
+	_ "sports_service/app/routers/api/v1/swag"
+	"sports_service/global/app/errdef"
+	"sports_service/global/consts"
+	_ "sports_service/models/mattention"
+	_ "sports_service/models/muser"
+	_ "sports_service/models/mvideo"
+	"sports_service/util"
 )
 
 // @Summary 视频搜索[分页获取] (ok)

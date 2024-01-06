@@ -1,8 +1,8 @@
 package madmin
 
-import "sports_service/server/models"
+import "sports_service/models"
 
-func (m *AdminModel) GetMenuList(offset, size int) ([]*models.SystemMenu, error){
+func (m *AdminModel) GetMenuList(offset, size int) ([]*models.SystemMenu, error) {
 	var list []*models.SystemMenu
 	if err := m.Engine.Limit(size, offset).Find(&list); err != nil {
 		return nil, err

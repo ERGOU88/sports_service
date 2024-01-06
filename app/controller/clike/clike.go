@@ -4,55 +4,55 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mattention"
-	"sports_service/server/models/mcollect"
-	"sports_service/server/models/mcomment"
-	"sports_service/server/models/mconfigure"
-	"sports_service/server/models/minformation"
-	"sports_service/server/models/mlike"
-	"sports_service/server/models/mposting"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/mvideo"
-	redismq "sports_service/server/redismq/event"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mattention"
+	"sports_service/models/mcollect"
+	"sports_service/models/mcomment"
+	"sports_service/models/mconfigure"
+	"sports_service/models/minformation"
+	"sports_service/models/mlike"
+	"sports_service/models/mposting"
+	"sports_service/models/muser"
+	"sports_service/models/mvideo"
+	redismq "sports_service/redismq/event"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"strings"
 	"time"
 )
 
 type LikeModule struct {
-	context    *gin.Context
-	engine     *xorm.Session
-	user       *muser.UserModel
-	like       *mlike.LikeModel
-	video      *mvideo.VideoModel
-	comment    *mcomment.CommentModel
-	attention  *mattention.AttentionModel
-	collect    *mcollect.CollectModel
-	post       *mposting.PostingModel
+	context     *gin.Context
+	engine      *xorm.Session
+	user        *muser.UserModel
+	like        *mlike.LikeModel
+	video       *mvideo.VideoModel
+	comment     *mcomment.CommentModel
+	attention   *mattention.AttentionModel
+	collect     *mcollect.CollectModel
+	post        *mposting.PostingModel
 	information *minformation.InformationModel
 	config      *mconfigure.ConfigModel
 }
 
 func New(c *gin.Context) LikeModule {
-    socket := dao.AppEngine.NewSession()
+	socket := dao.AppEngine.NewSession()
 	defer socket.Close()
 	return LikeModule{
-		context: c,
-		user: muser.NewUserModel(socket),
-		video: mvideo.NewVideoModel(socket),
-		comment: mcomment.NewCommentModel(socket),
-		like: mlike.NewLikeModel(socket),
-		attention: mattention.NewAttentionModel(socket),
-		collect: mcollect.NewCollectModel(socket),
-		post: mposting.NewPostingModel(socket),
+		context:     c,
+		user:        muser.NewUserModel(socket),
+		video:       mvideo.NewVideoModel(socket),
+		comment:     mcomment.NewCommentModel(socket),
+		like:        mlike.NewLikeModel(socket),
+		attention:   mattention.NewAttentionModel(socket),
+		collect:     mcollect.NewCollectModel(socket),
+		post:        mposting.NewPostingModel(socket),
 		information: minformation.NewInformationModel(socket),
-		config: mconfigure.NewConfigModel(socket),
-		engine: socket,
+		config:      mconfigure.NewConfigModel(socket),
+		engine:      socket,
 	}
 }
 
@@ -74,7 +74,7 @@ func (svc *LikeModule) GiveLikeForVideo(userId string, videoId int64) int {
 
 	// 查找视频是否存在
 	video := svc.video.FindVideoById(fmt.Sprint(videoId))
-	if video == nil  {
+	if video == nil {
 		log.Log.Errorf("like_trace: like video not found, videoId:%d", videoId)
 		svc.engine.Rollback()
 		return errdef.LIKE_VIDEO_NOT_EXISTS
@@ -96,7 +96,7 @@ func (svc *LikeModule) GiveLikeForVideo(userId string, videoId int64) int {
 		return errdef.LIKE_ALREADY_EXISTS
 	}
 
-	now :=  int(time.Now().Unix())
+	now := int(time.Now().Unix())
 	score := svc.config.GetActionScore(int(consts.WORK_TYPE_VIDEO), consts.ACTION_TYPE_FABULOUS)
 	// 更新视频点赞总计 +1
 	if err := svc.video.UpdateVideoLikeNum(videoId, now, consts.CONFIRM_OPERATE, score); err != nil {
@@ -172,10 +172,10 @@ func (svc *LikeModule) CancelLikeForVideo(userId string, videoId int64) int {
 		return errdef.LIKE_REPEAT_CANCEL
 	}
 
-	now :=  int(time.Now().Unix())
+	now := int(time.Now().Unix())
 	score := svc.config.GetActionScore(int(consts.WORK_TYPE_VIDEO), consts.ACTION_TYPE_FABULOUS)
 	// 更新视频点赞总计 -1
-	if err := svc.video.UpdateVideoLikeNum(videoId, now, consts.CANCEL_OPERATE, score * -1); err != nil {
+	if err := svc.video.UpdateVideoLikeNum(videoId, now, consts.CANCEL_OPERATE, score*-1); err != nil {
 		log.Log.Errorf("like_trace: update video like num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.LIKE_CANCEL_FAIL
@@ -365,7 +365,7 @@ func (svc *LikeModule) GiveLike(userId, toUserId string, commentId int64, commen
 		return errdef.LIKE_ALREADY_EXISTS
 	}
 
-	now :=  int(time.Now().Unix())
+	now := int(time.Now().Unix())
 	// 未点赞
 	// 记录存在 且 状态为 未点赞 更新状态为 已点赞
 	if info != nil && info.Status == consts.NOT_GIVE_LIKE {
@@ -452,7 +452,7 @@ func (svc *LikeModule) CancelLike(userId string, commentId int64, commentType in
 		return errdef.LIKE_REPEAT_CANCEL
 	}
 
-	now :=  int(time.Now().Unix())
+	now := int(time.Now().Unix())
 	info.Status = consts.NOT_GIVE_LIKE
 	info.CreateAt = now
 	// 更新状态 未点赞
@@ -487,7 +487,7 @@ func (svc *LikeModule) GiveLikeForPost(userId string, postId int64) int {
 		return errdef.LIKE_POST_NOT_EXISTS
 	}
 
-	if fmt.Sprint(post.Status) != consts.POST_AUDIT_SUCCESS  {
+	if fmt.Sprint(post.Status) != consts.POST_AUDIT_SUCCESS {
 		log.Log.Errorf("like_trace: post not found, postId:%d", postId)
 		svc.engine.Rollback()
 		return errdef.LIKE_POST_FAIL
@@ -503,7 +503,7 @@ func (svc *LikeModule) GiveLikeForPost(userId string, postId int64) int {
 		return errdef.LIKE_ALREADY_EXISTS
 	}
 
-	now :=  int(time.Now().Unix())
+	now := int(time.Now().Unix())
 	score := svc.config.GetActionScore(int(consts.WORK_TYPE_POST), consts.ACTION_TYPE_FABULOUS)
 	// 更新帖子点赞总计 +1
 	if err := svc.post.UpdatePostLikeNum(postId, now, consts.CONFIRM_OPERATE, score); err != nil {
@@ -560,7 +560,7 @@ func (svc *LikeModule) CancelLikeForPost(userId string, postId int64) int {
 
 	// 查找帖子是否存在
 	post, err := svc.post.GetPostById(fmt.Sprint(postId))
-	if err != nil || post == nil  {
+	if err != nil || post == nil {
 		log.Log.Errorf("like_trace: cancel like post not found, postId:%d", postId)
 		svc.engine.Rollback()
 		return errdef.LIKE_POST_NOT_EXISTS
@@ -581,10 +581,10 @@ func (svc *LikeModule) CancelLikeForPost(userId string, postId int64) int {
 		return errdef.LIKE_REPEAT_CANCEL
 	}
 
-	now :=  int(time.Now().Unix())
+	now := int(time.Now().Unix())
 	score := svc.config.GetActionScore(int(consts.WORK_TYPE_POST), consts.ACTION_TYPE_FABULOUS)
 	// 更新帖子点赞总计 -1
-	if err := svc.post.UpdatePostLikeNum(postId, now, consts.CANCEL_OPERATE, score * -1); err != nil {
+	if err := svc.post.UpdatePostLikeNum(postId, now, consts.CANCEL_OPERATE, score*-1); err != nil {
 		log.Log.Errorf("like_trace: update post like num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.LIKE_CANCEL_FAIL
@@ -705,7 +705,6 @@ func (svc *LikeModule) CancelLikeForInformationComment(userId string, commentId 
 	return errdef.SUCCESS
 }
 
-
 // 点赞资讯
 func (svc *LikeModule) GiveLikeForInformation(userId string, newsId int64) int {
 	// 开启事务
@@ -739,7 +738,7 @@ func (svc *LikeModule) GiveLikeForInformation(userId string, newsId int64) int {
 		return errdef.LIKE_ALREADY_EXISTS
 	}
 
-	now :=  int(time.Now().Unix())
+	now := int(time.Now().Unix())
 	score := svc.config.GetActionScore(int(consts.WORK_TYPE_INFO), consts.ACTION_TYPE_FABULOUS)
 	// 更新资讯点赞总计 +1
 	if err := svc.information.UpdateInformationLikeNum(newsId, now, consts.CONFIRM_OPERATE, score); err != nil {
@@ -815,10 +814,10 @@ func (svc *LikeModule) CancelLikeForInformation(userId string, newsId int64) int
 		return errdef.LIKE_REPEAT_CANCEL
 	}
 
-	now :=  int(time.Now().Unix())
+	now := int(time.Now().Unix())
 	score := svc.config.GetActionScore(int(consts.WORK_TYPE_INFO), consts.ACTION_TYPE_FABULOUS)
 	// 更新资讯点赞总计 -1
-	if err := svc.information.UpdateInformationLikeNum(newsId, now, consts.CANCEL_OPERATE, score * -1); err != nil {
+	if err := svc.information.UpdateInformationLikeNum(newsId, now, consts.CANCEL_OPERATE, score*-1); err != nil {
 		log.Log.Errorf("like_trace: update information like num err:%s", err)
 		svc.engine.Rollback()
 		return errdef.LIKE_CANCEL_FAIL

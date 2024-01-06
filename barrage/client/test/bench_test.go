@@ -1,8 +1,8 @@
 package test
 
 import (
+	"sports_service/barrage/client"
 	"testing"
-	"sports_service/server/barrage/client"
 )
 
 func BenchmarkClientConn(b *testing.B) {
@@ -13,6 +13,3 @@ func BenchmarkClientConn(b *testing.B) {
 		}
 	})
 }
-
-
-

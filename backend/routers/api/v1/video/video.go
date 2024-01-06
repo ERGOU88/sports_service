@@ -3,14 +3,14 @@ package video
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/backend/controller/cvideo"
-	"sports_service/server/global/backend/errdef"
-	"sports_service/server/global/consts"
-	"sports_service/server/middleware/jwt"
-	"sports_service/server/models"
-	"sports_service/server/models/mlabel"
-	"sports_service/server/models/mvideo"
-	"sports_service/server/util"
+	"sports_service/backend/controller/cvideo"
+	"sports_service/global/backend/errdef"
+	"sports_service/global/consts"
+	"sports_service/middleware/jwt"
+	"sports_service/models"
+	"sports_service/models/mlabel"
+	"sports_service/models/mvideo"
+	"sports_service/util"
 )
 
 // 视频审核 修改视频状态
@@ -203,13 +203,13 @@ func AddAlbum(c *gin.Context) {
 		reply.Response(http.StatusBadRequest, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	svc := cvideo.New(c)
 	syscode, album := svc.CreateVideoAlbum(param)
 	if syscode == errdef.SUCCESS {
 		reply.Data["album"] = album
 	}
-	
+
 	reply.Response(http.StatusOK, syscode)
 }
 
@@ -221,7 +221,7 @@ func VideoAlbumList(c *gin.Context) {
 	svc := cvideo.New(c)
 	code, list := svc.GetVideoAlbumByUserId(userId, page, size)
 	reply.Data["list"] = list
-	
+
 	reply.Response(http.StatusOK, code)
 }
 

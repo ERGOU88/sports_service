@@ -4,13 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"sports_service/server/barrage/config"
-	"sports_service/server/global/barrage/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/log/zap"
-	"sports_service/server/models/pprof"
-	"sports_service/server/util"
-	"sports_service/server/dao"
+	"sports_service/barrage/config"
+	"sports_service/dao"
+	"sports_service/global/barrage/log"
+	"sports_service/global/consts"
+	"sports_service/log/zap"
+	"sports_service/models/pprof"
+	"sports_service/util"
 )
 
 var (

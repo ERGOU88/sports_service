@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-	_ "sports_service/server/app/docs"
+	_ "sports_service/app/docs"
 )
 
 // swag接口文档路由

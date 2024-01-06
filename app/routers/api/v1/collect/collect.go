@@ -3,13 +3,13 @@ package collect
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/collect"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mcollect"
-	_ "sports_service/server/models/mvideo"
-	"sports_service/server/util"
+	"sports_service/app/controller/collect"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mcollect"
+	_ "sports_service/models/mvideo"
+	"sports_service/util"
 )
 
 // @Summary 收藏视频 (ok)
@@ -146,7 +146,6 @@ func OtherUserCollectVideoList(c *gin.Context) {
 	reply.Response(http.StatusOK, errdef.SUCCESS)
 }
 
-
 // @Summary 删除收藏的历史记录 (ok)
 // @Tags 收藏模块
 // @Version 1.0
@@ -184,4 +183,3 @@ func DeleteCollect(c *gin.Context) {
 	syscode := svc.DeleteCollectByIds(userId.(string), param)
 	reply.Response(http.StatusOK, syscode)
 }
-

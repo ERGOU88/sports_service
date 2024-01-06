@@ -4,25 +4,25 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/mappointment"
-	"sports_service/server/models/mcoach"
-	"sports_service/server/models/mcourse"
-	"sports_service/server/models/muser"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/mappointment"
+	"sports_service/models/mcoach"
+	"sports_service/models/mcourse"
+	"sports_service/models/muser"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"time"
 )
 
 type CourseAppointmentModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	user        *muser.UserModel
-	course      *mcourse.CourseModel
-	coach       *mcoach.CoachModel
+	context *gin.Context
+	engine  *xorm.Session
+	user    *muser.UserModel
+	course  *mcourse.CourseModel
+	coach   *mcoach.CoachModel
 	*base
 }
 
@@ -59,13 +59,13 @@ func (svc *CourseAppointmentModule) Options(relatedId int64) (int, interface{}) 
 	res := make([]*mappointment.Options, len(list))
 	for index, item := range list {
 		info := &mappointment.Options{
-			Id: item.Id,
-			Name: item.Title,
-			Title: item.Subhead,
-			Avatar: item.PromotionPic,
-			Describe: item.Describe,
+			Id:              item.Id,
+			Name:            item.Title,
+			Title:           item.Subhead,
+			Avatar:          item.PromotionPic,
+			Describe:        item.Describe,
 			CostDescription: item.CostDescription,
-			Instructions: item.Instructions,
+			Instructions:    item.Instructions,
 		}
 
 		res[index] = info
@@ -73,7 +73,6 @@ func (svc *CourseAppointmentModule) Options(relatedId int64) (int, interface{}) 
 
 	return errdef.SUCCESS, res
 }
-
 
 // 预约大课
 func (svc *CourseAppointmentModule) Appointment(params *mappointment.AppointmentReq) (int, interface{}) {
@@ -258,7 +257,6 @@ func (svc *CourseAppointmentModule) AppointmentOptions() (int, interface{}) {
 			info.Address = svc.venue.Venue.Address
 		}
 
-
 		res = append(res, info)
 	}
 
@@ -270,14 +268,14 @@ func (svc *CourseAppointmentModule) AppointmentDetail() (int, interface{}) {
 	if !ok || err != nil {
 		return errdef.APPOINTMENT_QUERY_NODE_FAIL, nil
 	}
-	
+
 	// 获取课程信息
 	ok, err = svc.course.GetCourseInfoById(fmt.Sprint(svc.appointment.AppointmentInfo.CourseId))
 	if !ok || err != nil {
 		log.Log.Errorf("venue_trace: get course info fail, err:%s", err)
 		return errdef.COURSE_NOT_EXISTS, nil
 	}
-	
+
 	// 获取老师信息
 	ok, err = svc.coach.GetCoachInfoById(fmt.Sprint(svc.appointment.AppointmentInfo.CoachId))
 	if !ok || err != nil {
@@ -291,29 +289,29 @@ func (svc *CourseAppointmentModule) AppointmentDetail() (int, interface{}) {
 		log.Log.Errorf("venue_trace: get venue info by id fail, venueId:%d, err:%s", svc.course.Course.VenueId, err)
 		return errdef.VENUE_NOT_EXISTS, nil
 	}
-	
+
 	rsp := &mappointment.CourseDetail{
-		Id:   svc.appointment.AppointmentInfo.Id,
-		Date: svc.GetDateById(svc.DateId, consts.FORMAT_DATE),
-		TimeNode: svc.appointment.AppointmentInfo.TimeNode,
-		Address: svc.venue.Venue.Address,
-		CoachId: svc.coach.Coach.Id,
-		CoachName: svc.coach.Coach.Name,
-		CourseId: svc.course.Course.Id,
-		VenueId: svc.appointment.AppointmentInfo.VenueId,
-		VenueName: svc.venue.Venue.VenueName,
-		Title: svc.course.Course.Title,
-		Subhead: svc.course.Course.Subhead,
-		Avatar: tencentCloud.BucketURI(svc.coach.Coach.Avatar),
-		PromotionPic: tencentCloud.BucketURI(svc.course.Course.PromotionPic),
-		CoachDescribe: svc.coach.Coach.Describe,
-		CourseDescribe: svc.course.Course.Describe,
+		Id:              svc.appointment.AppointmentInfo.Id,
+		Date:            svc.GetDateById(svc.DateId, consts.FORMAT_DATE),
+		TimeNode:        svc.appointment.AppointmentInfo.TimeNode,
+		Address:         svc.venue.Venue.Address,
+		CoachId:         svc.coach.Coach.Id,
+		CoachName:       svc.coach.Coach.Name,
+		CourseId:        svc.course.Course.Id,
+		VenueId:         svc.appointment.AppointmentInfo.VenueId,
+		VenueName:       svc.venue.Venue.VenueName,
+		Title:           svc.course.Course.Title,
+		Subhead:         svc.course.Course.Subhead,
+		Avatar:          tencentCloud.BucketURI(svc.coach.Coach.Avatar),
+		PromotionPic:    tencentCloud.BucketURI(svc.course.Course.PromotionPic),
+		CoachDescribe:   svc.coach.Coach.Describe,
+		CourseDescribe:  svc.course.Course.Describe,
 		CostDescription: svc.course.Course.CostDescription,
-		Instructions: svc.course.Course.Instructions,
-		RealAmount: svc.appointment.AppointmentInfo.RealAmount,
-		CurAmount: svc.appointment.AppointmentInfo.CurAmount,
+		Instructions:    svc.course.Course.Instructions,
+		RealAmount:      svc.appointment.AppointmentInfo.RealAmount,
+		CurAmount:       svc.appointment.AppointmentInfo.CurAmount,
 	}
-	
+
 	return errdef.SUCCESS, rsp
 }
 
@@ -321,6 +319,3 @@ func (svc *CourseAppointmentModule) AppointmentDetail() (int, interface{}) {
 func (svc *CourseAppointmentModule) AppointmentDate() (int, interface{}) {
 	return errdef.SUCCESS, svc.AppointmentDateInfo(6, consts.APPOINTMENT_COURSE)
 }
-
-
-

@@ -2,11 +2,11 @@ package cposting
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http/httptest"
-	"sports_service/server/dao"
-	"sports_service/server/models/mposting"
-	"testing"
 	. "github.com/smartystreets/goconvey/convey"
+	"net/http/httptest"
+	"sports_service/dao"
+	"sports_service/models/mposting"
+	"testing"
 )
 
 func init() {
@@ -26,14 +26,14 @@ func TestPublishPosting(t *testing.T) {
 		c, _ := gin.CreateTestContext(httptest.NewRecorder())
 		svc := New(c)
 		code := svc.PublishPosting("13918242", &mposting.PostPublishParam{
-			Title:  "测试",
-			Describe: "测试描述",
-			ImagesAddr: []string{"https://fpv-1251316249.cos.ap-shanghai.myqcloud.com/fpv/1607511255127.png","https://fpv-1251316249.cos.ap-shanghai.myqcloud.com/fpv/1607511255127.png"},
-			SectionId: 1,
-			TopicIds: []string{"1","2"},
-			AtInfo: []string{"10240133"},
+			Title:      "测试",
+			Describe:   "测试描述",
+			ImagesAddr: []string{"https://fpv-1251316249.cos.ap-shanghai.myqcloud.com/fpv/1607511255127.png", "https://fpv-1251316249.cos.ap-shanghai.myqcloud.com/fpv/1607511255127.png"},
+			SectionId:  1,
+			TopicIds:   []string{"1", "2"},
+			AtInfo:     []string{"10240133"},
 		})
 
-		So(code,  ShouldEqual, 200)
+		So(code, ShouldEqual, 200)
 	})
 }

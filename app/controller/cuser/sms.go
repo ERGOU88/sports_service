@@ -1,19 +1,19 @@
 package cuser
 
 import (
+	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"math/rand"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/muser"
-	"sports_service/server/models/sms"
-	"sports_service/server/tools/tencentCloud"
-	"sports_service/server/util"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/muser"
+	"sports_service/models/sms"
+	"sports_service/tools/tencentCloud"
+	"sports_service/util"
 	"strings"
 	"time"
-	"fmt"
 )
 
 var (
@@ -79,17 +79,17 @@ func (svc *UserModule) SendSmsCode(params *sms.SendSmsCodeParams) int {
 		return errdef.ERROR
 	}
 
-  // 发送短信验证码
-  if err := svc.sms.Send(params.MobileNum, code); err != nil {
-    log.Log.Errorf("sms_trace: send sms code err:%s", err)
-    return errdef.SMS_CODE_SEND_FAIL
-  }
+	// 发送短信验证码
+	if err := svc.sms.Send(params.MobileNum, code); err != nil {
+		log.Log.Errorf("sms_trace: send sms code err:%s", err)
+		return errdef.SMS_CODE_SEND_FAIL
+	}
 
-  // 重发验证码的限制时间
-  if err := svc.sms.SetSmsIntervalTm(params.SendType, params.MobileNum); err != nil {
-    log.Log.Errorf("sms_trace: set sms interval tm err:%s", err)
-    return errdef.ERROR
-  }
+	// 重发验证码的限制时间
+	if err := svc.sms.SetSmsIntervalTm(params.SendType, params.MobileNum); err != nil {
+		log.Log.Errorf("sms_trace: set sms interval tm err:%s", err)
+		return errdef.ERROR
+	}
 
 	// 记录发送验证码的次数
 	if err := svc.sms.IncrSendSmsNum(params.MobileNum); err != nil {
@@ -166,18 +166,17 @@ func (svc *UserModule) SmsCodeLogin(params *sms.SmsCodeLoginParams) (int, string
 		if err := svc.user.SaveUserToken(svc.user.User.UserId, token); err != nil {
 			log.Log.Errorf("user_trace: save user token err:%s", err)
 		}
-		
+
 		return errdef.SUCCESS, token, svc.UserInfoResp()
 
 	}
 
-	
 	// 登陆的时候 检查用户状态
 	if !svc.CheckUserStatus(svc.user.User.Status) {
 		log.Log.Errorf("user_trace: forbid status, userId:%s", svc.user.User.UserId)
 		return errdef.USER_FORBID_STATUS, "", nil
 	}
-	
+
 	avatar := tencentCloud.BucketURI(svc.user.User.Avatar)
 	svc.user.User.Avatar = string(avatar)
 	// 用户已注册过, 则直接从redis中获取token并返回
@@ -259,12 +258,12 @@ func (svc *UserModule) RegisterOfficialAccount(params *sms.SmsCodeLoginParams) (
 
 // 检查用户状态
 func (svc *UserModule) CheckUserStatus(status int) bool {
-  // 如果用户状态不正常
-  if status != consts.USER_NORMAL {
-    return false
-  }
+	// 如果用户状态不正常
+	if status != consts.USER_NORMAL {
+		return false
+	}
 
-  return true
+	return true
 }
 
 // 校验短信验证码

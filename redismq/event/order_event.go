@@ -2,11 +2,11 @@ package event
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"sports_service/server/dao"
-	"sports_service/server/global/rdskey"
-	"sports_service/server/global/app/log"
-	"sports_service/server/redismq/protocol"
-	"sports_service/server/util"
+	"sports_service/dao"
+	"sports_service/global/app/log"
+	"sports_service/global/rdskey"
+	"sports_service/redismq/protocol"
+	"sports_service/util"
 	"time"
 )
 
@@ -34,7 +34,7 @@ func NewOrderEvent(userId, orderId string, processTm int64, eventType int32) []b
 	data.OrderId = orderId
 	data.ProcessTm = processTm
 
-	msg , _ := util.JsonFast.Marshal(data)
+	msg, _ := util.JsonFast.Marshal(data)
 	event.Data = msg
 	b, err := util.JsonFast.Marshal(event)
 	if err != nil {

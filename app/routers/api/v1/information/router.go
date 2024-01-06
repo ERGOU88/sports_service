@@ -2,7 +2,7 @@ package information
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/sign"
+	"sports_service/middleware/sign"
 )
 
 // 资讯模块路由

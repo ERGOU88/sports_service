@@ -3,12 +3,12 @@ package order
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sports_service/server/app/controller/corder"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models/morder"
-	"sports_service/server/util"
+	"sports_service/app/controller/corder"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models/morder"
+	"sports_service/util"
 )
 
 // 订单列表
@@ -110,7 +110,7 @@ func RefundRules(c *gin.Context) {
 	userId, _ := c.Get(consts.USER_ID)
 	svc := corder.New(c)
 	code, refundAmount, refundFee, ruleId := svc.OrderRefund(&morder.ChangeOrder{
-		UserId: userId.(string),
+		UserId:  userId.(string),
 		OrderId: orderId,
 	}, consts.EXECUTE_TYPE_QUERY)
 
@@ -142,7 +142,7 @@ func ReceiveGift(c *gin.Context) {
 		reply.Response(http.StatusOK, errdef.INVALID_PARAMS)
 		return
 	}
-	
+
 	userId, _ := c.Get(consts.USER_ID)
 	param.UserId = userId.(string)
 	svc := corder.New(c)
@@ -159,6 +159,6 @@ func GiftDetail(c *gin.Context) {
 	if code == errdef.SUCCESS {
 		reply.Data["detail"] = detail
 	}
-	
+
 	reply.Response(http.StatusOK, code)
 }

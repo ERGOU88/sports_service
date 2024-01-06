@@ -2,7 +2,7 @@ package venue
 
 import (
 	"github.com/gin-gonic/gin"
-	"sports_service/server/middleware/jwt"
+	"sports_service/middleware/jwt"
 )
 
 func Router(engine *gin.Engine) {
@@ -16,9 +16,9 @@ func Router(engine *gin.Engine) {
 		venue.GET("/detail", VenueDetail)
 		// 编辑场馆
 		venue.POST("/edit", EditVenue)
-        // 更新退款费率
+		// 更新退款费率
 		venue.POST("/refund/rate", UpdateRefundRate)
-        // 退款规则
+		// 退款规则
 		venue.GET("/refund/rules", RefundRules)
 		// 添加场馆
 		venue.POST("/add", AddVenue)
@@ -36,4 +36,3 @@ func Router(engine *gin.Engine) {
 		venue.GET("/store/manager/list", StoreManagerList)
 	}
 }
-

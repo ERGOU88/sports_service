@@ -1,28 +1,28 @@
 package comment
 
 import (
-  "github.com/gin-gonic/gin"
-  "net/http/httptest"
-  "sports_service/server/models/mcomment"
-  "testing"
-  "sports_service/server/dao"
+	"github.com/gin-gonic/gin"
+	"net/http/httptest"
+	"sports_service/dao"
+	"sports_service/models/mcomment"
+	"testing"
 )
 
 func init() {
-  dao.AppEngine = dao.InitXorm("root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4", []string{"root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4"})
-  dao.InitRedis("192.168.5.12:6378", "")
+	dao.AppEngine = dao.InitXorm("root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4", []string{"root:bluetrans888@tcp(192.168.5.12:3306)/sports_service?charset=utf8mb4"})
+	dao.InitRedis("192.168.5.12:6378", "")
 }
 
 // 发布评论
 func TestPublishComment(t *testing.T) {
-  params := &mcomment.PublishCommentParams{
-    VideoId: 97,
-    Content: "我是1级评论",
-  }
-  c, _ := gin.CreateTestContext(httptest.NewRecorder())
-  svc := New(c)
-  syscode, _ := svc.PublishComment("202009101933004667", params)
-  t.Logf("syscode:%d\n", syscode)
+	params := &mcomment.PublishCommentParams{
+		VideoId: 97,
+		Content: "我是1级评论",
+	}
+	c, _ := gin.CreateTestContext(httptest.NewRecorder())
+	svc := New(c)
+	syscode, _ := svc.PublishComment("202009101933004667", params)
+	t.Logf("syscode:%d\n", syscode)
 }
 
 //func BenchmarkPublishComment(b *testing.B) {
@@ -40,17 +40,17 @@ func TestPublishComment(t *testing.T) {
 
 // 发布回复
 func TestPublishReply(t *testing.T) {
-  params := &mcomment.ReplyCommentParams{
-    ComposeId: 13,
-    Content: "评论回复no.1",
-    CommentType: 2,
-    ReplyId: "17",
-  }
+	params := &mcomment.ReplyCommentParams{
+		ComposeId:   13,
+		Content:     "评论回复no.1",
+		CommentType: 2,
+		ReplyId:     "17",
+	}
 
-  c, _ := gin.CreateTestContext(httptest.NewRecorder())
-  svc := New(c)
-  syscode, info := svc.PublishReply("13918242", params)
-  t.Logf("syscode:%d\n, info:%+v", syscode, info)
+	c, _ := gin.CreateTestContext(httptest.NewRecorder())
+	svc := New(c)
+	syscode, info := svc.PublishReply("13918242", params)
+	t.Logf("syscode:%d\n, info:%+v", syscode, info)
 }
 
 //func BenchmarkPublishReply(b *testing.B) {

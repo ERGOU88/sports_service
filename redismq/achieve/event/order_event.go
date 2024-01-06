@@ -1,18 +1,18 @@
 package event
 
 import (
-	"github.com/garyburd/redigo/redis"
-	"sports_service/server/dao"
-	"sports_service/server/global/consts"
-	"sports_service/server/global/rdskey"
-	"sports_service/server/models/mappointment"
-	"sports_service/server/models/morder"
-	producer "sports_service/server/redismq/event"
-	"sports_service/server/util"
-	"time"
-	"sports_service/server/global/app/log"
-	"sports_service/server/redismq/protocol"
 	"errors"
+	"github.com/garyburd/redigo/redis"
+	"sports_service/dao"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/global/rdskey"
+	"sports_service/models/mappointment"
+	"sports_service/models/morder"
+	producer "sports_service/redismq/event"
+	"sports_service/redismq/protocol"
+	"sports_service/util"
+	"time"
 )
 
 func LoopPopOrderEvent() {
@@ -31,7 +31,6 @@ func LoopPopOrderEvent() {
 			log.Log.Errorf("redisMq_trace: invalid values, len:%d, values:%+v", len(values), values)
 		}
 
-
 		bts, ok := values[1].([]byte)
 		if !ok {
 			log.Log.Errorf("redisMq_trace: value[1] unSupport type")
@@ -47,7 +46,7 @@ func LoopPopOrderEvent() {
 	}
 }
 
-func OrderEventConsumer (bts []byte) error {
+func OrderEventConsumer(bts []byte) error {
 	event := protocol.Event{}
 	if err := util.JsonFast.Unmarshal(bts, &event); err != nil {
 		log.Log.Errorf("redisMq_trace: proto unmarshal order event err:%s", err)
@@ -160,7 +159,7 @@ func orderTimeOut(appointmentType int, orderId string) error {
 
 	for _, record := range list {
 		// 归还对应节点的冻结库存
-		affected, err = amodel.RevertStockNum(record.TimeNode, record.Date,  record.PurchasedNum * -1, now,
+		affected, err = amodel.RevertStockNum(record.TimeNode, record.Date, record.PurchasedNum*-1, now,
 			record.AppointmentType, int(record.VenueId))
 		if affected != 1 || err != nil {
 			log.Log.Errorf("redisMq_trace: update stock info fail, orderId:%s, err:%s, affected:%d, id:%d", orderId, err, affected, record.Id)

@@ -1,11 +1,11 @@
 package job
 
 import (
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/global/app/log"
+	"sports_service/dao"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
 	"time"
-	"sports_service/server/dao"
 )
 
 // 检测banner列表 是否上架/是否过期（每5分钟）
@@ -15,7 +15,7 @@ func CheckBanners() {
 
 	for {
 		select {
-		case <- ticker.C:
+		case <-ticker.C:
 			// 检测banner是否上架/是否已过期
 			checkBannerStatus()
 		}
@@ -69,4 +69,3 @@ func updateBannerStatus(banner *models.Banner) error {
 
 	return nil
 }
-

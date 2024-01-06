@@ -4,21 +4,21 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"sports_service/server/dao"
-	"sports_service/server/global/app/errdef"
-	"sports_service/server/global/app/log"
-	"sports_service/server/global/consts"
-	"sports_service/server/models"
-	"sports_service/server/models/mshop"
-	"sports_service/server/models/muser"
+	"sports_service/dao"
+	"sports_service/global/app/errdef"
+	"sports_service/global/app/log"
+	"sports_service/global/consts"
+	"sports_service/models"
+	"sports_service/models/mshop"
+	"sports_service/models/muser"
 	"time"
 )
 
 type ShopModule struct {
-	context     *gin.Context
-	engine      *xorm.Session
-	user        *muser.UserModel
-	shop        *mshop.ShopModel
+	context *gin.Context
+	engine  *xorm.Session
+	user    *muser.UserModel
+	shop    *mshop.ShopModel
 	//resp        *mshop.OrderResp
 }
 
@@ -27,8 +27,8 @@ func New(c *gin.Context) ShopModule {
 	defer socket.Close()
 	return ShopModule{
 		context: c,
-		user: muser.NewUserModel(socket),
-		shop: mshop.NewShop(socket),
+		user:    muser.NewUserModel(socket),
+		shop:    mshop.NewShop(socket),
 		//resp: &mshop.OrderResp{Products: make([]*mshop.Product, 0)},
 		engine: socket,
 	}
@@ -39,7 +39,7 @@ func (svc *ShopModule) GetProducts(categoryId, sortType string, page, size int) 
 		return svc.GetProductList(sortType, "", page, size)
 	}
 
-	return svc.GetProductListByCategory(categoryId, sortType,  page, size)
+	return svc.GetProductListByCategory(categoryId, sortType, page, size)
 }
 
 func (svc *ShopModule) GetProductList(sortType, keyword string, page, size int) (int, []*mshop.ProductSimpleInfo) {
@@ -49,7 +49,7 @@ func (svc *ShopModule) GetProductList(sortType, keyword string, page, size int) 
 		log.Log.Errorf("shop_trace: get all spu fail, err:%s", err)
 		return errdef.SHOP_GET_ALL_SPU_FAIL, nil
 	}
-	
+
 	if len(list) == 0 {
 		return errdef.SUCCESS, []*mshop.ProductSimpleInfo{}
 	}
@@ -64,7 +64,7 @@ func (svc *ShopModule) GetProductListByCategory(categoryId, sortType string, pag
 		log.Log.Errorf("shop_trace: get spu list by category fail, err:%s", err)
 		return errdef.SHOP_GET_SPU_BY_CATEGORY_FAIL, nil
 	}
-	
+
 	if len(list) == 0 {
 		return errdef.SUCCESS, []*mshop.ProductSimpleInfo{}
 	}
@@ -79,8 +79,8 @@ func (svc *ShopModule) GetProductCategoryConf() []*mshop.Category {
 	}
 
 	info := &mshop.Category{
-	   CategoryId: 0,
-	   CategoryName: "综合",
+		CategoryId:   0,
+		CategoryName: "综合",
 	}
 
 	conf = append([]*mshop.Category{info}, conf...)
@@ -116,13 +116,13 @@ func (svc *ShopModule) GetProductDetail(productId, indexes, userId string) (int,
 		detail.HasActivities = 1
 		detail.RemainDuration = detail.EndTime - now
 	}
-	
+
 	skuList, err := svc.shop.GetProductSkuList(fmt.Sprint(productId))
 	if err != nil {
 		log.Log.Errorf("shop_trace: get product sku by spuId fail, spuId:%d, err:%s", productId, err)
 		return errdef.SHOP_PRODUCT_SKU_FAIL, nil
 	}
-	
+
 	if skuList != nil {
 		detail.SkuList = skuList
 		for _, item := range detail.SkuList {
@@ -132,35 +132,35 @@ func (svc *ShopModule) GetProductDetail(productId, indexes, userId string) (int,
 				item.MinBuy = stockInfo.MinBuy
 				item.MaxBuy = stockInfo.MaxBuy
 			}
-			
+
 			if item.OwnSpec == nil {
 				item.OwnSpec = make([]*mshop.OwnSpec, 0)
 			}
 		}
-		
+
 	} else {
 		detail.SkuList = make([]*mshop.ProductSkuInfo, 0)
 	}
-	
+
 	stockInfo, err := svc.shop.GetProductSkuStock(fmt.Sprint(detail.Id))
 	if err == nil {
 		detail.Stock = stockInfo.Stock - stockInfo.PurchasedNum
 		detail.MinBuy = stockInfo.MinBuy
 		detail.MaxBuy = stockInfo.MaxBuy
 	}
-	
+
 	if detail.Specifications == nil {
 		detail.Specifications = make([]mshop.SpecInfo, 0)
 	}
-	
+
 	if detail.SpecTemplate == nil {
 		detail.SpecTemplate = make([]mshop.SpecTemplate, 0)
 	}
-	
+
 	if detail.OwnSpec == nil {
 		detail.OwnSpec = make([]mshop.OwnSpec, 0)
 	}
-	
+
 	services, err := svc.shop.GetProductServiceInfo(fmt.Sprint(detail.ProductId))
 	if services != nil && err == nil {
 		detail.AfterService = services
@@ -168,13 +168,13 @@ func (svc *ShopModule) GetProductDetail(productId, indexes, userId string) (int,
 		log.Log.Errorf("shop_trace: get product service fail, err:%s", err)
 		detail.AfterService = []*mshop.AfterService{}
 	}
-	
+
 	if userId != "" {
 		count, err := svc.shop.GetProductCartNum(userId)
 		if err != nil {
 			log.Log.Errorf("shop_trace: get product cart num fail, err:%s", err)
 		}
-		
+
 		detail.ProductCartNum = count
 	}
 
@@ -261,7 +261,7 @@ func (svc *ShopModule) GetUserAddrList(page, size int, userId string) (int, []*m
 		log.Log.Errorf("shop_trace: get user addr by userId fail, userId:%s, err:%s", userId, err)
 		return errdef.SHOP_GET_USER_ADDR_FAIL, nil
 	}
-	
+
 	//for _, item := range addrList {
 	//	item.Mobile = util.HideMobileNum(item.Mobile)
 	//}
@@ -275,24 +275,24 @@ func (svc *ShopModule) AddProductCart(param *mshop.AddOrUpdateProductCartParam) 
 	if err != nil {
 		log.Log.Errorf("shop_trace: get product cart num fail, err:%s", err)
 	}
-	
+
 	for _, info := range param.Params {
 		if info.Count <= 0 {
 			return errdef.INVALID_PARAMS, 0
 		}
-		
+
 		info.UserId = param.UserId
 		if _, err := svc.shop.GetProductSpu(fmt.Sprint(info.ProductId)); err != nil {
 			log.Log.Errorf("shop_trace: get product spu fail, productId:%d, err:%s", info.ProductId, err)
 			return errdef.SHOP_PRODUCT_SPU_FAIL, 0
 		}
-		
+
 		condition := fmt.Sprintf("id=%d AND product_id=%d", info.SkuId, info.ProductId)
 		if _, err := svc.shop.GetProductSku(condition); err != nil {
 			log.Log.Errorf("shop_trace: get product sku by id fail, skuId:%d, err:%s", info.SkuId, err)
 			return errdef.SHOP_PRODUCT_SKU_FAIL, 0
 		}
-		
+
 		info.CreateAt = int(time.Now().Unix())
 		condition = fmt.Sprintf("product_id=%d AND user_id='%s' AND sku_id=%d", info.ProductId, info.UserId, info.SkuId)
 		cartInfo, err := svc.shop.GetProductCart(condition)
@@ -300,15 +300,15 @@ func (svc *ShopModule) AddProductCart(param *mshop.AddOrUpdateProductCartParam) 
 			log.Log.Errorf("shop_trace: get product cart fail err:%s", err)
 			return errdef.SHOP_GET_PRODUCT_CART_FAIL, 0
 		}
-		
+
 		if cartInfo == nil {
 			if _, err := svc.shop.AddProductCart(info); err != nil {
 				log.Log.Errorf("shop_trace: add product cart fail, err:%s", err)
 				return errdef.SHOP_ADD_PRODUCT_CART_FAIL, total
 			}
-			
+
 			total += 1
-			
+
 		} else {
 			affected, err := svc.shop.UpdateProductCart(info)
 			if affected <= 0 || err != nil {
@@ -329,7 +329,7 @@ func (svc *ShopModule) GetProductCartList(userId string) (int, []*mshop.ProductC
 		log.Log.Errorf("shop_trace: get product cart list fail, err:%s", err)
 		return errdef.SHOP_GET_PRODUCT_CART_FAIL, nil
 	}
-	
+
 	if len(list) == 0 {
 		return errdef.SUCCESS, []*mshop.ProductCartInfo{}
 	}
@@ -339,19 +339,19 @@ func (svc *ShopModule) GetProductCartList(userId string) (int, []*mshop.ProductC
 		if err != nil {
 			log.Log.Errorf("shop_trace: get product sku stock fail, skuId:%d, err:%s", item.Id, err)
 		}
-		
+
 		log.Log.Infof("stockInfo:%+v", stockInfo)
-		
+
 		if stockInfo != nil {
 			item.Stock = stockInfo.Stock
 			item.MinBuy = stockInfo.MinBuy
 			item.MinBuy = stockInfo.MaxBuy
 		}
-		
+
 		if item.IsDelete == 1 {
 			item.Status = 1
 		}
-		
+
 		now := time.Now().Unix()
 		if now >= item.StartTime && now < item.EndTime {
 			item.HasActivities = 1
@@ -371,7 +371,7 @@ func (svc *ShopModule) SearchProduct(sortType, keyword string, page, size int) (
 	if list == nil {
 		return code, []*mshop.ProductSimpleInfo{}
 	}
-	
+
 	return code, list
 }
 
@@ -443,11 +443,11 @@ func (svc *ShopModule) DeleteProductCart(ids []int, userId string) int {
 	if user == nil {
 		return errdef.USER_NOT_EXISTS
 	}
-	
+
 	affected, err := svc.CleanProductCart(ids, userId)
 	if err != nil || int(affected) != len(ids) {
 		return errdef.SHOP_DEL_PRODUCT_CART_FAIL
 	}
-	
+
 	return errdef.SUCCESS
 }
