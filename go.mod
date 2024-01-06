@@ -4,7 +4,6 @@ go 1.21.0
 
 replace github.com/go-xorm/core v0.6.3 => xorm.io/core v0.6.3
 
-
 require (
 	github.com/DeanThompson/jpush-api-go-client v0.0.0-20160606124945-0c253969b0ca
 	github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc
@@ -23,6 +22,7 @@ require (
 	github.com/json-iterator/go v1.1.10
 	github.com/lestrrat/go-file-rotatelogs v0.0.0-20180223000712-d3151e2a480f
 	github.com/microcosm-cc/bluemonday v1.0.15
+	github.com/mojocn/base64Captcha v1.3.6
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/parnurzeal/gorequest v0.2.16
 	github.com/rs/xid v1.2.1
@@ -37,10 +37,11 @@ require (
 	github.com/tencentyun/tls-sig-api-v2-golang v1.2.0
 	github.com/tencentyun/vod-go-sdk v1.0.0
 	github.com/tidwall/gjson v1.6.1
+	github.com/xuri/excelize/v2 v2.8.0
 	github.com/zheng-ji/goSnowFlake v0.0.0-20180906112711-fc763800eec9
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
-	golang.org/x/net v0.0.0-20210614182718-04defd469f4e
+	golang.org/x/crypto v0.12.0
+	golang.org/x/net v0.14.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/ldap.v2 v2.5.1
 )
@@ -62,6 +63,7 @@ require (
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator/v10 v10.2.0 // indirect
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 // indirect
@@ -78,9 +80,12 @@ require (
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/mozillazg/go-httpheader v0.2.1 // indirect
 	github.com/pelletier/go-toml v1.2.0 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
+	github.com/richardlehane/mscfb v1.0.4 // indirect
+	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d // indirect
 	github.com/spf13/afero v1.1.2 // indirect
 	github.com/spf13/cast v1.3.0 // indirect
@@ -91,11 +96,14 @@ require (
 	github.com/tidwall/match v1.0.1 // indirect
 	github.com/tidwall/pretty v1.0.2 // indirect
 	github.com/ugorji/go/codec v1.1.7 // indirect
+	github.com/xuri/efp v0.0.0-20230802181842-ad255f2331ca // indirect
+	github.com/xuri/nfp v0.0.0-20230819163627-dc951e3ffe1a // indirect
 	go.uber.org/atomic v1.6.0 // indirect
 	go.uber.org/multierr v1.5.0 // indirect
-	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
-	golang.org/x/text v0.3.6 // indirect
-	golang.org/x/tools v0.0.0-20191112195655-aa38f8e97acc // indirect
+	golang.org/x/image v0.13.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/text v0.13.0 // indirect
+	golang.org/x/tools v0.6.0 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
